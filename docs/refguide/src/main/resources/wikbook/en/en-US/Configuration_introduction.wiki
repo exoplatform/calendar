@@ -1,0 +1,7 @@
+This chapter describes about configurations used in eXo Collaboration. It consists of three main sections:
+
+* [Components in eXo Collaboration Configuration|#CSref.Configuration.ComponentsineXoCollaborationConfiguration]
+
+* [External Component Plugins|#CSref.Configuration.ExternalComponentPlugins]
+
+* [eXo Chatserver Configuration|#CSref.Configuration.eXoChatserverConfiguration]

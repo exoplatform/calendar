@@ -1,0 +1,135 @@
+h1. Components in eXo Collaboration Configuration {anchor:id=CSref.Configuration.ComponentsineXoCollaborationConfiguration}
+This table shows some main components that take init-param in the applications of eXo Collaboration:
+
+|| Applications|| Components || Description ||
+| *Calendar* | {{CalendarServiceImpl}} | It is a service that manages calendars in the Calendar application of eXo Collaboration.|
+| *Chat* | {{HistoryImpl}}  {example}{example}{example}{example} {{XMPPMessenger}} {example}{example}{example}{example}  {{DefaultPresenceStatus}}| It is a service that saves the chat history of users. {example}{example} It is a service that processes messages of chat users, basing on the XMPP Protocol.  {example}{example}  It is a component that controls the presence status of chat users.|
+|*Contact* | {{ContactServiceImpl}} | It is a service that supplies functions to manage contacts in the Address Book application of eXo Collaboration. |
+| *Webservice* | {{AddActionsPlugin}} | It is used to register a listener for the actions on the nodes. |
+
+
+h2. CalendarService {anchor:id=CSref.Configuration.CalendarService}
+The configuration of the Calendar application is applied mainly in _/eXoApplication/calendar/service/src/main/resources/conf/portal/configuration.xml_.
+
+Use the CalendarService to configure the Calendar. The following information will explain details of its configuration.
+When this configuration file is executed, the component named _org.exoplatform.calendar.service.impl.CalendarServiceImpl_ will process actions of the Calendar application.
+
+{code:xml}
+<component>
+	<key>org.exoplatform.calendar.service.CalendarService</key>
+	<type>org.exoplatform.calendar.service.impl.CalendarServiceImpl</type>
+	<init-params>
+		<properties-param>
+			<name>eventNumber.info</name>
+			<property name="eventNumber" value="100" />
+		</properties-param>
+	</init-params>
+</component>
+{code}
+
+Details:
+||Properties-Param || Property name || Description || Possible Value || Default Value ||
+| *eventNumber* | {{eventNumber}} | The number of events in a calendar. | {{interger}} | {{100}} |
+
+h2. HistoryImpl {anchor:id=CSref.Configuration.HistoryImpl}
+The configuration of historyImpl is found in the  _/extension/webapp/src/main/webapp/WEB-INF/cs-extension/cs/chat/chat-service-configuration.xml_.
+When this configuration file is executed, the component named _org.exoplatform.services.xmpp.history.impl.jcr.HistoryImpl_ initializes all the configured parameters.
+
+{code:xml}
+<component>
+	<type>org.exoplatform.services.xmpp.history.impl.jcr.HistoryImpl</type>
+	<init-params>
+		<value-param>
+			<name>workspace</name>
+			<value>collaboration</value>
+		</value-param>
+		<value-param>
+			<name>repository</name>
+			<value>repository</value>
+		</value-param>
+		<value-param>
+			<name>path</name>
+			<value>exo:applications/eXoChat/history</value>
+		</value-param>
+	</init-params>
+</component>
+{code}
+
+Details:
+||Value-Param || Description || Possible Values || Default Value ||
+| *workspace* | The workspace name in JCR where history data is stored. | {{string}} | {{collaboration}} |
+|*repository*| The repository name in JCR where history data is stored. | {{string}} | {{repository}} |
+|*path*| The JCR path to the location where history data is stored. | {{string}} | {{exo:applications/eXoChat/history}}. |
+
+
+h2. XMPPMessenger {anchor:id=CSref.Configuration.XMPPMessenger}
+The configuration of the XMPPMessenger component is found in _/extension/webapp/src/main/webapp/WEB-INF/cs-extension/cs/chat/chat-service-configuration.xml_. It helps eXo Collaboration connect the Openfire instance.
+
+{code:xml}
+<component>
+  <type>org.exoplatform.services.xmpp.connection.impl.XMPPMessenger</type>
+  <init-params>
+    <properties-param>
+      <name>openfire-connection-conf</name>
+      <property name="host" value="127.0.0.1" />
+      <property name="port" value="5222" />
+    </properties-param>
+    <properties-param>
+      <name>send-file</name>
+      <property name="timeout" value="7200000" />
+    </properties-param>
+  </init-params>
+</component>
+{code}
+
+Details: 
+||Properties-param || Property name || Description || Possible Values || Default Value ||
+| *openfire-connection-conf* | {{host}}  {example}{example} {{port}}| IP address or hostname for the openfire server. {example}{example}  Port to connect on the Openfire server. Should be the same that is set in the Openfire configuration "Client to Server". | {{integer}} {example}{example} {{integer}} | 127.0.0.1 {example}{example} 5222 |
+| *send-file*| {{timeout}} | The timeout before aborting attempt to establish a file transfer. | {{integer}} | {{7200000}} |
+
+
+h2. DefaultPresenceStatus {anchor:id=CSref.Configuration.DefaultPresenceStatus}
+The configuration of the DefaultPresenceStatus component is found in _/extension/webapp/src/main/webapp/WEB-INF/cs-extension/cs/chat/chat-service-configuration.xml_.
+
+{code:xml}
+<component>
+  <type>org.exoplatform.services.presence.DefaultPresenceStatus</type>
+  <init-params>
+    <properties-param>
+      <name>presence-status</name>
+      <property name="mode" value="Free to chat" />
+    </properties-param>
+  </init-params>
+</component>
+{code}
+
+Details:
+|| Properties-param || Property name|| Description || Possible Values || Default Value ||
+| *presence-status* | {{mode}} | Show the present status of users. | {{string}} | {{Free to chat}} |
+
+h2. ContactService {anchor:id=CSref.Configuration.ContactService}
+The configuration of the ContactService component is found in _eXoApplication/contact/service/src/main/resources/conf/portal/configuration.xml_.
+
+When the server starts, the configuration file which contains the declaration of ContactService component is executed. A ContactService component is then created with params and plugins in the configuration file.
+
+{code:xml}
+<component>
+  <key>org.exoplatform.contact.service.ContactService</key>
+  <type>org.exoplatform.contact.service.impl.ContactServiceImpl</type>
+  <init-params>
+    <values-param>
+      <name>UserCanSeeAllGroupAddressBooks</name>
+      <description>User can see all GroupAddressBooks or only GroupAddressBooks that the user has at least one membership</description>
+      <value>false</value>
+    </values-param>
+    <values-param>
+      <name>NonPublicGroups</name>
+      <description>Groups that should not be displayed in broadcast list. Wildcards may be used in groups name</description>
+    </values-param>
+  </init-params>
+</component>
+{code}
+
+|| Values-param || Description || Possible Values || Default Value ||
+| *UserCanSeeAllGroupAddressBooks* | User can see all GroupAddressBooks or only GroupAddressBooks that the user has at least one membership. | {{true/false}} | {{false}} |
+| *NonPublicGroups* | Groups that should not be displayed in the broadcast list. Wildcards may be used in groups name. | {{true/false}} | N/A |

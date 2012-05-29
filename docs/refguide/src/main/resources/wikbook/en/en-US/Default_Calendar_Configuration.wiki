@@ -1,0 +1,231 @@
+
+h1. Default Calendar Configuration
+
+
+
+h1. Overview
+
+eXo Calendar can initialize some default data automatically :
+* default personal calendars
+* default group calendars
+* default event categories
+* default calendar setting
+
+{note}
+This feature relies on organization listeners. They are only executed when eXo's OrganizationService is used to create/delete users/groups. If you provision your organization data by an external tool make sure you do it by calling OrganizationService or you won't be able to benefit of this.
+{note}
+
+Configuration of this is done by plugins in {{cs-plugins-configuration.xml}}.
+
+h1. Default personal calendar
+
+Each user can have a default personal calendar created. Use the {{NewUserListener}} to configure that.
+
+
+{code:xml}
+<component-plugin>
+  <name>calendar.new.user.event.listener</name>
+  <set-method>addListenerPlugin</set-method>
+  <type>org.exoplatform.calendar.service.impl.NewUserListener</type>
+  <description>description</description>
+  <init-params>
+    <value-param>
+      <name>defaultCalendarCategory</name>
+      <value>My group</value>
+    </value-param>
+    <value-param>
+      <name>defaultCalendar</name>
+      <value>Default</value>
+    </value-param>
+    <value-param>
+      <name>defaultEventCategories</name>
+      <value>Anniversary,Calls,Clients,Holiday,Meeting</value>
+    </value-param>
+  </init-params>
+</component-plugin>
+{code}
+
+You may want to change the following :
+
+| parameter | description | value|
+| defaultCalendarCategory |Name of the calendar group | any string|
+| defaultCalendar | Default the name of a Calendar that will be created for that user | comma separated list of calendar names (ex: personal,business)|
+| defaultEventCategories | Default event categories for user| Comma separated list of category names (ex: lunch,meeting,conference,sport)|
+
+Advanced users may want to change the behaviour by using their own plugins.
+The following information may be interesting to them :
+
+* calendar.new.user.event.listener: unique key to avoid duplicate names.
+* addListenerPlugin: This API of Organization service to allow other listener overwrite.
+* org.exoplatform.calendar.service.impl.NewUserListener: The class that is used to define Calendar Service to insert database.
+* description: Some brief descriptions about plugin.
+
+
+#info("Since cs 1.3.1 we add exception create default calendar to the configuration file")
+* We need to add this in side the  \<init-params> tag
+{code:xml}
+<values-param>
+  <name>ignoredUsers</name>
+  <description>Definition users to ignore create default calendar</description>
+  <value>demo</value>
+  <value>marry</value>
+</values-param>
+{code}
+
+|| parameter || description || value ||
+| ignoredUsers| definition users to ignore create default calendar | user id, use multiple by each line |
+
+
+
+
+
+h1. Default calendar settings
+
+Default user settings for eXo Calendar application are also configured by the NewUserListener:
+
+{code:xml}
+  <value-param>
+    <name>viewType</name>
+    <value>1</value>
+  </value-param>
+  <value-param>
+    <name>timeInterval</name>
+    <value>15</value>
+  </value-param>
+  <value-param>
+    <name>weekStartOn</name>
+    <value>2</value>
+  </value-param>
+  <value-param>
+    <name>dateFormat</name>
+    <value>MM/dd/yyyy</value>
+  </value-param>
+  <value-param>
+    <name>timeFormat</name>
+    <value>HH:mm</value>
+  </value-param>
+  <value-param>
+    <name>localeId</name>
+    <value>BEL</value>
+  </value-param>
+  <value-param>
+    <name>timezoneId</name>
+    <value>Europe/Brussels</value>
+  </value-param>
+  <value-param>
+    <name>baseUrlForRss</name>
+    <value></value>
+  </value-param>
+  <value-param>
+    <name>isShowWorkingTime</name>
+    <value>false</value>
+  </value-param>
+  <value-param>
+    <name>workingTimeBegin</name>
+    <value>08:00</value>
+  </value-param>
+  <value-param>
+    <name>workingTimeEnd</name>
+    <value>18:00</value>
+  </value-param>
+{code}
+
+You may want to change the following :
+
+| parameter | description | value |
+| viewType |default view after user logins and goes to Calendar portlet | 1-7 (see below) |
+| timeInterval | the time unit interval when you drag and move the event (in Day view and Week view only)  | integer in minutes  |
+| weekStartOn | day to use as the begining of the week. only affect on Week view | 1-7 (see below) |
+| dateFormat | The display format for dates | valid [Java Date format>http:--java.sun.com-j2se-1.5.0-docs-api-java-text-SimpleDateFormat.html] |
+| timeFormat | The display format for time | valid [Java Date format>http:--java.sun.com-j2se-1.5.0-docs-api-java-text-SimpleDateFormat.html] (ex : HH:mm) |
+| timezoneId | user time zone | valid [TimeZone id>http:--www.unicode.org-cldr-data-docs-design-formatting-zone_log.html#windows_ids ] |
+| localeId | ID of the geographic locale | valid [locale ID>http:--userpage.chemie.fu-berlin.de-diverse-doc-ISO_3166.html] |
+| isShowWorkingTime | Indicate if the working time should be hilighted in day view | true,false |
+| workingTimeBegin | the start time in working time | time in timeFormat |
+| workingTimeEnd | the end time  in working time. | time in timeFormat |
+
+
+*viewType* parameter is encoded by a number as follow:
+
+* 0 : Day view
+* 1 : Week view
+* 2 : Month view
+* 3 : Year view
+* 4 : List view
+* 5 : Schedule view
+* 6 : Working days view
+
+
+*weekStartOn* parameter is encoded as follow:
+
+* 1 : Sunday
+* 2 : Monday
+* 3 : Tuesday
+* 4 : Wednesday
+* 5 : Thursday
+* 6 : Friday
+* 7 : Saturday
+
+
+#info("Since CS 2.1 we has a newfeature about timezone. It now takes affect to the created events or tasks ")
+- When you add calendar the time zone and language is CAN NOT select able, it will follow your calendar setting
+- Event/task will change follow your timezene setting
+- When you are sharing the calendar, events and tasks will be display flow your timezone setting
+
+
+1 Group calendars
+
+To create a default group calendar: Beside using the Organization Portlet to create an user, we also use it to create a group. Calendar service will generate a Calendar for that group (Group calendar means : we have a calendar for all users in that group and the user can do actions in that Calendar ). To do that we have some more listeners define below:
+{code:xml}
+<component-plugin>
+  <name>calendar.new.group.event.listener</name>
+  <set-method>addListenerPlugin</set-method>
+  <type>org.exoplatform.calendar.service.impl.NewGroupListener</type>
+  <description>description</description>
+  <init-params>
+    <value-param>
+      <name>defaultEditPermission</name>
+      <value>*.*</value>
+    </value-param>
+    <value-param>
+      <name>defaultViewPermission</name>
+      <value>*.*</value>
+    </value-param>
+    <value-param>
+      <name>defaultLocale</name>
+      <value>BEL</value>
+    </value-param>
+    <value-param>
+      <name>defaultTimeZone</name>
+      <value>Europe/Brussels</value>
+    </value-param>
+  </init-params>
+</component-plugin>
+{code}
+
+* Name: defaultEditPermission: The default Edit permission  value: *.* it means all users in that group have modify and add, remove calendar, events of calendar .(Multi value membership, use coma (,) to split values)
+* Name:  defaultViewPermission. Value: *.* stands for all in that group can view this calendar and all the events of this calendar (Multi value membership, use coma (,) to split values)
+* Name:  defaultLocale: the default locale of the calendar Value:  BEL (see more locale ids http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html )
+* Name:   defaultTimeZone. The default time zone of calendar value: Europe/Brussels (see more for timeZone ids http://www.unicode.org/cldr/data/docs/design/formatting/zone_log.html#windows_ids)
+* Note:   the permission you can define by two ways : use user name or use membership type permission is suitable (ex: \*.manager,root,\*.moderator).
+
+{info}
+Since cs 1.3.1 we add exception create default group calendar to the configuration file
+{info}
+* We need to add this in side the \<init-params> tag
+{code:xml}
+ <values-param>
+  <name>ignoredGroups</name>
+  <description>Definition group to ignore create default calendar</description>	
+  <value>/platform/guests</value>	
+ </values-param>
+{code}
+
+|| parameter || description || value ||
+| ignoredGroups| Definition group to ignore create default calendar | group id, use line to define multiple value |
+
+
+
+
+
+

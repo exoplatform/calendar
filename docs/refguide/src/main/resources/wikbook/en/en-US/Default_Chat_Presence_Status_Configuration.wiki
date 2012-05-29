@@ -1,0 +1,30 @@
+h1.eXo Chat Default Presence Status Configuration
+
+h2. Define presence status 
+Presence status is chain of character describes chatter status in a chat session. Example: Online(or Available) describes chatter ready to chat directly with others.
+Default presence status enables user set their presence status is default. 
+ 
+h2. Configuration in chat-service-configuration.xml file 
+
+Default presence status is configured in WEB-INF/conf/csdemo/chat/chat-service-configuration.xml file. Configuration is based on properties expressed in an XML syntax.
+
+{code:xml}
+	<component>
+		<type>org.exoplatform.services.presence.DefaultPresenceStatus</type>
+		<init-params>
+			<properties-param>
+				<name>chat-status</name>
+					<property name="mode" value="Available" /> 
+			</properties-param>
+		</init-params>
+	</component>
+{code}
+
+At present, there are 6 status in eXo Platform 3's chat:
+* Available: describes chatter is ready to chat directly with others, it has mean the same with "Online" staus in other chat applications.
+* Unavailable: describes chatter is not ready to chat directly with others, it has mean the same with "Ofline" staus in other chat applications.
+* Away: mean that chatter don't chat.
+* Free to chat: mean that chatter always feel comfortable for chat.
+* Do not disturb: chatter don't want any people chat with him/her.
+* Extend away: as Away status mean.
+  

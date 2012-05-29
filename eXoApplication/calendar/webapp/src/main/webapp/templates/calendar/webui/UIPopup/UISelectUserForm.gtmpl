@@ -1,0 +1,96 @@
+<%
+ import org.exoplatform.services.organization.User;
+ uiform.begin()
+ def rcontext = _ctx.getRequestContext() ;
+ rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("'+uiform.id+'") ;') ;
+ rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+uicomponent.event('Search')+'") ;') ;
+%> 
+<div class="UISelectUserForm">
+  <div class="SelectUserContainer">
+    <%if(uicomponent.isShowSearch()){%>
+    <div class="UISearch">
+      <div class="UIBarStyle">
+        <div class="NormalBarStyle">
+          <div class="LeftBar">
+            <div class="RightBar">
+              <div class="MiddleBar">
+                
+                <div class="UIAddressSearchForm">
+                  
+                  <div class="QuickSet">
+                    <%uiform.renderField(uiform.FIELD_KEYWORD)%>
+                    <div class="FilterSelect">
+                      <%uiform.renderField(uiform.FIELD_FILTER)%>
+                    </div>  
+                    <a class="SearchIcon" href="<%=uicomponent.event('Search')%>" title="<%=uiform.getLabel(uiform.FIELD_KEYWORD)%>"><span></span></a>
+                  </div>
+                  <div class="AddressesGroup">
+                    <div class="AddressLabel">
+                      <%=uiform.getLabel(uiform.FIELD_GROUP)%>
+                    </div>
+                    <div class="GroupSelect">
+                    <%uiform.renderField(uiform.FIELD_GROUP)%>
+                    </div>
+                  </div>
+                  
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>        
+    </div>
+    <div style="clear: both"><span></span></div>
+    <%}%>
+    <div class="AddressContainer">
+      <div class="ListAddress">
+      
+        <table cellspacing="0" borderspacing="0" id="UIListUsers" class="UIGrid">
+            <thead>
+              <tr>
+                <th style="width: 30px;" class="BorderAddress"><input type="checkbox" class="checkbox" value="4" /></th>
+                <th class="BorderAddress">
+                  <div class="BlueDownArrowIcon">
+                    <div class="Label">
+                     <%=uiform.getLabel('name')%>
+                    </div>
+                  </div>
+                </th>
+                <th class="BorderAddress">
+                  <div class="BlueDownArrowIcon">
+                    <div class="Label">
+                     <%=uiform.getLabel('email')%>
+                    </div>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <%
+                for (User data : uicomponent.getData()) {
+                  checkboxField = uicomponent.getChildById(data.getUserName());
+              %>
+                <tr>
+                  <td class="BorderAddress">
+                    <%
+                      if (checkboxField != null) { uicomponent.renderField(checkboxField); }
+                    %>
+                  </td>
+                  <td class="text BorderAddress"><%=data.getFullName() != null ? data.getFullName() : data.getUserName()%></td>
+                  <td class="text BorderAddress"><%=data.getEmail() != null ? data.getEmail() : "" %></td>
+                </tr>
+              <%}%>
+        </tbody>
+        </table>      
+        <%_ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");%>    
+      </div>
+    </div>
+  </div>
+	<div class="UIAction">
+  		<%for(String action : uicomponent.getActions()){%>
+		<a href="<%=uicomponent.event(action)%>" class="ActionButton LightBlueStyle"><%=uiform.getLabel(action)%></a>
+		<%}%>
+	</div>
+</div>
+<% uiform.end() %>

@@ -1,0 +1,70 @@
+<%
+  def node = uicomponent.getNode() ;
+  def originalNode = uicomponent.getOriginalNode()
+%>
+<head>
+  <style>
+    .WorkCalendar {
+      text-align: left; 
+      margin: 8px 5px;
+    }
+    
+    label.text { 
+      font: normal bold 11px Verdana;
+      color: black; 
+      line-height: 16px; 
+      height: 16px;
+    }
+    
+    span.text  { 
+      font-size: 11px; 
+      vertical-align:bottom; 
+      color: black; 
+      text-align: left ;
+    }
+    
+    div.summary { 
+      width: 96.3%; 
+      height: 160px ; 
+      font-size: 12px; 
+      padding: 5px 5px 5px 10px; 
+      color: black ; 
+      font-size: 11px;
+    } 
+    
+    div.content { 
+      width: 96.3%; 
+      font-size: 12px; 
+      padding: 5px; 
+      color: gray; 
+    }
+    
+    
+    .ContainerCalendar span.text {
+      font-weight: normal;
+    }
+    
+    .ContainerCalendar {
+      border-bottom: solid 1px #BDBDBD;
+      height: 25px;
+      line-height: 25px;
+    }
+  </style>
+</head>
+<div class="WorkCalendar">
+  <div class="ContainerCalendar">
+    <label class="text"><%=_ctx.appRes("Calendar.view.label.calendar")%> : <label>
+    <span class="text"><%=originalNode.getName()%></span>
+    <div style="clear: left;"><span></span></div>
+  </div>
+  <div class="ContainerCalendar">
+    <label class="text"><%=_ctx.appRes("Calendar.view.label.shared")%>: </label>
+    <span class="text">
+      <%if(node.hasProperty("exo:shared")) {%>
+        <%=node.getProperty("exo:shared").getString()%>
+      <%}%>
+    </span>
+  </div>
+  <div><% _ctx.include(uicomponent.getViewTemplate("exo:vote", "view1")); %></div>
+  <div><% _ctx.include(uicomponent.getViewTemplate("exo:comment", "view1")); %></div>
+</div>

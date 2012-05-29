@@ -1,0 +1,97 @@
+<%
+  import org.exoplatform.calendar.webui.UIActionBar ;
+  import org.exoplatform.calendar.webui.UICalendarWorkingContainer ;
+  import org.exoplatform.calendar.webui.popup.UIPopupAction ;
+  import org.exoplatform.calendar.service.CalendarSetting;
+  try {
+    def rcontext = _ctx.getRequestContext() ;
+    rcontext.getJavascriptManager().addJavascript('eXo.calendar.restContext = "'+ uicomponent.getRestContextName() +'" ;') ;
+    rcontext.getJavascriptManager().addJavascript('eXo.calendar.settingTimezone = "'+ uicomponent.getSettingTimeZone() +'" ;') ;
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+%>
+<style type="text/css">
+#CalendarApplicationMinWidth
+{
+  min-width: 790px;
+  width:expression(document.getElementById("CalendarApplicationMinWidth").clientWidth < 790? "790px": "auto" );
+}
+</style>
+
+<div id="CalendarApplicationMinWidth">
+    <div class="UICalendarPortlet" id="$uicomponent.id">
+      <div class="UICalendarEventTooltip" title="Click to edit"><span></span></div>
+      <div class="UINotification" style="display:none;">
+        <div class="UIControlInfo ClearFix">
+          <div class="LeftControlInfo">
+            <div class="RightControlInfo">
+              <div class="CenterControlInfo">
+                <a class="ControlInfoLabel" href="#">(0)</a>
+              </div>
+            </div>
+          </div>  
+        </div>
+        <div class="UIPopupNotification" style="visibility: hidden;">
+          <div class="TLPopupNotification">
+            <div class="TRPopupNotification">
+              <div class="TCPopupNotification"><span></span></div>
+            </div>
+          </div>
+          <div class="LPopupTitleNotification">
+            <div class="RPopupTitleNotification">
+              <div class="CPopupTitleNotification">
+                <a class="ItemTitle" href="#">Notification</a>
+                <a class="Close" href="#"><span></span></a>
+              </div>
+            </div>
+          </div>
+          <div class="MLPopupNotification">
+            <div class="MRPopupNotification">
+              <div class="MCPopupNotification">
+                <!-- Message here
+                <a class="Item" href="#"><div class="ItemLabel">You have 3 new messages inbox</div></a>
+                <a class="Item" href="#"><div class="ItemLabel">New event on your calendar </div></a>
+                -->
+              </div>
+            </div>
+          </div>
+          <div class="BLPopupNotification">
+            <div class="BRPopupNotification">
+              <div class="BCPopupNotification"><span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <%
+      timeStep = uicomponent.getCalendarSetting().getTimeInterval() ; 
+      workingStart = uicomponent.getCalendarSetting().getWorkingTimeBegin() ;
+      CalendarSetting calendarSetting = uicomponent.getCalendarSetting() ;
+      String timeFormat = calendarSetting.getTimeFormat() ;
+      String settingTimeZone = uicomponent.getSettingTimeZone() ;
+      def rcontext = _ctx.getRequestContext() ;
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'") ;') ;
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.showContextMenu("'+ uicomponent.id +'") ;') ;
+      //rcontext.getJavascriptManager().addJavascript('if(eXo.core.Cometd) delete eXo.core.Cometd;') ;
+      //rcontext.getJavascriptManager().addJavascript('eXo.require("eXo.core.Cometd","/cometd/javascript/");') ;
+      //rcontext.getJavascriptManager().importJavascript('eXo.core.Cometd','/cometd/javascript/') ;
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.settingTimezone = "'+ settingTimeZone +'" ;') ;
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isSpace = "'+ uicomponent.getSpaceId() +'" ;') ;
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.LayoutManager.layoutId = "calendarlayout-' + uicomponent.getRemoteUser() + '";');
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkLayout();');
+      rcontext.getJavascriptManager().addJavascript('eXo.calendar.CalendarLayout.init();');
+    %>
+      <div class="CalendarWorkingWorkspace">
+        <%uicomponent.renderChild(UIActionBar.class)%>
+        <%uicomponent.renderChild(UICalendarWorkingContainer.class)%>
+      </div>
+    
+    </div>
+</div>
+<div class="UICalendarPortlet UIEmpty">
+<%
+  uicomponent.renderChild(UIPopupAction.class) ;
+%>
+</div>

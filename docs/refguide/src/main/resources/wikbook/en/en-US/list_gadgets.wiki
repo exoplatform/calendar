@@ -1,0 +1,78 @@
+eXo Collaboration consists of three gadgets: eventslist, taskslist and messageslist. They are packaged in the _csResources.war_ file.
+
+h1. Eventslist {anchor:id=CSref.Gadgets.Evenslist}
+
+h2. Description  {anchor:id=CSref.Gadgets.Eventlist.Description}
+Eventslist lists the maximum number of upcoming events, that is configurable by users. For example, they can set the preference list to 5 or 10 events.
+
+See preferences of this gadget in the following sample code:
+
+{code:xml}
+<UserPref name="url" display_name="__MSG_baseurl__" datatype="string" value="/calendar" required="true" />
+<UserPref name="subscribeurl" display_name="__MSG_subscribeurl__" datatype="string" value="/portal/rest/private/cs/calendar/upcoming"
+  required="true" />
+<UserPref name="limit" display_name="__MSG_limit__" default_value="10" datatype="string" />
+<UserPref name="timeformat" display_name="__MSG_format__" default_value="AM/PM" datatype="enum" />
+{code}
+
+Details:
+|| Preferences || Description ||
+| *url* | Link to the Calendar portlet. |
+| *Subscribeurl* | Link to the upcoming events. |
+| *limit* | The maximum number of upcoming events. |
+| *timeformat* | The time format for upcoming events. |
+
+For more details on the preferences of gadgets, see [here.|http://code.google.com/apis/gadgets/docs/basic.html#Userprefs]
+
+h2. Links to used REST services {anchor:id=CSref.Gadgets.Eventslist.LinksToUsedRESTServices}
+
+It uses the _upcomingEvent_ service in the following package:
+_org.exoplatform.webservice.cs.calendar.CalendarWebservice.java_.
+
+
+h1. Taskslist {anchor:id=CSref.Gadgets.Taskslist}
+Taskslist lists the maximum number of upcoming tasks that is configurable by users. For example, they can set the preference list to 5 or 10 tasks.
+
+h2. Description {anchor:id=CSref.Gadgets.Taskslist.Description}
+See the preferences of this gadget in the following sample code:
+
+{code:xml}
+<UserPref name="setting" default_value="/calendar:/portal/rest/private/cs/calendar/upcoming:10:AM/PM:Default" datatype="hidden" />
+{code}
+
+Accordingly, _setting_ collects all the configuration of upcoming tasks and add some more functions to help developers change the configuration of the default skin.
+
+h2. Links to used REST services  {anchor:id=CSref.Gadgets.Taskslist.LinksToUsedRESTServices}
+It uses upcomingEvent service in the following package:
+_org.exoplatform.webservice.cs.calendar.CalendarWebservice.java_.
+
+h1. Messageslist {anchor:id=CSref.Gadgets.Messageslist}
+It lists the maximum number of unread messages, that is configurable by users.
+
+h2. Description {anchor:id=CSref.Gadgets.Messageslist.Description}
+
+See the prefereces of this gadget in the following sample code:
+
+{code:xml}
+<UserPref name="url" display_name="__MSG_baseurl__" datatype="hidden" value="/mail" required="true" />
+<UserPref name="subscribeurl" display_name="__MSG_subscribeurl__" datatype="hidden" value="/portal/rest/private/cs/mail/unreadMail"
+  required="true" />
+<UserPref name="limit" display_name="__MSG_limit__" default_value="5" datatype="hidden" />
+<UserPref name="account" display_name="__MSG_account__" default_value="" datatype="hidden" />
+<UserPref name="folder" display_name="__MSG_folder__" default_value="" datatype="hidden" />
+<UserPref name="tag" display_name="__MSG_tag__" default_value="" datatype="hidden" />
+{code}
+
+Details:
+|| Preferences || Description ||
+| *Url* | The URL of the Mail Application. |
+| *Subscribeurl* | The link to upcoming messages.  |
+| *Limit* | The number of displayed unread messages that is set by users. |
+| *Account* | The mail account in the Mail application. |
+| *Folder* | The folder which consists of unread messages. |
+| *Tag* | The tags in all unread messages. |
+
+h2. Links to used REST services {anchor:id=CSref.Gadgets.LinksToUsedRESTServices}
+
+It uses the unreadMail service in the following package:
+_org.exoplatform.webservice.cs.mail.MailWebservice.java_.

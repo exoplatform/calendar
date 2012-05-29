@@ -1,0 +1,62 @@
+<% import org.exoplatform.calendar.webui.popup.UISelectComponent;%>
+<% String fieldName ; %>
+<div class="UIForm $uicomponent.id">
+  <%uiform.begin()%>
+  <div class="HorizontalLayout">
+    <div class="FormContainer">
+      <table class="UIFormGrid">
+        <% 
+          for(field in uiform.getChildren()) { 
+            if(field.isRendered()) {
+        %>
+              <tr>
+                <%
+                  fieldName = uicomponent.getLabel(field.getName());
+                  if(fieldName != null && fieldName.length() > 0 && !fieldName.equals(uicomponent.getId())) {
+                %>                        
+                      <td class="FieldLabel">
+                          <%=fieldName%>
+                      </td>
+                      <td class="FieldComponent">
+                      <% uiform.renderField(field) %>
+                      <% if(uicomponent.FIELD_TO_CALENDAR.equals(field.getName())) { %>
+                          <a href="<%= uicomponent.event("Add") %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
+                          <img class="AddNewNodeIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
+                          </a>
+                       <% } %>
+                       <% if(uicomponent.DISPLAY_NAME.equals(field.getName())) { %>
+                          <a href="<%= uicomponent.event("Import") %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
+                          <img class="BlueCircleMinus" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
+                          </a>
+                       <% } %> 
+                       <% if(uicomponent.PERMISSION.equals(field.getName())) { %>
+                          <a href="<%= uicomponent.event("SelectPermission",UISelectComponent.TYPE_USER) %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
+                          <img class="SelectUserIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
+                          </a>
+                          <a href="<%= uicomponent.event("SelectPermission",UISelectComponent.TYPE_MEMBERSHIP) %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
+                          <img class="SelectMemberIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
+                          </a>
+                       <% } %> 
+                      </td>
+                <%} else {%>
+                  <td class="FieldComponent" colspan="2"><% uiform.renderField(field) %></td>
+                <%}%>
+              </tr>
+        <%
+            }
+          }
+        %>
+      </table>
+      
+		<div class="UIAction">
+			<% for(action in uicomponent.getActions()) { 
+               String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+               String link = uicomponent.event(action) ;
+			%>
+			<a  href="$link" class="ActionButton LightBlueStyle">$actionLabel</a>
+			<%}%>  
+		</div>
+    </div>
+  </div>
+  <%uiform.end()%>
+</div>

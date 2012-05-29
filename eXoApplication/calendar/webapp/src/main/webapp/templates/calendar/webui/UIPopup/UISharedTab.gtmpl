@@ -1,0 +1,76 @@
+<%
+  uiForm = uicomponent.getParentFrom() ;
+  private void renderActions(String fieldKey) {
+    def actions = uicomponent.getActionField(fieldKey) ;
+    if(actions != null) {
+      for(action in actions) {
+        String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
+        if(actionLabel.equals("action." + action.actionName)) {
+          actionLabel = action.actionName ;
+        }
+        String actionLink ="#";
+        if(action.actionParameter != null) {
+          actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
+        }else {
+          actionLink = (uiForm.event(action.actionListener)) ;
+        }
+        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        if(action.actionType == action.TYPE_ICON) {
+          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+          if(action.isShowLabel) { println  actionLabel  ;}
+        }else if(action.actionType == action.TYPE_LINK){
+         println actionLabel ;
+        }
+        println  "</a>";
+        println "&nbsp;"; 
+        if(action.isBreakLine) { println "<br/>" ;} 
+      }
+    }
+  }
+%>
+<div id="$uicomponent.id" class="$uicomponent.id">
+  <table class="UIFormGrid">
+    <tbody>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_NAME)%>
+        </td>
+        <td class="FieldComponent">
+          <div title="$uicomponent.calendarName_">
+            <%uiForm.renderField(uicomponent.FIELD_NAME)%>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_USER)%>
+        </td>
+        <td class="FieldComponent">
+          <%
+            uiForm.renderField(uicomponent.FIELD_USER)
+            renderActions(uicomponent.FIELD_USER)
+          %>
+        </td>
+      </tr>
+      <tr>
+      <td class="FieldLabel">
+        <%=uiForm.getLabel(uicomponent.FIELD_GROUP)%>
+      </td>
+      <td class="FieldComponent">
+        <%
+          uiForm.renderField(uicomponent.FIELD_GROUP)
+          renderActions(uicomponent.FIELD_GROUP)
+        %>
+      </td>
+    </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_EDIT)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_EDIT)%>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

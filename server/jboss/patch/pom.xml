@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.cs</groupId>
+    <artifactId>cs</artifactId>
+    <version>2.2.0-SNAPSHOT</version>
+    <relativePath>../../../pom.xml</relativePath>
+  </parent>
+  <artifactId>exo.cs.server.jboss.patch</artifactId>
+  <version>${org.exoplatform.cs.version}</version>
+  <packaging>jar</packaging>
+  <name>eXo Cs JBoss Server Patch</name>
+  <description>eXo Cs JBoss Server Patch</description>
+  <url>http://www.exoplatform.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.server.jboss.patch</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/jboss</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-dependencies</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <excludes>**/conf/server.xml</excludes>
+              <includes>**</includes>
+              <excludeArtifactIds>hsqldb</excludeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

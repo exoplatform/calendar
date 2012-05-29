@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
+  xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">  
+  <component>
+    <key>org.exoplatform.services.scheduler.JobSchedulerService</key>
+    <type>org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl</type>
+  </component>
+  <component>
+     <type>org.exoplatform.services.scheduler.impl.QuartzSheduler</type>
+   </component>
+   <component>
+      <type>org.exoplatform.services.scheduler.QueueTasks</type>
+   </component>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.services.scheduler.JobSchedulerService</target-component>
+    <component-plugin>
+      <name>RecordsJob</name>
+      <set-method>addPeriodJob</set-method>
+      <type>org.exoplatform.calendar.service.ReminderPeriodJob</type>
+      <description>add e-mail reminder job to the JobSchedulerService</description>
+      <init-params>
+        <properties-param>
+          <name>job.info</name>
+          <description>save the monitor data  periodically</description>
+          <property name="jobName" value="ReminderJob"/>
+          <property name="groupName" value="CollaborationSuite"/>
+          <property name="job" value="org.exoplatform.calendar.service.ReminderJob"/>
+          <property name="repeatCount" value="0"/>
+          <property name="period" value="180000"/>     
+          <property name="startTime" value="+60000"/>
+          <property name="endTime" value=""/>               
+        </properties-param>
+        
+      </init-params>
+    </component-plugin>
+  <component-plugin>
+      <name>PopupRecordsJob</name>
+      <set-method>addPeriodJob</set-method>
+      <type>org.exoplatform.calendar.service.PopupReminderPeriodJob</type>
+      <description>add popup reminder job to the JobSchedulerService</description>
+      <init-params>
+        <properties-param>
+          <name>job.info</name>
+          <description>save the monitor data  periodically</description>
+          <property name="jobName" value="PopupReminderJob"/>
+          <property name="groupName" value="CollaborationSuite"/>
+          <property name="job" value="org.exoplatform.calendar.service.PopupReminderJob"/>
+          <property name="repeatCount" value="0"/>
+          <property name="period" value="15000"/>     
+          <property name="startTime" value="+60000"/>
+          <property name="endTime" value=""/>               
+        </properties-param>
+        <properties-param>
+          <name>popupreminder.info</name>
+          <description>save the monitor data  periodically</description>
+          <property name="portalName" value="portal"/> 
+        </properties-param>
+      </init-params>
+    </component-plugin>
+    
+    </external-component-plugins>
+  <external-component-plugins>
+    <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
+    <component-plugin>
+      <name>calendar.update.version</name>
+      <set-method>addListenerPlugin</set-method>
+      <type>org.exoplatform.calendar.service.impl.UpdateCalendarVersion</type>
+      <description>Update calendar data</description>      
+      <init-params>
+        <object-param>
+          <name>cs.calendar.update.object</name>
+          <description>cs update obj param</description>
+          <object type="org.exoplatform.calendar.service.CsObjectParam">
+            <field name="nodeTypes">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <object type="org.exoplatform.calendar.service.CsNodeTypeMapping">
+                    <field name="nodeTypeName">
+                      <string>exo:reminder</string>
+                    </field>
+                    <field name="updatedProperties">
+                      <collection type="java.util.ArrayList">
+                        <value>
+                          <object type="org.exoplatform.calendar.service.CsPropertyMapping">
+                            <field name="propertyName"><string>exo:owner</string></field>
+                            <field name="replaceName"><string>exo:creator</string></field>
+                            <field name="defaultValue"><string></string></field>
+                          </object>
+                        </value>
+                      </collection>
+                    </field>
+                  </object>
+                </value>
+                <value>
+                  <object type="org.exoplatform.calendar.service.CsNodeTypeMapping">
+                    <field name="nodeTypeName">
+                      <string>exo:calendarEvent</string>
+                    </field>
+                    <field name="addedProperties">
+                      <collection type="java.util.ArrayList">
+                        <value>
+                          <object type="org.exoplatform.calendar.service.CsPropertyMapping">
+                            <field name="propertyName"><string>exo:eventcategoryName</string></field>
+                            <field name="replaceName"><string></string></field>
+                            <field name="defaultValue"><string></string></field>
+                          </object>
+                        </value>
+                      </collection>
+                    </field>
+                    <field name="removedProperties">
+                      <collection type="java.util.ArrayList">
+                      </collection>
+                    </field>
+                    <field name="updatedProperties">
+                      <collection type="java.util.ArrayList">
+                      </collection>
+                    </field>
+                  </object>
+                </value>  
+              </collection>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>   
+  
+    
+    
+  
+</configuration>

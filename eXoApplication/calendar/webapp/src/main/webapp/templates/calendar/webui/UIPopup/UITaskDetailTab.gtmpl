@@ -1,0 +1,160 @@
+<%
+  uiForm = uicomponent.getParentFrom() ;
+  private void renderActions(String fieldKey) {
+    def actions = uicomponent.getActionField(fieldKey) ;
+    if(actions != null) {
+      for(action in actions) {
+        String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
+        if(actionLabel.equals("action." + action.actionName)) {
+          actionLabel = action.actionName ;
+        }
+        String actionLink ="#";
+        if(action.actionParameter != null) {
+          actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
+        }else {
+          actionLink = (uiForm.event(action.actionListener)) ;
+        }
+        if(actionLabel.lastIndexOf("-(") > 0)
+        {
+          String temp = actionLabel.substring(0, actionLabel.lastIndexOf("-(")) ;
+          String sizeLabel = actionLabel.substring(actionLabel.lastIndexOf("-(")) ;
+          if(temp.length() > 30) {
+          actionLabel = temp.substring(0, 30) + "..." + sizeLabel ;}
+        }
+        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        if(action.actionType == action.TYPE_ICON) {
+          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+          if(action.isShowLabel) { println  actionLabel  ;}
+        }else if(action.actionType == action.TYPE_LINK){
+         println actionLabel ;
+        }
+        println  "</a>";
+        println "&nbsp;"; 
+        if(action.isBreakLine) { println "<br/>" ;} 
+      }
+    }
+  }
+  def rcontext = _ctx.getRequestContext() ;  
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
+%>
+<div id="$uicomponent.id" class="UIAddNewEvent">
+  <table class="UIFormGrid">
+    <tbody>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_EVENT)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_EVENT)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_DESCRIPTION)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_DESCRIPTION)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_DELEGATION)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_DELEGATION)
+             renderActions(uicomponent.FIELD_DELEGATION) ;
+          %>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_FROM)%>
+        </td>
+        <td class="FieldComponent">
+          <div class="Date">
+            <%uiForm.renderField(uicomponent.FIELD_FROM)%>
+          </div>
+          <div class="Time">
+            <%uiForm.renderField(uicomponent.FIELD_FROM_TIME)%>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_TO)%>
+        </td>
+        <td class="FieldComponent">
+          <div class="Date">
+            <%uiForm.renderField(uicomponent.FIELD_TO)%>
+          </div>
+          <div class="Time">
+            <%uiForm.renderField(uicomponent.FIELD_TO_TIME)%>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_CHECKALL)%>
+        </td>
+        <td class="FieldComponent"  onclick="eXo.calendar.UICalendarPortlet.showHideTime(this) ;">
+          <%uiForm.renderField(uicomponent.FIELD_CHECKALL)%>
+        </td>
+      </tr>
+       <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_PRIORITY)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_PRIORITY)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_CALENDAR)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_CALENDAR)%>
+        </td>
+      </tr>
+      <%if(uicomponent.getChildById(uicomponent.FIELD_CATEGORY) != null && uicomponent.getChildById(uicomponent.FIELD_CATEGORY).isRendered()){%>
+        <tr>
+          <td class="FieldLabel">
+            <%=uiForm.getLabel(uicomponent.FIELD_CATEGORY)%>
+          </td>
+          <td class="FieldComponent">
+            <%
+              uiForm.renderField(uicomponent.FIELD_CATEGORY) ;
+              renderActions(uicomponent.FIELD_CATEGORY) ;
+            %>
+          </td>
+        </tr>
+      <%}%>
+       <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_STATUS)%>
+        </td>
+        <td class="FieldComponent">
+          <%
+            uiForm.renderField(uicomponent.FIELD_STATUS) ;
+          %>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>
+        </td>
+        <td class="FieldComponent">
+          <div style="width:242px;">
+          <%uiForm.renderField(uicomponent.FIELD_ATTACHMENTS) ;%>
+          <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
+          </div>
+          <div class="AddAttachmentIcon">
+            <a href="<%= uicomponent.getParent().event("AddAttachment") %>" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".action.AddAttachment")%>">
+              <img class="AddNewNodeIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
+            </a>          
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

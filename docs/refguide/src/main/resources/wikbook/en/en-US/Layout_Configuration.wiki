@@ -1,0 +1,15 @@
+
+h1. Layout Configuration
+
+eXo Address Book layout allows you to show or hide many parts of the Contact interface. Following simple guides to configure the layout:
+
+On the main tool bar, click the *Layout* icon and then select an item in the drop down list menu:
+
+
+!images/LayoutMenu.png!
+
+
+If you select the *Left Pane* item in the drop down list menu, the navigation pane in the left area is hidden:
+
+
+!images/HideLeftpanel.png!

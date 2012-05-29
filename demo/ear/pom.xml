@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.cs</groupId>
+    <artifactId>exo.cs.demo</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>exo.cs.demo.ear</artifactId>
+  <packaging>ear</packaging>
+  <name>eXo CS Demo Portal ear</name>
+  <description>CS Demo EAR for GateIn</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.cs</groupId>
+      <artifactId>exo.cs.demo.config</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.cs</groupId>
+      <artifactId>exo.cs.demo.rest-war</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.cs</groupId>
+      <artifactId>exo.cs.demo.cometd-war</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.cs</groupId>
+      <artifactId>exo.cs.demo.webapp</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>org.exoplatform.cs</groupId>
+      <artifactId>exo.cs.eXoApplication.calendar.service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.cs</groupId>
+      <artifactId>exo.cs.eXoApplication.calendar.webapp</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.exoplatform.cs</groupId>
+      <artifactId>exo.cs.web.csResources</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+     
+     
+  </dependencies>
+  <build>
+    <finalName>gatein-exo-cs-sample-${project.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ear-plugin</artifactId>
+        <configuration>
+          <defaultLibBundleDir>lib</defaultLibBundleDir>
+          <displayName>csdemo</displayName>
+          <modules>
+            <jarModule>
+              <groupId>org.exoplatform.cs</groupId>
+              <artifactId>exo.cs.demo.config</artifactId>
+              <includeInApplicationXml>true</includeInApplicationXml>
+            </jarModule>
+            
+          
+            <jarModule>
+              <groupId>org.exoplatform.cs</groupId>
+              <artifactId>exo.cs.eXoApplication.calendar.service</artifactId>
+              <includeInApplicationXml>true</includeInApplicationXml>
+            </jarModule>  
+            
+            <webModule>
+              <groupId>org.exoplatform.cs</groupId>
+              <artifactId>exo.cs.demo.webapp</artifactId>
+              <contextRoot>csdemo</contextRoot>
+            </webModule>
+            <webModule>
+              <groupId>org.exoplatform.cs</groupId>
+              <artifactId>exo.cs.demo.rest-war</artifactId>
+              <contextRoot>rest-csdemo</contextRoot>
+            </webModule>
+            
+            
+            <webModule>
+              <groupId>org.exoplatform.cs</groupId>
+              <artifactId>exo.cs.eXoApplication.calendar.webapp</artifactId>
+              <contextRoot>calendar</contextRoot>
+            </webModule>
+            
+            <webModule>
+              <groupId>org.exoplatform.cs</groupId>
+              <artifactId>exo.cs.web.csResources</artifactId>
+              <contextRoot>csResources</contextRoot>
+            </webModule>
+            
+            
+            
+          </modules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

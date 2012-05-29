@@ -1,0 +1,313 @@
+<%
+import org.exoplatform.calendar.webui.UIListView;
+import org.exoplatform.calendar.webui.UIMonthView;
+import org.exoplatform.calendar.webui.UIWeekView;
+import org.exoplatform.calendar.webui.UIDayView;
+import org.exoplatform.calendar.webui.UIYearView;
+import java.util.Calendar;
+
+def rcontext = _ctx.getRequestContext() ;
+def msg = _ctx.appRes("UICalendarView.msg.check-box-required");
+def parent = uicomponent.getParent().getId() ;
+rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.getFilterSelect("'+uiform.id+'") ;') ;
+uicomponent.update() ;
+uicomponent.setSelectedCategory(uicomponent.getSelectedCategory()) ;
+%>
+<div class="UIHeaderBar ListBar ClearFix">
+    <!--
+	<div onclick="<%=uicomponent.event("AddEvent",uicomponent.TYPE_EVENT)%>" class="ControlButton">
+      <div class="IconHolder AddNewEvent">
+        <%=_ctx.appRes("UIHeaderBar.label.AddEvent")%>
+      </div>
+    </div>
+    <div class="SeparatorLine"><span></span></div>
+    <div onclick="<%=uicomponent.event("AddEvent", uicomponent.TYPE_TASK)%>" class="ControlButton">
+      <div class="IconHolder AddNewTask">
+        <%=_ctx.appRes("UIHeaderBar.label.AddTask")%>
+      </div>
+    </div>
+	-->
+	<div class="AddCategoryIcon" onclick="<%=uicomponent.event("AddCategory")%>" title="<%=_ctx.appRes('UIHeaderBar.label.addNewCategory')%>">
+	  <span></span>
+	</div>
+	<div class="EventCategory" msg="<%=_ctx.appRes('UICalendarView.msg.event-category-list-empty')%>">
+	  <% 
+		uiform.renderField("eventCategories") ;
+	  %>      
+	</div>
+	<div class="Label">
+	  <%=_ctx.appRes("UIHeaderBar.label.eventCategory")%>
+	</div> 
+	
+	<% 
+	 if(uicomponent instanceof UIWeekView) {
+	 String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.WEEK_OF_YEAR)) ;
+	 String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.WEEK_OF_YEAR)) ;
+	  Calendar startDateOfWeek = uicomponent.getBeginDateOfWeek();
+      Calendar endDateOfWeek = uicomponent.getEndDateOfWeek();
+	   String startDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ startDateOfWeek.getTimeInMillis();
+		String startMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ startDateOfWeek.getTimeInMillis();
+		String startYearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ startDateOfWeek.getTimeInMillis();
+		String endDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ endDateOfWeek.getTimeInMillis();
+		String endMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ endDateOfWeek.getTimeInMillis();
+		String endYearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ endDateOfWeek.getTimeInMillis();
+	 %>
+	  <div class="TitleBar">
+    <table>
+      <tbody>
+        <tr>
+          <td>
+              <div onclick="$linkDayPrevious" class="BackIcon" title="<%=uiform.getLabel('previousWeek')%>">
+                <span></span>
+              </div>
+          </td>
+          <td>
+            <div class="Title">
+              <%=uiform.getLabel("Week")%>
+              <%=uicomponent.getCurrentWeek()%>,
+              <% if (startDateOfWeek.get(Calendar.MONTH) == endDateOfWeek.get(Calendar.MONTH)) {%>
+              <a href="<%=uicomponent.event('GotoDate',startDayViewAction)%>"><%=startDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a> - 
+              <a href="<%=uicomponent.event('GotoDate',endDayViewAction)%>"><%=endDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a>
+              <a href="<%=uicomponent.event('GotoDate',startMonthViewAction)%>"><%=uicomponent.getMonthName(startDateOfWeek.get(Calendar.MONTH))%></a>
+              <a href="<%=uicomponent.event('GotoDate',startYearViewAction)%>"><%=startDateOfWeek.get(Calendar.YEAR)%></a>
+              <% } else { %>
+              <a href="<%=uicomponent.event('GotoDate',startDayViewAction)%>"><%=startDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a>
+              <a href="<%=uicomponent.event('GotoDate',startMonthViewAction)%>"><%=uicomponent.getMonthName(startDateOfWeek.get(Calendar.MONTH))%></a>
+              <a href="<%=uicomponent.event('GotoDate',startYearViewAction)%>"><%=startDateOfWeek.get(Calendar.YEAR)%></a> - 
+              <a href="<%=uicomponent.event('GotoDate',endDayViewAction)%>"><%=endDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a>
+              <a href="<%=uicomponent.event('GotoDate',endMonthViewAction)%>"><%=uicomponent.getMonthName(endDateOfWeek.get(Calendar.MONTH))%></a>
+              <a href="<%=uicomponent.event('GotoDate',endYearViewAction)%>"><%=endDateOfWeek.get(Calendar.YEAR)%></a>
+              <% } %>
+            </div>
+          </td>
+          <td>
+        <div onclick="$linkDayNext" class="NextIcon" title="<%=uiform.getLabel('nextWeek')%>">
+        <span></span>
+        </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+	 <%
+	 } else if(uicomponent instanceof UIDayView) { 
+	 
+	  String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
+      String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
+	  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+	  
+	  int currentDay = uicomponent.getCurrentDay() ;
+  int currentMonth = uicomponent.getCurrentMonth() ;
+  String currentMonthName = uicomponent.getMonthName(currentMonth) ;
+  int currentYear = uicomponent.getCurrentYear() ;
+  String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
+
+	 %>
+	 <div class="TitleBar">
+    <table>
+      <body>
+        <tr>
+          <td>
+            <div onclick="$linkDayPrevious">
+              <div class="BackIcon" title="<%=uiform.getLabel('previousDay')%>"><span></span></div>
+            </div>
+          </td>
+          <td>
+            <div class="Title $cssClass">
+              <span>$currentDayName,
+            <%=uicomponent.renderDayViewInTitleBar("<a href=\"" + uicomponent.event("GotoDate",monthViewAction)+ "\">", "</a>", "<a href=\"" + uicomponent.event("GotoDate",yearViewAction) + "\">", "</a>"); %>
+            </span>
+          <!--     <a href="<%=uicomponent.event("GotoDate",monthViewAction)%>">
+              $currentMonthName
+            </a>, $currentDay, 
+            <a href="<%=uicomponent.event("GotoDate",yearViewAction)%>">
+              $currentYear
+            </a>
+            -->
+            </div>
+          </td>
+          <td>
+            <div onclick="$linkDayNext">
+              <div class="NextIcon" title="<%=uiform.getLabel('nextDay')%>"><span></span></div>
+            </div>
+          </td>
+        </tr>
+      </body>
+    </table>
+  </div>
+	 
+	 <% 
+	 } else if(uicomponent instanceof UIMonthView) { 
+	 
+	 int currentDay = uicomponent.getCurrentDay() ;
+  int currentMonth = uicomponent.getCurrentMonth() ;
+  String currentMonthName = uicomponent.getMonthName(currentMonth) ;
+  int currentYear = uicomponent.getCurrentYear() ;
+   String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.MONTH)) ;
+   String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.MONTH)) ;
+  Calendar calendar = uicomponent.getCurrentCalendar() ;
+   yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+ 
+	 %> 
+	 
+	 <div class="SeparatorLine"><span></span></div>
+      <div onclick='eXo.cs.Utils.confirmAction(this,"$msg","$parent") ;' actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
+        <div class="IconHolder DeleteEventIcon">
+          <%=_ctx.appRes("UIHeaderBar.label.Delete")%>
+        </div>
+      </div>
+	  
+	  <div class="TitleBar">
+      <table>
+        <body>
+          <tr>
+            <td>
+              <div onclick="$linkDayPrevious">
+                <div class="BackIcon" title="<%=uiform.getLabel('previousMonth')%>"><span></span></div>
+              </div>
+            </td>
+            <td>
+              <div class="Title">$currentMonthName, 
+                <a href="<%=uicomponent.event("GotoDate",yearViewAction)%>">
+                  $currentYear
+                </a>
+              </div>
+            </td>
+            <td>
+              <div onclick="$linkDayNext">
+                <div class="NextIcon" title="<%=uiform.getLabel('nextMonth')%>"><span></span></div>
+              </div>
+            </td>
+          </tr>
+        </body>
+      </table>
+    </div>
+	 
+	 <%
+	 } else if(uicomponent instanceof UIListView) { 
+	 int currentDay = uicomponent.getCurrentDay() ;
+  int currentMonth = uicomponent.getCurrentMonth() ;
+  String currentMonthName = uicomponent.getMonthName(currentMonth) ;
+  int currentYear = uicomponent.getCurrentYear() ;
+  String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
+  String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
+   String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
+   monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+	 %>
+	 <div class="SeparatorLine"><span></span></div>
+      <div onclick='eXo.cs.Utils.confirmAction(this,"$msg","$parent") ;' actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
+        <div class="IconHolder DeleteEventIcon">
+          <%=_ctx.appRes("UIHeaderBar.label.Delete")%>
+        </div>
+      </div>
+	  
+	  <div class="SeparatorLine"><span></span></div>
+    <div class="ViewTypeSelect" style="cursor:pointer; position:relative ;" onclick="eXo.calendar.UICalendarPortlet.switchListView(this, event);">
+      <% /*Begin  ViewTypeSelect Popup Menu*/ %>
+          <div class="UIPopupCategory" style="display: none;">
+            <div class="UIRightClickPopupMenu" style="display: block;">
+              <div class="UIContextMenuContainer">
+                <div class="TopLeftRightClickPopupMenu">
+                  <div class="TopRightRightClickPopupMenu">
+                    <div class="TopCenterRightClickPopupMenu"><span></span></div>
+                  </div>
+                </div>
+                <div class="MiddleLeftRightClickPopupMenu">
+                  <div class="MiddleRightRightClickPopupMenu">
+                    <div class="UIRightPopupMenuContainer">
+                       <%for(type in uicomponent.getViews()){
+                           if(!type.equals(uicomponent.getViewType())){
+                           icon = type + "Icon" ;  
+                        %>
+                        <div onclick="<%=uicomponent.event("SwitchView",type)%>" class="MenuItem">   
+                          <div class="ItemIcon $icon">
+                            <%=_ctx.appRes("UIHeaderBar.label."+type)%>
+                          </div>
+                        </div>
+                       <%}
+                            }
+                       %> 
+                    </div>
+                  </div>
+                </div>
+                <div class="BottomLeftRightClickPopupMenu">
+                  <div class="BottomRightRightClickPopupMenu">
+                    <div class="BottomCenterRightClickPopupMenu"><span></span></div>
+                  </div>
+                </div>
+              </div>    
+            </div>
+          </div>
+    <% /*End Popup Menu*/ %>
+      <div class="ControlButton">
+        <div class="IconHolder <%=uicomponent.getViewType()%>Icon">
+          <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%>
+        </div>
+      </div>
+  
+    </div>
+	
+	 <div class="TitleBar Result">
+      <table>
+        <body>
+          <tr>
+            <td>
+              <a href="$linkDayPrevious">
+                <div class="BackIcon" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>"><span></span></div>
+              </a>
+            </td>
+            <td>
+              <div class="Title">
+               <span>
+               $currentDayName,
+               <%=uicomponent.renderDayViewInTitleBar("<a href=\"" + uicomponent.event("GotoDate",monthViewAction)+ "\">", "</a>", "<a href=\"" + uicomponent.event("GotoDate",yearViewAction) + "\">", "</a>"); %>
+               </span>
+              
+              </div>
+            </td>
+            <td>
+              <a href="$linkDayNext">
+                <div class="NextIcon" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>"><span></span></div>
+              </a>
+            </td>
+          </tr>
+        </body>
+      </table>
+    </div>
+	
+	 <%
+	 } else if(uicomponent instanceof UIYearView){
+	   
+  int currentYear = uicomponent.getCurrentYear() ;
+   
+  String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.YEAR)) ;
+   String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.YEAR)) ;
+	 %> 
+	 <div class="TitleBar">    
+    <table>
+      <body>
+        <tr>
+          <td>
+            <a href="$linkDayPrevious">
+              <div class="BackIcon" title="<%=uiform.getLabel('previousYear')%>"><span></span></div>
+            </a>
+          </td>
+          <td>
+            <div class="Title"><%=uiform.getLabel('year')%> $currentYear</div>
+          </td>
+          <td>
+            <a href="$linkDayNext">
+              <div class="NextIcon" title="<%=uiform.getLabel('nextYear')%>"><span></span></div>
+            </a>
+          </td>
+        </tr>
+      </body>
+    </table>
+  </div>
+	 <%
+	 
+	 }
+	%>
+
+</div>

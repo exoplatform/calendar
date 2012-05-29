@@ -1,0 +1,15 @@
+<%
+  uiform.begin();
+  def rcontext = _ctx.getRequestContext() ;  
+  action = uicomponent.event("Search") ;
+  rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("value") ;') ;
+%>
+<div class="UISearchForm">
+  <div onclick="<%=uicomponent.event("AdvancedSearch")%>">
+    <div class="AdvancedSearch" title="<%=uiform.getLabel('AdvancedSearch')%>"><span></span></div>
+  </div>
+  <div class="Input Search" onclick="$action">
+    <div class="SearchIcon" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
+  </div>
+</div>
+<%uiform.end();%>

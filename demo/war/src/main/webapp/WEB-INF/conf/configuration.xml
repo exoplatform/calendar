@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
+  xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+  
+  <import>war:/conf/csdemo/common/common-configuration.xml</import>
+
+  <import>war:/conf/csdemo/jcr/jcr-configuration.xml</import>
+  <import>war:/conf/csdemo/cs/cs-nodetypes-configuration.xml</import>
+  <import>war:/conf/csdemo/cs/jcr-component-plugins-configuration.xml</import>
+
+  <import>war:/conf/csdemo/portal/portal-configuration.xml</import>
+  
+  <import>war:/conf/csdemo/cs/calendar/calendar-service-configuration.xml</import>
+  
+  <import>war:/conf/csdemo/cs/webservice/webservice-configuration.xml</import>
+ 
+  <import>war:/conf/csdemo/cs/services-configuration.xml</import>
+
+ </configuration>

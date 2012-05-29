@@ -1,0 +1,219 @@
+Data injectors are used to create data for performance test.
+This part will describe which data injectors are implemented in eXo Collaboration and how to use them.
+
+In eXo Collaboration, data injectors are implemented as plug-ins attached to the _org.exoplatform.services.bench.DataInjectorService_ service and handled via RESTful requests. This service is normally registered to the portal container as a general component.
+
+To use this service, add the following dependency to the Classpath of the server:
+
+{code:xml}
+<dependency>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>exo.platform.commons.component</artifactId>      
+</dependency>
+{code}
+
+To activate the _DataInjectorService_ component, you need to register it to a portal container by the following configuration:
+{code:xml}
+<component>
+    <type>org.exoplatform.services.bench.DataInjectorService</type>
+</component>
+{code}
+
+When you want to inject data for a specific product, you must implement a class which extends "org.exoplatform.services.bench.DataInjector" and register it to the _DataInjectorService_ component as a plug\-in.
+
+In eXo Collaboration, there are three plug-ins attached to the _DataInjectorService_ component:
+
+* ContactDataInjector
+
+* CalendarDataInjector
+
+* MailDataInjector
+
+
+h2. ContactDataInjector    {anchor:id=CSref.Configuration.DataInjectorService.ContactDataInjector}
+The _ContactDataInjector_ plug\-in is used to manage data injection of the Address Book application.
+
+To use this plug-in, do as follows:
+
+1. Add the following configuration to the _configuration.xml_ file to register the plug-in to the _DataInjectorService_ component:
+
+{code:xml}
+<external-component-plugins>
+    <target-component>org.exoplatform.services.bench.DataInjectorService</target-component>
+    <component-plugin>
+      <name>ContactDataInjector</name>
+      <set-method>addInjector</set-method>
+      <type>org.exoplatform.contact.service.bench.ContactDataInjector</type>
+      <description>inject data for Contact</description>
+      <init-params>
+        <value-param>
+          <name>mA</name> <!-- maximum number of address books -->
+          <value>5</value>
+        </value-param>
+        <value-param>
+          <name>mC</name> <!-- maximum number of contacts per a address books -->
+          <value>10</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+</external-component-plugins>
+{code}
+
+In which:
+
+* *Name*:  {{ContactDataInjector}}
+
+* *Set-method*: {{addInjector}}
+
+* *Type*: {{org.exoplatform.contact.service.bench.ContactDataInjector}}
+
+||Parameters  || Possible Values  || Default Values|| Description  ||
+| mA | number |5|  The maximum number of address books of the Address Book application in each injection.|
+| mC  | number |5| The maximum number of contacts of an address book in each injection.|
+
+
+2. Execute the injector by the RESTful request as follows:
+
+{code:}
+http://{domain}/{rest}/bench/inject/ContactDataInjector?mA=5&mC=10
+{code}
+
+In which:
+
+* *{{{{domain}}}}*: The domain name of the server.
+
+* *{{{{rest}}}}*: The name of eXo REST service.
+
+
+h2. CalendarDataInjector    {anchor:id=CSref.Configuration.DataInjectorService.CalendarDataInjector}
+The _CalendarDataInjector_ plug\-in is used to manage data injection in the Calendar application.
+
+To use this plug\-in, do as follows:
+
+1. Add the following configuration to the _configuration.xml_ file to register the plug-in to the _DataInjectorService_ component:
+{code:xml}
+<external-component-plugins>
+    <target-component>org.exoplatform.services.bench.DataInjectorService</target-component>
+    <component-plugin>
+      <name>CalendarDataInjector</name>
+      <set-method>addInjector</set-method>
+      <type>org.exoplatform.calendar.bench.CalendarDataInjector</type>
+      <description>inject data for Calendar</description>
+      <init-params>
+        <value-param>
+          <name>mCt</name> <!-- maximum number of categories -->
+          <value>5</value>
+        </value-param>
+        <value-param>
+          <name>mEcat</name> <!-- maximum number of event categories -->
+          <value>10</value>
+        </value-param>
+        <value-param>
+          <name>mCal</name> <!-- maximum number of calendars -->
+          <value>10</value>
+        </value-param>
+        <value-param>
+          <name>mEv</name> <!-- maximum number of events -->
+          <value>5</value>
+        </value-param>
+        <value-param>
+          <name>mTa</name> <!-- maximum number of tasks -->
+          <value>5</value>
+        </value-param>
+        <value-param>
+          <name>typeOfInject</name> <!-- type of inject -->
+          <value>all</value> <!-- string all/public/private -->
+        </value-param>
+      </init-params>
+    </component-plugin>
+</external-component-plugins>
+{code}
+
+In which:
+
+* *Name*: {{CalendarDataInjector}}
+
+* *Set-method*: {{addInjector}}
+
+* *Type*: {{org.exoplatform.calendar.bench.CalendarDataInjector}}
+
+|| Parameters || Possible Values || Default Values|| Description ||
+| mCt | number |5| The maximum number of categories in each injection. |
+| mEcat | number |10| The maximum number of event categories in each injection.|
+| mCal | number | 10|The maximum number of calendars in each injection. |
+| mEv | number | 5| The maximum number of events in one calendar in each injection. |
+| mTa | number | 5| The maximum number of tasks in one calendar in each injection. |
+| typeOfInject | String |all |The type of injection, including "public", "private" and "all". If the type is set as "public", only public calendars are created. If the type is set as "private", only personal calendars are create. If the type is set as "all", both the public and private ones are created.|
+
+
+2. Execute the injector by the RESTful request as follows.
+
+{code:language=html/xml}
+http://{domain}/{rest}/bench/inject/CalendarDataInjector?mCt=5&mEcat=10&mCal=10&mEv=20&mTa=20&typeOfInject=private
+{code}
+
+h2. MailDataInjector    {anchor:id=CSref.Configuration.DataInjectorService.MailDataInjector}
+
+The _MailDataInjector_ is used to manage data injection in the Mail application.
+
+Because of the quite complicated architecture of the Mail application in eXo Collaboration, the injector uses a simple mail server (a mock server) to simulate the way a mail server works. This will create real mail data without mocking effort from the injector and create a reliable testing environment.
+
+To use the injector, do as follows:
+
+1. Add the Greenmail library to the classpath of the web server (in tomcat, copy it to the *lib* folder). The library is Greenmail 1.3.1b but including some bug fixes which are not updated in the counterpart version of Icegreen.
+(To have the library, contact eXo Support team).
+
+2. Initialize this component as a service of GateIn, then it will be invoked by MailDataInjector.
+
+{code:xml}
+<component>
+    <type>org.exoplatform.mail.service.bench.SimpleMailServerInitializer</type>
+</component>
+{code}
+
+3. Register _MailDataInjector_ to _DataInjectorService_ by the following configuration:
+
+{code:xml}
+<external-component-plugins>
+  <target-component>org.exoplatform.services.bench.DataInjectorService</target-component>
+  <component-plugin>
+      <name>MailDataInjector</name>
+      <set-method>addInjector</set-method>
+      <type>org.exoplatform.mail.service.bench.MailDataInjector</type>
+      <description>inject data for Contact</description>
+    </component-plugin>
+</external-component-plugins>
+{code}
+
+In which:
+
+* *Name*: {{MailDataInjector}}
+
+* *Set-method*: {{addInjector}}
+
+* *Type*:  {{org.exoplatform.mail.service.bench.MailDataInjector}}
+
+h2. Usage of MailDataInjector  {anchor:id=CSref.Configuration.DataInjectorService.MailDataInjector.Usage}
+* To insert mail data into the Mail application, the request link is as follows:
+
+{code:language=html/xml}
+ http://{domain}/{rest}/bench/inject/MailDataInjector/?users=mary,root&accounts=2,account&inPro=IMAP&check=true&msgs=100&attSize=100
+{code}
+
+|| Params || Values || Description  ||
+| users | String| The list of users separated by commas.  |
+| accounts | String|The number of accounts injected by the data injector. This value consists of two parts separated by commas: the first is the number of accounts of an user, the second is the prefix of the account Id.|
+| inPro | String | The incoming protocol. The possible values are: POP3 and IMAP. |
+| check | Boolean | Specify if checking mails after the data are created on the mail server or not. If the value is true, the injector will execute checking new message tasks sequentially. This task can take some time if the data are large.|
+| msgs  | Number  | The number of messages will be available in each account. |
+| attSize | Number  | The size of an attachment. If it does not exist or is equal to 0, no file is attached to the mail message. |
+
+* To reject mail data from the Mail application, the request link is as follows:
+{code:language=html/xml}
+http://{domain}/{rest}/bench/reject/MailDataInjector/?users=root&accounts=2,account
+{code}
+This link will request for removing 2 accounts of "root" of which Id starts with "account".
+
+{note}
+By default, such settings have been declared in "csdemo.war/WEB-INF/conf/csdemo/cs/bench\-configuration.xml". Therefore, to save time, you should import the _bench-configuration.xml_ file to "_csdemo.war/WEB\-INF/conf/configuration.xml_", and then modify it as your purpose rather than create a new one.
+{note}

@@ -1,0 +1,3 @@
+<div class="UICalendarWorkingContainer ClearFix" id="$uicomponent.id" msg="<%=_ctx.appRes("UICalendars.msg.have-no-permission-to-edit-event")%>">
+ <%uicomponent.renderChildren()%>
+</div>

@@ -1,0 +1,113 @@
+h1. eXo Chatserver Configuration {anchor:id=CSref.Configuration.eXoChatserverConfiguration}
+
+h2.  Openfire Configuration {anchor:id=CSref.Configuration.OpenfireConfiguration}
+
+The Chat service of eXo Collaboration is a Jabber engine powered by Openfire. eXo Platform will delegate the actual Jabber protocol communication to Openfire.
+
+You have the full latitude to configure Openfire. There are two possible ways to do it:
+
+* The admin console: http://localhost:9090/.
+
+* The openfire.xml file in _$openfire\_home/conf/_.
+
+
+h3. Configuration in Openfire.xml {anchor:id=CSref.Configuration.ConfigurationinOpenfirexml}
+
+The Openfire server has a single configuration file called _openfire.xml_ and located under the _exo\-openfire/conf_ directory. Configuration is based on properties expressed in an XML syntax. For example, to set the property prop.name.is.blah=value, you would write this xml snippet:
+
+{code:xml}
+<prop>
+  <name>
+    <is>
+      <blah>value</blah>
+    </is>
+  </name>
+</prop>
+{code}
+
+Openfire has an extensive list of configuration properties. You can read a list of all properties on this page: http://www.igniterealtime.org/community/docs/DOC-1061.
+
+h3. eXo specific configuration {anchor:id=CSref.Configuration.eXospecificConfiguration}
+
+The eXo Collaboration bundle comes with a pre-configured Openfire server. It is bundled with some eXo plugins and configurations that allow connectivity with eXo Platform. The key properties for integration are:
+
+* _provider.auth.className_: An implementation of the AuthProvider interface for authentication of users on the Chat server.
+
+* _provider.users.className_: An implementation of the UserProvider interface to which Openfire will delegate users management.
+
+* _provider.groups.className_: An implementation of the GroupProvider interface to which Openfire will delegate groups management.
+
+eXo Platform provides implementations for these 3 interfaces with ExoAuthProvider, ExoUserProvider, ExoGroupProvider. These implementations are based on the eXo REST framework and let you configure the endpoints within the _openfire.xml_ file with additional properties:
+
+|| Property || Default value || Description ||
+|*eXo.env.serverBaseURL*| {{http://localhost:8080/}} | The base URL of the server. |
+|*eXo.env.restContextName*| {{rest}} | The context name of REST Web application. |
+| *provider.authorizedUser.name*| {{root}}| The username to authenticate to access the HTTP REST service. |
+| *provider.authorizedUser.password* | {{gtn}} | The password matching with provider.authorizeduser.name. |
+| *exoAuthProvider.authenticationURL* |{{/organization/authenticate/}} | The URL to authenticate users. |
+| *exoAuthProvider.authenticationMethod* | {{POST}} | The HTTP method used for the authentication method. |
+| *exoUserProvider.findUsersURL* | {{/organization/xml/user/find-all/}} |The URL to find all users. |
+| *exoUserProvider.findUsersMethod* | {{GET}} | The HTTP method used to find all users in the system. |
+| *exoUserProvider.getUsersURL* | {{/organization/xml/user/view-range/}} | The URL to retrieve a range of users.|
+| *exoUserProvider.getUsersMethod* |  {{GET}} | The HTTP method used for user/view-range. |
+| *exoUserProvider.usersCountURL* |  {{/organization/xml/user/count}} |The URL to count the number of users. |
+| *exoUserProvider.usersCountMethod* | {{GET}} | The HTTP method used to count the number of users. |
+| *exoUserProvider.userInfoURL* | {{/organization/xml/user/info/}} | The URL to get the information of users. |
+| *exoUserProvider.userInfoMethod* | {{GET}} |The HTTP method used to get the information of users. |
+| *exoGroupProvider.groupInfoURL* | {{/organization/xml/group/info/}} | The URL to get the information of a group of users. |
+| *exoGroupProvider.groupInfoMethod*|  {{GET}} |The HTTP method used to get the information of a group of users. |
+| *exoGroupProvider.getGroupsAllURL* |  {{/organization/xml/group/view-all/}} |The URL to view a list of all user groups. |
+| *exoGroupProvider.getGroupsAllMethod* |  {{GET}} |The HTTP method used to view a list of all user groups. |
+| *exoGroupProvider.getGroupsRangeURL* | {{/organization/xml/group/view-from-to/}} | The URL to list groups in a specific range. |
+| *exoGroupProvider.getGroupsRangeMethod* |  {{GET}} |The HTTP method used to list groups in a specific range. |
+| *exoGroupProvider.getGroupsForUserURL* | {{/organization/xml/group/groups-for-user/}} |The URL to list groups to which a user belongs. |
+| *exoGroupProvider.getGroupsForUserMethod* | {{GET}} |The HTTP method used to list groups to which a user belongs. |
+| *exoGroupProvider.groupsCountURL* |  {{/organization/xml/group/count}} |The URL to count the number of groups. |
+| *exoGroupProvider.groupsCountMethod* |  {{GET}} |The HTTP method used to count the number of groups. |
+
+
+As you can see, the default settings will only work if eXo Platform is deployed on the same host as Openfire, on the port 8080.
+
+{note}
+_restContextName_ is used to specify the Openfire server that is dedicated for the portal. If the _eXo.env.restContextName_ system property exists, it will override this value.
+
+The _eXo.env.restContextName_ system property can be set by specifying the {{{ -D }}} option to the Java command when running Openfire.
+
+For example:
+
+* If the Openfire server is dedicated for the portal named "portal", the command will have the following format: _{{{ java -DeXo.env.restContextName=rest -jar ../lib/startup.jar}}}_.
+
+* If the Openfire server is dedicated for the portal named "csdemo", the command will have following format: _{{{ java -DeXo.env.restContextName=rest-csdemo -jar ../lib/startup.jar}}}_.
+
+By default, the Openfire server is dedicated to the portal named "portal".
+{note}
+
+h2. System Configuration {anchor:id=CSref.Configuration.SystemConfiguration}
+Openfire makes use of several ports for communication.
+|| Interface || Port || Type || Description ||
+| *All addresses* | {{5222}} | {{Client to Server}} | The standard port for clients is to connect to the server. Connection may or may not be encrypted. You can update the security settings for this port. |
+| *All addresses* | {{9090 & 9091}} | {{Admin Console}} | The ports used for the unsecured and secured Openfire Admin Console accesses respectively. |
+| *All addresses* | {{7777}} | {{File Transfer Proxy}} | The port used for the proxy service that allows files to be transferred between two entities on the XMPP network.|
+| *All addresses* | {{3478 & 3479}} | {{STUN Service}} | The port used for the service that ensures connectivity between entities behind a NAT.|
+
+You can view the table above in _http\://hostname\:9090/index.jsp_ after you have logged into the Openfire's web console and also customize those ports by yourself.
+
+h2. AS configuration {anchor:id=CSref.Configuration.ASConfiguration}
+To enable the propagation of identity across the Chat webapp, you are required to enable the SSO valve on the Tomcat-based Application server.
+
+* For the Jboss server, edit _jboss/server/default/deploy/jboss-web.deployer/server.xml_.
+
+* For the Tomcat server, edit _tomcat/conf/server.xml_.
+The valve should already be there, you just need to uncomment it if it is not already done.
+
+{code:xml}
+<Valve className="org.apache.catalina.authenticator.SingleSignOn" />
+{code}
+
+In case of the cluster deployment, you may want to use {{ClusteredSingleSignOn}} instead.
+
+{code:xml}
+<Valve className="org.jboss.web.tomcat.service.sso.ClusteredSingleSignOn" />
+{code}
+
+

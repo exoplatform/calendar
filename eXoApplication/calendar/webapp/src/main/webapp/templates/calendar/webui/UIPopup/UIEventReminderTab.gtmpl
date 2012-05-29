@@ -1,0 +1,103 @@
+<%
+  uiForm = uicomponent.getParentFrom() ;
+  def isEmailReminder = (uiForm.getEmailReminder())?"": "style='display:none;'";
+  def isPopupReminder = (uiForm.getPopupReminder())?"": "style='display:none;'";
+  def rcontext = _ctx.getRequestContext() ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.autoShowHideSetting() ;') ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.autoShowRepeatEvent() ;') ;
+%>
+<div id="$uicomponent.id" class="UIAddNewEvent">
+  <div class="ReminderByEmail">
+    <div>
+      <div onclick="eXo.calendar.UICalendarPortlet.showHideSetting(this);">
+        <%uiForm.renderField(uicomponent.REMIND_BY_EMAIL); %>
+        <span class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.REMIND_BY_EMAIL)%>
+        </span>
+      </div>      
+    </div>
+    <table class="UIFormGrid" $isEmailReminder>
+      <tbody>
+        <tr>
+          <td class="FieldComponent">
+            <%=uiForm.getLabel(uicomponent.EMAIL_REMIND_BEFORE); %>
+            <% uiForm.renderField(uicomponent.EMAIL_REMIND_BEFORE)  ; %>
+          </td>
+        </tr>
+        <tr>
+          <td class="FieldLabel">         
+            <table>
+            <tbody>
+              <tr>
+                <td class="FieldComponent">
+                  <div class="CheckBoxRepeat" onclick="eXo.calendar.UICalendarPortlet.showHideRepeat(this) ;" id="IsEmailRepeatEventReminderTab">
+                    <% uiForm.renderField(uicomponent.EMAIL_IS_REPEAT);%>                                                  
+                  </div>
+                  <div class="RepeatLabel"><%=uiForm.getLabel(uicomponent.REPEAT)%>  </div>
+                   <div class="RepeatInterval" style="visibility:hidden">                    
+                   <%=uiForm.getLabel(uicomponent.EMAIL_REPEAT_INTERVAL)%>
+                   <% uiForm.renderField(uicomponent.EMAIL_REPEAT_INTERVAL)  ; %>                  
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+      </td>
+        </tr>
+      <tr><td><%=uiForm.getLabel(uicomponent.FIELD_EMAIL_ADDRESS)%> :</td></tr>
+        <tr>
+          <td class="FieldComponent">
+            <% 
+              uiForm.renderField(uicomponent.FIELD_EMAIL_ADDRESS)
+              String actionLabel =  uiForm.getLabel("SelectEmail")  ;
+              String actionLink = uiForm.event("AddEmailAddress") ;
+              println "<span></span></div><a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+              println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"AddNewNodeIcon\"/> " + actionLabel ;
+              println  "</a>";
+            %>
+            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ReminderByPopup">
+    <div>
+      <div onclick="eXo.calendar.UICalendarPortlet.showHideSetting(this);">      
+          <% uiForm.renderField(uicomponent.REMIND_BY_POPUP) %>
+          <span class="FieldLabel" ><%=uiForm.getLabel(uicomponent.REMIND_BY_POPUP)%></span>
+      </div>
+    </div>
+      <table class="UIFormGrid" $isPopupReminder>
+        <tbody>
+          <tr>
+           <td class="FieldComponent">
+              <%=uiForm.getLabel(uicomponent.POPUP_REMIND_BEFORE)%> 
+              <% uiForm.renderField(uicomponent.POPUP_REMIND_BEFORE)  ;%>      
+            </td>
+          </tr>
+         <tr>
+          <td class="FieldLabel">         
+            <table>
+            <tbody>
+              <tr>
+                <td class="FieldComponent" valign="top" colspan="2"> 
+                   <div class="CheckBoxRepeat" onclick="eXo.calendar.UICalendarPortlet.showHideRepeat(this) ;" id="IsPopupRepeatEventReminderTab">
+                  <% uiForm.renderField(uicomponent.POPUP_IS_REPEAT)  ;%>                                                
+                </div>
+                <div class="RepeatLabel"><%=uiForm.getLabel(uicomponent.REPEAT)%>  </div>      
+                <div class="RepeatInterval" style="visibility:hidden">             
+                   <%=uiForm.getLabel(uicomponent.POPUP_REPEAT_INTERVAL)%> 
+                   <% uiForm.renderField(uicomponent.POPUP_REPEAT_INTERVAL)  ;%>                
+                </div>   
+             </td>
+              </tr>
+            </tbody>
+          </table>
+      </td>
+        </tr>
+
+        </tbody>
+      </table>
+   </div>
+</div>

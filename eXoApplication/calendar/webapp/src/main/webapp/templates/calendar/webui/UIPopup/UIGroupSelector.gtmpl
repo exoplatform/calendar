@@ -1,0 +1,57 @@
+<% 
+  import  org.exoplatform.webui.core.UIBreadcumbs; 
+  import  org.exoplatform.webui.core.UITree;
+  def st; 
+%>
+<div class="UIGroupMembershipSelector" id="$uicomponent.id">
+  <div class="Container">
+  <%if(uicomponent.isSelectGroup()){%>
+    <div class="SelectedGroupPath"><% uicomponent.renderChild(UIBreadcumbs.class); %></div>
+    <div class="GroupSelector">
+      <div class="ContentContainer">
+        <%uicomponent.renderChild(UITree.class);%>
+        <div class="MembershipTitle"><%=_ctx.appRes(uicomponent.id+".label.selectGroup")%></div>
+      </div>
+    </div>
+    <%}else {st ="style='margin-left:0px;'"}%>
+    <div class="MembershipSelector" $st>
+      <div class="ContentContainer">
+        <div class="MembershipTitle">
+          <%if(uicomponent.isSelectUser()){%>
+            <%=_ctx.appRes(uicomponent.id+".label.selectUser")%>
+          <%}%>
+          <%if(uicomponent.isSelectMemberShip()){%>
+             <%=_ctx.appRes(uicomponent.id+".label.selectMemberShip")%>
+          <%}%>
+          <%if(uicomponent.isSelectGroup()){%>
+            <%=_ctx.appRes(uicomponent.id+".label.selectGroup")%>
+          <%}%>
+        </div>
+        <div class="OverflowContainer">
+          <%                
+          boolean even = true ;
+          if(uicomponent.getCurrentGroup() != null) {
+            for(user in uicomponent.getList()){
+              String rowCssClass = "OddRow" ;
+              if(even) rowCssClass = "EvenRow" ;  
+              even = !even ;
+              if(uicomponent.getType() != null) {
+                key = uicomponent.getType() +  ":/" + uicomponent.getCurrentGroup().getId() +  ":/" + user ;
+                if(uicomponent.isSelectMemberShip()) {
+                  key = uicomponent.getType() +  ":/" + uicomponent.getCurrentGroup().getId() +  ":/*." + user ;
+                }
+              } else {
+                key = "" ;
+              }
+                  
+          %>
+              <div class="$rowCssClass">
+                  <a class="ItemIcon" href="<%=uicomponent.event('SelectMembership',key)%>">$user</a>  
+              </div>
+          <%}
+          }%>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>     

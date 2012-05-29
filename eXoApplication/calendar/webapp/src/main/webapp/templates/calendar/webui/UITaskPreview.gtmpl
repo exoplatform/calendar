@@ -1,0 +1,153 @@
+<%
+import org.exoplatform.calendar.service.CalendarEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import org.exoplatform.calendar.CalendarUtils;
+dateTimeFormat = uicomponent.getDateTimeFormat() ;
+DateFormat df = new SimpleDateFormat(dateTimeFormat) ;
+df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
+CalendarEvent task = uicomponent.getEvent() ;    
+uiform.begin() ;
+%>
+<div class="UIPreview">
+  <%if(!uicomponent.isShowPopup()){%>
+    <div class="ViewBar ClearFix">
+      <div class="Label">
+       <%=uiform.getLabel('taskDetail')%>
+      </div> 
+      <div class="MaximizeButton" title="View full - size task" onclick = "eXo.cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>')"><span></span></div>
+    </div>
+  <%}%>    
+    <div class="ViewContainer SpliterResizableListArea">
+      <div class="DecoratorBox">
+        <div class="ViewBoxStyle">
+			<table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
+			  <tr>
+				<td style="border-right: 1px solid #c7c7c7;width: 185px;">
+				<%for(attachFile in task.getAttachment()){%>
+				 <div class="AttachmentIcon"  style="">
+				  <a href="<%=uicomponent.event('Download',attachFile.getId())%>" title="<%=attachFile.name + '(' +CalendarUtils.convertSize(attachFile.size) + ')'%>">$attachFile.name</a>  
+				   (<%=CalendarUtils.convertSize(attachFile.size)%>) 
+				 </div>
+				  <%if(attachFile.getMimeType().startsWith("image")) {
+				  String src = uicomponent.getImageSource(attachFile) ;
+				 %>
+					 <img id="$attachFile.id" src="$src" class="Img" style="display:none;" />
+				 <%}%>
+				 <div class="Actions" style="white-space: nowrap;">
+				 <%if(attachFile.getMimeType().startsWith("image")) {
+					  String rndString = String.valueOf(new Date().getTime());
+					  //String src = uicomponent.getDownloadLink(attachFile) ;"/${uicomponent.getPortalName()}/jcr?workspace=${attachFile.workspace}&hash=${rndString}&path=${attachFile.getDataPath()}" ;
+				 %>
+				 
+				 <% 
+				   String View = uiform.getLabel('View') ;
+				   String Close = uiform.getLabel('Close') ;
+				  %>
+				   <a viewLabel="$View" closeLabel="$Close" onclick="eXo.calendar.UICalendarPortlet.showImagePreview(this);" class="IconHolder ViewAttachmentIcon" style="cursor:pointer;padding-left:15px;"> 
+				   <%=uiform.getLabel('View')%>
+				   </a> 
+				 <%}%>
+				 </div> 
+				 <%}%> 
+				<td >
+				  <div class="TaskDescription" style="font-weight: bold;"><%=task.getSummary()%></div>
+				  <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
+					<tr>
+					  <td class="Text" style="width: 100px;">
+						<%=uiform.getLabel('Status')%>
+					  </td>
+					  <td class="Text"><%=(CalendarUtils.isEmpty(task.getEventState()))?"" : uicomponent.getLabel(task.getEventState())%></td>
+					</tr>  
+					<tr>
+					  <td class="Text">
+						<%=uiform.getLabel('Priority')%>
+					  </td>
+					  <td class="Text"><%=uicomponent.getLabel(task.getPriority())%></td>
+					</tr>  
+					<tr>
+					  <td class="Text">
+						<%=uiform.getLabel('StartDate')%>
+					  </td>
+					  <td class="Text"><%=df.format(task.getFromDateTime())%></td>
+					</tr>  
+					<tr>
+					  <td class="Text">
+						<%=uiform.getLabel('DueDate')%>
+					  </td>
+					  <td class="Text"><%=df.format(task.getToDateTime())%></td>
+					</tr>  
+					<tr>
+					  <td class="Text">
+						<%=uiform.getLabel('TaskDelegation')%>
+					  </td>
+					  
+					  <% 
+						delegators = task.getTaskDelegator();
+						String subDelegators ;
+						if (CalendarUtils.isEmpty(delegators)) subDelegators = "" ;
+						else {
+						  delegators = delegators.replaceAll(",", ", ") ;
+						  if (delegators.length() > 50) subDelegators = delegators.substring(0, 50) + "..." ;
+						  else subDelegators = delegators ;  
+						}
+					 %>
+					  <td class="Text" title="$delegators"><%=subDelegators%></td>
+					</tr>  
+					<tr>
+					  <td class="Text">
+						<%=uiform.getLabel('Reminder')%>
+					  </td>
+					   <td class="Text">
+					  <%                    
+						   for(reminder in task.getReminders()) {
+							  String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
+							%>
+							  <div style="float:left;margin-right: 10px;">
+								<a href="$reminderLink" class="ControlButton"><%=reminder.getReminderType()%></a>
+							  </div>
+							<%          
+						   }                    
+					 %>
+					   </td>
+					</tr>  
+					<tr>
+					  <td class="Text">
+						<%=uiform.getLabel('Note')%>
+					  </td>
+					  <td class="Text">
+						<div class="ViewDescription">
+						   <%
+							String des = "" ;
+							if(!CalendarUtils.isEmpty(task.getDescription())) {
+							 des = task.getDescription().replaceAll("\n","<br/>") ; ;
+							}
+							println des ; 
+						   %>
+						</div>
+					  </td>
+					</tr>  
+				  </table>
+				  <%if(!uicomponent.isShowPopup()){%>
+				  <div class="ActionsContainer ClearFix">
+					<a href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
+					  <div class="IconHolder EditTaskIcon">
+						<%=uiform.getLabel('EditTask')%>
+					  </div>
+					</a>
+					<div class="SeparatorDotLine"><span></span></div>
+					<a href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
+					  <div class="IconHolder DeleteTaskIcon">
+						<%=uiform.getLabel('DeleteTask')%>
+					  </div>
+					</a>
+				  </div>
+				  <%}%>
+				</td>
+			  </tr>                                
+			</table>
+        </div>
+      </div>
+    </div>
+  </div>
+<%uiform.end();%>

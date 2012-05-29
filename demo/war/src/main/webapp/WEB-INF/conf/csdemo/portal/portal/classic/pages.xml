@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<page-set>
+  
+  
+  <page>
+    <name>homepage</name>
+    <title>Home Page</title>
+    <access-permissions>Everyone</access-permissions>
+    <edit-permission>*:/platform/administrators</edit-permission>
+    <portlet-application>
+      <portlet>
+        <application-ref>web</application-ref>
+        <portlet-ref>HomePagePortlet</portlet-ref>
+        <preferences>
+          <preference>
+            <name>template</name>
+            <value>system:/templates/UIHomePagePortlet.gtmpl</value>
+            <read-only>false</read-only>
+          </preference>
+        </preferences>
+      </portlet>
+      <title>cs Home Page</title>
+      <access-permissions>Everyone</access-permissions>
+      <show-info-bar>false</show-info-bar>
+      <show-application-state>false</show-application-state>
+      <show-application-mode>false</show-application-mode>
+    </portlet-application>
+  </page>
+  
+  <page>
+    <name>register</name>
+    <title>Register</title>
+    <access-permissions>Everyone</access-permissions>
+    <edit-permission>*:/platform/administrators</edit-permission>    
+    <portlet-application>
+      <portlet>
+        <application-ref>exoadmin</application-ref>
+        <portlet-ref>RegisterPortlet</portlet-ref>
+      </portlet>
+      <title>New Account</title>
+      <access-permissions>*:/platform/guests</access-permissions>
+      <show-info-bar>false</show-info-bar>      
+    </portlet-application>
+  </page>
+
+ 
+  <page>
+    <name>calendar</name>
+    <title>Calendar</title>
+    <access-permissions>*:/platform/users</access-permissions>
+    <edit-permission>*:/platform/administrators</edit-permission>
+    
+    <portlet-application>
+      <portlet>
+        <application-ref>calendar</application-ref>
+        <portlet-ref>CalendarPortlet</portlet-ref>
+      </portlet>   
+      <title>Calendar Portlet</title>
+      <access-permissions>*:/platform/users</access-permissions>
+      <show-info-bar>false</show-info-bar>      
+    </portlet-application>  
+  </page>
+  
+   
+  
+   
+  
+  </page-set>
+

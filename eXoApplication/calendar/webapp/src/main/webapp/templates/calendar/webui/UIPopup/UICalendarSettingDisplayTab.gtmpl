@@ -1,0 +1,103 @@
+<%
+  import org.exoplatform.webui.core.UIComponent;
+  import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.service.Calendar;
+  uiForm = uicomponent.getParentFrom() ;
+%>
+<div id="$uicomponent.id" class="$uicomponent.id">
+  <table class="UIFormGrid">
+    <tbody>
+      <tr>
+        <td class="FieldLabel" style="font-weight:bold;">
+          <%=uiForm.getLabel(uiForm.DEFAULT_CALENDARS)%>
+        </td>
+        <td class="FieldLabel">
+          <%uiForm.renderField(uiForm.DEFAULT_CALENDARS)%>
+        </td>
+      </tr>
+      <%if(!uicomponent.getUIFormPrivateCheckboxs().isEmpty()){%>
+        <tr>
+          <td class="FieldLabel" style="font-weight:bold;">
+            <%=uiForm.getLabel(CalendarUtils.PRIVATE_CALENDARS)%>
+          </td>
+          <td class="FieldComponent">
+           <%uiForm.renderField(CalendarUtils.PRIVATE_CALENDARS)%>
+          </td>
+        </tr>
+        <%for(UIComponent comp : uicomponent.getUIFormPrivateCheckboxs()) {%>
+          <tr>
+            <td class="FieldComponent ">
+              <%uiForm.renderField(comp.getId())%>
+            </td>
+            <td class="FieldLabel">
+            <%
+              fullLabel = uiForm.getLabel(comp.getId()) ;
+              label = fullLabel ;
+              if(fullLabel.length() > 35) {
+                label = fullLabel.substring(0,35) + "..." ;
+              }
+              println "<div title='$fullLabel'>$label</div>" ;
+            %>
+            </td>
+          </tr>
+        <%}%>
+      <%}%>
+      <%if(!uicomponent.getUIFormShareCheckboxs().isEmpty()){%>
+        <tr>
+          <td class="FieldLabel" style="font-weight:bold;">
+            <%=uiForm.getLabel(CalendarUtils.SHARED_CALENDARS)%>
+          </td>
+          <td class="FieldComponent">
+            <%uiForm.renderField(CalendarUtils.SHARED_CALENDARS)%>
+          </td>
+        </tr>
+        <%for(Calendar cal : uicomponent.getShareCalendars()) {%>
+          <tr>
+            <td class="FieldComponent">
+              <%uiForm.renderField(cal.getId())%>
+            </td>
+            <td class="FieldLabel">
+            <%
+              String owner = "" ;
+              if(cal.getCalendarOwner() != null) { owner = cal.getCalendarOwner() + "- "} ;
+              fullLabel =  owner + cal.getName() ; 
+              label = fullLabel ;
+              if(fullLabel.length() > 35) {
+                label = fullLabel.substring(0,35) + "..." ;
+              }
+              println "<div title='$fullLabel'>$label</div>" ;
+            %>
+            </td>
+          </tr>
+        <%}%>
+      <%}%>
+      <%if(!uicomponent.getUIFormPublicCheckboxs().isEmpty()){%>
+        <tr>
+          <td class="FieldLabel" style="font-weight:bold;">
+            <%=uiForm.getLabel(CalendarUtils.PUBLIC_CALENDARS)%>
+          </td>
+          <td class="FieldComponent">
+            <%uiForm.renderField(CalendarUtils.PUBLIC_CALENDARS)%>
+          </td>
+        </tr>
+        <%for(UIComponent comp : uicomponent.getUIFormPublicCheckboxs()) {%>
+          <tr>
+            <td class="FieldComponent">
+              <%uiForm.renderField(comp.getId())%>
+            </td>
+            <td class="FieldLabel">
+              <%
+              fullLabel = uiForm.getLabel(comp.getId()) ;
+              label = fullLabel ;
+              if(fullLabel.length() > 35) {
+                label = fullLabel.substring(0,35) + "..." ;
+              }
+              println "<div title='$fullLabel'>$label</div>" ;
+              %>
+            </td>
+          </tr>
+        <%}%>
+      <%}%>
+    </tbody>
+  </table>
+</div>

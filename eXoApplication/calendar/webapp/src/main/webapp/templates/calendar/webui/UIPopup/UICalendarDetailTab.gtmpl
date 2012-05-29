@@ -1,0 +1,149 @@
+<%
+import java.util.Map;
+import java.util.Map.Entry;
+import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
+
+  parent = uicomponent.getParent();
+  private void renderActions(String fieldKey) {
+    def actions = uicomponent.getActionField(fieldKey) ;
+    if(actions != null) {
+      for(action in actions) {
+        String actionLabel = parent.getLabel("action." + action.actionName)  ;
+        if(actionLabel.equals("action." + action.actionName)) {
+          actionLabel = action.actionName ;
+        }
+        String actionLink ="";
+        if(action.actionParameter != null) {
+          actionLink = (parent.event(action.actionListener, action.actionParameter)) ;
+        }else {
+          actionLink = (parent.event(action.actionListener)) ;
+        }
+        if(actionLabel.lastIndexOf("-(") > 0)
+        {
+          String temp = actionLabel.substring(0, actionLabel.lastIndexOf("-(")) ;
+          String sizeLabel = actionLabel.substring(actionLabel.lastIndexOf("-(")) ;
+          if(temp.length() > 30) {
+          actionLabel = temp.substring(0, 30) + "..." + sizeLabel ;}
+        }
+        
+        // CS-3361 replace "title=action.actionName" by "title=actionLabel"   
+        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        if(action.actionType == action.TYPE_ICON) {
+          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+          if(action.isShowLabel) { println  actionLabel  ;}
+        }else if(action.actionType == action.TYPE_LINK){
+         println actionLabel ;
+        }
+        println  "</a>";
+        println "&nbsp;"; 
+        if(action.isBreakLine) { println "<br/>" ;} 
+      }
+    }
+  }
+  def rcontext = _ctx.getRequestContext() ;  
+%>
+<div id="$uicomponent.id" class="$uicomponent.id">
+  <table class="UIFormGrid">
+    <tbody>
+      <tr>
+        <td class="FieldLabel">
+          <%=parent.getLabel(parent.DISPLAY_NAME)%>
+        </td>
+        <td class="FieldComponent">
+          <%parent.renderField(parent.DISPLAY_NAME)%>
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="FieldLabel">
+          <%=parent.getLabel(parent.DESCRIPTION)%>
+        </td>
+        <td class="FieldComponent">
+          <%parent.renderField(parent.DESCRIPTION)%>
+        </td>
+      </tr>
+      
+      <% if (!parent.getCalType().equals(CalendarUtils.PUBLIC_TYPE)) {%>
+      <tr>
+        <td class="FieldLabel">
+          <%=parent.getLabel(parent.CATEGORY)%>
+        </td>
+        <td class="FieldComponent">
+          <%parent.renderField(parent.CATEGORY)%>
+          <%renderActions(parent.CATEGORY) ;%>
+        </td>
+      </tr>
+      <% } %>
+      <tr>
+        <td class="FieldLabel">
+          <%=parent.getLabel(parent.LOCALE)%>
+        </td>
+        <td class="FieldComponent">
+          <%parent.renderField(parent.LOCALE)%>
+        </td>
+      </tr>
+    
+      <tr>
+        <td class="FieldLabel">
+          <%=parent.getLabel(parent.TIMEZONE)%>
+        </td>
+        <td class="FieldComponent">
+          <%parent.renderField(parent.TIMEZONE)%>
+        </td>
+      </tr>
+      
+      <tr>
+      <td class="FieldLabel">
+        <%=parent.getLabel(parent.SELECT_COLOR)%>
+      </td>
+      <td class="FieldComponent">
+        <%parent.renderField(parent.SELECT_COLOR)%>
+      </td>
+    </tr>
+
+      <% if (!parent.isAddNew()) { %>
+  <tr>
+    <td class="FieldLabel">
+      <%=parent.getLabel(parent.PRIVATE_URL)%>
+    </td>
+    <td class="FieldComponent">
+      <%parent.renderField(parent.PRIVATE_URL)%>
+      <%renderActions(parent.PRIVATE_URL) ;%>
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="FieldLabel">
+      <%=parent.getLabel(parent.PUBLIC_URL)%>
+    </td>
+    <td class="FieldComponent">
+      <% if (!CalendarUtils.isEmpty(parent.calendar_.getPublicUrl())) { %>
+            <a title="<%= parent.getLabel(parent.ACT_OPEN)%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">
+              <img class="ICalIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif">  
+            </a>
+            <span style="color:grey;font-style: italic;">
+              <%= parent.getLabel(parent.PUBLIC_URL_MSG)%>
+            </span>
+            <a  style="color:blue;font-style: italic;text-decoration: underline;cursor: pointer;" onclick="<%=parent.event("Deactive")%>">
+              <%= parent.getLabel(parent.ACT_DEACTIVE)%>
+            </a>
+      <% } else { %>
+            <span style="color:grey;font-style: italic;">
+              <%= parent.getLabel(parent.PUBLIC_URL_MSG_D)%>
+            
+            </span>
+            <a  style="color:blue;font-style: italic;text-decoration: underline;cursor: pointer;" onclick="<%=parent.event("Active")%>">
+              <%= parent.getLabel(parent.ACT_ACTIVE)%>
+            </a>
+      <% } %>
+    </td>
+  </tr>
+<% }  %>
+             
+    </tbody>
+  </table>
+  
+  
+  
+</div>

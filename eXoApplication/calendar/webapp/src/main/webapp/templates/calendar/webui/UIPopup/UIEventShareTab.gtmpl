@@ -1,0 +1,92 @@
+<%
+import java.util.Map;
+import java.util.Map.Entry;
+import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
+
+  uiForm = uicomponent.getParentFrom() ;   
+  private void renderActions(String fieldKey) {
+    def actions = uicomponent.getActionField(fieldKey) ;
+    if(actions != null) {
+      for(action in actions) {
+        String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
+        if(actionLabel.equals("action." + action.actionName)) {
+          actionLabel = action.actionName ;
+        }
+        String actionLink ="";
+        if(action.actionParameter != null) {
+          actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
+        }else {
+          actionLink = (uiForm.event(action.actionListener)) ;
+        }
+        if(actionLabel.lastIndexOf("-(") > 0)
+        {
+          String temp = actionLabel.substring(0, actionLabel.lastIndexOf("-(")) ;
+          String sizeLabel = actionLabel.substring(actionLabel.lastIndexOf("-(")) ;
+          if(temp.length() > 30) {
+          actionLabel = temp.substring(0, 30) + "..." + sizeLabel ;}
+        }
+        
+        // CS-3361 replace "title=action.actionName" by "title=actionLabel"   
+        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        if(action.actionType == action.TYPE_ICON) {
+          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+          if(action.isShowLabel) { println  actionLabel  ;}
+        }else if(action.actionType == action.TYPE_LINK){
+         println actionLabel ;
+        }
+        println  "</a>";
+        println "&nbsp;"; 
+        if(action.isBreakLine) { println "<br/>" ;} 
+      }
+    }
+  }
+  def rcontext = _ctx.getRequestContext() ;  
+%>
+<div id="$uicomponent.id" class="$uicomponent.id">
+  <table class="UIFormGrid">
+    <tbody>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_SHARE)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_SHARE)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_STATUS)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_STATUS)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <span>
+          <%=uiForm.getLabel(uicomponent.FIELD_INFO)%>
+          <%renderActions(uicomponent.FIELD_INFO) ;%>
+          </span>
+        </td>
+        <td class="FieldComponent">
+          
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" >
+          <div class="ListParticipants">
+            <%uiForm.renderField("UIParticipantList")%>
+          </div>
+        </td>
+      </tr>
+       <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_SEND)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_SEND)%>
+        </td>
+      </tr>    
+    </tbody>
+  </table>
+</div>

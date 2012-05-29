@@ -1,0 +1,8 @@
+You can refer to the following links to understand more about the eXo Collaboration Reference Guide:
+
+* [GateIn Reference Guide|http://docs.jboss.com/gatein/portal/3.1.0-FINAL/reference-guide/en-US/html/index.html]
+* [OpenSocial gadget|http://wiki.opensocial.org/index.php?title=Main_Page]
+* [WebService|http://docs.jboss.org/exojcr/1.12.4-GA/developer/en-US/html/part-ws.html]
+* [Chatserver|http://www.igniterealtime.org/builds/openfire/docs/latest/documentation/javadoc/index.html]
+* [Vcard|http://en.wikipedia.org/wiki/VCard]
+* [iCalendar|http://en.wikipedia.org/wiki/ICalendar] and [its Internet standard|http://www.ietf.org/rfc/rfc2445.txt]

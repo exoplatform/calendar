@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
+  xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+
+  <component>
+    <type>org.exoplatform.cs.statistics.JCRAPIAspectConfig</type>
+    <init-params>
+      <values-param>
+        <name>targetInterfaces</name>
+        <value>org.exoplatform.calendar.service.CalendarService</value>
+        <value>org.exoplatform.webservice.cs.calendar.CalendarWebservice</value>
+      </values-param>
+    </init-params>
+  </component>
+</configuration>

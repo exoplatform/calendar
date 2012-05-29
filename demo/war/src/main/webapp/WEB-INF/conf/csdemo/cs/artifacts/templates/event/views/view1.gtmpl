@@ -1,0 +1,238 @@
+<head>
+  <style>
+    .UIEvent {
+      background-color: white;
+    }
+    
+    .UIEvent .TopLeftCornerDecorator {
+      background: url('/ecm/skin/images/event/LeftTop27x35.gif') no-repeat left;
+      height: 35px;
+      padding-left: 27px;
+    }
+    
+    .UIEvent .TopCenterDecorator {
+      background: url('/ecm/skin/images/event/CenterTop1x10.gif') repeat-x top;
+      height: 35px;
+    }
+    
+    .UIEvent .TopRightCornerDecorator {
+      background: url('/ecm/skin/images/event/RightTop41x35.gif') no-repeat right ;
+      height: 35px;
+      padding-right: 41px;
+    }
+    
+    .UIEvent .MiddleLeftSideDecorator {
+      background: url('/ecm/skin/images/event/LeftMiddle11x1.gif') repeat-y left;
+      padding-left: 13px ;  
+    }
+    
+    .UIEvent .MiddleCenterDecorator {
+      padding: 0px 10px 25px 10px;
+      background: url('/ecm/skin/images/event/CenterMiddleGB.gif') repeat-x bottom;
+    }
+    
+    .UIEvent .MiddleRightSideDecorator {
+      background: url('/ecm/skin/images/event/RightMiddle13x1.gif') repeat-y right;
+      padding-right: 15px ;  
+    }
+    
+    .UIEvent .BottomLeftCornerDecorator {
+      background: url('/ecm/skin/images/event/LeftBottom13x16.gif') no-repeat left ;
+      height: 16px;
+      padding-left: 13px;
+    }
+    
+    .UIEvent .BottomCenterDecorator {
+      background: url('/ecm/skin/images/event/CenterBottom1x14.gif') repeat-x bottom;
+      height: 16px;
+    }
+    
+    .UIEvent .BottomRightCornerDecorator {
+      background: url('/ecm/skin/images/event/RightBottom15x16.gif') no-repeat right ;
+      height: 16px;
+      padding-right: 15px ;  
+    }
+    
+    .UIEvent .CalendarContainer {
+      height: 125px;
+      background: url('/ecm/skin/images/event/BannerBG.gif') repeat-x bottom;
+    }
+    
+    .Calendar {
+      background: none;
+    }
+    
+    .UIEvent .CalendarContainer .EventLabel {
+      float: left;
+      padding: 5px 0px 0px 40px;
+      font: normal bold 18px Arial;
+    }
+    
+    .UIEvent .CalendarContainer .Calendar {
+      margin: auto;
+      width: 360px; heigth: 116px;
+    }
+    
+    .UIEvent .CalendarContainer .Calendar .CalendarIcon {
+      width: 106px; height: 116px;
+      background: url('/ecm/skin/images/event/CalendarIcon.gif') repeat-x bottom;
+    }
+    
+    .UIEvent .CalendarContainer .Calendar .ArrowIcon {
+      margin: auto;
+      width: 32px; height: 116px;
+      background: url('/ecm/skin/images/event/RightBlueArrow32x32.gif') no-repeat center center;
+    }
+    
+    .UIEvent .CalendarContainer .Calendar .DateLabel {
+      margin-top: 25px;
+      width: 100px;
+      text-align: center;
+      font: normal bold 30px Arial;
+    }
+    
+    .UIEvent .CalendarContainer .Calendar .SeparateLine {
+      margin-left: 20px;
+      height: 1px; width: 65px;
+      background-color: #898989;
+    }
+    
+    .UIEvent .CalendarContainer .Calendar .MonthLabel {
+      margin-top: 5px;
+      width: 100px;
+      text-align: center;
+      font: normal bold 14px Arial;
+      color: #898989;
+    }
+    
+    .UIEvent .EventFrame {
+      margin-top: 10px;
+      border: solid 1px #bdbdbd;
+    }
+    
+    .UIEvent .EventFrame .TitleLabel {
+      height: 18px;
+      padding: 2px 0px 0px 15px;
+      font: normal bold 11px Verdana;
+      background: url('/ecm/skin/images/event/EventFrameBG.gif') repeat-x;
+    }
+    
+    .UIEvent .EventFrame .FrameContent {
+      padding: 10px;
+    }
+  </style>
+</head>
+<%
+  public String getMonth(def month) {
+    String strMonth = null ;
+    if(month == 1) strMonth = _ctx.appRes("Event.view.label.january") ;
+    else if(month == 2) strMonth = _ctx.appRes("Event.view.label.february") ;
+    else if(month == 3) strMonth = _ctx.appRes("Event.view.label.march") ;
+    else if(month == 4) strMonth = _ctx.appRes("Event.view.label.april") ;
+    else if(month == 5) strMonth = _ctx.appRes("Event.view.label.may") ;
+    else if(month == 6) strMonth = _ctx.appRes("Event.view.label.june") ;
+    else if(month == 7) strMonth = _ctx.appRes("Event.view.label.july") ;
+    else if(month == 8) strMonth = _ctx.appRes("Event.view.label.august") ;
+    else if(month == 9) strMonth = _ctx.appRes("Event.view.label.september") ;
+    else if(month == 10) strMonth =_ctx.appRes("Event.view.label.october") ;
+    else if(month == 11) strMonth =_ctx.appRes("Event.view.label.november") ;
+    else if(month == 12) strMonth =_ctx.appRes("Event.view.label.december") ;
+    return strMonth ;
+  }
+  def node = uicomponent.getNode() ;
+%>
+
+<div class="UIEvent" id="$uicomponent.id">
+  <div class="TopLeftCornerDecorator">
+    <div class="TopRightCornerDecorator">
+      <div class="TopCenterDecorator"><span></span></div>
+    </div>
+  </div>     
+  <div class="MiddleLeftSideDecorator">
+    <div class="MiddleRightSideDecorator">
+      <div class="MiddleCenterDecorator">
+        <div class="CalendarContainer">
+          <div class="EventLabel"><%=_ctx.appRes("Event.view.label.event")%></div>
+          <div class="Calendar">
+            <div class="CalendarIcon" style="float: left;">
+              <div class="DateLabel">
+                <%=node.getProperty("exo:dtstart").getDate().get(5)%>
+              </div>
+              <div class="SeparateLine"><span></span></div>
+              <div class="MonthLabel">
+                <% def fromMonth = node.getProperty("exo:dtstart").getDate().get(2) + 1 ; %>
+                <%=getMonth(fromMonth)%>
+              </div>
+            </div>
+            <div class="CalendarIcon" style="float: right;">
+              <div class="DateLabel">
+                <% if(node.hasProperty("exo:dtend")) { %>
+                  <%=node.getProperty("exo:dtend").getDate().get(5)%>
+                <% } %>
+              </div>
+              <div class="SeparateLine"><span></span></div>
+              <div class="MonthLabel">
+                <% if(node.hasProperty("exo:dtend")) { 
+                    def toMonth = node.getProperty("exo:dtend").getDate().get(2) + 1 ; %>
+                    <%=getMonth(toMonth)%>
+                <% } %>
+              </div>
+            </div>
+            <div class="ArrowIcon"><span></span></div>
+          </div>
+        </div>
+        <%
+          if(node.hasProperty("exo:summary")) {
+            if(node.hasProperty("exo:location")) { %>
+              <div class="EventFrame" style="float: left; width: 49%">
+          <%} else { %>
+              <div class="EventFrame" style="float: left; width: 99.8%">
+          <%} %>          
+                <div class="TitleLabel"><%=_ctx.appRes("Event.view.label.subject")%></div>
+                <div class="FrameContent">
+                  <%=node.getProperty("exo:summary").getString()%>
+                </div>
+              </div>
+        <%} %>
+        <%
+          if(node.hasProperty("exo:location")) {
+            if(node.hasProperty("exo:summary")) { %>
+              <div class="EventFrame" style="float: right; width: 49%">
+          <%} else {%>
+              <div class="EventFrame" style="float: right; width: 99.8%">
+          <%} %>          
+                <div class="TitleLabel"><%=_ctx.appRes("Event.view.label.location")%></div>
+                <div class="FrameContent">
+                  <%=node.getProperty("exo:location").getString()%>
+                </div>
+              </div>          
+        <%} %>
+        <div style="clear: both;"><span></span></div>
+        <%if(node.hasProperty("exo:comment")) { %>
+            <div class="EventFrame">
+              <div class="TitleLabel"><%=_ctx.appRes("Event.view.label.comment")%></div>
+              <div class="FrameContent">
+                <%=node.getProperty("exo:comment").getString()%>
+              </div>
+            </div>          
+        <%} %>
+        <%if(node.hasProperty("exo:description")) {%>          
+            <div class="EventFrame">
+              <div class="TitleLabel"><%=_ctx.appRes("Event.view.label.description")%></div>
+              <div class="FrameContent">
+                <%=node.getProperty("exo:description").getString()%>
+              </div>
+            </div>          
+        <%} %>
+      <div style="height: 10px;"><span></span></div>
+      <% _ctx.include(uicomponent.getViewTemplate("exo:vote", "view1")); %>
+      </div>
+    </div>
+  </div>
+  <div class="BottomLeftCornerDecorator">
+    <div class="BottomRightCornerDecorator">
+      <div class="BottomCenterDecorator"><span></span></div>
+    </div>
+  </div>
+  <% _ctx.include(uicomponent.getViewTemplate("exo:comment", "view1")); %>
+</div>

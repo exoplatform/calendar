@@ -1,0 +1,288 @@
+<% 
+  import java.text.DecimalFormat ;
+  import java.text.DateFormat;
+  import java.text.SimpleDateFormat;
+  import java.util.Calendar;
+  import java.util.GregorianCalendar;
+  import org.exoplatform.calendar.CalendarUtils;
+  import java.util.TimeZone;
+  import java.util.Date;
+  import java.util.Locale;
+  import org.exoplatform.webui.application.WebuiRequestContext;
+  import java.util.SimpleTimeZone;
+  import org.exoplatform.calendar.service.CalendarEvent;
+  uiform.begin() ;
+  Date currentDate = uicomponent.getCurrentDate();
+  int currentDay = uicomponent.getCurrentDay() ;
+  int currentMonth = uicomponent.getCurrentMonth() ;
+  String currentMonthName = uicomponent.getMonthName(currentMonth) ;
+  int currentYear = uicomponent.getCurrentYear() ;
+  String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
+
+   
+  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+                    
+  dateFormat = uicomponent.getDateFormat() ;
+  timeFormat = uicomponent.getTimeFormat() ;
+  dateTimeFormat = uicomponent.getDateTimeFormat() ;
+  timeInterval = uicomponent.getTimeInterval() ;
+  WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+   Locale locale = context.getParentAppRequestContext().getLocale() ;
+   
+  DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
+  df.setCalendar(uicomponent.getInstanceTempCalendar()) ;
+  //String currentDate = df.format(uicomponent.getCurrentCalendar().getTime()) ;
+  DateFormat tf = new SimpleDateFormat(timeFormat, locale) ;
+  tf.setCalendar(uicomponent.getInstanceTempCalendar()) ;
+  DateFormat dtf = new SimpleDateFormat(dateTimeFormat, locale) ;
+  dtf.setCalendar(uicomponent.getInstanceTempCalendar()) ;
+  def rcontext = _ctx.getRequestContext() ;  
+  String startWorkingTime = uicomponent.getStartTime() ;
+  String endWorkingTime = uicomponent.getEndTime() ;
+  def hoursMap = uicomponent.getTimeSteps(timeFormat, timeInterval) ;
+  boolean isShowWorkingTime = uicomponent.isShowWorkingTime() ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.showEvent() ;') ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSelection() ;') ;
+  //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.UICalendarPortlet.checkFilter();') ;
+  rcontext.getJavascriptManager().addOnResizeJavascript('eXo.calendar.UICalendarPortlet.browserResizeCallback') ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  cssClass = "Day" ;
+  
+  DateFormat tempFormat = new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;
+  tempFormat.setCalendar(uicomponent.getInstanceTempCalendar()) ;
+  
+%>
+<div class="UIDayView">
+ <%_ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%>
+  
+  <div class="EventAllDay">
+    <table>
+      <tbody>
+        <tr>
+          <%
+            int size = uicomponent.getAllDayEvents().size() ;
+            for(ce in uicomponent.getAllDayEvents()) {             
+            actionLink = uicomponent.event("UpdateEvent",ce.id);
+            long precent = (99 / size) ;
+            color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;
+            Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
+            String recurId = ce.getRecurrenceId();
+          %>
+           <td width="$precent%">
+            <div unselectable="on" class="EventContainerBorder EventBoxes $color" style="height:20px;border:solid 1px white;" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink" isOccur="$isOccur" recurId="$recurId">
+              <input type="hidden" name="${ce.id}calType" value="$ce.calType" />
+              <input type="hidden" name="${ce.id}calendarId" value="$ce.calendarId" />          
+              <input type="hidden" name="${ce.id}startTime" value="" />
+              <input type="hidden" name="${ce.id}finishTime" value="" />
+              <input type="hidden" name="${ce.id}isOccur" value="$isOccur" />
+              <input type="hidden" name="${ce.id}recurId" value="$recurId" />
+              <input type="hidden" name="${ce.id}currentDate" value="" />
+              <div class="EventContainer"  title="<%=dtf.format(ce.getFromDateTime())%>:-><%=dtf.format(ce.getToDateTime())%>">
+                <%=ce.getSummary()%>
+              </div>
+            </div>
+          </td>
+        <%}%>
+    </tr>
+    </tbody>
+    </table>
+  </div>
+  <div class="EventDayContainer MainWorkingPanel" style="position:relative ;">
+    <div class="EventDayContent">
+      <table class="UIGrid" id="UIDayViewGrid" cellspacing="0" borderspacing="0" cellpadding="0" style="table-layout: fixed;">
+        <tbody>
+          <tr>
+            <td style="width: 60px ;border-right: none;">
+              <table>
+                <tbody>
+                  <%
+                  flag = true ;
+                  style = "" ;
+                  if(isShowWorkingTime) {style = "WorkOffTime" ;}  
+                  for(full in uicomponent.getDisplayTimes(timeFormat, timeInterval, locale)){
+          					String display = full.substring(full.lastIndexOf("_")+1) ;
+                    cssClass = "TdDotLine" ;
+                    if(flag) {cssClass = "TdLine" ;} ;
+                  %>
+                  <tr>
+                    <td class="TdTime">
+                      <%if(flag){print display;} else { print "&nbsp;";}%>
+                    </td>
+                  </tr>
+                  <%
+                  flag = !flag ;
+                  }%>
+                </tbody>
+              </table>
+            </td>
+            <td >
+              <div class="EventBoard" style="position : relative ;">
+                <div class="EventBoardContainer" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
+                  <%
+                 for(ce in  uicomponent.getEventData()) {
+                   cal = uicomponent.getInstanceTempCalendar() ;
+                   cal.setTime(ce.getFromDateTime()) ;
+                   long   beginTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
+                   cal.setTime(ce.getToDateTime()) ;
+                   long  endTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
+                   color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;                   
+                   actionLink = uicomponent.event("UpdateEvent",ce.id);
+                   Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
+                  String recurId = ce.getRecurrenceId();
+                  %>
+                  <div class="EventContainerBorder EventBoxes $color" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink"  startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId">
+                    <input type="hidden" name="${ce.id}calType" value="$ce.calType" />
+                    <input type="hidden" name="${ce.id}calendarId" value="$ce.calendarId" />          
+                    <input type="hidden" name="${ce.id}startTime" value="" />
+                    <input type="hidden" name="${ce.id}finishTime" value="" />
+                    <input type="hidden" name="${ce.id}isOccur" value="$isOccur" />
+                    <input type="hidden" name="${ce.id}recurId" value="$recurId" />
+                    <input type="hidden" name="${ce.id}currentDate" value="" />
+                    <div class="<%=ce.eventState%>Icon">
+                      <div class="<%=ce.getPriority()%>PriorityIcon" style="float:left;"><span></span></div>
+                    </div>
+                    <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>">
+                      
+                      <p>
+                        <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>
+                      </p>
+                    </div>
+                    <div class="EventContainer">
+                      <%=ce.getSummary()%>
+                    </div>
+                    <div class="ResizeEventContainer">
+                     <span></span>
+                    </div>
+                  </div>
+                  <%}%>
+                  <table cellspacing="0" cellpadding="0"  borderspacing="0" width="100%" class="TimeRule">
+                    <tbody>
+                      <%
+                      flag = true ;
+                      style = "" ;
+                      if(isShowWorkingTime) {style = "WorkOffTime" ;}
+                      Calendar cl = uicomponent.getInstanceTempCalendar() ;
+                      cl.setTime(uicomponent.calendar_.getTime());
+                      cl = uicomponent.getBeginDay(cl) ;
+					  					def counter = 0;
+					  					def timeName = "EvenRow";
+		                  for(full in uicomponent.getDisplayTimes(timeFormat, timeInterval, locale)){
+													if((counter % 4) == 0 || (counter % 4) == 1) {
+													 timeName = "OddRow";
+													} else if((counter % 4) == 2 || (counter % 4) == 3) {
+													 timeName = "EvenRow";
+													}
+													String h = full.substring(0,full.lastIndexOf("_")) ;
+													String display = full.substring(full.lastIndexOf("_")+1) ;
+		                      if(isShowWorkingTime) {
+		                        if(h.equals(startWorkingTime)) {style=""}
+		                        if(h.equals(endWorkingTime)) {style="WorkOffTime"}
+		                      }
+		                      cssClass = "TdDotLine" ;
+		                      if(flag) {cssClass = "TdLine" ;} ;
+                          
+                      %>
+                      <tr startFull="<%=tempFormat.format(cl.getTime())%>" startTime="<%=cl.getTimeInMillis()%>"  class="$style $timeName">
+                        <td class="$cssClass $style"  startFull="<%=tempFormat.format(cl.getTime())%>" startTime="<%=cl.getTimeInMillis()%>"  unselectable="on" >
+                          &nbsp;
+                        </td>
+                      </tr>
+                      <%
+                       flag = !flag ;
+                       cl.add(java.util.Calendar.MINUTE, timeInterval) ;
+					   counter++;
+                      }%>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<% /*Begin Popup Menu*/ %>
+<div class="UIRightClickPopupMenu" id="UIDayViewRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback">
+  <div class="UIContextMenuContainer">
+    <div class="TopLeftRightClickPopupMenu">
+      <div class="TopRightRightClickPopupMenu">
+        <div class="TopCenterRightClickPopupMenu">
+          <span></span>
+        </div>
+      </div>
+    </div>
+    <div class="MiddleLeftRightClickPopupMenu">
+      <div class="MiddleRightRightClickPopupMenu">
+        <div class="UIRightPopupMenuContainer">
+            <div class="MenuItem">
+             <a class="ItemIcon QuickAddEvent" href="<%=uicomponent.event("QuickAdd","$uicomponent.TYPE_EVENT&startTime=beginTime")%>">
+               <%=_ctx.appRes("ContextMenu.label.addEvent")%>
+             </a>
+            </div>
+            <div class="MenuItem">
+              <a class="ItemIcon QuickAddTask" href="<%=uicomponent.event("QuickAdd","$uicomponent.TYPE_TASK&startTime=beginTime")%>">
+                <%=_ctx.appRes("ContextMenu.label.addTask")%>
+              </a>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="BottomLeftRightClickPopupMenu">
+    <div class="BottomRightRightClickPopupMenu">
+      <div class="BottomCenterRightClickPopupMenu">
+        <span></span>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+<% /*End Popup Menu*/ %>
+<% /*Begin Popup Menu*/ %>
+<div class="UIRightClickPopupMenu" id="UIDayViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback">
+  <div class="UIContextMenuContainer">
+    <div class="TopLeftRightClickPopupMenu">
+      <div class="TopRightRightClickPopupMenu">
+        <div class="TopCenterRightClickPopupMenu">
+          <span></span>
+        </div>
+      </div>
+    </div>
+    <div class="MiddleLeftRightClickPopupMenu">
+      <div class="MiddleRightRightClickPopupMenu">
+        <div class="UIRightPopupMenuContainer">
+          <%
+            for(String act : uicomponent.getQuickEditMenu()) {
+            link = uicomponent.event(act,uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ;
+            icon = act + "EventIcon" ;
+          %>
+          <div class="MenuItem">
+            <a class="ItemIcon $icon" href="$link" >
+              <%=_ctx.appRes("ContextMenu.label."+act)%>
+            </a>
+          </div>
+          <%}%>
+          <div class="MenuItem">
+            <a class="ItemIcon ExportCalendarIcon" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+              <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="BottomLeftRightClickPopupMenu">
+    <div class="BottomRightRightClickPopupMenu">
+      <div class="BottomCenterRightClickPopupMenu">
+        <span></span>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+<% /*End Popup Menu*/ %>
+<%uiform.end();%>

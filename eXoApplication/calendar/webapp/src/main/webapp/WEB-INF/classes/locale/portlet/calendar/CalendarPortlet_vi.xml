@@ -1,0 +1,1351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bundle>
+  <javax>
+    <portlet>
+      <title>Tiếng việt</title>
+    </portlet>
+  </javax>
+  <!--
+  #org.exoplatform.calendar.webui.UICalendars
+  -->
+  <UICalendars>
+    <label>
+      <calendars>Lịch</calendars>
+      <tasks>Nhiệm vụ</tasks>
+      <task>
+        <needs-action>Cần làm</needs-action>
+        <completed>Đã hoàn thành</completed>
+        <in-process>Đang xử lý</in-process>
+        <canceled>Đã hủy</canceled>
+      </task>
+      <AddGroup>Thêm nhóm</AddGroup>
+      <AddCalendar>Thêm lịch</AddCalendar>
+      <AddEventCategory>Thêm danh mục</AddEventCategory>
+      <ImportCalendar>Nhập lịch</ImportCalendar>
+      <GenerateRss>Tạo RSS</GenerateRss>
+      <GenerateCalDav>Tạo CalDAV</GenerateCalDav>
+      <CalendarSetting>Cài đặt</CalendarSetting>
+      <EditGroup>Sửa nhóm</EditGroup>
+      <DeleteGroup>Xóa nhóm</DeleteGroup>
+      <ExportCalendars>Xuất lịch</ExportCalendars>
+      <ShareCalendar>Chia sẻ</ShareCalendar>
+      <SendMailCalendar>Gửi thư</SendMailCalendar>
+      <ExportCalendar>Xuất lịch</ExportCalendar>
+      <RemoveCalendar>Xóa lịch</RemoveCalendar>
+      <EditCalendar>Sửa lịch</EditCalendar>
+      <AddTask>Thêm nhiệm vụ</AddTask>
+      <AddEvent>Thêm sự kiện</AddEvent>
+      <calendarActions>Tác vụ lịch</calendarActions>
+      <groupActions>Tác vụ nhóm</groupActions>
+      <defaultCalendarCategoryId>Nhóm của tôi</defaultCalendarCategoryId>
+      <defaultCalendarId>Mặc định</defaultCalendarId>
+    </label>
+    <msg>
+      <have-no-permission-to-edit>Bạn không có quền sửa chữa!</have-no-permission-to-edit>
+      <have-no-permission-to-edit-event>Bạn không có quền sửu sự kiện!</have-no-permission-to-edit-event>
+      <confirm-delete-calendar>Có phải bạn muốn xóa lịch và các sự kiện?</confirm-delete-calendar>
+      <confirm-delete-sharedCalendar>Có phải bạn muốn ngắt kết nối đến lịch chia sẻ?</confirm-delete-sharedCalendar>
+      <confirm-delete-group>Bạn muốn xóa nhóm này?</confirm-delete-group>
+      <have-no-calendar>Lịch này không tồn tại hoặc đã bị xóa.</have-no-calendar>
+      <calendar-require>Cần phải thêm lịch trước đã!</calendar-require>
+      <not-support-edit-share-calendar>Bạn không thể sửa chữa lịch chia sẻ!</not-support-edit-share-calendar>
+      <have-no-item>Chưa chọn mục nào.</have-no-item>
+    </msg>
+  </UICalendars>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIPopupAction
+  -->
+  <UICalendarPopupWindow>
+    <title>
+      <UIPopupAddCalendarContainer>Lịch</UIPopupAddCalendarContainer>
+      <UICalendarCategoryForm>Phân loại lịch</UICalendarCategoryForm>
+      <UIEventCategoryForm>Phân loại sự kiện</UIEventCategoryForm>
+      <UICalendarSettingForm>Cấu hình</UICalendarSettingForm>
+      <UIExportForm>Xuất lịch</UIExportForm>
+      <UIImportForm>Nhập lịch</UIImportForm>
+      <UIRssForm>Tạo RSS</UIRssForm>
+      <UICalDavForm>Tạo CalDAV</UICalDavForm>
+      <UIFeed>Danh mục</UIFeed>
+      <UIAdvancedSearchForm>Tìm kiếm nâng cao</UIAdvancedSearchForm>
+      <UISharedForm>Chia sẻ lịch</UISharedForm>
+      <UIPermissionSelectPopup>Chọn quền</UIPermissionSelectPopup>
+      <UICalendarForm>Tạo lịch</UICalendarForm>
+      <UIGroupSelector>Chọn nhóm làm việc</UIGroupSelector>
+      <UIPopupAddEventContainer>Tạo mới sự kiện</UIPopupAddEventContainer>
+      <UIAddEmailAddress>Thêm thư điện tử</UIAddEmailAddress>
+      <UIQuickAddEvent>Thêm sự kiện</UIQuickAddEvent>
+      <UIQuickAddTask>Thêm nhiệm vụ</UIQuickAddTask>
+      <UICalendarCategoryManager>Quản lý phân loại</UICalendarCategoryManager>
+      <UIEventCategoryManager>Quản lý chỉ mục</UIEventCategoryManager>
+      <UIPopupAddTaskContainer>Nhiệm vụ</UIPopupAddTaskContainer>
+      <UIEventPreview>Xem chi tiết</UIEventPreview>
+      <UIPopupCalendarSettingContainer>Cài đặt lịch</UIPopupCalendarSettingContainer>
+    </title>
+  </UICalendarPopupWindow>
+  <UIQuckAddEventPopupWindow>
+    <title>
+      <UIQuickAddEvent>Thêm sự kiện</UIQuickAddEvent>
+    </title>
+  </UIQuckAddEventPopupWindow>
+  <UIQuckAddTaskPopupWindow>
+    <title>
+      <UIQuickAddTask>Thêm nhiệm vụ</UIQuickAddTask>
+    </title>
+  </UIQuckAddTaskPopupWindow>
+  <UICalendarChildPopupWindow>
+    <title>
+      <UIGroupSelector>Chọn nhóm</UIGroupSelector>
+      <UISelectUserForm>Chọn người dùng</UISelectUserForm>
+      <UIAttachFileForm>Đính kèm tệp</UIAttachFileForm>
+      <UICalendarCategoryManager>Quản lý phân loại</UICalendarCategoryManager>
+      <UIEventCategoryManager>Quản lý chỉ mục</UIEventCategoryManager>
+      <UIAddressForm>Chọn địa chỉ</UIAddressForm>
+      <UIFeed>Calendar Feed</UIFeed>
+      <UIInvitationContainer>Lời mời</UIInvitationContainer>
+      <UIConfirmForm>Xác nhận</UIConfirmForm>
+      <UIEditFeed>Sửa Feed</UIEditFeed>
+    </title>
+  </UICalendarChildPopupWindow>
+  <UISharedForm>
+    <label>
+      <calendarName>Tên lịch</calendarName>
+      <canEdit>Có thể sửa</canEdit>
+      <UICombobox>UISharedForm</UICombobox>
+      <UIInputUserSelect>UISharedForm</UIInputUserSelect>
+      <action>
+        <SelectUser>Chọn người dùng</SelectUser>
+        <SelectGroup>Chọn nhóm người dùng</SelectGroup>
+        <SelectMemberShip>Chọn vai trò</SelectMemberShip>
+      </action>
+      <username>Tên người dùng</username>
+    </label>
+    <msg>
+      <invalid-username>Tên người dùng sai!</invalid-username>
+      <not-found-user>{0} không tìm thấy</not-found-user>
+      <found-user>Đã tồn tại {0} trong hệ thống</found-user>
+    </msg>
+    <action>
+      <Save>Lưu</Save>
+      <Close>Đóng</Close>
+    </action>
+  </UISharedForm>
+  <UIAddEditPermission>
+    <header>
+      <viewPermission>Chỉ xem</viewPermission>
+      <editPermission>Được sửa</editPermission>
+      <action>Thực hiện</action>
+    </header>
+    <label>
+      <true>Có</true>
+      <false>Không</false>
+    </label>
+  </UIAddEditPermission>
+  <UIPopupWindowUserSelect>
+    <title>
+      <UIUserSelector>Chọn người dùng</UIUserSelector>
+    </title>
+  </UIPopupWindowUserSelect>
+  <UIPopupWindowUserSelectEventForm>
+    <title>
+      <UIUserSelector>Chọn người dùng</UIUserSelector>
+    </title>
+  </UIPopupWindowUserSelectEventForm>
+  <UIPopupWindowUserSelectTaskForm>
+    <title>
+      <UIUserSelector>Chọn người dùng</UIUserSelector>
+    </title>
+  </UIPopupWindowUserSelectTaskForm>
+  <UIPopupWindowAddUserEventForm>
+    <title>
+      <UIUserSelector>Chọn người dùng</UIUserSelector>
+    </title>
+  </UIPopupWindowAddUserEventForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UICalendarCategoryForm
+  -->
+  <UICalendarCategoryForm>
+    <action>
+      <Reset>Làm lại</Reset>
+      <Cancel>Hủy bỏ</Cancel>
+      <Save>Lưu</Save>
+    </action>
+    <label>
+      <categoryName>Tên danh mục</categoryName>
+      <description>Mô tả</description>
+    </label>
+    <msg>
+      <category-name-required>Tên cần phải có!</category-name-required>
+      <name-invalid>Tên không đúng định dạng!</name-invalid>
+      <group-existed>Tên đã có trong hệ thống!</group-existed>
+    </msg>
+  </UICalendarCategoryForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UICalendarForm
+  -->
+  <UICalendarForm>
+    <tab>
+      <label>
+        <MyTab>Cơ bản</MyTab>
+        <public>Trạng thái</public>
+        <calendarDetail>Thông tin thêm</calendarDetail>
+      </label>
+    </tab>
+    <label>
+      <selectPermission>Chọn phân quền</selectPermission>
+      <displayName>Tên hiển thị</displayName>
+      <description>Mô tả</description>
+      <category>Phân loại</category>
+      <isPublic>Công cộng?</isPublic>
+      <action>
+        <AddCategory>Thêm loại</AddCategory>
+        <SelectUser>Chọn người dùng</SelectUser>
+        <SelectMemberShip>Chọn vai trò</SelectMemberShip>
+        <EditPermission>Quền sửa chữa</EditPermission>
+        <SelectPermission>Phân quền</SelectPermission>
+        <public-url-msg-active>Lịch này truy cập ở chế độ công cộng.</public-url-msg-active>
+        <Open>Mở</Open>
+      </action>
+      <locale>Địa điểm</locale>
+      <timeZone>Múi giờ</timeZone>
+      <selectGroups>Chọn nhóm</selectGroups>
+      <selectColor>Chọn mầu</selectColor>
+      <editPermission>Quền sửa chữa:</editPermission>
+      <public-url>URL công cộng</public-url>
+      <private-url>URL cá nhân</private-url>
+      <public-url-msg-active>Lịch này truy cập ở chế độ công cộng.</public-url-msg-active>
+      <public-url-msg-deactive>Lịch này không truy cập ở chế độ công cộng.</public-url-msg-deactive>
+      <Open>Mở</Open>
+      <Active>Cho phép truy cập ở chế độ công cộng</Active>
+      <Deactive>Không cho phép truy cập ở chế độ công cộng</Deactive>
+    </label>
+    <action>
+      <Cancel>Hủy bỏ</Cancel>
+      <Save>Lưu</Save>
+      <Reset>Làm lại</Reset>
+    </action>
+    <msg>
+      <name-invalid>Tên người dùng không đúng</name-invalid>
+      <name-exist>Người dùng {0} đã tồn tại</name-exist>
+      <name-not-on-group>Người dùng {0} không có trong nhóm</name-not-on-group>
+      <group-empty>Nhóm người dùng chưa có ai</group-empty>
+      <category-empty>Danh mục chưa có</category-empty>
+      <checkbox-public-notchecked>Bạn phải chọn ít nhất 1 để thao tác</checkbox-public-notchecked>
+      <checkbox-notchecked>Bạn phải chọn {0}</checkbox-notchecked>
+      <need-save-calendar-first>Bạn phải lưu lịch lại trước!</need-save-calendar-first>
+    </msg>
+  </UICalendarForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIEventCategoryForm
+  -->
+  <UIEventCategoryForm>
+    <label>
+      <eventCategoryName>Tên chỉ mục</eventCategoryName>
+      <description>Mô tả</description>
+    </label>
+    <action>
+      <Reset>Làm lại</Reset>
+      <Cancel>Hủy bỏ</Cancel>
+      <Save>Lưu</Save>
+    </action>
+    <msg>
+      <name-invalid>Tên không đúng</name-invalid>
+      <name-exist>Tên đã có trong hệ thống!</name-exist>
+    </msg>
+  </UIEventCategoryForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UICalendarSettingForm
+  -->
+  <UICalendarSettingForm>
+    <tab>
+      <label>
+        <setting>Cài đặt</setting>
+        <defaultCalendarTab>Lịch mặc định</defaultCalendarTab>
+        <feedTab>Feeds</feedTab>
+      </label>
+    </tab>
+    <label>
+      <viewType>Kiểu hiển thị</viewType>
+      <timeInterval>Khoảng thời gian</timeInterval>
+      <weekStartOn>Ngày đầu tuần:</weekStartOn>
+      <dateFormat>Định dạng ngày</dateFormat>
+      <timeFormat>Định dạng giờ</timeFormat>
+      <location>Địa điểm</location>
+      <timeZone>Múi giờ</timeZone>
+      <showWorkingTime>Hiện giờ làm việc</showWorkingTime>
+      <beginTime>Bắt đầu</beginTime>
+      <endTime>Kết thúc</endTime>
+      <baseURL>Đường dẫn cơ bản(URL) dùng để tạo 'RSS'</baseURL>
+      <defaultCalendars>Hướng dẫn:</defaultCalendars>
+      <note>Bỏ chọn những lịch mà bạn muốn ẩn</note>
+      <privateCalendar>Lịch cá nhân</privateCalendar>
+      <sharedCalendar>Lịch chia sẻ</sharedCalendar>
+      <publicCalendar>Lịch cho nhóm</publicCalendar>
+      <option>
+        <dd-MM-yyyy>dd-mm-yyyy (nn-tt-nnnn)</dd-MM-yyyy>
+        <MM-dd-yyyy>mm-dd-yyyy (tt-nn-nnnn)</MM-dd-yyyy>
+        <dfm0>nn/tt/nnnn</dfm0>
+        <dfm1>nn-tt-nnnn</dfm1>
+        <dfm2>tt/nn/nnnn</dfm2>
+        <dfm3>tt/nn/nnnn</dfm3>
+      </option>
+      <option.1-wst>Chủ nhật</option.1-wst>
+      <option.2-wst>Thứ hai</option.2-wst>
+      <option.3-wst>Thứ ba</option.3-wst>
+      <option.4-wst>Thứ tư</option.4-wst>
+      <option.5-wst>Thứ năm</option.5-wst>
+      <option.6-wst>Thứ sáu</option.6-wst>
+      <option.7-wst>Thứ bẩy</option.7-wst>
+      <option.0>Hiển thị theo ngày</option.0>
+      <option.1>Hiển thị theo tuần</option.1>
+      <option.2>Hiển thị theo tháng</option.2>
+      <option.3>Hiển thị theo năm</option.3>
+      <option.4>Hiển thị danh sách</option.4>
+      <option.5>Hiển thị theo biểu thời gian</option.5>
+      <option.6>Tuần làm việc</option.6>
+      <option.12-Hours>AM/PM</option.12-Hours>
+      <option.24-Hours>24 giờ</option.24-Hours>
+      <send>gửi lời mời cho sự kiện</send>
+    </label>
+    <action>
+      <Cancel>Hủy bỏ</Cancel>
+      <Save>Lưu</Save>
+    </action>
+    <msg>
+      <working-time-logic>Giờ kết thúc phải lớn hơn giờ bắt đầu!</working-time-logic>
+    </msg>
+  </UICalendarSettingForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIGroupSelector
+  -->
+  <UIGroupSelector>
+    <label>
+      <selectGroup>Chọn nhóm</selectGroup>
+      <selectUser>Chọn người dùng</selectUser>
+      <selectMemberShip>Chọn vai trò</selectMemberShip>
+    </label>
+  </UIGroupSelector>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIEventForm
+  -->
+  <UIEventForm>
+    <tab>
+      <label>
+        <eventDetail>Chi tiết</eventDetail>
+        <eventReminder>Nhắc lịch</eventReminder>
+        <eventShare>Chia sẻ</eventShare>
+        <eventAttender>Người tham gia</eventAttender>
+      </label>
+    </tab>
+    <action>
+      <AddAttachment>Đính kèm tệp</AddAttachment>
+      <Save>#{word.save}</Save>
+      <Cancel>#{word.cancel}</Cancel>
+      <AddUser>Thêm người tham dự</AddUser>
+    </action>
+    <label>
+      <eventName>Tên sự kiện</eventName>
+      <description>Mô tả</description>
+      <calendar>Thuộc lịch</calendar>
+      <category>Thuộc loại</category>
+      <mailReminder>Gủi thư nhắc nhở</mailReminder>
+      <mailReminderTime>Thời gian:</mailReminderTime>
+      <mailReminderAddress>Địa chỉ thư</mailReminderAddress>
+      <popupReminder>Thông báo nhắc nhở</popupReminder>
+      <popupReminderTime>Thời gian:</popupReminderTime>
+      <action>
+        <title>
+          <AddParticipant>Thêm người tham dự</AddParticipant>
+          <AddEmailAddress>Lựa chọn thư</AddEmailAddress>
+          <AddAttachment>Đính kèm tệp</AddAttachment>
+        </title>
+        <AddUser>Thêm người dùng</AddUser>
+        <AddCategory>Thêm chỉ mục</AddCategory>
+        <RemoveAttachment>Xóa tệp đính kèm</RemoveAttachment>
+        <AddParticipant>Tìm người tham dự</AddParticipant>
+        <AddEmailAddress>Thêm địa chỉ email</AddEmailAddress>
+        <AddAttachment>Tải file lên</AddAttachment>
+      </action>
+      <from>Từ</from>
+      <to>Tới</to>
+      <allDay>Cả ngày</allDay>
+      <repeat>Lặp lại</repeat>
+      <attachments>Tệp đính kèm</attachments>
+      <place>Tại</place>
+      <reminder>Nhắc nhở</reminder>
+      <timeReminder>Thời gian:</timeReminder>
+      <shareEvent>Chia sẻ</shareEvent>
+      <status>Trạng thái</status>
+      <meeting>Hội họp:</meeting>
+      <participant>Người tham dự</participant>
+      <priority>Quyền ưu tiên</priority>
+      <dateAll>Cả ngày</dateAll>
+      <checkTime>Kiểm tra thời gian</checkTime>
+      <timeTo>Đến</timeTo>
+      <timeFrom>Từ</timeFrom>
+      <emailIsRepeat>Lặp lại việc gửi mail</emailIsRepeat>
+      <emailRepeatInterval>Thời gian</emailRepeatInterval>
+      <popupIsRepeat>Lặp lại nhắc nhở</popupIsRepeat>
+      <popupRepeatInterval>Thời gian</popupRepeatInterval>
+      <Participants>Người tham dự</Participants>
+      <DeleteUsername>Xóa người dùng</DeleteUsername>
+      <AddUsername>Thêm người dùng</AddUsername>
+      <FreeTimes>Thời gian rỗi</FreeTimes>
+      <BusyTimes>Thời gian bận</BusyTimes>
+      <isSendMail>Có gửi thư?</isSendMail>
+      <SelectEmail>Chọn thư</SelectEmail>
+      <invitation>Lời mời</invitation>
+      <invitedTo>Gửi tới</invitedTo>
+      <fromWho>Từ</fromWho>
+      <when>Vào lúc</when>
+      <option>
+        <none>Không có</none>
+        <normal>Bình thường</normal>
+        <high>Cao</high>
+        <low>Thấp</low>
+        <norepeat>Không lặp</norepeat>
+        <no-repeat>Không lặp</no-repeat>
+        <repeat>Lặp lại</repeat>
+        <daily>Hàn ngày</daily>
+        <workingdays>Ngày trong tuần</workingdays>
+        <weekend>Cuối tuần</weekend>
+        <weekly>Hàng tuần</weekly>
+        <monthly>Hàng tháng</monthly>
+        <yearly>Hàng năm</yearly>
+        <private>Cá nhân</private>
+        <public>Công cộng</public>
+        <busy>Bận</busy>
+        <available>Rảnh rỗi</available>
+        <outside>Ra ngoài</outside>
+      </option>
+      <info>Người tham dự :</info>
+      <answer>Tham dự ?</answer>
+      <always>Luôn luôn</always>
+      <never>Không bao giờ</never>
+      <ask>Hỏi</ask>
+      <send>Gửi lời mời</send>
+      <confirm-msg>Sự kiện được lưu và những lời mời đã được gửi. Bạn có xác nhận không?</confirm-msg>
+      <messageName>Thông điệp mời</messageName>
+    </label>
+    <msg>
+      <summary-invalid>{0}{1} chưa đúng</summary-invalid>
+      <error-particimant-email-required>Yêu cầu nhập thư của người tham gia</error-particimant-email-required>
+      <email-reminder-required>Phải thêm thư khi muốn nhắc lịc qua thư</email-reminder-required>
+      <add-event-successfully>Thêm sự kiện thành công</add-event-successfully>
+      <update-event-successfully>Cập nhật sự kiện thành công</update-event-successfully>
+      <add-event-error>Lỗ khi tạo sự kiện!</add-event-error>
+      <event-summary-required>Tóm tắt</event-summary-required>
+      <event-calendar-required>Cần phải tạo lịc trước</event-calendar-required>
+      <event-category-required>Cần phải tạo chỉ mục trước</event-category-required>
+      <event-fromdate-required>Ngày bắt đầu cần phải có</event-fromdate-required>
+      <event-fromdate-notvalid>Ngày bắt đầu không đúng</event-fromdate-notvalid>
+      <event-todate-required>Ngày kết thúc cần phải có</event-todate-required>
+      <event-todate-notvalid>Ngày kết thúc không đúng</event-todate-notvalid>
+      <event-date-time-logic>Ngày giờ không hợp lý!</event-date-time-logic>
+      <event-date-time-getvalue>Lấy giá trị ngày giờ</event-date-time-getvalue>
+      <event-email-required>Thư cần phải có</event-email-required>
+      <event-email-invalid>Thư không đúng</event-email-invalid>
+      <can-not-check>Không thể kiểm tra</can-not-check>
+      <participant-required>Cần phải có nguời tham dự</participant-required>
+      <name-not-correct>Tên {0} không đúng</name-not-correct>
+      <check-free-busy-required>Kiểm tra thời gian cần thiết</check-free-busy-required>
+      <cant-send-email>Không thể gửi thư được</cant-send-email>
+      <error-send-email>Lỗi khi gửi thư</error-send-email>
+      <event-participant-invalid>invalid participant : {0}</event-participant-invalid>
+      <invalid-username>'{0}' là một tên người dùng không hợp lệ</invalid-username>
+      <confirm-delete>Bạn có xác nhận xóa người tham dự này từ danh sách?</confirm-delete>
+    </msg>
+    <optionGroup>
+      <label>
+        <privateCalendar>Lịch cá nhân</privateCalendar>
+        <sharedCalendar>Lịch chia sẻ</sharedCalendar>
+        <publicCalendar>Lịch nhóm</publicCalendar>
+      </label>
+    </optionGroup>
+  </UIEventForm>
+  <eventShare>
+    <header>
+      <status>Trạng thái</status>
+      <participant>Người tham dự</participant>
+      <action />
+    </header>
+    <action>
+      <title>
+        <Delete>Xóa</Delete>
+        <AddUser>Thêm người dùng</AddUser>
+        <AddCategory>Thêm chỉ mục</AddCategory>
+      </title>
+    </action>
+  </eventShare>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIAddEmailAddress
+  -->
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIExportForm
+  -->
+  <UIExportForm>
+    <action>
+      <Cancel>#{word.cancel}</Cancel>
+      <Save>#{word.save}</Save>
+    </action>
+    <label>
+      <name>Tên</name>
+      <type>Loại</type>
+    </label>
+    <msg>
+      <event-does-not-existing>Sự kiện không tồn tại hoặc đã bị xóa</event-does-not-existing>
+      <calendar-does-not-existing>Lịch không có hoặc đã bị xóa</calendar-does-not-existing>
+    </msg>
+  </UIExportForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIImportForm
+  -->
+  <UIImportForm>
+    <action>
+      <Cancel>#{word.cancel}</Cancel>
+      <Save>#{word.save}</Save>
+    </action>
+    <label>
+      <type>Loại</type>
+      <upload>Tải lên</upload>
+      <isAddTo>Thêm vào?</isAddTo>
+      <impotTo>Nhập lịch vào</impotTo>
+      <displayName>Tên</displayName>
+      <description>Mô tả</description>
+      <category>Chỉ mục</category>
+      <locale>Địa điểm</locale>
+      <timeZone>Múi giờ</timeZone>
+      <selectColor>Chọn mầu</selectColor>
+      <AddCalendar>Thêm lịch</AddCalendar>
+      <permission>Sửa quền</permission>
+    </label>
+    <optionGroup>
+      <label>
+        <privateCalendar>Lịch cá nhân</privateCalendar>
+        <sharedCalendar>Lịch chia sẻ</sharedCalendar>
+        <publicCalendar>Lịch nhóm</publicCalendar>
+      </label>
+    </optionGroup>
+    <msg>
+      <file-name-error>Tên tệp bị lỗi</file-name-error>
+      <file-type-error>Loại tệp không đúng</file-type-error>
+      <file-name-invalid>Tên tệp sai</file-name-invalid>
+    </msg>
+  </UIImportForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIRssForm
+  -->
+  <UIRssForm>
+    <action>
+      <Cancel>#{word.cancel}</Cancel>
+      <GenerateRss>Tạo rss</GenerateRss>
+    </action>
+    <label>
+      <name>Tên RSS</name>
+      <version>Phiên bản</version>
+      <url>Đường dẫn(URL)</url>
+      <title>Nhan đề</title>
+      <description>Mô tả</description>
+      <descriptions>Dữ liệu RSS được tạo ra bởi công ty mã nguồn mở eXo Platform</descriptions>
+      <copyrights>eXo Platform SAS   nắm giữ toàn bộ bản quền © 2000-2008</copyrights>
+      <copyright>Bản quền</copyright>
+      <link>Liên kết</link>
+      <link-url>www.exoplatform.org</link-url>
+      <pubDate>Ngày xuất bản</pubDate>
+      <info>Thông tin</info>
+      <message>Lời nhắn</message>
+    </label>
+    <tab>
+      <label>
+        <rssInfo>Thông tin rss</rssInfo>
+        <rssCalendars>Tên lịch</rssCalendars>
+      </label>
+    </tab>
+    <msg>
+      <there-is-not-calendar>Bạn phải tạo hoặc chọn lịch trước</there-is-not-calendar>
+      <feed-has-been-generated>{0} vừa được tạo</feed-has-been-generated>
+      <feed-name-invalid>Tên không hợp lệ</feed-name-invalid>
+      <no-data-generated>Không có dữ lệu để tạo</no-data-generated>
+    </msg>
+  </UIRssForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIFeed
+  -->
+  <UIFeed>
+    <action>
+      <Close>Đóng</Close>
+    </action>
+    <msg>
+      <there-are-not-feed-generated>Không có rss nào được tạo</there-are-not-feed-generated>
+    </msg>
+  </UIFeed>
+  <!--
+  #org.exoplatform.calendar.webui.UICalendarView
+  -->
+  <UICalendarView>
+    <msg>
+      <some-events-cannot-move>{0} một vài sự kiện không thể chuyển</some-events-cannot-move>
+      <confirm-delete>Bạn chắc chắn là sẽ xóa dữ liệu ?</confirm-delete>
+      <calendar-list-empty>Cần phải tạo lịch trước</calendar-list-empty>
+      <event-category-list-empty>Cần phải tạo danh mục trước</event-category-list-empty>
+      <check-box-required>Cần phải chọn một trong các sự kiện hoặc công việc</check-box-required>
+      <delete-event-successfully>Đã xóa sự kiện thành công</delete-event-successfully>
+      <delete-event-error>Lỗi khi xóa sự kiện</delete-event-error>
+      <function-not-supported>Chưa cung cấp chức năng này trong phiên bản này</function-not-supported>
+      <have-no-edit-permission>Bạn không có quền sửa</have-no-edit-permission>
+      <have-no-delete-permission>Bạn không có quền xóa</have-no-delete-permission>
+      <event-not-found>Không tìm thấy sự kiện này, có thể đã bị xóa</event-not-found>
+      <can-not-delete-all-event>Không thể xóa tất cả sự kiện</can-not-delete-all-event>
+      <feed-list-empty>Danh sách rss chưa tạo</feed-list-empty>
+    </msg>
+    <label>
+      <defaultEventCategoryIdAll>Tất cả</defaultEventCategoryIdAll>
+      <Meeting>Hội họp</Meeting>
+      <Calls>Liên lạc</Calls>
+      <Clients>Khách hàng</Clients>
+      <Holiday>Kỳ Nghỉ</Holiday>
+      <Anniversary>Kỉ niệm</Anniversary>
+      <defaultEventCategoryIdMeeting>Hội họp</defaultEventCategoryIdMeeting>
+      <defaultEventCategoryIdCalls>Liên lạc</defaultEventCategoryIdCalls>
+      <defaultEventCategoryIdClients>Khách hàng</defaultEventCategoryIdClients>
+      <defaultEventCategoryIdHoliday>Kỳ Nghỉ</defaultEventCategoryIdHoliday>
+      <defaultEventCategoryIdAnniversary>Kỉ niệm</defaultEventCategoryIdAnniversary>
+    </label>
+  </UICalendarView>
+  <!--
+  #org.exoplatform.calendar.webui.UISearchForm
+  -->
+  <UISearchForm>
+    <label>
+      <value>Từ khóa</value>
+      <AdvancedSearch>Tìm kiếm nâng cao</AdvancedSearch>
+      <Search>Tìm</Search>
+    </label>
+    <msg>
+      <no-text-to-search>Phải điền từ khóa khi tìm</no-text-to-search>
+      <error-text-to-search>Lỗi từ khóa không cho phép</error-text-to-search>
+    </msg>
+  </UISearchForm>
+  <!--
+  #org.exoplatform.calendar.webui.UIQuickAddEvent
+  -->
+  <UIQuickAddEvent>
+    <label>
+      <eventName>Tên sự kiện</eventName>
+      <description>Mô tả</description>
+      <from>Từ</from>
+      <to>Đến</to>
+      <allDay>Cả ngày</allDay>
+      <calendar>Lịch</calendar>
+      <category>Mục</category>
+      <mailReminder>Nhắc lịch</mailReminder>
+      <popupReminder>Gợi nhớ</popupReminder>
+    </label>
+    <optionGroup>
+      <label>
+        <privateCalendar>Lịch cá nhân</privateCalendar>
+        <sharedCalendar>Lịch chia sẻ</sharedCalendar>
+        <publicCalendar>Lịch nhóm</publicCalendar>
+      </label>
+    </optionGroup>
+    <action>
+      <MoreDetail>Chi tiết</MoreDetail>
+      <Save>#{word.save}</Save>
+      <Cancel>#{word.cancel}</Cancel>
+    </action>
+    <msg>
+      <summary-invalid>{0}{1} tóm tắt không hợp lệ</summary-invalid>
+      <calendar-field-required>Cần phải tạo lịch trước</calendar-field-required>
+      <category-field-required>Cần phải tạo danh mục trước</category-field-required>
+      <logic-required>Ngày giờ phải phù hợp</logic-required>
+      <add-unsuccessfully>Thêm dữ liệu bị lỗi</add-unsuccessfully>
+      <add-successfully>Thêm dữ liệu thành công</add-successfully>
+      <fromDate-format>Định dạng ngày bắt đầu</fromDate-format>
+      <toDate-format>Định dạng ngày kết thúc</toDate-format>
+    </msg>
+  </UIQuickAddEvent>
+  <!--
+  #org.exoplatform.calendar.webui.UIAdvancedSearchForm
+  -->
+  <UIAdvancedSearchForm>
+    <label>
+      <text>Từ khóa</text>
+      <type>Loại</type>
+      <calendar>Thuộc lịch</calendar>
+      <category>Thuộc mục</category>
+      <state>Tình trạng</state>
+      <priority>Mức ưu tiên</priority>
+      <fromDate>Từ ngày</fromDate>
+      <toDate>Đến ngày</toDate>
+      <option>
+        <none>Không định nghĩa</none>
+        <normal>Bình thường</normal>
+        <high>Cao</high>
+        <low>Thấp</low>
+        <Event>Sự kiện</Event>
+        <Task>Công việc</Task>
+        <needs-action>Cần hoàn thành</needs-action>
+        <completed>Đã hoàn thành</completed>
+        <in-process>Đang thực hiện</in-process>
+        <tentative>Đề nghị</tentative>
+        <confirmed>Đã xác thực</confirmed>
+        <canceled>Đã hủy bỏ</canceled>
+      </option>
+      <option.0>Không có gì</option.0>
+      <option.2>Bình thường</option.2>
+      <option.1>Cao</option.1>
+      <option.3>Thấp</option.3>
+    </label>
+    <action>
+      <Cancel>#{word.cancel}</Cancel>
+      <Search>Tìm</Search>
+    </action>
+    <msg>
+      <from-date-time-invalid>Ngày bắt đầu không đúng</from-date-time-invalid>
+      <to-date-time-invalid>Ngày kết thúc không đúng</to-date-time-invalid>
+      <date-time-invalid>Ngày tháng không đúng</date-time-invalid>
+    </msg>
+  </UIAdvancedSearchForm>
+  <!--
+  #org.exoplatform.calendar.webui.UIQuickAddTask
+  -->
+  <UIQuickAddTask>
+    <label>
+      <eventName>Tên sự kiện</eventName>
+      <description>Mô tả</description>
+      <from>Từ</from>
+      <to>Tới</to>
+      <allDay>Cả ngày</allDay>
+      <calendar>Thuộc lịch</calendar>
+      <category>Thuộc mục</category>
+    </label>
+    <optionGroup>
+      <label>
+        <privateCalendar>Lịch cá nhân</privateCalendar>
+        <sharedCalendar>Lịch chia sẻ</sharedCalendar>
+        <publicCalendar>Lịch cho nhóm</publicCalendar>
+      </label>
+    </optionGroup>
+    <action>
+      <MoreDetail>Chi tiết</MoreDetail>
+      <Save>#{word.save}</Save>
+      <Cancel>#{word.cancel}</Cancel>
+    </action>
+    <msg>
+      <summary-invalid>{0}{1} tóm lược không đúng</summary-invalid>
+      <calendar-field-required>Cần phải tạo lịch trước</calendar-field-required>
+      <category-field-required>Cần phải tạo mục trước</category-field-required>
+      <logic-required>Ngày tháng không đúng yêu cầu</logic-required>
+      <add-unsuccessfully>Dữ liệu không tạo được</add-unsuccessfully>
+      <add-successfully>Dữ liệu được tạo thành công</add-successfully>
+    </msg>
+  </UIQuickAddTask>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIAttachFileForm
+  -->
+  <UIAttachFileForm>
+    <label>
+      <upload1>Tệp thứ 1</upload1>
+      <upload2>Tệp thứ 2</upload2>
+      <upload3>Tệp thứ 3</upload3>
+      <upload4>Tệp thứ 4</upload4>
+      <upload5>Tệp thứ 5</upload5>
+    </label>
+    <action>
+      <Save>#{word.save}</Save>
+      <Cancel>#{word.cancel}</Cancel>
+    </action>
+    <msg>
+      <fileName-error>Tên tệp không đúng</fileName-error>
+      <total-attachts-size-over10M>Dung lượng tệp đính kèm không được quá 10MB</total-attachts-size-over10M>
+    </msg>
+  </UIAttachFileForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UICalendarCategoryManager
+  -->
+  <UICalendarCategoryManager>
+    <header>
+      <name>Tên</name>
+      <action>Thao tác</action>
+    </header>
+    <action>
+      <title>
+        <Delete>Xóa</Delete>
+        <Edit>Sửa</Edit>
+      </title>
+    </action>
+    <msg>
+      <confirm-delete>Bạn thực sự muốn xóa?</confirm-delete>
+      <can-not-delete-calendar-in-use>Bạn không thể xóa nhóm này bởi vì bạn đang sửa một lịch trong nhóm này.</can-not-delete-calendar-in-use>
+    </msg>
+  </UICalendarCategoryManager>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIEventCategoryManager
+  -->
+  <UIEventCategoryManager>
+    <header>
+      <name>Tên</name>
+      <action>Thao tác</action>
+    </header>
+    <action>
+      <title>
+        <Delete>Xóa</Delete>
+        <Edit>Sửa</Edit>
+      </title>
+    </action>
+    <msg>
+      <confirm-delete>Bạn thực sự muốn xóa?</confirm-delete>
+      <cannot-delete>Không thể xóa loại sự kiện này.</cannot-delete>
+    </msg>
+  </UIEventCategoryManager>
+  <!--
+  #org.exoplatform.calendar.webui.UIActionBar
+  -->
+  <UIActionBar>
+    <label>
+      <QuickAdd />
+      <Event>Sự kiện</Event>
+      <Task>Nhiệm vụ</Task>
+      <CalendarView />
+      <CalendarSettings>Cài đặt</CalendarSettings>
+      <RSS>Tin RSS</RSS>
+      <Print>In</Print>
+      <ShowHide>Ẩn hiện</ShowHide>
+      <ShowHideAll>Ẩn hiện tất cả</ShowHideAll>
+      <ShowHideMinicalendar>Ẩn hiện lịch nhỏ</ShowHideMinicalendar>
+      <ShowHideCalendarList>Ẩn hiện danh sách lịch</ShowHideCalendarList>
+      <Today>Hôm nay</Today>
+      <UIDayView>Theo ngày</UIDayView>
+      <UIWeekView>Theo tuần</UIWeekView>
+      <UIMonthView>Theo tháng</UIMonthView>
+      <UIYearView>Theo năm</UIYearView>
+      <UIListContainer>Danh sách</UIListContainer>
+      <UIScheduleView>Xắp xếp</UIScheduleView>
+      <UIWorkingView>Ngày làm việc</UIWorkingView>
+      <DefaultLayout>Sự bố trí mặc định</DefaultLayout>
+    </label>
+  </UIActionBar>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UITaskForm
+  -->
+  <UITaskForm>
+    <tab>
+      <label>
+        <eventDetail>Chi tiết</eventDetail>
+        <eventReminder>Nhắc lịch</eventReminder>
+      </label>
+    </tab>
+    <action>
+      <AddAttachment>Đính kèm tệp</AddAttachment>
+      <Save>#{word.save}</Save>
+      <Cancel>#{word.cancel}</Cancel>
+    </action>
+    <label>
+      <eventName>Tên sự kiện</eventName>
+      <description>Mô tả</description>
+      <delegation>Giao việc</delegation>
+      <calendar>Lịch</calendar>
+      <category>Phân loại</category>
+      <mailReminder>Gửi thư nhắc nhở</mailReminder>
+      <mailReminderTime>Thời gian</mailReminderTime>
+      <mailReminderAddress>Địa chỉ thư</mailReminderAddress>
+      <popupReminder>Thông báo nhắc nhở</popupReminder>
+      <popupReminderTime>Thời gian</popupReminderTime>
+      <action>
+        <AddCategory>Thêm chỉ mục</AddCategory>
+        <RemoveAttachment>Xóa bỏ tệp đính kèm</RemoveAttachment>
+        <AddEmailAddress>Thêm địa chỉ thư</AddEmailAddress>
+        <AddAttachment>Đính kèm</AddAttachment>
+        <SelectUser>Chọn người dùng</SelectUser>
+      </action>
+      <from>Từ</from>
+      <to>Tới</to>
+      <allDay>Cả ngày</allDay>
+      <attachments>Tệp đính kèm</attachments>
+      <place>Địa điểm</place>
+      <reminder>Nhắc nhở</reminder>
+      <timeReminder>Thời gian</timeReminder>
+      <status>Trạng thái</status>
+      <priority>Mức ưu tiên</priority>
+      <dateFrom>Từ ngày</dateFrom>
+      <dateTo>Đến ngày</dateTo>
+      <dateAll>Cả ngày</dateAll>
+      <emailIsRepeat>Lặp lại nhắc lịch</emailIsRepeat>
+      <emailRepeatInterval>Khoảng</emailRepeatInterval>
+      <popupIsRepeat>Lặp lại nhắc lịch</popupIsRepeat>
+      <popupRepeatInterval>Khoảng</popupRepeatInterval>
+      <SelectEmail>Chọn thư</SelectEmail>
+      <option>
+        <none>Không có</none>
+        <normal>Bình thường</normal>
+        <high>Cao</high>
+        <low>Thấp</low>
+        <needs-action>Cần thực hiện</needs-action>
+        <completed>Đã thực hiện</completed>
+        <in-process>Đang thực hiện</in-process>
+        <canceled>Đã hủy</canceled>
+        <no-repeat>Không lặp</no-repeat>
+        <repeat>Lặp lại</repeat>
+      </option>
+      <repeat>Lặp lại</repeat>
+    </label>
+    <msg>
+      <summary-invalid>{0}{1} tóm lược không đúng</summary-invalid>
+      <email-reminder-required>Cần phải có địa chỉ thư để gửi nhắc lịch</email-reminder-required>
+      <event-email-invalid>Địa chỉ thư không đúng định dạng</event-email-invalid>
+      <add-event-successfully>Tạo sự kiện thành công</add-event-successfully>
+      <update-event-successfully>Cập nhật sự kiện thành công</update-event-successfully>
+      <add-event-error>Thêm sự kiện bị lỗi</add-event-error>
+      <event-summary-required>Tóm tắt cần phải có</event-summary-required>
+      <event-calendar-required>Phải thêm lịch trước</event-calendar-required>
+      <event-category-required>Phải thêm chỉ mục trước</event-category-required>
+      <event-fromdate-required>Ngày bắt đầu cần phải có</event-fromdate-required>
+      <event-fromdate-notvalid>Định dạng ngày bắt đầu không đúng</event-fromdate-notvalid>
+      <event-todate-required>Ngày kết thúc cần phải có</event-todate-required>
+      <event-todate-notvalid>Định dạng ngày kết thúc không đúng</event-todate-notvalid>
+      <event-date-time-logic>Thời gian không hợp lệ</event-date-time-logic>
+      <event-date-time-getvalue>Giá trị ngày tháng không đúng</event-date-time-getvalue>
+      <event-email-required>Hộp thư cần phải có để nhắc lịch</event-email-required>
+    </msg>
+    <optionGroup>
+      <label>
+        <privateCalendar>Lịch cá nhân</privateCalendar>
+        <sharedCalendar>Lịch chia sẻ</sharedCalendar>
+        <publicCalendar>Lịch cho nhóm</publicCalendar>
+      </label>
+    </optionGroup>
+  </UITaskForm>
+  <!--
+  #org.exoplatform.calendar.webui.UIEventPreview
+  -->
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIShareForm
+  -->
+  <!--
+  #org.exoplatform.calendar.webui.popup.UIAddressForm
+  -->
+  <UIAddressForm>
+    <label>
+      <keyWord>Từ khóa</keyWord>
+      <group>Nhóm</group>
+      <name>Tên</name>
+      <email>Thư</email>
+    </label>
+    <msg>
+      <keyword-error>Từ khóa không đúng</keyword-error>
+      <contact-email-required>Hộp thư cần phải có</contact-email-required>
+    </msg>
+    <action>
+      <Cancel>Hủy bỏ</Cancel>
+      <Replace>Thay thế</Replace>
+      <Add>Thêm</Add>
+    </action>
+  </UIAddressForm>
+  <!--
+  #org.exoplatform.calendar.webui.popup.UICalDavForm
+  -->
+  <UICalDavForm>
+    <action>
+      <Cancel>#{word.cancel}</Cancel>
+      <Generate>Tạo</Generate>
+    </action>
+    <label>
+      <name>Tên RSS</name>
+      <version>Phiên bản</version>
+      <url>Đường dẫn</url>
+      <title>Tên</title>
+      <description>Mô tả</description>
+      <copyright>Bản quền</copyright>
+      <pubDate>Ngày đưa lên</pubDate>
+      <info>Thông tin</info>
+      <message>Chọn các lịch dưới đây để tạo</message>
+      <descriptions>Rss này được tạo bởi công ty mã nguồn mở exoplatform</descriptions>
+      <copyrights>eXo Platform SAS nắm giữ toàn bộ bản quền © 2000-2009</copyrights>
+    </label>
+    <tab>
+      <label>
+        <rssInfo>Thông tin rss</rssInfo>
+        <rssCalendars>Lịch rss</rssCalendars>
+      </label>
+    </tab>
+    <msg>
+      <there-is-not-calendar>Lịch chưa có sự kiện nên không thể tạo CalDAV</there-is-not-calendar>
+      <feed-has-been-generated>{0} vừa được tạo</feed-has-been-generated>
+    </msg>
+  </UICalDavForm>
+  <!--
+  #org.exoplatform.calendar.webui.UIHeaderBar
+  -->
+  <UIHeaderBar>
+    <label>
+      <AddEvent>Thêm sự kiện</AddEvent>
+      <AddTask>Thêm nhiệm vụ</AddTask>
+      <Delete>Xóa</Delete>
+      <eventCategory>Chỉ mục:</eventCategory>
+      <Event>Sự kiện</Event>
+      <Task>Nhiệm vụ</Task>
+      <Both>Cả hai</Both>
+      <addNewCategory>Thêm mới chỉ mục</addNewCategory>
+    </label>
+  </UIHeaderBar>
+  <!--
+  #org.exoplatform.calendar.webui.UIDayView
+  -->
+  <UIDayView>
+    <label>
+      <previousDay>Ngày trước</previousDay>
+      <nextDay>Ngày sau</nextDay>
+      <moveEvent>Chuyển sự kiện</moveEvent>
+      <option>
+        <all>Tất cả</all>
+      </option>
+    </label>
+  </UIDayView>
+  <!--
+  #org.exoplatform.calendar.webui.UIWeekView
+  -->
+  <UIWeekView>
+    <label>
+      <previousWeek>Tuần trước</previousWeek>
+      <nextWeek>Tuần sau</nextWeek>
+      <Week>Tuần thứ</Week>
+      <moveEvent>Chuyển sự kiện</moveEvent>
+      <option>
+        <all>Tất cả</all>
+      </option>
+    </label>
+  </UIWeekView>
+  <!--
+  #org.exoplatform.calendar.webui.UIMonthView
+  -->
+  <UIMonthView>
+    <label>
+      <previousMonth>Tháng trước</previousMonth>
+      <nextMonth>Tháng sau</nextMonth>
+      <option>
+        <all>Tất cả</all>
+      </option>
+    </label>
+  </UIMonthView>
+  <!--
+  #org.exoplatform.calendar.webui.UIYearView
+  -->
+  <UIYearView>
+    <label>
+      <previousYear>Năm trước</previousYear>
+      <nextYear>Năm sau</nextYear>
+      <year>Năm</year>
+      <option>
+        <all>Tất cả</all>
+      </option>
+    </label>
+  </UIYearView>
+  <!--
+  #org.exoplatform.calendar.webui.UIListView
+  -->
+  <UIListView>
+    <label>
+      <searchResult>Kết quả tìm kiếm</searchResult>
+      <Summary>Tóm tắt</Summary>
+      <Start>Bắt đầu</Start>
+      <End>Kết thúc</End>
+      <CloseSearch>Đóng</CloseSearch>
+      <noData>Không có dữ liệu</noData>
+      <Event>Sự kiện</Event>
+      <EventDescription>Chi tiết</EventDescription>
+      <CheckAll>Chọn tất</CheckAll>
+      <option>
+        <all>Tất cả</all>
+      </option>
+      <Task>Nhiệm vụ</Task>
+      <Priority>Ưu tiên</Priority>
+      <Status>Trạng thái</Status>
+      <DueDate>Trong khoảng</DueDate>
+      <TaskDelegation>Giao việc</TaskDelegation>
+      <days>Ngày</days>
+      <needs-action>Cần thực hiện</needs-action>
+      <completed>Đã hoàn thành</completed>
+      <in-process>Đang thực thi</in-process>
+      <canceled>Đã hủy bỏ</canceled>
+    </label>
+  </UIListView>
+  <!--
+  #org.exoplatform.calendar.webui.UIPreview
+  -->
+  <UIPreview>
+    <label>
+      <eventDetail>Chi tiết</eventDetail>
+      <fullSize>Kích thước</fullSize>
+      <From>Từ:</From>
+      <To>Tới:</To>
+      <View>Xem</View>
+      <Close>Đóng</Close>
+      <Download>Tải về</Download>
+      <Place>Tại:</Place>
+      <RepeatEvent>Lặp lại:</RepeatEvent>
+      <Description>Miêu tả:</Description>
+      <EventReminder>Nhắc lịch:</EventReminder>
+      <EventSharing>Chia sẻ sự kiện:</EventSharing>
+      <ShowAs>Trạng thái hiển thị:</ShowAs>
+      <Invitation>Lời mời</Invitation>
+      <Participant>Người tham dự:</Participant>
+      <ViewOnCalendar>Chuyển tới lịch</ViewOnCalendar>
+      <EditEvent>Sửa sự kiện</EditEvent>
+      <DeleteEvent>Xóa sự kiện</DeleteEvent>
+      <taskDetail>Chi tiết nhiệm vụ</taskDetail>
+      <Status>Trạng thái</Status>
+      <Priority>Quyền ưu tiên:</Priority>
+      <StartDate>Ngày bắt đầu:</StartDate>
+      <DueDate>Trong khoảng</DueDate>
+      <TaskDelegation>Giao nhiệm vụ:</TaskDelegation>
+      <Reminder>Nhắc lịch:</Reminder>
+      <Note>Ghi chú:</Note>
+      <EditTask>Sửa chữa nhiệm vụ</EditTask>
+      <DeleteTask>Xóa nhiệm vụ</DeleteTask>
+      <none>Không định nghĩa</none>
+      <normal>Bình thường</normal>
+      <high>Cao</high>
+      <low>Thấp</low>
+      <needs-action>Cần thực hiện</needs-action>
+      <completed>Đã hoàn thành</completed>
+      <in-process>Đang thực hiện</in-process>
+      <canceled>Đã hủy bỏ</canceled>
+      <free>Rảnh rỗi</free>
+      <busy>Bận</busy>
+      <private>Cá nhân</private>
+      <public>Công cộng</public>
+      <norepeat>Không lặp</norepeat>
+      <daily>Hàng ngày</daily>
+      <weekly>Hàng tuần</weekly>
+      <monthly>Hàng tháng</monthly>
+      <yearly>Hàng năm</yearly>
+      <weekend>Cuối tuần</weekend>
+      <workingdays>Ngày trong tuần</workingdays>
+      <false>Sai</false>
+      <true>Đúng</true>
+    </label>
+  </UIPreview>
+  <!--
+  #org.exoplatform.calendar.webui.UIPreviewPopup
+  -->
+  <UIPreviewPopup>
+    <label>
+      <eventDetail>Chi tiết</eventDetail>
+      <fullSize>Dung lượng</fullSize>
+      <From>Từ</From>
+      <To>Tới</To>
+      <View>Xem</View>
+      <Close>Đóng</Close>
+      <Download>Tải về</Download>
+      <Place>Tại:</Place>
+      <RepeatEvent>Lặp lại sự kiện:</RepeatEvent>
+      <Description>Mô tả:</Description>
+      <EventReminder>Nhắc lịch:</EventReminder>
+      <EventSharing>Chia sẻ sự kiện:</EventSharing>
+      <ShowAs>Hiện ra là:</ShowAs>
+      <Invitation>Lời mời</Invitation>
+      <Participant>Người tham gia:</Participant>
+      <ViewOnCalendar>Chuyển tới sự kiện</ViewOnCalendar>
+      <EditEvent>Sửa sự kiện</EditEvent>
+      <DeleteEvent>Xóa sự kiện</DeleteEvent>
+      <available>Có hiệu lực</available>
+      <taskDetail>Chi tiết</taskDetail>
+      <Status>Trạng thái</Status>
+      <Priority>Quyền ưu tiên</Priority>
+      <StartDate>Ngày bắt đầu</StartDate>
+      <DueDate>Trong vòng</DueDate>
+      <TaskDelegation>Giao nhiện vụ</TaskDelegation>
+      <Reminder>Nhắc nhở</Reminder>
+      <Note>Ghi chú</Note>
+      <EditTask>Sửa nhiệm vụ</EditTask>
+      <DeleteTask>Xóa nhiệm vụ</DeleteTask>
+      <none>Không có</none>
+      <normal>Bình thường</normal>
+      <high>Cao</high>
+      <low>Thấp</low>
+      <needs-action>Cần hoàn thành</needs-action>
+      <completed>Đã hoàn thành</completed>
+      <in-process>Trong tiến trình</in-process>
+      <canceled>Đã hủy bỏ</canceled>
+      <busy>Bận</busy>
+      <private>Cá nhân</private>
+      <public>Công cộng</public>
+      <norepeat>Không lặp lại</norepeat>
+      <daily>Hàng ngày</daily>
+      <weekly>Hàng tuần</weekly>
+      <monthly>Hàng tháng</monthly>
+      <yearly>Hàng năm</yearly>
+      <weekend>Ngày cuối tuần</weekend>
+      <workingdays>Ngày trong tuần</workingdays>
+      <false>Sai</false>
+      <true>Đúng</true>
+    </label>
+  </UIPreviewPopup>
+  <!--
+  #org.exoplatform.calendar.webui.ContextMenu
+  -->
+  <ContextMenu>
+    <label>
+      <addEvent>Thêm sự kiện</addEvent>
+      <addTask>Thêm nhiệm vụ</addTask>
+      <View>Xem</View>
+      <Edit>Sửa</Edit>
+      <Delete>Xóa</Delete>
+      <ExportEvent>Xuất</ExportEvent>
+    </label>
+  </ContextMenu>
+  <!--
+  #org.exoplatform.calendar.webui.UISelectUserForm
+  -->
+  <UISelectUserForm>
+    <label>
+      <keyWord>Từ khóa</keyWord>
+      <group>Nhóm:</group>
+      <name>Tên</name>
+      <email>Thư điện tử</email>
+      <option>
+        <all>Tất cả</all>
+        <userName>Tên đăng nhập</userName>
+        <lastName>Tên</lastName>
+        <firstName>Họ</firstName>
+        <email>Thư</email>
+      </option>
+      <Replace>Thay thế</Replace>
+      <Add>Thêm</Add>
+      <Close>Đóng</Close>
+    </label>
+    <msg>
+      <user-required>Cần phải có người dùng</user-required>
+    </msg>
+  </UISelectUserForm>
+  <!-- #org.exoplatform.calendar.webui.popup.UIInvitationForm -->
+  <UIInvitationForm>
+    <label>
+      <default-invitation-msg>Vui mừng khi mời bạn tham gia sự kiện</default-invitation-msg>
+      <participant>Người tham dự</participant>
+      <invitation-msg>Nội dung lời mời</invitation-msg>
+      <contact-picker>Chọn liên lạc</contact-picker>
+      <user-picker>Chọn người dùng</user-picker>
+      <group-picker>Chọn nhóm</group-picker>
+    </label>
+    <action>
+      <Save>Lưu</Save>
+      <Cancel>Hủy bỏ</Cancel>
+    </action>
+  </UIInvitationForm>
+  <UIEventForm>
+    <label>
+      <info>Người tham gia :</info>
+      <answer>Tham dự?</answer>
+      <always>Luôn luôn</always>
+      <never>Không bao giờ</never>
+      <ask>Hỏi</ask>
+      <send>Gửi lời mời :</send>
+      <confirm-msg>"Bạn có muốn gửi lời mời?"</confirm-msg>
+      <messageName>Nội dung lời mời</messageName>
+    </label>
+  </UIEventForm>
+  <shareEvent>
+    <label>
+      <private>Cá nhân</private>
+      <public>Công cộng</public>
+    </label>
+  </shareEvent>
+  <status>
+    <label>
+      <busy>Bận</busy>
+      <available>Rảnh rỗi</available>
+      <outside>Ra ngoài</outside>
+    </label>
+  </status>
+  <send>
+    <label>
+      <setting>Cài đặt lịch</setting>
+      <never>Không bao giờ</never>
+      <always>Luôn luôn</always>
+      <ask>Hỏi</ask>
+    </label>
+  </send>
+  <UICalendarChildPopupWindow>
+    <title>
+      <UIInvitationContainer>Lời mời</UIInvitationContainer>
+    </title>
+  </UICalendarChildPopupWindow>
+  <PUIPopupGroupSelector>
+    <title>
+      <PGroupSelector>Chọn nhóm</PGroupSelector>
+    </title>
+  </PUIPopupGroupSelector>
+  <UIPopupWindow3>
+    <title>
+      <UIAddressForm>Thêm liên lạc</UIAddressForm>
+    </title>
+  </UIPopupWindow3>
+  <UICalendarSettingForm>
+    <label>
+      <send>Gửi lời mời tham gia</send>
+    </label>
+  </UICalendarSettingForm>
+  <UIPopupWindow>
+    <title>
+      <UIAddressForm>Chọn địa chỉ thư</UIAddressForm>
+    </title>
+  </UIPopupWindow>
+  <!-- #org.exoplatform.calendar.webui.popup.UIConfirmForm -->
+  <UICalendarChildPopupWindow>
+    <title>
+      <UIConfirmForm>Xác nhận</UIConfirmForm>
+    </title>
+  </UICalendarChildPopupWindow>
+  <UIConfirmForm>
+    <action>
+      <ConfirmOK>Lưu và gửi thư</ConfirmOK>
+      <ConfirmCancel>Chỉ lưu</ConfirmCancel>
+    </action>
+  </UIConfirmForm>
+  <UICalendarSettingFeedTab>
+    <msg>
+      <confirm-delete>Bạn có xác nhận xóa feed này khỏi danh sách?</confirm-delete>
+    </msg>
+  </UICalendarSettingFeedTab>
+  <feedTab>
+    <header>
+      <feed>Feed</feed>
+      <action>Hành động</action>
+    </header>
+    <action>
+      <title>
+        <Delete>Xóa</Delete>
+        <Edit>Sửa</Edit>
+        <CalendarFeed>URL</CalendarFeed>
+      </title>
+      <add>Thêm</add>
+    </action>
+  </feedTab>
+  <UIEditFeed>
+    <label>
+      <name>Tên</name>
+      <defaultFeedName>Calendar_Feed</defaultFeedName>
+      <url>URL</url>
+      <calendars>Lịch</calendars>
+      <addMore>thêm nhiều hơn</addMore>
+      <option>
+        <selectCalendar>-- chọn lịch --</selectCalendar>
+      </option>
+    </label>
+    <action>
+      <Save>Lưu</Save>
+      <Close>Đóng</Close>
+      <delete>Xóa</delete>
+      <ResetURL>đặt lại URL</ResetURL>
+      <GenerateURL>tạo URL</GenerateURL>
+    </action>
+    <msg>
+      <no-data-generated>Lịch này đang trống. Không thể tạo được feed.</no-data-generated>
+      <feed-has-been-generated>feed {0} đã được tạo thành công.</feed-has-been-generated>
+      <invalidCalName>""</invalidCalName>
+      <selectCalendar>Chọn lịch để tạo</selectCalendar>
+      <feedName_existed>Tên này đã tồn tại. Hãy chọn một tên khác.</feedName_existed>
+    </msg>
+  </UIEditFeed>
+</bundle>
+

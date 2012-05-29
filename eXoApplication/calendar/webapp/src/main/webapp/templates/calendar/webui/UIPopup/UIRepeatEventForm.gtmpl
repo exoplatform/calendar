@@ -1,0 +1,121 @@
+<%
+  import org.exoplatform.calendar.service.CalendarEvent;
+
+  def jsMan = _ctx.getRequestContext().getJavascriptManager() ;
+  jsMan.addJavascript("eXo.calendar.UICalendarPortlet.changeRepeatType('" + uicomponent.id + "') ;");
+%>
+<div class="UIForm $uicomponent.id">
+  <%uiform.begin()%>
+  <div class="HorizontalLayout">
+    <div class="FormContainer">
+      
+      <table class="UIFormGrid">
+          <tbody>
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_REPEAT_TYPE)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_REPEAT_TYPE)%>
+              </td>
+            </tr>
+            <tr class="RepeatInterval">
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_INTERVAL)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_INTERVAL)%> &nbsp;
+                <span id="interval-unit"></span>
+              </td>
+            </tr>
+            <%
+              field = uicomponent.getChildById(uicomponent.FIELD_REPEAT_TYPE);
+              type = field.getSelectedValues()[0];
+              String weeklyStyle = "display:none";
+              String monthlyStyle = "display:none";
+              if (type.equals(CalendarEvent.RP_WEEKLY)) {
+                weeklyStyle = "";
+                monthlyStyle = "display:none";
+              } else {
+                if (type.equals(CalendarEvent.RP_MONTHLY)) {
+                  weeklyStyle = "display:none";
+                  monthlyStyle = "";
+                }
+              }
+            %>
+            <tr class="weeklyByDay" style="<%=weeklyStyle%>">
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_WEEKLY_BYDAY)%>
+              </td>
+              <td class="FieldComponent">
+                <%
+                  for (int i = 0; i < 7; i++) {
+                    uicomponent.renderField(CalendarEvent.RP_WEEKLY_BYDAY[i]);
+                    field = uicomponent.getChildById(CalendarEvent.RP_WEEKLY_BYDAY[i]);
+                %>
+                <%=field.getLabel();%>
+                &nbsp;
+                <%
+                  }
+                %>
+              </td>
+            </tr>
+            <tr class="monthlyType" style="<%=monthlyStyle%>">
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_MONTHLY_TYPE)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_MONTHLY_TYPE)%>
+              </td>
+            </tr>
+            
+            <tr><td><%uicomponent.renderField(uicomponent.FIELD_END_REPEAT)%></td></tr>
+            
+            <%
+              String endType = uicomponent.getChildById(uicomponent.FIELD_END_REPEAT).getValue();
+              Boolean isNever = (endType.equals(uicomponent.RP_END_NEVER));
+              Boolean isEndAfter = (endType.equals(uicomponent.RP_END_AFTER));
+              Boolean isEndByDate = (endType.equals(uicomponent.RP_END_BYDATE)); 
+            %>
+            
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_END_REPEAT)%>
+              </td>
+              <td class="FieldComponent">
+                <div>
+                  <input id="endNever" class="radio" type="radio" value="$uicomponent.RP_END_NEVER" name="$uicomponent.FIELD_END_REPEAT" <%if(isNever){%>checked<%}%> >
+                  <span><%=uicomponent.getLabel(uicomponent.RP_END_NEVER)%></span>
+                </div>
+                <div>
+                  <input id="endAfter" class="radio" type="radio" value="$uicomponent.RP_END_AFTER" name="$uicomponent.FIELD_END_REPEAT" <%if(isEndAfter){%>checked<%}%> >
+                  <span><%=uicomponent.getLabel(uicomponent.RP_END_AFTER)%></span>
+                  <%uicomponent.renderField(uicomponent.FIELD_END_AFTER)%> &nbsp; <%=uicomponent.getLabel(uicomponent.OCCURRENCES)%>
+                </div>
+                <div id="endByDateContainer">
+                  <input id="endByDate" class="radio" type="radio" value="$uicomponent.RP_END_BYDATE" name="$uicomponent.FIELD_END_REPEAT" <%if(isEndByDate){%>checked<%}%> >
+                  <span style="float:left"><%=uicomponent.getLabel(uicomponent.RP_END_BYDATE)%></span>
+                  <div id="endDate">
+                  <%uicomponent.renderField(uicomponent.FIELD_END_BYDATE)%>
+                  </div>
+                </div>
+              </td>
+            </tr> 
+          </tbody>
+      </table>
+      
+      <div class="UIAction"> 
+	      <% for(action in uicomponent.getActions()) { 
+	           String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+	           String link = uicomponent.event(action) ;
+	      %>
+	      <a href="$link" class="ActionButton LightBlueStyle">
+	      	$actionLabel
+	      </a>
+	      <%}%>        
+      </div>
+    </div>
+  </div>
+  <%uiform.end()%>
+</div>
+

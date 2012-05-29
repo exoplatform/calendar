@@ -1,0 +1,92 @@
+<%
+def rcontext = _ctx.getRequestContext() ;  
+rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;  
+%>
+<div class="UIQuickAddEvent" id="QuickAddEventContainer">
+  <div class="QuickAddEventContainer">
+    <%uiform.begin()%>
+    <div class="HorizontalLayout">
+      <div class="FormContainer">
+        <table class="UIFormGrid">
+          <tbody>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_EVENT)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_EVENT)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_DESCRIPTION)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_DESCRIPTION)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_FROM)%>
+              </td>
+              <td class="FieldComponent">
+                <div class="Date">
+                  <%uicomponent.renderField(uicomponent.FIELD_FROM)%>
+                </div>
+                <div class="Time">
+                  <%uicomponent.renderField(uicomponent.FIELD_FROM_TIME)%>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_TO)%>
+              </td>
+              <td class="FieldComponent">
+                <div class="Date">
+                  <%uicomponent.renderField(uicomponent.FIELD_TO)%>
+                </div>
+                <div class="Time">
+                  <%uicomponent.renderField(uicomponent.FIELD_TO_TIME)%>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_ALLDAY)%>
+              </td>
+              <td class="FieldComponent" onclick="eXo.calendar.UICalendarPortlet.showHideTime(this) ;">
+                <%uicomponent.renderField(uicomponent.FIELD_ALLDAY)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_CALENDAR)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_CALENDAR)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_CATEGORY)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_CATEGORY)%>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <%uiform.end();%>
+  </div>
+	<div class="UIAction">
+	<% for(action in uicomponent.getActions()) { 
+           String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+           String link = uicomponent.event(action) ;
+          %>
+		<a onclick="$link" class="ActionButton LightBlueStyle">$actionLabel</a>
+	<%}%>
+	</div>
+</div>

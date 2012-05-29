@@ -1,0 +1,9 @@
+This chapter provides you a comprehensive view about applications in eXo Collaboration, including:
+* [Portlets|#CSref.Portlets]
+* [Gadgets|#CSref.Gadgets]
+
+These applications are packaged as Web application archives (WARs).
+
+Also, you can specify the package of each portlet and gadget and its available preferences that allow you to extend the configuration choices for standard preferences.
+
+

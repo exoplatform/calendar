@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
+  xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+  <component>
+    <type>org.exoplatform.services.authentication.rest.RESTAuthenticator</type>
+  </component>
+  <component>
+    <type>org.exoplatform.services.organization.rest.xml.RESTOrganizationServiceXMLImpl</type>
+  </component>
+  <component>
+    <type>org.exoplatform.services.organization.rest.json.RESTOrganizationServiceJSONImpl</type>
+  </component>
+
+  <!-- external-component-plugins>
+    <target-component>org.exoplatform.services.xml.transform.impl.trax.TRAXTemplatesServiceImpl</target-component>
+    <component-plugin>
+      <name>add.xslschema</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.services.xml.transform.impl.trax.TRAXTemplatesLoaderPlugin</type>
+      <init-params>
+      <properties-param>
+        <name>xsl-source-urls</name>
+        <property name="users-list" value="xslt/users-list.xsl"/>
+        <property name="users-list-search" value="xslt/users-list-search.xsl"/>
+        <property name="user-info" value="xslt/user-info.xsl"/>
+        <property name="groups-list" value="xslt/groups-list.xsl"/>
+        <property name="groups-list-fragment" value="xslt/groups-list-fragment.xsl"/>
+        <property name="group-info" value="xslt/group-info.xsl"/>
+        <property name="group-edit" value="xslt/group-edit.xsl"/>
+        <property name="memberships-list" value="xslt/memberships-list.xsl"/>
+      </properties-param>
+    </init-params>
+    </component-plugin>
+  </external-component-plugins-->  
+</configuration>

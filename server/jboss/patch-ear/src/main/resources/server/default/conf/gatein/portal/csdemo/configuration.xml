@@ -1,0 +1,126 @@
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
+  xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
+
+<!-- This is a placeholder file for kernel components customization.
+This file is loaded in last by csdemo portal.
+You can override any kernel component or define any additional external-component-plugin.
+-->
+<component>
+    <key>org.exoplatform.services.organization.OrganizationService</key>
+    <type>org.exoplatform.cs.CS4782PicketLinkIDMOrganizationServiceImpl</type>
+    <init-params>
+      <object-param>
+        <name>configuration</name>
+        <object type="org.exoplatform.services.organization.idm.Config">
+          <!-- For all ids not mapped with type in 'groupTypeMappings' use parent id path
+               as a group type to store group in PicketLink IDM. The effect of setting
+               this option to false and not providing any mappings under 'groupTypeMappings' option
+               is that there can be only one group with a given name in all GateIn group tree-->
+          <field name="useParentIdAsGroupType">
+            <boolean>true</boolean>
+          </field>
+          <!-- Group stored in PicketLink IDM with a type mapped in 'groupTypeMappings' will
+               automatically be member under mapped parent. Normally groups are linked by
+               PicketLink IDM group association - such relationship won't be needed then. It can
+               be set to false if all groups are added via GateIn APIs
+               This option may be useful with LDAP config as it will make (if set to true) every entry
+               added to LDAP (not via GateIn management UI) appear in GateIn-->
+          <field name="forceMembershipOfMappedTypes">
+            <boolean>true</boolean>
+          </field>
+          <!-- When 'userParentIdAsGroupType is set to true this value will be used to
+               replace all "/" chars in id. This is because "/" is not allowed to be
+               used in group type name in PicketLink IDM-->
+          <field name="pathSeparator">
+            <string>.</string>
+          </field>
+          <!-- Name of a group stored in PicketLink IDM that acts as root group in GateIn - "/" -->
+          <field name="rootGroupName">
+            <string>GTN_ROOT_GROUP</string>
+          </field>
+          <!-- Map groups added with GateIn API as a childs of a given group ID to be stored with a given
+               group type name in PicketLink IDM. If parent ID ends with "/*" then all child groups will
+               have the mapped group type. Otherwise only direct (first level) children will use this type.
+
+               This can be leveraged by LDAP setup. Given LDAP DN configured in PicketLink IDM to
+               store specific group type will then store one given branch in GateIn group tree while
+               all other groups will remain in DB. -->
+          <field name="groupTypeMappings">
+            <map type="java.util.HashMap">
+              <entry>
+                <key><string>/</string></key>
+                <value><string>root_type</string></value>
+              </entry>
+
+              <!-- Uncomment for sample LDAP configuration -->
+              <!--
+              <entry>
+                <key><string>/platform/*</string></key>
+                <value><string>platform_type</string></value>
+              </entry>
+              <entry>
+                <key><string>/organization/*</string></key>
+                <value><string>organization_type</string></value>
+              </entry>
+              -->
+
+
+              <!-- Uncomment for ACME LDAP example -->
+              <!--
+              <entry>
+                <key><string>/acme/roles/*</string></key>
+                <value><string>acme_roles_type</string></value>
+              </entry>
+              <entry>
+                <key><string>/acme/organization_units/*</string></key>
+                <value><string>acme_ou_type</string></value>
+              </entry>
+              -->
+
+              <!-- Uncomment for MSAD ReadOnly LDAP example -->
+              <!--
+              <entry>
+                <key><string>/acme/roles/*</string></key>
+                <value><string>msad_roles_type</string></value>
+              </entry>
+              -->
+            </map>
+          </field>
+          <!-- If this option is used then each Membership created with MembrshipType that is
+               equal to value specified here will be stored in PicketLink IDM as simple
+               Group-User association-->
+          <field name="associationMembershipType">
+            <string>member</string>
+          </field>
+          <!-- if "associationMembershipType" option is used and this option is set to true
+                then Membership with MembershipType configured to be stored as PicketLink IDM association
+                will not be stored as PicketLink IDM Role -->
+          <field name="ignoreMappedMembershipType">
+            <boolean>false</boolean>
+          </field>
+          <!-- If 'true' will use JTA UserTransaction. If 'false' will use IDM transaction API -->
+          <field name="useJTA">
+            <boolean>false</boolean>
+          </field>
+
+          <!-- If PLIDM group will have name containing slash "/" char than it will be replace with following string.
+               Slashes are used in group paths and if present in names may cause unpredictable behaviour -->
+          <field name="slashReplacement">
+            <string>@_@_@</string>
+          </field>
+
+          <!-- If groups should be displayed in a sorted order in the management UI-->
+          <field name="sortGroups">
+            <boolean>true</boolean>
+          </field>
+
+          <!-- If memberships should be displayed in a sorted order in the management UI-->
+          <field name="sortMemberships">
+            <boolean>true</boolean>
+          </field>
+        </object>
+      </object-param>
+    </init-params>
+  </component>
+</configuration>

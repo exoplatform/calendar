@@ -1,0 +1,74 @@
+<%
+ import org.exoplatform.services.organization.Group;
+  uiForm = uicomponent.getParentFrom() ;
+  private void renderActions(String fieldKey) {
+    def actions = uicomponent.getActionField(fieldKey) ;
+    if(actions != null) {
+      for(action in actions) {
+        String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
+        if(actionLabel.equals("action." + action.actionName)) {
+          actionLabel = action.actionName ;
+        }
+        String actionLink ="#";
+        if(action.actionParameter != null) {
+          actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
+        }else {
+          actionLink = (uiForm.event(action.actionListener)) ;
+        }
+        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        if(action.actionType == action.TYPE_ICON) {
+          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+          if(action.isShowLabel) { println  actionLabel  ;}
+        }else if(action.actionType == action.TYPE_LINK){
+         println actionLabel ;
+        }
+        println  "</a>";
+        println "&nbsp;"; 
+        if(action.isBreakLine) { println "<br/>" ;} 
+      }
+    }
+  }
+  def rcontext = _ctx.getRequestContext() ;  
+%>
+<div id="$uicomponent.id" class="$uicomponent.id">
+   <table class="UIFormGrid">
+     <tr>
+       <td class="FieldLabel" width="40%">
+         <%=uiForm.getLabel(uiForm.SELECT_GROUPS)%>
+       </td>
+       <td class="" width="5%">
+         &nbsp;
+       </td>
+       <td class="FieldComponent">
+         <%=uiForm.getLabel(uiForm.EDIT_PERMISSION)%>
+       </td>
+       <td class="" width="15%">
+         &nbsp;
+       </td>
+     </tr>
+     <%
+     for(Object obj : uicomponent.getPublicGroups()) {
+       String group = ((Group) obj).getId() ;
+     %>
+       <tr>
+         <td class="FieldLabel"><%=group%></td>
+         <td class="FieldComponent">
+           <%uiForm.renderField(group)%>
+         </td>
+         <td class="FieldComponent">
+           <%
+           if(uicomponent.getChildById(group+uiForm.PERMISSION_SUB) != null) {
+             uiForm.renderField(group+uiForm.PERMISSION_SUB) ;
+            } else {%>
+             &nbsp;
+           <%}%>
+         </td>
+          <td >
+           <%renderActions(group+uiForm.PERMISSION_SUB)%>
+         </td>
+       </tr>
+     <%
+     }
+     %>
+   </table>
+</div>

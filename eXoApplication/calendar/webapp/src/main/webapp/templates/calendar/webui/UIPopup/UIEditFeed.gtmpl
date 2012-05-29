@@ -1,0 +1,111 @@
+<%
+import java.util.Map;
+import java.util.Map.Entry;
+import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
+
+  uiform.begin() ;   
+  private void renderActions(String fieldKey) {
+    def actions = uicomponent.getActionField(fieldKey) ;
+    if(actions != null) {
+      for(action in actions) {
+        String actionLabel = uiform.getLabel("action." + action.actionName)  ;
+        if(actionLabel.equals("action." + action.actionName)) {
+          actionLabel = action.actionName ;
+        }
+        String actionLink ="";
+        if(action.actionParameter != null) {
+          actionLink = (uiform.event(action.actionListener, action.actionParameter)) ;
+        }else {
+          actionLink = (uiform.event(action.actionListener)) ;
+        }
+        if(actionLabel.lastIndexOf("-(") > 0)
+        {
+          String temp = actionLabel.substring(0, actionLabel.lastIndexOf("-(")) ;
+          String sizeLabel = actionLabel.substring(actionLabel.lastIndexOf("-(")) ;
+          if(temp.length() > 30) {
+          actionLabel = temp.substring(0, 30) + "..." + sizeLabel ;}
+        }
+        
+        // CS-3361 replace "title=action.actionName" by "title=actionLabel"   
+        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        if(action.actionType == action.TYPE_ICON) {
+          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+          if(action.isShowLabel) { println  actionLabel  ;}
+        }else if(action.actionType == action.TYPE_LINK){
+         println actionLabel ;
+        }
+        println  "</a>";
+        println "&nbsp;"; 
+        if(action.isBreakLine) { println "<br/>" ;} 
+      }
+    }
+  }
+  def rcontext = _ctx.getRequestContext() ;  
+%>
+<div id="$uicomponent.id" class="$uicomponent.id">
+  <table class="UIFormGrid">
+    <tbody>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiform.getLabel(uicomponent.NAME)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiform.renderField(uicomponent.NAME)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiform.getLabel(uicomponent.URL)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiform.renderField(uicomponent.URL)%>
+          <%renderActions(uicomponent.URL) ;%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <span>
+          <%=uiform.getLabel(uicomponent.CALENDARS)%>
+          </span>
+        </td>
+        <td class="FieldComponent">
+          <table>
+          <%
+            for (String cal : uicomponent.getFeedCalendars().keySet()) {
+          %>
+          <tr>
+            <td><%= uicomponent.getFeedCalendars().get(cal) %></td>
+            <td>
+              <a href ="<%= uiform.event("DeleteCalendar", cal) %>">
+                <img title="<%=uiform.getLabel("delete")%>" class="RemoveFile" src="/eXoResources/skin/DefaultSkin/background/Blank.gif">
+              </a>
+            </td>
+          </tr>
+          <% } %>
+          </table>        
+        </td>  
+      </tr>
+      <tr>
+      <td class="FieldLabel">
+        <%=uiform.getLabel(uicomponent.ADDMORE)%>
+      </td>
+      <td class="FieldComponent">
+        <%uiform.renderField(uicomponent.ADDMORE)%>
+        <%renderActions(uicomponent.ADDMORE) ;%>
+      </td>
+    </tr>          
+    </tbody>
+  </table>
+  
+  <div class="UIAction"> 
+    <%for(String action : uicomponent.getActions()){
+      String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+    %>
+		<a href="<%=uicomponent.event(action)%>" class="ActionButton LightBlueStyle">
+           $actionLabel
+		</a>
+     <%}%>
+  </div>
+  
+</div>
+<% uiform.end(); %>

@@ -1,0 +1,180 @@
+
+h1. Calendar portlet {anchor:id=CSref.Portlets.CalendarPortlet}
+The Calendar portlet is packaged in the _calendar.war_ file.
+
+h2. Description {anchor:id=CSref.Portlets.Description}
+The Calendar portlet shows the Calendar application of eXo Collaboration with a lot of features provided to users.
+
+The Calendar application includes the following features:
+
+* Create multiple personal calendars, manage calendars easily with calendar groups.
+* Create events or tasks using the *Quick Add* dialog easily.
+* Create events or tasks in details.
+* Create all-day events.
+* View other attender's availability schedules.
+* Create recurring events.
+* Get reminders.
+* View calendars by various views: day, week, month and year.
+* View events day-by-day by navigating the mini-calendar quickly.
+* Share calendars with others.
+* Import/Export calendars.
+* Publish your calendars with RSS, CalDAV.
+* Search for events and/or tasks in calendars.
+* Print your agenda.
+ 
+h2. Portlet.xml {anchor:id=CSref.Portlets.Portletxml}
+To see the portlet in the project, follow this path:
+ _/eXoApplication/calendar/webapp/src/main/webapp/WEB-INF/portlet.xml_.
+
+
+h1. Chatbar portlet {anchor:id=CSref.Portlets.ChatbatPortlet}
+The Chatbar portlet is packaged in the _Chatbar.war_ file.
+
+{docbook}
+<note><para>
+The Chatbar portlet and its services are deprecated. It remains fully supported for eXo customers, however it	will not receive any enhancement and will be removed from the product scope in the future.
+</para></note>
+{docbook}
+
+h2. Description {anchor:id=CSref.Portlets.ChatbarPortletDescription}
+
+The Chatbar portlet shows the Chatbar application of eXo Collaboration that can be positioned in the portal or page layout as any other, but behaves as a floating box. The bar remains floating at its location even when the browser window is scrolled or resized. Its height is fixed, but can be expanded horizontally to any size available in its container. This allows the portlet to be placed in two layout cases:
+
+- Large width area (typically header or footer).
+
+- Narrow column.
+
+The Chatbar application implements all functions of the Chat application, allowing you to send and receive messages anywhere after you are logged in successfully. The Chatbar is a typical toolbar with buttons to open menus. It gives access to main features of Chat:
+
+- Status change and presence indicator.
+
+- Contacts.
+
+- Rooms.
+
+- Minimized conversation window.
+
+h2. Portlet preferences {anchor:id=CSref.Portlets.ChatbarPortletPreference}
+
+The Chatbar Portlet consists of some preferences as in the following sample code:
+ 
+{code:xml}
+<portlet-preferences>
+  <preference>
+    <name>showMailLink</name>
+    <value>true</value> <!--true/false -->
+    <read-only>false</read-only>
+  </preference>
+  <preference>
+    <name>showCalendarLink</name>
+    <value>true</value> <!--true/false -->
+    <read-only>false</read-only>
+  </preference>
+  <preference>
+    <name>showContactLink</name>
+    <value>true</value> <!--true/false -->
+    <read-only>false</read-only>
+  </preference>
+  <preference>
+    <name>mailUrl</name>
+    <value>portal/private/intranet/mail</value> <!--String page name -->
+    <read-only>false</read-only>
+  </preference>
+  <preference>
+    <name>calendarUrl</name>
+    <value>portal/private/intranet/calendar</value> <!--String page name -->
+    <read-only>false</read-only>
+  </preference>
+  <preference>
+    <name>contactUrl</name>
+    <value>portal/private/intranet/contact</value> <!--String page name -->
+    <read-only>false</read-only>
+  </preference>
+  <preference>
+    <name>info</name>
+    <value>info</value> <!--this is only the key to get the resource bundle the full key : UIConfigForm.label.info -->
+    <read-only>true</read-only>
+  </preference>
+</portlet-preferences>
+{code}
+
+In which:
+
+||Preference Name||Possible Values||Default Values||Description||
+|  *showMailLink* | {{true / false}} | {{true}} | The value as "true" or "false" means that users are allowed to see the application icon or not respectively. |
+| *showCalendarLink* | {{true / false}} | {{true}} | The value as "true" or "false" means that users are allowed to see the application icon or not respectively. |
+| *showContactLink* | {{true / false}} | {{true}} | The value as "true" or "false" means that users are allowed to see the application icon or not respectively. |
+| *mailUrl* | {{string}} | {{Portal/private/intranet/mail}} | The URL to the Mail application page in the portal without combining with the %domain name. The port% chatbar will resolve it from server. |
+| *calendarUrl* | {{string}} | {{Portal/private/intranet/calendar}} | The URL to the Calendar application page in the portal without combining with the %domain name. The port% chatbar will resolve it from server. |
+| *contactUrl* | {{string}} | {{Portal/private/intranet/contact}} | The URL to the Address Book application page in the portal without combining with the %domain name. The port% chatbar will resolve it from server. |
+| *info* | {{Info}}| {{Info}}| This is only the key to get the resource bundle of the full key: UIConfigForm.label.info. |
+      
+h2. Portlet.xml {anchor:id=CSref.Portlets.ChatbarPortletxml}
+See the portlet in the project following this path:
+_/eXoApplication/chatbar/webapp/src/main/webapp/WEB-INF/portlet.xml_.
+
+
+h1. Chat Portlet {anchor:id=CSref.Portlets.ChatPortlet}
+The Chat portlet is packaged in the _Chat.war_ file.
+
+{docbook}
+<note><para>
+The Chat portlet and its services are deprecated. It remains fully supported for eXo customers, however it will not receive any enhancement and will be removed from the product scope in the future.
+</para></note>
+{docbook}
+
+h2. Description {anchor:id=CSref.Portlets.ChatPortletDescription}
+ The Chat Portlet shows the Chat application of eXo Collaboration that allows users to enter chat rooms and communicate with online others at real time.
+
+h2. Portlet.xml {anchor:id=CSref.Portlets.ChatPortletxml}
+See the portlet in the project following this path:
+_/eXoApplication/chat/webapp/src/main/webapp/WEB-INF/portlet.xml_
+
+
+
+h1. Contact Portlet {anchor:id=CSref.Portlets.ContactPortlet}
+Contact Portlet is packaged in the _Contact.war_ file.
+
+h2. Description {anchor:id=CSref.Portlets.ContactPortletDescription}
+Contact Portlet shows the Contact application of eXo Collaboration that allows users to personalize their contact view from different view types, such as List view and VCards view.
+
+h2. Portlet.xml {anchor:id=CSref.Portlets.ContactPortletxml}
+See the portlet in the project following this path:
+_/eXoApplication/contact/webapp/src/main/webapp/WEB-INF/portlet.xml_.
+
+
+h1. Mail Portlet {anchor:id=CSref.Portlets.MailPortlet}
+The Mail Portlet is packaged in the _Mail.war_ file.
+
+{docbook}
+<note><para>
+The Mail portlet and its services are deprecated. It remains fully supported for eXo customers, however it will not receive any enhancement and will be removed from the product scope in the future.
+</para></note>
+{docbook}
+
+h2. Description {anchor:id=CSref.Portlets.MailPortletDescription}
+Mail Portlet shows the Mail application of eXo Collaboration that offers a lot of features to users such as sending, receiving or viewing their mails through Internet without actually downloading them to their computer. Users not only take advantages of eXo Mail by keeping and receiving all important messages, files and pictures forever but also by looking for and viewing their needed messages easily whenever they want. Additionally, the Mail application is smoothly integrated with other Collaboration modules, such as Address Book and Calendar.
+
+h2. Portlet.xml {anchor:id=CSref.Portlets.MailPortletxml}
+ See the portlet in the project following this path:
+_/eXoApplication/mail/webapp/src/main/webapp/WEB-INF/portlet.xml_.
+
+
+h1. RSSreader Portlet {anchor:id=CSref.Portlets.RSSreaderPortlet}
+
+The RSSreader Portlet is packaged in the _Rssreader.war_ file.
+
+{docbook}
+<warning><para>
+The RSSreader portlet and its services are deprecated. It remains fully supported for eXo customers, however it will not receive any enhancement and will be removed from the product scope in the future.
+</para></warning>
+{docbook}
+
+
+h2. Description {anchor:id=CSref.Portlets.RSSreaderDescription} 
+eXo Collaboration uses the RSS Reader Portlet that facilitates users to quickly get a view of their favorite feeds around the web. They will get the latest news, the last updated posts from their favorite blogs, latest emails, and more.
+
+h2. Portlet.xml {anchor:id=CSref.Portlets.RSSreaderPortletxml}
+See the portlet in the project following this path:
+_/eXoApplication/content/webapp/src/main/webapp/WEB-INF/portlet.xml_.
+

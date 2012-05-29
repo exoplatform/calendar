@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
+  xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+  
+  <component>
+    <key>org.exoplatform.calendar.service.CalendarService</key>
+    <type>org.exoplatform.calendar.service.impl.CalendarServiceImpl</type>
+    <init-params>
+      <properties-param>
+        <name>eventNumber.info</name>
+        <property name="eventNumber" value="100"/>         
+      </properties-param>
+    </init-params>
+  </component>    
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.services.organization.OrganizationService</target-component>
+    
+    <component-plugin>
+      <name>calendar.new.user.event.listener</name>
+      <set-method>addListenerPlugin</set-method>
+      <type>org.exoplatform.calendar.service.impl.NewUserListener</type>
+      <description>description</description>
+      <init-params>
+        <value-param>
+          <name>defaultEventCategories</name>
+          <value>defaultEventCategoryIdMeeting,defaultEventCategoryIdCalls,defaultEventCategoryIdClients,defaultEventCategoryIdHoliday,defaultEventCategoryIdAnniversary</value><!-- Multi value, use coma (,) to split values-->
+          <!-- The event category's name will be get from resource bundle by key "UICalendars.label." + defaultEventCategory's value. 
+               If the key does not exist, the defaultEventCategory's value will be used to display. 
+               Sample: 
+                  If the value is "defaultEventCategoryIdMeeting" then the resource bundle key is "UICalendars.label.defaultEventCategoryIdMeeting". 
+                    The value of this key is "Meeting", so "Meeting" will be display as default event category.
+                  If the value is "Not exist key", because this key doesn't exist in resource bundle then 
+                    "Not exist key" will be display as default event category.
+          -->
+        </value-param>
+        <value-param>
+          <name>defaultCalendarCategory</name>
+          <value>defaultCalendarCategoryId</value><!-- Single value, default calendar category's name is "My group"-->
+          <!-- The calendar category's name will be get from resource bundle by key "UICalendars.label." + defaultCalendarCategory's value. 
+               If the key does not exist, the defaultCalendarCategory's value will be used to display. 
+               Sample:
+                  If the value is "defaultCalendarCategoryId" then the resource bundle key is "UICalendars.label.defaultCalendarCategoryId".
+                    The value of this key is "My group", so "My group" will be display as default calendar category.
+                  If the value is "My calendar category", because this key doesn't exist in resource bundle then
+                    "My calendar category" will be display as default calendar category.
+          -->
+        </value-param>
+        <value-param>
+          <name>defaultCalendar</name>
+          <value>defaultCalendarId</value> <!-- Single value, default calendar's name is "Default"-->
+          <!-- The calendar's name will be get from resource bundle by key "UICalendars.label." + defaultCalendar's value. 
+               If the key does not exist, the defaultCalendar's value will be used to display. 
+               Sample: 
+                  If the value is "defaultCalendarId" then the resource bundle key is "UICalendars.label.defaultCalendarId".
+                    The value of this key is "Default", so "Default" will be display as default calendar.
+                  If the value is "My calendar", because this key doesn't exist in resource bundle then
+                    "My calendar" will be display as default calendar.
+          -->
+        </value-param>
+        <!--Params for default calendar setting-->
+        <value-param>
+         <name>viewType</name>
+         <value>1</value><!-- DAY_VIEW = "0" ; WEEK_VIEW = "1" ; MONTH_VIEW = "2" ; YEAR_VIEW = "3" ; LIST_VIEW = "4" ; SCHEDULE_VIEW = "5" ; WORKING_VIEW = "6" ;-->
+        </value-param>
+        
+        <value-param>
+         <name>weekStartOn</name>
+         <value>2</value><!--SUNDAY = "1" ; MONDAY = "2" ; TUESDAY = "3" ; WEDNESDAY = "4" ; THURSDAY = "5" ; FRIDAY = "6" ;SATURDAY = "7" ;-->
+        </value-param>
+        
+        <value-param>
+         <name>dateFormat</name>
+         <value>MM/dd/yyyy</value>
+        </value-param>
+        
+        <value-param>
+         <name>timeFormat</name>
+         <value>HH:mm</value> <!-- HH:mm/hh:mm a -->
+        </value-param>
+        
+        <value-param>
+         <name>localeId</name>
+         <value>BEL</value><!-- see more locale ids http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html -->
+        </value-param>
+        
+         <value-param>
+         <name>timezoneId</name>
+         <value>Europe/Brussels</value><!-- see more for timeZone ids http://www.unicode.org/cldr/data/docs/design/formatting/zone_log.html#windows_ids -->
+        </value-param>
+        
+         <value-param>
+         <name>baseUrlForRss</name>
+         <value></value>
+        </value-param>
+        
+         <value-param>
+         <name>isShowWorkingTime</name>
+         <value>false</value><!-- boolean true/false -->
+        </value-param>
+        
+         <value-param>
+         <name>workingTimeBegin</name>
+         <value>08:00</value><!--  -->
+        </value-param>
+        
+         <value-param>
+           <name>workingTimeEnd</name>
+           <value>18:00</value><!--  -->
+        </value-param>
+        
+        <values-param>
+          <name>ignoredUsers</name>
+          <description>Definition users to ignore create default calendar</description>
+          <!-- 
+          <value>demo</value> 
+          <value>marry</value>
+           -->
+        </values-param>
+        
+        
+      </init-params>    
+    </component-plugin>
+    
+    <component-plugin>
+      <name>calendar.new.group.event.listener</name>
+      <set-method>addListenerPlugin</set-method>
+      <type>org.exoplatform.calendar.service.impl.NewGroupListener</type>
+      <description>description</description>
+      <init-params>
+        <value-param>
+          <name>defaultEditPermission</name>
+          <value>*.*</value><!-- Multi value membership, use coma (,) to split values-->
+        </value-param>
+        <value-param>
+          <name>defaultViewPermission</name>
+          <value>*.*</value><!-- Multi value membership, use coma (,) to split values-->
+        </value-param>
+        
+        <value-param>
+          <name>defaultLocale</name>
+          <value>BEL</value><!-- see more locale ids http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html -->
+        </value-param>
+      
+        <value-param>
+          <name>defaultTimeZone</name>
+          <value>Europe/Brussels</value><!-- see more for timeZone ids http://www.unicode.org/cldr/data/docs/design/formatting/zone_log.html#windows_ids -->
+        </value-param>  
+      
+        <values-param>
+          <name>ignoredGroups</name>
+          <description>Definition group to ignore create default calendar</description>
+          <!-- 
+          <value>/platform/guests</value>
+           -->
+          <value>/spaces/*</value> <!-- single value, use more <value> tags to add more group -->
+        </values-param>
+        
+        
+      </init-params>    
+    </component-plugin>
+    <component-plugin>
+      <name>calendar.new.membership.event.listener</name>
+      <set-method>addListenerPlugin</set-method>
+      <type>org.exoplatform.calendar.service.impl.NewMembershipListener</type>
+      <description>description</description>       
+    </component-plugin>
+    
+  </external-component-plugins>   
+   
+</configuration>

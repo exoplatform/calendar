@@ -1,0 +1,34 @@
+<%
+  import org.exoplatform.calendar.CalendarUtils;
+  
+  String serverBaseUrl = CalendarUtils.getServerBaseUrl();
+%>
+<%uiform.begin()%>
+  <div class="UIFeed">
+     <div class="FeedContent">
+       <%
+         List feeds = uicomponent.getFeeds() ;
+         if(feeds.size() == 0) {
+           String text = _ctx.appRes("UIFeed.msg.there-are-not-feed-generated") ;       
+         %>
+           $text
+         <%
+         }else {
+           for(feed in feeds) {
+             String feedUrl = serverBaseUrl + feed.getUrl().substring(1);
+             %>
+               <a href="<%=feedUrl%>" class="Icon IconFeed" target="_blank"><%=feed.getTitle()%></a> 
+               <div class="FeedLink">(<%=feedUrl%>)</div>
+             <%
+           }
+         }
+       %>
+     </div>
+  </div>
+	<div class="UIAction">
+		<%
+		  String actionLabel = _ctx.appRes(uicomponent.getName() + ".action.Close") ;       
+		 %>
+		<a href="<%=uicomponent.event("Close")%>" class="ActionButton LightBlueStyle">$actionLabel</a>
+	</div>
+	<%uiform.end();%>

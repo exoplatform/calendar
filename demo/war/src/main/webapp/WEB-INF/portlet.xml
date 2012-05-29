@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2009 eXo Platform SAS.
+    
+    This is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as
+    published by the Free Software Foundation; either version 2.1 of
+    the License, or (at your option) any later version.
+    
+    This software is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+    Lesser General Public License for more details.
+    
+    You should have received a copy of the GNU Lesser General Public
+    License along with this software; if not, write to the Free
+    Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+    02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+
+ <portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd" version="1.0">
+ 
+  <portlet>
+    <description xml:lang="EN">Banner Portlet</description>
+    <portlet-name>CSBannerPortlet</portlet-name>
+    <display-name xml:lang="EN">Banner Portlet</display-name>
+    <portlet-class>org.exoplatform.webui.application.portlet.PortletApplicationController</portlet-class>    
+    
+    <init-param>
+      <name>webui.configuration</name>
+      <value>/WEB-INF/conf/portlet/web/BannerPortlet/webui/configuration.xml</value>
+    </init-param>    
+
+    <expiration-cache>0</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>locale.portal.webui</resource-bundle>
+    <portlet-info>
+      <title>Banner Portlet</title>
+      <short-title>Banner Portlet</short-title>
+      <keywords>System</keywords>
+    </portlet-info>    
+    
+    <portlet-preferences>
+      <preference>
+        <name>template</name>
+        <value>system:/templates/UIBannerPortlet.gtmpl</value>
+        <read-only>false</read-only>
+      </preference>
+    </portlet-preferences>
+    
+  </portlet>
+  
+  
+  <portlet>
+    <description xml:lang="EN">Footer Portlet</description>
+    <portlet-name>CSFooterPortlet</portlet-name>
+    <display-name xml:lang="EN">Footer Portlet</display-name>
+    <portlet-class>org.exoplatform.webui.application.portlet.PortletApplicationController</portlet-class>    
+    
+    <init-param>
+      <name>webui.configuration</name>
+      <value>/WEB-INF/conf/portlet/web/FooterPortlet/webui/configuration.xml</value>
+    </init-param>    
+
+    <expiration-cache>0</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>locale.portal.webui</resource-bundle>
+    <portlet-info>
+      <title>Footer Portlet</title>
+      <short-title>Footer Portlet</short-title>
+      <keywords>System</keywords>
+    </portlet-info>    
+    
+    <portlet-preferences>
+      <preference>
+        <name>template</name>
+        <value>system:/templates/UIFooterPortlet.gtmpl</value>
+        <read-only>false</read-only>
+      </preference>
+    </portlet-preferences>
+    
+  </portlet>
+  
+  <portlet>
+    <description xml:lang="EN">CSDemo CSS Controler Portlet</description>
+    <portlet-name>CSDemoCSSControlerPortlet</portlet-name>
+    <display-name xml:lang="EN">CSDemo CSS Controler Portlet</display-name>
+    <portlet-class>org.exoplatform.webui.application.portlet.PortletApplicationController</portlet-class>    
+    
+    <init-param>
+      <name>webui.configuration</name>
+      <value>/WEB-INF/conf/portlet/web/CSDemoCSSControlerPortlet/webui/configuration.xml</value>
+    </init-param>    
+
+    <expiration-cache>0</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>locale.portal.webui</resource-bundle>
+    <portlet-info>
+      <title>CSDemo CSS Controler Portlet</title>
+      <short-title>CSDemo CSS Controler Portlet</short-title>
+      <keywords>System</keywords>
+    </portlet-info>    
+    
+    <portlet-preferences>
+      <preference>
+        <name>template</name>
+        <value>system:/templates/UICSDemoCSSControlerPortlet.gtmpl</value>
+        <read-only>false</read-only>
+      </preference>
+    </portlet-preferences>
+    
+  </portlet>
+  
+  
+  
+  
+  <portlet>
+    <description xml:lang="EN">CalendarToolbar Portlet</description>
+    <portlet-name>UserToolBarCalendarPortlet</portlet-name>
+    <display-name xml:lang="EN">CalendarToolbar Portlet</display-name>
+    <portlet-class>org.exoplatform.webui.application.portlet.PortletApplicationController</portlet-class>    
+    
+    <init-param>
+      <name>webui.configuration</name>
+      <value>/WEB-INF/conf/portlet/toolbar/UserToolBarCalendarPortlet/webui/configuration.xml</value>
+    </init-param>    
+
+    <expiration-cache>0</expiration-cache>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <supported-locale>en</supported-locale>
+    <resource-bundle>locale.portal.webui</resource-bundle>
+    <portlet-info>
+      <title>CalendarToolbar Portlet</title>
+      <short-title>CalendarToolbar Portlet</short-title>
+      <keywords>System</keywords>
+    </portlet-info>    
+    
+    <portlet-preferences>
+      <preference>
+        <name>template</name>
+        <value>system:/templates/toolbar/UIUserToolBarCalendarPortlet.gtmpl</value>
+        <read-only>false</read-only>
+      </preference>
+    </portlet-preferences>
+    
+  </portlet>
+  
+  
+
+</portlet-app>

@@ -1,0 +1,10 @@
+<div class="UICalendarViewContainer" id="$uicomponent.id">
+  <%
+    List children = uicomponent.getChildren() ;
+    for(child in children) {
+      if(child.isRendered()){
+        uicomponent.renderChild(child.getClass()) ;
+      } 
+    }
+  %>
+</div>  

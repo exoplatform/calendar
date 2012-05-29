@@ -1,0 +1,159 @@
+<%
+  def jsMan = _ctx.getRequestContext().getJavascriptManager() ;
+  jsMan.addJavascript("eXo.calendar.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "') ;");
+  uiform.setLocale();
+%>
+<div class="UIForm UIRemoteCalendar">
+  <%uiform.begin()%>
+  <div class="HorizontalLayout">
+    <div class="FormContainer">
+      
+      <table class="UIFormGrid">
+          <tbody>
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.URL)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.URL)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.NAME)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.NAME)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.DESCRIPTION)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.DESCRIPTION)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.COLOR)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.COLOR)%>
+              </td>
+            </tr>
+            <!--
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.AUTO_REFRESH)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.AUTO_REFRESH)%>
+              </td>
+            </tr>  -->
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_BEFORE_DATE_SELECTBOX)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_BEFORE_DATE_SELECTBOX)%>
+              </td>
+            </tr>
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.FIELD_AFTER_DATE_SELECTBOX)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.FIELD_AFTER_DATE_SELECTBOX)%>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <div>
+                  <table> 
+                    <%              
+                      field = uicomponent.getChildById(uicomponent.USE_AUTHENTICATION);
+                      label = _ctx.appRes(uicomponent.id + ".label." + field.getId()) ;
+                      def useAuthentication = field.isChecked();
+                      def accountColor = "";
+                      def fieldUsername = uicomponent.getChildById(uicomponent.USERNAME);
+                      def labelUsername = _ctx.appRes(uicomponent.id+ ".label." + fieldUsername.getId()) ;
+                      
+                      def fieldPW = uicomponent.getChildById(uicomponent.PASSWORD);
+                      def labelPW = _ctx.appRes(uicomponent.id+ ".label." + fieldPW.getId()) ;
+                      
+                      if(!useAuthentication){
+                        accountColor= "color:gray;"
+                        fieldUsername.setEnable(false);
+                        fieldPW.setEnable(false);
+                      } else {
+                        accountColor= "color:black;";
+                        fieldUsername.setEnable(true);
+                        fieldPW.setEnable(true);                
+                      }
+                    %>
+                    <tr style="height:25px;">
+                      <td>
+                        <div class="InputFieldLabel" id='<%=field.getId()%>'>
+                          <span class="FieldComponent" style="padding-left:0px;"><%uicomponent.renderUIComponent(field)%></span>
+                          <span class="Label" style="padding-left:10px;">$label</span>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr style="height:25px;">
+                      <td>
+                        <div style="padding-left:50px;">
+                          <table>
+                            <tr style="height:25px;">
+                              <td>
+                                <div class="FieldInput" id='id-<%=fieldUsername.getId()%>' style="white-space:nowarp; width:auto;">
+                                  <span class="InputFieldLabel" style="width:100px;<%=accountColor%>">$labelUsername</span>
+                                  <span class="FieldComponent"><%uicomponent.renderUIComponent(fieldUsername)%>&nbsp;*</span>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr style="height:22px;">
+                              <td>
+                                <div class="FieldInput" id='id-<%=fieldPW.getId()%>' style="white-space:nowarp; width:auto;">
+                                  <span class="InputFieldLabel" style="width:100px;<%=accountColor%>">$labelPW</span>
+                                  <span class="FieldComponent"><%uicomponent.renderUIComponent(fieldPW)%>&nbsp;*</span>
+                                </div>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </td>
+            </tr>
+            <% if (!uicomponent.isAddNew_) { %>
+            <tr><td colspan="2"><br/></td></tr>
+            <tr>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLabel(uicomponent.LAST_UPDATED)%>
+              </td>
+              <td class="InputFieldLabel">
+                <%=uicomponent.getLastUpdated()%>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+      </table>
+      
+      <div class="UIAction"> 
+          <% for(action in uicomponent.getActions()) { 
+               String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+               String link = uicomponent.event(action) ;
+          %>
+	      <a href="$link" class="ActionButton LightBlueStyle">
+	      	$actionLabel
+	      </a>
+      <%}%>        
+      </div>
+    </div>
+  </div>
+  <%uiform.end()%>
+</div>
+

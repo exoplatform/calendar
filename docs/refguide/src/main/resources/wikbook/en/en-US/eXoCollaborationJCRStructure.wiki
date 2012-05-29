@@ -1,0 +1,489 @@
+eXo Collaboration is a JCR-based product, so data of eXo Collaboration are managed by the eXo-JCR service with each specific structure. The chapter aims at outlining the JCR structure of each application in eXo Collaboration through diagrams and then describing properties of main node types.
+
+Each diagram shows nodes and their primary node types. Every node/child node must have only one primary node type represented in the round bracket () under the node/childnode, but may also have many mixin node types. Because mixin nodes cannot define the node structure like the primary nodes, they are not shown in the diagrams and their properties hereafter are not described.
+
+{note}
+To learn more about the eXo Collaboration JCR Structure, you should have the certain knowledge of [JCR|http://jcp.org/en/jsr/detail?id=170].
+{note} 
+
+h1. Calendar JCR Structure {anchor:id=CSref.JCRStructure.Calendar.JCR}
+
+The Calendar data are saved in eXo-JCR under the CalendarApplication data directory. The Calendar JCR Structure is divided into two main branches: one for public (exo:application) and the other for users (Users).
+
+The whole JCR structure of Calendar can be visualized in the diagram below:
+
+!images/Calendar-JCR-Structure.png|align="center" width="150mm" fo:scalefit="1" html:scalefit="0"!
+
+h2. calendars  {anchor:id=CSref.JCRStructure.Calendar.JCR.calendars}
+
+The *Calendars* node of the nt:unstructured type contains the child nodes of the *exo\:calendar* type. When a calendar is created by users or the default ones in the system, it is stored under the *calendars* node: _{{{CalendarApplication/calendars/%calendar_id%}}}_.
+Its node type is _exo\:calendar_ that has the following properties:
+
+|| Property name || Required type || Multiple || Description ||
+| exo:id | String | false | The Id of the calendar. |
+| exo:name | String | false | The name of the calendar. |
+| exo:description | String |  false | The brief description of the calendar. |
+| exo:viewPermissions | String | true| The list of users/groups having the view permissions. |
+| exo:editPermissions | String | true| The list of users/groups having the edit permissions. |
+| exo:groups | String | true |The list of user groups to which the calendar belongs. |
+| exo:categoryId | String |  false | The Id of the category containing the calendar. |
+| exo:calendarColor | String |  false | The color name of the calendar that is defined in the _org.exoplatform.web__ ui.form.ext.UIFormColorPicker class (such as Sky blue, Powder blue). |
+| exo:calendarOwner | String |  false | The name of the user creating the calendar. |
+| exo:locale | String | false | Location where the calendar is set in format of the uppercase ISO 3166 3-letter country code. |
+| exo:timeZone | String |  false | The Id of the time zone that is set by the user in compliance with the Java class: java.util.TimeZone. |
+| exo:publicUrl | String | false |The public ICAL link of the calendar. |
+| exo:privateUrl | String |  false | The private ICAL link of the calendar. |
+
+When a user shares his own calendar with other users, the Id of the calendar node is referred to the node under the *sharedCalendar* node: _CalendarApplication/sharedCalendars/%user\_id%_ following the JCR reference mechanism.
+
+In case of users' private calendar, two mixin node types _exo\:remoteCalendar_ and _exo\:calendarShared_ can be added to the _exo\:calendar_ node type.
+
+* The _exo\:remoteCalendar_ mixin node type has the following properties:
+
+|| Property name || Required type ||  Multiple|| Description ||
+| exo:remoteUrl| String| false|The URL of the remote calendar.|
+| exo:remoteType | String| false|The type of the remote calendar, including ICalendar (.ics) and CalDav.|
+| exo:username| String| false|The username used to access the remote calendar.|
+| exo:password| String| false|The password used to access the remote calendar.|
+| exo:syncPeriod| String| false|The period the remote calendar is synchronized. auto, 5 minutes, 10 minutes, 15 minutes, 1 hour, 1 day, 1 year|
+| exo:lastUpdated| Date| false|The last update of the remote calendar. |
+| exo:beforeDate| String| false|The period before the  current date in which the calendar is checked out, including the values: None (the unlimited time), 1 week, 2 weeks, 1month, 2 months, 3 months, 6 months and 1 year.|
+| exo:afterDate|  String| false|The period after the current date in which the calendar is checked out, including the values: Forever (the unlimited time), 1 week, 2 weeks, 1month, 2 months, 3 months, 6 months and 1 year.||
+
+* The _exo\:calendarShared_ mixin node type has the following properties:
+|| Property name || Required type ||  Multiple|| Description ||
+|exo:sharedId|Reference|true|The user Ids who are shared the calendars.|
+
+An event can have many attachments which are stored under the *attachment* node of the _exo\:eventAttachment_type: _CalendarApplication/calendars/%calendar\_id%/%event\_id%/attachment/%attachment\_id%_.
+The _exo\:eventAttachment_ node type has the following properties:
+
+|| Property name || Required type ||Multiple|| Description ||
+| exo:fileName | String |false| The name of the attached file. |
+
+h2. eventCategories  {anchor:id=CSref.JCRStructure.Calendar.JCR.eventCategories}
+
+The *eventCategories* node contains all event categories. When an event category is created, it is stored in a node of the _exo\:eventCategory_ type, under the *eventCategories* node defined at the path: {{{CalendarApplication/eventCategories/%eventcategory_id%}}}.
+
+This node type has the following properties:
+
+|| Property name || Required type ||Multiple|| Description ||
+| exo:id | String |false| The Id of the category to which an event belongs. |
+| exo:name | String |false| The name of the category to which an event belongs. |
+| exo:description | String |false| The brief description of the category to which an event belongs. |
+
+Each event category node contains the calendar event node of the _exo\:calendarEvent_ type. This node of the _exo\:calendarEvent_ type is stored at the path: _{{{CalendarApplication/eventCategories/%eventcategory_id%/%event_id%}}}_.
+
+This node type has the following properties:
+
+|| Property name || Required type ||  Multiple|| Description ||
+| exo:id | String | false|The Id of the event. |
+| exo:eventType | String | false| Type of the event, including Event and Task. |
+| exo:summary | String |false| The summary of the event. |
+| exo:location | String |false| The location where the event will take place. |
+| exo:taskDelegator | String |false|The name of the user being delegated the task. |
+| exo:description | String | false|The brief description of the event. |
+| exo:eventCategoryId | String |false| The Id of the category containing the event. |
+| exo:eventCategoryName | String |false|The name of the category containing the event. |
+| exo:calendarId | String | false|The Id of the calendar containing the event. |
+| exo:fromDateTime | Date | false|The start time of the event. |
+| exo:toDateTime | Date |false|The end time of the event. |
+| exo:priority | String |false| The preference order of the event, including 4 values: none, low, normal, high. |
+| exo:isPrivate | Boolean |false| Define if the event is private or not. |
+| exo:eventState | String |false| The state of the event which depends on each event type. |
+| exo:invitation | String |true| The list of email addresses of users being invited to the event. This property is for the Event type only. |
+| exo:participant | String |true| The list of users being invited to the event. This property is for the Event type only.|
+| exo:participantStatus |true| String | The status of the participant, including name and status value. |
+| exo:message | String |false| The content of the invitation email.  |
+| exo:repeat | String |false| Repetition type of the event, including: "norepeat", "daily", "weekly", "monthly", "yearly", "weekend", "workingdays". |
+| exo:sendOption | String |false| The option to notify users before sending the invitation via email: never (not sending all time), always (sending without asking) and ask (asking before sending). |
+
+h2. categories   {anchor:id=CSref.JCRStructure.Calendar.JCR.categories}
+The *categories* node of the _nt\:unstructured_ type contains the child nodes of the _exo\:calendarCategory_ type.
+These child nodes containing the Id of the calendars in the categories are stored under the *categories* node: _CalendarApplication/categories/%calendarcategories\_id%_.
+
+The _exo\:calendarCategory_ node type has the following properties:
+
+|| Property name || Required type || Multiple|| Description ||
+| exo:id | String |false| The Id of the category to which a calendar belongs. |
+| exo:name | String |false| The name of the category to which a calendar belongs. |
+| exo:description | String |false| The brief description of the category to which a calendar belongs. |
+| exo:calendarIds | String |true| A list of calendar Ids belonging to the category. |
+
+h2. eXoCalendarFeed   {anchor:id=CSref.JCRStructure.Calendar.JCR.eXoCalendarFeed}
+
+The *eXoCalendarFeed* of the _nt\:unstructured_ type contains *iCalendars*, *webDavCalendars* as child nodes and others of the _exo\:rssData_ type.
+
+The _exo\:rssData_ node type has the following properties:
+|| Property name || Required type ||  Multiple|| Description ||
+| exo:baseUrl | String |false| The original link to the RSS source. |
+| exo:title | String | false| The title of the feed. |
+| exo:content | Binary |false| The content of the feed. |
+
+The *iCalendars* node of the _nt\:unstructured_ type contains the child nodes of _exo\:iCalData_ type.
+
+The _exo\:iCalData_ node type has the following properties:
+|| Property name || Required type ||  Multiple|| Description ||
+|exo:data|Binary|false| The exported content of the calendar in the ics.format.|
+
+The *webDavCalendars* node of the _nt\:unstructured_ type contains the child nodes of the _exo\:caldavCalendarEvent_ type.
+
+The _exo\:caldavCalendarEvent_ node type has the following properties:
+|| Property name || Required type ||  Multiple|| Description ||
+| exo:caldavHref| String| false|The URL of the remote calendar event.|
+| exo:caldavEtag| String| false|The tag of the remote calendar event.|
+
+h2. Y%yyyy%     {anchor:id=CSref.JCRStructure.Calendar.JCR.Year}
+
+The *Y%yyyy%* of the _nt\:unstructured_ type has the name beginning with the Y character followed by the year name having 4 numbers. It contains all the child nodes of *M%mm%*.
+
+The *M%mm%* of the _nt\:unstructured_ type has the name beginning with the M character followed by the month name having 2 numbers. It contains all the child nodes of *D%dd%*.
+
+The *D%dd%* of the _nt\:unstructured_ type has the name beginning with the D character followed by the date having 2 numbers. This node has two child nodes: *reminder* and *events*.
+
+The *reminder* node of the _nt\:unstructured_ type contains the child nodes named basing on the Id of the event. This child node also has the nt:unstructured type.
+Each node is used to classify reminders of the same event. Each reminder is stored under a node of the _exo\:reminder_ type: _{{{CalendarApplication/Y%yyyy%/M%mm%/D%dd%/reminders/%event_id%/%reminder_id%}}}_.
+
+The _exo\:reminder_ node type has the following properties:
+
+|| Property name || Required type || Multiple || Description ||
+| exo:id | String |false|The Id of the reminder. |
+| exo:eventId | String |false| The event Id of the reminder. |
+| exo:creator | String |false| Define who creates the reminder. |
+| exo:alarmBefore | Long |false| The amount of time that the reminder message is sent before the event starts. |
+| exo:email | String |false| The list of emails to which the reminder message is sent. |
+| exo:timeInterval | Long |false| Interval for resending the reminder message in minutes. |
+| exo:reminderType | String |false| The types of reminders, including email and pop-up. |
+| exo:fromDateTime | Date |false| The start time to send the reminder. |
+| exo:remindDateTime | Date |false| The time to send the reminder. |
+| exo:isRepeat | Boolean |false| Check if the reminder is repeated or not. |
+| exo:isOver | Boolean |false| Check if the reminder is expired or not. |
+| exo:summary | String |false| The summary of the reminder. |
+| exo:description | String |false|The brief description of the reminder. |
+
+The *events* node of the _nt\:unstructured_ type contains the child node of the  _exo\:calendarPublicEvent_ type defined at the path: _{{{CalendarApplication/Y%yyyy%/M%mm%/D%dd%/events/%event_id%}}}_.
+
+|| Property name || Required type || Multiple|| Description ||
+| exo:id | String |false| The Id of the public event. |
+| exo:eventType | String |false| Event type, including Task and Event. |
+| exo:calendarId | String |false| The calendar Id of the public event. |
+| exo:rootEventId | String |false| The Id of each corresponding node: exo:calendarEvent. |
+| exo:fromDateTime | Date |false| The start time of the public event. |
+| exo:toDateTime | Date |false| The snd time of the public event. |
+| exo:participant | String |true| The list of users being invited to the public event. |
+| exo:eventState | String | false|The state of the public event, including: busy, available, outside. |
+
+The *events* node can add the *exo\:repeatCalendarEvent* mixin node that has the following properties:
+|| Property name || Required type ||  Multiple|| Description ||
+| exo:repeatCount| Long | false |The number of times that the event is repeated. |
+| exo:repeatUntil| Date | false|The given time until when the event is repeated.|
+| exo:repeatInterval| Long | false |The interval when the event is repeated. It can be day, week, month or year corresponding to the repetition type chosen of day, week, month or year.  |
+| exo:repeatByDay| String | true| The given days in a week on which the event is repeated.|
+| exo:repeatByMonthDay| Long |true|The given day/date in a month on which the event is repeated.|
+| exo:recurrenceId| String| false|The Id of each event in the event series.|
+| exo:excludeId |String | true|The Id of the events that are removed from the event series. |
+| exo:isException| Boolean| false| Show whether the event is the exception in the event series or not. This case occurs when the event is removed from the repeated event series. |
+| exo:originalReference| Reference |false|The UUID of the event that is repeated first.|
+| exo:repeatFinishDate| Date | false| The end date on which the event is repeated.|
+
+h2. calendarSetting    {anchor:id=CSref.JCRStructure.Calendar.JCR.CalendarSetting}
+The *calendarSetting* node of the _exo\:calendarSetting_ type is stored in _CalendarApplication/calendarsetting_.
+The _exo\:calendarSetting_ node type has the following properties:
+
+|| Property name || Required type ||Multiple|| Description ||
+| exo:viewType | String | false| View type of the calendar. For more details, refer to the _org.exoplatform.calendar.service._ CalendarSetting class. |
+| exo:timeInterval | Long | false| The interval for each action displayed each UI, for example, dragging and dropping one event in the Calendar application. |
+| exo:weekStartOn | String |false| Define the start date of one week, complying with the _org.exoplatform.cal__ endar.service.CalendarSetting class. |
+| exo:dateFormat | String | false| Define the date format, including dd/MM/yyyy, dd-MM-yyyy, MM/dd/yyyy, and MM-dd-yyyy. |
+| exo:timeFormat | String |false| Define the time format, including "hh:mm a" and "HH:mm". |
+| exo:location | String | false| Location where the calendar is set in format of the uppercase ISO 3166 3-letter country code.  |
+| exo:timeZone | String | false| The Id of the time zone, which is set by the user in compliance with the Java class: java.util.TimeZone. |
+| exo:showWorkingTime | false| Boolean | Check if the working period is displayed or not. |
+| exo:workingTimeBegin | String | false| Time to start working. This property only takes effect when exo:showWorkingTime is set to true.  |
+| exo:workingTimeEnd | String | false| Time to end working. This property only takes effect when exo:showWorkingTime is set to true. |
+| exo:defaultPrivateCalendars | String |true|The list of the hidden private calendars. |
+| exo:defaultPublicCalendars | String | true| The list of the hidden public calendars. |
+| exo:defaultSharedCalendars | String |true | The list of the hidden shared calendars. |
+| exo:sharedCalendarsColors | String | true| Define the color of the shared calendar, which is in the format of [calendar id]:[color name]. |
+| exo:sendOption | String | false| The option to notify users before sending an invitation via email: never (not sending all time), always (sending message without asking) and ask (asking before sending). |
+
+h1. Chat JCR Structure {anchor:id=CSref.JCRStructure.Chat}
+
+{docbook}
+<warning><para>
+The Chat portlet and its services are deprecated. It remains fully supported for eXo customers, however it 	will not receive any enhancement and will be removed from the product scope in the future.
+</para></warning>
+{docbook}
+
+!images/Chat JCR Structure.png|align="center" width="100mm" fo:scalefit="1" html:scalefit="0"!
+
+The node type *lr\:conversation* has the following properties:
+
+|| Property name || Required type || Description ||
+| lr:conversationstartDate | Date | Start date of the conversation. |
+| lr:conversationlastActiveDate | Date | Last date when the conversation is updated. |
+
+The node type *lr\:historicalmessage* has the following properties:
+
+|| Property name || Required type || Description ||
+| lr:messagefrom | String | Jabber Id of the user (or chat room) sending (or containing) the message respectively. |
+| lr:messageto | String | Jabber Id of the user (or chat room) to whom (to which) the message is sent. |
+| lr:messagetype | String | List of message types. For more details, refer to the _org.jivesoftware.__ smack.packet.Message.Type class.  |
+| lr:messagebody | String | Main content of the message.  |
+| lr:messagedateSend | Date | Date when the message was sent. |
+| lr:messagereceive | Boolean | Check if the message has been received or not. |
+
+The node type *lr\:participantchat* has the following properties:
+
+|| Property name || Required type || Description ||
+| lr:participantchatjid | String | Jabber Id of the user. |
+| lr:participantchatusername | String | Username of the portal. |
+
+
+The node type *lr\:interlocutor* contains information regarding to the conversation between two users or of the chat room. It has the following properties:
+
+|| Property name || Required type || Description ||
+| lr:conversationId | String | Id of the conversation which is the JCR node name of lr:conversation. |
+| lr:interlocutorjid | String | Jabber Id of the chat room or user. |
+| lr:interlocutorname | String | Username or name of the chat room. |
+| lr:interlocutorisRoom | Boolean | Define if the conversation is performed between two users or is of chat room. |
+
+The node type *lr\:defaultpresencestatus* has the following properties:
+
+|| Property name || Required type || Description ||
+| lr:conversationlastActiveDate | Date | Date when the conversation is last updated. |
+
+
+The node type *lr\:presencestatus* contains information regarding to the current status of user. It has the following properties:
+
+|| Property name || Required type || Description ||
+| lr:userid | String | Id of the user. |
+| lr:status | String | Current status of the user included in the _org.jivesoftware.smack.pack__ et.Presence.Type class. |
+
+
+h1. Address Book JCR Structure {anchor:id=CSref.JCRStructure.AddressBook}
+
+{docbook}
+<warning><para>
+The Address Book portlet and its services are deprecated. It remains fully supported for eXo customers, however it will not receive any enhancement and will be removed from the product scope in the future.
+</para></warning>
+{docbook}
+
+The Address Book portlet is a JCR-based application. The Address Book data are stored in the eXo-JCR under the ContactApplication data directory. The whole JCR structure of Address Book can be visualized in the diagram below:
+
+!images/Addressbook-JCR-Structure.png|align="center" width="120mm" fo:scalefit="1" html:scalefit="0"!
+
+h2. Contacts {anchor:id=CSref.JCRStructure.AddressBook.Contacts}
+The *Contacts* node of the _nt\:unstructured_ type has the child nodes of the _exo\:contact_. When a contact is created and added to an address book, it is stored in a node defined at the path: _{{{ContactAppication/Contacts/%contact_id%}}}_.
+When a contact is tagged, it is saved in the *tags* node with the _exo\:tags_ property. In case, a contact is shared to other users, it is referred to the *SharedContact* node of the _exo\:sharedId_ type.
+The _exo\:contact_ node type has the following properties:
+
+|| Property name || Required type ||Multiple || Description ||
+| exo:id | String |false| Node name of the exo:contact property.  |
+| exo:fullName | String |false | The full name of the contact. |
+| exo:firstName | String | false | The first name of the contact. |
+| exo:lastName | String |false | The last name of the contact. |
+| exo:nickName | String | false | The nickname of the contact. |
+| exo:gender | String | false | The gender of the contact. |
+| exo:birthday | Date | false | The birthday of the contact.|
+| exo:jobTitle | String |false | The job title of the contact. |
+| exo:emailAddress | String | true | The email address of the contact. |
+| exo:exoId | String | false | The Id of the user in the Chat application of eXo Collaboration. |
+| exo:googleId | String | false | The Google Id of the user. |
+| exo:msnId | String | false | The MSN Id of the user. |
+| exo:aolId | String | false | The AOL Id of the user. |
+| exo:yahooId | String |false | The Yahoo Id of the user. |
+| exo:icrId | String | false | The ICR Id of the user. |
+| exo:skypeId | String | false | The Skype Id of the user. |
+| exo:icqId | String | false | The ICQ Id of the user. |
+| exo:homeAddress | String |false | The home address of the contact. |
+| exo:homeCity | String | false | The home city of the contact.|
+| exo:homeState_province | String | false | The home state/province of the contact. |
+| exo:homePostalCode | String | false | The home postal code of the contact. |
+| exo:homeCountry | String | false | The home country of the contact. |
+| exo:homePhone1 | String | false | The primary home phone number of the contact. |
+| exo:homePhone2 | String |false | The secondary home phone number of the contact. |
+| exo:homeFax | String | false | The home fax of the contact. |
+| exo:personalSite | String | false | The personal site of the contact. |
+| exo:workAddress | String | false | The address where the contact works. |
+| exo:workCity | String |false | The city where the contact works. |
+| exo:workState_province | String |false | The state/province where the contact works. |
+| exo:workPostalCode | String | false | The postal code of the location where the contact works. |
+| exo:workCountry | String | false | The country where the contact works. |
+| exo:workPhone1 | String | false | The primary phone number at the contact's working location. |
+| exo:workPhone2 | String | false | The secondary phone number at the contact's working location. |
+| exo:workFax | String | false | The fax number at the contact's working location. |
+| exo:mobilePhone | String | false | The mobile phone number of the contact. |
+| exo:webPage | String |false | The website of the contact. |
+| exo:note | String |false | The note about the contact. |
+| exo:categories | String |true| The list of categories created by the user. |
+| exo:editPermissionUsers | String |true| The list of users obtaining the edit permission. |
+| exo:viewPermissionUsers | String |true|The list of users obtaining the view permission.  |
+| exo:editPermissionGroups | String |true| The list of groups obtaining the edit permission. |
+| exo:viewPermissionGroups | String |true| The list of groups obtaining the view permission. |
+| exo:tags | String |true| The list of tag Ids which the contact has marked.|
+| exo:lastUpdated | Date | false| The time when the contact is last updated. |
+| exo:isOwner | Boolean | false|Show if this contact is the contact of the user in the system or not. |
+| exo:ownerId| String| false| If the contact is a user in the system, the owner Id will be the username of this user.|
+
+This node type may add the _exo\:contactShared_ mixin that has the following properties:
+
+|| Property name || Required type ||Multiple|| Description ||
+| exo:sharedUserId | String | false| The name of the user sharing the contact. |
+| exo:sharedId | Reference | true| The list of the references to shared users/groups.s|
+
+h2. ContactGroup {anchor:id=CSref.JCRStructure.AddressBook.ContactGroup}
+The *ContactGroup* node of the _nt\:unstructured_ type contains all the child nodes of the _exo\:contactGroup_ type. These child nodes store address books and are stored in _{{{ContactApplication/ContactGroup/%addressbook_id}}}_.
+This node is also referred to the _exo\:contact_ node type with the _exo\:categories_ property.
+When an address book is shared, it is referred to the *SharedAddressBook* node with the _exo\:sharedId_ property.
+
+The information of each address book is contained in a node of the _exo\:contactGroup_ type that has the following properties:
+|| Property name || Required type ||Multiple|| Description ||
+| exo:id | String | false| The Id of the address book. |
+| exo:name | String |false| The name of the address book. |
+| exo:description | String | false| The brief description of the address book. |
+| exo:editPermissionUsers | String |true| The list of users having the permission to edit the address book. |
+| exo:viewPermissionUsers | String | true | The list of users having the permission to view the address book. |
+| exo:editPermissionGroups | String | true| The list of groups having the permission to edit the address book. |
+| exo:viewPermissionGroups | String | true| The list of groups having the permission to view the address book. |
+
+h2. tags {anchor:id=CSref.JCRStructure.AddressBook.tags}
+Tags are used to categorize the contacts in groups, so users can easily find the contacts. The *tags* node of the _nt\:unstructured_ type contains the child nodes of the _exo\:contactTag_ type. When a new tag is created, it is stored in a node defined at the path: _{{{ApplicationData/ContactApplications/tags/%tags_id%}}}_.
+The information of each tag is contained in a node of the _exo\:contactTag_ type that has the following properties:
+
+|| Property name || Required type ||Multiple|| Description ||
+| exo:id | String |false| The Id of the tag. |
+| exo:name | String |false| The name of the tag. |
+| exo:description | String |false| The brief description of the tag. |
+| exo:color | String | false| The color of the tag. |
+
+h2. Shared {anchor:id=CSref.JCRStructure.AddressBook.Shared}
+When a contact or a address book is shared to other users, it is referred to the *SharedContact* or *SharedAddressBook* node. Both of these child nodes have the _nt\:unstructured_ type.
+
+
+
+
+h1. Mail JCR Structure {anchor:id=CSref.JCRStructure.Mail}
+
+{docbook}
+<warning><para>
+The Mail portlet and its services are deprecated. It remains fully supported for eXo customers, however it will not receive any enhancement and will be removed from the product scope in the future.
+</para></warning>
+{docbook}
+
+!images/Mail JCR Structure.png|align="center" width="150mm" fo:scalefit="1" html:scalefit="0"!
+
+The node type *exo\:account* has the following properties:
+|| Property name || Required type || Description ||
+| exo:id | String | Id of the account. |
+| exo:label | String | Name of the account. |
+| exo:userDisplayName | String | Screen name of the user. |
+| exo:emailAddress | String | Email address of the account. |
+| exo:emailReplyAddress | String | Email address of the account receiving replies.  |
+| exo:signature | String | Signature of the account. |
+| exo:description | String | Brief description of the account. |
+| exo:checkMailAuto | Boolean | Define if the mail is automatically checked after a given period or not. |
+| exo:emptyTrash | Boolean | Define if the trash needs to be cleaned up when exiting from the Mail application or not. |
+| exo:serverProperties | String | Information of the POP/IMAP server configuration. |
+| exo:smtpServerProperties | String | Information of the SMTP server configuration. |
+| exo:lastCheckedTime | Date | Time when the account was last checked. |
+| exo:checkAll | Boolean | Define if all folders of the mail are checked or not. |
+| exo:checkFromDate | Date | Get mails as from the given date only if the value of exo:serverProperties is set for configuring the IMAP server. |
+| exo:isSavePassword | Boolean | Define if the password is saved or not. |
+| exo:secureAuthsIncoming | String | Type of the incoming connection for security. Its values include starttls, ssl/tls. |
+| exo:secureAuthsOutgoing | String | Type of the outgoing connection for security. Its values include starttls, ssl/tls. |
+| exo:authMechsIncoming | String | Authentication mechanism of the incoming connections. Its values consist of ntlm, plain, login, digest-md5, kerberos/gssapi, cram-md5. |
+| exo:authMechsOutgoing | String | Authentication mechanism of the outgoing connections. Its values consist of ntlm, plain, login, digest-md5, kerberos/gssapi, cram-md5. |
+| exo:permissions | String | Permissions of delegators. |
+
+The node type *exo\:folder* has the following properties:
+
+|| Property name || Required type || Description ||
+| exo:id | String | Id of the folder. |
+| exo:name | String | Name of the folder. |
+| exo:label | String | Absolute path referring to the folder on the Mail server. |
+| exo:unreadMessages | Long | Number of unread messages in the folder. |
+| exo:totalMessages | Long | Total number of messages in the folder. |
+| exo:personal | Boolean | Define if the folder is created by one user or the Mail system. |
+| exo:folderType | Long | Type of folder, which is defined in the javax.mail.Folder class.  |
+| exo:lastStartCheckingTime | Date | Start time of the last check in the folder. |
+| exo:lastCheckedTime | Date | End time of the last check in the folder. |
+
+
+The node type *exo\:message* has the following properties:
+|| Property name || Required type || Description ||
+| exo:id | String | Id of the message. |
+| exo:uid | String | Id of the message on the IMAP server.  |
+| exo:inReplyToHeader | String | Id of the first message in the matching thread. |
+| exo:path | String | Absolute path of the exo:message type. |
+| exo:account | String | Id of the account. |
+| exo:from | String | Value given in the *From* field in the email message, containing information of the sender, such as full name and email. |
+| exo:to | String | Value given in the *To* field in the email message, containing information of the receiver, such as full name and email. |
+| exo:cc | String | Value given in the *CC* field in the email message, containing information of the receivers, such as full name and email. |
+| exo:replyto | String | Value given in the *Reply-To* field in the email message, such as emails. |
+| exo:isUnread | Boolean | Define if the email has been read or not. |
+| exo:subject | String | Subject of the email message that can be read from the *Subject* field. |
+| exo:body | String | Main content of the email message. |
+| exo:sendDate | Date | Date when the email message was sent. |
+| exo:receivedDate | Date | Date when the email message was received. |
+| exo:size | Long | Capacity of the email message in bytes. |
+| exo:contentType | String | Content type of the email message, for example: text/plain and text/html. |
+| exo:folders | String | List of folder Ids containing the email message. |
+| exo:tags | String | List of tag Ids marked in the email message. |
+| exo:star | Boolean | Define if the email message is starred or not. |
+| exo:hasAttach | Boolean | Define if any files are attached with the email message or not. |
+| exo:priority | Long | Preference order of the message with 3 default values: 1 = High, 3 = Normal, 5 = Low. |
+| exo:lastUpdateTime | Date | Time when the message was last updated. |
+
+The node type *exo\:mailAttachment* has the following property:
+|| Property name || Required type || Description ||
+| exo:fileName | String | Name of the file attached in the mail. |
+
+
+The node type *exo\:mailtag* has the following properties:
+|| Property name || Required type || Description ||
+| exo:id | String | Tag id of the mail. |
+| exo:name | String | Name of the tag. |
+| exo:description | String | Brief description of the mail tag. |
+| exo:color | String | Color of the tag which is defined in the _org.exoplatform.webui.form.ext.UIFormColorPicker_ class. |
+
+The node type *exo\:filter* has the following properties:
+
+|| Property name || Required type || Description ||
+| exo:id | String | Filter id which is a unique and randomized value.|
+| exo:name | String | Name of the filter which is defined by the user. |
+| {example}{example} {example}{example} exo:from {example}{example} exo:to {example}{example} exo:subject {example}{example} exo:body | String | Filter email messages by each field respectively:  {example}{example} * From {example}{example} * To {example}{example} * Subject {example}{example} * Body|
+| {example}{example} {example}{example} exo:fromCondition {example}{example} exo:toCondition {example}{example} exo:subjectCondition {example}{example} exo:bodyCondition | Long | Filter emails by the condition types set in each property respectively: {example}{example} * exo:from {example}{example} * exo:to {example}{example} * exo:subject {example}{example} * exo:body {example}{example} All these properties have two values: {example}{example} * 0 = returned messages contains the value set in the corresponding property. {example}{example} * 1 = do not contain the value set in the corresponding property. |
+| exo:applyTag | String | Apply the tag for the filtered email messages. |
+| exo:applyFolder | String | Apply the folder for the filtered email messages. |
+| exo:keepInbox | Boolean | Define if the email message is still kept in the Inbox folder or not. |
+| exo:applyForAll | Boolean | If the value is set to "true" into the exo:applyForAll property, the filter will be executed for all email messages. |
+
+
+The node type *exo\:mailSetting* has the following properties:
+
+|| Property name || Required type || Description ||
+| exo:numberMsgPerPage | Long | Number of messages displayed in one page. |
+| exo:formatAsOriginal | Boolean | Define if the email message got from the mail server is kept in the original format or not. |
+| exo:replyWithAttach | Boolean | Make the original message as the attachment before replying or not. |
+| exo:forwardWithAttach | Boolean | Make the original message as the attachment before forwarding or not. |
+| exo:prefixMsgWith | String | Prefix for the message. |
+| exo:periodCheckAuto | Long | Time interval to check the email messages automatically. |
+| exo:defaultAccount | String | Id of the user account that is displayed by default when the user logged in the Mail application.  |
+| exo:useWysiwyg | String | Define the Wysiwyg editor is used or not. |
+| exo:saveMsgInSent | Boolean | Define the sent email message is saved to the Sent folder or not. |
+| exo:layout | Long | Type of layout which is displayed to the user. |
+| exo:returnReceipt | Long | Action type of the user when receiving the "return receipt" to confirm the arrival of one email message, including: 0 = ask, 1 = never, 3 = always. |
+
+h1. RSS JCR Structure {anchor:id=CSref.JCRStructure.RSS}
+
+!images/RSS JCR Structure.png|align="center" width="70mm" fo:scalefit="1" html:scalefit="0"!
+
+The node type *exo\:content* has the following properties:
+|| Property name || Required type || Description ||
+| id | String | Id of the content. |
+| ownerType | String | Type of the owner. Its default value is user. |
+| ownerId | String | User Id of owner. |
+| dataType | String | Type of data. |
+| data | String | XML string of the content navigation. |
+| createdDate | Date | Created date of the content. |
+| modifiedDate | Date | Modified date of the content. |

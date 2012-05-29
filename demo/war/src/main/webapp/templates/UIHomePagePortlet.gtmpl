@@ -1,0 +1,183 @@
+<%
+  import org.exoplatform.portal.webui.util.Util ;
+  import org.exoplatform.web.url.PortalURL;
+  import org.exoplatform.web.url.navigation.NavigationResource;
+  import org.exoplatform.portal.mop.SiteType;
+  
+  String signInAction = "if(document.getElementById('UIMaskWorkspace')) ajaxGet(eXo.env.server.createPortalURL('UIPortal', 'ShowLoginForm', true));" ;
+  
+  PortalURL nodeURL = nodeurl();
+  NavigationResource resource = new NavigationResource(SiteType.PORTAL, Util.getPortalRequestContext().getPortalOwner(), "tour");
+  String toururi = nodeURL.setResource(resource).toString();
+  def prContext = _ctx.getRequestContext().getParentAppRequestContext();
+  String user = prContext.getRemoteUser() ;
+  resource = new NavigationResource(SiteType.PORTAL, Util.getPortalRequestContext().getPortalOwner(), "calendar");
+  String calendarUrl = nodeURL.setResource(resource).toString();
+  resource = new NavigationResource(SiteType.PORTAL, Util.getPortalRequestContext().getPortalOwner(), "mail");
+  String mailUrl = nodeURL.setResource(resource).toString();
+  resource = new NavigationResource(SiteType.PORTAL, Util.getPortalRequestContext().getPortalOwner(), "contact");
+  String contactUrl = nodeURL.setResource(resource).toString();
+  resource = new NavigationResource(SiteType.PORTAL, Util.getPortalRequestContext().getPortalOwner(), "webos");
+  String webosUrl = nodeURL.setResource(resource).toString();
+  String chatUrl = "/portal/classic/webos" ;
+  resource = new NavigationResource(SiteType.PORTAL, Util.getPortalRequestContext().getPortalOwner(), "register");
+  String registerUrl = nodeURL.setResource(resource).toString();
+  if(user == null) {
+   calendarUrl = "#" ;
+   mailUrl = "#" ;
+   contactUrl = "#" ;
+  
+  } ;
+  
+   chatUrl = "#" ;  
+  
+  String portalRequestContext = Util.getPortalRequestContext().getRequestContextPath();
+  String autoLoginLink = portalRequestContext + "/" + "login?username=root&amp;password=gtn&amp;initialURI=" + portalRequestContext + "/classic";
+  
+%>
+<div class="UIHomePagePorlet">
+      <div class="BannerDefault">
+        <div class="CSProductName">
+          <h2><%=_ctx.appRes("UIHomePagePortlet.cs-title")%></h2>
+          <h3><%=_ctx.appRes("UIHomePagePortlet.cs-subtitle")%></h3>
+        </div>  
+      </div>
+      <div class="ClearFix BoxButton">
+        <div  class="Container FL">
+          <div class="BoxDocument">
+            <h4><%=_ctx.appRes("UIHomePagePortlet.cs-communityMembers")%> </h4>
+            <a href="http://docs.exoplatform.org" class="ArrowBlue TxtBlue" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-documentation")%></a>
+          </div>
+        </div>
+        <div  class="Container FR">
+          <div class="BoxTry">
+            <h4><%=_ctx.appRes("UIHomePagePortlet.cs-usingPurpose")%> </h4>
+            <a href="http://www.exoplatform.com/company/public/website/platform/exo-platform-3" class="ArrowBlue TxtBlue" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-try")%></a>
+          </div>
+        </div>
+      </div>
+      <div class="CSHomeContainer ClearFix">
+        <div class="RightContainer DecorationContainer ">
+          <div class="DecorationTL">
+            <div class="DecorationTR">
+              <div class="DecorationTC"><span></span></div>
+            </div>
+          </div>  
+          <div class="DecorationML">
+            <div class="DecorationMR">
+              <div class="DecorationMC ">              
+                <div class="ClearFix">
+                  <div class="BlockWebsite FL">
+                    <a href="http://www.exoplatform.com/company/public/website/company/contact-us" class="IconContact Icon" target="_blank" >                    
+                    </a>
+                    <a href="http://www.exoplatform.com/company/public/website/company/contact-us" class="TxtLinkIcon" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-contact")%></a>
+                  </div>
+                  <div class="BlockWebsite FL">
+                    <a href="http://www.exoplatform.com/company/public/website/resource-center" class="IconResource Icon" target="_blank" > </a>
+                    <a href="http://www.exoplatform.com/company/public/website/resource-center" class="TxtLinkIcon" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-resourceCenter")%></a>
+                  </div>
+                </div>
+                <div class="ClearFix">
+                  <div class="BlockWebsite FL">
+                    <a href="http://support.exoplatform.com" class="IconSupport Icon" target="_blank" > </a>                    
+                    <a href="http://support.exoplatform.com" class="TxtLinkIcon" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-support")%></a>
+                  </div>
+                  <div class="BlockWebsite FL">
+                    <a href="http://www.exoplatform.com/company/public/website/services/development/development-training" class="IconTraining Icon" target="_blank" > </a>                      
+                    <a href="http://www.exoplatform.com/company/public/website/services/development/development-training" class="TxtLinkIcon" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-training")%></a>
+                  </div>
+                </div>
+                <div class="ClearFix">
+                  <div class="BlockWebsite FL">
+                    <a href="http://blog.exoplatform.org" class="IconBlog Icon" target="_blank" > </a>
+                    <a href="http://blog.exoplatform.org" class="TxtLinkIcon" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-blog")%></a>
+                  </div>
+                  <div class="BlockWebsite FL">
+                    <a href="http://www.exoplatform.com" class="IconWebsite Icon" target="_blank" > </a>
+                    <a href="http://www.exoplatform.com" class="TxtLinkIcon" target="_blank" ><%=_ctx.appRes("UIHomePagePortlet.cs-website")%></a>
+                  </div>
+                </div>              
+              </div>
+            </div>
+          </div>
+          <div class="DecorationBL">
+            <div class="DecorationBR">
+              <div class="DecorationBC"><span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="LeftContainer  DecorationContainer">
+          <div class="DecorationTL">
+            <div class="DecorationTR">
+              <div class="DecorationTC">
+                <span></span>
+              </div>
+            </div>
+          </div>            
+          
+          <div class="DecorationML">
+            <div class="DecorationMR">
+              <div class="DecorationMC ">
+                <div class="RowContent BorderBottom">
+                  <p class="Introduction TextBold"><%=_ctx.appRes("UIHomePagePortlet.cs-newToeXo")%></p>
+                  <p class="Introduction"><%=_ctx.appRes("UIHomePagePortlet.cs-watch")%> <a href="http://www.exoplatform.com/company/public/website/resource-viewer?path=/website/eXo-collaboration-GS" class="TxtBlue" target="_blank"><%=_ctx.appRes("UIHomePagePortlet.cs-gettingStarted")%></a>, <%=_ctx.appRes("UIHomePagePortlet.cs-startExploring")%></p>
+                </div>
+                <div class="ClearFix RowContent">
+                  <div class="FL ColsProduct">
+                    <h5 ><a href="$calendarUrl" class="ProductTitle TxtOrg"><%=_ctx.appRes("UIHomePagePortlet.cs-calendar")%></a></h5>
+                    <ul>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-calendar-1")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-calendar-2")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-calendar-3")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-calendar-4")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-calendar-5")%></li>
+                    </ul>
+                  </div>
+                  <div class="FL">
+                    <h5 ><a href="$contactUrl" class="ProductTitle TxtOrg"><%=_ctx.appRes("UIHomePagePortlet.cs-address-book")%></a></h5>
+                    <ul>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-address-book-1")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-address-book-2")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-address-book-3")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-address-book-4")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-address-book-5")%></li>
+                    </ul>
+                  </div>                
+                </div>
+                <div class="ClearFix RowContent">                  
+                  <div class="FL ColsProduct">
+                    <h5 ><a href="$chatUrl" class="ProductTitle TxtOrg"><%=_ctx.appRes("UIHomePagePortlet.cs-chat")%></a></h5>
+                    <ul>                    
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-chat-1")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-chat-2")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-chat-3")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-chat-4")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-chat-5")%></li>
+                    </ul>
+                  </div>                
+                  <div class="FL">
+                    <h5 ><a href="$mailUrl" class="ProductTitle TxtOrg"><%=_ctx.appRes("UIHomePagePortlet.cs-mail")%></a></h5>
+                    <ul>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-mail-1")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-mail-2")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-mail-3")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-mail-4")%></li>
+                      <li class="ListArrow"><%=_ctx.appRes("UIHomePagePortlet.cs-mail-5")%></li>
+                    </ul>
+                  </div>
+                </div>                
+                <%if(prContext.getRemoteUser() == null) {%>
+                  <div class="RowContent"><p class="Information"><%=_ctx.appRes("UIHomePagePortlet.cs-startUsing")%>, <a href="$autoLoginLink" class="TxtBlue"><%=_ctx.appRes("UIHomePagePortlet.cs-loginAsRoot")%></a></p></div>
+                <% } %>
+              </div>
+            </div>
+          </div>        
+          <div class="DecorationBL">
+            <div class="DecorationBR">
+              <div class="DecorationBC"><span></span></div>
+            </div>
+          </div>          
+        </div>          
+      </div>  
+    </div>
+    

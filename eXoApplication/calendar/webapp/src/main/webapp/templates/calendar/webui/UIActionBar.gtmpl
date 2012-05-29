@@ -1,0 +1,140 @@
+<% 
+  import org.exoplatform.web.application.Parameter;
+  import org.exoplatform.calendar.webui.UISearchForm;
+   
+  def rcontext = _ctx.getRequestContext() ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.CalendarScrollManager.load() ;') ;
+%>
+<div id="$uicomponent.id" class="UIActionBar"> 
+  <div class="UIToolbar">
+    <div class="HeaderToolbar">
+      <div class="LeftBar">
+        <div class="RightBar">
+          <div class="CenterBar">
+		    <%uicomponent.renderChild(UISearchForm.class)%>
+		        <div class="LeftActionBar">
+		        <div class="CalendarActionBar ClearFix">
+            <div class="Title ControlButton ActionBarButton">
+              <span></span>
+            </div>
+            <div onclick="eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 1);" class="ControlButton ActionBarButton">
+              <a class="IconHolder QuickAddEvent">
+                <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
+              </a>
+            </div>
+            <div onclick="eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 2);" class="ControlButton ActionBarButton">
+              <a class="IconHolder AddNewTask">
+                <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
+              </a>
+            </div>
+            
+            <div onclick="<%=uicomponent.event("Today")%>" class="ControlButton ActionBarButton">
+                <a class="IconHolder TodayIcon">
+                  <%=_ctx.appRes(uicomponent.id + ".label.Today")%>
+                </a>
+            </div>
+            
+      <%for(viewType in uicomponent.getViewTypes()){
+            
+                  icon = viewType + "Icon" ;
+                  Parameter[] params = [new Parameter("categoryId", "calId")];
+                  actionLink = uicomponent.event("ChangeView",viewType, params) ;
+                  String label = _ctx.appRes(uicomponent.id + ".label." + viewType) ;
+                  String style = "ControlButton  ActionBarButton" ;
+              if(viewType.equals(uicomponent.getCurrentView())) {
+               style = "ControlButton ControlButtonHover ActionBarButton" ;
+              }
+                  
+              if(!viewType.equals("UIScheduleView")) {
+                %>
+                    <div class="$style">
+                      <a href="$actionLink" class="IconHolder $icon">
+                        $label
+                      </a>
+                    </div>
+                  
+          <%   } 
+              
+            }
+          %>
+
+            <div onclick="<%=uicomponent.event("Setting")%>" class="ControlButton ActionBarButton">
+              <div class="IconHolder SettingCalendarIcon">
+                <%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>
+              </div>
+            </div>
+			<div onclick="<%=uicomponent.event("RSS")%>" class="ControlButton  ActionBarButton">
+              <div class="IconHolder CalendarRssIcon">
+                <%=_ctx.appRes(uicomponent.id + ".label.RSS")%>
+              </div>
+            </div>
+            <!--
+            <div class="SeparatorLine"><span></span></div>
+            <span class="ControlButton  ActionBarButton" style="color:gray;margin-top: 4px;">
+              <div class="IconHolder PrintCalendarIcon">
+                <%=_ctx.appRes(uicomponent.id + ".label.Print")%>
+              </div>
+            </span>
+            -->
+            <div class="ControlButton  ActionBarButton" onclick="eXo.calendar.UICalendarPortlet.showView(this, event);">
+                <div class="IconHolder LayoutSwitcherIcon" title="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>">
+                  <span></span>
+                </div>
+              <% /*Begin Popup Menu*/ %>
+                  <div class="UIRightClickPopupMenu" style="display: none;">
+                    <div class="UIContextMenuContainer">
+                      <div class="TopLeftRightClickPopupMenu">
+                        <div class="TopRightRightClickPopupMenu">
+                          <div class="TopCenterRightClickPopupMenu"><span></span></div>
+                        </div>
+                      </div>
+                      <div class="MiddleLeftRightClickPopupMenu">
+                        <div class="MiddleRightRightClickPopupMenu">
+                          <div class="UIRightPopupMenuContainer">
+                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(0)" >   
+                              <div class="ItemIcon HidenAllCalendar">
+                                 <%=_ctx.appRes(uicomponent.id + ".label.DefaultLayout")%>
+                              </div>
+                            </div>
+                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(1)" >   
+                              <div class="ItemIcon ShowMinicalendar">
+                                <%=_ctx.appRes(uicomponent.id + ".label.ShowHideAll")%>
+                              </div>
+                            </div>
+                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(2)" >   
+                              <div class="ItemIcon ShowMinicalendar">
+                                <%=_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")%>
+                              </div>
+                            </div>
+                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(3)" >
+                              <div class="ItemIcon HidenMinicalendar">
+                                <%=_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")%>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="BottomLeftRightClickPopupMenu">
+                      <div class="BottomRightRightClickPopupMenu">
+                        <div class="BottomCenterRightClickPopupMenu"><span></span></div>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+              <% /*End Popup Menu*/ %>
+              </div>
+              <div class="ScrollButtons" style="display: none;">
+					<div title="Previous" class="ScrollLeftButton">
+						<div title="Next" class="ScrollRightButton"><span></span></div>
+					</div>
+              </div>
+              </div>
+            </div>
+          </div>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

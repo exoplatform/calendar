@@ -1,0 +1,9 @@
+<%
+  import org.exoplatform.calendar.webui.UIListView ;
+  import org.exoplatform.calendar.webui.UIPreview ;
+%>
+<div class="UIListContainer SpliterContainer" id="$uicomponent.id">
+  <%uicomponent.renderChild(UIListView.class)%>
+  <div class="ResizeReadingPane" onmousedown="eXo.cs.Spliter.doResize(event, this) ;"><span></span></div>
+  <%uicomponent.renderChild(UIPreview.class)%>
+</div>

@@ -1,0 +1,189 @@
+<%
+  import java.text.DateFormat;
+  import java.text.SimpleDateFormat;
+  import java.util.Locale;
+  import java.util.Calendar;
+  import org.exoplatform.webui.application.WebuiRequestContext;
+  import org.exoplatform.calendar.CalendarUtils;
+  uiform.begin() ;
+  
+  int currentDay = uicomponent.getCurrentDay() ;
+  int currentMonth = uicomponent.getCurrentMonth() ;
+  String currentMonthName = uicomponent.getMonthName(currentMonth) ;
+  int currentYear = uicomponent.getCurrentYear() ;
+  String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
+  String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
+   String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
+   monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+  WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+   Locale locale = context.getParentAppRequestContext().getLocale() ;
+  dateTimeFormat = uicomponent.getDateTimeFormat() ;
+  DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
+  boolean searchDisplay = uicomponent.isDisplaySearchResult();
+  if(searchDisplay) {
+%>
+    <div class="Result ListBar">
+      <%=uiform.getLabel('searchResult')%>
+    </div>
+<%
+  }else {
+    _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
+  }
+  selectedEvent = uicomponent.getSelectedEvent() ;
+  def rcontext = _ctx.getRequestContext() ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
+  rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("'+uiform.id+'") ;') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  uicomponent.refreshBrowser();
+  uicomponent.setCalClicked(false);
+%>
+ 
+  <div class="UIListView SpliterResizableListArea MainWorkingPanel">
+    <table cellspacing="0" borderspacing="0" id="UIListUsers" class="UIGrid">
+      <thead>
+        <tr>
+        <%if(!searchDisplay) {
+        %>
+           <th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
+        <%}%>
+          <th style="width: 24px;"><div class="AttachmentIcon">&nbsp;</div></th>
+          <%
+            String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
+            String classCss = "";
+            if (uicomponent.getSortedField().equals(uicomponent.EVENT_PRIORITY)) {
+              if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
+              else classCss = "DownArrow1Icon";
+            }
+          %>
+          <th style="width: 46px;"><a href="$sortLink" ><div class="$classCss"><%=uiform.getLabel('Priority')%></div></a></th>
+          <%
+            sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
+            classCss = "";
+            if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
+              if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
+              else classCss = "DownArrow1Icon";
+          }
+          %>
+          <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('Event')%></div></a></th>
+          <%
+            sortLink = uicomponent.event("Sort", uicomponent.EVENT_START.toString()) ;
+            classCss = "";
+            if (uicomponent.getSortedField().equals(uicomponent.EVENT_START)) {
+              if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
+              else classCss = "DownArrow1Icon";
+            }
+          %>
+           <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('Start')%></div></a></th>
+          <%
+            sortLink = uicomponent.event("Sort", uicomponent.EVENT_END.toString()) ;
+            classCss = "";
+            if (uicomponent.getSortedField().equals(uicomponent.EVENT_END)) {
+              if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
+              else classCss = "DownArrow1Icon";
+            }
+          %>
+           <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('End')%></div></a></th>
+          <%
+            sortLink = uicomponent.event("Sort", uicomponent.EVENT_DESCRIPTION.toString()) ;
+            classCss = "";
+            if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
+              if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
+              else classCss = "DownArrow1Icon";
+            }
+          %>
+           <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('EventDescription')%></div></a></th>
+         </tr>
+       </thead>
+         <tbody>
+          <%
+            for(event in uicomponent.getEvents()){
+              rowStyle = "" ;
+              if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#F5F5F5;";}
+              attachIcon = "" ;
+              if(!event.getAttachment().isEmpty()) {attachIcon = "AttachmentIcon" ;}
+              String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
+			  def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+          %>
+              <tr actionLink="$actionLink" onclick="eXo.calendar.UICalendarPortlet.listViewClickCallback(this);" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
+              <%if(!searchDisplay) {%>
+                <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
+              <%}%>
+                <td style="padding: 0px 0px 0px 7px;"><div class="$attachIcon" >&nbsp;</div></td>
+                <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>      
+                <td class="text">
+				  <div class="EventDescription $color"><span></span></div>
+                  <span class="ControlButton" title="<%=event.summary%>">
+                    <%=event.getSummary()%>
+                  </span>  
+                </td>          
+                <td class="text"><%=df.format(event.getFromDateTime())%></td>
+                <td class="text"><%=df.format(event.getToDateTime())%></td>
+                <td class="text"><%=(event.getDescription() == null)? "": event.getDescription()%></td>
+               </tr>
+            <%
+            }
+          %>
+         </tbody>
+    </table>
+   <%if(uicomponent.getEvents().size() <= 0) { %>
+    <table>
+      <tr>
+        <td class="Null">
+          <%=uiform.getLabel('noData')%> 
+        </td>
+      </tr>
+    </table>
+    <%} else { 
+       _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
+      }
+    %>
+  </div>
+  <%if(searchDisplay) {%>
+    <div class="UIAction">
+      <a href="<%= uicomponent.event('CloseSearch')%>" class="ActionButton LightBlueStyle"><%=uiform.getLabel('CloseSearch')%></a>
+    </div>
+  <%}%>
+    <% /*Begin Popup Menu*/ %>
+  <div class="UIRightClickPopupMenu" id="UIListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallack">
+    <div class="UIContextMenuContainer">
+      <div class="TopLeftRightClickPopupMenu">
+        <div class="TopRightRightClickPopupMenu">
+          <div class="TopCenterRightClickPopupMenu">
+            <span></span>
+          </div>
+        </div>
+      </div>
+      <div class="MiddleLeftRightClickPopupMenu">
+        <div class="MiddleRightRightClickPopupMenu">
+          <div class="UIRightPopupMenuContainer">
+            <%
+              for(String act : uicomponent.getQuickEditMenu()) {
+              link = uicomponent.event(act,"id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype") ;
+              icon = act + "EventIcon" ;
+            %>
+            <a class="MenuItem" style="display: block;" href="$link">
+              <div class="ItemIcon $icon">
+                 <%=_ctx.appRes("ContextMenu.label."+act)%>
+               </div>
+            </a>
+            <%}%>
+            <a class="MenuItem" style="display: block;" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+              <div class="ItemIcon ExportCalendarIcon">
+                 <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
+               </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="BottomLeftRightClickPopupMenu">
+      <div class="BottomRightRightClickPopupMenu">
+        <div class="BottomCenterRightClickPopupMenu">
+          <span></span>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+  <% /*End Popup Menu*/ %>
+<%uiform.end();%>

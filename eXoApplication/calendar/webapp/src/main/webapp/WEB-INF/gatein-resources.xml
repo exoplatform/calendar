@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<gatein-resources
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.gatein.org/xml/ns/gatein_resources_1_2 http://www.gatein.org/xml/ns/gatein_resources_1_2"
+    xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_2">  
+
+  <portlet-skin>
+    <application-name>calendar</application-name>
+    <portlet-name>CalendarPortlet</portlet-name>
+    <skin-name>Default</skin-name>
+    <css-path>/skin/DefaultSkin/webui/Stylesheet.css</css-path>
+    <css-priority>1</css-priority>
+  </portlet-skin>
+  
+  <javascript>
+    <param>
+      <js-module>eXo.calendar.UICalendarPortlet</js-module>
+      <js-path>/javascript/eXo/calendar/UICalendarPortlet.js</js-path>
+    </param>
+  </javascript>
+  
+  <javascript>
+    <param>
+      <js-module>eXo.calendar.Highlighter</js-module>
+      <js-path>/javascript/eXo/calendar/Highlighter.js</js-path>
+    </param>
+  </javascript>
+  
+  <javascript>
+    <param>
+      <js-module>eXo.calendar.CalendarLayout</js-module>
+      <js-path>/javascript/eXo/calendar/CalendarLayout.js</js-path>
+    </param>
+  </javascript>
+  
+  <javascript>
+    <param>
+      <js-module>eXo.calendar.Reminder</js-module>
+      <js-path>/javascript/eXo/calendar/Reminder.js</js-path>
+    </param>
+  </javascript>
+  
+</gatein-resources>
+

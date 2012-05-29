@@ -1,0 +1,111 @@
+<%
+  uiForm = uicomponent.getParentFrom() ;
+  private void renderActions(String fieldKey) {
+    def actions = uicomponent.getActionField(fieldKey) ;
+    if(actions != null) {
+      for(action in actions) {
+        String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
+        if(actionLabel.equals("action." + action.actionName)) {
+          actionLabel = action.actionName ;
+        }
+        String actionLink ="#";
+        if(action.actionParameter != null) {
+          actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
+        }else {
+          actionLink = (uiForm.event(action.actionListener)) ;
+        }
+        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        if(action.actionType == action.TYPE_ICON) {
+          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+          if(action.isShowLabel) { println  actionLabel  ;}
+        }else if(action.actionType == action.TYPE_LINK){
+         println actionLabel ;
+        }
+        println  "</a>";
+        println "&nbsp;"; 
+        if(action.isBreakLine) { println "<br/>" ;} 
+      }
+    }
+  }
+  def rcontext = _ctx.getRequestContext() ;
+  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
+%>
+<div id="$uicomponent.id" class="$uicomponent.id">
+  <table class="UIFormGrid">
+    <tbody>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.VIEW_TYPE)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.VIEW_TYPE)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.DATE_FORMAT)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.DATE_FORMAT)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.TIME_FORMAT)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.TIME_FORMAT)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.LOCATION)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.LOCATION)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.TIMEZONE)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.TIMEZONE);%>
+          <%renderActions(uicomponent.TIMEZONE);%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.WEEK_START_ON)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.WEEK_START_ON)%>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.ISSHOWWORKINGTIME)%>
+        </td>
+        <td class="FieldComponent">
+          <div class="WorkingTimeCheck">
+            <%uiForm.renderField(uicomponent.ISSHOWWORKINGTIME)%>
+          </div>
+          <div class="WorkingTime">
+            <%=uiForm.getLabel(uicomponent.WORKINGTIME_BEGIN)%>
+            <%uiForm.renderField(uicomponent.WORKINGTIME_BEGIN)%>
+            <%=uiForm.getLabel(uicomponent.WORKINGTIME_END)%>
+            <%uiForm.renderField(uicomponent.WORKINGTIME_END)%>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="FieldLabel">
+          <%=uiForm.getLabel(uicomponent.FIELD_SEND)%>
+        </td>
+        <td class="FieldComponent">
+          <%uiForm.renderField(uicomponent.FIELD_SEND)%>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

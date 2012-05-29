@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aspectj>
+	<aspects>
+		<concrete-aspect name="org.exoplatform.cs.statistics.JCRAPIAspectImpl" extends="org.exoplatform.cs.statistics.JCRAPIAspect">
+			<pointcut name="JCRAPIPointcut"
+				expression="(target(org.exoplatform.calendar.service.CalendarService) || target(org.exoplatform.contact.service.ContactService) || 
+                     target(org.exoplatform.mail.service.MailService) || target(org.exoplatform.services.xmpp.rest.RESTXMPPService) || 
+                     target(org.exoplatform.content.service.ContentDAO) || target(org.exoplatform.services.authentication.rest.RESTAuthenticator) || 
+                     target(org.exoplatform.services.organization.rest.json.RESTOrganizationServiceJSONImpl) || target(org.exoplatform.services.organization.rest.xml.RESTOrganizationServiceXMLImpl) || 
+                     target(org.exoplatform.services.presence.DefaultPresenceStatus) || target(org.exoplatform.services.uistate.rest.UIStateService) || 
+                     target(org.exoplatform.services.xmpp.connection.impl.XMPPMessenger) || target(org.exoplatform.services.xmpp.history.impl.jcr.HistoryImpl) || 
+                     target(org.exoplatform.services.xmpp.rest.FileExchangeService) || target(org.exoplatform.services.xmpp.userinfo.UserInfoService) || 
+                     target(org.exoplatform.webservice.cs.calendar.CalendarWebservice) || target(org.exoplatform.webservice.cs.mail.MailWebservice)
+                     ) &amp;&amp; call(public * *(..))" />
+		</concrete-aspect>
+	</aspects>
+	<weaver options="-XnoInline">
+		<include within="org.exoplatform.calendar..*" />
+    <include within="org.exoplatform.contact..*" />
+    <include within="org.exoplatform.mail..*" />
+    <include within="org.exoplatform.services.xmpp..*" />
+    <include within="org.exoplatform.content..*" />
+    <include within="org.exoplatform.services.authentication.rest..*" />
+    <include within="org.exoplatform.services.organization.rest..*" />
+    <include within="org.exoplatform.services.presence..*" />
+    <include within="org.exoplatform.services.uistate..*" />
+    <include within="org.exoplatform.webservice.cs..*" />
+    <exclude within="org.exoplatform.contact.service.impl.JCRDataStorage"/>
+    <exclude within="org.exoplatform.contact.service.impl.VCardImportExport"/>
+    <exclude within="org.exoplatform.calendar.service.impl.JCRDataStorage"/>
+    <exclude within="org.exoplatform.calendar.service.impl.ICalendarImportExport"/>
+    <exclude within="org.exoplatform.mail.service.impl.JCRDataStorage"/>
+    <exclude within="org.exoplatform.contact.service.Utils"/>
+	</weaver>
+</aspectj>
