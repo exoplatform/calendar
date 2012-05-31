@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.exoplatform.cs</groupId>
     <artifactId>exo.cs.packaging</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0.Alpha1-SNAPSHOT</version>
   </parent>
   <artifactId>exo.cs.packaging.assembly</artifactId>
   <packaging>pom</packaging>
@@ -440,46 +440,21 @@
 		<scope>provided</scope>
 	  </dependency>
 	  <dependency>
-                <groupId>org.apache.jackrabbit</groupId>
-        	<artifactId>jackrabbit-webdav</artifactId>
-        	<version>${org.apache.jackrabbit.version}</version>
-      	  </dependency>
-	  <!--exo.cs.eXoApplication.chat.service-->
-	  <dependency>
-		<groupId>jivesoftware</groupId>
-		<artifactId>smack</artifactId>
-		<version>${jivesoftware.smack.version}</version>
-	  </dependency>
-	  <dependency>
-		<groupId>jivesoftware</groupId>
-		<artifactId>smackx</artifactId>
-		<version>${jivesoftware.smackx.version}</version>
-	  </dependency>
-	  <dependency>
-		<groupId>dom4j</groupId>
-		<artifactId>dom4j</artifactId>
-		<version>${dom4j.version}</version>
-	  </dependency>
-	  <!--exo.cs.eXoApplication.contact.service-->
-	  <dependency>
-		<groupId>net.wimpi.pim</groupId>
-		<artifactId>jpim-0.1</artifactId>
-		<version>${jpim-0.1.version}</version>
-	  </dependency>
-	  <!--exo.cs.eXoApplication.organization.client.openfire-->
-	  <dependency>
-		<groupId>openfire</groupId>
-		<artifactId>openfire</artifactId>
-		<version>${openfire.version}</version>
-	  </dependency>
-   <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>${org.apache.jackrabbit.version}</version>
+      </dependency>
+	   
+	   
+	  
+   	<dependency>
 		  <groupId>org.exoplatform.portal</groupId>
 		  <artifactId>exo.portal.component.xml-parser</artifactId>
 		  <version>3.1.5-PLF</version>
 			<scope>provided</scope>
 		</dependency>   
 
-<dependency>
+	<dependency>
       <groupId>org.exoplatform.ecms</groupId>
       <artifactId>exo-ecms-core-parser</artifactId>
       <version>2.3.5</version>
@@ -603,79 +578,7 @@
 		<version>${project.version}</version>
 		<type>jar</type>
 	</dependency>
-	<!-- 	
 	
-	<dependency>
-    <groupId>org.exoplatform.cs</groupId>
-    <artifactId>exo.cs.component.upgrade</artifactId>
-    <version>${project.version}</version>
-    <type>jar</type>
-  </dependency>   
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.mail.service</artifactId>
-		<version>${project.version}</version>
-		<type>jar</type>
-	</dependency>
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.contact.webapp</artifactId>
-		<version>${project.version}</version>
-		<type>war</type>
-	</dependency>
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.chat.service</artifactId>
-		<version>${project.version}</version>
-		<type>jar</type>
-	</dependency>
-	
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.contact.service</artifactId>
-		<version>${project.version}</version>
-		<type>jar</type>
-	</dependency>
-	
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.chat.webapp</artifactId>
-		<version>${project.version}</version>
-		<type>war</type>
-	</dependency>
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.chatbar.webapp</artifactId>
-		<version>${project.version}</version>
-		<type>war</type>
-	</dependency>
- 	<dependency>
- 		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.mail.webapp</artifactId>
-		<version>${project.version}</version>
-		<type>war</type>
-	</dependency>
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.content.service</artifactId>
-		<version>${project.version}</version>
-		<type>jar</type>
-	</dependency>
-	
-	<dependency>
-    <groupId>org.exoplatform.cs</groupId>
-    <artifactId>exo.cs.component.injector</artifactId>
-    <version>${project.version}</version>
-    <type>jar</type>
-  </dependency>
-  
-  <dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.content.webapp</artifactId>
-		<version>${project.version}</version>
-		<type>war</type>
-	</dependency>
-	-->
 	<dependency>
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-api</artifactId>
@@ -785,24 +688,14 @@
 		<version>${project.version}</version>
 		<type>war</type>
 	</dependency>
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.organization.service</artifactId>
-		<version>${project.version}</version>
-		<type>jar</type>
-	</dependency>
+	 
 	<dependency>
 		<groupId>org.exoplatform.cs</groupId>
 		<artifactId>exo.cs.eXoApplication.calendar.service</artifactId>
 		<version>${project.version}</version>
 		<type>jar</type>
 	</dependency>
-	<dependency>
-		<groupId>org.exoplatform.cs</groupId>
-		<artifactId>exo.cs.eXoApplication.organization.client.openfire</artifactId>
-		<version>${project.version}</version>
-		<type>jar</type>
-	</dependency>
+	 
  	<dependency>
  		<groupId>org.exoplatform.cs</groupId>
  		<artifactId>exo.cs.demo.rest-war</artifactId>

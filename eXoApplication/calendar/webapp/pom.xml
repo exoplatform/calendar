@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.exoplatform.cs</groupId>
     <artifactId>exo.cs.eXoApplication.calendar</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0.Alpha1-SNAPSHOT</version>
   </parent>
   <artifactId>exo.cs.eXoApplication.calendar.webapp</artifactId>
   <packaging>war</packaging>
