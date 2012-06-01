@@ -8,7 +8,7 @@
   </parent>
   <groupId>org.exoplatform.cs</groupId>
   <artifactId>test-calendar-selenium</artifactId>
-  <version>1.4-SNAPSHOT</version>
+  <version>4.0.0.Alpha1-SNAPSHOT</version>
   <repositories>
     <repository>
       <id>openqa.org</id>

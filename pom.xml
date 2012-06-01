@@ -32,12 +32,12 @@
     <org.exoplatform.ws.version>2.2.8-GA-SNAPSHOT</org.exoplatform.ws.version>
     <org.exoplatform.jcr.version>1.14.8-GA-SNAPSHOT</org.exoplatform.jcr.version>
     <org.exoplatform.portal.version>3.2.5-PLF-SNAPSHOT</org.exoplatform.portal.version>
-    <org.exoplatform.ecms.version>2.3.8-SNAPSHOT</org.exoplatform.ecms.version>
+    <org.exoplatform.ecms.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.ecms.version>
     <exo.tool.framework.junit.version>1.2.0</exo.tool.framework.junit.version>
     <org.exoplatform.exopackage.version>1.1.4</org.exoplatform.exopackage.version>
     <version.chromattic>1.1.2</version.chromattic>    
      <!--commons dependencies-->
-    <org.exoplatform.commons.version>1.1.9-SNAPSHOT</org.exoplatform.commons.version>	      
+    <org.exoplatform.commons.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.commons.version>	      
     <org.hsqldb.version>2.0.0</org.hsqldb.version>
      <!-- eXo extended service -->
      <org.exoplatform.social.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.social.version>
@@ -131,7 +131,7 @@
     <!-- config-scm-maven-plugin -->
     <version.release.plugin>2.2.1</version.release.plugin>
 	<org.apache.maven.scm.version>1.6</org.apache.maven.scm.version>
-	<version.buildnumber.plugin>1.0</version.buildnumber.plugin>
+	<version.buildnumber.plugin>1.1</version.buildnumber.plugin>
     <!-- maven-release-plugin -->
     <arguments>-Prelease,pkg-tomcat,arc-tomcat,run-its -Dgatein.working.dir=target</arguments>
   </properties>
