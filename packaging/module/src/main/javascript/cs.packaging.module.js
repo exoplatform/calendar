@@ -16,7 +16,8 @@ function getModule(params) {
   
   module.commons = {};
   module.commons.extension = 
-    new Project("org.exoplatform.commons", "exo.platform.commons.extension.webapp", "war", "${org.exoplatform.commons.version}");
+    new Project("org.exoplatform.commons", "exo.platform.commons.extension.webapp", "war", "${org.exoplatform.commons.version}").
+    addDependency(new Project("org.exoplatform.commons", "exo.platform.commons.webui", "jar", "${org.exoplatform.commons.version}"));
   module.commons.extension.deployName = "commons-extension";
   
   module.comet = {};
@@ -98,14 +99,6 @@ function getModule(params) {
     new Project("org.exoplatform.cs", "exo.cs.demo.rest-war", "war", module.version).
     addDependency(ws.frameworks.servlet);
   module.demo.rest.deployName = "rest-csdemo"; 
-       
-   
    
    return module;
 }
-
-/**
- * Configure and deploy Openfire for integrated chat on cs 
- */
-
-

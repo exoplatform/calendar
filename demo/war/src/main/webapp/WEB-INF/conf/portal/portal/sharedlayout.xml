@@ -84,26 +84,8 @@
         <show-info-bar>false</show-info-bar>
       </portlet-application>
     </container>
-    <container id="UserToolBarContactPortlet" template="system:/groovy/portal/webui/container/UIContainer.gtmpl">
-      <portlet-application>
-        <portlet>
-          <application-ref>csdemo</application-ref>
-          <portlet-ref>UserToolBarContactPortlet</portlet-ref>
-        </portlet>
-        <access-permissions>Everyone</access-permissions>
-        <show-info-bar>false</show-info-bar>
-      </portlet-application>
-    </container>
-    <container id="UserToolBarMailPortlet" template="system:/groovy/portal/webui/container/UIContainer.gtmpl">
-      <portlet-application>
-        <portlet>
-          <application-ref>csdemo</application-ref>
-          <portlet-ref>UserToolBarMailPortlet</portlet-ref>
-        </portlet>
-        <access-permissions>Everyone</access-permissions>
-        <show-info-bar>false</show-info-bar>
-      </portlet-application>
-    </container>
+     
+     
     <container id="UserToolBarCalendarPortlet" template="system:/groovy/portal/webui/container/UIContainer.gtmpl">
       <portlet-application>
         <portlet>
@@ -114,16 +96,7 @@
         <show-info-bar>false</show-info-bar>
       </portlet-application>
     </container>
-    <container id="UserToolBarContentPortlet" template="system:/groovy/portal/webui/container/UIContainer.gtmpl">
-      <portlet-application>
-        <portlet>
-          <application-ref>csdemo</application-ref>
-          <portlet-ref>UserToolBarContentPortlet</portlet-ref>
-        </portlet>
-        <access-permissions>Everyone</access-permissions>
-        <show-info-bar>false</show-info-bar>
-      </portlet-application>
-    </container>
+     
   </container>
   
   <site-body/>

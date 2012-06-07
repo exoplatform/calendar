@@ -8,10 +8,6 @@
     <type>org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl</type>
   </component>
   <component>
-    <key>org.exoplatform.services.rss.parser</key>
-    <type>org.exoplatform.services.rss.parser.RSSParser</type>     
-  </component>
-  <component>
      <type>org.exoplatform.services.scheduler.impl.QuartzSheduler</type>
    </component>
    <component>
@@ -63,16 +59,5 @@
         </properties-param>
       </init-params>
     </component-plugin>
-    
-    </external-component-plugins>  
-    
-    <external-component-plugins>  
-    <target-component>org.exoplatform.content.service.ContentDAO</target-component>      
-   
-
-  
- 
- 
-   
-  
+   </external-component-plugins>     
 </configuration>
