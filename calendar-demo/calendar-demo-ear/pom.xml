@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.calendar</groupId>
+    <artifactId>calendar-demo</artifactId>
+    <version>4.0.0.Alpha1-SNAPSHOT</version>
+  </parent>
+  <artifactId>calendar-demo-ear</artifactId>
+  <packaging>ear</packaging>
+  <name>eXo Calendar Demo Portal ear</name>
+  <description>Caendar Demo EAR for GateIn</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-demo-config</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-demo-rest</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-demo-cometd</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-demo-webapp</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-webapp</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-resources</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+     
+     
+  </dependencies>
+  <build>
+    <finalName>gatein-exo-calendar-sample-${project.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ear-plugin</artifactId>
+        <configuration>
+          <defaultLibBundleDir>lib</defaultLibBundleDir>
+          <displayName>calendar-demo</displayName>
+          <modules>
+            <jarModule>
+              <groupId>org.exoplatform.calendar</groupId>
+              <artifactId>calendar-demo-config</artifactId>
+              <includeInApplicationXml>true</includeInApplicationXml>
+            </jarModule>
+            
+          
+            <jarModule>
+              <groupId>org.exoplatform.calendar</groupId>
+              <artifactId>calendar-service</artifactId>
+              <includeInApplicationXml>true</includeInApplicationXml>
+            </jarModule>  
+            
+            <webModule>
+              <groupId>org.exoplatform.calendar</groupId>
+              <artifactId>calendar-demo-webapp</artifactId>
+              <contextRoot>calendar-demo</contextRoot>
+            </webModule>
+            <webModule>
+              <groupId>org.exoplatform.calendar</groupId>
+              <artifactId>calendar-demo-rest</artifactId>
+              <contextRoot>rest-calendar-demo</contextRoot>
+            </webModule>
+            
+            
+            <webModule>
+              <groupId>org.exoplatform.calendar</groupId>
+              <artifactId>calendar-webapp</artifactId>
+              <contextRoot>calendar</contextRoot>
+            </webModule>
+            
+            <webModule>
+              <groupId>org.exoplatform.calendar</groupId>
+              <artifactId>calendar-resources</artifactId>
+              <contextRoot>calendarResources</contextRoot>
+            </webModule>
+            
+            
+            
+          </modules>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

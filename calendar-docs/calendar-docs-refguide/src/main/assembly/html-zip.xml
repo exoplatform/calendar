@@ -1,0 +1,26 @@
+<assembly>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+   <fileSet>
+    <directory>target/wikbook/src</directory>
+    <outputDirectory>org.exoplatform.calendar</outputDirectory>
+    <includes>
+      <include>**/*.xml</include>
+     </includes>
+    <!--excludes>
+      <exclude>**/*.fo</exclude>
+      <exclude>**/*.pdf</exclude>
+    </excludes-->
+   </fileSet>
+   <fileSet>
+    <directory>target/wikbook/tmp/images</directory>
+    <outputDirectory>org.exoplatform.calendar/images</outputDirectory>
+    <includes>
+      <include>**/*.png</include>
+     </includes>
+   </fileSet>
+  </fileSets>
+</assembly>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.calendar</groupId>
+    <artifactId>calendar-server-jboss</artifactId>
+    <version>4.0.Alpha1-SNAPSHOT</version>
+  </parent>
+  <artifactId>calendar-server-jboss-patch</artifactId>
+  <packaging>jar</packaging>
+  <name>eXo Calendar Jboss Server</name>
+  <description>eXo Jboss Server Patch</description>
+  <url>http://www.exoplatform.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.server.jboss.patch</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/jboss</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-dependencies</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <excludes>**/GATEIN-README.txt,**/Release_notes.txt</excludes>
+              <includes>**</includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

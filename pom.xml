@@ -6,11 +6,11 @@
     <artifactId>exo.parent</artifactId>
     <version>7.1</version>
   </parent>
-  <groupId>org.exoplatform.cs</groupId>
-  <artifactId>cs</artifactId>
+  <groupId>org.exoplatform.calendar</groupId>
+  <artifactId>calendar</artifactId>
   <version>4.0.0.Alpha1-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>eXo Collaboration</name>
+  <name>eXo Calendar</name>
   <description>eXo Calendar application</description>
   <url>http://wiki.exoplatform.org/xwiki/bin/view/CS/</url>
   <scm>
@@ -20,7 +20,7 @@
   </scm>
   <issueManagement>
     <system>jira</system>
-    <url>https://jira.exoplatform.org/browse/CS</url>
+    <url>https://jira.exoplatform.org/browse/CAL</url>
   </issueManagement>
   <ciManagement>
     <system>hudson</system>
@@ -563,15 +563,19 @@
   </profiles>
 
   <modules>
-    <module>component</module>
-    <module>web</module>
-    <module>eXoApplication</module>
-    <module>extension</module>
-    <module>demo</module>
-    <module>docs</module>
-    <module>server/tomcat/patch</module>
-    <module>server/jboss/patch-ear</module>
-    <module>packaging</module>
-    <module>testsuite</module>
+    <module>calendar-injector</module>
+    <module>calendar-statistics</module>
+    <module>calendar-upgrade</module>
+    <module>calendar-common</module>
+    <module>calendar-service</module>
+    <module>calendar-webapp</module>
+    <module>calendar-extension</module>
+    <module>calendar-demo</module>
+    <module>calendar-docs</module>
+    <module>calendar-server</module>
+    <module>calendar-packaging</module>
+    <module>calendar-test</module>
+    <module>calendar-resources</module>
+    <module>calendar-webservice</module>
   </modules>
 </project>
