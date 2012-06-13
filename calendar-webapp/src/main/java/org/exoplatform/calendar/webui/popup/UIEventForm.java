@@ -106,7 +106,6 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
                      @EventConfig(listeners = UIEventForm.MovePreviousActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.DeleteUserActionListener.class, phase = Phase.DECODE),
                      //@EventConfig(listeners = UIEventForm.DeleteActionListener.class, confirm = "UIEventForm.msg.confirm-delete", phase = Phase.DECODE ),
-                     @EventConfig(listeners = UIEventForm.AddEmailAddressActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.AddAttachmentActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.RemoveAttachmentActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.DownloadAttachmentActionListener.class, phase = Phase.DECODE),
@@ -1744,20 +1743,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
   }
   
-  static  public class AddEmailAddressActionListener extends EventListener<UIEventForm> {
-    public void execute(Event<UIEventForm> event) throws Exception {
-      UIEventForm uiForm = event.getSource() ;
-      if(!uiForm.getEmailReminder()) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIEventForm.msg.email-reminder-required", null));
-        } else {
-        UIPopupAction uiPopupAction  = uiForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class) ;
-        UIAddressForm uiAddressForm = uiPopupAction.activate(UIAddressForm.class, 640) ;
-        UITaskForm.showAddressForm(uiAddressForm, uiForm.getEmailAddress());
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
-      }
-    }
-  }
-  
   static  public class AddAttachmentActionListener extends EventListener<UIEventForm> {
     public void execute(Event<UIEventForm> event) throws Exception {
       UIEventForm uiForm = event.getSource() ;
@@ -1819,6 +1804,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource();
       UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
+      UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;
+
       UIEventForm uiEventForm = uiContainer.getChild(UIEventForm.class);
       UIEventShareTab uiEventShareTab =  uiEventForm.getChild(UIEventShareTab.class);
       Long currentPage = uiEventShareTab.getCurrentPage();
@@ -1843,7 +1830,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       uiEventShareTab.updateCurrentPage(currentPage.intValue());
       ((UIEventAttenderTab)uiEventForm.getChildById(TAB_EVENTATTENDER)).updateParticipants(uiEventForm.getParticipantValues()) ; 
       uiEventForm.setMeetingInvitation(currentEmails.toArray(new String[currentEmails.size()])) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer);
+      //close select user popup
+      uiPoupPopupWindow.setShow(false) ;      
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;  
     }
   }
   static  public class AddUserActionListener extends EventListener<UIEventForm> {

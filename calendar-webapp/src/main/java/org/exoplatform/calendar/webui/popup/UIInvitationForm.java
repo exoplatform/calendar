@@ -62,7 +62,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
                     }
   ),
   @ComponentConfig(
-                   id = "UIPopupWindowUserSelectEventForm",
+                   id = "UIPopupWindowUserSelectEventFormForParticipant",
                    type = UIPopupWindow.class,
                    template =  "system:/groovy/webui/core/UIPopupWindow.gtmpl",
                    events = {
@@ -255,7 +255,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
       UIPopupContainer uiPopupContainer = uiInvitationForm.getParent();  
       uiPopupContainer.deActivate();
       UIPopupWindow uiPopupWindow = uiPopupContainer.getChild(UIPopupWindow.class) ;
-      if(uiPopupWindow == null)uiPopupWindow = uiPopupContainer.addChild(UIPopupWindow.class, "UIPopupWindowUserSelectEventForm", "UIPopupWindowUserSelectEventForm") ;
+      if(uiPopupWindow == null)uiPopupWindow = uiPopupContainer.addChild(UIPopupWindow.class, "UIPopupWindowUserSelectEventFormForParticipant", "UIPopupWindowUserSelectEventFormForParticipant") ;
       UIUserSelector uiUserSelector = uiPopupContainer.createUIComponent(UIUserSelector.class, null, null) ;
       uiUserSelector.setShowSearch(true);
       uiUserSelector.setShowSearchUser(true) ;
@@ -287,11 +287,16 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource();
       UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
+      UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;
       UIInvitationForm uiInvitationForm = uiContainer.getChild(UIInvitationForm.class) ;
       String values = uiUserSelector.getSelectedUsers();
       String value = uiInvitationForm.appendValue(uiInvitationForm.getParticipantValue(), values) ;
       uiInvitationForm.getUIFormTextAreaInput(UIInvitationForm.FIELD_PARTICIPANT).setValue(value) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiInvitationForm) ;
+//      event.getRequestContext().addUIComponentToUpdateByAjax(uiInvitationForm) ;
+      //close select user popup
+      uiPoupPopupWindow.setUIComponent(null) ;
+      uiPoupPopupWindow.setShow(false) ;      
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;  
     }
   }
 

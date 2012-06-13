@@ -145,11 +145,18 @@
       <UIUserSelector>Chọn người dùng</UIUserSelector>
     </title>
   </UIPopupWindowUserSelect>
-  <UIPopupWindowUserSelectEventForm>
+  <UIPopupWindowUserSelectEventFormForParticipant>
     <title>
       <UIUserSelector>Chọn người dùng</UIUserSelector>
     </title>
-  </UIPopupWindowUserSelectEventForm>
+  </UIPopupWindowUserSelectEventFormForParticipant>
+  
+  <UIPopupWindowUserSelectEventFormForReminder>
+    <title>
+      <UIUserSelector>Chọn người dùng</UIUserSelector>
+    </title>
+  </UIPopupWindowUserSelectEventFormForReminder>
+  
   <UIPopupWindowUserSelectTaskForm>
     <title>
       <UIUserSelector>Chọn người dùng</UIUserSelector>

@@ -21,14 +21,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.webui.UIEmailInput;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
+import org.exoplatform.webui.config.annotation.ComponentConfigs;
+import org.exoplatform.webui.config.annotation.EventConfig;
+import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.model.SelectItemOption;
+import org.exoplatform.webui.event.Event;
+import org.exoplatform.webui.event.EventListener;
+import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormCheckBoxInput;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormSelectBox;
+import org.exoplatform.webui.organization.account.UIUserSelector;
 
 /**
  * Created by The eXo Platform SARL
@@ -37,9 +45,26 @@ import org.exoplatform.webui.form.UIFormSelectBox;
  * Aug 29, 2007  
  */
 
-@ComponentConfig(
-    template = "app:/templates/calendar/webui/UIPopup/UIEventReminderTab.gtmpl"
-) 
+@ComponentConfigs( {
+  @ComponentConfig (
+                    template = "app:/templates/calendar/webui/UIPopup/UIEventReminderTab.gtmpl",
+                    events = {
+                        @EventConfig(listeners = UIEventReminderTab.AddEmailAddressActionListener.class)
+                    }
+
+  ),
+  @ComponentConfig(
+                   id = "UIPopupWindowUserSelectEventFormForReminder",
+                   type = UIPopupWindow.class,
+                   template =  "system:/groovy/webui/core/UIPopupWindow.gtmpl",
+                   events = {
+                     @EventConfig(listeners = UIPopupWindow.CloseActionListener.class, name = "ClosePopup"),
+                     @EventConfig(listeners = UIEventReminderTab.AddActionListener.class, name = "Add", phase = Phase.DECODE),
+                     @EventConfig(listeners = UIEventReminderTab.CloseActionListener.class, phase = Phase.DECODE )
+                   }
+  )
+}
+)  
 public class UIEventReminderTab extends UIFormInputWithActions {
 
 
@@ -63,7 +88,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
 
     List<SelectItemOption<String>> emailRemindRepeatOptions = getReminderTimes(5,60) ;
     List<SelectItemOption<String>> emailRemindBeforeOptions = getReminderTimes(5,60) ;
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(REMIND_BY_EMAIL, REMIND_BY_EMAIL, false)) ;
+    addUIFormInput(new UIFormCheckBoxInput<Boolean>(REMIND_BY_EMAIL, REMIND_BY_EMAIL, true)) ;
     addUIFormInput(new UIFormSelectBox(EMAIL_REMIND_BEFORE, EMAIL_REMIND_BEFORE, emailRemindBeforeOptions));
     //addUIFormInput(new UIFormTextAreaInput(FIELD_EMAIL_ADDRESS, FIELD_EMAIL_ADDRESS, null)) ;
     addUIFormInput(new UIEmailInput(FIELD_EMAIL_ADDRESS, FIELD_EMAIL_ADDRESS, null)) ;
@@ -106,6 +131,71 @@ public class UIEventReminderTab extends UIFormInputWithActions {
   public void processRender(WebuiRequestContext arg0) throws Exception {
     super.processRender(arg0);
   }
+  
+  
+  static  public class AddEmailAddressActionListener extends EventListener<UIEventReminderTab> {
+    public void execute(Event<UIEventReminderTab> event) throws Exception {
+      UIEventReminderTab uiEventReminderTab = event.getSource() ;
+      UIPopupContainer uiPopupContainer = uiEventReminderTab.getParent().getParent();  
+      uiPopupContainer.deActivate();
+      UIPopupWindow uiPopupWindow = uiPopupContainer.getChild(UIPopupWindow.class) ;
+      if(uiPopupWindow == null)uiPopupWindow = uiPopupContainer.addChild(UIPopupWindow.class, "UIPopupWindowUserSelectEventFormForReminder", "UIPopupWindowUserSelectEventFormForReminder") ;
+      UIUserSelector uiUserSelector = uiPopupContainer.createUIComponent(UIUserSelector.class, null, null) ;
+      uiUserSelector.setShowSearch(true);
+      uiUserSelector.setShowSearchUser(true) ;
+      uiUserSelector.setShowSearchGroup(true);
+      uiPopupWindow.setUIComponent(uiUserSelector);
+      uiPopupWindow.setShow(true);
+      uiPopupWindow.setRendered(true);
+      uiPopupWindow.setWindowSize(740, 400) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupContainer) ;
+    }
+  }
+  
+  static  public class AddActionListener extends EventListener<UIUserSelector> {
+    public void execute(Event<UIUserSelector> event) throws Exception {
+      UIUserSelector uiUserSelector = event.getSource();
+      UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
+      UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;
+      UIForm uiForm = uiContainer.getChild(UIEventForm.class) == null ? uiContainer.getChild(UITaskForm.class) : uiContainer.getChild(UIEventForm.class);
+      UIEventReminderTab uiEventReminderTab = uiForm.getChild(UIEventReminderTab.class);
+      UIEmailInput uiEmailInput = uiEventReminderTab.getChildById(FIELD_EMAIL_ADDRESS);
+      String values = uiUserSelector.getSelectedUsers();
+      List<String> newEmails = new ArrayList<String>() ;
+      for (String value : values.split(CalendarUtils.COMMA)) {
+        String email = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(value).getEmail() ;
+        if (!newEmails.contains(email)) {
+          newEmails.add(email) ;
+        }
+      }
+      uiEmailInput.setValue(appendMail(uiEmailInput,newEmails));
+      uiPoupPopupWindow.setUIComponent(null) ;
+      //close select user popup
+      uiPoupPopupWindow.setShow(false) ;      
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;  
+    }
+  }
+  
+  static  public class CloseActionListener extends EventListener<UIUserSelector> {
+    public void execute(Event<UIUserSelector> event) throws Exception {
+      UIUserSelector uiUserSelector = event.getSource() ;
+      UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;
+      UIPopupContainer uiContainer = uiPoupPopupWindow.getAncestorOfType(UIPopupContainer.class) ;
+      uiPoupPopupWindow.setUIComponent(null) ;
+      uiPoupPopupWindow.setShow(false) ;      
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;  
+    }
+  }
 
-
+  private static String appendMail(UIEmailInput uiEmailInput, List<String> newMails) {
+    StringBuilder sb = new StringBuilder();
+    String existedMails = uiEmailInput.getValue();
+    sb.append(existedMails);
+    for(String mail : newMails) {
+      if(!existedMails.contains(mail)) {
+        sb.append("," + mail);
+      }
+    }
+    return sb.toString();
+  }
 }

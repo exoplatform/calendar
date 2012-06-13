@@ -50,7 +50,7 @@
             <% 
               uiForm.renderField(uicomponent.FIELD_EMAIL_ADDRESS)
               String actionLabel =  uiForm.getLabel("SelectEmail")  ;
-              String actionLink = uiForm.event("AddEmailAddress") ;
+              String actionLink = uicomponent.event("AddEmailAddress") ;
               println "<span></span></div><a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
               println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"AddNewNodeIcon\"/> " + actionLabel ;
               println  "</a>";
