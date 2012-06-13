@@ -871,6 +871,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource();
       UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
+      UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;
       UITaskForm uiTaskForm = uiContainer.getChild(UITaskForm.class);
       UITaskDetailTab uiTaskDetailTab  = uiTaskForm.getChild(UITaskDetailTab.class); 
       UIFormStringInput uiInput = uiTaskDetailTab.getUIStringInput(UITaskDetailTab.FIELD_DELEGATION);
@@ -879,7 +880,10 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       if(!CalendarUtils.isEmpty(currentValues) && !currentValues.equals("null")) values += ","+ currentValues;
       values = CalendarUtils.cleanValue(values);
       uiInput.setValue(values);
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer);
+      //close popup
+      uiPoupPopupWindow.setUIComponent(null) ;
+      uiPoupPopupWindow.setShow(false) ;      
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;  
     }
   }
   

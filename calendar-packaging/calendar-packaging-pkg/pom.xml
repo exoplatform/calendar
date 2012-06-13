@@ -581,7 +581,7 @@
 	
 	<dependency>
 		<groupId>org.exoplatform.calendar</groupId>
-		<artifactId>calendar-web-resources</artifactId>
+		<artifactId>calendar-resources</artifactId>
 		<version>${project.version}</version>
 		<type>war</type>
 	</dependency>
@@ -651,7 +651,7 @@
 	
 	<dependency>
 		<groupId>org.exoplatform.calendar</groupId>
-		<artifactId>calendar-web-webservice</artifactId>
+		<artifactId>calendar-webservice</artifactId>
 		<version>${project.version}</version>
 		<type>jar</type>
 	</dependency>

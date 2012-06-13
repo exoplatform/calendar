@@ -55,7 +55,7 @@ function getModule(params) {
     new Project("org.exoplatform.calendar", "calendar-webservice", "jar",  module.version);
   module.web.resources =
     new Project("org.exoplatform.calendar", "calendar-resources", "war", module.version) ;
-  
+  module.web.resources.deployName = "csResources"
   //Calendar extension
   module.extension = {};
   module.extension.webapp =
