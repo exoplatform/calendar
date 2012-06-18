@@ -1,5 +1,4 @@
 <%
- import org.exoplatform.contact.service.Contact;
  import org.exoplatform.calendar.webui.popup.UIAddressForm.ContactData ;
  uiform.begin()
  def rcontext = _ctx.getRequestContext() ;
