@@ -56,7 +56,6 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
                     events = {
                       @EventConfig(listeners = UIInvitationForm.AddUserParticipantActionListener.class, phase = Phase.DECODE ),
                       @EventConfig(listeners = UIInvitationForm.AddGroupParticipantActionListener.class, phase = Phase.DECODE ),
-                      @EventConfig(listeners = UIInvitationForm.AddContactParticipantActionListener.class, phase = Phase.DECODE ),
                       @EventConfig(listeners = UIInvitationForm.SaveActionListener.class),
                       @EventConfig(listeners = UIInvitationForm.CancelActionListener.class, phase = Phase.DECODE ),
                       @EventConfig(listeners = UIInvitationForm.SelectGroupActionListener.class, phase = Phase.DECODE)
@@ -283,25 +282,6 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     }
   }
 
-  static public class AddContactParticipantActionListener extends EventListener<UIInvitationForm>{
-    public void execute(Event<UIInvitationForm> event) throws Exception{
-      UIInvitationForm uiInvitationForm = event.getSource();
-      UIPopupContainer uiPopupContainer = uiInvitationForm.getParent();
-     UIPopupWindow window = uiPopupContainer.getChildById("UIPopupWindowUserSelectEventForm");
-      if(window != null) {
-        window.setUIComponent(null) ;
-        window.setRendered(false);
-        window.setShow(false) ;
-      }
-      UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class) ;
-      UIPopupContainer uiGrandParentPopup = uiPopupContainer.getAncestorOfType(UIPopupContainer.class) ;
-      UIEventForm uiEventForm = uiGrandParentPopup.getChild(UIEventForm.class) ;
-      UIAddressForm uiAddressForm = uiPopupAction.activate(UIAddressForm.class,660) ;
-      uiAddressForm.actions_ = new String[]{"Add", "Cancel"};
-      UITaskForm.showAddressForm(uiAddressForm, uiEventForm.getEmailAddress());
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupContainer) ;  
-   }
-  }
 
   static  public class AddActionListener extends EventListener<UIUserSelector> {
     public void execute(Event<UIUserSelector> event) throws Exception {
