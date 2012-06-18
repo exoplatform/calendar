@@ -7,9 +7,6 @@
     <div class="Label">   
       <span>
           <%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
-        <a href="<%=uiForm.event("AddContactParticipant")%>" class="ParticipantLabel" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_CONTACT)%>">
-          <img class="AddContactParticipantIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
-        </a>
         <a href="<%=uiForm.event("AddUserParticipant")%>" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>">
           <img class="SelectUserIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
         </a>
