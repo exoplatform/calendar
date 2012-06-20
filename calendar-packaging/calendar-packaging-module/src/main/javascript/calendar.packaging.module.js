@@ -16,28 +16,28 @@ function getModule(params) {
   
   module.commons = {};
   module.commons.extension = 
-    new Project("org.exoplatform.commons", "exo.platform.commons.extension.webapp", "war", "${org.exoplatform.commons.version}").
-    addDependency(new Project("org.exoplatform.commons", "exo.platform.commons.webui", "jar", "${org.exoplatform.commons.version}"));
+    new Project("org.exoplatform.commons", "commons-extension-webapp", "war", "${org.exoplatform.commons.version}").
+    addDependency(new Project("org.exoplatform.commons", "commons-webui-component", "jar", "${org.exoplatform.commons.version}"));
   module.commons.extension.deployName = "commons-extension";
   
   module.comet = {};
   module.comet.cometd =
-    new Project("org.exoplatform.commons", "exo.platform.commons.comet.webapp", "war", cometVersion).
+    new Project("org.exoplatform.commons", "commons-comet-webapp", "war", cometVersion).
     addDependency(new Project("org.mortbay.jetty", "cometd-bayeux", "jar", "${org.mortbay.jetty.cometd-bayeux.version}")).
     addDependency(new Project("org.mortbay.jetty", "jetty-util", "jar", "${org.mortbay.jetty.jetty-util.version}")).
     addDependency(new Project("org.mortbay.jetty", "cometd-api", "jar", "${org.mortbay.jetty.cometd-api.version}")).
-    addDependency(new Project("org.exoplatform.commons", "exo.platform.commons.comet.service", "jar", cometVersion));
+    addDependency(new Project("org.exoplatform.commons", "commons-comet-service", "jar", cometVersion));
   module.comet.cometd.deployName = "cometd";
   
   // Calendar
 
-  module.upgrade = new Project("org.exoplatform.commons", "exo.platform.commons.component.upgrade", "jar", "${org.exoplatform.commons.version}").
-    addDependency(new Project("org.exoplatform.commons", "exo.platform.commons.component.product", "jar", "${org.exoplatform.commons.version}"));
+  module.upgrade = new Project("org.exoplatform.commons", "commons-component-upgrade", "jar", "${org.exoplatform.commons.version}").
+    addDependency(new Project("org.exoplatform.commons", "commons-component-product", "jar", "${org.exoplatform.commons.version}"));
 
   
   module.common = new Project("org.exoplatform.calendar", "calendar-common", "jar", module.version).
      addDependency(new Project("org.exoplatform.calendar", "calendar-upgrade", "jar", module.version)).
-     addDependency(new Project("org.exoplatform.commons", "exo.platform.commons.webui.ext", "jar", "${org.exoplatform.commons.version}"));
+     addDependency(new Project("org.exoplatform.commons", "commons-webui-ext", "jar", "${org.exoplatform.commons.version}"));
 
   
     
