@@ -149,45 +149,45 @@
 	  </dependency>
 	  <dependency>
 		<groupId>org.exoplatform.commons</groupId>
-		<artifactId>exo.platform.commons.component.upgrade</artifactId>
+		<artifactId>commons-component-upgrade</artifactId>
 		<version>${org.exoplatform.commons.version}</version>
 	  </dependency>
     <dependency>
     <groupId>org.exoplatform.commons</groupId>
-    <artifactId>exo.platform.commons.component.product</artifactId>
+    <artifactId>commons-component-product</artifactId>
     <version>${org.exoplatform.commons.version}</version>
     </dependency>
     <dependency>
     <groupId>org.exoplatform.commons</groupId>
-    <artifactId>exo.platform.commons.webui</artifactId>
+    <artifactId>commons-webui-component</artifactId>
     <version>${org.exoplatform.commons.version}</version>
     </dependency>
     <dependency>
     <groupId>org.exoplatform.commons</groupId>
-    <artifactId>exo.platform.commons.comet.service</artifactId>
+    <artifactId>commons-comet-service</artifactId>
     <version>${org.exoplatform.commons.version}</version>
     </dependency>
     <dependency>
     <groupId>org.exoplatform.commons</groupId>
-    <artifactId>exo.platform.commons.comet.webapp</artifactId>
+    <artifactId>commons-comet-webapp</artifactId>
     <version>${org.exoplatform.commons.version}</version>
     <type>war</type>
     </dependency>
 	  <dependency>
 		<groupId>org.exoplatform.commons</groupId>
-		<artifactId>exo.platform.commons.fck</artifactId>
+		<artifactId>commons-fck</artifactId>
 		<version>${org.exoplatform.commons.version}</version>
 		<type>war</type>
 	  </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
-      <artifactId>exo.platform.commons.resources</artifactId>
+      <artifactId>commons-webui-resources</artifactId>
       <version>${org.exoplatform.commons.version}</version>
        <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
-      <artifactId>exo.platform.commons.extension.webapp</artifactId>
+      <artifactId>commons-extension-webapp</artifactId>
       <version>${org.exoplatform.commons.version}</version>
        <type>war</type>
     </dependency>
