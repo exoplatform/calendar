@@ -22,13 +22,13 @@
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
-      <artifactId>exo.platform.commons.webui.ext</artifactId>
+      <artifactId>commons-webui-ext</artifactId>
       <version>${org.exoplatform.commons.version}</version>
       <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
-      <artifactId>exo.platform.commons.component</artifactId>
+      <artifactId>commons-component-common</artifactId>
       <version>${org.exoplatform.commons.version}</version>
       <type>jar</type>
     </dependency>
