@@ -37,6 +37,7 @@ import org.exoplatform.webui.form.UIFormCheckBoxInput;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.organization.account.UIUserSelector;
+import org.gatein.common.i18n.BundleName.Iterator;
 
 /**
  * Created by The eXo Platform SARL
@@ -190,12 +191,24 @@ public class UIEventReminderTab extends UIFormInputWithActions {
   private static String appendMail(UIEmailInput uiEmailInput, List<String> newMails) {
     StringBuilder sb = new StringBuilder();
     String existedMails = uiEmailInput.getValue();
-    sb.append(existedMails);
-    for(String mail : newMails) {
-      if(!existedMails.contains(mail)) {
-        sb.append("," + mail);
+    if(existedMails.equals("")) {
+      java.util.Iterator<String> it = newMails.iterator();
+      while(it.hasNext()) {
+        sb.append(it.next());
+        if(!it.hasNext()) {
+          break;
+        }
+        sb.append(",");
       }
+      return sb.toString();
+    } else {
+      sb.append(existedMails);
+      for(String mail : newMails) {
+        if(!existedMails.contains(mail)) {
+          sb.append("," + mail);
+        }
+      }
+      return sb.toString();
     }
-    return sb.toString();
   }
 }
