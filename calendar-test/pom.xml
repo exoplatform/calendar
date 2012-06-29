@@ -10,6 +10,6 @@
   <packaging>pom</packaging>
   <name>eXo Platform - Tests</name>
   <modules>
-    <module>selenium</module>
+    <module>calendar-test-selenium</module>
   </modules>
 </project>

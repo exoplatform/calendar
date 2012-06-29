@@ -8,7 +8,7 @@
     <version>4.0.0.Alpha1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>selenium</artifactId>
+  <artifactId>calendar-test-selenium</artifactId>
   <packaging>jar</packaging>
   <name>Selenium Sniff Test for selenium</name>
   <description>Automated UI tests for selenium</description>
