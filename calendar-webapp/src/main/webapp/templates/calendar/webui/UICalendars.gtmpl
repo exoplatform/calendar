@@ -6,7 +6,6 @@
   import org.exoplatform.webui.form.UIFormCheckBoxInput;
   import org.exoplatform.calendar.webui.UICalendarPortlet;
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().importJavascript('eXo.calendar.UICalendars','/calendar/javascript/') ;
   rcontext.getJavascriptManager().addJavascript('eXo.calendar.CalendarLayout.updateUICalendarsLayout();') ;
   rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendars.init("' + uiform.id + '") ;') ;
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;

@@ -1,13 +1,13 @@
 
 // Create new method for special context
-DragDrop.prototype.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
+eXo.core.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
   if(dropableTargets == null) return null ;
   var UICalendarDragDropObj = eXo.calendar.UICalendarDragDrop;
   var additionX = UICalendarDragDropObj.RowContainerDay.scrollLeft;
   var additionY = UICalendarDragDropObj.RowContainerDay.scrollTop;
-  var mousexInPage = eXo.core.Browser.findMouseXInPage(mouseEvent) + additionX ;
-  var mouseyInPage = eXo.core.Browser.findMouseYInPage(mouseEvent) + additionY ;
-  if(eXo.core.Browser.getBrowserType() == "ie" && eXo.core.I18n.isRT())
+  var mousexInPage = eXo.cs.Browser.findMouseXInPage(mouseEvent) + additionX ;
+  var mouseyInPage = eXo.cs.Browser.findMouseYInPage(mouseEvent) + additionY ;
+  if(gj.browser.msie != undefined && eXo.core.I18n.isRT())
   	mousexInPage = mousexInPage / 2;
   
   var clickObject = dndEvent.clickObject ;
@@ -17,8 +17,8 @@ DragDrop.prototype.findDropableTarget4Cal = function(dndEvent, dropableTargets, 
   for(var i = 0 ; i < len ; i++) {
     var ele =  dropableTargets[i] ;
     if(document.getElementById("UIPageDesktop")) {
-			mousexInPage = eXo.core.Browser.findMouseXInPage(mouseEvent) + eXo.cs.Utils.getScrollLeft(ele) ;
-  		mouseyInPage = eXo.core.Browser.findMouseYInPage(mouseEvent) + eXo.cs.Utils.getScrollTop(ele) ;
+			mousexInPage = eXo.cs.Browser.findMouseXInPage(mouseEvent) + eXo.cs.Utils.getScrollLeft(ele) ;
+  		mouseyInPage = eXo.cs.Browser.findMouseYInPage(mouseEvent) + eXo.cs.Utils.getScrollTop(ele) ;
 		}
     if(dragObject != ele && this.isIn(mousexInPage, mouseyInPage, ele)) {
       if(foundTarget == null) {
@@ -56,7 +56,7 @@ function UICalendarDragDrop() {
 UICalendarDragDrop.prototype.init = function(tableData, events) {
   this.tableData = tableData;
   this.events = events;
-  this.RowContainerDay = eXo.core.DOMUtil.findAncestorByClass((this.tableData[0])[0], 'RowContainerDay');
+  this.RowContainerDay = gj((this.tableData[0])[0]).parents('.RowContainerDay')[0]; 
   this.getAllDropableSets() ;
   this.regDnDItem() ;
 } ;
@@ -71,7 +71,7 @@ UICalendarDragDrop.prototype.getAllDropableSets = function() {
   }
 	// For moving events between calendars.
 	var uiCalendars = document.getElementById("UICalendars");
-	var calendarItems = eXo.core.DOMUtil.findDescendantsByClass(uiCalendars,"div","CalendarItem");
+	var calendarItems = gj(uiCalendars).find('div.CalendarItem'); 
 	this.dropableSets.pushAll(calendarItems);
 } ;
 
@@ -117,8 +117,8 @@ UICalendarDragDrop.prototype.initDnD = function(dropableObjs, clickObj, dragObj,
   var EventMonthContentNode = document.createElement('div');
   EventMonthContentNode.className = 'EventMonthContent';
   
-	eXo.core.DOMUtil.addClass(UIMonthViewNode,"DummyDNDClass");
-	eXo.core.DOMUtil.addClass(EventMonthContentNode,"DummyDNDClass");
+	gj(UIMonthViewNode).addClass("DummyDNDClass");
+	gj(EventMonthContentNode).addClass("DummyDNDClass");
 	
   tmpNode = this.getCheckedObject(clickBlock) ;
   
@@ -145,13 +145,13 @@ UICalendarDragDrop.prototype.synDragObjectPos = function(dndEvent) {
     }
   }
   var dragObject = dndEvent.dragObject ;
-  var mouseX = eXo.core.Browser.findMouseXInPage(dndEvent.backupMouseEvent);
-  var mouseY = eXo.core.Browser.findMouseYInPage(dndEvent.backupMouseEvent);
+  var mouseX = eXo.cs.Browser.findMouseXInPage(dndEvent.backupMouseEvent);
+  var mouseY = eXo.cs.Browser.findMouseYInPage(dndEvent.backupMouseEvent);
   dragObject.style.top = mouseY + 'px' ;
   dragObject.style.left = mouseX + 'px' ;
   if (eXo.core.I18n.isRT()) {
-		if(eXo.core.Browser.browserType == "ie") mouseX -= eXo.cs.Utils.getScrollbarWidth();
-		dragObject.style.right = (eXo.core.Browser.getBrowserWidth() - mouseX) + 'px' ;
+		if(gj.browser.msie != undefined) mouseX -= eXo.cs.Utils.getScrollbarWidth();
+		dragObject.style.right = (gj(window).width() - mouseX) + 'px' ;
 		dragObject.style.left = '' ;
   }
 } ;
@@ -205,7 +205,7 @@ UICalendarDragDrop.prototype.dragCallback = function(dndEvent) {
 
 UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
 	eXo.calendar.EventTooltip.enable();
-  var eventObj = eXo.core.DOMUtil.findDescendantsByClass(dndEvent.dragObject,"div","EventBoxes");
+  var eventObj = gj(dndEvent.dragObject).find('div.EventBoxes');
   eXo.calendar.UICalendarDragDrop.highlight(false);
   if ((eXo.calendar.UICalendarDragDrop.pos.x == dndEvent.dragObject.offsetLeft) && (eXo.calendar.UICalendarDragDrop.pos.y == dndEvent.dragObject.offsetTop)) {
     eXo.calendar.UICalendarDragDrop.pos = null ;
@@ -217,13 +217,13 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
   var junkMove =  eXo.core.DragDrop.isJunkMove(dndEvent.dragObject, foundTarget) ;
   dndEvent.update(foundTarget, junkMove) ;
   
-  eXo.core.DOMUtil.removeElement(dndEvent.dragObject);
+  gj(dndEvent.dragObject).remove();
   if (this.foundTargetObjectCatch) {
     this.foundTargetObjectCatch.style.backgroundColor = this.foundTargetObjectCatchStyle ;
   }
   this.foundTargetObjectCatch = dndEvent.foundTargetObject ;
-	if (this.foundTargetObjectCatch && eXo.core.DOMUtil.hasClass(this.foundTargetObjectCatch,"CalendarItem")) {
-		var moveAction = eXo.core.DOMUtil.findFirstDescendantByClass(dndEvent.dragObject,"div","EventBoxes").getAttribute("moveAction");
+	if (this.foundTargetObjectCatch && gj(this.foundTargetObjectCatch).hasClass("CalendarItem")) {
+		var moveAction = gj(dndEvent.dragObject).find('div.EventBoxes')[0].getAttribute("moveAction"); 
 		ajaxAsyncGetRequest(eXo.cs.Utils.createUrl(moveAction,null), false) ;
 		return ;
 	}
@@ -250,14 +250,14 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
 } ;
 
 UICalendarDragDrop.prototype.getCheckedObject = function(clickObj){
-  var eventContainer = eXo.core.DOMUtil.findAncestorByClass(clickObj,"RowContainerDay");
-  var evenObj = eXo.core.DOMUtil.findDescendantsByClass(eventContainer,"div", "EventBoxes");
+  var eventContainer = gj(clickObj).parents('.RowContainerDay')[0];
+  var evenObj = gj(eventContainer).find('div.EventBoxes'); 
   var checkedObj = [];
   var i = evenObj.length ;
   var tmpNode = null ;
   var top = 0 ;
   this.selectedEvent = new Array();
-	tmpNode = eXo.core.DOMUtil.findFirstDescendantByClass(clickObj, "input", "checkbox");
+	tmpNode = gj(clickObj).find('input.checkbox')[0]; 
 	tmpNode.checked = true ;
   while(i--){
     if(!this.isCheckedObject(evenObj[i])) continue ;
@@ -278,18 +278,18 @@ UICalendarDragDrop.prototype.highlight = function(isHighlight){
 	var i = me.selectedEvent.length ;
 	if(isHighlight){
 		while(i--){
-	  	eXo.core.DOMUtil.addClass(me.selectedEvent[i],"UIHightlightEvent");
+	  	gj(me.selectedEvent[i]).addClass("UIHightlightEvent");
 	  }
 	} else{
 		while(i--){
-	  	eXo.core.DOMUtil.replaceClass(me.selectedEvent[i],"UIHightlightEvent","");
+	  	gj(me.selectedEvent[i]).toggleClass("UIHightlightEvent");
 	  }
 	  delete me.selectedEvent ;
 	}
 };
 
 UICalendarDragDrop.prototype.isCheckedObject = function(eventObj){
-  var checkbox = eXo.core.DOMUtil.findFirstDescendantByClass(eventObj, "input", "checkbox");
+  var checkbox = gj(eventObj).find('input.checkbox')[0]; 
   return checkbox.checked ;
 } ;
 

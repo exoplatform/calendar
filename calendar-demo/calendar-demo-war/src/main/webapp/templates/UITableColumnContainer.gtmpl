@@ -4,7 +4,6 @@
   def rcontext = _ctx.getRequestContext() ;
   JavascriptManager jsmanager = rcontext.getJavascriptManager();
   
-  jsmanager.importJavascript('eXo.portal.PortalDragDrop');
 %>
 <div class="UIContainer" id="UIContainer-${uicomponent.id}">
   <div class="META-DATA-BLOCK" style="display: none">

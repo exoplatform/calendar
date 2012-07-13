@@ -48,7 +48,7 @@ function getProduct(version) {
   product.addDependencies(calendar.demo.cometd);
   product.addDependencies(calendar.demo.rest);
   
-  product.addDependencies(new Project("org.exoplatform.commons", "exo.platform.commons.component", "jar", "${org.exoplatform.commons.version}"));
+  product.addDependencies(new Project("org.exoplatform.commons", "commons-component-common", "jar", "${org.exoplatform.commons.version}"));
   
   product.addServerPatch("tomcat", calendar.server.tomcat.patch) ;
   //product.addServerPatch("jboss",  cs.server.jboss.patch) ;

@@ -1,3 +1,4 @@
+var eXo = eXo || {}
 if(!eXo.cs){
 	eXo.cs = {} ;
 }
@@ -6,8 +7,9 @@ function CheckBoxManager() {
 } ;
 
 CheckBoxManager.prototype.init = function(cont) {
-	if(typeof(cont) == "string") cont = document.getElementById(cont) ;
-	var checkboxes = eXo.core.DOMUtil.findDescendantsByClass(cont, "input", "checkbox") ;
+	if(typeof(cont) == "string") 
+		cont = document.getElementById(cont) ;
+	var checkboxes = gj(cont).find('input.checkbox'); 
 	if(checkboxes.length <=0) return ;
 	checkboxes[0].onclick = this.checkAll ;
 	var len = checkboxes.length ;
@@ -21,8 +23,8 @@ CheckBoxManager.prototype.checkAll = function() {
 } ;
 
 CheckBoxManager.prototype.getItems = function(obj) {
-	var table = eXo.core.DOMUtil.findAncestorByTagName(obj, "table");
-	var checkboxes = eXo.core.DOMUtil.findDescendantsByClass(table, "input","checkbox");
+	var table = gj(obj).parents('table')[0];
+	var checkboxes = gj(table).find('input.checkbox')[0];
 	return checkboxes ;
 } ;
 
@@ -57,10 +59,12 @@ CheckBoxManager.prototype.checkItem = function(obj){
 } ;
 
 CheckBoxManager.prototype.highlight = function(obj,isChecked){
-	obj = eXo.core.DOMUtil.findAncestorByTagName(obj,"tr");
+	obj = gj(obj).parents('tr')[0];
 	if(!obj) return ;
-	if(isChecked) eXo.core.DOMUtil.addClass(obj,"UIHightLight");
-	else eXo.core.DOMUtil.replaceClass(obj,"UIHightLight","");
+	if(isChecked) 
+		gj(obj).addClass("UIHightLight");
+	else 
+		gj(obj).toggleClass("UIHightLight","");
 } ;
 
 eXo.cs.CheckBox = new CheckBoxManager() ;
@@ -78,11 +82,10 @@ function LayoutSpliter() {
  */
 LayoutSpliter.prototype.doResize = function(e , markerobj) {
   _e = (window.event) ? window.event : e ;
-  var DOMUtil = eXo.core.DOMUtil ;
-  this.posY = eXo.core.Browser.findMouseYInPage(_e) ;
+  this.posY = eXo.cs.Browser.findMouseYInPage(_e) ;
   var marker = (typeof(markerobj) == "string")? document.getElementById(markerobj):markerobj ;
   var container = marker.parentNode ;
-  var areas = DOMUtil.findDescendantsByClass(container, "div", "SpliterResizableListArea") ;
+  var areas = gj(container).find('div.SpliterResizableListArea'); 
   if((areas.length < 2) || (areas[0].style.display=="none")) return ;
   this.beforeArea = areas[0] ;
   this.afterArea = areas[1] ;
@@ -97,7 +100,7 @@ LayoutSpliter.prototype.doResize = function(e , markerobj) {
 LayoutSpliter.prototype.adjustHeight = function(evt) {
   evt = (window.event) ? window.event : evt ;
   var Spliter = eXo.cs.Spliter ;
-  var delta = eXo.core.Browser.findMouseYInPage(evt) - Spliter.posY ;
+  var delta = eXo.cs.Browser.findMouseYInPage(evt) - Spliter.posY ;
   var afterHeight = Spliter.afterY - delta ;
   var beforeHeight = Spliter.beforeY + delta ;
   if (beforeHeight <= 0  || afterHeight <= 0) return ;
@@ -127,8 +130,9 @@ Utils.prototype.show = function(obj, evt){
 	if(!evt) evt = window.event ;
 	evt.cancelBubble = true ;
 	var DOMUtil = eXo.core.DOMUtil ;
-	var uiPopupCategory = DOMUtil.findFirstDescendantByClass(obj, 'ul', 'UIRightClickPopupMenu') ;	
-	if (!uiPopupCategory) uiPopupCategory = DOMUtil.findFirstDescendantByClass(obj, 'div', 'UIRightClickPopupMenu') ;
+	var uiPopupCategory = gj(obj).find('ul.UIRightClickPopupMenu')[0] ;	
+	if (!uiPopupCategory) 
+		uiPopupCategory = gj(obj).find('div.UIRightClickPopupMenu')[0] ;
 	if(uiPopupCategory.style.display == "none") {
 		DOMUtil.cleanUpHiddenElements() ;
 		uiPopupCategory.style.display = "block" ;
@@ -139,10 +143,10 @@ Utils.prototype.show = function(obj, evt){
 };
 
 Utils.prototype.showHidePane = function(clickobj, beforeobj, afterobj) {
-  var container = eXo.core.DOMUtil.findAncestorByClass(clickobj, "SpliterContainer") ;
-  var areas = eXo.core.DOMUtil.findDescendantsByClass(container, "div", "SpliterResizableListArea") ;
-  var uiGrid = eXo.core.DOMUtil.findFirstDescendantByClass(areas[1], "table", "UIGrid") ;
-  var uiPreview = eXo.core.DOMUtil.findAncestorByClass(areas[1], "UIPreview") ;
+  var container = gj(clickobj).parents('.SpliterContainer')[0]; 
+  var areas = gj(container).find('div.SpliterResizableListArea'); 
+  var uiGrid = gj(areas[1]).find('table.UIGrid')[0]; 
+  var uiPreview = gj(areas[1]).parents(".UIPreview")[0] ;
   if(areas.length < 2) return ;
 	if(areas[0].style.display != "none") {
 		clickobj.className = "MinimizeButton";
@@ -185,7 +189,7 @@ Utils.prototype.onEnter = function(evt) {
 } ;
 
 Utils.prototype.doAction = function(obj){
-	var uiSeachForm = eXo.core.DOMUtil.findAncestorByClass(obj,"UIForm");
+	var uiSeachForm = gj(obj).parents(".UIForm")[0];
 	var actionNode = this.getElementByClass(uiSeachForm,"Search");
 	var nodeName = String(actionNode.nodeName).toLowerCase();
 	switch(nodeName){
@@ -199,7 +203,8 @@ Utils.prototype.getElementByClass = function(parentNode,clazz){
 	var nodeList = parentNode.getElementsByTagName("*");
 	var i = nodeList.length;
 	while(i--){
-		if(eXo.core.DOMUtil.hasClass(nodeList[i],clazz)) return nodeList[i];
+		if(gj(nodeList[i]).hasClass(clazz)) 
+			return nodeList[i];
 	}
 };
 
@@ -208,8 +213,8 @@ Utils.prototype.cancelSubmit = function() {
 } ;
 
 Utils.prototype.confirmAction = function(obj,msg,parentId){
-	var	cont = eXo.core.DOMUtil.findAncestorById(obj,parentId);
-	var checkboxes = eXo.core.DOMUtil.findDescendantsByClass(cont,"input","checkbox");
+	var	cont = gj(obj).parents('#' + parentId)[0]; 
+	var checkboxes = gj(cont).find("input.checkbox");
 	var i = checkboxes.length;
 	var actionLink = obj.getAttribute("actionLink");
 	var check = false ;
@@ -227,9 +232,10 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
 };
 
 Utils.prototype.swapClass = function(obj,hoverClass){
-	var domUtil = eXo.core.DOMUtil;
-	if(domUtil.hasClass(obj,hoverClass)) domUtil.replaceClass(obj,hoverClass,"");
-	else domUtil.addClass(obj,hoverClass);
+	if(gj(obj).hasClass(hoverClass)) 
+		gj(obj).toggleClass(hoverClass);
+	else 
+		gj(obj).addClass(hoverClass);
 };
 /**
  * Gets scrollTop property of DOM element
@@ -526,7 +532,6 @@ Utils.prototype.loadPlatformCometd = function(){
 }
 
 eXo.cs.Utils = new Utils() ;
-eXo.cs.Utils.loadPlatformCometd();
 /**
  * TODO: remove method call when portal remove Cometd.js file
  */
@@ -537,14 +542,6 @@ function EventManager(){
 	
 }
 
-EventManager.prototype.addEvent = function( obj, type, fn ) {
-  if ( obj.attachEvent ) {
-    obj['e'+type+fn] = fn;
-    obj[type+fn] = function(){obj['e'+type+fn]( window.event );}
-    obj.attachEvent( 'on'+type, obj[type+fn] );
-  } else
-    obj.addEventListener( type, fn, false );
-};
 
 EventManager.prototype.removeEvent = function( obj, type, fn ) {
   if ( obj.detachEvent ) {
@@ -570,10 +567,10 @@ EventManager.prototype.getEventTarget = function(evt){
 
 EventManager.prototype.getEventTargetByClass = function(evt, className){
 	var target = this.getEventTarget(evt);
-	if (eXo.core.DOMUtil.hasClass(target, className))
+	if (gj(target).hasClass(className))
 		return target ;
 	else
-		return eXo.core.DOMUtil.findAncestorByClass(target, className) ;
+		return gj(target).parents('.' + className)[0] ;
 };
 
 EventManager.prototype.getEventTargetByTagName = function(evt, tagName){
@@ -581,7 +578,7 @@ EventManager.prototype.getEventTargetByTagName = function(evt, tagName){
 	if (target.tagName.toLowerCase() == tagName.trim())
 		return target ;
 	else
-		return eXo.core.DOMUtil.findAncestorByTagName(target, tagName) ;
+		return gj(target).parents(tagName)[0] ;
 };
 
 EventManager.prototype.cancelBubble = function(evt) {
@@ -592,14 +589,14 @@ EventManager.prototype.cancelBubble = function(evt) {
 };
 
 EventManager.prototype.cancelEvent = function(evt) {
-	eXo.core.EventManager.cancelBubble(evt) ;
+	eXo.cs.EventManager.cancelBubble(evt) ;
   if(eXo.core.Browser.browserType == 'ie')
     window.event.returnValue = true ;
   else
     evt.preventDefault() ;
 };
 
-eXo.core.EventManager = new EventManager() ;
+eXo.cs.EventManager = new EventManager() ;
 
 /********************* Scroll Manager ******************/
 
@@ -614,11 +611,11 @@ UINavigation.prototype.loadScroll = function() {
     this.scrollMgr = eXo.portal.UIPortalControl.newScrollManager("UIActionBar") ;
     this.scrollMgr.initFunction = uiNav.iniScroll ;
     
-    this.scrollMgr.mainContainer = eXo.core.DOMUtil.findFirstDescendantByClass(container, "div", "CenterBar") ;
-    this.scrollMgr.arrowsContainer = eXo.core.DOMUtil.findFirstDescendantByClass(container, "div", "ScrollButtons") ;
+    this.scrollMgr.mainContainer = gj(container).find('div.CenterBar')[0];
+    this.scrollMgr.arrowsContainer = gj(container).find('div.ScrollButtons')[0];
     this.scrollMgr.loadElements("ControlButton", true) ;
     
-    var button = eXo.core.DOMUtil.findDescendantsByTagName(this.scrollMgr.arrowsContainer, "div");
+    var button = gj(this.scrollMgr.arrowsContainer).find("div");
     if(button.length >= 2) {    
       this.scrollMgr.initArrowButton(button[0],"left", "ScrollLeftButton", "HighlightScrollLeftButton", "DisableScrollLeftButton") ;
       this.scrollMgr.initArrowButton(button[1],"right", "ScrollRightButton", "HighlightScrollRightButton", "DisableScrollRightButton") ;
@@ -812,5 +809,3 @@ DateTimeFormater.prototype.format = function (date, mask, utc) {
 
 eXo.cs.DateTimeFormater = new DateTimeFormater();
 document.onclick = eXo.core.DOMUtil.cleanUpHiddenElements;
-if(!eXo.calendar.LayoutManager) eXo.calendar.LayoutManager = new LayoutManager("calendarlayout");
-if(!eXo.contact.LayoutManager) eXo.contact.LayoutManager = new LayoutManager("contactLayout");

@@ -13,7 +13,7 @@ UIContextMenu.prototype.getCallback = function(menu) {
 } ;
 
 UIContextMenu.prototype.init = function(conf) {
-	this.IE = (eXo.core.Browser.browserType == "ie")?true : false ;
+	this.IE = (gj.browser.msie != undefined) ;
 	try {		
 		this.preventDefault = conf.preventDefault ;
 		this.preventForms = conf.preventForms ;
@@ -89,7 +89,7 @@ UIContextMenu.prototype.getReturnValue = function() {
 
 UIContextMenu.prototype.hasChild = function(root, obj) {
 	if(typeof(obj) == "string") obj = document.getElementById(obj) ;
-	var children = eXo.core.DOMUtil.findChildrenByClass(root, "div", "UIRightClickPopupMenu") ;
+	var children = gj(root).children("div.UIRightClickPopupMenu") ;
 	var len = children.length ;
   for(var i = 0 ; i < len ; i ++) {
   	if (children[i].id == obj.id) return children[i] ;    
@@ -129,7 +129,7 @@ UIContextMenu.prototype.replaceall = function(string, obj) {
 } ;
 
 UIContextMenu.prototype.changeAction = function(obj, id) {
-	var actions = eXo.core.DOMUtil.findDescendantsByTagName(obj, "a") ;
+	var actions = gj(obj).find("a") ;
 	var len = actions.length ;
 	var href = "" ;
 	if (typeof(id) == "string") {
@@ -165,21 +165,21 @@ UIContextMenu.prototype.showHide = function() {
 	}
 } ;
 
-UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos,evt) {
+UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
   var DOMUtil = eXo.core.DOMUtil;
   var Browser = eXo.core.Browser;
-  var browserHeight = eXo.core.Browser.getBrowserHeight() + document.documentElement.scrollTop || document.body.scrollTop;
-  var browserWidth = eXo.core.Browser.getBrowserWidth() + document.documentElement.scrollLeft || document.body.scrollLeft;
+  var browserHeight = gj(window).height() + document.documentElement.scrollTop || document.body.scrollTop;
+  var browserWidth = gj(window).width() + document.documentElement.scrollLeft || document.body.scrollLeft;
   if (document.getElementById("tmpMenuElement"))
-    DOMUtil.removeElement(document.getElementById("tmpMenuElement"));
+    gj("#tmpMenuElement").remove();
   var tmpMenuElement = oldmenu.cloneNode(true);
   tmpMenuElement.setAttribute("id", "tmpMenuElement");
-  DOMUtil.addClass(tmpMenuElement, this.portletCssClass + " UIEmpty");
+  gj(tmpMenuElement).addClass(this.portletCssClass + " UIEmpty");
   this.menuElement = tmpMenuElement;
-  var callback = this.getCallback(tmpMenuElement);
-  if (callback) {
-    callback = callback + "(evt)";
-    eval(callback);
+  var callback = this.getCallback(tmpMenuElement);  
+  if (callback) {	  
+	callback = callback + "(arguments[2])";
+	eval(callback);		
   }
   var uiApplication = document.getElementById("UIPortalApplication");
   if (this.menuElement) {
@@ -229,17 +229,18 @@ UIContextMenu.prototype.show = function(evt) {
 	var UIContextMenu = eXo.webui.UIContextMenu ;
 	UIContextMenu.attachedElement = UIContextMenu.getSource(_e) ;
 	var menuPos = {
-		"x": eXo.core.Browser.findMouseXInPage(_e) ,
-		"y": eXo.core.Browser.findMouseYInPage(_e)
+		"x": eXo.cs.Browser.findMouseXInPage(_e) ,
+		"y": eXo.cs.Browser.findMouseYInPage(_e)
 	} ;
 	var menuElementId = UIContextMenu.getMenuElementId() ;
-	var currentPortlet = eXo.core.DOMUtil.findAncestorByClass(UIContextMenu.attachedElement, UIContextMenu.portletCssClass) ;
+	var currentPortlet = gj(UIContextMenu.attachedElement).parents('.' + UIContextMenu.portletCssClass)[0];
 	if (menuElementId) {
-		UIContextMenu.menuElement = eXo.core.DOMUtil.findDescendantById(currentPortlet, menuElementId) ; //document.getElementById(menuElementId) ;
+		UIContextMenu.menuElement = gj(currentPortlet).find('#' + menuElementId)[0] ; //document.getElementById(menuElementId) ;
 		eXo.core.DOMUtil.listHideElements(UIContextMenu.menuElement) ;
 		eXo.core.DOMUtil.cleanUpHiddenElements();
 		UIContextMenu.swapMenu(document.getElementById(menuElementId), menuPos,_e) ;
-		if(!UIContextMenu.menuElement) return false;
+		if(!UIContextMenu.menuElement) 
+			return false;
 		UIContextMenu.menuElement.onmouseover = UIContextMenu.autoHide ;
 		UIContextMenu.menuElement.onmouseout = UIContextMenu.autoHide ;		
 		return false ;

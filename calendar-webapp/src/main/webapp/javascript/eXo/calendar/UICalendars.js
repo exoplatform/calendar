@@ -8,29 +8,30 @@ function UICalendars() {
 UICalendars.prototype.init = function(calendarsForm) {
   if (typeof(calendarsForm) == "string") 
     calendarsForm = eXo.calendar.UICalendarPortlet.getElementById(calendarsForm);
-  var DOMUtil = eXo.core.DOMUtil;
   var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
   UICalendarPortlet.filterForm = calendarsForm;
   this.calsFormElem = calendarsForm;
-  var CalendarGroup = DOMUtil.findDescendantsByClass(calendarsForm, "input", "CalendarGroup");
-  var CalendarItem = DOMUtil.findDescendantsByClass(calendarsForm, "li", "CalendarItem");
+  var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
+  var CalendarItem = gj(calendarsForm).find('li.CalendarItem'); 
   var len = CalendarGroup.length;
   var clen = CalendarItem.length;
   for (var i = 0; i < len; i++) {
       CalendarGroup[i].onclick = UICalendarPortlet.filterByGroup;
   }
   for (var j = 0; j < clen; j++) {
-    var checkBox = DOMUtil.findFirstDescendantByClass(CalendarItem[j], "div", "CalendarCheckboxBlock");
+    var checkBox = gj(CalendarItem[j]).find('div.CalendarCheckboxBlock')[0];
     checkBox.onclick = UICalendarPortlet.filterByCalendar;
 }
 };
 
 UICalendars.prototype.resetSettingButton = function(settingButton) {
-  if (settingButton) eXo.core.DOMUtil.removeClass(settingButton, "IconSetting");
+  if (settingButton) 
+	  gj(settingButton).removeClass("IconSetting");
 };
 
 UICalendars.prototype.showSettingButtonStably = function(settingButton) {
-  if (settingButton) eXo.core.DOMUtil.addClass(settingButton, "IconSetting");
+  if (settingButton) 
+	  gj(settingButton).addClass("IconSetting");
 };
 
 UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
@@ -47,22 +48,21 @@ UICalendars.prototype.mainMenuCallback = function(anchorElm, evt) {
   var currentTime = d.getTime();
   var timezoneOffset = d.getTimezoneOffset();
   var menu = eXo.calendar.UICalendars.currentMenuElm;
-  var actions = eXo.core.DOMUtil.findDescendantsByTagName(menu, "div");
+  var actions = gj(menu).find('div');
   actions[0].onclick = String(actions[0].onclick).replace(/&.*/, "&ct=" + currentTime + "&tz=" + timezoneOffset + "')");
 };
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
-  var DOMUtil = eXo.core.DOMUtil ;
-  var obj = eXo.core.EventManager.getEventTargetByClass(evt,"CalendarItem") || eXo.core.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var obj = eXo.cs.EventManager.getEventTargetByClass(evt,"CalendarItem") || eXo.cs.EventManager.getEventTargetByClass(evt,"GroupItem");
   var calType = obj.getAttribute("calType");
   var calName = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");
   var canEdit = String(obj.getAttribute("canedit")).toLowerCase();
   var UICalendars = eXo.calendar.UICalendars;
   var menu = UICalendars.currentMenuElm;
-  var contentContainerElm = DOMUtil.findAncestorByClass(anchorElm, "ContentContainer");
+  var contentContainerElm = gj(anchorElm).parents(".ContentContainer")[0];
   if (contentContainerElm) {
-    menu.style.top = (eXo.core.Browser.findPosY(menu) - contentContainerElm.scrollTop) + 'px';
+    menu.style.top = (eXo.cs.Browser.findPosY(menu) - contentContainerElm.scrollTop) + 'px';
   }
   try {
     var selectedCategory = (eXo.calendar.UICalendarPortlet.filterSelect) ? eXo.calendar.UICalendarPortlet.filterSelect : null;
@@ -88,14 +88,14 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   if (calColor) {
       value += "&calColor=" + calColor;
   }
-  var items = DOMUtil.findDescendantsByTagName(menu, "a");  
+  var items = gj(menu).find("a");  
   for (var i = 0; i < items.length; i++) {
-      if (DOMUtil.hasClass(items[i].firstChild, "SelectedColorCell")) {
+      if (gj(items[i].firstChild).hasClass("SelectedColorCell")) {
           items[i].firstChild.className = items[i].firstChild.className.toString().replace(/SelectedColorCell/, "");
       }
-      if (DOMUtil.hasClass(items[i], calColor)) {
+      if (gj(items[i]).hasClass(calColor)) {
           var selectedCell = items[i].firstChild;
-          DOMUtil.addClass(selectedCell, "SelectedColorCell");
+          gj(selectedCell).addClass("SelectedColorCell");
       }
       if (items[i].href.indexOf("ChangeColor") != -1) {
           value = value.replace(/calColor\s*=\s*\w*/, "calColor=" + items[i].className.split(" ")[0]);
@@ -103,13 +103,13 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       items[i].href = String(items[i].href).replace(/objectId\s*=.*(?='|")/, value);
   }
   
-  if (DOMUtil.hasClass(obj, "CalendarItem")) {
+  if (gj(obj).hasClass("CalendarItem")) {
       items[0].href = String(items[0].href).replace("')", "&categoryId=" + selectedCategory + "')");
       items[1].href = String(items[1].href).replace("')", "&categoryId=" + selectedCategory + "')");      
   }
   if (calType && (calType != "0")) {
   
-      var actions = DOMUtil.findDescendantsByTagName(menu, "a");
+      var actions = gj(menu).find("a");
       for (var j = 0; j < actions.length; j++) {
           if ((actions[j].href.indexOf("EditCalendar") >= 0) ||
           (actions[j].href.indexOf("RemoveCalendar") >= 0) ||
@@ -120,7 +120,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       }
   }
   if (canEdit && (canEdit == "true")) {
-      var actions = DOMUtil.findDescendantsByTagName(menu, "a");
+      var actions = gj(menu).find("a");
       for (var j = 0; j < actions.length; j++) {
           if (actions[j].href.indexOf("EditCalendar") >= 0 || actions[j].href.indexOf("RemoveCalendar") >= 0) {
               actions[j].style.display = "block";
@@ -129,7 +129,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   }
   UICalendars.resetSettingButton(UICalendars.currentAnchorElm);
   UICalendars.currentAnchorElm = anchorElm;
-  if (DOMUtil.hasClass(UICalendars.currentAnchorElm, "IconHoverSetting")) {
+  if (gj(UICalendars.currentAnchorElm).hasClass("IconHoverSetting")) {
     UICalendars.showSettingButtonStably(UICalendars.currentAnchorElm);
     if (!UICalendars.modifiedOnclick) {
       UICalendars.defaultOnclickFunc = document.onclick;
@@ -148,8 +148,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
 UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCallback) {
   var _e = window.event || evt;
   _e.cancelBubble = true;
-  var DOMUtil = eXo.core.DOMUtil;
-  var menuTemplateElm = DOMUtil.findFirstDescendantByClass(this.calsFormElem, "div", menuClassName);
+  var menuTemplateElm = gj(this.calsFormElem).find('div.' + menuClassName)[0]; 
   this.renderMenu(menuTemplateElm, anchorElm);
   // invoke callback
   if (menuCallback) menuCallback(anchorElm, evt);

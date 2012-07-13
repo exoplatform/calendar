@@ -1,6 +1,9 @@
 /**
  * @author uocnb
  */
+if (!eXo.cs)
+  eXo.cs = {};
+
 function AdvancedTooltip() {
 }
 

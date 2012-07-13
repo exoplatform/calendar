@@ -29,14 +29,14 @@ Highlighter.prototype.getPos = function(cell) {
 Highlighter.prototype.isInCell = function(cell, _e) {
 	var Highlighter = eXo.calendar.Highlighter ;
 	var cellX = eXo.core.Browser.findPosX(cell) - Highlighter.container.scrollLeft ;
-	var cellY = eXo.core.Browser.findPosY(cell) - Highlighter.container.scrollTop ;
-	var mouseX = eXo.core.Browser.findMouseXInPage(_e) ;
-	var mouseY = eXo.core.Browser.findMouseYInPage(_e) ;
+	var cellY = eXo.cs.Browser.findPosY(cell) - Highlighter.container.scrollTop ;
+	var mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
+	var mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
 	if(document.getElementById("UIPageDesktop")) {
-		mouseX = eXo.core.Browser.findMouseXInPage(_e) ;
-		mouseY = eXo.core.Browser.findMouseYInPage(_e) ;
-		cellX = eXo.core.Browser.findPosX(cell) - eXo.cs.Utils.getScrollLeft(cell) ;
-		cellY = eXo.core.Browser.findPosY(cell) - eXo.cs.Utils.getScrollTop(cell) ;
+		mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
+		mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
+		cellX = eXo.core.Browser.findPosX(cell)() - eXo.cs.Utils.getScrollLeft(cell) ;
+		cellY = eXo.cs.Browser.findPosY(cell) - eXo.cs.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
 	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") ||  eXo.core.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
@@ -95,16 +95,16 @@ Highlighter.prototype.hideBlock = function(start,end) {
  * @param {Object} cell A cell in time table
  */
 Highlighter.prototype.createBlock = function(cell) {
-	var DOMUtil = eXo.core.DOMUtil ;
-	var table = DOMUtil.findAncestorByTagName(cell, "table") ;
-	var tr = DOMUtil.findDescendantsByTagName(table, "tr") ;
+	var table = gj(cell).parents("table")[0] ;
+	var tr = gj(table).find("tr") ;
 	var len = tr.length ;
 	var div = null ;
 	var block = new Array() ;
 	for(var i = 0 ; i < len ; i ++) {
 		div = document.createElement("div") ;
-		div.onmousedown = eXo.calendar.Highlighter.hideAll ;
-		if(document.getElementById("UserSelectionBlock"+i)) DOMUtil.removeElement(document.getElementById("UserSelectionBlock"+i)) ; 
+		gj(div).on('mousedown', eXo.calendar.Highlighter.hideAll) ;
+		if(document.getElementById("UserSelectionBlock"+i)) 
+			gj("#UserSelectionBlock"+i).remove() ; 
 		div.setAttribute("id", "UserSelectionBlock"+i) ;
 		div.className = "UserSelectionBlock" ;
 		table.parentNode.appendChild(div) ;
@@ -135,11 +135,11 @@ Highlighter.prototype.start = function(evt) {
 	if(_e.button == 2) return ;
 	_e.cancelBubble = true ;
 	Highlighter.startCell = this ;
-	var table = eXo.core.DOMUtil.findAncestorByTagName(Highlighter.startCell, "table") ;
+	var table = gj(Highlighter.startCell).parents("table")[0] ;
 	var callback = table.getAttribute("eXoCallback") ;
 	if (callback) Highlighter.callback = callback ;
-	Highlighter.cell = eXo.core.DOMUtil.findDescendantsByClass(table, Highlighter.startCell.tagName.toLowerCase(), "UICellBlock") ;
-	Highlighter.cellLength = eXo.core.DOMUtil.findDescendantsByTagName(Highlighter.startCell.parentNode,Highlighter.startCell.tagName.toLowerCase()).length ;
+	Highlighter.cell = gj(table).find(Highlighter.startCell.tagName.toLowerCase() + ".UICellBlock") ;
+	Highlighter.cellLength = gj(Highlighter.startCell.parentNode).find(Highlighter.startCell.tagName.toLowerCase()).length; 
 	Highlighter.dimension = {"x":(Highlighter.startCell.offsetWidth), "y":(Highlighter.startCell.offsetHeight)} ;
 	var pos = Highlighter.getPos(Highlighter.startCell) ;
 	Highlighter.createBlock(Highlighter.startCell) ;
@@ -155,8 +155,10 @@ Highlighter.prototype.start = function(evt) {
 	Highlighter.startBlock.style.top = y + "px" ;
 	Highlighter.startBlock.style.width = Highlighter.dimension.x + "px" ;
 	Highlighter.startBlock.style.height = Highlighter.dimension.y + "px" ;
-	document.onmousemove = Highlighter.execute ;
-	document.onmouseup = Highlighter.end ;
+	document.onmousemove = Highlighter.execute;
+	document.onmouseup = Highlighter.end;
+//	gj(document).on('mousemove', Highlighter.execute) ;
+//	gj(document).on('mouseup', Highlighter.end) ;
 	Highlighter.firstCell = Highlighter.startCell ;
 	Highlighter.lastCell = Highlighter.startCell ;
 	} catch(e) {
@@ -245,7 +247,6 @@ Highlighter.prototype.execute = function(evt) {
 			}
 			endBlock.style.display  = "block" ;
 			endBlock.style.top  = parseInt(Highlighter.block[lastIndex - 1].style.top) + Highlighter.dimension.y + "px" ;
-			//endBlock.style.right  = eXo.core.Browser.findPosXInContainer(Highlighter.cell[0], Highlighter.container) - fixleftIE + "px" ;
 			Highlighter.reserveDirection(Highlighter.cell[0], Highlighter.container,endBlock) ;
 			endBlock.style.width = endX + "px" ;
 			endBlock.style.height = Highlighter.dimension.y + "px" ;
@@ -262,7 +263,7 @@ Highlighter.prototype.execute = function(evt) {
  */
 Highlighter.prototype.end = function(evt) {
 	var Highlighter = eXo.calendar.Highlighter;
-	if (Highlighter.callback) eval(Highlighter.callback) ;	
+	if (Highlighter.callback) eval(Highlighter.callback) ;
 	document.onmousemove = null ;
 	document.onmouseup = null ;
 } ;
@@ -290,14 +291,14 @@ function UIHSelection() {
 UIHSelection.prototype.isInCell = function(cell, _e) {
 	var UIHSelection = eXo.calendar.UIHSelection ;
 	var cellX = eXo.core.Browser.findPosX(cell) - UIHSelection.container.scrollLeft ;
-	var cellY = eXo.core.Browser.findPosY(cell) - UIHSelection.container.scrollTop ;
-	var mouseX = eXo.core.Browser.findMouseXInPage(_e) ;
-	var mouseY = eXo.core.Browser.findMouseYInPage(_e) ;
+	var cellY = eXo.cs.Browser.findPosY(cell) - UIHSelection.container.scrollTop ;
+	var mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
+	var mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
 	if(document.getElementById("UIPageDesktop")) {
-		mouseX = eXo.core.Browser.findMouseXInPage(_e) ;
-		mouseY = eXo.core.Browser.findMouseYInPage(_e) ;
+		mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
+		mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
 		cellX = eXo.core.Browser.findPosX(cell) - eXo.cs.Utils.getScrollLeft(cell) ;
-		cellY = eXo.core.Browser.findPosY(cell) - eXo.cs.Utils.getScrollTop(cell) ;
+		cellY = eXo.cs.Browser.findPosY(cell) - eXo.cs.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
 	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") || eXo.core.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
@@ -330,7 +331,7 @@ UIHSelection.prototype.getCurrentIndex = function(evt){
  */
 UIHSelection.prototype.setAttr = function(sIndex, eIndex, cells){
 	for(var i = sIndex; i <= eIndex ; i++) {
-		eXo.core.DOMUtil.addClass(cells[i],"UserSelection") ;
+		gj(cells[i]).addClass("UserSelection") ;
 	}
 } ;
 
@@ -342,10 +343,10 @@ UIHSelection.prototype.setAttr = function(sIndex, eIndex, cells){
  */
 UIHSelection.prototype.removeAttr = function(sIndex, eIndex, cells){
 	var len = cells.length ;
-	var DOMUtil = eXo.core.DOMUtil ;
 	for(var i = 0; i < len ; i++) {
 		if((i>=sIndex) && (i<=eIndex)) continue ;
-		if(DOMUtil.hasClass(cells[i],"UserSelection")) DOMUtil.replaceClass(cells[i],"UserSelection","") ;
+		if(gj(cells[i]).hasClass("UserSelection")) 
+			gj(cells[i]).removeClass("UserSelection") ;
 	}
 } ;
 
@@ -355,9 +356,9 @@ UIHSelection.prototype.removeAttr = function(sIndex, eIndex, cells){
 UIHSelection.prototype.removeAllAttr = function(){
 	var cells = this.cells ;
 	var len = cells.length ;
-	var DOMUtil = eXo.core.DOMUtil ;
 	for(var i = 0; i < len ; i++) {
-		if(DOMUtil.hasClass(cells[i],"UserSelection")) DOMUtil.replaceClass(cells[i],"UserSelection","") ;
+		if(gj(cells[i]).hasClass("UserSelection")) 
+			gj(cells[i]).removeClass("UserSelection") ;
 	}
 } ;
 
@@ -367,14 +368,15 @@ UIHSelection.prototype.removeAllAttr = function(){
  */
 UIHSelection.prototype.start = function(){
 	var UIHSelection = eXo.calendar.UIHSelection ;
-	var table = eXo.core.DOMUtil.findAncestorByTagName(this, "table") ;
+	var table = gj(this).parents("table")[0] ;
 	var callback = table.getAttribute("eXoCallback") ;
-	if (callback) UIHSelection.callback = callback ;
+	if (callback) 
+	UIHSelection.callback = callback ;
 	UIHSelection.startIndex = this.cellIndex ;
-	UIHSelection.cells = eXo.core.DOMUtil.getChildrenByTagName(this.parentNode, "td") ;
+	UIHSelection.cells = gj(this.parentNode).children("td") ;
 	UIHSelection.container = this.parentNode ;
-  UIHSelection.removeAllAttr() ;
-	eXo.core.DOMUtil.addClass(this,"UserSelection") ;
+	UIHSelection.removeAllAttr() ;
+	gj(this).addClass("UserSelection") ;
 	document.onmousemove = UIHSelection.execute ;
 	document.onmouseup =  UIHSelection.end ;
 	UIHSelection.firstCell = UIHSelection.cells[UIHSelection.startIndex] ;
