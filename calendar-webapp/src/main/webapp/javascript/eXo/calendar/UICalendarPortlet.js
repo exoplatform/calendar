@@ -11,6 +11,7 @@ function UICalendarPortlet(){
 	this.portletId = "calendars";
 	this.currentDate = 0;
 	this.CELL_HEIGHT = 20;
+//	if(eXo.core.Browser.webkit != 0) this.CELL_HEIGHT = 21;
 	this.MINUTE_PER_CELL = 30;
 	this.PIXELS_PER_MINUTE = this.CELL_HEIGHT / this.MINUTE_PER_CELL; 
 	this.MINUTES_PER_PIXEL = this.MINUTE_PER_CELL / this.CELL_HEIGHT;
@@ -123,7 +124,7 @@ UICalendarPortlet.prototype.restorePosition = function(eventObj){
 
 UICalendarPortlet.prototype.postCheck = function(response){
 	var me = eXo.calendar.UICalendarPortlet ;
-	eval("var data = " + response);
+	eval("var data = " + response.responseText);
 	var isEdit = data.permission;
 	if(!isEdit){
 		me.notify(me.activeEventObject);		
@@ -2104,9 +2105,11 @@ function UISelection(){
 UISelection.prototype.start = function(evt){
     try {
         var UISelection = eXo.calendar.UISelection;
+		if(eXo.core.Browser.webkit != 0) UISelection.step = 21;
         var src = eXo.cs.EventManager.getEventTarget(evt);
+
         if ((src == UISelection.block) || (eXo.cs.EventManager.getMouseButton(evt) == 2) || (gj(src).hasClass("TdTime"))) {
-						return;
+			return;
         }
         
         UISelection.startTime = parseInt(Date.parse(src.getAttribute("startFull")));//src.getAttribute("startTime");
@@ -2117,8 +2120,8 @@ UISelection.prototype.start = function(evt){
         UISelection.block.style.left = UISelection.startX + "px";
         UISelection.block.style.top = UISelection.startY + "px";
         UISelection.block.style.height = UISelection.step + "px";
-        UISelection.block.style.zIndex = 1; 
-        eXo.calendar.UICalendarPortlet.resetZIndex(UISelection.block);
+        UISelection.block.style.zIndex = 1;
+        //eXo.calendar.UICalendarPortlet.resetZIndex(UISelection.block);
         document.onmousemove = UISelection.execute;
         document.onmouseup = UISelection.clear;
     } 
@@ -2135,9 +2138,9 @@ UISelection.prototype.execute = function(evt){
     var UISelection = eXo.calendar.UISelection;
     var _e = window.event || evt;
     var delta = null;
-		var containerHeight = UISelection.container.offsetHeight;
+	var containerHeight = UISelection.container.offsetHeight;
     var scrollTop = eXo.cs.Utils.getScrollTop(UISelection.block);
-    var mouseY = eXo.core.Browser.findMouseRelativeY(UISelection.container, _e) + UISelection.relativeObject.scrollTop;
+    var mouseY = eXo.core.Browser.findMouseRelativeY(UISelection.container, _e);// + UISelection.relativeObject.scrollTop;
     if (document.getElementById("UIPageDesktop")) 
         mouseY = eXo.core.Browser.findMouseRelativeY(UISelection.container, _e) + scrollTop;
     var posY = UISelection.block.offsetTop;

@@ -582,7 +582,7 @@ EventManager.prototype.getEventTargetByTagName = function(evt, tagName){
 };
 
 EventManager.prototype.cancelBubble = function(evt) {
-  if(eXo.core.Browser.browserType == 'ie')
+  if(gj.browser.msie != undefined)
     window.event.cancelBubble = true ;
   else 
     evt.stopPropagation() ;		  
@@ -590,7 +590,7 @@ EventManager.prototype.cancelBubble = function(evt) {
 
 EventManager.prototype.cancelEvent = function(evt) {
 	eXo.cs.EventManager.cancelBubble(evt) ;
-  if(eXo.core.Browser.browserType == 'ie')
+  if(gj.browser.msie != undefined)
     window.event.returnValue = true ;
   else
     evt.preventDefault() ;

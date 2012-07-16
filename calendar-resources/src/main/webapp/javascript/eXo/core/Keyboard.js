@@ -26,7 +26,7 @@ function Keyboard() {
 }
 
 Keyboard.prototype.init = function() {
-  if (eXo.core.Browser.browserType == 'ie') {
+  if (gj.browser.msie != undefined) {
     document.onkeydown = function(e) {
       return eXo.core.Keyboard.onKeyDown(e) ;
     }
@@ -37,7 +37,7 @@ Keyboard.prototype.init = function() {
 } ;
 
 Keyboard.prototype.finish = function() {
-  if (eXo.core.Browser.browserType == 'ie') {
+  if (gj.browser.msie != undefined) {
     document.onkeydown = null ;
   }
   document.onkeypress = null ;
@@ -100,7 +100,7 @@ Keyboard.prototype.onKeyPress = function(event) {
   var keychar = '' ;
   var eventHandler = false ;
 
-  if (eXo.core.Browser.browserType == 'ie' && this.controlKeyCodes.contains(keynum)) {
+  if (gj.browser.msie != undefined && this.controlKeyCodes.contains(keynum)) {
     return false ;
   }
   
@@ -179,7 +179,7 @@ Keyboard.prototype.listenerCallback = function(eventHandler, event, keynum, keyc
  * @param {Event} event
  */
 Keyboard.prototype.cancelEvent = function(event) {
-  if(eXo.core.Browser.browserType == 'ie') { // Cancel bubble for ie
+  if(gj.browser.msie != undefined) { // Cancel bubble for ie
     window.event.cancelBubble = true ;
     window.event.returnValue = true ;
     return ;
@@ -218,7 +218,7 @@ function Keyboard() {
 }
 
 Keyboard.prototype.init = function() {
-  if (eXo.core.Browser.browserType == 'ie') {
+  if (gj.browser.msie != undefined) {
     document.onkeydown = function(e) {
       return eXo.core.Keyboard.onKeyDown(e) ;
     }
@@ -229,7 +229,7 @@ Keyboard.prototype.init = function() {
 } ;
 
 Keyboard.prototype.finish = function() {
-  if (eXo.core.Browser.browserType == 'ie') {
+  if (gj.browser.msie != undefined) {
     document.onkeydown = null ;
   }
   document.onkeypress = null ;
@@ -292,7 +292,7 @@ Keyboard.prototype.onKeyPress = function(event) {
   var keychar = '' ;
   var eventHandler = false ;
 
-  if (eXo.core.Browser.browserType == 'ie' && this.controlKeyCodes.contains(keynum)) {
+  if (gj.browser.msie != undefined && this.controlKeyCodes.contains(keynum)) {
     return false ;
   }
   
@@ -371,7 +371,7 @@ Keyboard.prototype.listenerCallback = function(eventHandler, event, keynum, keyc
  * @param {Event} event
  */
 Keyboard.prototype.cancelEvent = function(event) {
-  if(eXo.core.Browser.browserType == 'ie') { // Cancel bubble for ie
+  if(gj.browser.msie != undefined) { // Cancel bubble for ie
     window.event.cancelBubble = true ;
     window.event.returnValue = true ;
     return ;

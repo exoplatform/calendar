@@ -110,8 +110,8 @@ UICalendarDragDrop.prototype.initDnD = function(dropableObjs, clickObj, dragObj,
 
   tmpNode.style.background = "rgb(237,237,237)";
   tmpNode.style.width = dropableObjs[0].offsetWidth + 'px';
-
-  eXo.core.Browser.setOpacity(tmpNode, 50) ;
+  gj(tmpNode).css({opacity:0.5});
+//  eXo.core.Browser.setOpacity(tmpNode, 50) ;
   var UIMonthViewNode = document.createElement('div');
   UIMonthViewNode.className = 'UICalendarPortlet UIMonthView';
   var EventMonthContentNode = document.createElement('div');
@@ -167,7 +167,7 @@ UICalendarDragDrop.prototype.initCallback = function(dndEvent) {
 
 UICalendarDragDrop.prototype.dragCallback = function(dndEvent) {
 	eXo.calendar.EventTooltip.disable();
-	if(eXo.core.Browser.getBrowserType() == "safari"){
+	if(eXo.core.Browser.webkit != 0){
 		if(!this.onMouseMoveCount) this.onMouseMoveCount = 0;
 		this.onMouseMoveCount++;
 		if(this.onMouseMoveCount < 7) return;
@@ -262,7 +262,8 @@ UICalendarDragDrop.prototype.getCheckedObject = function(clickObj){
   while(i--){
     if(!this.isCheckedObject(evenObj[i])) continue ;
     tmpNode = evenObj[i].cloneNode(true) ;
-    eXo.core.Browser.setOpacity(tmpNode,50) ;
+    gj(tmpNode).css({opacity:0.5});
+//    eXo.core.Browser.setOpacity(tmpNode,50) ;
     tmpNode.style.top = top + "px";		
     top += 20 ;
     this.selectedEvent.push(evenObj[i]);

@@ -55,7 +55,7 @@ UIWeekView.prototype.distributeEvent = function() {
 	var UIWeekView = eXo.calendar.UIWeekView ;
 	var len = UIWeekView.cols.length ;
 	for(var i = 1 ; i < len ; i ++) {
-		if (gj(UIWeekView.cols[i]).children('div.EventContainerBorder').length == 0)
+		if (gj(UIWeekView.cols[i]).children('div.EventContainerBorder').length < 0)
 			return ;
 		var colIndex = parseInt(UIWeekView.cols[i].getAttribute("eventindex")) ;
 		var eventIndex = null ;
@@ -77,7 +77,7 @@ UIWeekView.prototype.setSize = function() {
 	var len = UIWeekView.cols.length ;
 	for(var i = 1 ; i < len ; i ++) {
 		UIWeekView.showInCol(UIWeekView.cols[i]) ;
-	}	
+	}
 } ;
 
 UIWeekView.prototype.adjustWidth = function(el) {
@@ -153,7 +153,8 @@ UIWeekView.prototype.showInCol = function(obj) {
 UIWeekView.prototype.dragStart = function(evt) {
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
-	_e.cancelBubble = true ;
+	_e.stopPropagation();
+	//_e.cancelBubble = true ;
 	if (_e.button == 2) return ;
 	var UIWeekView = eXo.calendar.UIWeekView ;
 	UIWeekView.dragElement = this ;
@@ -334,7 +335,8 @@ UIWeekView.prototype.removeTooltip = function(){
 UIWeekView.prototype.initResize = function(evt) {
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
-	_e.cancelBubble = true ;
+	_e.stopPropagation();
+	//_e.cancelBubble = true ;
 	if(_e.button == 2) return ;
 	var UIResizeEvent = eXo.calendar.UIResizeEvent ;
 	var outerElement = gj(this).parents('.EventContainerBorder')[0]; 

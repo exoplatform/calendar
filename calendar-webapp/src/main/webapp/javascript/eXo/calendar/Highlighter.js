@@ -102,7 +102,7 @@ Highlighter.prototype.createBlock = function(cell) {
 	var block = new Array() ;
 	for(var i = 0 ; i < len ; i ++) {
 		div = document.createElement("div") ;
-		gj(div).on('mousedown', eXo.calendar.Highlighter.hideAll) ;
+		div.onmousedown = eXo.calendar.Highlighter.hideAll ;
 		if(document.getElementById("UserSelectionBlock"+i)) 
 			gj("#UserSelectionBlock"+i).remove() ; 
 		div.setAttribute("id", "UserSelectionBlock"+i) ;
