@@ -12,10 +12,13 @@
   boolean showCloseButton =  uicomponent.isShowCloseButton()
   String popupId = uicomponent.getId() ;
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().importJavascript('eXo.webui.UIPopupWindow');
-  rcontext.getJavascriptManager().importJavascript('eXo.webui.UIPopup');
-  rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.init('$popupId', $uicomponent.show, $uicomponent.resizable, true, $uicomponent.showMask);") ;
-    
+  String show = "none";
+  if(uicomponent.show) {
+    rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
+  show = "block";
+  } else if (rcontext.useAjax()) {
+    rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
+  }
   String title = popupId ;
   if(component != null)  title = component.getId() ;
   
@@ -25,8 +28,6 @@
   def String heightStyle = "" ;
   if(width > 0) widthStyle = "width:" + width + "px;" ;
   if(height > 0) heightStyle = "height:" + height + "px;" ;
-  String show = "none";
-  if(uicomponent.isShow()) show = "block";
 %>
 
 <div class="UIPopupWindow UIDragObject NormalStyle" exo:minWidth="200" exo:minHeight="200" id="$popupId" style="$widthStyle display: $show;">

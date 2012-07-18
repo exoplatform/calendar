@@ -139,8 +139,8 @@ TableMan.prototype.getCol = function(cellIndex) {
  * @param {Element} cellNode Table Cell element such as td, th
  */
 TableMan.prototype.cellIndexOf = function(cellNode) {
-  var nodeLst = eXo.core.DOMUtil.findAncestorByTagName(cellNode, 'tr').getElementsByTagName('td') ;
-  nodeLst = nodeLst.length > 0 ? nodeLst : eXo.core.DOMUtil.findAncestorByTagName(cellNode, 'tr').getElementsByTagName('th') ;
+  var nodeLst = gj(cellNode).parents('tr')[0].getElementsByTagName('td'); 
+  nodeLst = nodeLst.length > 0 ? nodeLst : gj(cellNode).parents('tr')[0].getElementsByTagName('th') ;
   for (var i=0; i<nodeLst.length; i++) {
     if (nodeLst[i] == cellNode) {
       return i ;

@@ -8,14 +8,13 @@ function CalendarLayout() {
 }
 
 CalendarLayout.prototype.init = function() {
-  var DOMUtil = eXo.core.DOMUtil;
   this.loadDOMElements();
   var uiWorkingWorkspace = document.getElementById(this.UI_WORKING_WORKSPACE);
   var UICalendarPortlet = document.getElementById(eXo.calendar.UICalendarPortlet.portletId);
-  var UICalendarWorkingContainer = DOMUtil.findFirstDescendantByClass(UICalendarPortlet, 'div', 'UICalendarWorkingContainer');
+  var UICalendarWorkingContainer = gj(UICalendarPortlet).find('div.UICalendarWorkingContainer')[0];
   this.uiCalendarWorkingContainerHeight = UICalendarWorkingContainer.offsetHeight;
   if (uiWorkingWorkspace) {
-    var browserHeight = eXo.core.Browser.getBrowserHeight();
+    var browserHeight = gj(window).height();
     var workingWorkspaceHeight = uiWorkingWorkspace.offsetHeight;
     if (workingWorkspaceHeight < browserHeight) {
       this.uiCalendarWorkingContainerHeight += (browserHeight - workingWorkspaceHeight);
@@ -34,10 +33,10 @@ CalendarLayout.prototype.adjustApplicationHeight = function() {
 CalendarLayout.prototype.updateUICalendarViewLayout = function() {
   var CalendarLayout = eXo.calendar.CalendarLayout;
   var UICalendarPortlet = document.getElementById(eXo.calendar.UICalendarPortlet.portletId);
-  var UICalendarViewContainer = eXo.core.DOMUtil.findFirstDescendantByClass(UICalendarPortlet, 'div', CalendarLayout.UI_CALENDAR_VIEW_CONTAINER);
+  var UICalendarViewContainer = gj(UICalendarPortlet).find('div.' + CalendarLayout.UI_CALENDAR_VIEW_CONTAINER)[0];
   var uCVCHeight = UICalendarViewContainer.offsetHeight;
   if (uCVCHeight != CalendarLayout.uiCalendarWorkingContainerHeight) {
-    var uiMainWorkingArea = eXo.core.DOMUtil.findFirstDescendantByClass(UICalendarPortlet, 'div', CalendarLayout.MAIN_WORKING_PANEL);
+    var uiMainWorkingArea = gj(UICalendarPortlet).find('div.' + CalendarLayout.MAIN_WORKING_PANEL)[0]; 
     if (uiMainWorkingArea) {
       uiMainWorkingArea.style.height = (uiMainWorkingArea.offsetHeight + CalendarLayout.uiCalendarWorkingContainerHeight - uCVCHeight)+ "px";
     }
@@ -52,15 +51,14 @@ CalendarLayout.prototype.updateHeightParams = function() {
 };
 
 CalendarLayout.prototype.loadDOMElements = function() {
-  var DOMUtil = eXo.core.DOMUtil;
   var UICalendarPortlet = document.getElementById(eXo.calendar.UICalendarPortlet.portletId);
-  this.UICalendarContainer = DOMUtil.findFirstDescendantByClass(UICalendarPortlet, "div", "UICalendarContainer");
-  this.UIMiniCalendar = DOMUtil.findFirstDescendantByClass(this.UICalendarContainer, "div", "UIMiniCalendar");
-  this.UICalendarsList = DOMUtil.findFirstDescendantByClass(this.UICalendarContainer, "div", "UICalendars");
-  this.UIMiniCalendarContainer = DOMUtil.findFirstDescendantByClass(this.UIMiniCalendar, "div", "MiniCalendarContainer");
-  this.UICalendarsListContentContainer = DOMUtil.findFirstDescendantByClass(this.UICalendarsList, "div", "ContentContainer");
-  this.UIMiniCalendarToggleButton = DOMUtil.findFirstDescendantByClass(this.UIMiniCalendar, "div", "UIMiniCalendarToggleButton");
-  this.UICalendarsToggleButton = DOMUtil.findFirstDescendantByClass(this.UICalendarsList, "div", "UICalendarsToggleButton");
+  this.UICalendarContainer = gj(UICalendarPortlet).find("div.UICalendarContainer")[0];
+  this.UIMiniCalendar = gj(this.UICalendarContainer).find("div.UIMiniCalendar")[0];
+  this.UICalendarsList = gj(this.UICalendarContainer).find("div.UICalendars")[0];
+  this.UIMiniCalendarContainer = gj(this.UIMiniCalendar).find("div.MiniCalendarContainer")[0];
+  this.UICalendarsListContentContainer = gj(this.UICalendarsList).find("div.ContentContainer")[0];
+  this.UIMiniCalendarToggleButton = gj(this.UIMiniCalendar).find("div.UIMiniCalendarToggleButton")[0];
+  this.UICalendarsToggleButton = gj(this.UICalendarsList).find("div.UICalendarsToggleButton")[0];
   var layoutMan = eXo.calendar.LayoutManager;
   this.layoutcookie = eXo.core.Browser.getCookie(layoutMan.layoutId);
   this.updateHeightParams();
@@ -95,7 +93,7 @@ CalendarLayout.prototype.updateUICalendarsLayout = function() {
 
 CalendarLayout.prototype.collapseCalendarContainer = function() {
   this.UICalendarContainer.style.display = "none";
-  var UICalendarViewContainer = eXo.core.DOMUtil.findNextElementByTagName(this.UICalendarContainer, "div");
+  var UICalendarViewContainer = gj(this.UICalendarContainer).nextAll("div")[0];
   if (eXo.core.I18n.isRT()) {
       UICalendarViewContainer.style.marginRight = "0px";
     }else{
@@ -105,7 +103,7 @@ CalendarLayout.prototype.collapseCalendarContainer = function() {
 
 CalendarLayout.prototype.expandCalendarContainer = function() {
   this.UICalendarContainer.style.display = "block";
-  var UICalendarViewContainer = eXo.core.DOMUtil.findNextElementByTagName(this.UICalendarContainer, "div");
+  var UICalendarViewContainer = gj(this.UICalendarContainer).nextAll("div")[0];
   if (eXo.core.I18n.isRT()) {
     UICalendarViewContainer.style.marginRight = "236px" ;
   }else{
@@ -160,5 +158,5 @@ CalendarLayout.prototype.expandUICalendars = function() {
   this.UICalendarsToggleButton.className = buttonCssClassStr;
 };
 
-
 if (!eXo.calendar.CalendarLayout) eXo.calendar.CalendarLayout = new CalendarLayout();
+if(!eXo.calendar.LayoutManager) eXo.calendar.LayoutManager = new LayoutManager("calendarlayout");

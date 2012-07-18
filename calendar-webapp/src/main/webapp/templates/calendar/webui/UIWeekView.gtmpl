@@ -24,8 +24,6 @@
     styleWidth = "width:19.8%;*width:20%;" ;
   } 
   workingStart = uicomponent.getCalendarSetting().getWorkingTimeBegin() ;
-  rcontext.getJavascriptManager().importJavascript('eXo.calendar.UICalendarMan','/calendar/javascript/') ;
-  rcontext.getJavascriptManager().importJavascript('eXo.calendar.UIWeekView','/calendar/javascript/') ;
   int defaultTimeInterval = uicomponent.getDefaultTimeInterval() ;
   rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.getWorkingdays('+numberOfDays+') ;') ;
   //rcontext.getJavascriptManager().addOnLoadJavascript('eXo.calendar.UICalendarPortlet.onLoad') ;

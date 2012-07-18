@@ -245,7 +245,7 @@
 }
 
 .UICalendarPortlet .UIAddNewEvent .NewEventAttendee .TitleBar {
-  background: url('../../background/CalendarBackgrond.gif') repeat-x center -51px;  
+  background: url('../../background/CalendarBackground.gif') repeat-x center -51px;  
   height: 23px;
   border: 1px solid #c7c7c7;
   border-bottom: none;

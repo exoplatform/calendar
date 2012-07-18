@@ -11,7 +11,6 @@ Reminder.prototype.init = function(eXoUser, eXoToken, cometdContextName){
 	eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
 		eXo.calendar.Reminder.alarm(eventObj) ;
   });
-  //eXo.cs.CSCometd.addOnConnectionReadyCallback(this.initCometd);
 	if (!eXo.cs.CSCometd.isConnected()) {
 		eXo.cs.CSCometd.init();
   }
@@ -24,19 +23,19 @@ Reminder.prototype.initCometd = function() {
 }
 
 Reminder.prototype.alarm = function(eventObj){
-	var a = eXo.core.JSON.parse(eventObj.data);	
+	var a = gj.parseJSON(eventObj.data);	
 	var message = '<a class="Item" href="#">('+ a.fromDateTime.hours + ':' + a.fromDateTime.minutes + ') ' +a.summary+'</a>' ;
 	var html = this.generateHTML(message) ;
-	var popup = eXo.core.DOMUtil.findFirstDescendantByClass(this.createMessage(html, message), "div","UIPopupNotification") ;
+	var popup = gj(this.createMessage(html, message)).find('div.UIPopupNotification')[0]; 
 	eXo.webui.Box.config(popup,popup.offsetHeight, 5, this.openCallback, this.closeBox) ;
 	window.focus() ;
 	return ;
 } ;
 
 Reminder.prototype.openCallback = function(obj){
-	obj.onclick = function(){
+	gj(obj).on('click',function(){
 		this.style.visibility = "hidden" ;
-	} ;
+	}) ;
 }
 Reminder.prototype.closeBox = function(obj){
 	obj.style.visibility = "hidden" ;
@@ -46,13 +45,13 @@ Reminder.prototype.createMessage = function(html, message){
 	var msgBox = null ;
 	if(document.getElementById("msgBox")) {
 		msgBox = document.getElementById("msgBox") ;
-		var directChildNode = eXo.core.DOMUtil.findFirstDescendantByClass(msgBox,'div','UIPopupNotification');
+		var directChildNode = gj(msgBox).find('div.UIPopupNotification')[0]; 
 		if(directChildNode.style.visibility == 'hidden')
 			msgBox.innerHTML = html ;
 		else {
 		//For CS-1397
-			var contentBox = eXo.core.DOMUtil.findFirstDescendantByClass(msgBox,'div','MCPopupNotification');
-			var childrens = eXo.core.DOMUtil.findDescendantsByClass(contentBox,'a','Item');
+			var contentBox = gj(msgBox).find('div.MCPopupNotification')[0];
+			var childrens = gj(contentBox).find('a.Item');
   		var ln = childrens.length ;	
   		var child = null ;
   		var hasExist = false;

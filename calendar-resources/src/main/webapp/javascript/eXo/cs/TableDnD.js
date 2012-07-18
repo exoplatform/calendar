@@ -4,8 +4,7 @@
 function TableDnD() {
   this.scKey = 'border' ;
   this.scValue = 'solid 1px #000' ;
-  this.DOMUtil = eXo.core.DOMUtil ;
-  this.DragDrop = eXo.core.DragDrop ;
+  this.DragDrop = eXo.cs.DragDrop ;
   this.tableMan = eXo.cs.TableMan ;
   this.dropableLst = [] ;                                      
 } ;
@@ -28,7 +27,7 @@ TableDnD.prototype.init = function(root){
 
 TableDnD.prototype.dndTrigger = function(e) {
   e = e ? e : window.event ;
-  var srcE = eXo.core.Browser.getEventSource(e) ;
+  var srcE = eXo.cs.Browser.getEventSource(e) ;
   if ((srcE.tagName + '') != 'th' && (srcE.onclick)) {
     return true ;
   }
@@ -80,7 +79,7 @@ TableDnD.prototype.synDragObjectPos = function(dndEvent) {
     }
   }
   var dragObject = dndEvent.dragObject ;
-  var mouseX = eXo.core.Browser.findMouseXInPage(dndEvent.backupMouseEvent) + 1 ;
+  var mouseX = eXo.cs.Browser.findMouseXInPage(dndEvent.backupMouseEvent) + 1 ;
   var mouseY = eXo.core.Browser.findPosYInContainer(dndEvent.clickObject, document.body)  ;
   dragObject.style.top = mouseY + 'px' ;
   dragObject.style.left = mouseX + 'px' ;
@@ -130,7 +129,7 @@ TableDnD.prototype.dropCallback = function(dndEvent) {
       tableMan.swapColumn(x1, x2) ;
     }
   } catch(e) {}
-  eXo.core.DragDrop.destroy() ;
+  eXo.cs.DragDrop.destroy() ;
   return true ;
 } ;
 

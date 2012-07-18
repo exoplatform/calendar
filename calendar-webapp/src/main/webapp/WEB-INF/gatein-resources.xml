@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-
-<gatein-resources
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.gatein.org/xml/ns/gatein_resources_1_2 http://www.gatein.org/xml/ns/gatein_resources_1_2"
-    xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_2">  
-
+<gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gatein.org/xml/ns/gatein_resources_1_2_1 http://www.gatein.org/xml/ns/gatein_resources_1_2_1"
+   xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_2_1">
   <portlet-skin>
     <application-name>calendar</application-name>
     <portlet-name>CalendarPortlet</portlet-name>
@@ -13,33 +9,54 @@
     <css-priority>1</css-priority>
   </portlet-skin>
   
-  <javascript>
-    <param>
-      <js-module>eXo.calendar.UICalendarPortlet</js-module>
-      <js-path>/javascript/eXo/calendar/UICalendarPortlet.js</js-path>
-    </param>
-  </javascript>
-  
-  <javascript>
-    <param>
-      <js-module>eXo.calendar.Highlighter</js-module>
-      <js-path>/javascript/eXo/calendar/Highlighter.js</js-path>
-    </param>
-  </javascript>
-  
-  <javascript>
-    <param>
-      <js-module>eXo.calendar.CalendarLayout</js-module>
-      <js-path>/javascript/eXo/calendar/CalendarLayout.js</js-path>
-    </param>
-  </javascript>
-  
-  <javascript>
-    <param>
-      <js-module>eXo.calendar.Reminder</js-module>
-      <js-path>/javascript/eXo/calendar/Reminder.js</js-path>
-    </param>
-  </javascript>
-  
+  <portlet>
+    <name>CalendarPortlet</name>
+    <module>
+      <script>
+        <name>eXo.calendar.UICalendarPortlet</name>
+        <path>/javascript/eXo/calendar/UICalendarPortlet.js</path>
+      </script>
+      <script>
+        <name>eXo.calendar.Highlighter</name>
+        <path>/javascript/eXo/calendar/Highlighter.js</path>
+      </script>
+      <script>
+        <name>eXo.calendar.CalendarLayout</name>
+        <path>/javascript/eXo/calendar/CalendarLayout.js</path>
+      </script>
+      <script>
+        <name>eXo.calendar.Reminder</name>
+        <path>/javascript/eXo/calendar/Reminder.js</path>
+      </script>
+      <script>
+        <name>eXo.calendar.UICalendars</name>
+        <path>/javascript/eXo/calendar/UICalendars.js</path>
+      </script>
+      <script>
+        <name>eXo.calendar.UICalendarDragDrop</name>
+        <path>/javascript/eXo/calendar/UICalendarDragDrop.js</path>
+      </script>
+      <script>
+        <name>eXo.calendar.UIWeekView</name>
+        <path>/javascript/eXo/calendar/UIWeekView.js</path>
+      </script>
+      <script>
+        <name>eXo.calendar.UICalendarMan</name>
+        <path>/javascript/eXo/calendar/UICalendarMan.js</path>
+      </script>
+      <depends>
+        <module>base</module>
+      </depends>
+      <depends>
+        <module>navigation</module>
+      </depends>      
+      <depends>
+        <module>cometd</module>
+      </depends>
+      <depends>
+        <module>csResources</module>
+      </depends>
+    </module>  
+  </portlet>
 </gatein-resources>
 

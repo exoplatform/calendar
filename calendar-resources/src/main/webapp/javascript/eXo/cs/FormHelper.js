@@ -14,7 +14,7 @@ FormHelper.prototype.isSelected = function(element) {
 } ;
 
 FormHelper.prototype.checkAllElement = function(root) {
-  var eList = eXo.core.DOMUtil.findDescendantsByTagName(root, 'input') ;
+  var eList = gj(root).find('input'); 
   for (var i=0; i<eList.length; i++) {
     eList[i].checked = true ;
   }
@@ -25,12 +25,12 @@ FormHelper.prototype.checkAllElement = function(root) {
  * @param {Element} root
  */
 FormHelper.prototype.getSelectedElementByClass = function(root, klazz, e2selectIfFalse) {
-  var inputEList = eXo.core.DOMUtil.findDescendantsByTagName(root, 'input') ;
+  var inputEList = gj(root).find('input') ;
   var selectedItems = [] ;
   var foundCheckObj = false ;
   for (var i=0; i<inputEList.length; i++) {
     if (inputEList[i].checked) {
-      selectedItems[selectedItems.length] = eXo.core.DOMUtil.findAncestorByClass(inputEList[i], klazz) ;
+      selectedItems[selectedItems.length] = gj(inputEList[i]).parents('.' + klazz)[0] ;
       if (e2selectIfFalse == selectedItems[selectedItems.length - 1]) {
         foundCheckObj = true ;
       }
