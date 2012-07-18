@@ -102,7 +102,7 @@ Highlighter.prototype.createBlock = function(cell) {
 	var block = new Array() ;
 	for(var i = 0 ; i < len ; i ++) {
 		div = document.createElement("div") ;
-		div.onmousedown = eXo.calendar.Highlighter.hideAll ;
+		gj(div).on('mousedown',eXo.calendar.Highlighter.hideAll);
 		if(gj("#UserSelectionBlock"+i)) 
 			gj("#UserSelectionBlock"+i).remove() ; 
 		div.setAttribute("id", "UserSelectionBlock"+i) ;
@@ -154,8 +154,9 @@ Highlighter.prototype.start = function(evt) {
 	Highlighter.startBlock.style.top = y + "px" ;
 	Highlighter.startBlock.style.width = Highlighter.dimension.x + "px" ;
 	Highlighter.startBlock.style.height = Highlighter.dimension.y + "px" ;
-	document.onmousemove = Highlighter.execute;
-	document.onmouseup = Highlighter.end;
+	gj(document).on({'mousemove':Highlighter.execute, 'mouseup':Highlighter.end});
+//	document.onmousemove = Highlighter.execute;
+//	document.onmouseup = Highlighter.end;
 	Highlighter.firstCell = Highlighter.startCell ;
 	Highlighter.lastCell = Highlighter.startCell ;
 	} catch(e) {
@@ -257,8 +258,9 @@ Highlighter.prototype.execute = function(evt) {
 Highlighter.prototype.end = function(evt) {
 	var Highlighter = eXo.calendar.Highlighter;
 	if (Highlighter.callback) eval(Highlighter.callback) ;
-	document.onmousemove = null ;
-	document.onmouseup = null ;
+	gj(document).off("mousemove mouseup")
+//	document.onmousemove = null ;
+//	document.onmouseup = null ;
 } ;
 
 Highlighter.prototype.setCallback = function(str) {
@@ -370,8 +372,9 @@ UIHSelection.prototype.start = function(){
 	UIHSelection.container = this.parentNode ;
 	UIHSelection.removeAllAttr() ;
 	gj(this).addClass("UserSelection") ;
-	document.onmousemove = UIHSelection.execute ;
-	document.onmouseup =  UIHSelection.end ;
+	gj(document).on({'mousemove':UIHSelection.execute,'mouseup':UIHSelection.end});
+//	document.onmousemove = UIHSelection.execute ;
+//	document.onmouseup =  UIHSelection.end ;
 	UIHSelection.firstCell = UIHSelection.cells[UIHSelection.startIndex] ;
 	UIHSelection.lastCell = UIHSelection.cells[UIHSelection.startIndex] ;
 } ;
@@ -410,8 +413,9 @@ UIHSelection.prototype.end = function(){
 	UIHSelection.endIndex = null ;
 	UIHSelection.cells = null ;
 	UIHSelection.container = null ;
-	document.onmousemove = null ;
-	document.onmouseup = null ;
+	gj(document).off("mousemove mouseup")
+//	document.onmousemove = null ;
+//	document.onmouseup = null ;
 	if (UIHSelection.callback) eval(UIHSelection.callback) ;
 } ;
 

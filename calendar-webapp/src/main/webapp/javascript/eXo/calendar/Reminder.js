@@ -33,9 +33,9 @@ Reminder.prototype.alarm = function(eventObj){
 } ;
 
 Reminder.prototype.openCallback = function(obj){
-	obj.onclick = function(){
+	gj(obj).on('click',function(){
 		this.style.visibility = "hidden" ;
-	} ;
+	}) ;
 }
 Reminder.prototype.closeBox = function(obj){
 	obj.style.visibility = "hidden" ;

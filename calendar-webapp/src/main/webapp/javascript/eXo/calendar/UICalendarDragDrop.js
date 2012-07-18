@@ -76,9 +76,11 @@ UICalendarDragDrop.prototype.getAllDropableSets = function() {
 
 UICalendarDragDrop.prototype.regDnDItem = function() {
   for (var i=0; i<this.events.length; i++) {
-    this.events[i].rootNode.onmousedown = this.dndTrigger;
+	  gj(this.events[i].rootNode).on('mousedown',this.dndTrigger);
+	  //    this.events[i].rootNode.onmousedown = this.dndTrigger;
     for (var j = 0; j < this.events[i].cloneNodes.length; j++) {
-      this.events[i].cloneNodes[j].onmousedown = this.dndTrigger;
+    	gj(this.events[i].cloneNodes[j]).on('mousedown',this.dndTrigger);
+//      this.events[i].cloneNodes[j].onmousedown = this.dndTrigger;
     }    
   } ; 
 } ;

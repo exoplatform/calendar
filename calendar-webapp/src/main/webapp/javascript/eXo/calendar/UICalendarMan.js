@@ -418,10 +418,9 @@ EventMan.prototype.initMonth = function(rootNode){
       continue;
     }
     var eventObj = new EventObject();
-    allEvents[i].onmouseover = eXo.calendar.EventTooltip.show;
-    allEvents[i].onmouseout = eXo.calendar.EventTooltip.hide;
-//    gj(allEvents[i]).on('mouseover',eXo.calendar.EventTooltip.show);
-//    gj(allEvents[i]).on('mouseout',eXo.calendar.EventTooltip.hide);
+//    allEvents[i].onmouseover = eXo.calendar.EventTooltip.show;
+//    allEvents[i].onmouseout = eXo.calendar.EventTooltip.hide;
+    gj(allEvents[i]).on({'mouseover':eXo.calendar.EventTooltip.show, 'mouseout':eXo.calendar.EventTooltip.hide});
     eventObj.init(allEvents[i]);
     this.events.push(eventObj);
   }
@@ -693,7 +692,8 @@ GUIMan.prototype.initSelectionDayEvent = function() {
   UISelection.block.className = "UserSelectionBlock" ;
   UISelection.container = container ;
   gj(container).prevAll('div')[0].appendChild(UISelection.block) ;
-  UISelection.container.onmousedown = UISelection.start ;
+  gj(UISelection.container).on('mousedown',UISelection.start);
+//  UISelection.container.onmousedown = UISelection.start ;
   UISelection.relativeObject = gj(UISelection.container).parents('.EventWeekContent')[0]; 
   UISelection.viewType = "UIWeekView" ;
 } ;
@@ -701,8 +701,11 @@ GUIMan.prototype.initSelectionDayEvent = function() {
 GUIMan.prototype.initSelectionDaysEvent = function() {
   for(var i=0; i<this.dayNodes.length; i++) {
     var link = gj(this.dayNodes[i]).children("a")[0] ;    
-    if (link) link.onmousedown = this.cancelEvent ;
-    this.dayNodes[i].onmousedown = eXo.calendar.UIHSelection.start ;
+    if (link)
+    	gj(link).on('mousedown',this.cancelEvent);
+//    	link.onmousedown = this.cancelEvent ;
+    gj(this.dayNodes[i]).on('mousedown',eXo.calendar.UIHSelection.start);
+//    this.dayNodes[i].onmousedown = eXo.calendar.UIHSelection.start ;
   }
 } ;
  
@@ -724,8 +727,9 @@ GUIMan.prototype.initDND = function() {
     var eventNode = events[i].rootNode;
     var checkbox = gj(eventNode).find('input.checkbox')[0]; 
     if (checkbox) {
-      checkbox.onmousedown = this.cancelEvent;
-			checkbox.onclick = eXo.cs.EventManager.cancelBubble;
+//      checkbox.onmousedown = this.cancelEvent;
+//			checkbox.onclick = eXo.cs.EventManager.cancelBubble;
+    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':eXo.cs.EventManager.cancelBubble});
     }
     eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
   }
@@ -820,14 +824,20 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 		var moreEventTitleBar = moreContainerNode.cloneNode(true);
 		moreEventBar.className = "MoreEventBar" ;
 		moreEventBar.innerHTML = "<span></span>" ;
-		moreEventBar.onclick = this.hideMore ;
+		gj(moreEventBar).on('click',this.hideMore);
+//		moreEventBar.onclick = this.hideMore ;
 		moreEventTitleBar.innerHTML = "&nbsp;";
 		moreEventTitleBar.className = "MoreEventTitleBar";
-		moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
-		moreEventTitleBar.onmousedown = function(evt){
+		gj(moreEventTitleBar).on('click',eXo.cs.EventManager.cancelBubble);
+//		moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
+		gj(moreEventTitleBar).on('mousedown',function(evt){
 			eXo.cs.EventManager.cancelBubble(evt);
 			eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
-		} ;
+		});
+//		moreEventTitleBar.onmousedown = function(evt){
+//			eXo.cs.EventManager.cancelBubble(evt);
+//			eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
+//		} ;
 		moreEventBar.appendChild(moreEventTitleBar);
     moreContainerNode.className = 'MoreEventContainer' ;
     // Create invisible event
@@ -874,7 +884,8 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
     var moreLabel = document.createElement('div');
 		moreLabel.className = "MoreEventLabel";
     moreLabel.innerHTML = 'more ' + cnt + '+';
-		moreLabel.onclick = this.showMore;
+    gj(moreLabel).on('click',this.showMore);
+//		moreLabel.onclick = this.showMore;
     moreNode.appendChild(moreLabel);
 		moreContainerNode.appendChild(moreEventBar);
 		moreContainerNode.appendChild(moreEventList)
@@ -934,19 +945,32 @@ GUIMan.prototype.showMore = function(evt) {
 			moreContainerNode.style.top = - moreContainerNode.offsetHeight + "px";
 		}
 		eXo.core.DOMUtil.listHideElements(moreContainerNode);
-		moreContainerNode.onclick = eXo.cs.EventManager.cancelBubble ;
-		moreContainerNode.onmousedown = function(evt){
-			eXo.cs.EventManager.cancelEvent(evt);
-			if(eXo.cs.EventManager.getMouseButton(evt) == 2) 
-				eXo.core.DOMUtil.hideElementList.remove(this);
-		}
-		moreContainerNode.oncontextmenu = function(evt){
+//		moreContainerNode.onclick = eXo.cs.EventManager.cancelBubble ;
+		gj(moreContainerNode).on({'click':eXo.cs.EventManager.cancelBubble,
+			'mousedown':function(evt){
+				eXo.cs.EventManager.cancelEvent(evt);
+				if(eXo.cs.EventManager.getMouseButton(evt) == 2) 
+					eXo.core.DOMUtil.hideElementList.remove(this);
+			},
+			'contextmenu':function(evt){
 				eXo.cs.EventManager.cancelEvent(evt);
 				eXo.core.DOMUtil.hideElementList.remove(this);
 				eXo.webui.UIContextMenu.show(evt) ;
 				eXo.core.DOMUtil.hideElementList.push(this);
 				return false;
-		}
+		}});
+//		moreContainerNode.onmousedown = function(evt){
+//			eXo.cs.EventManager.cancelEvent(evt);
+//			if(eXo.cs.EventManager.getMouseButton(evt) == 2) 
+//				eXo.core.DOMUtil.hideElementList.remove(this);
+//		}
+//		moreContainerNode.oncontextmenu = function(evt){
+//				eXo.cs.EventManager.cancelEvent(evt);
+//				eXo.core.DOMUtil.hideElementList.remove(this);
+//				eXo.webui.UIContextMenu.show(evt) ;
+//				eXo.core.DOMUtil.hideElementList.push(this);
+//				return false;
+//		}
   }
 	GUIMan.moreNode = moreContainerNode ;
 	GUIMan.lastMore = moreContainerNode.parentNode;
@@ -1050,7 +1074,8 @@ GUIMan.prototype.initHighlighter = function() {
   for(var i=0 ; i<this.tableData.length; i++) {
     var row = this.tableData[i];
     for (var j=0; j<row.length; j++) {
-      row[j].onmousedown = eXo.calendar.Highlighter.start ;
+//      row[j].onmousedown = eXo.calendar.Highlighter.start ;
+    	gj(row[j]).on('mousedown',eXo.calendar.Highlighter.start);
     }
   }
 } ;
