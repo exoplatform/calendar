@@ -23,7 +23,17 @@
 function DOMUtil() {
 	this.hideElementList = new Array() ;
 } ;
-
+/**
+ * Returns true if root has obj as a ancestor
+ */
+DOMUtil.prototype.hasAncestor= function(root, obj) {
+  var prtEle = root.parentNode ;
+  while (prtEle) {
+  	if(prtEle == obj) return true;
+  	prtEle = prtEle.parentNode;
+  }
+  return false ;
+} ;
 /**
  * Generates an id based on the current time and random number
  */

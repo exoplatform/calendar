@@ -11,7 +11,6 @@ Reminder.prototype.init = function(eXoUser, eXoToken, cometdContextName){
 	eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
 		eXo.calendar.Reminder.alarm(eventObj) ;
   });
-  //eXo.cs.CSCometd.addOnConnectionReadyCallback(this.initCometd);
 	if (!eXo.cs.CSCometd.isConnected()) {
 		eXo.cs.CSCometd.init();
   }

@@ -11,7 +11,7 @@ function UICalendarPortlet(){
 	this.portletId = "calendars";
 	this.currentDate = 0;
 	this.CELL_HEIGHT = 20;
-//	if(eXo.core.Browser.webkit != 0) this.CELL_HEIGHT = 21;
+	if(eXo.core.Browser.webkit != 0) this.CELL_HEIGHT = 21;
 	this.MINUTE_PER_CELL = 30;
 	this.PIXELS_PER_MINUTE = this.CELL_HEIGHT / this.MINUTE_PER_CELL; 
 	this.MINUTES_PER_PIXEL = this.MINUTE_PER_CELL / this.CELL_HEIGHT;
@@ -22,7 +22,7 @@ function UICalendarPortlet(){
  */
 UICalendarPortlet.prototype.pixelsToMins = function(pixels) {
   var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
-  return Math.ceil(pixels * UICalendarPortlet.MINUTES_PER_PIXEL);
+  return Math.round(pixels/UICalendarPortlet.CELL_HEIGHT) * UICalendarPortlet.MINUTE_PER_CELL;
 };
 
 /**
@@ -30,7 +30,7 @@ UICalendarPortlet.prototype.pixelsToMins = function(pixels) {
  */
 UICalendarPortlet.prototype.minsToPixels = function(minutes) {
   var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
-  return Math.ceil(minutes * UICalendarPortlet.PIXELS_PER_MINUTE);
+  return Math.round(minutes / UICalendarPortlet.MINUTE_PER_CELL) * UICalendarPortlet.CELL_HEIGHT;
 };
 
 
@@ -51,12 +51,12 @@ UICalendarPortlet.prototype.attachSwapClass = function(compId,className,hoverCla
     var items = gj(component).find('div.' + className);
     var i = items.length;
     while(i--){
-    	gj(items[i]).on("mouseover",function(){
+    	items[i].onmouseover = function(){
     		eXo.cs.Utils.swapClass(this,hoverClass);
-    	});
-    	gj(items[i]).on("mouseout",function(){
+    	};
+    	items[i].onmouseout = function(){
     		eXo.cs.Utils.swapClass(this,hoverClass);
-    	});
+    	}; 
     };
 } ;
 
@@ -553,8 +553,8 @@ UICalendarPortlet.prototype.showHide = function(obj){
     if (obj.style.display != "block") {
         eXo.core.DOMUtil.cleanUpHiddenElements();
         obj.style.display = "block";
-        gj(obj).on('mouseover',eXo.calendar.UICalendarPortlet.autoHide);
-        gj(obj).on('mouseout',eXo.calendar.UICalendarPortlet.autoHide);
+        obj.onmouseover = eXo.calendar.UICalendarPortlet.autoHide;
+        obj.onmouseout = eXo.calendar.UICalendarPortlet.autoHide;
         eXo.core.DOMUtil.listHideElements(obj);
     }
     else {
@@ -694,7 +694,7 @@ UICalendarPortlet.prototype.getBlockElements = function(elements){
 UICalendarPortlet.prototype.setSize = function(obj){
 	var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
     var start = parseInt(obj.getAttribute("startTime"));
-  var topY = UICalendarPortlet.minsToPixels(start);
+  	var topY = UICalendarPortlet.minsToPixels(start);
     var end = parseInt(obj.getAttribute("endTime"));
     var eventContainer = gj(obj).find('div.EventContainer')[0];
     if (end == 0) 
@@ -708,7 +708,7 @@ UICalendarPortlet.prototype.setSize = function(obj){
         "top": topY + "px",
         "height": (height - 2) + "px"
     };
-  UICalendarPortlet.setStyle(obj, styles);
+	UICalendarPortlet.setStyle(obj, styles);
 	var busyIcon = gj(obj).children("div")[0] ;
 	if(!busyIcon ||  (busyIcon.offsetHeight <= 5)) 
 		busyIcon = gj(obj).find("div.EventContainerBar")[0] ;
@@ -812,12 +812,8 @@ UICalendarPortlet.prototype.adjustWidth = function(el, totalWidth){
             }
             UICalendarPortlet.setWidth(el[j], width);
             if (el[j - 1] && (len > 1)) 
-//                el[j].style.left = offsetLeft + parseFloat(el[j - 1].style.width) * n + "%";
-//                el[j].style.right = offsetLeft + parseFloat(el[j - 1].style.width) * n + "%";
                   setLeft(el[j],offsetLeft + parseFloat(el[j - 1].style.width) * n);
             else {
-//                el[j].style.left = offsetLeft + "%";
-//                el[j].style.right = offsetLeft + "%";
                   setLeft(el[j],offsetLeft);
             }
             n++;
@@ -849,12 +845,12 @@ UICalendarPortlet.prototype.showEvent = function(){
     var marker = null;
     for (var i = 0; i < el.length; i++) {
         this.setSize(el[i]);
-        gj(el[i]).on('mouseover',eXo.calendar.EventTooltip.show);
-        gj(el[i]).on('mouseout',eXo.calendar.EventTooltip.hide);
-        gj(el[i]).on('mousedown',eXo.calendar.UICalendarPortlet.initDND);
-        gj(el[i]).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
+        el[i].onmouseover = eXo.calendar.EventTooltip.show;
+        el[i].onmouseout = eXo.calendar.EventTooltip.hide;
+        el[i].onmousedown = eXo.calendar.UICalendarPortlet.initDND;
+	    el[i].ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback;        
         marker = gj(el[i]).children("div.ResizeEventContainer")[0];
-        gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
+        marker.onmousedown = eXo.calendar.UIResizeEvent.init;
     }
     this.items = el;
     this.adjustWidth(this.items);
@@ -892,7 +888,8 @@ UICalendarPortlet.prototype.browserResizeCallback = function(){
 /**
  * Callback method when double click on a calendar event
  */
-UICalendarPortlet.prototype.ondblclickCallback = function(){
+UICalendarPortlet.prototype.ondblclickCallback = function(evt){
+	evt.stopPropagation();
     var eventId = this.getAttribute("eventId");
     var calendarId = this.getAttribute("calid");
     var calendarType = this.getAttribute("caltype");
@@ -950,7 +947,7 @@ function UIResizeEvent(){
  */
 UIResizeEvent.prototype.init = function(evt){
   var _e = window.event || evt;
-  _e.cancelBubble = true;
+  _e.stopPropagation();
   var UIResizeEvent = eXo.calendar.UIResizeEvent;
   var outerElement = gj(this).parents('.EventBoxes')[0];
   var innerElement = gj(this).prevAll("div")[0];
@@ -1786,7 +1783,8 @@ UICalendarPortlet.prototype.listViewDblClick = function(form){
 	eXo.calendar.UICalendarPortlet.viewType = "UIListView";
 	var chk = null ;
 	while(i--){
-		gj(tr[i]).on('dblclick',this.listViewDblClickCallback);
+		tr[i].ondblclick = this.listViewDblClickCallback;		
+//gj(tr[i]).on('dblclick',this.listViewDblClickCallback);
 	}
 };
 
@@ -2174,26 +2172,26 @@ UISelection.prototype.execute = function(evt){
  * Ends dragging selection, this method clean up some unused properties and execute callback function
  */
 UISelection.prototype.clear = function(){
-  var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
-    var UISelection = eXo.calendar.UISelection;
-    var endTime = UICalendarPortlet.pixelsToMins(UISelection.block.offsetHeight) * 60 * 1000 + parseInt(UISelection.startTime);
-    var startTime = UISelection.startTime;
-		var bottom = UISelection.block.offsetHeight + UISelection.block.offsetTop;
+	var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
+	var UISelection = eXo.calendar.UISelection;
+	var endTime = UICalendarPortlet.pixelsToMins(UISelection.block.offsetHeight) * 60 * 1000 + parseInt(UISelection.startTime);
+	var startTime = UISelection.startTime;
+	var bottom = UISelection.block.offsetHeight + UISelection.block.offsetTop;
 
-    if (UISelection.block.offsetTop < UISelection.startY) {
-        startTime = parseInt(UISelection.startTime) - UISelection.block.offsetHeight * 60 * 1000 + UISelection.step * 60 * 1000;
-        endTime = parseInt(UISelection.startTime) + UISelection.step * 60 * 1000;
-    }
-		if(bottom >= UISelection.container.offsetHeight) endTime -= 1;
-	var container = UICalendarPortlet.getElementById("UICalendarViewContainer");	
+	if (UISelection.block.offsetTop < UISelection.startY) {
+		startTime = parseInt(UISelection.startTime) - UICalendarPortlet.pixelsToMins(UISelection.block.offsetHeight) * 60 * 1000 + UICalendarPortlet.MINUTE_PER_CELL * 60 * 1000;
+		endTime = parseInt(UISelection.startTime) + UICalendarPortlet.MINUTE_PER_CELL * 60 * 1000;
+	}
+	if(bottom >= UISelection.container.offsetHeight) endTime -= 1;
+	var container = UICalendarPortlet.getElementById("UICalendarViewContainer");
 	UICalendarPortlet.addQuickShowHiddenWithTime(container, 1, startTime, endTime) ;
-    //eXo.webui.UIForm.submitEvent(UISelection.viewType, 'QuickAdd', '&objectId=Event&startTime=' + startTime + '&finishTime=' + endTime);
-    eXo.core.DOMUtil.listHideElements(UISelection.block);
-		UISelection.startTime = null;
-		UISelection.startY = null;
-		UISelection.startX = null;
-    document.onmousemove = null;
-    document.onmouseup = null;
+	//eXo.webui.UIForm.submitEvent(UISelection.viewType, 'QuickAdd', '&objectId=Event&startTime=' + startTime + '&finishTime=' + endTime);
+	eXo.core.DOMUtil.listHideElements(UISelection.block);
+	UISelection.startTime = null;
+	UISelection.startY = null;
+	UISelection.startX = null;
+	document.onmousemove = null;
+	document.onmouseup = null;
 };
 
 // check free/busy time
@@ -2642,17 +2640,17 @@ eXo.calendar.EventTooltip = {
 		if(!self._container){
 			var eventNode = eXo.cs.EventManager.getEventTarget(evt);
 			eventNode = gj(eventNode).parents('.UICalendarPortlet')[0]; 
-			self._container = gj(eventNode).find('div.UICalendarEventTooltip')[0]; 
-			gj(self._container).on("mouseover",function(evt){
+			self._container = gj(eventNode).find('div.UICalendarEventTooltip')[0];
+			self._container.onmouseover = function(evt){
 				self.cleanupTimer(evt);
-			});
-			gj(self._container).on("mouseout",function(evt){
+				}; 
+		    self._container.onmouseout = function(evt){
 				self.hide(evt);
-			});
-			gj(self._container).on("click",function(evt){
+			}; 	
+			self._container.onclick = function(evt){
 				self.hideElement();
 				self.editEvent(self.currentEvent);
-			});
+			}; 
 		}
 	},
 	editEvent: function(eventNode){				
@@ -2784,7 +2782,7 @@ eXo.calendar.EventTooltip = {
 		var extraY = (this.currentEvent.offsetHeight - this._container.offsetHeight)/2
 		var extraX = 0;
 		var x = eXo.core.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + this.currentEvent.offsetWidth;
-		var y = eXo.core.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - offsetEvent.scrollTop + extraY;		
+		var y = eXo.core.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) + extraY;		
 		this._container.style.top = y + "px";
 		this._container.style.left = x + "px";
 		var relativeX = eXo.core.Browser.findPosX(this._container) + this._container.offsetWidth;

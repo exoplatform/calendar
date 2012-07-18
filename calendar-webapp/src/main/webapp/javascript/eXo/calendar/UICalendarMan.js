@@ -418,8 +418,10 @@ EventMan.prototype.initMonth = function(rootNode){
       continue;
     }
     var eventObj = new EventObject();
-    gj(allEvents[i]).on('mouseover',eXo.calendar.EventTooltip.show);
-    gj(allEvents[i]).on('mouseout',eXo.calendar.EventTooltip.hide);
+    allEvents[i].onmouseover = eXo.calendar.EventTooltip.show;
+    allEvents[i].onmouseout = eXo.calendar.EventTooltip.hide;
+//    gj(allEvents[i]).on('mouseover',eXo.calendar.EventTooltip.show);
+//    gj(allEvents[i]).on('mouseout',eXo.calendar.EventTooltip.hide);
     eventObj.init(allEvents[i]);
     this.events.push(eventObj);
   }
@@ -569,7 +571,6 @@ GUIMan.prototype.initMonth = function(){
   for (var i=0; i<events.length; i++) {
     var eventObj = events[i];
     var eventLabelNode = gj(eventObj.rootNode).find('div.EventLabel')[0];
-    //eventLabelNode.innerHTML = eventObj.getLabel();
     eventObj.rootNode.setAttribute('title', eventObj.name);
   }
   this.rowContainerDay = gj(eXo.calendar.UICalendarMan.EventMan.rootNode).find('div.RowContainerDay')[0];
@@ -825,7 +826,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 		moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
 		moreEventTitleBar.onmousedown = function(evt){
 			eXo.cs.EventManager.cancelBubble(evt);
-			eXo.core.DragDrop.init(null,this,moreContainerNode,evt);
+			eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
 		} ;
 		moreEventBar.appendChild(moreEventTitleBar);
     moreContainerNode.className = 'MoreEventContainer' ;
@@ -986,7 +987,6 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
   }
   if(delta <= 0) delta = 1;
   var eventLen = Math.round(delta) * (dayInfo.width) + (delta - 1);
-	//eventLen = ((delta > 5) && eXo.core.Browser.isIE6())?(eventLen - 2): eventLen; 
 	eventNode.style.top = topPos + 'px';
   eventNode.style.left = leftPos + 'px';
   eventNode.style.width = eventLen + 'px';

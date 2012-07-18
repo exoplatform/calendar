@@ -1,6 +1,5 @@
-
 // Create new method for special context
-eXo.core.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
+eXo.cs.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
   if(dropableTargets == null) return null ;
   var UICalendarDragDropObj = eXo.calendar.UICalendarDragDrop;
   var additionX = UICalendarDragDropObj.RowContainerDay.scrollLeft;
@@ -17,9 +16,9 @@ eXo.core.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, m
   for(var i = 0 ; i < len ; i++) {
     var ele =  dropableTargets[i] ;
     if(document.getElementById("UIPageDesktop")) {
-			mousexInPage = eXo.cs.Browser.findMouseXInPage(mouseEvent) + eXo.cs.Utils.getScrollLeft(ele) ;
+		mousexInPage = eXo.cs.Browser.findMouseXInPage(mouseEvent) + eXo.cs.Utils.getScrollLeft(ele) ;
   		mouseyInPage = eXo.cs.Browser.findMouseYInPage(mouseEvent) + eXo.cs.Utils.getScrollTop(ele) ;
-		}
+	}
     if(dragObject != ele && this.isIn(mousexInPage, mouseyInPage, ele)) {
       if(foundTarget == null) {
         foundTarget = ele ;
@@ -41,11 +40,11 @@ eXo.core.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, m
 function UICalendarDragDrop() {
   this.scKey = 'background' ;
   this.scValue = '#c0c0c0' ;
-  this.DOMUtil = eXo.core.DOMUtil ;
-  this.DragDrop = eXo.core.DragDrop ;
+  this.DragDrop = eXo.cs.DragDrop ;
   this.dropableSets = [] ;
   this.listView = false ;
   this.onMouseMoveCount = 0; //Trick to slow onMouseMove event on Safari
+
 } ;
 
 /**
@@ -85,12 +84,12 @@ UICalendarDragDrop.prototype.regDnDItem = function() {
 } ;
 
 UICalendarDragDrop.prototype.dndTrigger = function(e){
-  e = e ? e : window.event;
+	e = e ? e : window.event;
 	eXo.calendar.EventTooltip.disable(e);
-  if (e.button == 1 || e.which == 1) {
-    return eXo.calendar.UICalendarDragDrop.initDnD(eXo.calendar.UICalendarDragDrop.dropableSets, this, this, e);
-  }
-  return true ;
+	if (e.button == 1 || e.which == 1) {
+		return eXo.calendar.UICalendarDragDrop.initDnD(eXo.calendar.UICalendarDragDrop.dropableSets, this, this, e);
+	}
+	return true ;
 } ;
 
 /**
@@ -110,8 +109,8 @@ UICalendarDragDrop.prototype.initDnD = function(dropableObjs, clickObj, dragObj,
 
   tmpNode.style.background = "rgb(237,237,237)";
   tmpNode.style.width = dropableObjs[0].offsetWidth + 'px';
+
   gj(tmpNode).css({opacity:0.5});
-//  eXo.core.Browser.setOpacity(tmpNode, 50) ;
   var UIMonthViewNode = document.createElement('div');
   UIMonthViewNode.className = 'UICalendarPortlet UIMonthView';
   var EventMonthContentNode = document.createElement('div');
@@ -132,7 +131,6 @@ UICalendarDragDrop.prototype.initDnD = function(dropableObjs, clickObj, dragObj,
   this.DragDrop.initCallback = this.initCallback ;
   this.DragDrop.dragCallback = this.dragCallback ;
   this.DragDrop.dropCallback = this.dropCallback ;
-  
   this.DragDrop.init(dropableObjs, clickBlock, UIMonthViewNode, e) ;
   return false ;
 } ;
@@ -158,16 +156,16 @@ UICalendarDragDrop.prototype.synDragObjectPos = function(dndEvent) {
 
 UICalendarDragDrop.prototype.initCallback = function(dndEvent) {
 	var dragObj = dndEvent.dragObject;
-  dragObj.style.top = '-1000px';
-  eXo.calendar.UICalendarDragDrop.pos = {
-    "x": dragObj.offsetLeft,
-    "y": dragObj.offsetTop
-  } ;
+	dragObj.style.top = '-1000px';
+	eXo.calendar.UICalendarDragDrop.pos = {
+		"x": dragObj.offsetLeft,
+		"y": dragObj.offsetTop
+	} ;
 } ;
 
 UICalendarDragDrop.prototype.dragCallback = function(dndEvent) {
 	eXo.calendar.EventTooltip.disable();
-	if(eXo.core.Browser.webkit != 0){
+	if(eXo.core.Browser.webkit !=0){
 		if(!this.onMouseMoveCount) this.onMouseMoveCount = 0;
 		this.onMouseMoveCount++;
 		if(this.onMouseMoveCount < 7) return;
@@ -179,11 +177,12 @@ UICalendarDragDrop.prototype.dragCallback = function(dndEvent) {
     dragObject.style.display = 'block' ;
   }
 	dragObject.style.zIndex = 2000 ; // fix for IE 
+
   eXo.calendar.UICalendarDragDrop.synDragObjectPos(dndEvent) ;
   // Re-find target
   var foundTarget = 
-      eXo.core.DragDrop.findDropableTarget4Cal(dndEvent, eXo.core.DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
-  var junkMove =  eXo.core.DragDrop.isJunkMove(dragObject, foundTarget) ;
+      eXo.cs.DragDrop.findDropableTarget4Cal(dndEvent, eXo.cs.DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
+  var junkMove =  eXo.cs.DragDrop.isJunkMove(dragObject, foundTarget) ;
   dndEvent.update(foundTarget, junkMove) ;
   
   if (dndEvent.foundTargetObject) {
@@ -213,8 +212,8 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
   }
   // Re-find target
   var foundTarget = 
-      eXo.core.DragDrop.findDropableTarget4Cal(dndEvent, eXo.core.DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
-  var junkMove =  eXo.core.DragDrop.isJunkMove(dndEvent.dragObject, foundTarget) ;
+      eXo.cs.DragDrop.findDropableTarget4Cal(dndEvent, eXo.cs.DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
+  var junkMove =  eXo.cs.DragDrop.isJunkMove(dndEvent.dragObject, foundTarget) ;
   dndEvent.update(foundTarget, junkMove) ;
   
   gj(dndEvent.dragObject).remove();
@@ -263,7 +262,6 @@ UICalendarDragDrop.prototype.getCheckedObject = function(clickObj){
     if(!this.isCheckedObject(evenObj[i])) continue ;
     tmpNode = evenObj[i].cloneNode(true) ;
     gj(tmpNode).css({opacity:0.5});
-//    eXo.core.Browser.setOpacity(tmpNode,50) ;
     tmpNode.style.top = top + "px";		
     top += 20 ;
     this.selectedEvent.push(evenObj[i]);

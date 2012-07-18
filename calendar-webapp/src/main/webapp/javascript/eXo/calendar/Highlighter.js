@@ -103,7 +103,7 @@ Highlighter.prototype.createBlock = function(cell) {
 	for(var i = 0 ; i < len ; i ++) {
 		div = document.createElement("div") ;
 		div.onmousedown = eXo.calendar.Highlighter.hideAll ;
-		if(document.getElementById("UserSelectionBlock"+i)) 
+		if(gj("#UserSelectionBlock"+i)) 
 			gj("#UserSelectionBlock"+i).remove() ; 
 		div.setAttribute("id", "UserSelectionBlock"+i) ;
 		div.className = "UserSelectionBlock" ;
@@ -149,16 +149,13 @@ Highlighter.prototype.start = function(evt) {
 	Highlighter.container = Highlighter.startBlock.offsetParent ;
 	var fixleftIE = (document.all && document.getElementById("UIWeekView"))? 6 : 0 ; //TODO : No hard code 
 	var x = eXo.core.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) -  fixleftIE ;
-	var y = eXo.core.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) - document.getElementById(eXo.calendar.UICalendarPortlet.portletName).parentNode.scrollTop ;
-	//Highlighter.startBlock.style.left = x + "px" ;
+	var y = eXo.core.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) + gj('.UIMonthView .MainWorkingPanel').scrollTop();
 	Highlighter.reserveDirection(Highlighter.startCell, Highlighter.container,Highlighter.startBlock) ;
 	Highlighter.startBlock.style.top = y + "px" ;
 	Highlighter.startBlock.style.width = Highlighter.dimension.x + "px" ;
 	Highlighter.startBlock.style.height = Highlighter.dimension.y + "px" ;
 	document.onmousemove = Highlighter.execute;
 	document.onmouseup = Highlighter.end;
-//	gj(document).on('mousemove', Highlighter.execute) ;
-//	gj(document).on('mouseup', Highlighter.end) ;
 	Highlighter.firstCell = Highlighter.startCell ;
 	Highlighter.lastCell = Highlighter.startCell ;
 	} catch(e) {
@@ -191,13 +188,11 @@ Highlighter.prototype.execute = function(evt) {
 			startBlock = Highlighter.startBlock ;
 			Highlighter.hideAll(startBlock) ;
 			if (diff > 0) {
-				//startBlock.style.right = Highlighter.container.offsetWidth - Highlighter.startCell.offsetWidth - eXo.core.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) - fixleftIE + "px" ;
 				Highlighter.reserveDirection(Highlighter.startCell, Highlighter.container,startBlock) ;
 				startBlock.style.width = (diff + 1)*Highlighter.dimension.x + "px" ;
 				Highlighter.firstCell = Highlighter.startCell ;
 				Highlighter.lastCell  = Highlighter.currentCell ;
 			} else {
-				//startBlock.style.right = eXo.core.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) + diff*Highlighter.dimension.x - fixleftIE + "px" ;
 			 	Highlighter.reserveDirection(Highlighter.currentCell, Highlighter.container,startBlock);
 				startBlock.style.width = (1 - diff)*Highlighter.dimension.x + "px" ;
 			 	Highlighter.lastCell = Highlighter.startCell ;
@@ -231,15 +226,13 @@ Highlighter.prototype.execute = function(evt) {
 				Highlighter.reserveDirection(Highlighter.currentCell, Highlighter.container,startBlock) ;
 			}
 			startBlock.style.display = "block" ;
-			startBlock.style.top = startY + "px" ;
-			//startBlock.style.right = startX - fixleftIE + "px" ;
+			startBlock.style.top = startY  + gj('.UIMonthView .MainWorkingPanel').scrollTop() + "px" ;
 			startBlock.style.width = startWidth + "px" ;
 			startBlock.style.height = Highlighter.dimension.y + "px" ;
 			if(Math.abs(len) >= 1) {
 				for(var i = startIndex + 1 ; i < (startIndex + Math.abs(len)); i ++) {
 					Highlighter.block[i].style.display  = "block" ;
 					Highlighter.block[i].style.top  = parseInt(Highlighter.block[i - 1].style.top) + Highlighter.dimension.y + "px" ;
-					//Highlighter.block[i].style.left  = eXo.core.Browser.findPosXInContainer(Highlighter.cell[0], Highlighter.container) + "px" ;
 					Highlighter.reserveDirection(Highlighter.cell[0], Highlighter.container,Highlighter.block[i]) ;
 					Highlighter.block[i].style.width = Highlighter.cellLength*Highlighter.dimension.x + "px" ;
 					Highlighter.block[i].style.height = Highlighter.dimension.y + "px" ;

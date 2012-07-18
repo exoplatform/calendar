@@ -17,6 +17,10 @@
       <path>/javascript/eXo/cs/CalBrowser.js</path>
     </script>
     <script>
+      <name>eXo.cs.DragDrop</name>
+      <path>/javascript/eXo/core/CalDragDrop.js</path>
+    </script>
+    <script>
       <name>eXo.core.Resize</name>
       <path>/javascript/eXo/core/Resize.js</path>
     </script>

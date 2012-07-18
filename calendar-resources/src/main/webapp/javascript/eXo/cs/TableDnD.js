@@ -4,7 +4,7 @@
 function TableDnD() {
   this.scKey = 'border' ;
   this.scValue = 'solid 1px #000' ;
-  this.DragDrop = eXo.core.DragDrop ;
+  this.DragDrop = eXo.cs.DragDrop ;
   this.tableMan = eXo.cs.TableMan ;
   this.dropableLst = [] ;                                      
 } ;
@@ -129,7 +129,7 @@ TableDnD.prototype.dropCallback = function(dndEvent) {
       tableMan.swapColumn(x1, x2) ;
     }
   } catch(e) {}
-  eXo.core.DragDrop.destroy() ;
+  eXo.cs.DragDrop.destroy() ;
   return true ;
 } ;
 
