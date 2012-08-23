@@ -58,8 +58,11 @@
                     <string>web</string>
                 </value>                                                                                                         
                 <value>
-                  <string>calendar</string>
-                </value>   
+                  <string>calendar-extension</string>
+                </value>
+                <value>
+                  <string>cs-gadgets</string>
+                </value>    
                                           
               </collection>
             </field>
