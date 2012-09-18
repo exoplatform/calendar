@@ -18,3 +18,4 @@ target
 .svn
 pom.xml~
 *~
+.DS_Store

@@ -20,6 +20,7 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.organization.idm.PicketLinkIDMOrganizationServiceImpl;
 import org.exoplatform.services.organization.idm.PicketLinkIDMService;
+import org.gatein.common.transaction.JTAUserTransactionLifecycleService;
 
 /**
  * Created by The eXo Platform SAS
@@ -31,8 +32,9 @@ public class CS4782PicketLinkIDMOrganizationServiceImpl extends PicketLinkIDMOrg
 
   public CS4782PicketLinkIDMOrganizationServiceImpl(InitParams params,
                                                     PicketLinkIDMService idmService,
+                                                    JTAUserTransactionLifecycleService jtaTransactionLifecycleService,
                                                     NodeHierarchyCreator nodeHierarchyCreator) throws Exception {
-    super(params, idmService);
+    super(params, idmService, jtaTransactionLifecycleService );
   }
 
 }

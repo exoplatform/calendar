@@ -27,11 +27,11 @@
     <url>https://ci.exoplatform.org/job/cs-2.2.x-ci/</url>
   </ciManagement>
   <properties>
-    <org.exoplatform.kernel.version>2.3.9-GA-SNAPSHOT</org.exoplatform.kernel.version>
-    <org.exoplatform.core.version>2.4.9-GA-SNAPSHOT</org.exoplatform.core.version>
-    <org.exoplatform.ws.version>2.2.9-GA-SNAPSHOT</org.exoplatform.ws.version>
-    <org.exoplatform.jcr.version>1.14.9-GA-SNAPSHOT</org.exoplatform.jcr.version>
-    <org.exoplatform.portal.version>3.3.0-GA</org.exoplatform.portal.version>
+    <org.exoplatform.kernel.version>2.3.6-GA</org.exoplatform.kernel.version>
+    <org.exoplatform.core.version>2.4.6-GA</org.exoplatform.core.version>
+    <org.exoplatform.ws.version>2.2.6-GA</org.exoplatform.ws.version>
+    <org.exoplatform.jcr.version>1.14.6-GA</org.exoplatform.jcr.version>
+    <org.exoplatform.portal.version>3.4.0.M01</org.exoplatform.portal.version>
     <org.exoplatform.ecms.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.ecms.version>
     <exo.tool.framework.junit.version>1.2.0</exo.tool.framework.junit.version>
     <org.exoplatform.exopackage.version>1.1.4</org.exoplatform.exopackage.version>
@@ -83,15 +83,8 @@
     <ical4j.version>1.0-beta5</ical4j.version>
     <jcrom.version>1.2</jcrom.version>
     <org.apache.jackrabbit.version>1.6.4</org.apache.jackrabbit.version>
-    <!--exo.cs.eXoApplication.chat.service-->
-    <jivesoftware.smack.version>3.1.0</jivesoftware.smack.version>
-    <jivesoftware.smackx.version>3.1.0</jivesoftware.smackx.version>
     <dom4j.version>1.6.1</dom4j.version>
     <commons-fileupload.version>1.2.1</commons-fileupload.version>
-    <!--exo.cs.eXoApplication.contact.service-->
-    <jpim-0.1.version>1.0</jpim-0.1.version>
-    <!--exo.cs.eXoApplication.organization.client.openfire-->
-    <openfire.version>3.6.4</openfire.version>
     <!--need when deploy CS-->
     <org.slf4j.version>1.5.8</org.slf4j.version>
     <c3p0.version>0.9.1.2</c3p0.version>
@@ -112,8 +105,8 @@
     <org.jsecurity.version>0.9.0</org.jsecurity.version>
     <org.gatein.pc.version>2.3.2-GA</org.gatein.pc.version>
     <org.gatein.shindig.version>2.0.2-CP01</org.gatein.shindig.version>
-    <org.gatein.wci.version>2.2.0-Beta01</org.gatein.wci.version>
-    <org.gatein.wsrp.version>2.1.0-GA</org.gatein.wsrp.version>
+    <org.gatein.wci.version>2.2.0-Beta02</org.gatein.wci.version>
+    <org.gatein.wsrp.version>2.2.0-Beta04</org.gatein.wsrp.version>
     <org.reflext.version>1.1.0</org.reflext.version>
     <xerces.version>2.9.1</xerces.version>
     <commons-collections.version>3.2.1</commons-collections.version>
@@ -392,17 +385,6 @@
         <artifactId>jackrabbit-webdav</artifactId>
         <version>${org.apache.jackrabbit.version}</version>
       </dependency>
-      <!--exo.cs.eXoApplication.chat.service-->
-      <dependency>
-        <groupId>jivesoftware</groupId>
-        <artifactId>smack</artifactId>
-        <version>${jivesoftware.smack.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jivesoftware</groupId>
-        <artifactId>smackx</artifactId>
-        <version>${jivesoftware.smackx.version}</version>
-      </dependency>
       <dependency>
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
@@ -412,18 +394,6 @@
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
         <version>${commons-fileupload.version}</version>
-      </dependency>
-      <!--exo.cs.eXoApplication.contact.service-->
-      <dependency>
-        <groupId>net.wimpi.pim</groupId>
-        <artifactId>jpim-0.1</artifactId>
-        <version>${jpim-0.1.version}</version>
-      </dependency>
-      <!--exo.cs.eXoApplication.organization.client.openfire-->
-      <dependency>
-        <groupId>openfire</groupId>
-        <artifactId>openfire</artifactId>
-        <version>${openfire.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sourceforge.nekohtml</groupId>
