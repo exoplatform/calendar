@@ -17,6 +17,13 @@ function UICalendarPortlet(){
 	this.MINUTES_PER_PIXEL = this.MINUTE_PER_CELL / this.CELL_HEIGHT;
 }
 
+UICalendarPortlet.prototype.onLoad = function(param){
+	eXo.calendar = eXo.calendar || {};
+	
+	eXo.calendar.restContext = param.restContext;
+	eXo.calendar.settingTimezone = param.settingTimezone;
+}
+
 /**
  * compute minutes from pixels in height of a event.
  */
@@ -3170,3 +3177,4 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
 
 };
 
+_module.UICalendarPortlet = new UICalendarPortlet();

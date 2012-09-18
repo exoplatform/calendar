@@ -1,0 +1,1 @@
+eXo.calendar = eXo.calendar || {};

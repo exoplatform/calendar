@@ -160,3 +160,6 @@ CalendarLayout.prototype.expandUICalendars = function() {
 
 if (!eXo.calendar.CalendarLayout) eXo.calendar.CalendarLayout = new CalendarLayout();
 if(!eXo.calendar.LayoutManager) eXo.calendar.LayoutManager = new LayoutManager("calendarlayout");
+
+_module.CalendarLayout = eXo.calendar.CalendarLayout;
+_module.LayoutManager = eXo.calendar.LayoutManager;
