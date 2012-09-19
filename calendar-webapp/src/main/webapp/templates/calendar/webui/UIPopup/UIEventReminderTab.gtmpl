@@ -3,8 +3,12 @@
   def isEmailReminder = (uiForm.getEmailReminder())?"": "style='display:none;'";
   def isPopupReminder = (uiForm.getPopupReminder())?"": "style='display:none;'";
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.autoShowHideSetting() ;') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.autoShowRepeatEvent() ;') ;
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts('cal.UICalendarPortlet.autoShowHideSetting() ;') ;
+  requireJS.addScripts('cal.UICalendarPortlet.autoShowRepeatEvent() ;') ;
+ // rcontext.getJavascriptManager().addJavascript('cal.UICalendarPortlet.autoShowHideSetting() ;') ;
+ // rcontext.getJavascriptManager().addJavascript('cal.UICalendarPortlet.autoShowRepeatEvent() ;') ;
   
   
 %>

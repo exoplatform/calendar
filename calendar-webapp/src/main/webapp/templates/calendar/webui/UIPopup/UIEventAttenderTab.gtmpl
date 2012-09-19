@@ -8,8 +8,12 @@
   }
   def rcontext = _ctx.getRequestContext() ;
   def userSettingTimezoneOffset = uicomponent.getUserTimeZone();
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.UICalendarPortlet.initCheck("' + uicomponent.id + '",' + userSettingTimezoneOffset + ') ;') ;
-%>
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.initCheck("' + uicomponent.id + '",' + userSettingTimezoneOffset + ') ;') ;
+
+  
+  %>
 <div class="UIAddNewEvent $uicomponent.id" id="$uicomponent.id">
   <div class="NewEventAttendee">
     <div class="UIFormInputSet">

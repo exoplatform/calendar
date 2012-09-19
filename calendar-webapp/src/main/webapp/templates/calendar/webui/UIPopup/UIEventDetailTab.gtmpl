@@ -38,8 +38,10 @@
     }
   }
   def rcontext = _ctx.getRequestContext() ;  
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
-  rcontext.getJavascriptManager().addJavascript("eXo.calendar.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  rcontext.getJavascriptManager().addJavascript('cal.UICalendarPortlet.isAllday("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
+  rcontext.getJavascriptManager().addJavascript("cal.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
   
 %>
 <div id="$uicomponent.id" class="UIAddNewEvent">

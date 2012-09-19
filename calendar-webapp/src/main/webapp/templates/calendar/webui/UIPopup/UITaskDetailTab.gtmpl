@@ -35,8 +35,11 @@
     }
   }
   def rcontext = _ctx.getRequestContext() ;  
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
-%>
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts.('cal.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
+//  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
+  %>
 <div id="$uicomponent.id" class="UIAddNewEvent">
   <table class="UIFormGrid">
     <tbody>

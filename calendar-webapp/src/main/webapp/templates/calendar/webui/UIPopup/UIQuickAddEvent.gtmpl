@@ -1,6 +1,9 @@
 <%
 def rcontext = _ctx.getRequestContext() ;  
-rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;  
+def requireJS = rcontext.getJavascriptManager().getRequireJS();
+requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+requireJS.addScripts('cal.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;
+//rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;  
 %>
 <div class="UIQuickAddEvent" id="QuickAddEventContainer">
   <div class="QuickAddEventContainer">
