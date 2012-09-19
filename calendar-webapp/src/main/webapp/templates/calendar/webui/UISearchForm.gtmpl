@@ -2,7 +2,9 @@
   uiform.begin();
   def rcontext = _ctx.getRequestContext() ;  
   action = uicomponent.event("Search") ;
-  rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("value") ;') ;
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("SHARED/csResources","cs");
+  requirejs.addScripts('cs.Utils.captureInput("value") ;') ;
 %>
 <div class="UISearchForm">
   <div onclick="<%=uicomponent.event("AdvancedSearch")%>">

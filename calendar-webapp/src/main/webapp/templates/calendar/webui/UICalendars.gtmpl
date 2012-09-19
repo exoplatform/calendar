@@ -6,8 +6,10 @@
   import org.exoplatform.webui.form.UIFormCheckBoxInput;
   import org.exoplatform.calendar.webui.UICalendarPortlet;
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.CalendarLayout.updateUICalendarsLayout();') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendars.init("' + uiform.id + '") ;') ;
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.addScripts('cal.CalendarLayout.updateUICalendarsLayout();') ;
+  requirejs.addScripts('cal.UICalendars.init("' + uiform.id + '") ;') ;
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
   
   String[] checkPerms = uicomponent.getCheckPermissionString().split(CalendarUtils.COMMA);

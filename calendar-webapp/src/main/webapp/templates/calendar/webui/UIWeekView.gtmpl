@@ -25,12 +25,18 @@
   } 
   workingStart = uicomponent.getCalendarSetting().getWorkingTimeBegin() ;
   int defaultTimeInterval = uicomponent.getDefaultTimeInterval() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.getWorkingdays('+numberOfDays+') ;') ;
+  
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  
+  requirejs.addScripts('cal.UICalendarPortlet.getWorkingdays('+numberOfDays+') ;') ;
   //rcontext.getJavascriptManager().addOnLoadJavascript('eXo.calendar.UICalendarPortlet.onLoad') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.UICalendarPortlet.checkFilter();') ;
-  rcontext.getJavascriptManager().addOnResizeJavascript('eXo.calendar.UIWeekView.onResize') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  requirejs.addScripts('cal.UICalendarPortlet.checkFilter();') ;
+  requirejs.addScripts('cal.UIWeekView.onResize') ;
+  requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;  
+  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout();');
+  requirejs.addScripts('cal.CalendarLayout.updateUICalendarViewLayout();') ;
+  
    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
    Locale locale = context.getParentAppRequestContext().getLocale() ;
    String currentMonthName = uicomponent.getMonthName(currentMonth) ;

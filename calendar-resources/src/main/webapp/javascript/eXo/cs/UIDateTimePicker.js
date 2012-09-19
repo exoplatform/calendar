@@ -9,7 +9,8 @@ function UIDateTimePicker() {
   this.pathResource = "/csResources/javascript/eXo/cs/lang/";
 } ;
 
-UIDateTimePicker.prototype = eXo.webui.UICalendar ;
+//UIDateTimePicker.prototype = eXo.webui.UICalendar ;
+UIDateTimePicker.prototype = wx.UICalendar ; //UICalendar of webui-ext module
 
 UIDateTimePicker.prototype.getLang = function() {
 	try {
@@ -39,7 +40,7 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
 
 	// fix bug for IE 6
   var cld = document.getElementById(this.calendarId);
-  if(eXo.core.Browser.isIE6())  {
+  if(base.Browser.isIE6())  {
     var blockClnd = document.getElementById('BlockCaledar') ;
     var iframe = document.getElementById(this.calendarId + 'IFrame') ;
     iframe.style.height = blockClnd.offsetHeight + "px";
@@ -48,7 +49,7 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
 };
 
 UIDateTimePicker.prototype.show = function() {
-	eXo.cs.UIDateTimePicker.getLang() ;
+	_module.UIDateTimePicker.getLang() ;
 	document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
 	
   var str = this.dateField.getAttribute("format") ;
@@ -120,7 +121,7 @@ UIDateTimePicker.prototype.show = function() {
 UIDateTimePicker.prototype.initDND = function(evt) {
 	var _e = evt || window.event;
 	_e.cancelBubble = true ;
-	eXo.cs.DragDrop.init(null, this, this.parentNode.parentNode, evt);
+	_module.DragDrop.init(null, this, this.parentNode.parentNode, evt);
 } ;
 
 UIDateTimePicker.prototype.getTypeFormat = function() {
@@ -241,4 +242,5 @@ UIDateTimePicker.prototype.hide = function() {
 	document.onclick = null;
 }
 
-eXo.cs.UIDateTimePicker = new UIDateTimePicker() ;
+//eXo.cs.UIDateTimePicker = new UIDateTimePicker() ;
+_module.UIDateTimePicker = new UIDateTimePicker() ;

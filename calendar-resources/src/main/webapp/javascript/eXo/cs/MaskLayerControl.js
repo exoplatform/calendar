@@ -15,7 +15,7 @@ MaskLayerControl.prototype.init = function(root){
 } ;
 
 MaskLayerControl.prototype.showPictureWrapper = function() {
-  eXo.cs.MaskLayerControl.showPicture(this) ;
+  _module.MaskLayerControl.showPicture(this) ;
   return false ;
 } ;
 
@@ -54,13 +54,13 @@ MaskLayerControl.prototype.showPicture = function(node) {
 } ;
 
 MaskLayerControl.prototype.scrollHandler = function() {
-	if(eXo.cs.MaskLayerControl.isMail) {
+	if(_module.MaskLayerControl.isMail) {
 		eXo.core.UIMaskLayer.object.style.top = document.getElementById("MaskLayer").offsetTop + "px" ;
-		eXo.cs.MaskLayerControl.timer = setTimeout(eXo.cs.MaskLayerControl.scrollHandler,1);
+		_module.MaskLayerControl.timer = setTimeout(_module.MaskLayerControl.scrollHandler,1);
 		return ;
 	}
   eXo.core.UIMaskLayer.object.style.top = document.getElementById("MaskLayer").offsetTop + "px" ;
-	eXo.cs.MaskLayerControl.timer = setTimeout(eXo.cs.MaskLayerControl.scrollHandler,1);
+	_module.MaskLayerControl.timer = setTimeout(_module.MaskLayerControl.scrollHandler,1);
 } ;
 
 MaskLayerControl.prototype.hidePicture = function() {
@@ -69,8 +69,8 @@ MaskLayerControl.prototype.hidePicture = function() {
   var maskNode = document.getElementById("MaskLayer") || document.getElementById("subMaskLayer") ;
   if (maskContent) maskContent.parentNode.removeChild(maskContent) ;
   if (maskNode) maskNode.parentNode.removeChild(maskNode) ;
-	clearTimeout(eXo.cs.MaskLayerControl.timer);
-	delete eXo.cs.MaskLayerControl.timer;
+	clearTimeout(_module.MaskLayerControl.timer);
+	delete _module.MaskLayerControl.timer;
 } ;
 
 MaskLayerControl.prototype.getImageSize = function(img) {
@@ -80,4 +80,6 @@ MaskLayerControl.prototype.getImageSize = function(img) {
 };
 
 if (!eXo.cs) eXo.cs = {} ;
-eXo.cs.MaskLayerControl = new MaskLayerControl() ;
+
+//eXo.cs.MaskLayerControl = new MaskLayerControl() ;
+_module.MaskLayerControl = new MaskLayerControl() ;

@@ -5,6 +5,8 @@
   def rcontext = _ctx.getRequestContext() ;
   rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.autoShowHideSetting() ;') ;
   rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.autoShowRepeatEvent() ;') ;
+  
+  
 %>
 <div id="$uicomponent.id" class="UIAddNewEvent">
   <div class="ReminderByEmail">

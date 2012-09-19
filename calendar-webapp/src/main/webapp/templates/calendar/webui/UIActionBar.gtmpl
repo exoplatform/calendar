@@ -3,8 +3,14 @@
   import org.exoplatform.calendar.webui.UISearchForm;
    
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.CalendarScrollManager.load() ;') ;
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+    
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.require("SHARED/jquery","gj");
+  requireJS.addScripts('cal.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
+  //requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
+  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
+  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
 %>
 <div id="$uicomponent.id" class="UIActionBar"> 
   <div class="UIToolbar">
@@ -18,12 +24,12 @@
             <div class="Title ControlButton ActionBarButton">
               <span></span>
             </div>
-            <div onclick="eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 1);" class="ControlButton ActionBarButton">
+            <div id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>" class="ControlButton ActionBarButton">
               <a class="IconHolder QuickAddEvent">
                 <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
               </a>
             </div>
-            <div onclick="eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 2);" class="ControlButton ActionBarButton">
+            <div id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>" class="ControlButton ActionBarButton">
               <a class="IconHolder AddNewTask">
                 <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
               </a>

@@ -31,7 +31,7 @@
     <org.exoplatform.core.version>2.4.6-GA</org.exoplatform.core.version>
     <org.exoplatform.ws.version>2.2.6-GA</org.exoplatform.ws.version>
     <org.exoplatform.jcr.version>1.14.6-GA</org.exoplatform.jcr.version>
-    <org.exoplatform.portal.version>3.4.0.M01</org.exoplatform.portal.version>
+    <org.exoplatform.portal.version>3.4.0.Final</org.exoplatform.portal.version>
     <org.exoplatform.ecms.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.ecms.version>
     <exo.tool.framework.junit.version>1.2.0</exo.tool.framework.junit.version>
     <org.exoplatform.exopackage.version>1.1.4</org.exoplatform.exopackage.version>

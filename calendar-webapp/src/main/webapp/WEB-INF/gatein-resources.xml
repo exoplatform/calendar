@@ -9,7 +9,7 @@
     <css-priority>1</css-priority>
   </portlet-skin>
   
-  <scripts>
+  <!--scripts>
   	<name>cal-bootstrap</name>
   	<script>
   		<name>eXo.calendar.bootstrap</name>
@@ -18,7 +18,7 @@
   	<depends>
   		<scripts>bootstrap</scripts>
   	</depends>
-  </scripts>
+  </scripts-->
   
   <portlet>
     <name>CalendarPortlet</name>
@@ -56,22 +56,34 @@
         <path>/javascript/eXo/calendar/UICalendarMan.js</path>
       </script>
       <depends>
-	<module>common</module>
+		<module>common</module>
       </depends>
       <depends>
         <module>base</module>
-      </depends>
-      <depends>
-	<module>jquery</module>
-      </depends>
+        <as>base</as>
+      </depends>      
       <depends>
         <module>navigation</module>
       </depends>      
       <depends>
-        <module>cometd</module>
+        <module>commons.cometd</module>
+        <as>cometd</as>
+      </depends>
+      <depends>
+        <module>webui</module>
+        <as>webui</as>
+      </depends>
+      <depends>
+        <module>webui-ext</module>
+        <as>wx</as>
       </depends>
       <depends>
         <module>csResources</module>
+        <as>cs</as>
+      </depends>
+      <depends>
+		<module>jquery</module>
+		<as>gj</as>
       </depends>
     </module>  
   </portlet>

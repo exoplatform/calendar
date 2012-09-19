@@ -52,16 +52,16 @@ DOMUtil.prototype.generateId = function(objectId) {
   * and that all opened popup menu should be hidden
   */
 DOMUtil.prototype.hideElements = function() {
-	document.onclick = eXo.core.DOMUtil.cleanUpHiddenElements;
+	document.onclick = _module.DOMUtil.cleanUpHiddenElements;
 };
 
 DOMUtil.prototype.cleanUpHiddenElements = function() {
-	var ln = eXo.core.DOMUtil.hideElementList.length ;
+	var ln = _module.DOMUtil.hideElementList.length ;
 	if (ln > 0) {
 		for (var i = 0; i < ln; i++) {
-			eXo.core.DOMUtil.hideElementList[i].style.display = "none" ;
+			_module.DOMUtil.hideElementList[i].style.display = "none" ;
 		}
-		eXo.core.DOMUtil.hideElementList.clear() ;
+		_module.DOMUtil.hideElementList.clear() ;
 	}
 };
 
@@ -70,8 +70,8 @@ DOMUtil.prototype.cleanUpHiddenElements = function() {
  * Should only contain elements from a popup menu
  */
 DOMUtil.prototype.listHideElements = function(object) {
-	if (!eXo.core.DOMUtil.hideElementList.contains(object)) {
-		eXo.core.DOMUtil.hideElementList.push(object) ;
+	if (!_module.DOMUtil.hideElementList.contains(object)) {
+		_module.DOMUtil.hideElementList.push(object) ;
 	}
 } ;
 
@@ -80,4 +80,5 @@ DOMUtil.prototype.disableOnClick = function(el) {
 }
 
 /****************************************************************************/
-eXo.core.DOMUtil = new DOMUtil() ;
+//eXo.core.DOMUtil = new DOMUtil() ;
+_module.DOMUtil = new DOMUtil() ;

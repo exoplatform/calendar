@@ -95,6 +95,7 @@ QuickSortObject.prototype.partitionProcess = function(begin, end, pivotIndex){
 };
 
 eXo.core.QuickSortObject = new QuickSortObject();
+_module.QuickSortObject = new QuickSortObject();
 
 function EventObject(){
   this.LABEL_MAX_LEN = 10;
@@ -1109,3 +1110,5 @@ eXo.calendar.UICalendarMan = {
   EventMan: new EventMan(),
   GUIMan: new GUIMan()
 }
+
+_module.UICalendarMan = eXo.calendar.UICalendarMan;
