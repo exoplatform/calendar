@@ -29,14 +29,34 @@
 			<name>eXo.cs.UIContextMenu</name>
 			<path>/javascript/eXo/cs/UIContextMenu.js</path>
 		</script>
-		<!--script> <name>eXo.core.Resize</name> <path>/javascript/eXo/core/Resize.js</path> 
-			</script> <script> <name>eXo.cs.MaskLayerControl</name> <path>/javascript/eXo/cs/MaskLayerControl.js</path> 
-			</script> <script> <name>eXo.cs.CSUtils</name> <path>/javascript/eXo/cs/CSUtils.js</path> 
-			</script> <script> <name>eXo.cs.UIContextMenu</name> <path>/javascript/eXo/cs/UIContextMenu.js</path> 
-			</script> <script> <name>eXo.cs.UIDateTimePicker</name> <path>/javascript/eXo/cs/UIDateTimePicker.js</path> 
-			</script> <script> <name>eXo.cs.FormHelper</name> <path>/javascript/eXo/cs/FormHelper.js</path> 
-			</script> <script> <name>eXo.cs.webservice.core.WebserviceManager</name> 
-			<path>/javascript/eXo/cs/webservice/core/WebserviceManager.js</path> </script -->
+		<script>
+			<name>eXo.core.Resize</name>
+			<path>/javascript/eXo/core/Resize.js</path>
+		</script>
+		<script>
+			<name>eXo.cs.MaskLayerControl</name>
+			<path>/javascript/eXo/cs/MaskLayerControl.js</path>
+		</script>
+		<script>
+			<name>eXo.cs.CSUtils</name>
+			<path>/javascript/eXo/cs/CSUtils.js</path>
+		</script>
+		<script>
+			<name>eXo.cs.UIContextMenu</name>
+			<path>/javascript/eXo/cs/UIContextMenu.js</path>
+		</script>
+		<script>
+			<name>eXo.cs.UIDateTimePicker</name>
+			<path>/javascript/eXo/cs/UIDateTimePicker.js</path>
+		</script>
+		<script>
+			<name>eXo.cs.FormHelper</name>
+			<path>/javascript/eXo/cs/FormHelper.js</path>
+		</script>
+		<script>
+			<name>eXo.cs.webservice.core.WebserviceManager</name>
+			<path>/javascript/eXo/cs/webservice/core/WebserviceManager.js</path>
+		</script>
 		<depends>
 			<module>common</module>
 		</depends>

@@ -15,7 +15,15 @@ uiform.begin() ;
       <div class="Label">
        <%=uiform.getLabel('taskDetail')%>
       </div> 
-      <div class="MaximizeButton" title="View full - size task" onclick = "eXo.cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>')"><span></span></div>
+	  <%
+	  //INLINE Scripts	
+	  def rcontext = _ctx.getRequestContext();
+	  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+	  requireJS.require("SHARED/jquery","gj").require("SHARED/csResource","cs");
+	  requireJS.addScripts("gj('div.MaximizeButton').click(function() {cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>');});");
+	  %>
+      <!--div class="MaximizeButton" title="View full - size task" onclick = "eXo.cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>')"><span></span></div-->
+	  <div class="MaximizeButton" title="View full - size task" ><span></span></div>
     </div>
   <%}%>    
     <div class="ViewContainer SpliterResizableListArea">
@@ -43,8 +51,10 @@ uiform.begin() ;
 				 <% 
 				   String View = uiform.getLabel('View') ;
 				   String Close = uiform.getLabel('Close') ;
+				   requireJS.addScripts("gj('div.ViewAttachmentIcon').click(function() {cal.UICalendarPortlet.showImagePreview(this);});");
 				  %>
-				   <a viewLabel="$View" closeLabel="$Close" onclick="eXo.calendar.UICalendarPortlet.showImagePreview(this);" class="IconHolder ViewAttachmentIcon" style="cursor:pointer;padding-left:15px;"> 
+				   <!--a viewLabel="$View" closeLabel="$Close" onclick="eXo.calendar.UICalendarPortlet.showImagePreview(this);" class="IconHolder ViewAttachmentIcon" style="cursor:pointer;padding-left:15px;"--> 
+				   <a viewLabel="$View" closeLabel="$Close" class="IconHolder ViewAttachmentIcon" style="cursor:pointer;padding-left:15px;">
 				   <%=uiform.getLabel('View')%>
 				   </a> 
 				 <%}%>

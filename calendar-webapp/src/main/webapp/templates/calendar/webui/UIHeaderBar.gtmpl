@@ -9,7 +9,7 @@ import java.util.Calendar;
 def rcontext = _ctx.getRequestContext() ;
 def msg = _ctx.appRes("UICalendarView.msg.check-box-required");
 def parent = uicomponent.getParent().getId() ;
-rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.getFilterSelect("'+uiform.id+'") ;') ;
+rcontext.getJavascriptManager().require("PORTLET/calendar/CalendarPortlet","cal").addScripts('cal.UICalendarPortlet.getFilterSelect("'+uiform.id+'") ;') ;
 uicomponent.update() ;
 uicomponent.setSelectedCategory(uicomponent.getSelectedCategory()) ;
 %>

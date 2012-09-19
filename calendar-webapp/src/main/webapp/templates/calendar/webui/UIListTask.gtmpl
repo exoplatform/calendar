@@ -14,9 +14,19 @@
   yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
   _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
+  requireJS.require("SHARED/csResources","cs");
+  requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
+  
+  //INLINE Scripts
+  requireJS.require("SHARED/jquery","gj");
+  requireJS.addScripts("gj('tr.UIListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this);});");
+  requireJS.addScripts("gj('div#UIListViewEventRightMenu').attr('exocallback','cal.UICalendarPortlet.listViewCallack');");
+  
 %>
 
 <div class="UIListView SpliterResizableListArea MainWorkingPanel">
@@ -58,7 +68,8 @@
                     String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;  
 					def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
                 %>
-            <tr actionLink="$actionLink" onclick="eXo.calendar.UICalendarPortlet.listViewClickCallback(this);" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
+            <!--tr actionLink="$actionLink" onclick="eXo.calendar.UICalendarPortlet.listViewClickCallback(this);" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>-->
+			<tr actionLink="$actionLink" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
               <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
                 <td style="padding: 0px 0px 0px 7px;"><div class="$attachIcon" >&nbsp;</div></td>
                 <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>
@@ -99,7 +110,9 @@
     %>
   </div>  
     <% /*Begin Popup Menu*/ %>
-  <div class="UIRightClickPopupMenu" id="UIListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallack">
+	
+  <!--div class="UIRightClickPopupMenu" id="UIListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallack"-->
+	<div class="UIRightClickPopupMenu" id="UIListViewEventRightMenu">
     <div class="UIContextMenuContainer">
       <div class="TopLeftRightClickPopupMenu">
         <div class="TopRightRightClickPopupMenu">

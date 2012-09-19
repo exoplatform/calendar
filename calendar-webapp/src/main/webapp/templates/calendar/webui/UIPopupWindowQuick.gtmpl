@@ -13,12 +13,13 @@
   String popupId = uicomponent.getId() ;
   def rcontext = _ctx.getRequestContext() ;
   String show = "none";
-  if(uicomponent.show) {
-    rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
-  show = "block";
-  } else if (rcontext.useAjax()) {
-    rcontext.getJavascriptManager().addJavascript("eXo.webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
+  if(uicomponent.show) {	 
+    rcontext.getJavascriptManager().require("SHARED/webui","webui").addScripts("webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
+	show = "block";
+  } else if (rcontext.useAjax()) {  
+    rcontext.getJavascriptManager().require("SHARED/webui","webui").addScripts("webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
   }
+    
   String title = popupId ;
   if(component != null)  title = component.getId() ;
   
@@ -33,7 +34,7 @@
 <div class="UIPopupWindow UIDragObject NormalStyle" exo:minWidth="200" exo:minHeight="200" id="$popupId" style="$widthStyle display: $show;">
 		<div class="OverflowContainer ClearFix">
 			<%if( true) {%>
-				<!-- <div class="CloseButton" title="Close Window" onclick="<%=uicomponent.event("ClosePopup")%>"><span></span></div> -->
+				<!-- <div class="CloseButton" title="Close Window" onclick="<%=uicomponent.event("ClosePopup")%>"><span></span></div> -->				
 				<a class="CloseButton" title="<%=_ctx.appRes("UIPopupWindow.Close")%>" onclick="eXo.webui.UIPopup.hide('$popupId')"></a>
 			<% } else { %>
 				<div class="PopupTitleIconRight"><span></span></div>

@@ -7,7 +7,7 @@ function UICalendars() {
 
 UICalendars.prototype.init = function(calendarsForm) {
   if (typeof(calendarsForm) == "string") 
-    calendarsForm = _module.UICalendarPortlet.calendar.UICalendarPortlet.getElementById(calendarsForm);
+    calendarsForm = _module.UICalendarPortlet.getElementById(calendarsForm);
   var UICalendarPortlet = _module.UICalendarPortlet;
   UICalendarPortlet.filterForm = calendarsForm;
   this.calsFormElem = calendarsForm;

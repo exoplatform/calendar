@@ -10,9 +10,13 @@
   import org.exoplatform.webui.application.WebuiRequestContext;
   uiform.begin() ;
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.setSelected("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  
+  requirejs.addScripts('cal.UICalendarPortlet.setSelected("'+uiform.id+'") ;') ;
+  requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
+  
   int currentYear = uicomponent.getCurrentYear() ;
   Calendar cal =  new GregorianCalendar() ;
   cal.setTimeInMillis(uicomponent.getCurrentCalendar().getTimeInMillis()) ;

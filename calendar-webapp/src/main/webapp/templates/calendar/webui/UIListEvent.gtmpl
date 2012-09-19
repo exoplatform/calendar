@@ -23,9 +23,12 @@
   _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
   selectedEvent = uicomponent.getSelectedEvent() ;
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.require("SHARED/csResources","cs");
+  requirejs.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
+  requirejs.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
 %>
  
   <div class="UIListView SpliterResizableListArea MainWorkingPanel">

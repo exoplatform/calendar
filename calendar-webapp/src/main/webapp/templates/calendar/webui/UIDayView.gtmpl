@@ -16,7 +16,7 @@
   int currentDay = uicomponent.getCurrentDay() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
   String currentMonthName = uicomponent.getMonthName(currentMonth) ;
-  int currentYear = uicomponent.getCurrentYear() ;
+  int currentYear = uicomponent.getCurrentYear();
   String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
 
    
@@ -37,18 +37,26 @@
   tf.setCalendar(uicomponent.getInstanceTempCalendar()) ;
   DateFormat dtf = new SimpleDateFormat(dateTimeFormat, locale) ;
   dtf.setCalendar(uicomponent.getInstanceTempCalendar()) ;
+    
   def rcontext = _ctx.getRequestContext() ;  
   String startWorkingTime = uicomponent.getStartTime() ;
   String endWorkingTime = uicomponent.getEndTime() ;
   def hoursMap = uicomponent.getTimeSteps(timeFormat, timeInterval) ;
   boolean isShowWorkingTime = uicomponent.isShowWorkingTime() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.showEvent() ;') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSelection() ;') ;
+  
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+ 
+  requirejs.addScripts('cal.UICalendarPortlet.showEvent() ;') ;
+  requirejs.addScripts('cal.UICalendarPortlet.initSelection() ;') ;
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.UICalendarPortlet.checkFilter();') ;
-  rcontext.getJavascriptManager().addOnResizeJavascript('eXo.calendar.UICalendarPortlet.browserResizeCallback') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.UICalendarPortlet.checkFilter();') ;
+  //TODO
+  //rcontext.getJavascriptManager().addOnResizeJavascript('eXo.calendar.UICalendarPortlet.browserResizeCallback') ;
+  //TODO
+  requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
+  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
+  //TODO
   cssClass = "Day" ;
   
   DateFormat tempFormat = new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;
