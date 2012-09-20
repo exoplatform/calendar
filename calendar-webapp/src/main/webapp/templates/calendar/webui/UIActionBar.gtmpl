@@ -11,7 +11,12 @@
   //requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
-%>
+  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHide")+"').click(function() {cal.UICalendarPortlet.showView(this, event);});")
+  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.DefaultLayout")+"').click(function() {cal.UICalendarPortlet.switchLayout(0);});")
+  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHideAll")+"').click(function() {cal.UICalendarPortlet.switchLayout(1);});")
+  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")+"').click(function() {cal.UICalendarPortlet.switchLayout(2);});")
+  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")+"').click(function() {cal.UICalendarPortlet.switchLayout(3);});")
+  %>
 <div id="$uicomponent.id" class="UIActionBar"> 
   <div class="UIToolbar">
     <div class="HeaderToolbar">
@@ -83,7 +88,7 @@
               </div>
             </span>
             -->
-            <div class="ControlButton  ActionBarButton" onclick="eXo.calendar.UICalendarPortlet.showView(this, event);">
+            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>" class="ControlButton  ActionBarButton">
                 <div class="IconHolder LayoutSwitcherIcon" title="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>">
                   <span></span>
                 </div>
@@ -98,22 +103,22 @@
                       <div class="MiddleLeftRightClickPopupMenu">
                         <div class="MiddleRightRightClickPopupMenu">
                           <div class="UIRightPopupMenuContainer">
-                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(0)" >   
+                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.DefaultLayout")%>" class="MenuItem"  >   
                               <div class="ItemIcon HidenAllCalendar">
                                  <%=_ctx.appRes(uicomponent.id + ".label.DefaultLayout")%>
                               </div>
                             </div>
-                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(1)" >   
+                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHideAll")%>"  class="MenuItem">   
                               <div class="ItemIcon ShowMinicalendar">
                                 <%=_ctx.appRes(uicomponent.id + ".label.ShowHideAll")%>
                               </div>
                             </div>
-                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(2)" >   
+                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")%>" class="MenuItem" >   
                               <div class="ItemIcon ShowMinicalendar">
                                 <%=_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")%>
                               </div>
                             </div>
-                            <div class="MenuItem" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(3)" >
+                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")%>"    class="MenuItem">
                               <div class="ItemIcon HidenMinicalendar">
                                 <%=_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")%>
                               </div>

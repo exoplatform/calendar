@@ -36,7 +36,7 @@
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");  
   requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
   requireJS.require("SHARED/csResources","cs");
-  equireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
+  requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
   
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
   

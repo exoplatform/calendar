@@ -13,7 +13,7 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   
-  requirejs.addScripts('cal.UICalendarPortlet.setSelected("'+uiform.id+'") ;') ;
+  requirejs.addScripts("cal.UICalendarPortlet.setSelected('"+uiform.id+"') ;") ;
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
   

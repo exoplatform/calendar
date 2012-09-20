@@ -2,7 +2,9 @@
 def rcontext = _ctx.getRequestContext() ;  
 def requireJS = rcontext.getJavascriptManager().getRequireJS();
 requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts('cal.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;
+requireJS.addScripts("gj('td#"+uicomponent.FIELD_ALLDAY)+"').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
 //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;  
 %>
 <div class="UIQuickAddEvent" id="QuickAddEventContainer">
@@ -58,7 +60,7 @@ requireJS.addScripts('cal.UICalendarPortlet.isAllday("QuickAddEventContainer",""
               <td class="FieldLabel">
                 <%=uicomponent.getLabel(uicomponent.FIELD_ALLDAY)%>
               </td>
-              <td class="FieldComponent" onclick="eXo.calendar.UICalendarPortlet.showHideTime(this) ;">
+              <td id="<%=uicomponent.FIELD_ALLDAY%>" class="FieldComponent">
                 <%uicomponent.renderField(uicomponent.FIELD_ALLDAY)%>
               </td>
             </tr>

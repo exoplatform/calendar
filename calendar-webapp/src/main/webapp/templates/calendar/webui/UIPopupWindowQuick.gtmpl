@@ -12,12 +12,16 @@
   boolean showCloseButton =  uicomponent.isShowCloseButton()
   String popupId = uicomponent.getId() ;
   def rcontext = _ctx.getRequestContext() ;
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("SHARED/webui","webui");
+  requirejs.require("SHARED/jquery","gj");
+  requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close').click(function() {webui.UIPopup.hide('"+popupId+"'); });")
   String show = "none";
   if(uicomponent.show) {	 
-    rcontext.getJavascriptManager().require("SHARED/webui","webui").addScripts("webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
+    requirejs.addScripts("webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
 	show = "block";
   } else if (rcontext.useAjax()) {  
-    rcontext.getJavascriptManager().require("SHARED/webui","webui").addScripts("webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
+    requirejs.addScripts("webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
   }
     
   String title = popupId ;
@@ -29,13 +33,16 @@
   def String heightStyle = "" ;
   if(width > 0) widthStyle = "width:" + width + "px;" ;
   if(height > 0) heightStyle = "height:" + height + "px;" ;
+  
+  
+  			
 %>
 
 <div class="UIPopupWindow UIDragObject NormalStyle" exo:minWidth="200" exo:minHeight="200" id="$popupId" style="$widthStyle display: $show;">
 		<div class="OverflowContainer ClearFix">
 			<%if( true) {%>
 				<!-- <div class="CloseButton" title="Close Window" onclick="<%=uicomponent.event("ClosePopup")%>"><span></span></div> -->				
-				<a class="CloseButton" title="<%=_ctx.appRes("UIPopupWindow.Close")%>" onclick="eXo.webui.UIPopup.hide('$popupId')"></a>
+				<a id="UIPopupWindowQuick_UIPopupWindow_Close" class="CloseButton" title="<%=_ctx.appRes("UIPopupWindow.Close")%>" ></a>
 			<% } else { %>
 				<div class="PopupTitleIconRight"><span></span></div>
 			<% } %>

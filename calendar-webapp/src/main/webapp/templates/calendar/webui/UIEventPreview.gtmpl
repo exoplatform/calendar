@@ -14,15 +14,21 @@ DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
 df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
 CalendarEvent event = uicomponent.getEvent() ;    
 color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
-   
-uiform.begin() %>
+uiform.begin() 
+def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+requirejs.require("SHARED/csResources","cs");
+requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+requirejs.require("SHARED/jquery","gj");
+requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() {cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>'); });")
+requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
+%>
 <div class="UIPreview">
   <%if(!uicomponent.isShowPopup()){%>
     <div class="ViewBar ClearFix">
       <div class="Label">
        <%=uiform.getLabel('eventDetail')%>
       </div> 
-      <div class="MaximizeButton" title="<%=uiform.getLabel('fullSize')%>" onclick = "eXo.cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>')"><span></span></div>
+      <div id="UIEventPreview_fullSize" class="MaximizeButton" title="<%=uiform.getLabel('fullSize')%>" ><span></span></div>
     </div>
   <%}%>
   <div class="ViewContainer">
@@ -56,7 +62,7 @@ uiform.begin() %>
                  String View = uiform.getLabel('View') ;
                  String Close = uiform.getLabel('Close') ;
               %>             
-                <a viewLabel="$View" closeLabel="$Close" onclick="eXo.calendar.UICalendarPortlet.showImagePreview(this);" class="IconHolder ViewAttachmentIcon">
+                <a id="UIEventPreview_1" viewLabel="$View" closeLabel="$Close" class="IconHolder ViewAttachmentIcon">
                  <%=uiform.getLabel('View')%>
                </a> 
              <%}%>

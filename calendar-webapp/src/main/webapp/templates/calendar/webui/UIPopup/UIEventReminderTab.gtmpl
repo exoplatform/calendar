@@ -5,17 +5,20 @@
   def rcontext = _ctx.getRequestContext() ;
   def requireJS = rcontext.getJavascriptManager().getRequireJS();
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.require("SHARED/jquery","gj");
   requireJS.addScripts('cal.UICalendarPortlet.autoShowHideSetting() ;') ;
   requireJS.addScripts('cal.UICalendarPortlet.autoShowRepeatEvent() ;') ;
- // rcontext.getJavascriptManager().addJavascript('cal.UICalendarPortlet.autoShowHideSetting() ;') ;
+  requireJS.addScripts("gj('div#IsEmailRepeatEventReminderTab').click(function() {cal.UICalendarPortlet.showHideRepeat(this);});");
+  requireJS.addScripts("gj('div#IsPopupRepeatEventReminderTab').click(function() {cal.UICalendarPortlet.showHideRepeat(this);});");
+  requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_EMAIL+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
+  requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_POPUP+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
+  // rcontext.getJavascriptManager().addJavascript('cal.UICalendarPortlet.autoShowHideSetting() ;') ;
  // rcontext.getJavascriptManager().addJavascript('cal.UICalendarPortlet.autoShowRepeatEvent() ;') ;
-  
-  
 %>
 <div id="$uicomponent.id" class="UIAddNewEvent">
   <div class="ReminderByEmail">
     <div>
-      <div onclick="eXo.calendar.UICalendarPortlet.showHideSetting(this);">
+      <div id="<%=uicomponent.REMIND_BY_EMAIL%>" >
         <%uiForm.renderField(uicomponent.REMIND_BY_EMAIL); %>
         <span class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.REMIND_BY_EMAIL)%>
@@ -36,7 +39,7 @@
             <tbody>
               <tr>
                 <td class="FieldComponent">
-                  <div class="CheckBoxRepeat" onclick="eXo.calendar.UICalendarPortlet.showHideRepeat(this) ;" id="IsEmailRepeatEventReminderTab">
+                  <div id="IsEmailRepeatEventReminderTab" class="CheckBoxRepeat" >
                     <% uiForm.renderField(uicomponent.EMAIL_IS_REPEAT);%>                                                  
                   </div>
                   <div class="RepeatLabel"><%=uiForm.getLabel(uicomponent.REPEAT)%>  </div>
@@ -69,7 +72,7 @@
   </div>
   <div class="ReminderByPopup">
     <div>
-      <div onclick="eXo.calendar.UICalendarPortlet.showHideSetting(this);">      
+      <div id="<%=uicomponent.REMIND_BY_POPUP%>">      
           <% uiForm.renderField(uicomponent.REMIND_BY_POPUP) %>
           <span class="FieldLabel" ><%=uiForm.getLabel(uicomponent.REMIND_BY_POPUP)%></span>
       </div>
@@ -88,7 +91,7 @@
             <tbody>
               <tr>
                 <td class="FieldComponent" valign="top" colspan="2"> 
-                   <div class="CheckBoxRepeat" onclick="eXo.calendar.UICalendarPortlet.showHideRepeat(this) ;" id="IsPopupRepeatEventReminderTab">
+                   <div id="IsPopupRepeatEventReminderTab" class="CheckBoxRepeat"  >
                   <% uiForm.renderField(uicomponent.POPUP_IS_REPEAT)  ;%>                                                
                 </div>
                 <div class="RepeatLabel"><%=uiForm.getLabel(uicomponent.REPEAT)%>  </div>      
