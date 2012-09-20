@@ -13,9 +13,9 @@
   String popupId = uicomponent.getId() ;
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
-  requirejs.require("SHARED/webui","webui");
+  requirejs.require("SHARED/base","webui");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close').click(function() {webui.UIPopup.hide('"+popupId+"'); });")
+  requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close').click(function() {base.UIPopup.hide('"+popupId+"'); });")
   String show = "none";
   if(uicomponent.show) {	 
     requirejs.addScripts("webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
