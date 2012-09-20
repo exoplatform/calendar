@@ -49,23 +49,23 @@ MaskLayerControl.prototype.showPicture = function(node) {
 	var imgWidth = (windowWidth < parseInt(imgSize.width))?windowWidth + "px":"auto";
 	var imageNode = "<img src='" + imgSrcNode.src +"' style='height:" + imgHeight + ";width:"+ imgWidth +";margin-top:" + marginTop + "px;' alt='Click to close'/>";
   containerNode.innerHTML = imageNode;
-  var maskNode = eXo.core.UIMaskLayer.createMask('UIPortalApplication', containerNode, 30, 'CENTER') ;
+  var maskNode = base.UIMaskLayer.createMask('UIPortalApplication', containerNode, 30, 'CENTER') ;
 	this.scrollHandler();	
 } ;
 
 MaskLayerControl.prototype.scrollHandler = function() {
 	if(_module.MaskLayerControl.isMail) {
-		eXo.core.UIMaskLayer.object.style.top = document.getElementById("MaskLayer").offsetTop + "px" ;
+		base.UIMaskLayer.object.style.top = document.getElementById("MaskLayer").offsetTop + "px" ;
 		_module.MaskLayerControl.timer = setTimeout(_module.MaskLayerControl.scrollHandler,1);
 		return ;
 	}
-  eXo.core.UIMaskLayer.object.style.top = document.getElementById("MaskLayer").offsetTop + "px" ;
+  base.UIMaskLayer.object.style.top = document.getElementById("MaskLayer").offsetTop + "px" ;
 	_module.MaskLayerControl.timer = setTimeout(_module.MaskLayerControl.scrollHandler,1);
 } ;
 
 MaskLayerControl.prototype.hidePicture = function() {
-  eXo.core.Browser.onScrollCallback.remove('MaskLayerControl') ;
-  var maskContent = eXo.core.UIMaskLayer.object ;
+  base.Browser.onScrollCallback.remove('MaskLayerControl') ;
+  var maskContent = base.UIMaskLayer.object ;
   var maskNode = document.getElementById("MaskLayer") || document.getElementById("subMaskLayer") ;
   if (maskContent) maskContent.parentNode.removeChild(maskContent) ;
   if (maskNode) maskNode.parentNode.removeChild(maskNode) ;

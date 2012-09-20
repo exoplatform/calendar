@@ -874,6 +874,5 @@ UIWeekView.prototype.callbackSelectionX = function() {
 	porlet.addQuickShowHiddenWithTime(container, 1, startTime, endTime) ;
 } ;
 eXo.calendar.UIHorizontalResize = new UIHorizontalResize() ;
-eXo.calendar.UIWeekView = new UIWeekView() ;
 _module.UIWeekView = new UIWeekView() ;
-
+eXo.calendar.UIWeekView = _module.UIWeekView;

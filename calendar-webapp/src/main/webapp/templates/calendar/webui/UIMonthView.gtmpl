@@ -18,8 +18,7 @@
   requireJS.addScripts('cal.UICalendarPortlet.onLoad() ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   requireJS.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
-  
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout'); 
    int currentDay = uicomponent.getCurrentDay() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
   String currentMonthName = uicomponent.getMonthName(currentMonth) ;

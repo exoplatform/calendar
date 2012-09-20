@@ -50,7 +50,7 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
 
 UIDateTimePicker.prototype.show = function() {
 	_module.UIDateTimePicker.getLang() ;
-	document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
+	document.onmousedown = new Function('cs.UIDateTimePicker.hide()') ;
 	
   var str = this.dateField.getAttribute("format") ;
   str = str.replace(/d{2}/,"(\\d{1,2}\\") ;
@@ -110,7 +110,7 @@ UIDateTimePicker.prototype.show = function() {
 	  left = x + "px" ;
 	  top = y + "px" ;
   }
-  if(eXo.core.Browser.isIE6()){
+  if(base.Browser.isIE6()){
 		var ifr = gj(clndr).find('#' + this.calendarId + "IFrame")[0] ;
 		ifr.style.height = (gj(ifr).nextAll("div")[0].offsetHeight - 5) + "px";
 	}
@@ -194,7 +194,9 @@ UIDateTimePicker.prototype.renderCalendar = function() {
 	table += 		'		</table>' ;
 	table += 		'	</div>' ;
 	table += 		'	<div class="CalendarGrid">' ;
-	table += 		'	<table>' ;
+	table += 		'	<table>' ;	
+	
+	
   for (var week=0; week < 6; week++) {
     table += "<tr>";
     for (var dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
@@ -242,5 +244,7 @@ UIDateTimePicker.prototype.hide = function() {
 	document.onclick = null;
 }
 
-//eXo.cs.UIDateTimePicker = new UIDateTimePicker() ;
-_module.UIDateTimePicker = new UIDateTimePicker() ;
+
+window.eXo.cs = window.eXo.cs || {};  
+window.eXo.cs.UIDateTimePicker = new UIDateTimePicker();
+_module.UIDateTimePicker = window.eXo.cs.UIDateTimePicker;

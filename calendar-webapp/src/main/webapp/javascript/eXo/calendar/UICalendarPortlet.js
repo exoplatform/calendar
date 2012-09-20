@@ -1567,7 +1567,7 @@ UICalendarPortlet.prototype.getEventsForFilter = function(events){
     for (var i = 0; i < len; i++) {
         if (checkbox[i].checked) {
             calid = checkbox[i].name;
-            el.pushAll(this.getEventsByCalendar(events, calid));
+            el.concat(this.getEventsByCalendar(events, calid));
         }
     }
     return el;

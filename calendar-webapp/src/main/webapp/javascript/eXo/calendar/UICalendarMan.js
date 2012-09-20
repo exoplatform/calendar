@@ -94,8 +94,9 @@ QuickSortObject.prototype.partitionProcess = function(begin, end, pivotIndex){
   return scanIndex;
 };
 
-eXo.core.QuickSortObject = new QuickSortObject();
 _module.QuickSortObject = new QuickSortObject();
+eXo.core.QuickSortObject = _module.QuickSortObject;
+
 
 function EventObject(){
   this.LABEL_MAX_LEN = 10;

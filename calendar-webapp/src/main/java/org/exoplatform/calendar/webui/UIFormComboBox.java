@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.model.SelectItemOption;
@@ -143,30 +144,45 @@ public class UIFormComboBox extends UIFormInputBase<String>  {
   
   public void processRender(WebuiRequestContext context) throws Exception {
     String parentId = ((UIComponent) this.getParent()).getId();
-    context.getJavascriptManager().addJavascript("eXo.calendar.UICombobox.init('" + parentId + "','" + getId() + "');");
+    
+    RequireJS requirejs = context.getJavascriptManager().getRequireJS();
+    requirejs.require("SHARED/webui-ext", "wx");    
+    requirejs.addScripts("wx.UICombobox.init('" + parentId + "','" + getId() + "');");       
+    
     Writer w = context.getWriter();
     String options = "[";
     StringBuffer text = new StringBuffer(
         "<div class='UIComboboxComponent'><div class='UIComboboxList'><div class='UIComboboxContainer'><div class='UIComboboxItemContainer'>");
-    for (SelectItemOption item : options_) {
+    for (SelectItemOption item : options_) {      
       options += "'" + item.getValue() + "',";
-      text.append("<div onclick='eXo.calendar.UICombobox.getValue(this);' value='").append(item.getValue()).append("' class='UIComboboxItem'>");
+      //text.append("<div onclick='eXo.calendar.UICombobox.getValue(this);' value='").append(item.getValue()).append("' class='UIComboboxItem'>");
+      text.append("<div value='").append(item.getValue()).append("' class='UIComboboxItem'>");
       text.append("<div class='UIComboboxIcon'>");
       text.append("<div class='UIComboboxLabel'>").append(item.getLabel()).append("</div>");
       text.append("</div>");
-      text.append("</div>");
-    }
+      text.append("</div>");            
+    }    
+    
     text.append("</div></div></div>");
     options = options.substring(0, options.length() - 1) + "]";
     
     text.append("<input class='UIComboboxInput' options=\"").append(options)
-        .append("\" onkeyup='eXo.calendar.UICombobox.complete(this,event);' name='").append(getName())
+        //.append("\" onkeyup='eXo.calendar.UICombobox.complete(this,event);' name='").append(getName())
+    	.append("\" name='").append(getName())
         .append("' type='text'").append(" id='").append(getId()).append("' ").append(renderJsActions());
-    
+        
     if (value_ != null && value_.trim().length() > 0) {
       text.append(" value='").append(encodeValue(value_).toString()).append("'");
     }
     text.append(" /></div>");
+    
+    //Set action events
+    requirejs.require("SHARED/jquery", "gj");
+    //Set onclick function for all combobox items      
+    requirejs.addScripts("gj('div.UIComboboxItem').click(function(){wx.UICombobox.getValue(this);});");
+    //set onkeyup function for this comboBox
+    requirejs.addScripts("gj('input#"+getId()+"').keyup(function(){wx.UICombobox.complete(this,event);});");
+    
     w.write(text.toString());
   }
 

@@ -31,11 +31,10 @@
   
   requirejs.addScripts('cal.UICalendarPortlet.getWorkingdays('+numberOfDays+') ;') ;
   //rcontext.getJavascriptManager().addOnLoadJavascript('eXo.calendar.UICalendarPortlet.onLoad') ;
-  requirejs.addScripts('cal.UICalendarPortlet.checkFilter();') ;
-  requirejs.addScripts('cal.UIWeekView.onResize') ;
-  requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;  
-  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout();');
-  requirejs.addScripts('cal.CalendarLayout.updateUICalendarViewLayout();') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
+  rcontext.getJavascriptManager().addOnResizeJavascript('eXo.calendar.UIWeekView.onResize') ;
+  requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
   
    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
    Locale locale = context.getParentAppRequestContext().getLocale() ;

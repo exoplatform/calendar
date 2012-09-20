@@ -50,13 +50,11 @@
   requirejs.addScripts('cal.UICalendarPortlet.showEvent() ;') ;
   requirejs.addScripts('cal.UICalendarPortlet.initSelection() ;') ;
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
-  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.UICalendarPortlet.checkFilter();') ;
-  //TODO
-  //rcontext.getJavascriptManager().addOnResizeJavascript('eXo.calendar.UICalendarPortlet.browserResizeCallback') ;
-  //TODO
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;  
+  rcontext.getJavascriptManager().addOnResizeJavascript('cal.UICalendarPortlet.browserResizeCallback') ;  
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('eXo.calendar.CalendarLayout.updateUICalendarViewLayout();');
-  //TODO
+  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout();');  
+  
   cssClass = "Day" ;
   
   DateFormat tempFormat = new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;

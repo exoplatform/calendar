@@ -294,6 +294,6 @@ UICalendarDragDrop.prototype.isCheckedObject = function(eventObj){
   return checkbox.checked ;
 } ;
 
-eXo.calendar.UICalendarDragDrop = new UICalendarDragDrop();
-
 _module.UICalendarDragDrop = new UICalendarDragDrop();
+
+eXo.calendar.UICalendarDragDrop = _module.UICalendarDragDrop;

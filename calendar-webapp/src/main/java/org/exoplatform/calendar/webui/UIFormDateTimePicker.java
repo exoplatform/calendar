@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.form.UIFormInputBase;
 
@@ -146,11 +147,14 @@ public class UIFormDateTimePicker extends UIFormInputBase<String>  {
   }
   public void processRender(WebuiRequestContext context) throws Exception {
     Locale locale = context.getParentAppRequestContext().getLocale() ;
-    locale_ = locale ;
-    context.getJavascriptManager().loadScriptResource("eXo.cs.UIDateTimePicker");
-    Writer w = context.getWriter();
+    locale_ = locale ;    
+    //context.getJavascriptManager().loadScriptResource("eXo.cs.UIDateTimePicker");
+    String input_id = "DateTimePicker-"+context.getJavascriptManager().generateUUID();    
+    
+    Writer w = context.getWriter();    
+    /*
     //w.write("<input lang='"+getLang()+"' monthsName='"+ getMonthsName()+"' daysName='"+getDaysName()+"' format='" + getFormatStyle() + "' type='text' onfocus='eXo.cs.UIDateTimePicker.init(this,") ;
-    w.write("<input lang='"+getLang()+"' format='" + getFormatStyle() + "' type='text' onfocus='eXo.cs.UIDateTimePicker.init(this,") ;
+    w.write("<input id='"+input_id+"' lang='"+getLang()+"' format='" + getFormatStyle() + "' type='text' onfocus='eXo.cs.UIDateTimePicker.init(this,") ;
     w.write(String.valueOf(isDisplayTime_));
     w.write(");' onkeyup='eXo.cs.UIDateTimePicker.show();' name='") ;
     w.write(getName()) ; w.write('\'') ;
@@ -158,6 +162,28 @@ public class UIFormDateTimePicker extends UIFormInputBase<String>  {
       w.write(" value='"+value_+"\'");
     }
     w.write(" onmousedown='event.cancelBubble = true' />") ;
+    */
+    
+    w.write("<input id='"+input_id+"' lang='"+getLang()+"' format='" + getFormatStyle() + "' type='text'") ;    
+    w.write("name='") ;
+    w.write(getName()) ; w.write('\'') ;
+    if(value_ != null && value_.length() > 0) {      
+      w.write(" value='"+value_+"\'");
+    }
+    w.write("/>") ;
+    
+    RequireJS requirejs = context.getJavascriptManager().getRequireJS();    
+    requirejs.require("SHARED/csResources","cs");
+    requirejs.require("SHARED/jquery","gj");
+    
+    String obj = "input#"+input_id;
+    String onfocus_function = "cs.UIDateTimePicker.init(this,"+String.valueOf(isDisplayTime_)+");";
+    String onkeyup_function = "cs.UIDateTimePicker.show();";
+    String onmousedown_function = "event.cancelBubble = true";
+    
+    requirejs.addScripts("gj('"+obj+"').focus(function(){"+onfocus_function+"});");
+    requirejs.addScripts("gj('"+obj+"').keyup(function(){"+onkeyup_function+"});");
+    requirejs.addScripts("gj('"+obj+"').focus(function(){"+onmousedown_function+"});");
   }
 
 }
