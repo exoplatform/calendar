@@ -4,7 +4,7 @@ def requireJS = rcontext.getJavascriptManager().getRequireJS();
 requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
 requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts('cal.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;
-requireJS.addScripts("gj('td#"+uicomponent.FIELD_ALLDAY)+"').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
+requireJS.addScripts("gj('td#"+uicomponent.FIELD_ALLDAY+"').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
 //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;  
 %>
 <div class="UIQuickAddEvent" id="QuickAddEventContainer">
