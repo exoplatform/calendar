@@ -6,8 +6,6 @@
   try {
     def rcontext = _ctx.getRequestContext() ;
 	def jsManager = rcontext.getJavascriptManager();	
-    //jsManager.addScript("eXo.calendar.restContext = \""+ uicomponent.getRestContextName() +"\";") ;    
-    //jsManager.addScript("eXo.calendar.settingTimezone = \""+ uicomponent.getSettingTimeZone() +"\";") ;
   } catch (Exception e) {
     e.printStackTrace();
   }
@@ -78,8 +76,10 @@
       requireJS.require("PORTLET/calendar/CalendarPortlet","cal");	
 	
       //def params = "{restContext: $restContext,settingTimezone: $settingTimeZone}";
-
-      //requireJS.addScripts('cal.UICalendarPortlet.onLoad($params);');
+      //requireJS.addScripts('cal.UICalendarPortlet.onLoad($params);');	 
+	  requireJS.addScripts("cal.restContext = \""+ uicomponent.getRestContextName() +"\";") ;
+	  requireJS.addScripts("cal.settingTimezone = \""+ uicomponent.getSettingTimeZone() +"\";") ;
+	  
       requireJS.addScripts('cal.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'") ;') ;
       requireJS.addScripts('cal.UICalendarPortlet.showContextMenu("'+ uicomponent.id +'") ;') ;            
       requireJS.addScripts('cal.Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;

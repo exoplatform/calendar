@@ -50,7 +50,7 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
 
 UIDateTimePicker.prototype.show = function() {
 	_module.UIDateTimePicker.getLang() ;
-	document.onmousedown = new Function('cs.UIDateTimePicker.hide()') ;
+	document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
 	
   var str = this.dateField.getAttribute("format") ;
   str = str.replace(/d{2}/,"(\\d{1,2}\\") ;
