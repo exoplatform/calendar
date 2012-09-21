@@ -18,6 +18,31 @@
  */
 
 /**
+* Array convenience method to check for membership.
+*
+* @param object element
+* @returns boolean
+*/
+Array.prototype.contains = function (element) {
+  for (var i = 0; i < this.length; i++) {
+    if (this[i] == element) {
+      return true ;
+    }
+  }
+  return false ;
+} ;
+
+/**
+* Array convenience method to clear membership.
+* @param object element
+* @returns void
+*/
+Array.prototype.clear = function () {
+  this.length = 0 ;
+} ;
+
+
+/**
  * Some utility functions to use the DOM
  */
 function DOMUtil() {
