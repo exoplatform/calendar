@@ -72,7 +72,7 @@
 			<as>wx</as>
 		</depends>
 		<depends>
-			<module>commons.cometd</module>
+			<module>commons-cometd</module>
 			<as>cometd</as>
 		</depends>
 		<depends>

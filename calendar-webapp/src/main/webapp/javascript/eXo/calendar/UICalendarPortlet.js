@@ -211,7 +211,7 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     }
 		
 		var tmpMenuElement = document.getElementById("tmpMenuElement");
-		if (tmpMenuElement) webui.UIPopup.hide(tmpMenuElement) ;
+		if (tmpMenuElement) base.UIPopup.hide(tmpMenuElement) ;
     
 		var formater = cs.DateTimeFormater ;
     var data = {
@@ -893,7 +893,7 @@ UICalendarPortlet.prototype.editAlldayEvent = function(cont){
  * Deal with incorrect event sorting when portlet loads in the first times
  */
 UICalendarPortlet.prototype.onLoad = function(){	
-    window.setTimeout("_module.UICalendarPortlet.checkFilter() ;", 2000);
+    window.setTimeout("eXo.calendar.UICalendarPortlet.checkFilter() ;", 2000);
 };
 
 /**
@@ -3180,3 +3180,4 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
 };
 
 _module.UICalendarPortlet = new UICalendarPortlet();
+eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;

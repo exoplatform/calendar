@@ -11,11 +11,12 @@
   //requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
-  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHide")+"').click(function() {cal.UICalendarPortlet.showView(this, event);});")
-  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.DefaultLayout")+"').click(function() {cal.UICalendarPortlet.switchLayout(0);});")
-  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHideAll")+"').click(function() {cal.UICalendarPortlet.switchLayout(1);});")
-  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")+"').click(function() {cal.UICalendarPortlet.switchLayout(2);});")
-  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")+"').click(function() {cal.UICalendarPortlet.switchLayout(3);});")
+  requireJS.addScripts("gj('div#CustomLayout').click(function() {cal.UICalendarPortlet.showView(this, event);});")
+
+  requireJS.addScripts("gj('div#DefaultLayout').click(function() {cal.UICalendarPortlet.switchLayout(0);});")
+  requireJS.addScripts("gj('div#ShowHideAll').click(function() {cal.UICalendarPortlet.switchLayout(1);});")
+  requireJS.addScripts("gj('div#ShowHideMinicalendar').click(function() {cal.UICalendarPortlet.switchLayout(2);});")
+  requireJS.addScripts("gj('div#ShowHideCalendarList').click(function() {cal.UICalendarPortlet.switchLayout(3);});")
   %>
 <div id="$uicomponent.id" class="UIActionBar"> 
   <div class="UIToolbar">
@@ -40,6 +41,7 @@
               </a>
             </div>
             
+           
             <div onclick="<%=uicomponent.event("Today")%>" class="ControlButton ActionBarButton">
                 <a class="IconHolder TodayIcon">
                   <%=_ctx.appRes(uicomponent.id + ".label.Today")%>
@@ -88,7 +90,7 @@
               </div>
             </span>
             -->
-            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>" class="ControlButton  ActionBarButton">
+            <div id="CustomLayout" class="ControlButton  ActionBarButton">
                 <div class="IconHolder LayoutSwitcherIcon" title="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>">
                   <span></span>
                 </div>
@@ -103,22 +105,22 @@
                       <div class="MiddleLeftRightClickPopupMenu">
                         <div class="MiddleRightRightClickPopupMenu">
                           <div class="UIRightPopupMenuContainer">
-                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.DefaultLayout")%>" class="MenuItem"  >   
+                            <div id="DefaultLayout" class="MenuItem"  >   
                               <div class="ItemIcon HidenAllCalendar">
                                  <%=_ctx.appRes(uicomponent.id + ".label.DefaultLayout")%>
                               </div>
                             </div>
-                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHideAll")%>"  class="MenuItem">   
+                            <div id="ShowHideAll"  class="MenuItem">   
                               <div class="ItemIcon ShowMinicalendar">
                                 <%=_ctx.appRes(uicomponent.id + ".label.ShowHideAll")%>
                               </div>
                             </div>
-                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")%>" class="MenuItem" >   
+                            <div id="ShowHideMinicalendar" class="MenuItem" >   
                               <div class="ItemIcon ShowMinicalendar">
                                 <%=_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")%>
                               </div>
                             </div>
-                            <div id="<%=_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")%>"    class="MenuItem">
+                            <div id="ShowHideCalendarList"    class="MenuItem">
                               <div class="ItemIcon HidenMinicalendar">
                                 <%=_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")%>
                               </div>

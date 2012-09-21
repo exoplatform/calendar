@@ -177,13 +177,13 @@ public class UIFormDateTimePicker extends UIFormInputBase<String>  {
     requirejs.require("SHARED/jquery","gj");
     
     String obj = "input#"+input_id;
-    String onfocus_function = "cs.UIDateTimePicker.init(this,"+String.valueOf(isDisplayTime_)+");";
-    String onkeyup_function = "cs.UIDateTimePicker.show();";
-    String onmousedown_function = "event.cancelBubble = true";
+    String onfocusFunc = "cs.UIDateTimePicker.init(this,"+String.valueOf(isDisplayTime_)+");";
+    String onkeyupFunc = "cs.UIDateTimePicker.show();";
+    String onmousedownFunc = "event.cancelBubble = true";
     
-    requirejs.addScripts("gj('"+obj+"').focus(function(){"+onfocus_function+"});");
-    requirejs.addScripts("gj('"+obj+"').keyup(function(){"+onkeyup_function+"});");
-    requirejs.addScripts("gj('"+obj+"').focus(function(){"+onmousedown_function+"});");
+    requirejs.addScripts("gj('"+obj+"').focus(function(){"+onfocusFunc+"});");
+    requirejs.addScripts("gj('"+obj+"').keyup(function(){"+onkeyupFunc+"});");
+    requirejs.addScripts("gj('"+obj+"').focus(function(){"+onmousedownFunc+"});");
   }
 
 }
