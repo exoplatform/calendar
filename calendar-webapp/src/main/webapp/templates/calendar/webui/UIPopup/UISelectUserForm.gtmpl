@@ -2,8 +2,12 @@
  import org.exoplatform.services.organization.User;
  uiform.begin()
  def rcontext = _ctx.getRequestContext() ;
- rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("'+uiform.id+'") ;') ;
- rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+uicomponent.event('Search')+'") ;') ;
+ def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ requireJS.require("SHARED/csResoures","cs");
+ requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
+ requireJS.addScripts('cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+uicomponent.event('Search')+'") ;') ;
+// rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("'+uiform.id+'") ;') ;
+// rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+uicomponent.event('Search')+'") ;') ;
 %> 
 <div class="UISelectUserForm">
   <div class="SelectUserContainer">

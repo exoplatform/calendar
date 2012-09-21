@@ -35,8 +35,13 @@
     }
   }
   def rcontext = _ctx.getRequestContext() ;  
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
-%>
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.require("SHARED/jquery","gj");
+  requireJS.addScripts.('cal.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
+  requireJS.addScripts("gj('td#UITaskDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
+//  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
+  %>
 <div id="$uicomponent.id" class="UIAddNewEvent">
   <table class="UIFormGrid">
     <tbody>
@@ -96,7 +101,7 @@
         <td class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.FIELD_CHECKALL)%>
         </td>
-        <td class="FieldComponent"  onclick="eXo.calendar.UICalendarPortlet.showHideTime(this) ;">
+        <td id="UITaskDetailTab_FIELD_CHECKALL" class="FieldComponent" >
           <%uiForm.renderField(uicomponent.FIELD_CHECKALL)%>
         </td>
       </tr>

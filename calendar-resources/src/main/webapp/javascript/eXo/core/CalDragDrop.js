@@ -9,8 +9,8 @@ function DragDropEvent(clickObject, dragObject) {
   this.lastFoundTargetObject = null ;
   this.junkMove = false ;
   
- 	if(eXo.core.I18n.isLT() && isNaN(parseInt(this.dragObject.style.left))) this.dragObject.style.left = "0px" ;
- 	if(eXo.core.I18n.isRT() && isNaN(parseInt(this.dragObject.style.right))) this.dragObject.style.right = "0px" ;
+ 	if(base.I18n.isLT() && isNaN(parseInt(this.dragObject.style.left))) this.dragObject.style.left = "0px" ;
+ 	if(base.I18n.isRT() && isNaN(parseInt(this.dragObject.style.right))) this.dragObject.style.right = "0px" ;
 	if(isNaN(parseInt(this.dragObject.style.top))) this.dragObject.style.top = "0px" ;
 } ;
 
@@ -55,27 +55,27 @@ DragDrop.prototype.init = function(dropableTargets, clickObject, dragObject, evt
 
 DragDrop.prototype.onKeyPressEvt = function(evt) {
 	if(!evt) evt = window.event ;
-	if(evt.keyCode == 27) eXo.cs.DragDrop.onDrop(evt) ;
+	if(evt.keyCode == 27) cs.DragDrop.onDrop(evt) ;
 }
 
 DragDrop.prototype.onMouseMove = function(evt) {
   eXo.core.Mouse.update(evt) ;
-	var dndEvent = eXo.cs.DragDrop.dndEvent ;
+	var dndEvent = cs.DragDrop.dndEvent ;
   dndEvent.backupMouseEvent = evt ;
 	var dragObject =  dndEvent.dragObject ;
 
 	var y = parseInt(dragObject.style.top) ;
-	var x = eXo.core.I18n.isRT() ? parseInt(dragObject.style.right) : parseInt(dragObject.style.left) ;
+	var x = base.I18n.isRT() ? parseInt(dragObject.style.right) : parseInt(dragObject.style.left) ;
 
-	if(eXo.core.I18n.isLT()) dragObject.style["left"] =  x + eXo.core.Mouse.deltax + "px" ;
+	if(base.I18n.isLT()) dragObject.style["left"] =  x + eXo.core.Mouse.deltax + "px" ;
 	else dragObject.style["right"] =  x - eXo.core.Mouse.deltax + "px" ;
 	dragObject.style["top"]  =  y + eXo.core.Mouse.deltay + "px" ;
 	
-  if(eXo.cs.DragDrop.dragCallback != null) {
-    var foundTarget = eXo.cs.DragDrop.findDropableTarget(dndEvent, eXo.cs.DragDrop.dropableTargets, evt) ;
-    var junkMove =  eXo.cs.DragDrop.isJunkMove(dragObject, foundTarget) ;
+  if(cs.DragDrop.dragCallback != null) {
+    var foundTarget = cs.DragDrop.findDropableTarget(dndEvent, cs.DragDrop.dropableTargets, evt) ;
+    var junkMove =  cs.DragDrop.isJunkMove(dragObject, foundTarget) ;
     dndEvent.update(foundTarget, junkMove) ;
-    eXo.cs.DragDrop.dragCallback(dndEvent) ;
+    cs.DragDrop.dragCallback(dndEvent) ;
   }
     
 	return false ;
@@ -84,22 +84,22 @@ DragDrop.prototype.onMouseMove = function(evt) {
 DragDrop.prototype.onDrop = function(evt) {
   if(!evt) evt = window.event ;
   /* should not remove this or move this line to  destroy since the onMouseMove method keep calling */
-  if(eXo.cs.DragDrop.dropCallback != null) {
-    var dndEvent = eXo.cs.DragDrop.dndEvent ;
+  if(cs.DragDrop.dropCallback != null) {
+    var dndEvent = cs.DragDrop.dndEvent ;
     dndEvent.backupMouseEvent = evt ;
     var dragObject = dndEvent.dragObject ;
 
-    var foundTarget = eXo.cs.DragDrop.findDropableTarget(dndEvent, eXo.cs.DragDrop.dropableTargets, evt) ;
-    var junkMove =  eXo.cs.DragDrop.isJunkMove(dragObject, foundTarget) ;
+    var foundTarget = cs.DragDrop.findDropableTarget(dndEvent, cs.DragDrop.dropableTargets, evt) ;
+    var junkMove =  cs.DragDrop.isJunkMove(dragObject, foundTarget) ;
 
     dndEvent.update(foundTarget, junkMove) ;
-    eXo.cs.DragDrop.dropCallback (dndEvent) ;
+    cs.DragDrop.dropCallback (dndEvent) ;
   }
-  eXo.cs.DragDrop.destroy() ;
+  cs.DragDrop.destroy() ;
 } ;
 
 DragDrop.prototype.onCancel = function(evt) {
-	if(eXo.cs.DragDrop.cancelCallback) eXo.cs.DragDrop.cancelCallback(eXo.cs.DragDrop.dndEvent);
+	if(cs.DragDrop.cancelCallback) cs.DragDrop.cancelCallback(cs.DragDrop.dndEvent);
 } ;
 
 DragDrop.prototype.destroy = function() {
@@ -124,8 +124,8 @@ DragDrop.prototype.destroy = function() {
   
 DragDrop.prototype.findDropableTarget = function(dndEvent, dropableTargets, mouseEvent) {
   if(dropableTargets == null) return null ;
-  var mousexInPage = eXo.cs.Browser.findMouseXInPage(mouseEvent) ;
-  var mouseyInPage = eXo.cs.Browser.findMouseYInPage(mouseEvent) ;
+  var mousexInPage = cs.Browser.findMouseXInPage(mouseEvent) ;
+  var mouseyInPage = cs.Browser.findMouseYInPage(mouseEvent) ;
   
 	var clickObject = dndEvent.clickObject ;
 	var dragObject = dndEvent.dragObject ;
@@ -138,7 +138,7 @@ DragDrop.prototype.findDropableTarget = function(dndEvent, dropableTargets, mous
       if(foundTarget == null) {
         foundTarget = ele ;
       } else {
-        if(eXo.core.DOMUtil.hasAncestor(ele, foundTarget)) {
+        if(_module.DOMUtil.hasAncestor(ele, foundTarget)) {
           foundTarget = ele ;
         }
       } 
@@ -149,9 +149,9 @@ DragDrop.prototype.findDropableTarget = function(dndEvent, dropableTargets, mous
 } ;
   
 DragDrop.prototype.isIn = function(x, y, component) {
-  var componentLeft = eXo.core.Browser.findPosX(component);
+  var componentLeft = base.Browser.findPosX(component);
   var componentRight = componentLeft + component.offsetWidth ;
-  var componentTop = eXo.cs.Browser.findPosY(component) ;
+  var componentTop = cs.Browser.findPosY(component) ;
   var componentBottom = componentTop + component.offsetHeight ;
   var isOver = false ;
 
@@ -171,4 +171,6 @@ DragDrop.prototype.isJunkMove = function(src, target) {
   return false ;
 } ;
 	
-eXo.cs.DragDrop = new DragDrop() ;
+//eXo.cs.DragDrop = new DragDrop() ;
+
+_module.DragDrop = new DragDrop() ;

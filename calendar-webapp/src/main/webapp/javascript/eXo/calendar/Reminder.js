@@ -3,21 +3,21 @@ function Reminder() {
 } ;
 
 Reminder.prototype.init = function(eXoUser, eXoToken, cometdContextName){
-	if(!eXo.cs.CSCometd) eXo.cs.CSCometd = eXo.core.Cometd;
-	eXo.cs.CSCometd.exoId = eXoUser;
-	eXo.cs.CSCometd.exoToken = eXoToken;
+	if(!cs.CSCometd) cs.CSCometd = cometd;
+	cs.CSCometd.exoId = eXoUser;
+	cs.CSCometd.exoToken = eXoToken;
 	if(cometdContextName)
-		eXo.cs.CSCometd.url = '/' + cometdContextName + '/cometd';
-	eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
+		cs.CSCometd.url = '/' + cometdContextName + '/cometd';
+	cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
 		eXo.calendar.Reminder.alarm(eventObj) ;
   });
-	if (!eXo.cs.CSCometd.isConnected()) {
-		eXo.cs.CSCometd.init();
+	if (!cs.CSCometd.isConnected()) {
+		cs.CSCometd.init();
   }
 } ;
 
 Reminder.prototype.initCometd = function() {
-	eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
+	cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
 		eXo.calendar.Reminder.alarm(eventObj) ;
   });
 }
@@ -27,7 +27,7 @@ Reminder.prototype.alarm = function(eventObj){
 	var message = '<a class="Item" href="#">('+ a.fromDateTime.hours + ':' + a.fromDateTime.minutes + ') ' +a.summary+'</a>' ;
 	var html = this.generateHTML(message) ;
 	var popup = gj(this.createMessage(html, message)).find('div.UIPopupNotification')[0]; 
-	eXo.webui.Box.config(popup,popup.offsetHeight, 5, this.openCallback, this.closeBox) ;
+	eXo.calendar.Box.config(popup,popup.offsetHeight, 5, this.openCallback, this.closeBox) ;
 	window.focus() ;
 	return ;
 } ;
@@ -126,7 +126,7 @@ Box.prototype.config = function(obj, height, speed, openCallback, closeCallback)
 };
 
 Box.prototype.open = function(){
-	var Box = eXo.webui.Box ;
+	var Box = eXo.calendar.Box ;
 	Box.object.parentNode.style.top = Box.calculateY() + "px" ;
 	if(Box.tmpHeight < Box.maxHeight){
 		Box.object.style.overflow = "hidden" ;
@@ -147,7 +147,7 @@ Box.prototype.open = function(){
 };
 
 Box.prototype.close = function(){
-	var Box = eXo.webui.Box ;	
+	var Box = eXo.calendar.Box ;	
 	if(Box.tmpHeight >= 0){
 		Box.object.style.overflow = "hidden" ;
 		Box.object.style.height = Box.tmpHeight + "px" ;
@@ -183,8 +183,11 @@ Box.prototype.floatingBox = function(objID, posTop){
 	var obj = document.getElementById(objID);
 	var currentTop = this.calculateY();
 	obj.style.top = (currentTop < posTop)? posTop + "px": currentTop + "px";
-	window.setTimeout('eXo.webui.Box.floatingBox("'+objID+'",'+posTop+')', 50);
+	window.setTimeout('eXo.calendar.Box.floatingBox("'+objID+'",'+posTop+')', 50);
 };
 
-eXo.webui.Box = new Box() ;
+//eXo.webui.Box = new Box() ;
+eXo.calendar.Box = new Box() ;
 eXo.calendar.Reminder = new Reminder() ;
+
+_module.Reminder = eXo.calendar.Reminder;

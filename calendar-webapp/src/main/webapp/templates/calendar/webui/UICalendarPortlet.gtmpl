@@ -5,8 +5,9 @@
   import org.exoplatform.calendar.service.CalendarSetting;
   try {
     def rcontext = _ctx.getRequestContext() ;
-    rcontext.getJavascriptManager().addJavascript('eXo.calendar.restContext = "'+ uicomponent.getRestContextName() +'" ;') ;
-    rcontext.getJavascriptManager().addJavascript('eXo.calendar.settingTimezone = "'+ uicomponent.getSettingTimeZone() +'" ;') ;
+	def jsManager = rcontext.getJavascriptManager();	
+    //jsManager.addScript("eXo.calendar.restContext = \""+ uicomponent.getRestContextName() +"\";") ;    
+    //jsManager.addScript("eXo.calendar.settingTimezone = \""+ uicomponent.getSettingTimeZone() +"\";") ;
   } catch (Exception e) {
     e.printStackTrace();
   }
@@ -69,16 +70,25 @@
       CalendarSetting calendarSetting = uicomponent.getCalendarSetting() ;
       String timeFormat = calendarSetting.getTimeFormat() ;
       String settingTimeZone = uicomponent.getSettingTimeZone() ;
+      //String restContext = uicomponent.getRestContextName();
       def rcontext = _ctx.getRequestContext() ;
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'") ;') ;
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.showContextMenu("'+ uicomponent.id +'") ;') ;            
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.settingTimezone = "'+ settingTimeZone +'" ;') ;
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isSpace = "'+ uicomponent.getSpaceId() +'" ;') ;
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.LayoutManager.layoutId = "calendarlayout-' + uicomponent.getRemoteUser() + '";');
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkLayout();');
-      rcontext.getJavascriptManager().addJavascript('eXo.calendar.CalendarLayout.init();');
+      def requireJS = rcontext.getJavascriptManager().getRequireJS();
+	
+
+      requireJS.require("PORTLET/calendar/CalendarPortlet","cal");	
+	
+      //def params = "{restContext: $restContext,settingTimezone: $settingTimeZone}";
+
+      //requireJS.addScripts('cal.UICalendarPortlet.onLoad($params);');
+      requireJS.addScripts('cal.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'") ;') ;
+      requireJS.addScripts('cal.UICalendarPortlet.showContextMenu("'+ uicomponent.id +'") ;') ;            
+      requireJS.addScripts('cal.Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;
+      requireJS.addScripts('cal.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
+      requireJS.addScripts('cal.UICalendarPortlet.settingTimezone = "'+ settingTimeZone +'" ;') ;
+      requireJS.addScripts('cal.UICalendarPortlet.isSpace = "'+ uicomponent.getSpaceId() +'" ;') ;
+      requireJS.addScripts('cal.LayoutManager.layoutId = "calendarlayout-' + uicomponent.getRemoteUser() + '";');
+      requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
+      requireJS.addScripts('cal.CalendarLayout.init();');
     %>
       <div class="CalendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>

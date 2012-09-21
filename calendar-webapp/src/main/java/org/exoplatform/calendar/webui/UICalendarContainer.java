@@ -43,7 +43,8 @@ public class UICalendarContainer extends UIContainer  {
   public void renderChildren(WebuiRequestContext context) throws Exception {
     super.renderChildren(context);
     // load javascript block for updating the component's visibility. 
-    context.getJavascriptManager().addJavascript("eXo.calendar.CalendarLayout.updateCalendarContainerLayout();");
+    
+    context.getJavascriptManager().require("PORTLET/calendar/CalendarPortlet","cal").addScripts("cal.CalendarLayout.updateCalendarContainerLayout();");
   }
 
 

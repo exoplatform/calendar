@@ -19,7 +19,7 @@ CheckBoxManager.prototype.init = function(cont) {
 } ;
 
 CheckBoxManager.prototype.checkAll = function() {
-	eXo.cs.CheckBox.checkAllItem(this);
+	_module.CheckBox.checkAllItem(this);
 } ;
 
 CheckBoxManager.prototype.getItems = function(obj) {
@@ -29,12 +29,12 @@ CheckBoxManager.prototype.getItems = function(obj) {
 } ;
 
 CheckBoxManager.prototype.check = function() {
-	eXo.cs.CheckBox.checkItem(this);
+	_module.CheckBox.checkItem(this);
 } ;
 
 CheckBoxManager.prototype.checkAllItem = function(obj){
 	var checked = obj.checked ;
-	var items = eXo.cs.CheckBox.getItems(obj) ;
+	var items = _module.CheckBox.getItems(obj) ;
 	var len = items.length ;
 	for(var i = 1 ; i < len ; i ++) {
 		items[i].checked = checked ;
@@ -43,7 +43,7 @@ CheckBoxManager.prototype.checkAllItem = function(obj){
 } ;
 
 CheckBoxManager.prototype.checkItem = function(obj){
-	var checkboxes = eXo.cs.CheckBox.getItems(obj);
+	var checkboxes = _module.CheckBox.getItems(obj);
 	var len = checkboxes.length;
 	var state = true;
 	if (!obj.checked) {
@@ -67,7 +67,8 @@ CheckBoxManager.prototype.highlight = function(obj,isChecked){
 		gj(obj).toggleClass("UIHightLight","");
 } ;
 
-eXo.cs.CheckBox = new CheckBoxManager() ;
+//eXo.cs.CheckBox = new CheckBoxManager() ;
+_module.CheckBox = new CheckBoxManager() ;
 
 /********************* Pane Spliter ******************/
 
@@ -82,7 +83,7 @@ function LayoutSpliter() {
  */
 LayoutSpliter.prototype.doResize = function(e , markerobj) {
   _e = (window.event) ? window.event : e ;
-  this.posY = eXo.cs.Browser.findMouseYInPage(_e) ;
+  this.posY = _module.Browser.findMouseYInPage(_e) ;
   var marker = (typeof(markerobj) == "string")? document.getElementById(markerobj):markerobj ;
   var container = marker.parentNode ;
   var areas = gj(container).find('div.SpliterResizableListArea'); 
@@ -93,14 +94,14 @@ LayoutSpliter.prototype.doResize = function(e , markerobj) {
   this.afterArea.style.overflowY = "auto" ;
   this.beforeY = this.beforeArea.offsetHeight ;
   this.afterY = this.afterArea.offsetHeight ;
-  document.onmousemove = eXo.cs.Spliter.adjustHeight ;
-  document.onmouseup = eXo.cs.Spliter.clear ;
+  document.onmousemove = _module.Spliter.adjustHeight ;
+  document.onmouseup = _module.Spliter.clear ;
 } ;
 
 LayoutSpliter.prototype.adjustHeight = function(evt) {
   evt = (window.event) ? window.event : evt ;
-  var Spliter = eXo.cs.Spliter ;
-  var delta = eXo.cs.Browser.findMouseYInPage(evt) - Spliter.posY ;
+  var Spliter = _module.Spliter ;
+  var delta = _module.Browser.findMouseYInPage(evt) - Spliter.posY ;
   var afterHeight = Spliter.afterY - delta ;
   var beforeHeight = Spliter.beforeY + delta ;
   if (beforeHeight <= 0  || afterHeight <= 0) return ;
@@ -110,7 +111,7 @@ LayoutSpliter.prototype.adjustHeight = function(evt) {
 
 LayoutSpliter.prototype.clear = function() {
   try {
-    var Spliter = eXo.cs.Spliter ;
+    var Spliter = _module.Spliter ;
     document.onmousemove = null ;
     delete Spliter.beforeY ;
     delete Spliter.afterY ;
@@ -120,7 +121,7 @@ LayoutSpliter.prototype.clear = function() {
   } catch(e) {window.statuts = "Message : " + e.message ;} ;
 } ;
 
-eXo.cs.Spliter = new LayoutSpliter() ;
+_module.Spliter = new LayoutSpliter() ;
 
 /********************* Utility function for CS ******************/
 
@@ -129,7 +130,7 @@ function Utils() {}
 Utils.prototype.show = function(obj, evt){
 	if(!evt) evt = window.event ;
 	evt.cancelBubble = true ;
-	var DOMUtil = eXo.core.DOMUtil ;
+	var DOMUtil = _module.DOMUtil ;
 	var uiPopupCategory = gj(obj).find('ul.UIRightClickPopupMenu')[0] ;	
 	if (!uiPopupCategory) 
 		uiPopupCategory = gj(obj).find('div.UIRightClickPopupMenu')[0] ;
@@ -137,7 +138,7 @@ Utils.prototype.show = function(obj, evt){
 		DOMUtil.cleanUpHiddenElements() ;
 		uiPopupCategory.style.display = "block" ;
 		DOMUtil.listHideElements(uiPopupCategory) ;
-		if(eXo.core.I18n.isRT()) uiPopupCategory.style.left = (obj.offsetWidth - uiPopupCategory.offsetWidth) + "px" ;
+		if(base.I18n.isRT()) uiPopupCategory.style.left = (obj.offsetWidth - uiPopupCategory.offsetWidth) + "px" ;
 	}	
 	else uiPopupCategory.style.display = "none" ;
 };
@@ -175,16 +176,16 @@ Utils.prototype.getKeynum = function(event) {
 
 Utils.prototype.captureInput = function(input, action) {
   if(typeof(input) == "string") input = document.getElementById(input) ;
-	input.form.onsubmit = eXo.cs.Utils.cancelSubmit ;
-  input.onkeypress= eXo.cs.Utils.onEnter ;
+	input.form.onsubmit = _module.Utils.cancelSubmit ;
+  input.onkeypress= _module.Utils.onEnter ;
 } ;
 
 Utils.prototype.onEnter = function(evt) {
   var _e = evt || window.event ;
   _e.cancelBubble = true ;
-  var keynum = eXo.cs.Utils.getKeynum(_e) ;
+  var keynum = _module.Utils.getKeynum(_e) ;
   if (keynum == 13) {
-		eXo.cs.Utils.doAction(this);
+		_module.Utils.doAction(this);
   }
 } ;
 
@@ -525,13 +526,15 @@ Utils.prototype.getElementWidth = function(obj){
  */ 
 
 Utils.prototype.loadPlatformCometd = function(){
-	if(eXo.cs.CSCometd) return;
-	if(eXo.core.Cometd) delete eXo.core.Cometd;
-	eXo.require("eXo.core.Cometd","/cometd/javascript/");
-	eXo.cs.CSCometd = eXo.core.Cometd;
+	//if(eXo.cs.CSCometd) return;
+	//if(eXo.core.Cometd) delete eXo.core.Cometd;
+	//eXo.require("eXo.core.Cometd","/cometd/javascript/");
+	//eXo.cs.CSCometd = eXo.core.Cometd;
+	if(_module.CSCometd) return;	
+	_module.CSCometd = cometd;
 }
 
-eXo.cs.Utils = new Utils() ;
+_module.Utils = new Utils() ;
 /**
  * TODO: remove method call when portal remove Cometd.js file
  */
@@ -589,14 +592,15 @@ EventManager.prototype.cancelBubble = function(evt) {
 };
 
 EventManager.prototype.cancelEvent = function(evt) {
-	eXo.cs.EventManager.cancelBubble(evt) ;
+	_module.EventManager.cancelBubble(evt) ;
   if(gj.browser.msie != undefined)
     window.event.returnValue = true ;
   else
     evt.preventDefault() ;
 };
 
-eXo.cs.EventManager = new EventManager() ;
+//eXo.cs.EventManager = new EventManager() ;
+_module.EventManager = new EventManager() ;
 
 /********************* Scroll Manager ******************/
 
@@ -605,7 +609,7 @@ function UINavigation() {
 } ;
 
 UINavigation.prototype.loadScroll = function() {
-  var uiNav = eXo.cs.UINavigation ;
+  var uiNav = _module.UINavigation ;
   var container = document.getElementById("UIActionBar") ;
   if(container) {    
     this.scrollMgr = eXo.portal.UIPortalControl.newScrollManager("UIActionBar") ;
@@ -628,7 +632,7 @@ UINavigation.prototype.loadScroll = function() {
 } ;
 
 UINavigation.prototype.initScroll = function() {
-  var uiNav = eXo.cs.UINavigation ;
+  var uiNav = _module.UINavigation ;
   if(!uiNav.scrollManagerLoaded) uiNav.loadScroll() ;
   var elements = uiNav.scrollMgr.elements ;
   uiNav.scrollMgr.init() ;
@@ -640,14 +644,15 @@ UINavigation.prototype.scrollCallback = function() {
 
 } ;
 
-eXo.cs.UINavigation = new UINavigation() ;
+//eXo.cs.UINavigation = new UINavigation() ;
+_module.UINavigation = new UINavigation() ;
 
 function LayoutManager(id){
 	this.layoutId = id ;
 }
 
 LayoutManager.prototype.check = function(){
-	var layoutcookie = eXo.core.Browser.getCookie(this.layoutId) ;	
+	var layoutcookie = base.Browser.getCookie(this.layoutId) ;	
 	var i = layoutcookie.length ;
 	while(i--){
 		if(!this.layouts[parseInt(layoutcookie.charAt(i))-1]) continue ;
@@ -657,7 +662,7 @@ LayoutManager.prototype.check = function(){
 };
 
 LayoutManager.prototype.switchLayout = function(layout){
-	var layoutcookie = eXo.core.Browser.getCookie(this.layoutId) ;
+	var layoutcookie = base.Browser.getCookie(this.layoutId) ;
 	var status = this.setValue(layout,layoutcookie);
 	if (!status) {
     if (this.layouts[layout-1]) 
@@ -678,7 +683,7 @@ LayoutManager.prototype.setValue = function(value, str){
 		str = str.replace(value,'');
 		status = true ;
 	}	
-	eXo.core.Browser.setCookie(this.layoutId,str,1);
+	base.Browser.setCookie(this.layoutId,str,1);
 	return status ;
 };
 
@@ -687,10 +692,14 @@ LayoutManager.prototype.reset = function(){
 	while(i--){
 		if(this.layouts[i]) this.layouts[i].style.display = "block";
 	}
-	eXo.core.Browser.setCookie(this.layoutId,"",1);
+	base.Browser.setCookie(this.layoutId,"",1);
 	if(this.resetCallback) this.resetCallback() ;
 };
-eXo.cs.UINavigation = new UINavigation() ;
+
+//eXo.cs.UINavigation = new UINavigation() ;
+_module.LayoutManager = function(id){
+	return new LayoutManager(id);
+}
 
 /*
  * Date Format 1.2.2
@@ -741,7 +750,7 @@ DateTimeFormater.prototype.i18n = {
 };
 
 DateTimeFormater.prototype.format = function (date, mask, utc) {
-	var dF = eXo.cs.DateTimeFormater;
+	var dF = _module.DateTimeFormater;
 
 	// You can't provide utc if you skip other args (use the "UTC:" mask prefix)
 	if (arguments.length == 1 && (typeof date == "string" || date instanceof String) && !/\d/.test(date)) {
@@ -807,5 +816,6 @@ DateTimeFormater.prototype.format = function (date, mask, utc) {
 };
 
 
-eXo.cs.DateTimeFormater = new DateTimeFormater();
-document.onclick = eXo.core.DOMUtil.cleanUpHiddenElements;
+_module.DateTimeFormater = new DateTimeFormater();
+
+document.onclick = _module.DOMUtil.cleanUpHiddenElements;

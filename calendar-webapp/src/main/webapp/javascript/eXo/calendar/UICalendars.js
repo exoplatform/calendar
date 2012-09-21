@@ -7,8 +7,8 @@ function UICalendars() {
 
 UICalendars.prototype.init = function(calendarsForm) {
   if (typeof(calendarsForm) == "string") 
-    calendarsForm = eXo.calendar.UICalendarPortlet.getElementById(calendarsForm);
-  var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
+    calendarsForm = _module.UICalendarPortlet.getElementById(calendarsForm);
+  var UICalendarPortlet = _module.UICalendarPortlet;
   UICalendarPortlet.filterForm = calendarsForm;
   this.calsFormElem = calendarsForm;
   var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
@@ -35,11 +35,11 @@ UICalendars.prototype.showSettingButtonStably = function(settingButton) {
 };
 
 UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
-  var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
+  var UICalendarPortlet = _module.UICalendarPortlet;
   UICalendarPortlet.swapMenu(menuElm, anchorElm);
   this.currentMenuElm = UICalendarPortlet.menuElement;
-  if (!eXo.core.I18n.isRT()) {
-    this.currentMenuElm.style.left = (eXo.core.Browser.findPosX(this.currentMenuElm) - this.currentMenuElm.offsetWidth  + anchorElm.offsetWidth) + 'px';
+  if (!base.I18n.isRT()) {
+    this.currentMenuElm.style.left = (base.Browser.findPosX(this.currentMenuElm) - this.currentMenuElm.offsetWidth  + anchorElm.offsetWidth) + 'px';
   }
 };
 
@@ -47,25 +47,25 @@ UICalendars.prototype.mainMenuCallback = function(anchorElm, evt) {
   var d = new Date();
   var currentTime = d.getTime();
   var timezoneOffset = d.getTimezoneOffset();
-  var menu = eXo.calendar.UICalendars.currentMenuElm;
+  var menu = _module.UICalendars.currentMenuElm;
   var actions = gj(menu).find('div');
   actions[0].onclick = String(actions[0].onclick).replace(/&.*/, "&ct=" + currentTime + "&tz=" + timezoneOffset + "')");
 };
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
-  var obj = eXo.cs.EventManager.getEventTargetByClass(evt,"CalendarItem") || eXo.cs.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var obj = cs.EventManager.getEventTargetByClass(evt,"CalendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
   var calType = obj.getAttribute("calType");
   var calName = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");
   var canEdit = String(obj.getAttribute("canedit")).toLowerCase();
-  var UICalendars = eXo.calendar.UICalendars;
+  var UICalendars = _module.UICalendars;
   var menu = UICalendars.currentMenuElm;
   var contentContainerElm = gj(anchorElm).parents(".ContentContainer")[0];
   if (contentContainerElm) {
-    menu.style.top = (eXo.cs.Browser.findPosY(menu) - contentContainerElm.scrollTop) + 'px';
+    menu.style.top = (cs.Browser.findPosY(menu) - contentContainerElm.scrollTop) + 'px';
   }
   try {
-    var selectedCategory = (eXo.calendar.UICalendarPortlet.filterSelect) ? eXo.calendar.UICalendarPortlet.filterSelect : null;
+    var selectedCategory = (_module.UICalendarPortlet.filterSelect) ? _module.UICalendarPortlet.filterSelect : null;
     if (selectedCategory) {
     	selectedCategory = selectedCategory.options[selectedCategory.selectedIndex].value;
     } 
@@ -74,7 +74,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   }
   if(!menu || !obj.id) {
     if (menu) menu.style.display = 'none';
-    eXo.webui.UIContextMenu.menuElement = null ;
+    cs.UIContextMenu.menuElement = null ;
     return ;
   } 
   var value = "" ;
@@ -135,7 +135,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       UICalendars.defaultOnclickFunc = document.onclick;
       UICalendars.modifiedOnclick = true;
       document.onclick = function (evt) {
-        var UICalendars = eXo.calendar.UICalendars;
+        var UICalendars = _module.UICalendars;
         UICalendars.resetSettingButton(UICalendars.currentAnchorElm);
         UICalendars.defaultOnclickFunc(evt);
         document.onclick = UICalendars.defaultOnclickFunc;
@@ -155,3 +155,4 @@ UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCal
 };
 
 eXo.calendar.UICalendars = new UICalendars();
+_module.UICalendars = new UICalendars();

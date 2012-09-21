@@ -268,6 +268,7 @@ Highlighter.prototype.setCallback = function(str) {
 } ;
 
 eXo.calendar.Highlighter = new Highlighter() ;
+_module.Highlighter = new Highlighter() ;
 
 /**
  * Class control horizontal dragging selection in the month view
@@ -420,3 +421,4 @@ UIHSelection.prototype.end = function(){
 } ;
 
 eXo.calendar.UIHSelection = new UIHSelection() ;
+_module.UIHSelection = new UIHSelection() ;

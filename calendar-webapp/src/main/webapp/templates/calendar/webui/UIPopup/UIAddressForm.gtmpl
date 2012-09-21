@@ -2,9 +2,16 @@
  import org.exoplatform.calendar.webui.popup.UIAddressForm.ContactData ;
  uiform.begin()
  def rcontext = _ctx.getRequestContext() ;
+ 
  String actionLink = uicomponent.event('Search') ;
- rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+actionLink+'") ;') ;
- rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("' + uiform.id + '"); ') ;
+ 
+ def requireJS = rcontext.getJavascriptManager().getRequireJS(); 
+
+ requireJS.require("SHARED/csResoures","cs");
+ requireJS.addScripts('cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+actionLink+'") ;');
+ requireJS.addScripts('cs.CheckBox.init("' + uiform.id + '"); ') ;
+ //rcontext.getJavascriptManager().addJavascript('cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+actionLink+'") ;') ;
+ //rcontext.getJavascriptManager().addJavascript('cs.CheckBox.init("' + uiform.id + '"); ') ;
 %>
 <div class="UIInsertAddress">
   <div class="InsertAddressContainer">

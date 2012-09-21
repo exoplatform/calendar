@@ -46,4 +46,5 @@ if (!eXo.cs) {
   eXo.cs = {} ;
 }
 
-eXo.cs.FormHelper = new FormHelper() ;
+//eXo.cs.FormHelper = new FormHelper() ;
+_module.FormHelper = new FormHelper() ;

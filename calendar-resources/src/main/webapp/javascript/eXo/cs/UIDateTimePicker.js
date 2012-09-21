@@ -9,7 +9,8 @@ function UIDateTimePicker() {
   this.pathResource = "/csResources/javascript/eXo/cs/lang/";
 } ;
 
-UIDateTimePicker.prototype = eXo.webui.UICalendar ;
+//UIDateTimePicker.prototype = eXo.webui.UICalendar ;
+UIDateTimePicker.prototype = wx.UICalendar ; //UICalendar of webui-ext module
 
 UIDateTimePicker.prototype.getLang = function() {
 	try {
@@ -39,7 +40,7 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
 
 	// fix bug for IE 6
   var cld = document.getElementById(this.calendarId);
-  if(eXo.core.Browser.isIE6())  {
+  if(base.Browser.isIE6())  {
     var blockClnd = document.getElementById('BlockCaledar') ;
     var iframe = document.getElementById(this.calendarId + 'IFrame') ;
     iframe.style.height = blockClnd.offsetHeight + "px";
@@ -48,8 +49,8 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
 };
 
 UIDateTimePicker.prototype.show = function() {
-	eXo.cs.UIDateTimePicker.getLang() ;
-	document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
+	_module.UIDateTimePicker.getLang() ;
+	document.onmousedown = new Function('cs.UIDateTimePicker.hide()') ;
 	
   var str = this.dateField.getAttribute("format") ;
   str = str.replace(/d{2}/,"(\\d{1,2}\\") ;
@@ -109,7 +110,7 @@ UIDateTimePicker.prototype.show = function() {
 	  left = x + "px" ;
 	  top = y + "px" ;
   }
-  if(eXo.core.Browser.isIE6()){
+  if(base.Browser.isIE6()){
 		var ifr = gj(clndr).find('#' + this.calendarId + "IFrame")[0] ;
 		ifr.style.height = (gj(ifr).nextAll("div")[0].offsetHeight - 5) + "px";
 	}
@@ -120,7 +121,7 @@ UIDateTimePicker.prototype.show = function() {
 UIDateTimePicker.prototype.initDND = function(evt) {
 	var _e = evt || window.event;
 	_e.cancelBubble = true ;
-	eXo.cs.DragDrop.init(null, this, this.parentNode.parentNode, evt);
+	_module.DragDrop.init(null, this, this.parentNode.parentNode, evt);
 } ;
 
 UIDateTimePicker.prototype.getTypeFormat = function() {
@@ -193,7 +194,9 @@ UIDateTimePicker.prototype.renderCalendar = function() {
 	table += 		'		</table>' ;
 	table += 		'	</div>' ;
 	table += 		'	<div class="CalendarGrid">' ;
-	table += 		'	<table>' ;
+	table += 		'	<table>' ;	
+	
+	
   for (var week=0; week < 6; week++) {
     table += "<tr>";
     for (var dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
@@ -241,4 +244,7 @@ UIDateTimePicker.prototype.hide = function() {
 	document.onclick = null;
 }
 
-eXo.cs.UIDateTimePicker = new UIDateTimePicker() ;
+
+window.eXo.cs = window.eXo.cs || {};  
+window.eXo.cs.UIDateTimePicker = new UIDateTimePicker();
+_module.UIDateTimePicker = window.eXo.cs.UIDateTimePicker;

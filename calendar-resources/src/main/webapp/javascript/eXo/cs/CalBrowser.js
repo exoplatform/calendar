@@ -40,8 +40,8 @@ MouseObject.prototype.init = function(mouseEvent) {
 } ;
 
 MouseObject.prototype.update = function(mouseEvent) {
-  var  x = eXo.cs.Browser.findMouseXInPage(mouseEvent) ;
-  var  y = eXo.cs.Browser.findMouseYInPage(mouseEvent) ;
+  var  x = _module.Browser.findMouseXInPage(mouseEvent) ;
+  var  y = _module.Browser.findMouseYInPage(mouseEvent) ;
 
   this.lastMousexInPage =  this.mousexInPage != null ? this.mousexInPage : x ;
   this.lastMouseyInPage =  this.mouseyInPage != null ? this.mouseyInPage : y ;
@@ -49,8 +49,8 @@ MouseObject.prototype.update = function(mouseEvent) {
   this.mousexInPage = x ;
   this.mouseyInPage = y ;
 
-  x  =  eXo.cs.Browser.findMouseXInClient(mouseEvent) ;
-  y  =  eXo.cs.Browser.findMouseYInClient(mouseEvent) ;
+  x  =  _module.Browser.findMouseXInClient(mouseEvent) ;
+  y  =  _module.Browser.findMouseYInClient(mouseEvent) ;
 
   this.lastMousexInClient =  this.mousexInClient != null ? this.mousexInClient : x ;
   this.lastMouseyInClient =  this.mouseyInClient != null ? this.mouseyInClient : y ;
@@ -128,5 +128,7 @@ Browser.prototype.getEventSource = function(e) {
 	return targ;
 }
 /************************************************************************************/
-eXo.cs.Browser = new Browser() ;
-eXo.core.Mouse = new MouseObject() ;
+//eXo.cs.Browser = new Browser() ;
+//eXo.core.Mouse = new MouseObject() ;
+_module.Browser = new Browser() ;
+_module.Mouse = new MouseObject() ;

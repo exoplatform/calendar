@@ -9,9 +9,18 @@ import java.util.Calendar;
 def rcontext = _ctx.getRequestContext() ;
 def msg = _ctx.appRes("UICalendarView.msg.check-box-required");
 def parent = uicomponent.getParent().getId() ;
-rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.getFilterSelect("'+uiform.id+'") ;') ;
+rcontext.getJavascriptManager().require("PORTLET/calendar/CalendarPortlet","cal").addScripts('cal.UICalendarPortlet.getFilterSelect("'+uiform.id+'") ;') ;
 uicomponent.update() ;
 uicomponent.setSelectedCategory(uicomponent.getSelectedCategory()) ;
+
+
+def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+requirejs.require("SHARED/csResources","cs");
+requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+requirejs.require("SHARED/jquery","gj");
+requirejs.addScripts("gj('div#UIHeaderBar_1').click(function() {cal.UICalendarPortlet.switchListView(this, event);});")
+requirejs.addScripts("gj('div#UIHeaderBar_2').click(function() {cs.Utils.confirmAction(this,'"+msg+"','"+parent+"');});")
+requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirmAction(this,'"+msg+"','"+parent+"');});")
 %>
 <div class="UIHeaderBar ListBar ClearFix">
     <!--
@@ -151,7 +160,7 @@ uicomponent.setSelectedCategory(uicomponent.getSelectedCategory()) ;
 	 %> 
 	 
 	 <div class="SeparatorLine"><span></span></div>
-      <div onclick='eXo.cs.Utils.confirmAction(this,"$msg","$parent") ;' actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
+      <div id="UIHeaderBar_2"  actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
         <div class="IconHolder DeleteEventIcon">
           <%=_ctx.appRes("UIHeaderBar.label.Delete")%>
         </div>
@@ -196,14 +205,14 @@ uicomponent.setSelectedCategory(uicomponent.getSelectedCategory()) ;
   yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
 	 %>
 	 <div class="SeparatorLine"><span></span></div>
-      <div onclick='eXo.cs.Utils.confirmAction(this,"$msg","$parent") ;' actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
+      <div id="UIHeaderBar_3" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
         <div class="IconHolder DeleteEventIcon">
           <%=_ctx.appRes("UIHeaderBar.label.Delete")%>
         </div>
       </div>
 	  
 	  <div class="SeparatorLine"><span></span></div>
-    <div class="ViewTypeSelect" style="cursor:pointer; position:relative ;" onclick="eXo.calendar.UICalendarPortlet.switchListView(this, event);">
+    <div id="UIHeaderBar_1" class="ViewTypeSelect" style="cursor:pointer; position:relative ;">
       <% /*Begin  ViewTypeSelect Popup Menu*/ %>
           <div class="UIPopupCategory" style="display: none;">
             <div class="UIRightClickPopupMenu" style="display: block;">

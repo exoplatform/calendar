@@ -199,4 +199,5 @@ if (!eXo.cs) {
   eXo.cs = {} ;
 }
 
-eXo.cs.TableMan = new TableMan() ;
+//eXo.cs.TableMan = new TableMan() ;
+_module.TableMan = new TableMan() ;

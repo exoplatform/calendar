@@ -1,6 +1,9 @@
 <%
   def jsMan = _ctx.getRequestContext().getJavascriptManager() ;
-  jsMan.addJavascript("eXo.calendar.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "') ;");
+  def requireJS=jsMan.getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts("cal.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "') ;");
+//jsMan.addJavascript("eXo.calendar.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "') ;");
   uiform.setLocale();
 %>
 <div class="UIForm UIRemoteCalendar">

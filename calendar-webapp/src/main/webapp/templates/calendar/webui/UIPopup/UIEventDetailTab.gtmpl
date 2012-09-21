@@ -38,9 +38,12 @@
     }
   }
   def rcontext = _ctx.getRequestContext() ;  
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
-  rcontext.getJavascriptManager().addJavascript("eXo.calendar.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
-  
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.require("SHARED/jquery","gj");
+  requireJS.addScripts('cal.UICalendarPortlet.isAllday("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
+  requireJS.addScripts("cal.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
+  requireJS.addScripts("gj('td#"+uicomponent.FIELD_CHECKALL)+"').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
 %>
 <div id="$uicomponent.id" class="UIAddNewEvent">
   <table class="UIFormGrid">
@@ -99,7 +102,7 @@
         <td class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.FIELD_CHECKALL)%>
         </td>
-        <td class="FieldComponent" onclick="eXo.calendar.UICalendarPortlet.showHideTime(this) ;"><!-- check all -->
+        <td id="<%=uicomponent.FIELD_CHECKALL%>" class="FieldComponent" ><!-- check all -->
           <%uiForm.renderField(uicomponent.FIELD_CHECKALL)%>
         </td>
       </tr>
@@ -150,7 +153,7 @@
         <td class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>
         </td>
-        <td class="FieldComponent">
+        <td class="">
           <div style="width:242px;">
           <%uiForm.renderField(uicomponent.FIELD_ATTACHMENTS) ;%>
           <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>

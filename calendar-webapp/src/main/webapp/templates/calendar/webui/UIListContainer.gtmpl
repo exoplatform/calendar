@@ -4,6 +4,13 @@
 %>
 <div class="UIListContainer SpliterContainer" id="$uicomponent.id">
   <%uicomponent.renderChild(UIListView.class)%>
-  <div class="ResizeReadingPane" onmousedown="eXo.cs.Spliter.doResize(event, this) ;"><span></span></div>
+  <%
+  	def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+	requirejs.require("SHARED/csResources","cs");
+	requirejs.require("SHARED/jquery","gj");
+	requirejs.addScripts("gj('div.ResizeReadingPane').mousedown(function() {cs.Spliter.doResize(event, this); });")
+	
+  %>
+  <div class="ResizeReadingPane"><span></span></div>
   <%uicomponent.renderChild(UIPreview.class)%>
 </div>

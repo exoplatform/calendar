@@ -28,7 +28,10 @@
     }
   }
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts('cal.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
+ // rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
 %>
 <div id="$uicomponent.id" class="$uicomponent.id">
   <table class="UIFormGrid">

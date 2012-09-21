@@ -2,7 +2,10 @@
   import org.exoplatform.calendar.service.CalendarEvent;
 
   def jsMan = _ctx.getRequestContext().getJavascriptManager() ;
-  jsMan.addJavascript("eXo.calendar.UICalendarPortlet.changeRepeatType('" + uicomponent.id + "') ;");
+  def requireJS= jsMan.getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts("cal.UICalendarPortlet.changeRepeatType('" + uicomponent.id + "') ;");
+//  jsMan.addJavascript("eXo.calendar.UICalendarPortlet.changeRepeatType('" + uicomponent.id + "') ;");
 %>
 <div class="UIForm $uicomponent.id">
   <%uiform.begin()%>

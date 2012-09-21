@@ -129,7 +129,8 @@ WebserviceHandler.prototype = {
 };
 
 
-eXo.cs.webservice.core.WebserviceHandler = WebserviceHandler;
+//eXo.cs.webservice.core.WebserviceHandler = WebserviceHandler;
+_module.WebserviceHandler = new WebserviceHandler();
 
 /**
  * WebserviceManager
@@ -184,4 +185,5 @@ WebserviceManager.prototype.initRequest = function(ajaxRequest, handler) {
   this.currentRequest = ajaxRequest ;
 };
 
-eXo.cs.webservice.core.WebserviceManager = new WebserviceManager();
+//eXo.cs.webservice.core.WebserviceManager = new WebserviceManager();
+_module.WebserviceManager = new WebserviceManager();

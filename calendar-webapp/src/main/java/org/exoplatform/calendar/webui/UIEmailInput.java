@@ -17,6 +17,7 @@ public class UIEmailInput extends UIFormStringInput {
   }
   public void processRender(WebuiRequestContext context) throws Exception {
     context.getJavascriptManager().loadScriptResource("eXo.cs.UIEmailInput") ;
+	
     Writer w = context.getWriter();
     String value = getValue();
     if(CalendarUtils.isEmpty(value)) value = "";

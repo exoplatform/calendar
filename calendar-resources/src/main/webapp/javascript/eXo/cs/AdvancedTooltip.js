@@ -60,7 +60,7 @@ AdvancedTooltip.prototype.applyTemplate = function(template, nodeData) {
 
 AdvancedTooltip.prototype.showAdvancedTooltip = function(e) {
   e = e ? e : window.event ;
-  return eXo.cs.AdvancedTooltip.show(e, this) ;
+  return _module.AdvancedTooltip.show(e, this) ;
 } ;
 
 /**
@@ -71,17 +71,17 @@ AdvancedTooltip.prototype.showAdvancedTooltip = function(e) {
 AdvancedTooltip.prototype.show = function(e, element) {
   var compiledTmpl = this.applyTemplate(this.tmpl.innerHTML, element) ;
   this.tooltipE.innerHTML = compiledTmpl ;
-  this.tooltipE.style['top'] = eXo.core.Browser.findMouseRelativeY(document.body, e) + 2 + 'px' ;
-  this.tooltipE.style['left'] = eXo.core.Browser.findMouseRelativeX(document.body, e) + 2 + 'px' ;
+  this.tooltipE.style['top'] = base.Browser.findMouseRelativeY(document.body, e) + 2 + 'px' ;
+  this.tooltipE.style['left'] = base.Browser.findMouseRelativeX(document.body, e) + 2 + 'px' ;
   if (this.tooltipE.style['display'] == 'none') {
-    this.cancelShowTimeout() ;
+    this.cancelShowTimeout() ;    
     this.showTimeoutId = window.setTimeout("eXo.cs.AdvancedTooltip.tooltipE.style['display'] = 'block' ;", 2*1000)
   }
 } ;
 
 AdvancedTooltip.prototype.hideAdvancedTooltip = function(e){
   e = e ? e : window.event ;
-  return eXo.cs.AdvancedTooltip.hide(e, this) ;
+  return _module.AdvancedTooltip.hide(e, this) ;
 } ;
 
 AdvancedTooltip.prototype.hide = function(e, element) {
@@ -96,4 +96,5 @@ AdvancedTooltip.prototype.cancelShowTimeout = function() {
   }
 } ;
 
-eXo.cs.AdvancedTooltip = new AdvancedTooltip() ;
+//eXo.cs.AdvancedTooltip = new AdvancedTooltip() ;
+_module.AdvancedTooltip = new AdvancedTooltip() ;

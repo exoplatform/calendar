@@ -6,10 +6,18 @@
   import org.exoplatform.webui.form.UIFormCheckBoxInput;
   import org.exoplatform.calendar.webui.UICalendarPortlet;
   def rcontext = _ctx.getRequestContext() ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.CalendarLayout.updateUICalendarsLayout();') ;
-  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendars.init("' + uiform.id + '") ;') ;
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.require("SHARED/jquery","gj");
+  requirejs.addScripts('cal.CalendarLayout.updateUICalendarsLayout();') ;
+  requirejs.addScripts('cal.UICalendars.init("' + uiform.id + '") ;') ;
+  requirejs.addScripts("gj('div#UICalendars_calendarActions').click(function() {cal.UICalendars.showMenu(this, event, 'CalendarMainPopupMenu', cal.UICalendars.mainMenuCallback); });");
+  requirejs.addScripts("gj('div#UICalendars_CalendarGroupPopupMenu').click(function() {cal.UICalendars.showMenu(this, event, 'CalendarGroupPopupMenu', cal.UICalendars.calendarMenuCallback); });");
+  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu1').click(function() {cal.UICalendars.showMenu(this, event, 'CalendarPopupMenu',cal.UICalendars.calendarMenuCallback); });");
+  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu2').click(function() {cal.UICalendars.showMenu(this, event, 'CalendarPopupMenu2',cal.UICalendars.calendarMenuCallback); });");
+  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu3').click(function() {cal.UICalendars.showMenu(this, event, 'CalendarPopupMenu', cal.UICalendars.calendarMenuCallback); });");
+  requirejs.addScripts("gj('div#UICalendars_toggle-calendars').click(function() {cal.UICalendars.UICalendarPortlet.switchLayout(3);});");
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
-  
   String[] checkPerms = uicomponent.getCheckPermissionString().split(CalendarUtils.COMMA);
 %>
 <%uiform.begin()%>
@@ -18,7 +26,7 @@
       <h6 class="Title">
       <%=uiform.getLabel("calendars")%>
       </h6>
-    <div class="ActionsButton" title="<%=uiform.getLabel("calendarActions")%>" onclick="eXo.calendar.UICalendars.showMenu(this, event, 'CalendarMainPopupMenu', eXo.calendar.UICalendars.mainMenuCallback);">
+    <div id="UICalendars_calendarActions" class="ActionsButton" title="<%=uiform.getLabel("calendarActions")%>" >
       <% /*Begin Popup Menu - Main */ %>
 	  
 		<div class="UIRightClickPopupMenu CalendarMainPopupMenu" style="display: none ;"> 
@@ -77,7 +85,7 @@
         %>
          
 			<div class="GroupItem ClearFix" id="$groupData.id">
-			  <div class="IconHoverSetting" onclick="eXo.calendar.UICalendars.showMenu(this, event, 'CalendarGroupPopupMenu', eXo.calendar.UICalendars.calendarMenuCallback);"></div>
+			  <div id="UICalendars_CalendarGroupPopupMenu" class="IconHoverSetting" ></div>
 				<a class="CollapserFlatStyle"></a>
 				<div class="CalendarGroupIcon" title="$groupData.name">$groupData.name</div>
 			</div>
@@ -96,7 +104,7 @@
                 if(chk.isChecked()){css = "IconCheckBox checkbox";}
         %>
             <li class="CalendarItem  CalendarItemPrivate ClearFix" calColor="$calendar.calendarColor" canEdit="true" id="$calId" calType="0" isRemote="$isRemote">
-                <div class="IconHoverSetting" onclick="eXo.calendar.UICalendars.showMenu(this, event, 'CalendarPopupMenu', eXo.calendar.UICalendars.calendarMenuCallback);"></div>
+                <div id="UICalendars_CalendarPopupMenu1" class="IconHoverSetting"></div>
                 <div class="CalendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$calendar.calendarColor">
                   	<span class="ColorOpacity">
@@ -149,7 +157,7 @@
             if(chk.isChecked()){css = "IconCheckBox checkbox";}
         %>
             <li class="CalendarItem CalendarItemShared ClearFix" calColor="$color" id="$calId" calType="1"  canEdit="<%=uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)%>">
-            <div class="IconHoverSetting" onclick="eXo.calendar.UICalendars.showMenu(this, event, 'CalendarPopupMenu2', eXo.calendar.UICalendars.calendarMenuCallback);"></div>
+            <div id="UICalendars_CalendarPopupMenu2" class="IconHoverSetting" ></div>
                 <div class="CalendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$color">
                   	<span class="ColorOpacity">
@@ -205,7 +213,7 @@
                 if(chk.isChecked()){css = "IconCheckBox checkbox";}
         %>
             <li class="CalendarItem CalendarItemPublic ClearFix"  calColor="$calendar.calendarColor" canEdit="<%=uicomponent.canEdit(calendar.getEditPermission(), checkPerms)%>" id="$calId" calType="2" >
-            <div class="IconHoverSetting" onclick="eXo.calendar.UICalendars.showMenu(this, event, 'CalendarPopupMenu', eXo.calendar.UICalendars.calendarMenuCallback);"></div>
+            <div id="UICalendars_CalendarPopupMenu3" class="IconHoverSetting" ></div>
                 <div class="CalendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$calendar.calendarColor">
                 	<span class="ColorOpacity">
@@ -413,7 +421,7 @@
 			</div>
 		</div>
     <% /*End Popup Menu*/ %>
-    <div class="DownArrow1Icon UICalendarsToggleButton ClearFix" onclick="javascript:eXo.calendar.UICalendarPortlet.switchLayout(3);" title="<%=_ctx.appRes('UICalendars.label.toggle-calendars')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
+    <div id="UICalendars_toggle-calendars" class="DownArrow1Icon UICalendarsToggleButton ClearFix" title="<%=_ctx.appRes('UICalendars.label.toggle-calendars')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
  
     </div>
 <%uiform.end()%>
