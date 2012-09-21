@@ -95,10 +95,11 @@ DOMUtil.prototype.cleanUpHiddenElements = function() {
  * Should only contain elements from a popup menu
  */
 DOMUtil.prototype.listHideElements = function(object) {
-	if (!_module.DOMUtil.hideElementList.contains(object)) {
-		_module.DOMUtil.hideElementList.push(object) ;
+	var container = _module.DOMUtil.hideElementList;
+	if (!gj.contains(container, object)) {
+		container.push(object);
 	}
-} ;
+};
 
 DOMUtil.prototype.disableOnClick = function(el) {
 	el.onclick = new Function("return false;");
