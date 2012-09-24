@@ -30,7 +30,12 @@
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   
   requirejs.addScripts('cal.UICalendarPortlet.getWorkingdays('+numberOfDays+') ;') ;
-  //rcontext.getJavascriptManager().addOnLoadJavascript('eXo.calendar.UICalendarPortlet.onLoad') ;
+  
+  //rcontext.getJavascriptManager().addOnLoadJavascript("eXo.calendar.UICalendarPortlet.onLoad") ; //error in addOnLoadJavascript
+  requirejs.require("SHARED/base","base");
+  id = Integer.toString(Math.abs(new String("cal.UICalendarPortlet.onLoad").hashCode()));  
+  requirejs.addScripts("base.Browser.addOnLoadCallback('mid"+id+"',cal.UICalendarPortlet.onLoad);") ;
+  
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   rcontext.getJavascriptManager().addOnResizeJavascript('cal.UIWeekView.onResize') ;
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
