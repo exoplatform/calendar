@@ -550,7 +550,7 @@ UICalendarPortlet.prototype.autoHide = function(evt){
     var eventType = _e.type;
     var UICalendarPortlet = _module.UICalendarPortlet;
     if (eventType == 'mouseout') {
-        UICalendarPortlet.timeout = setTimeout("_module.UICalendarPortlet.menuElement.style.display='none'", 5000);
+        UICalendarPortlet.timeout = setTimeout("eXo.calendar.UICalendarPortlet.menuElement.style.display='none'", 5000);
     }
     else {
         if (UICalendarPortlet.timeout) 
@@ -2857,7 +2857,7 @@ UIDesktop.prototype.showHideWindow = function(uiWindow, clickedElement, mode){
 	eXo.desktop.UIDesktop._ShowHideWindow(this.cs3474, clickedElement, mode);
 	//End fix for CS-3474
     if (eXo.desktop.UIDesktop.object.style.display != "block") {
-        if(uiWindow.indexOf("calendar") >=0) _module.UICalendarPortlet.delay = window.setTimeout("_module.UICalendarPortlet.fixFirstLoad() ;", 2000);
+        if(uiWindow.indexOf("calendar") >=0) _module.UICalendarPortlet.delay = window.setTimeout("eXo.calendar.UICalendarPortlet.fixFirstLoad() ;", 2000);
     }
 };
 

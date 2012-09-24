@@ -183,7 +183,7 @@ public class UIFormDateTimePicker extends UIFormInputBase<String>  {
     
     requirejs.addScripts("gj('"+obj+"').focus(function(){"+onfocusFunc+"});");
     requirejs.addScripts("gj('"+obj+"').keyup(function(){"+onkeyupFunc+"});");
-    requirejs.addScripts("gj('"+obj+"').focus(function(){"+onmousedownFunc+"});");
+    requirejs.addScripts("gj('"+obj+"').focus(function(event){"+onmousedownFunc+"});");
   }
 
 }
