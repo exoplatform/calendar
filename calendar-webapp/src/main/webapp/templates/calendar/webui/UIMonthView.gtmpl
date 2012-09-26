@@ -16,6 +16,13 @@
   
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.addScripts('cal.UICalendarPortlet.onLoad() ;') ;
+  //requireJS.require("SHARED/base","base");
+  //id1 = Integer.toString(Math.abs(new String("cal.UICalendarPortlet.onLoad").hashCode()));
+  //requireJS.addScripts("base.Browser.addOnLoadCallback('mid"+id1+"',cal.UICalendarPortlet.onLoad);") ;      
+
+  requireJS.require("SHARED/jquery","gj");
+  requireJS.addScripts("gj('table#UIMonthViewGrid.UIGrid').parent().resize(function(){eXo.calendar.UICalendarMan.initMonth() ;});");
+  
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   requireJS.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout'); 
@@ -50,7 +57,7 @@
     <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%>
     <div class="EventMonthContainer">
       <div class="EventMonthContent">
-        <div class="RowContainerDay MainWorkingPanel" style="position:relative ;"  onresize="eXo.calendar.UICalendarMan.initMonth() ;" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
+        <div class="RowContainerDay MainWorkingPanel" style="position:relative ;" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
           
       <table class="UIGrid"  style="table-layout: fixed;" id="UIMonthViewGrid" cellspacing="0" borderspacing="0" eXoCallback="eXo.calendar.UICalendarMan.GUIMan.callbackHighlighter() ;">
         <col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%">

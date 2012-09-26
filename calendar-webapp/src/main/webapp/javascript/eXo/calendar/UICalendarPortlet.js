@@ -1636,6 +1636,7 @@ UICalendarPortlet.prototype.resortEvents = function(){
         }
     } 
     catch (e) {
+    	//TODO
     };
 	
 };
@@ -2744,7 +2745,7 @@ eXo.calendar.EventTooltip = {
 			eXo.calendar.EventTooltip._container.innerHTML = "Loading...";
 		} ;
 	  eXo.portal.CurrentRequest = request ;
-	  request.process() ;
+	  request.process() ;				
 	},
 	parseData: function(req){
 		var data = gj.parseJSON(req.responseText);

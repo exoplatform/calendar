@@ -855,7 +855,7 @@ UIWeekView.prototype.initSelectionX = function() {
 		if (link) 
 			gj(link).on('mousedown',_module.UIWeekView.cancelBubble);
 //			link.onmousedown = eXo.calendar.UIWeekView.cancelBubble ;
-		gj(cell[i]).on('mousedown',Highlighter.start);
+		gj(cell[i]).on('mousedown',_module.Highlighter.start);
 //		cell[i].onmousedown = Highlighter.start ;
 	}
 } ;

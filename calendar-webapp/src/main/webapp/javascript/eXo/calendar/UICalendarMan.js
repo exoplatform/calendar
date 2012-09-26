@@ -731,7 +731,7 @@ GUIMan.prototype.initDND = function() {
     if (checkbox) {
 //      checkbox.onmousedown = this.cancelEvent;
 //			checkbox.onclick = eXo.cs.EventManager.cancelBubble;
-    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':eXo.cs.EventManager.cancelBubble});
+    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':cs.EventManager.cancelBubble});
     }
     eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
   }
@@ -830,11 +830,11 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 //		moreEventBar.onclick = this.hideMore ;
 		moreEventTitleBar.innerHTML = "&nbsp;";
 		moreEventTitleBar.className = "MoreEventTitleBar";
-		gj(moreEventTitleBar).on('click',eXo.cs.EventManager.cancelBubble);
+		gj(moreEventTitleBar).on('click',cs.EventManager.cancelBubble);
 //		moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
 		gj(moreEventTitleBar).on('mousedown',function(evt){
-			eXo.cs.EventManager.cancelBubble(evt);
-			eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
+			cs.EventManager.cancelBubble(evt);
+			cs.DragDrop.init(null,this,moreContainerNode,evt);
 		});
 //		moreEventTitleBar.onmousedown = function(evt){
 //			eXo.cs.EventManager.cancelBubble(evt);
@@ -923,7 +923,7 @@ GUIMan.prototype.hideMore = function(evt){
 		}
 		DOMUtil.hideElementList.clear() ;
 	}
-	var src = eXo.cs.EventManager.getEventTarget(evt);
+	var src = cs.EventManager.getEventTarget(evt);
 	var	moreContainerNode = gj(src).parents('.MoreEventContainer')[0]; 
 	if(!moreContainerNode) 
 		moreContainerNode = gj(src).nextAll("div")[0];
@@ -937,7 +937,7 @@ GUIMan.prototype.showMore = function(evt) {
   var moreContainerNode = gj(moreNode).nextAll('div')[0];
 	if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
 	moreContainerNode.parentNode.style.zIndex = 2;
-	eXo.cs.EventManager.cancelBubble(evt);
+	cs.EventManager.cancelBubble(evt);
 	GUIMan.hideMore(evt);
   if (!moreContainerNode.style.display || moreContainerNode.style.display == 'none') {
     moreContainerNode.style.display = 'block';
@@ -948,14 +948,14 @@ GUIMan.prototype.showMore = function(evt) {
 		}
 		eXo.core.DOMUtil.listHideElements(moreContainerNode);
 //		moreContainerNode.onclick = eXo.cs.EventManager.cancelBubble ;
-		gj(moreContainerNode).on({'click':eXo.cs.EventManager.cancelBubble,
+		gj(moreContainerNode).on({'click':cs.EventManager.cancelBubble,
 			'mousedown':function(evt){
-				eXo.cs.EventManager.cancelEvent(evt);
-				if(eXo.cs.EventManager.getMouseButton(evt) == 2) 
+				cs.EventManager.cancelEvent(evt);
+				if(cs.EventManager.getMouseButton(evt) == 2) 
 					eXo.core.DOMUtil.hideElementList.remove(this);
 			},
 			'contextmenu':function(evt){
-				eXo.cs.EventManager.cancelEvent(evt);
+				cs.EventManager.cancelEvent(evt);
 				eXo.core.DOMUtil.hideElementList.remove(this);
 				eXo.webui.UIContextMenu.show(evt) ;
 				eXo.core.DOMUtil.hideElementList.push(this);

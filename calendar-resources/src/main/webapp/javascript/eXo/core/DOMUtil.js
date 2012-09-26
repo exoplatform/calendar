@@ -41,7 +41,14 @@ Array.prototype.clear = function () {
   this.length = 0 ;
 } ;
 
-
+Array.prototype.pushAll = function (array) {	
+	if (array != null) {
+		for (var i = 0; i < array.length; i++) {
+			this.push(array[i]) ;
+		}
+	}
+} ;
+	
 /**
  * Some utility functions to use the DOM
  */
