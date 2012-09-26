@@ -26,7 +26,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.ws.rs.core.MediaType;
 
-import org.exoplatform.calendar.service.job.MultiTenancyJob;
+import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
