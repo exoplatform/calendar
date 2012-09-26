@@ -2739,7 +2739,7 @@ eXo.calendar.EventTooltip = {
 		if(this.overTimer) clearTimeout(this.overTimer);
 	},
 	makeRequest: function(method, url, queryString){
-		var request = new AjaxRequest(method, url, queryString) ;
+		var request = new eXo.portal.AjaxRequest(method, url, queryString) ;
 	  request.onSuccess = this.render ;
 	  request.onLoading = function(){
 			eXo.calendar.EventTooltip._container.innerHTML = "Loading...";
