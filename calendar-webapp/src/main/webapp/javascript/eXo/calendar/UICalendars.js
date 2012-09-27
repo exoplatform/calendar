@@ -137,7 +137,8 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       document.onclick = function (evt) {
         var UICalendars = _module.UICalendars;
         UICalendars.resetSettingButton(UICalendars.currentAnchorElm);
-        UICalendars.defaultOnclickFunc(evt);
+//        UICalendars.defaultOnclickFunc(evt);
+        UICalendars.defaultOnclickFunc = evt;
         document.onclick = UICalendars.defaultOnclickFunc;
         UICalendars.modifiedOnclick = false;
       };
