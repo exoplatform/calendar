@@ -105,7 +105,7 @@ UICalendarPortlet.prototype.getOrginalPosition = function(eventObj){
 };
 
 UICalendarPortlet.prototype.setPosition = function(eventObj){
-	var me = _module.UICalendarPortlet.UICalendarPortlet ;
+	var me = _module.UICalendarPortlet ;
 	me.activeEventObject = eventObj ;
 	var cTop = gj(eventObj).top;
 	var cLeft = gj(eventObj).offset().left;

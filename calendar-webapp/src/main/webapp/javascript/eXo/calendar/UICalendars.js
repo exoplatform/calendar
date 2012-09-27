@@ -137,8 +137,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       document.onclick = function (evt) {
         var UICalendars = _module.UICalendars;
         UICalendars.resetSettingButton(UICalendars.currentAnchorElm);
-//        UICalendars.defaultOnclickFunc(evt);
-        UICalendars.defaultOnclickFunc = evt;
+        UICalendars.defaultOnclickFunc(evt);
         document.onclick = UICalendars.defaultOnclickFunc;
         UICalendars.modifiedOnclick = false;
       };
@@ -149,6 +148,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
 UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCallback) {
   var _e = window.event || evt;
   _e.cancelBubble = true;
+  cs.EventManager.cancelBubble(evt);
   var menuTemplateElm = gj(this.calsFormElem).find('div.' + menuClassName)[0]; 
   this.renderMenu(menuTemplateElm, anchorElm);
   // invoke callback

@@ -228,7 +228,8 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
 			break ;
 		}
 	}
-	if(check) eval(actionLink);
+	//if(check) eval(actionLink);
+	if(check) gj.globalEval(actionLink);
 	else alert(msg);
 };
 

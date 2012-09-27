@@ -1083,7 +1083,7 @@ GUIMan.prototype.initHighlighter = function() {
 } ;
 
 GUIMan.prototype.callbackHighlighter = function() {
-  var Highlighter = eXo.calendar.Highlighter ;
+  var Highlighter = _module.Highlighter ;
   var startTime = parseInt(Date.parse(Highlighter.firstCell.getAttribute('startTimeFull')));
   var endTime = parseInt(Date.parse(Highlighter.lastCell.getAttribute('startTimeFull')))  + 24*60*60*1000 - 1;
   var d = new Date() ;
