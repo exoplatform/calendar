@@ -2606,13 +2606,15 @@ function CalendarScrollManager(){
 };
 
 CalendarScrollManager.prototype.load = function(){ 
-  var uiNav = eXo.calendar.CalendarScrollManager ;
+  var uiNav = _module.CalendarScrollManager ;
   var container = _module.UICalendarPortlet.getElementById("UIActionBar") ;
   if(container) {
     var mainContainer = gj(container).find('div.CalendarActionBar')[0];
     var randomId = cs.DOMUtil.generateId("CalendarScrollbar");
     mainContainer.setAttribute("id",randomId);
-    uiNav.scrollMgr = new ScrollManager(randomId) ;
+//    uiNav.scrollMgr = new ScrollManager(randomId) ;
+  uiNav.scrollMgr = new gtnav.ScrollManager(randomId) ;
+
     uiNav.scrollMgr.initFunction = uiNav.initScroll ;
     uiNav.scrollMgr.mainContainer = mainContainer ;
     uiNav.scrollMgr.arrowsContainer = gj(container).find('div.ScrollButtons')[0];
@@ -2629,7 +2631,7 @@ CalendarScrollManager.prototype.load = function(){
 } ;
 
 CalendarScrollManager.prototype.initScroll = function() {
-  var uiNav = eXo.calendar.CalendarScrollManager ;
+  var uiNav = _module.CalendarScrollManager ;
   if(!uiNav.scrollManagerLoaded) uiNav.load() ;
   var elements = uiNav.scrollMgr.elements ;
   uiNav.scrollMgr.init() ;
@@ -2637,7 +2639,7 @@ CalendarScrollManager.prototype.initScroll = function() {
   uiNav.scrollMgr.renderElements() ;
 } ;
 
-CalendarScrollManager.prototype.loadItems = function(elementClass, clean) {
+gtnav.ScrollManager.prototype.loadItems = function(elementClass, clean) {
 	if (clean) this.cleanElements();
 	this.elements.clear();
 	var items = gj(this.mainContainer).find('div.' + elementClass); 
@@ -2646,7 +2648,7 @@ CalendarScrollManager.prototype.loadItems = function(elementClass, clean) {
 	}
 };
 
-CalendarScrollManager.prototype.csCheckAvailableSpace = function(maxSpace) { // in pixels
+gtnav.ScrollManager.prototype.csCheckAvailableSpace = function(maxSpace) { // in pixels
 	if (!maxSpace) maxSpace = this.getElementSpace(this.mainContainer) - this.getElementSpace(this.arrowsContainer);
 	var elementsSpace = 0;
 	var margin = 0;
@@ -2840,7 +2842,9 @@ eXo.calendar.EventTooltip = {
 }
 
 
-eXo.calendar.CalendarScrollManager = new CalendarScrollManager();
+//eXo.calendar.CalendarScrollManager = new CalendarScrollManager();
+_module.CalendarScrollManager = new CalendarScrollManager();
+eXo.calendar.CalendarScrollManager = _module.CalendarScrollManager;
 
 if (!eXo.desktop) 
   eXo.desktop = {};
