@@ -146,3 +146,22 @@
 	background: none;
 	padding-left: 0px;
 }
+
+/*========================= UIRightClickPopupMenu======================================*/
+.UIRightClickPopupMenu .MenuItem {
+    padding: 0 10px;
+}
+.UIRightClickPopupMenu .MenuItem .ItemIcon {
+    cursor: pointer;
+    display: block;
+    line-height: 16px;
+    padding: 5px 0 5px 26px;
+    white-space: nowrap;
+    width: auto;
+}
+.UIRightClickPopupMenu .MenuItem:hover {
+    background: none repeat scroll 0 0 #EAEAEA;
+}
+.UIRightClickPopupMenu .MenuItem:hover .ItemIcon {
+    color: orange;
+}
