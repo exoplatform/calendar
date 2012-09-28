@@ -178,8 +178,8 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
   this.menuElement = tmpMenuElement;
   var callback = this.getCallback(tmpMenuElement);  
   if (callback) {	  
-	callback = callback + "(arguments[2])";
-	gj.globalEval(callback);		
+	callback = "window."+callback + "(arguments[2])";
+	eval(callback);
   }
   var uiApplication = document.getElementById("UIPortalApplication");
   if (this.menuElement) {

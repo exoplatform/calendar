@@ -957,7 +957,7 @@ GUIMan.prototype.showMore = function(evt) {
 			'contextmenu':function(evt){
 				cs.EventManager.cancelEvent(evt);
 				eXo.core.DOMUtil.hideElementList.remove(this);
-				eXo.webui.UIContextMenu.show(evt) ;
+				cs.UIContextMenu.show(evt) ;
 				eXo.core.DOMUtil.hideElementList.push(this);
 				return false;
 		}});
