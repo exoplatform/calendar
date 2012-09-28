@@ -18,7 +18,7 @@ UIDateTimePicker.prototype.getLang = function() {
 		if (this.lang == lang) 
 			return;
 		this.lang = lang;
-		var languages = eval(ajaxAsyncGetRequest(this.pathResource + this.lang.toLowerCase() + ".js", false));
+		var languages = gj.globalEval(ajaxAsyncGetRequest(this.pathResource + this.lang.toLowerCase() + ".js", false));
 		if (!languages || (typeof(languages) != "object")) 
 			return;
 	

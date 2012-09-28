@@ -245,7 +245,7 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
       actionlink = actionlink.replace(/calType\s*=\s*[a-zA-Z0-9_]*(?=&|'|\")/,"calType=" + calType) ;
       actionlink = actionlink.replace("javascript:","") ;
 			
-      eval(actionlink) ;
+      gj.globalEval(actionlink) ;
     }
   }
 } ;

@@ -194,7 +194,7 @@ Utils.prototype.doAction = function(obj){
 	var actionNode = this.getElementByClass(uiSeachForm,"Search");
 	var nodeName = String(actionNode.nodeName).toLowerCase();
 	switch(nodeName){
-		case "a":	eval(actionNode.href);break;
+		case "a":	gj.globalEval(actionNode.href);break;
 		case "div": actionNode.onclick();break;
 		default:actionNode.onclick(); 
 	}

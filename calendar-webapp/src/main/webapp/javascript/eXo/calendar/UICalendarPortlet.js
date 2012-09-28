@@ -137,7 +137,7 @@ UICalendarPortlet.prototype.restorePosition = function(eventObj){
 
 UICalendarPortlet.prototype.postCheck = function(response){
 	var me = _module.UICalendarPortlet ;
-	eval("var data = " + response.responseText);
+	gj.globalEval("var data = " + response.responseText);
 	var isEdit = data.permission;
 	if(!isEdit){
 		me.notify(me.activeEventObject);		
@@ -1086,7 +1086,7 @@ UIResizeEvent.prototype.resizeCallback = function(evt){
     form.elements[eventId + "recurId"].value = recurId;
 		UICalendarPortlet.setTimeValue(eventBox,start,end);
 		UICalendarPortlet.showEvent();
-		eval(actionLink);
+		gj.globalEval(actionLink);
     }
 	UIResizeEvent.innerElement = null;
     UIResizeEvent.outerElement = null;
@@ -1188,7 +1188,7 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
     var timeFormat = events.getAttribute("timeFormat");
     var title = gj(events).find("p")[0];
 		var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
-    timeFormat = (timeFormat) ? eval(timeFormat) : {
+    timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
         am: "AM",
         pm: "PM"
     };
@@ -1252,7 +1252,7 @@ UICalendarPortlet.prototype.dayviewDropCallback = function(){
     form.elements[eventId + "recurId"].value = recurId;
 		_module.UICalendarPortlet.setTimeValue(dragObject,currentStart,currentEnd);
 		_module.UICalendarPortlet.showEvent();
-		eval(actionLink);
+		gj.globalEval(actionLink);
     //}
     //title.innerHTML = titleName;
 };
@@ -1768,7 +1768,7 @@ UICalendarPortlet.prototype.runAction = function(obj){
 	var actionLink = obj.getAttribute("actionLink");
 	var categoryId = this.filterSelect.options[this.filterSelect.selectedIndex].value;
 	actionLink = actionLink.replace("')","&categoryId="+categoryId+"')");
-	eval(actionLink);
+	gj.globalEval(actionLink);
 };
 
 
@@ -1823,7 +1823,7 @@ UICalendarPortlet.prototype.doClick = function(){
 		window.clearTimeout(_module.UICalendarPortlet.clickone);
 		return ;
 	}
-	eval(_module.UICalendarPortlet.listViewAction);
+	gj.globalEval(_module.UICalendarPortlet.listViewAction);
 };
 
 UICalendarPortlet.prototype.listViewClickCallback = function(obj){
@@ -1959,13 +1959,24 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
     var UICalendarPortlet = _module.UICalendarPortlet;
     var uiDesktop = document.getElementById("UIPageDesktop");
     if (document.getElementById("tmpMenuElement")) 
-        gj("#tmpMenuElement").remove();
-    var tmpMenuElement = oldmenu.cloneNode(true);
+        gj("#tmpMenuElement").remove();  
+/*
+    var tmpMenuElement = oldmenu.cloneNode(true); 
     tmpMenuElement.setAttribute("id", "tmpMenuElement");
     tmpMenuElement.style.zIndex = 1 ;
     this.menuElement = tmpMenuElement;
  	if(Browser.isIE6()) this.menuElement.style.width = "140px";
     document.body.appendChild(this.menuElement);
+*/
+    var tmpMenuElement = gj(oldmenu).clone(true,true);
+    tmpMenuElement.attr("id","tmpMenuElement");
+    var style = tmpMenuElement.attr("style") + "zIndex = 1;";
+    if(Browser.isIE6())
+    	style = style + "width = 140px;";
+    tmpMenuElement.attr("style",style) ;
+    gj('body').append(tmpMenuElement);
+    this.menuElement = document.getElementById("tmpMenuElement");
+
     if (uiDesktop) {
         this.swapIeMenu(this.menuElement, clickobj);
         return;

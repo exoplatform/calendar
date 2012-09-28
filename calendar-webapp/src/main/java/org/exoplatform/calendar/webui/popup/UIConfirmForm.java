@@ -51,7 +51,7 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   @Override
    public String event(String name) throws Exception {
     StringBuilder b = new StringBuilder() ;
-    b.append("javascript:webui.UIForm.submitForm('").append(getConfig_id()).append("','");
+    b.append("javascript:eXo.webui.UIForm.submitForm('").append(getConfig_id()).append("','");
     b.append(name).append("',true)");
     return b.toString() ;
   } 
