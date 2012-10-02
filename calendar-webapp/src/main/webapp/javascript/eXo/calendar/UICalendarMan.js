@@ -745,6 +745,8 @@ GUIMan.prototype.initDND = function() {
 GUIMan.prototype.cancelEvent = function(event) {
   event = window.event || event ;
   event.cancelBubble = true ;
+  //Fix bug for click checkbox event
+  cs.EventManager.cancelBubble(event)
   if (event.preventDefault) {
     event.preventDefault();
   }
