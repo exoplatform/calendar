@@ -19,26 +19,27 @@
   //requireJS.require("SHARED/base","base");
   //id1 = Integer.toString(Math.abs(new String("cal.UICalendarPortlet.onLoad").hashCode()));
   //requireJS.addScripts("base.Browser.addOnLoadCallback('mid"+id1+"',cal.UICalendarPortlet.onLoad);") ;      
-
-  requireJS.require("SHARED/jquery","gj");
-  requireJS.addScripts("gj('table#UIMonthViewGrid.UIGrid').parent().resize(function(){eXo.calendar.UICalendarMan.initMonth() ;});");
-  
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   requireJS.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout'); 
-   int currentDay = uicomponent.getCurrentDay() ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
+  
+  requireJS.require("SHARED/jquery","gj");
+  //requireJS.addScripts("gj('table#UIMonthViewGrid.UIGrid').parent().resize(function(){eXo.calendar.UICalendarMan.initMonth() ;});");
+  rcontext.getJavascriptManager().addOnResizeJavascript('function(){cal.UICalendarMan.initMonth();}') ;
+  
+  int currentDay = uicomponent.getCurrentDay() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
   String currentMonthName = uicomponent.getMonthName(currentMonth) ;
   int currentYear = uicomponent.getCurrentYear() ;
-   String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.MONTH)) ;
-   String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.MONTH)) ;
+  String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.MONTH)) ;
+  String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.MONTH)) ;
   Calendar calendar = uicomponent.getCurrentCalendar() ;
-   yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
   dateFormat = uicomponent.getDateFormat() ;
   timeFormat = uicomponent.getTimeFormat() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
   WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
-   Locale locale = context.getParentAppRequestContext().getLocale() ;
+  Locale locale = context.getParentAppRequestContext().getLocale() ;
   
   DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
   df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;

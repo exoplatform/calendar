@@ -1096,17 +1096,19 @@ GUIMan.prototype.callbackHighlighter = function() {
 eXo.calendar.UICalendarMan = {
   initMonth : function(rootNode) {
     rootNode = document.getElementById('UIMonthView');
+    if (!rootNode) return;
     rootNode = typeof(rootNode) == 'string' ? document.getElementById(rootNode) : rootNode;
-    this.EventMan.initMonth(rootNode);
-    this.GUIMan.initMonth();
-    this.GUIMan.initHighlighter();
+    _module.UICalendarMan.EventMan.initMonth(rootNode);
+    _module.UICalendarMan.GUIMan.initMonth();
+    _module.UICalendarMan.GUIMan.initHighlighter();
 		this.GUIMan.addContinueClass();
   },
   initWeek : function(rootNode) {
     rootNode = document.getElementById('UIWeekViewGridAllDay');
+    if (!rootNode) return;
     rootNode = typeof(rootNode) == 'string' ? document.getElementById(rootNode) : rootNode;
-    this.EventMan.initWeek(rootNode);
-    this.GUIMan.initWeek();
+    _module.UICalendarMan.EventMan.initWeek(rootNode);
+    _module.UICalendarMan.GUIMan.initWeek();
   },
   EventMan: new EventMan(),
   GUIMan: new GUIMan()
