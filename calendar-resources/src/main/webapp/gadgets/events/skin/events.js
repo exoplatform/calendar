@@ -207,10 +207,14 @@ eXoEventGadget.prototype.ajaxAsyncGetRequest = function(url, callback) {
   gadgets.io.makeRequest(url, callback, params);
 	return;
 */	
-	var request =  parent.eXo.core.Browser.createHttpRequest() ;
-  request.open('GET', url, true) ;
-  request.setRequestHeader("Cache-Control", "max-age=86400") ;
-  request.send(null) ;
+//	var request =  parent.eXo.core.Browser.createHttpRequest() ;
+	if (!parent.eXo.core.Browser.isIE())
+		var request =  new XMLHttpRequest();
+	else 
+		var request =  new ActiveXObject("Msxml2.XMLHTTP");
+  	request.open('GET', url, true) ;
+  	request.setRequestHeader("Cache-Control", "max-age=86400") ;
+  	request.send(null) ;
 	request.onreadystatechange = function(){
 		if (request.readyState == 4) {
 			if (request.status == 200) {
