@@ -52,7 +52,7 @@ Highlighter.prototype.isInCell = function(cell, _e) {
  * @param {Object} evt Mouse event
  */
 Highlighter.prototype.getMousePos = function(evt) {
-	var Highlighter = eXo.calendar.Highlighter ;
+	var Highlighter = _module.Highlighter ;
 	var _e = window.event || evt ;
 	var cell = Highlighter.cell ;
 	var len = cell.length ;
@@ -267,8 +267,8 @@ Highlighter.prototype.setCallback = function(str) {
 	this.container.setAttribute("eXoCallback",str) ;
 } ;
 
-eXo.calendar.Highlighter = new Highlighter() ;
 _module.Highlighter = new Highlighter() ;
+eXo.calendar.Highlighter = _module.Highlighter;
 
 /**
  * Class control horizontal dragging selection in the month view
@@ -420,5 +420,5 @@ UIHSelection.prototype.end = function(){
 	if (UIHSelection.callback) eval(UIHSelection.callback) ;
 } ;
 
-eXo.calendar.UIHSelection = new UIHSelection() ;
 _module.UIHSelection = new UIHSelection() ;
+eXo.calendar.UIHSelection = _module.UIHSelection;

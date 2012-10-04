@@ -155,5 +155,5 @@ UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCal
   if (menuCallback) menuCallback(anchorElm, evt);
 };
 
-eXo.calendar.UICalendars = new UICalendars();
 _module.UICalendars = new UICalendars();
+eXo.calendar.UICalendars = _module.UICalendars;
