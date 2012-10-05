@@ -4,8 +4,8 @@ function UIWeekView() {
 
 UIWeekView.prototype.mousePos = function(evt){
 	return {
-		"x" : eXo.cs.Browser.findMouseXInPage(evt) ,
-		"y" : eXo.cs.Browser.findMouseYInPage(evt)
+		"x" : cs.Browser.findMouseXInPage(evt) ,
+		"y" : cs.Browser.findMouseYInPage(evt)
 	} ;
 } ;
 
@@ -137,8 +137,8 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	}
 	function setLeft(obj,left){
 		obj.style.left = left + "px";
-		if(eXo.core.I18n.isRT()){
-		if(eXo.core.Browser.isIE6()) left -= eXo.cs.Utils.getScrollbarWidth();
+		if(base.I18n.isRT()){
+		if(base.Browser.isIE6()) left -= cs.Utils.getScrollbarWidth();
 			obj.style.right = left + "px";	
 		}
 	}
@@ -150,10 +150,10 @@ UIWeekView.prototype.showInCol = function(obj) {
 	if (len <= 0) return ;
 	var UIWeekView = _module.UIWeekView ;
 	var container = (gj.browser.mozilla != undefined) ? UIWeekView.container : items[0].offsetParent ;
-	var left = parseFloat((eXo.core.Browser.findPosXInContainer(obj, container) - 1)/container.offsetWidth)*100 ;
+	var left = parseFloat((base.Browser.findPosXInContainer(obj, container) - 1)/container.offsetWidth)*100 ;
 	var width = parseFloat((obj.offsetWidth - 2)/container.offsetWidth)*100 ;
 	items = _module.UICalendarPortlet.sortByAttribute(items, "startTime") ;
-	UIWeekView.adjustWidth(items, obj.offsetWidth, eXo.core.Browser.findPosXInContainer(obj, container,eXo.core.I18n.isRT())) ;
+	UIWeekView.adjustWidth(items, obj.offsetWidth, base.Browser.findPosXInContainer(obj, container,base.I18n.isRT())) ;
 } ;
 
 UIWeekView.prototype.dragStart = function(evt) {
@@ -165,14 +165,14 @@ UIWeekView.prototype.dragStart = function(evt) {
 	var UIWeekView = _module.UIWeekView ;
 	UIWeekView.dragElement = this ;
 	_module.UICalendarPortlet.resetZIndex(UIWeekView.dragElement) ;
-	UIWeekView.objectOffsetLeft = eXo.core.Browser.findPosX(UIWeekView.dragElement) ;
+	UIWeekView.objectOffsetLeft = base.Browser.findPosX(UIWeekView.dragElement) ;
 	UIWeekView.offset = UIWeekView.getOffset(UIWeekView.dragElement, _e) ;
 	UIWeekView.mouseY = _e.clientY ;
 	UIWeekView.mouseX = _e.clientX ;
 	UIWeekView.eventY = UIWeekView.dragElement.offsetTop ;
 	UIWeekView.containerOffset = {
-		"x" : eXo.core.Browser.findPosX(UIWeekView.container.parentNode),
-		"y" : eXo.cs.Browser.findPosY(UIWeekView.container.parentNode)
+		"x" : base.Browser.findPosX(UIWeekView.container.parentNode),
+		"y" : cs.Browser.findPosY(UIWeekView.container.parentNode)
 	}
 	UIWeekView.title = gj(UIWeekView.dragElement).find('p')[0].innerHTML;
 	gj(document).on({'mousemove':UIWeekView.drag,'mouseup':UIWeekView.drop});
@@ -188,7 +188,7 @@ UIWeekView.prototype.drag = function(evt) {
 	var _e = window.event || evt ;
 	var src = _e.srcElement || _e.target ;
 	var UIWeekView = _module.UIWeekView ;
-	var mouseY = eXo.core.Browser.findMouseRelativeY(UIWeekView.container,_e) - UIWeekView.container.scrollTop ;
+	var mouseY = base.Browser.findMouseRelativeY(UIWeekView.container,_e) - UIWeekView.container.scrollTop ;
 	var posY = UIWeekView.dragElement.offsetTop ;
 	var height =  UIWeekView.dragElement.offsetHeight ;
 	var deltaY = null ;
@@ -198,7 +198,7 @@ UIWeekView.prototype.drag = function(evt) {
 	if(currentTop >= 0 && currentTop <= maxTop){
 		UIWeekView.dragElement.style.top = (currentTop - currentTop%_module.UICalendarPortlet.interval) + "px" ;
 		if (UIWeekView.isCol(_e)) {
-			var posX = eXo.core.Browser.findPosXInContainer(UIWeekView.currentCol, UIWeekView.dragElement.offsetParent) ;
+			var posX = base.Browser.findPosXInContainer(UIWeekView.currentCol, UIWeekView.dragElement.offsetParent) ;
 			UIWeekView.dragElement.style.left = posX + "px" ;
 		}
 	}
@@ -245,7 +245,7 @@ UIWeekView.prototype.drop = function(evt) {
 //	document.onmouseup = null;
 	var _e = window.event || evt ;
 	var UIWeekView = _module.UIWeekView ;
-	var isEventbox = eXo.cs.EventManager.getEventTargetByClass(evt,"WeekViewEventBoxes");
+	var isEventbox = cs.EventManager.getEventTargetByClass(evt,"WeekViewEventBoxes");
 	if (!UIWeekView.isCol(_e) || !isEventbox) return ;
 	var currentCol = UIWeekView.currentCol ;
 	var sourceCol = UIWeekView.dragElement.parentNode ;
@@ -270,24 +270,24 @@ UIWeekView.prototype.cleanUp = function(){
 
 UIWeekView.prototype.getOffset = function(object, evt) {	
 	return {
-		"x": (_module.UIWeekView.mousePos(evt).x - eXo.core.Browser.findPosX(object)) ,
-		"y": (_module.UIWeekView.mousePos(evt).y - eXo.cs.Browser.findPosY(object))
+		"x": (_module.UIWeekView.mousePos(evt).x - base.Browser.findPosX(object)) ,
+		"y": (_module.UIWeekView.mousePos(evt).y - cs.Browser.findPosY(object))
 	} ;
 } ;
 
 UIWeekView.prototype.isCol = function(evt) {
 	var UIWeekView = _module.UIWeekView ;
 	if (!UIWeekView.dragElement) return false;
-	var Browser = eXo.core.Browser ;
+	var Browser = base.Browser ;
 	var isIE = (gj.browser.msie != undefined);
 	var isDesktop = (document.getElementById("UIPageDesktop"))?true:false ;
-	var mouseX = eXo.cs.Browser.findMouseXInPage(evt);
-	if(eXo.core.I18n.isRT() && (Browser.isIE7() || Browser.isIE6())) mouseX = mouseX - 32; // 32 =  double of scrollbar width
+	var mouseX = cs.Browser.findMouseXInPage(evt);
+	if(base.I18n.isRT() && (Browser.isIE7() || Browser.isIE6())) mouseX = mouseX - 32; // 32 =  double of scrollbar width
 	var len = UIWeekView.cols.length ;
 	var colX = 0 ;
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
 	for(var i = 1 ; i < len ; i ++) {
-		colX = eXo.core.Browser.findPosX(UIWeekView.cols[i]) ;
+		colX = base.Browser.findPosX(UIWeekView.cols[i]) ;
 		if(uiControlWorkspace && isIE && (!isDesktop || Browser.isIE7())) colX -= uiControlWorkspace.offsetWidth ;
 		if ((mouseX > colX) && (mouseX < colX + UIWeekView.cols[i].offsetWidth)){
 			return UIWeekView.currentCol = UIWeekView.cols[i] ;
@@ -322,11 +322,11 @@ UIWeekView.prototype.showTooltip = function(outer,delta,evt,dir){
 	var unit = 15*60*1000;
 	delta = parseInt(delta/unit)*unit;
 	var tooltip = _module.UIWeekView.tooltip;
-	var extraLeft = gj(window).width() - eXo.cs.Browser.findMouseXInPage(evt);
+	var extraLeft = gj(window).width() - cs.Browser.findMouseXInPage(evt);
 	extraLeft = (extraLeft < tooltip.offsetWidth)? (tooltip.offsetWidth - extraLeft):0;
-	tooltip.style.left = eXo.cs.Browser.findMouseXInPage(evt) - extraLeft + "px";
-	tooltip.style.top = eXo.cs.Browser.findMouseYInPage(evt) + 20 + "px";
-	tooltip.innerHTML = eXo.cs.DateTimeFormater.format((new Date(delta)),"ddd, dd/mmm hh:MM TT");
+	tooltip.style.left = cs.Browser.findMouseXInPage(evt) - extraLeft + "px";
+	tooltip.style.top = cs.Browser.findMouseYInPage(evt) + 20 + "px";
+	tooltip.innerHTML = cs.DateTimeFormater.format((new Date(delta)),"ddd, dd/mmm hh:MM TT");
 };
 
 UIWeekView.prototype.removeTooltip = function(){
@@ -418,7 +418,7 @@ UIWeekView.prototype.rightDragResizeCallback = function(evt) {
 	var width = outer.offsetWidth;
 	var maxX = posX + width ;
 	var extraWidth = 0;
-	if (document.getElementById("UIPageDesktop") || !eXo.core.Browser.isIE6()) {
+	if (document.getElementById("UIPageDesktop") || !base.Browser.isIE6()) {
   	maxX -= 55;
 		extraWidth = 55;
   }
@@ -435,7 +435,7 @@ UIWeekView.prototype.leftDragResizeCallback = function(evt) {
 	var outer = eXo.calendar.UIHorizontalResize.outerElement ;
 	var left = outer.offsetLeft ;
 	var extraWidth = 0;
-	if (document.getElementById("UIPageDesktop") || !eXo.core.Browser.isIE6()) {
+	if (document.getElementById("UIPageDesktop") || !base.Browser.isIE6()) {
 		left -= 55;
 		extraWidth = 55;
   }
@@ -514,7 +514,7 @@ UIWeekView.prototype.initAlldayDND = function(evt) {
 	var _e = window.event || evt ;
 	if (_e.button == 2) return ;
 	var UIWeekView = _module.UIWeekView ;
-	var DragDrop = eXo.cs.DragDrop ;
+	var DragDrop = cs.DragDrop ;
 	var EventAllday = gj(this).parents('.EventAllday')[0];
 	dragObject = this ;
 	UIWeekView.totalWidth = EventAllday.offsetWidth ;
@@ -540,7 +540,7 @@ UIWeekView.prototype.allDayDragCallback = function(evt) {
 	var dragObject = evt.dragObject ;
 	dragObject.style.top = UIWeekView.elementTop + "px" ;
 	var posX = parseInt(dragObject.style.left) ;
-	var is55 = document.getElementById("UIPageDesktop") || !eXo.core.Browser.isIE6() ;
+	var is55 = document.getElementById("UIPageDesktop") || !base.Browser.isIE6() ;
 	var min = 0 ;
 	var max = UIWeekView.totalWidth - dragObject.offsetWidth ;	
 	if(is55) 
@@ -672,7 +672,7 @@ UIWeekView.prototype.setLeft = function(events) {
 	var start = 0 ;
 	var left = 0 ;
 	var startWeek = parseInt(this.startWeek.getAttribute("startTime")) ;
-	var totalWidth = parseFloat(eXo.core.Browser.findPosXInContainer(events[0].parentNode, events[0].offsetParent)/events[0].offsetParent.offsetWidth)*100 ;
+	var totalWidth = parseFloat(base.Browser.findPosXInContainer(events[0].parentNode, events[0].offsetParent)/events[0].offsetParent.offsetWidth)*100 ;
 	for(var i = 0 ; i < len ; i ++) {
 		start = parseInt(events[i].getAttribute("startTime")) ;
 		if (start < startWeek) start = startWeek ;
@@ -717,7 +717,7 @@ UIWeekView.prototype.setTop = function (events) {
 	var len = events.length ;
 	for(var i = 0 ; i < len ; i ++) {		
 		events[i].style.top = "0px" ;
-		events[i].style.top = eXo.core.Browser.findPosYInContainer(events[i],events[i].offsetParent) +  i*events[i].offsetHeight + "px" ;
+		events[i].style.top = base.Browser.findPosYInContainer(events[i],events[i].offsetParent) +  i*events[i].offsetHeight + "px" ;
 	}
 	this.resort(events) ;
 	return events ;
@@ -855,7 +855,7 @@ UIWeekView.prototype.initSelectionX = function() {
 		if (link) 
 			gj(link).on('mousedown',_module.UIWeekView.cancelBubble);
 //			link.onmousedown = eXo.calendar.UIWeekView.cancelBubble ;
-		gj(cell[i]).on('mousedown',Highlighter.start);
+		gj(cell[i]).on('mousedown',_module.Highlighter.start);
 //		cell[i].onmousedown = Highlighter.start ;
 	}
 } ;

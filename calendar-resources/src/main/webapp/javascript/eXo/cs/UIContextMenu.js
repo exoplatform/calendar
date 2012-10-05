@@ -177,9 +177,12 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
   gj(tmpMenuElement).addClass(this.portletCssClass + " UIEmpty");
   this.menuElement = tmpMenuElement;
   var callback = this.getCallback(tmpMenuElement);  
-  if (callback) {	  
-	callback = callback + "(arguments[2])";
-	eval(callback);		
+  if (callback) {	
+	//Just a workaround for this case
+	//TODO: Add all "window." before all variables in callback string
+	//TODO: Please find a better solution or a better action flow!  
+	callback = "window."+callback + "(arguments[2])";
+	eval(callback);
   }
   var uiApplication = document.getElementById("UIPortalApplication");
   if (this.menuElement) {

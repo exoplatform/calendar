@@ -8,10 +8,10 @@
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.require("SHARED/jquery","gj");
   requireJS.addScripts('cal.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
-  //requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
+  requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
-  requireJS.addScripts("gj('div#CustomLayout').click(function() {cal.UICalendarPortlet.showView(this, event);});")
+  requireJS.addScripts("gj('div#CustomLayout').click(function(event) {cal.UICalendarPortlet.showView(this, event);});")
 
   requireJS.addScripts("gj('div#DefaultLayout').click(function() {cal.UICalendarPortlet.switchLayout(0);});")
   requireJS.addScripts("gj('div#ShowHideAll').click(function() {cal.UICalendarPortlet.switchLayout(1);});")

@@ -18,6 +18,38 @@
  */
 
 /**
+* Array convenience method to check for membership.
+*
+* @param object element
+* @returns boolean
+*/
+Array.prototype.contains = function (element) {
+  for (var i = 0; i < this.length; i++) {
+    if (this[i] == element) {
+      return true ;
+    }
+  }
+  return false ;
+} ;
+
+/**
+* Array convenience method to clear membership.
+* @param object element
+* @returns void
+*/
+Array.prototype.clear = function () {
+  this.length = 0 ;
+} ;
+
+Array.prototype.pushAll = function (array) {	
+	if (array != null) {
+		for (var i = 0; i < array.length; i++) {
+			this.push(array[i]) ;
+		}
+	}
+} ;
+	
+/**
  * Some utility functions to use the DOM
  */
 function DOMUtil() {
@@ -70,10 +102,11 @@ DOMUtil.prototype.cleanUpHiddenElements = function() {
  * Should only contain elements from a popup menu
  */
 DOMUtil.prototype.listHideElements = function(object) {
-	if (!_module.DOMUtil.hideElementList.contains(object)) {
-		_module.DOMUtil.hideElementList.push(object) ;
+	var container = _module.DOMUtil.hideElementList;
+	if (!gj.contains(container, object)) {
+		container.push(object);
 	}
-} ;
+};
 
 DOMUtil.prototype.disableOnClick = function(el) {
 	el.onclick = new Function("return false;");

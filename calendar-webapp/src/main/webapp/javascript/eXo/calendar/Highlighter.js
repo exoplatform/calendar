@@ -27,19 +27,19 @@ Highlighter.prototype.getPos = function(cell) {
  * @return Boolean value
  */
 Highlighter.prototype.isInCell = function(cell, _e) {
-	var Highlighter = eXo.calendar.Highlighter ;
-	var cellX = eXo.core.Browser.findPosX(cell) - Highlighter.container.scrollLeft ;
-	var cellY = eXo.cs.Browser.findPosY(cell) - Highlighter.container.scrollTop ;
-	var mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
-	var mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
+	var Highlighter = _module.Highlighter ;
+	var cellX = base.Browser.findPosX(cell) - Highlighter.container.scrollLeft ;
+	var cellY = cs.Browser.findPosY(cell) - Highlighter.container.scrollTop ;
+	var mouseX = cs.Browser.findMouseXInPage(_e) ;
+	var mouseY = cs.Browser.findMouseYInPage(_e) ;
 	if(document.getElementById("UIPageDesktop")) {
-		mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
-		mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
-		cellX = eXo.core.Browser.findPosX(cell)() - eXo.cs.Utils.getScrollLeft(cell) ;
-		cellY = eXo.cs.Browser.findPosY(cell) - eXo.cs.Utils.getScrollTop(cell) ;
+		mouseX = cs.Browser.findMouseXInPage(_e) ;
+		mouseY = cs.Browser.findMouseYInPage(_e) ;
+		cellX = base.Browser.findPosX(cell)() - cs.Utils.getScrollLeft(cell) ;
+		cellY = cs.Browser.findPosY(cell) - cs.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
-	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") ||  eXo.core.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
+	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") ||  base.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
 	if (
 		 (mouseX > cellX) && (mouseX < (cellX + cell.offsetWidth))
 	&& (mouseY > cellY) && (mouseY < (cellY + cell.offsetHeight))
@@ -52,7 +52,7 @@ Highlighter.prototype.isInCell = function(cell, _e) {
  * @param {Object} evt Mouse event
  */
 Highlighter.prototype.getMousePos = function(evt) {
-	var Highlighter = eXo.calendar.Highlighter ;
+	var Highlighter = _module.Highlighter ;
 	var _e = window.event || evt ;
 	var cell = Highlighter.cell ;
 	var len = cell.length ;
@@ -69,7 +69,7 @@ Highlighter.prototype.getMousePos = function(evt) {
  */
 Highlighter.prototype.hideAll = function() {
 	var obj  = (arguments.length >0) ? arguments[0]: null ;
-	var blocks = eXo.calendar.Highlighter.block ;
+	var blocks = _module.Highlighter.block ;
 	var len = blocks.length ;
 	for(var i = 0 ; i < len ; i ++ ) {
 		if ((obj != null) && (obj == blocks[i])) blocks[i].style.display  = "block" ;		
@@ -83,7 +83,7 @@ Highlighter.prototype.hideAll = function() {
  * @param {Object} end End time
  */
 Highlighter.prototype.hideBlock = function(start,end) {
-	var blocks = eXo.calendar.Highlighter.block ;
+	var blocks = _module.Highlighter.block ;
 	var len = blocks.length ;
 	for(var i = 0 ; i < len ; i ++ ) {
 		if ((i < start) || (i > end)) blocks[i].style.display  = "none" ;
@@ -102,7 +102,7 @@ Highlighter.prototype.createBlock = function(cell) {
 	var block = new Array() ;
 	for(var i = 0 ; i < len ; i ++) {
 		div = document.createElement("div") ;
-		gj(div).on('mousedown',eXo.calendar.Highlighter.hideAll);
+		gj(div).on('mousedown',_module.Highlighter.hideAll);
 		if(gj("#UserSelectionBlock"+i)) 
 			gj("#UserSelectionBlock"+i).remove() ; 
 		div.setAttribute("id", "UserSelectionBlock"+i) ;
@@ -110,15 +110,15 @@ Highlighter.prototype.createBlock = function(cell) {
 		table.parentNode.appendChild(div) ;
 		block.push(div) ;
 	}
-	eXo.calendar.Highlighter.block = block ;
+	_module.Highlighter.block = block ;
 } ;
 
 
 Highlighter.prototype.reserveDirection = function(obj, container,targetObj,extra){
 		var fixleftIE = (document.all && document.getElementById("UIWeekView"))? 6 : 0 ;
-		var x = eXo.core.Browser.findPosXInContainer(obj,container)  - fixleftIE;
+		var x = base.Browser.findPosXInContainer(obj,container)  - fixleftIE;
 		if (extra) x += extra ;
-		if(eXo.core.I18n.isRT()){
+		if(base.I18n.isRT()){
 			x = (container.offsetWidth - obj.offsetWidth - x)  - 16;
 			targetObj.style.right = x + "px";
 		}
@@ -130,7 +130,7 @@ Highlighter.prototype.reserveDirection = function(obj, container,targetObj,extra
  */
 Highlighter.prototype.start = function(evt) {
 	try{		
-	var Highlighter = eXo.calendar.Highlighter ;
+	var Highlighter = _module.Highlighter ;
 	var _e = window.event || evt ;
 	if(_e.button == 2) return ;
 	_e.cancelBubble = true ;
@@ -148,8 +148,8 @@ Highlighter.prototype.start = function(evt) {
 	Highlighter.startBlock.style.display = "block" ;
 	Highlighter.container = Highlighter.startBlock.offsetParent ;
 	var fixleftIE = (document.all && document.getElementById("UIWeekView"))? 6 : 0 ; //TODO : No hard code 
-	var x = eXo.core.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) -  fixleftIE ;
-	var y = eXo.core.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) + gj('.UIMonthView .MainWorkingPanel').scrollTop();
+	var x = base.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) -  fixleftIE ;
+	var y = base.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) + gj('.UIMonthView .MainWorkingPanel').scrollTop();
 	Highlighter.reserveDirection(Highlighter.startCell, Highlighter.container,Highlighter.startBlock) ;
 	Highlighter.startBlock.style.top = y + "px" ;
 	Highlighter.startBlock.style.width = Highlighter.dimension.x + "px" ;
@@ -169,7 +169,7 @@ Highlighter.prototype.start = function(evt) {
  * @param {Object} evt Mouse event
  */
 Highlighter.prototype.execute = function(evt) {
-	var Highlighter = eXo.calendar.Highlighter ;
+	var Highlighter = _module.Highlighter ;
 	var _e = window.event || evt ;	
 	var sPos = Highlighter.getPos(Highlighter.startCell) ;
 	var fixleftIE = (document.all && document.getElementById("UIWeekView"))? 6 : 0 ; //TODO : No hard code 
@@ -206,8 +206,8 @@ Highlighter.prototype.execute = function(evt) {
 				lastIndex = startIndex + len ;
 				startBlock = Highlighter.startBlock
 				endBlock = Highlighter.block[lastIndex] ;
-				startX = eXo.core.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) ;
-				startY = eXo.core.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) ;
+				startX = base.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) ;
+				startY = base.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) ;
 				endX = (cPos.x + 1)*Highlighter.dimension.x ;
 				startWidth = (Highlighter.cellLength - sPos.x)*Highlighter.dimension.x ;
 				Highlighter.firstCell = Highlighter.startCell ;
@@ -218,8 +218,8 @@ Highlighter.prototype.execute = function(evt) {
 				lastIndex = sPos.y ;
 				startBlock = Highlighter.block[startIndex] ;
 				endBlock = Highlighter.block[lastIndex] ;
-				startX = eXo.core.Browser.findPosXInContainer(Highlighter.currentCell, Highlighter.container) ;
-				startY = eXo.core.Browser.findPosYInContainer(Highlighter.currentCell, Highlighter.container) ;
+				startX = base.Browser.findPosXInContainer(Highlighter.currentCell, Highlighter.container) ;
+				startY = base.Browser.findPosYInContainer(Highlighter.currentCell, Highlighter.container) ;
 				endX = (sPos.x + 1)*Highlighter.dimension.x ;
 				startWidth = (Highlighter.cellLength - cPos.x)*Highlighter.dimension.x ;
 				Highlighter.lastCell = Highlighter.startCell ;
@@ -256,7 +256,7 @@ Highlighter.prototype.execute = function(evt) {
  * @param {Object} evt Mouse event
  */
 Highlighter.prototype.end = function(evt) {
-	var Highlighter = eXo.calendar.Highlighter;
+	var Highlighter = _module.Highlighter;
 	if (Highlighter.callback) eval(Highlighter.callback) ;
 	gj(document).off("mousemove mouseup")
 //	document.onmousemove = null ;
@@ -267,8 +267,8 @@ Highlighter.prototype.setCallback = function(str) {
 	this.container.setAttribute("eXoCallback",str) ;
 } ;
 
-eXo.calendar.Highlighter = new Highlighter() ;
 _module.Highlighter = new Highlighter() ;
+eXo.calendar.Highlighter = _module.Highlighter;
 
 /**
  * Class control horizontal dragging selection in the month view
@@ -286,18 +286,18 @@ function UIHSelection() {
  */
 UIHSelection.prototype.isInCell = function(cell, _e) {
 	var UIHSelection = eXo.calendar.UIHSelection ;
-	var cellX = eXo.core.Browser.findPosX(cell) - UIHSelection.container.scrollLeft ;
-	var cellY = eXo.cs.Browser.findPosY(cell) - UIHSelection.container.scrollTop ;
-	var mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
-	var mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
+	var cellX = base.Browser.findPosX(cell) - UIHSelection.container.scrollLeft ;
+	var cellY = cs.Browser.findPosY(cell) - UIHSelection.container.scrollTop ;
+	var mouseX = cs.Browser.findMouseXInPage(_e) ;
+	var mouseY = cs.Browser.findMouseYInPage(_e) ;
 	if(document.getElementById("UIPageDesktop")) {
-		mouseX = eXo.cs.Browser.findMouseXInPage(_e) ;
-		mouseY = eXo.cs.Browser.findMouseYInPage(_e) ;
-		cellX = eXo.core.Browser.findPosX(cell) - eXo.cs.Utils.getScrollLeft(cell) ;
-		cellY = eXo.cs.Browser.findPosY(cell) - eXo.cs.Utils.getScrollTop(cell) ;
+		mouseX = cs.Browser.findMouseXInPage(_e) ;
+		mouseY = cs.Browser.findMouseYInPage(_e) ;
+		cellX = base.Browser.findPosX(cell) - cs.Utils.getScrollLeft(cell) ;
+		cellY = cs.Browser.findPosY(cell) - cs.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
-	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") || eXo.core.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
+	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") || base.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
 	if (
 		 (mouseX > cellX) && (mouseX < (cellX + cell.offsetWidth))
 	&& (mouseY > cellY) && (mouseY < (cellY + cell.offsetHeight))
@@ -420,5 +420,5 @@ UIHSelection.prototype.end = function(){
 	if (UIHSelection.callback) eval(UIHSelection.callback) ;
 } ;
 
-eXo.calendar.UIHSelection = new UIHSelection() ;
 _module.UIHSelection = new UIHSelection() ;
+eXo.calendar.UIHSelection = _module.UIHSelection;

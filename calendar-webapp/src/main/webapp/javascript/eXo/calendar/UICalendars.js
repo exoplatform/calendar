@@ -148,11 +148,12 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
 UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCallback) {
   var _e = window.event || evt;
   _e.cancelBubble = true;
+  cs.EventManager.cancelBubble(evt);
   var menuTemplateElm = gj(this.calsFormElem).find('div.' + menuClassName)[0]; 
   this.renderMenu(menuTemplateElm, anchorElm);
   // invoke callback
   if (menuCallback) menuCallback(anchorElm, evt);
 };
 
-eXo.calendar.UICalendars = new UICalendars();
 _module.UICalendars = new UICalendars();
+eXo.calendar.UICalendars = _module.UICalendars;
