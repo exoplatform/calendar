@@ -72,7 +72,12 @@
       <version>${org.exoplatform.jcr.version}</version>
       <scope>provided</scope>
     </dependency>
-    
+    <dependency>
+     <groupId>org.exoplatform.commons</groupId>
+     <artifactId>commons-component-common</artifactId>
+     <version>${org.exoplatform.commons.version}</version>
+     <scope>provided</scope>
+    </dependency>
    <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-comet-service</artifactId>

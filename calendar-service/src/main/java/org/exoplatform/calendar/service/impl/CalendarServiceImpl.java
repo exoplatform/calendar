@@ -697,7 +697,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       JobDataMap jobData = new JobDataMap();
       jobData.put(SynchronizeRemoteCalendarJob.USERNAME, username);
       RepositoryService repositoryService = (RepositoryService) container.getComponentInstanceOfType(RepositoryService.class);
-      jobData.put(SynchronizeRemoteCalendarJob.REPOSITORY_NAME, repositoryService.getCurrentRepository()
+      jobData.put(repositoryService.getCurrentRepository()
+                  .getConfiguration()
+                  .getName(), repositoryService.getCurrentRepository()
                                                                                  .getConfiguration()
                                                                                  .getName());
       PeriodInfo periodInfo = new PeriodInfo(null, null, 0, 5 * 60 * 1000);
