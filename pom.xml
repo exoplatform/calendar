@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.exoplatform</groupId>
-    <artifactId>exo.parent</artifactId>
-    <version>7.1</version>
+    <artifactId>maven-parent-pom</artifactId>
+    <version>9-SNAPSHOT</version>
     <relativePath />
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
@@ -13,21 +13,23 @@
   <packaging>pom</packaging>
   <name>eXo Calendar</name>
   <description>eXo Calendar application</description>
-  <url>http://wiki.exoplatform.org/xwiki/bin/view/CS/</url>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
-	<developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
-	<url>http://fisheye.exoplatform.org/browse/cs</url>
+	  <developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
+	  <url>http://fisheye.exoplatform.org/browse/calendar</url>
   </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>https://jira.exoplatform.org/browse/CAL</url>
-  </issueManagement>
-  <ciManagement>
-    <system>hudson</system>
-    <url>https://ci.exoplatform.org/job/cs-2.2.x-ci/</url>
-  </ciManagement>
   <properties>
+    <!-- **************************************** -->
+    <!-- Jira Settings                            -->
+    <!-- **************************************** -->
+    <jira.project.key>CAL</jira.project.key>
+    <!-- **************************************** -->
+    <!-- Jenkins Settings                         -->
+    <!-- **************************************** -->
+    <jenkins.job.name>calendar-master-ci</jenkins.job.name>
+    <!-- **************************************** -->
+    <!-- Project Dependencies                     -->
+    <!-- **************************************** -->
     <org.exoplatform.kernel.version>2.3.6-GA</org.exoplatform.kernel.version>
     <org.exoplatform.core.version>2.4.6-GA</org.exoplatform.core.version>
     <org.exoplatform.ws.version>2.2.6-GA</org.exoplatform.ws.version>
@@ -120,14 +122,8 @@
     <!-- ************** -->
     <!-- Build settings -->
     <!-- ************** -->
-    <!-- We enforce Java 6 to build to use Chromattic and APT -->
-    <jdk.min.version>1.6</jdk.min.version>
-    <!-- config-scm-maven-plugin -->
-    <version.release.plugin>2.2.1</version.release.plugin>
-	<org.apache.maven.scm.version>1.6</org.apache.maven.scm.version>
-	<version.buildnumber.plugin>1.1</version.buildnumber.plugin>
     <!-- maven-release-plugin -->
-    <arguments>-Prelease,pkg-tomcat,arc-tomcat,run-its -Dgatein.working.dir=target</arguments>
+    <arguments>-Ppkg-tomcat,arc-tomcat,run-its -Dgatein.working.dir=target</arguments>
   </properties>
   <dependencyManagement>
     <!-- TODO : import dependencyManagement of platform, instead of redefining those properties -->
@@ -426,36 +422,15 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <systemProperties>
-              <property>
-                <name>java.naming.factory.initial</name>
-                <value>org.exoplatform.services.naming.SimpleContextFactory</value>
-              </property>
-              <property>
-                <name>java.util.logging.config.class</name>
-                <value>org.exoplatform.component.test.logging.LogConfigurator</value>
-              </property>
-              <property>
-                <name>com.arjuna.ats.arjuna.objectstore.objectStoreDir</name>
-                <value>${project.build.directory}</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.driver</name>
-                <value>org.hsqldb.jdbcDriver</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.url</name>
-                <value>jdbc:hsqldb:file:${project.build.directory}/gateindb</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.username</name>
-                <value>sa</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.password</name>
-                <value />
-              </property>
-            </systemProperties>
+            <systemPropertyVariables>
+              <java.naming.factory.initial>org.exoplatform.services.naming.SimpleContextFactory</java.naming.factory.initial>
+              <java.util.logging.config.class>org.exoplatform.component.test.logging.LogConfigurator</java.util.logging.config.class>
+              <com.arjuna.ats.arjuna.objectstore.objectStoreDir>${project.build.directory}</com.arjuna.ats.arjuna.objectstore.objectStoreDir>
+              <gatein.test.datasource.driver>org.hsqldb.jdbcDriver</gatein.test.datasource.driver>
+              <gatein.test.datasource.url>jdbc:hsqldb:file:${project.build.directory}/gateindb</gatein.test.datasource.url>
+              <gatein.test.datasource.username>sa</gatein.test.datasource.username>
+              <gatein.test.datasource.password></gatein.test.datasource.password>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
       </plugins>
@@ -463,40 +438,6 @@
   </build>
 
   <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.apache.resources</groupId>
-                <artifactId>apache-source-release-assembly-descriptor</artifactId>
-                <version>1.0.2</version>
-              </dependency>
-            </dependencies>
-            <executions>
-              <execution>
-                <id>source-release-assembly</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-                  <descriptorRefs>
-                    <descriptorRef>source-release</descriptorRef>
-                  </descriptorRefs>
-                  <tarLongFileFormat>gnu</tarLongFileFormat>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
     <profile> <!-- profile for configuring hsql as database in test phase -->
       <id>hsqldb</id>
       <activation>
@@ -517,20 +458,9 @@
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-surefire-plugin</artifactId>
               <configuration>
-                 <systemProperties>
-                    <property>
-                       <name>java.util.logging.config.class</name>
-                       <value>org.exoplatform.component.test.logging.LogConfigurator</value>
-                    </property>
-                    <property>
-                       <name>com.arjuna.ats.arjuna.objectstore.objectStoreDir</name>
-                       <value>${project.build.directory}</value>
-                    </property>
-                    <property>
-                       <name>exo.profiles</name>
-                       <value>hsqldb</value>
-                    </property>
-                 </systemProperties>
+                <systemPropertyVariables>
+                  <exo.profiles>hsqldb</exo.profiles>
+                </systemPropertyVariables>
               </configuration>
            </plugin>
         </plugins>

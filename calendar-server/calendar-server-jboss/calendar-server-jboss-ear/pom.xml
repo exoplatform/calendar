@@ -10,7 +10,6 @@
   <packaging>jar</packaging>
   <name>eXo Calendar Jboss Server Ear</name>
   <description>eXo Jboss Server</description>
-  <url>http://www.exoplatform.org</url>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.portal</groupId>

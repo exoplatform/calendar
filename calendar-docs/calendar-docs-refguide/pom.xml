@@ -15,7 +15,6 @@
   <name>eXo Collaboration Reference Guide</name>
 
   <properties>
-    <wikbook.version>0.9.37</wikbook.version>
     <wikbook.sourceDirectory>${project.build.directory}/wikbook/tmp</wikbook.sourceDirectory>
     <wikbook.syntaxId>confluence/1.0</wikbook.syntaxId><!-- confluence/1.0 -->
     <wikbook.validationMode>strict</wikbook.validationMode> <!-- lax/strick -->
@@ -28,7 +27,7 @@
     <dependency>
       <groupId>org.wikbook</groupId>
       <artifactId>wikbook.docbkxstyle</artifactId>
-      <version>${wikbook.version}</version>
+      <version>${version.wikbook.plugin}</version>
     </dependency>
   </dependencies>
 
@@ -65,7 +64,7 @@
       <plugin>
         <groupId>org.wikbook</groupId>
         <artifactId>wikbook.maven</artifactId>
-        <version>${wikbook.version}</version>
+        <version>${version.wikbook.plugin}</version>
         <executions>
           <execution>
             <phase>prepare-package</phase>
@@ -93,7 +92,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.1</version>
         <executions>
           <execution>
             <id>a</id>
@@ -115,11 +113,6 @@
       <plugin>
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.13</version>
-        <!--
-          not last generation due to incompatibilities with last docbook
-          format
-        -->
         <executions>
           <execution>
             <id>Generate HTML</id>
@@ -223,32 +216,6 @@
         </executions>
       </plugin>
 
-      <!-- Attach the doc to the pom in maven repo -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <!--execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${docbook.targetDirectory}/${project.artifactId}.pdf</file>
-                  <type>pdf</type>
-                </artifact>
-                <artifact>
-                  <file>target/${project.artifactId}-${project.version}.zip</file>
-                  <type>zip</type>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution-->
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>

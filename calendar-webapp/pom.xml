@@ -10,7 +10,6 @@
   <packaging>war</packaging>
   <name>eXo Calendar application</name>
   <description>eXo Calendar application</description>
-  <url>http://www.exoplatform.org</url>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
