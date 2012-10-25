@@ -650,6 +650,16 @@
   width: auto;
   text-align: center;
 }
+
+.UIYearView .DayWorkingArea .UIGrid{
+	border: none;
+}
+
+.UIYearView .UIGrid td.CalendarContentNomal{
+	border-left: none;
+	border-right: none;
+}
+
 /*====================Event List View=====================*/
 
 .UIListView {
