@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
-  <version>4.0.0.Alpha1-SNAPSHOT</version>
+  <version>4.0.0.Alpha1-POC-CREATEEVENT-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Calendar</name>
   <description>eXo Calendar application</description>
@@ -1350,5 +1350,6 @@
     <module>calendar-packaging</module>
     <module>calendar-resources</module>
     <module>calendar-webservice</module>
+	<module>calendar-CreateEventTask</module>
   </modules>
 </project>
