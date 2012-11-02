@@ -7,9 +7,9 @@
     <version>4.0.0.Alpha1-POC-CREATEEVENT-SNAPSHOT</version>
   </parent>
 
-  <artifactId>calendar-common</artifactId>
+  <artifactId>calendar-Create-event</artifactId>
   <packaging>jar</packaging>
-  <name>eXo Calendar Applications commons</name>
+  <name>eXo Calendar Create</name>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.portal</groupId>
