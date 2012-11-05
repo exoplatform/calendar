@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
-  <version>4.0.0.Alpha1-SNAPSHOT</version>
+  <version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Calendar</name>
   <description>eXo Calendar application</description>
@@ -35,14 +35,14 @@
     <org.exoplatform.ws.version>2.2.6-GA</org.exoplatform.ws.version>
     <org.exoplatform.jcr.version>1.14.6-GA</org.exoplatform.jcr.version>
     <org.exoplatform.portal.version>3.4.0.Final</org.exoplatform.portal.version>
-    <org.exoplatform.ecms.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.ecms.version>
+    <org.exoplatform.ecms.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.ecms.version>
     <org.exoplatform.exopackage.version>1.1.4</org.exoplatform.exopackage.version>
     <version.chromattic>1.1.4</version.chromattic>    
      <!--commons dependencies-->
-    <org.exoplatform.commons.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.commons.version>	      
+    <org.exoplatform.commons.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.commons.version>	      
     <hsqldb.version>2.0.0</hsqldb.version>
      <!-- eXo extended service -->
-     <org.exoplatform.social.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.social.version>
+     <org.exoplatform.social.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.social.version>
      <!-- 3rd parties -->
      <docbook-xml.version>4.4</docbook-xml.version>
     <org.aspectj.version>1.6.10</org.aspectj.version>

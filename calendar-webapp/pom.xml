@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.exoplatform.calendar</groupId>
     <artifactId>calendar</artifactId>
-    <version>4.0.0.Alpha1-SNAPSHOT</version>
+    <version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-webapp</artifactId>
   <packaging>war</packaging>
