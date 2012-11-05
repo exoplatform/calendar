@@ -119,11 +119,6 @@
     <org.staxnav.version>0.9.6</org.staxnav.version>
     <nekohtml.version>1.9.14</nekohtml.version>
     <caja.version>r1</caja.version>
-    <!-- ************** -->
-    <!-- Build settings -->
-    <!-- ************** -->
-    <!-- maven-release-plugin -->
-    <arguments>-Ppkg-tomcat,arc-tomcat,run-its -Dgatein.working.dir=target</arguments>
   </properties>
   <dependencyManagement>
     <!-- TODO : import dependencyManagement of platform, instead of redefining those properties -->
@@ -1368,7 +1363,6 @@
     <module>calendar-demo</module>
     <module>calendar-docs</module>
     <module>calendar-server</module>
-    <module>calendar-packaging</module>
     <module>calendar-resources</module>
     <module>calendar-webservice</module>
   </modules>
