@@ -14,7 +14,6 @@
     <dependency>
       <groupId>org.exoplatform.portal</groupId>
       <artifactId>exo.portal.server.tomcat.patch</artifactId>
-      <version>${org.exoplatform.portal.version}</version>
       <type>jar</type>
     </dependency>
   </dependencies>
@@ -43,7 +42,6 @@
                 <artifactItem>
                   <groupId>org.exoplatform.portal</groupId>
                   <artifactId>exo.portal.server.tomcat.patch</artifactId>
-                  <version>${org.exoplatform.portal.version}</version>
                   <type>jar</type>
                 </artifactItem>
               </artifactItems>
