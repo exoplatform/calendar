@@ -34,6 +34,8 @@ function getModule(params) {
   module.upgrade = new Project("org.exoplatform.commons", "commons-component-upgrade", "jar", "${org.exoplatform.commons.version}").
     addDependency(new Project("org.exoplatform.commons", "commons-component-product", "jar", "${org.exoplatform.commons.version}"));
 
+  //Craete Event/TAsk
+  module.createevent = new Project("org.exoplatform.calendar", "calendar-Create-event", "jar", module.version);
   
   module.common = new Project("org.exoplatform.calendar", "calendar-common", "jar", module.version).
      addDependency(new Project("org.exoplatform.calendar", "calendar-upgrade", "jar", module.version)).
