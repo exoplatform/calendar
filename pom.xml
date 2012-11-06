@@ -1366,7 +1366,6 @@
     <module>calendar-webapp</module>
     <module>calendar-extension</module>
     <module>calendar-demo</module>
-    <module>calendar-docs</module>
     <module>calendar-server</module>
     <module>calendar-packaging</module>
     <module>calendar-resources</module>
