@@ -520,6 +520,5 @@
     <module>calendar-injector</module>
     <module>calendar-statistics</module>
     <module>calendar-upgrade</module>
-    <module>calendar-docs</module>
   </modules>
 </project>
