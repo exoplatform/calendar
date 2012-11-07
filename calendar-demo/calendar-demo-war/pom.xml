@@ -30,10 +30,5 @@
       <artifactId>exo.portal.component.resources</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-        <groupId>org.hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <scope>test</scope>
-    </dependency>
-  </dependencies>
+ </dependencies>
 </project>
