@@ -516,7 +516,6 @@
     <module>calendar-resources</module>
     <module>calendar-webapp</module>
     <module>calendar-extension</module>  
-    <module>calendar-demo</module>
     <module>calendar-server</module>
     <module>calendar-injector</module>
     <module>calendar-statistics</module>

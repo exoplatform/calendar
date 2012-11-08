@@ -9,6 +9,13 @@
   <artifactId>calendar-server-tomcat</artifactId>
   <packaging>pom</packaging>
   <name>eXo Calendar Server Tomcat</name>
+   <dependencies>
+    <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+    </dependencies>
   <modules>
    <module>calendar-server-tomcat-patch</module>
   </modules>

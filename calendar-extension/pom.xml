@@ -13,6 +13,5 @@
   <modules>
     <module>calendar-extension-config</module>
     <module>calendar-extension-webapp</module>
-    <module>calendar-extension-ear</module>
   </modules>
 </project>

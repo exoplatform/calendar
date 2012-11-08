@@ -9,26 +9,21 @@
   <artifactId>calendar-upgrade</artifactId>
   <name>eXo Calendar Upgrade Component</name>
   <dependencies>
-    
     <dependency>
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.ext</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.core</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-component-upgrade</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
-      <scope>compile</scope>
     </dependency>
    
     <!-- This an issue about mvn dependency:analyze saying that missing but scope runtime raises error so keep it on compile -->
@@ -36,23 +31,24 @@
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>org.exoplatform.core</groupId>
         <artifactId>exo.core.component.organization.api</artifactId>
-        <scope>compile</scope>
     </dependency>
     <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.commons</artifactId>
-        <scope>compile</scope>
       </dependency>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <scope>runtime</scope>
+    </dependency>
     <!--  End issue -->
      
   </dependencies>
