@@ -752,9 +752,12 @@
 
 .UIListView table {
   width: 100%;
-  _width: 99%;
   background-color: #ffffff;
   margin: 0px;
+}
+
+*+html .UIListView table {
+  width: 98%;
 }
 
 .UICalendarPortlet .UICalendarViewContainer .UIListView td {
