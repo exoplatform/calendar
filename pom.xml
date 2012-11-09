@@ -325,9 +325,9 @@
         <version>${org.exoplatform.ws.version}</version>
       </dependency>
     <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-            <version>${javax.annotation.version}</version>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+      <version>${javax.annotation.version}</version>
     </dependency>
      <dependency>
 		<groupId>javax.ws.rs</groupId>
@@ -377,32 +377,7 @@
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-common</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    
-    <!-- calendar-demo -->
-    <dependency>
-		<groupId>org.exoplatform.calendar</groupId>
-		<artifactId>calendar-demo-config</artifactId>
-		<version>${project.version}</version> 
-	</dependency>
-	<dependency>
- 		<groupId>org.exoplatform.calendar</groupId>
- 		<artifactId>calendar-demo-rest</artifactId>
- 		<version>${project.version}</version>
- 		<type>war</type>
- 	</dependency>
-    <dependency>
-		<groupId>org.exoplatform.calendar</groupId>
-		<artifactId>calendar-demo-cometd</artifactId>
-		<version>${project.version}</version>
-		<type>war</type>
-	</dependency>
-	<dependency>
-		<groupId>org.exoplatform.calendar</groupId>
-		<artifactId>calendar-demo-webapp</artifactId>
-		<version>${project.version}</version>
-		<type>war</type>
-	</dependency>    
+    </dependency> 
     <!-- calendar-injector define above-->
     
     <!-- calendar-statistics -->
@@ -416,15 +391,7 @@
 		<groupId>org.exoplatform.commons</groupId>
 		<artifactId>commons-component-upgrade</artifactId>
 		<version>${org.exoplatform.commons.version}</version>
-	  </dependency>
-	  
-	  <!-- calendar-docs --> 
-	  <dependency>
-      <groupId>org.wikbook</groupId>
-      <artifactId>wikbook.docbkxstyle</artifactId>
-      <version>${version.wikbook.plugin}</version>
-    </dependency>  
-     
+	 </dependency>
   </dependencies>
   
   </dependencyManagement>
