@@ -386,12 +386,6 @@
         <artifactId>aspectjrt</artifactId>
         <version>${org.aspectj.version}</version>
       </dependency>
-     <!-- calendar-upgrade --> 
-     <dependency>
-		<groupId>org.exoplatform.commons</groupId>
-		<artifactId>commons-component-upgrade</artifactId>
-		<version>${org.exoplatform.commons.version}</version>
-	 </dependency>
   </dependencies>
   
   </dependencyManagement>
@@ -467,6 +461,5 @@
     <module>calendar-extension</module>  
     <module>calendar-injector</module>
     <module>calendar-statistics</module>
-    <module>calendar-upgrade</module>
   </modules>
 </project>
