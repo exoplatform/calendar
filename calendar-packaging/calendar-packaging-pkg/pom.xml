@@ -553,7 +553,10 @@
 		<artifactId>chromattic.core</artifactId>
 		<type>jar</type>
 	</dependency>
-	
+	 <dependency>
+         <groupId>org.chromattic</groupId>
+         <artifactId>chromattic.ext</artifactId>
+    </dependency>
 	<dependency>
 		<groupId>org.exoplatform.calendar</groupId>
 		<artifactId>calendar-webservice</artifactId>
@@ -643,6 +646,18 @@
           <artifactId>json_simple</artifactId>
           <type>jar</type>
     </dependency>
+     <dependency>
+      	<groupId>org.exoplatform.calendar</groupId>
+      	<artifactId>calendar-upgrade</artifactId>
+      </dependency>
+      <dependency>
+      	<groupId>org.exoplatform.calendar</groupId>
+      	<artifactId>calendar-injector</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>commons-codec</groupId>
+         <artifactId>commons-codec</artifactId>
+       </dependency>
     <!-- TODO this coherence groupid (hsqldb and org.hsqldb) problem of exo build the difference version defined in Database.js we HAVE TO remove later -->
 	<dependency>
         <groupId>hsqldb</groupId>

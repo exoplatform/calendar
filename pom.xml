@@ -52,8 +52,8 @@
     <commons-chain.version>1.2</commons-chain.version>
     <commons-logging.version>1.1.1</commons-logging.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
-    <org.apache.httpcomponents.httpclient.version>4.0</org.apache.httpcomponents.httpclient.version>
-    <com.google.guava.version>r07</com.google.guava.version>
+    <org.apache.httpcomponents.httpclient.version>4.0.1</org.apache.httpcomponents.httpclient.version>
+    <com.google.guava.version>r09</com.google.guava.version>
     <javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
     <javax.portlet.portlet-api.version>2.0</javax.portlet.portlet-api.version>
     <javax.mail.mail.version>1.4.4</javax.mail.mail.version>
@@ -93,14 +93,14 @@
     <c3p0.version>0.9.1.2</c3p0.version>
     <net.oauth.version>20080621</net.oauth.version>
     <cglib.version>2.2</cglib.version>
-    <commons-dbcp.version>1.2.1</commons-dbcp.version>
+    <commons-dbcp.version>1.2.2</commons-dbcp.version>
     <org.exoplatform.tool.version>1.0.0</org.exoplatform.tool.version>
     <org.javassist.version>3.14.0-GA</org.javassist.version>
     <html-parser.version>1.6</html-parser.version>
     <com.sun.xml.bind.version>2.1.7</com.sun.xml.bind.version>
     <org.jvnet.jaxb2.maven2.version>0.7.4</org.jvnet.jaxb2.maven2.version>
     <commons-pool.version>1.5.5</commons-pool.version>
-    <asm.version>1.5.3</asm.version>
+    <asm.version>3.1</asm.version>
     <antlr.version>2.7.6rc1</antlr.version>
     <jcr.version>1.0</jcr.version>
     <stax.version>1.0</stax.version>
@@ -119,6 +119,7 @@
     <org.staxnav.version>0.9.6</org.staxnav.version>
     <nekohtml.version>1.9.14</nekohtml.version>
     <caja.version>r1</caja.version>
+    <commons.codec.version>1.4</commons.codec.version>
     <!-- ************** -->
     <!-- Build settings -->
     <!-- ************** -->
@@ -134,36 +135,22 @@
          <version>${version.chromattic}</version>
        </dependency>
        <dependency>
-	<groupId>org.exoplatform.jcr</groupId>
-        <artifactId>exo.jcr.component.webdav</artifactId>
-	<version>${org.exoplatform.jcr.version}</version>
-	<type>jar</type>
-      </dependency>
-      <dependency>
-        <groupId>c3p0</groupId>
-        <artifactId>c3p0</artifactId>
-        <version>${c3p0.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.container</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.commons</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-      </dependency>
+         <groupId>commons-codec</groupId>
+         <artifactId>commons-codec</artifactId>
+         <version>${commons.codec.version}</version>
+       </dependency>
+       
+        <dependency>
+         <groupId>org.chromattic</groupId>
+         <artifactId>chromattic.ext</artifactId>
+         <version>${version.chromattic}</version>
+       </dependency>
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.component.common</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.exoplatform.jcr</groupId>
-        <artifactId>exo.jcr.component.core</artifactId>
-        <version>${org.exoplatform.jcr.version}</version>
-      </dependency>
+       
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.component.cache</artifactId>
@@ -255,6 +242,16 @@
       <dependency>
       	<groupId>org.exoplatform.calendar</groupId>
       	<artifactId>calendar-webservice</artifactId>
+      	<version>${project.version}</version>
+      </dependency>
+       <dependency>
+      	<groupId>org.exoplatform.calendar</groupId>
+      	<artifactId>calendar-upgrade</artifactId>
+      	<version>${project.version}</version>
+      </dependency>
+       <dependency>
+      	<groupId>org.exoplatform.calendar</groupId>
+      	<artifactId>calendar-injector</artifactId>
       	<version>${project.version}</version>
       </dependency>
       <dependency>
@@ -363,21 +360,10 @@
 		<scope>provided</scope>
 	  </dependency>
 	  <dependency>
-		<groupId>org.exoplatform.kernel</groupId>
-		<artifactId>exo.kernel.component.common</artifactId>
-		<version>${org.exoplatform.kernel.version}</version>
-	  </dependency>
-	  
-	  <dependency>
 		<groupId>org.exoplatform.jcr</groupId>
 		<artifactId>exo.jcr.component.core</artifactId>
 		<version>${org.exoplatform.jcr.version}</version>
 		<scope>provided</scope>
-	  </dependency>
-	  <dependency>
-		<groupId>org.exoplatform.kernel</groupId>
-		<artifactId>exo.kernel.component.cache</artifactId>
-		<version>${org.exoplatform.kernel.version}</version>
 	  </dependency>
 	  <dependency>
       <groupId>org.exoplatform.kernel</groupId>
@@ -1186,12 +1172,6 @@
       <artifactId>commons-httpclient</artifactId>
        <version>${commons-httpclient.version}</version>
     </dependency>
-      <!-- test-calendar-selenium-->
-      <dependency>
-        <groupId>org.openqa.selenium.client-drivers</groupId>
-        <artifactId>selenium-java-client-driver</artifactId>
-        <version>${selenium-java-client-driver.version}</version>
-      </dependency>
       <!--exo.cs.eXoApplication.calendar.service-->
       <dependency>
         <groupId>ical4j</groupId>
