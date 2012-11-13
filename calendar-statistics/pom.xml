@@ -43,6 +43,10 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <complianceLevel>${maven.compiler.source}</complianceLevel>
+          <verbose>true</verbose>
+        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -46,7 +46,7 @@
      <org.exoplatform.social.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.social.version>
      <!-- 3rd parties -->
      <docbook-xml.version>4.4</docbook-xml.version>
-     <org.aspectj.version>1.6.10</org.aspectj.version>
+     <org.aspectj.version>1.6.11</org.aspectj.version>
      <quartz.version>1.5.2</quartz.version>
      <ical4j.version>1.0-beta5</ical4j.version>
      <rome.version>1.0</rome.version>
