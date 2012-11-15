@@ -395,16 +395,6 @@
     </dependencies>
   </dependencyManagement>
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/java</directory>
-        <includes>
-          <include>**/*.properties</include>
-          <include>**/*.xml</include>
-          <include>**/*.conf</include>
-        </includes>
-      </testResource>
-    </testResources>
     <pluginManagement>
       <plugins>
         <plugin>
