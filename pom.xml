@@ -86,7 +86,6 @@
         <artifactId>hsqldb</artifactId>
         <version>${hsqldb.version}</version>
       </dependency>
-      <!-- calendar-common -->
       <dependency>
         <groupId>org.exoplatform.portal</groupId>
         <artifactId>exo.portal.webui.core</artifactId>
@@ -133,7 +132,6 @@
         <version>${org.exoplatform.portal.version}</version>
         <type>test-jar</type>
       </dependency>
-      <!-- calendar-service -->
       <dependency>
         <groupId>org.exoplatform.core</groupId>
         <artifactId>exo.core.component.security.core</artifactId>
@@ -225,11 +223,6 @@
         <version>${commons-httpclient.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.exoplatform.jcr</groupId>
-        <artifactId>exo.jcr.component.webdav</artifactId>
-        <version>${org.exoplatform.jcr.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.component.command</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
@@ -244,7 +237,6 @@
         <artifactId>xml-apis</artifactId>
         <version>${xml-apis.version}</version>
       </dependency>
-      <!-- calendar-webapp -->
       <dependency>
         <groupId>org.exoplatform.portal</groupId>
         <artifactId>exo.portal.webui.portal</artifactId>
@@ -325,7 +317,6 @@
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
       </dependency>
-      <!-- calendar-webservice -->
       <dependency>
         <groupId>org.exoplatform.ws</groupId>
         <artifactId>exo.ws.rest.core</artifactId>
@@ -361,32 +352,6 @@
         <artifactId>chromattic.core</artifactId>
         <version>${version.chromattic}</version>
       </dependency>
-      <!-- calendar-extension -->
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-resources</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-extension-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- calendar-injector define above-->
-      <!-- calendar-statistics -->
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
