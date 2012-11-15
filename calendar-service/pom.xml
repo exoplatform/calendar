@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.exoplatform.calendar</groupId>
     <artifactId>calendar</artifactId>
+    <groupId>org.exoplatform.calendar</groupId>
     <version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-service</artifactId>
@@ -14,7 +14,7 @@
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.commons</artifactId>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.security.core</artifactId>
@@ -24,10 +24,10 @@
       <artifactId>exo.portal.component.resources</artifactId>
     </dependency>
     <dependency>
-     <groupId>org.exoplatform.commons</groupId>
-     <artifactId>commons-component-common</artifactId>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-component-common</artifactId>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-comet-service</artifactId>
     </dependency>
@@ -37,7 +37,7 @@
     </dependency>
     <dependency>
       <groupId>ical4j</groupId>
-      <artifactId>ical4j</artifactId>   
+      <artifactId>ical4j</artifactId>
     </dependency>
     <dependency>
       <groupId>rome</groupId>
@@ -63,7 +63,7 @@
       <artifactId>javassist</artifactId>
       <scope>test</scope>
     </dependency>
-     <!-- This an issue about mvn dependency:analyze saying that missing but scope runtime raises error so keep it on compile -->
+    <!-- This an issue about mvn dependency:analyze saying that missing but scope runtime raises error so keep it on compile -->
     <dependency>
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.organization.api</artifactId>
@@ -72,7 +72,7 @@
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.ext</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.exoplatform.ws</groupId>
       <artifactId>exo.ws.frameworks.json</artifactId>
     </dependency>
@@ -100,33 +100,33 @@
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.core</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
     </dependency>
     <dependency>
-        <groupId>javax.jcr</groupId>
-        <artifactId>jcr</artifactId> 
-     </dependency>
-     <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.component.command</artifactId>
-     </dependency>
-     <dependency>
-         <groupId>org.exoplatform.tool</groupId>
-         <artifactId>exo.tool.framework.junit</artifactId>
-         <scope>test</scope>
-     </dependency> 
-     <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <scope>test</scope>
-  	 </dependency>
-     <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <scope>runtime</scope>
-      </dependency>
-    <!-- End issue -->    
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.component.command</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.tool</groupId>
+      <artifactId>exo.tool.framework.junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- End issue -->
   </dependencies>
 </project>
