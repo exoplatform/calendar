@@ -18,7 +18,6 @@
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-webui-ext</artifactId>
     </dependency>
-    <!-- This an issue about mvn dependency:analyze saying that missing but scope runtime raises error so keep it on compile -->
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
@@ -43,17 +42,5 @@
       <groupId>org.exoplatform.portal</groupId>
       <artifactId>exo.portal.component.identity</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.portal</groupId>
-      <artifactId>exo.portal.component.identity</artifactId>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <!-- End issue -->
   </dependencies>
 </project>

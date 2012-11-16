@@ -9,13 +9,6 @@
   <artifactId>calendar-resources</artifactId>
   <packaging>war</packaging>
   <name>eXo Calendar web resources</name>
-  <dependencies>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <build>
     <finalName>csResources</finalName>
   </build>

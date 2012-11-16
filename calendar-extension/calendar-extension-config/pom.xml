@@ -9,11 +9,4 @@
   <artifactId>calendar-extension-config</artifactId>
   <packaging>jar</packaging>
   <name>eXo Calendar Extension configuration jar</name>
-  <dependencies>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 </project>
