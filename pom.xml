@@ -46,110 +46,47 @@
     <org.exoplatform.jcr.version>1.14.9-GA-SNAPSHOT</org.exoplatform.jcr.version>
     <org.exoplatform.jcr-services.version>1.14.9-GA-SNAPSHOT</org.exoplatform.jcr-services.version>
     <org.exoplatform.portal.version>3.4.0.Final</org.exoplatform.portal.version>
-    <org.exoplatform.ecms.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.ecms.version>
-    <org.exoplatform.exopackage.version>1.1.4</org.exoplatform.exopackage.version>
-    <version.chromattic>1.1.4</version.chromattic>
-    <!--commons dependencies-->
     <org.exoplatform.commons.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.commons.version>
-    <hsqldb.version>2.0.0</hsqldb.version>
     <!-- eXo extended service -->
     <org.exoplatform.social.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.social.version>
-    <!-- 3rd parties -->
-    <docbook-xml.version>4.4</docbook-xml.version>
-    <org.aspectj.version>1.6.11</org.aspectj.version>
-    <quartz.version>1.5.2</quartz.version>
-    <ical4j.version>1.0-beta5</ical4j.version>
-    <rome.version>1.0</rome.version>
-    <org.apache.jackrabbit.version>1.6.4</org.apache.jackrabbit.version>
-    <org.javassist.version>3.14.0-GA</org.javassist.version>
-    <commons-chain.version>1.2</commons-chain.version>
-    <commons-lang.version>2.6</commons-lang.version>
-    <picocontainer.version>1.1</picocontainer.version>
-    <commons-httpclient.version>3.1</commons-httpclient.version>
-    <javax.jcr.api.version>1.0</javax.jcr.api.version>
-    <xml-apis.version>1.0.b2</xml-apis.version>
-    <javax.annotation.version>1.0</javax.annotation.version>
-    <org.exoplatform.framework.junit.version>1.2.2-GA</org.exoplatform.framework.junit.version>
-    <javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
-    <javax.ws.rs.jsr311-api.version>1.0</javax.ws.rs.jsr311-api.version>
-    <junit.version>3.8.2</junit.version>
-    <org.slf4j.version>1.5.8</org.slf4j.version>
-    <org.mortbay.jetty.cometd-bayeux.version>6.1.11</org.mortbay.jetty.cometd-bayeux.version>
-    <javax.mail.mail.version>1.4.4</javax.mail.mail.version>
-    <javax.portlet.portlet-api.version>2.0</javax.portlet.portlet-api.version>
   </properties>
   <dependencyManagement>
-    <!-- TODO : import dependencyManagement of platform, instead of redefining those properties -->
     <dependencies>
+      <!-- Import versions of external dependencies to use -->
       <dependency>
-        <groupId>commons-chain</groupId>
-        <artifactId>commons-chain</artifactId>
-        <version>${commons-chain.version}</version>
+        <groupId>org.exoplatform</groupId>
+        <artifactId>maven-depmgt-pom</artifactId>
+        <version>1-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Our own project modules -->
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-commons</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>${commons-httpclient.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-extension-config</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>${commons-lang.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-extension-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
-        <groupId>ical4j</groupId>
-        <artifactId>ical4j</artifactId>
-        <version>${ical4j.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-injector</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>jsr250-api</artifactId>
-        <version>${javax.annotation.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.jcr</groupId>
-        <artifactId>jcr</artifactId>
-        <version>${javax.jcr.api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.mail</groupId>
-        <artifactId>mail</artifactId>
-        <version>${javax.mail.mail.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.portlet</groupId>
-        <artifactId>portlet-api</artifactId>
-        <version>${javax.portlet.portlet-api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${javax.servlet.servlet-api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
-        <version>${javax.ws.rs.jsr311-api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-webdav</artifactId>
-        <version>${org.apache.jackrabbit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjrt</artifactId>
-        <version>${org.aspectj.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.chromattic</groupId>
-        <artifactId>chromattic.core</artifactId>
-        <version>${version.chromattic}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-resources</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -158,24 +95,29 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-webservice</artifactId>
+        <artifactId>calendar-statistics</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.exoplatform.commons</groupId>
-        <artifactId>commons-comet-service</artifactId>
-        <version>${org.exoplatform.commons.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
       <dependency>
-        <groupId>org.exoplatform.commons</groupId>
-        <artifactId>commons-component-common</artifactId>
-        <version>${org.exoplatform.commons.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-webservice</artifactId>
+        <version>${project.version}</version>
       </dependency>
+      <!-- Import versions from commons project -->
       <dependency>
         <groupId>org.exoplatform.commons</groupId>
-        <artifactId>commons-webui-ext</artifactId>
+        <artifactId>commons</artifactId>
         <version>${org.exoplatform.commons.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
+      <!-- To be replaced by an import of core parent POM -->
       <dependency>
         <groupId>org.exoplatform.core</groupId>
         <artifactId>exo.core.component.organization.api</artifactId>
@@ -191,6 +133,7 @@
         <artifactId>exo.core.component.security.core</artifactId>
         <version>${org.exoplatform.core.version}</version>
       </dependency>
+      <!-- To be replaced by an import of JCR parent POM -->
       <dependency>
         <groupId>org.exoplatform.jcr</groupId>
         <artifactId>exo.jcr.component.core</artifactId>
@@ -201,6 +144,7 @@
         <artifactId>exo.jcr.component.ext</artifactId>
         <version>${org.exoplatform.jcr.version}</version>
       </dependency>
+      <!-- To be replaced by an import of kernel Parent POM -->
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.commons</artifactId>
@@ -221,6 +165,7 @@
         <artifactId>exo.kernel.container</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
       </dependency>
+      <!-- To be replaced by an import of GateIn Portal parent POM -->
       <dependency>
         <groupId>org.exoplatform.portal</groupId>
         <artifactId>exo.portal.component.common</artifactId>
@@ -297,16 +242,14 @@
         <artifactId>exo.portal.webui.portlet</artifactId>
         <version>${org.exoplatform.portal.version}</version>
       </dependency>
+      <!-- To be replaced by an import of calendar parent POM -->
+      <!-- Didn't we have to not use cross products deps ?? -->
       <dependency>
         <groupId>org.exoplatform.social</groupId>
         <artifactId>social-component-core</artifactId>
         <version>${org.exoplatform.social.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.exoplatform.tool</groupId>
-        <artifactId>exo.tool.framework.junit</artifactId>
-        <version>${org.exoplatform.framework.junit.version}</version>
-      </dependency>
+      <!-- To be replaced by an import of WS parent POM -->
       <dependency>
         <groupId>org.exoplatform.ws</groupId>
         <artifactId>exo.ws.frameworks.json</artifactId>
@@ -316,46 +259,6 @@
         <groupId>org.exoplatform.ws</groupId>
         <artifactId>exo.ws.rest.core</artifactId>
         <version>${org.exoplatform.ws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>${hsqldb.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.javassist</groupId>
-        <artifactId>javassist</artifactId>
-        <version>${org.javassist.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>cometd-bayeux</artifactId>
-        <version>${org.mortbay.jetty.cometd-bayeux.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>picocontainer</groupId>
-        <artifactId>picocontainer</artifactId>
-        <version>${picocontainer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>quartz</groupId>
-        <artifactId>quartz</artifactId>
-        <version>${quartz.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>rome</groupId>
-        <artifactId>rome</artifactId>
-        <version>${rome.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>xml-apis</groupId>
-        <artifactId>xml-apis</artifactId>
-        <version>${xml-apis.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
