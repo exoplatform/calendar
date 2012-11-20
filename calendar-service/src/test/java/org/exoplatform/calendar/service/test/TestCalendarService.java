@@ -604,11 +604,11 @@ public class TestCalendarService extends BaseCalendarTestCase {
     // test RemoteCaldav
     remoteCal.setType(CalendarService.CALDAV);
     remoteCal.setRemoteUser("exomailtest@gmail.com");
-    remoteCal.setRemotePassword("exoadmin");
+    remoteCal.setRemotePassword("tuanpham");
     remoteCal.setRemoteUrl("https://www.google.com/calendar/dav/exomailtest@gmail.com/events/");
     try {
       cal = remoteCalendarService.importRemoteCalendar(remoteCal);
-    } catch (IOException e) {
+    } catch (Exception e) {
       log.info("Exception occurs when connect to remote calendar. Skip this test.");
       return;
     }
