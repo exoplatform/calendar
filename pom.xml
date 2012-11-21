@@ -281,6 +281,14 @@
             </systemPropertyVariables>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <configuration>
+            <!-- Don't include libraries into Web Archives -->
+            <warSourceExcludes>WEB-INF/lib/*.jar</warSourceExcludes>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
