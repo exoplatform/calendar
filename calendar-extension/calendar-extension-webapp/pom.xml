@@ -9,6 +9,12 @@
   <artifactId>calendar-extension-webapp</artifactId>
   <packaging>war</packaging>
   <name>eXo Calendar Extension configuration war</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-extension-config</artifactId>
+    </dependency>
+  </dependencies>
   <build>
     <finalName>gatein-exo-calendar-${project.version}</finalName>
   </build>
