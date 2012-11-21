@@ -63,7 +63,7 @@
       <!-- Our own project modules -->
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-commons</artifactId>
+        <artifactId>calendar-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -79,6 +79,12 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-extension-webapp</artifactId>
+        <version>${project.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-injector</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -87,6 +93,12 @@
         <artifactId>calendar-resources</artifactId>
         <version>${project.version}</version>
         <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-resources</artifactId>
+        <version>${project.version}</version>
+        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -103,6 +115,12 @@
         <artifactId>calendar-webapp</artifactId>
         <version>${project.version}</version>
         <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-webapp</artifactId>
+        <version>${project.version}</version>
+        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
