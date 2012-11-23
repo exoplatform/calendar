@@ -9,9 +9,6 @@
   <artifactId>calendar-extension-webapp</artifactId>
   <packaging>war</packaging>
   <name>eXo Calendar Extension configuration war</name>
-  <build>
-    <finalName>gatein-exo-calendar-${project.version}</finalName>
-  </build>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.portal</groupId>
@@ -19,29 +16,32 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-  <groupId>org.exoplatform.kernel</groupId>
-  <artifactId>exo.kernel.component.common</artifactId>
-  <scope>runtime</scope>
-</dependency>
-<dependency>
-  <groupId>org.exoplatform.calendar</groupId>
-  <artifactId>calendar-service</artifactId>
-  <scope>runtime</scope>
-</dependency>
-<dependency>
-  <groupId>org.exoplatform.jcr</groupId>
-  <artifactId>exo.jcr.component.core</artifactId>
-  <scope>runtime</scope>
-</dependency>
-<dependency>
-  <groupId>org.exoplatform.jcr</groupId>
-  <artifactId>exo.jcr.component.ext</artifactId>
-  <scope>runtime</scope>
-</dependency>
-<dependency>
-  <groupId>org.exoplatform.kernel</groupId>
-  <artifactId>exo.kernel.component.common</artifactId>
-  <scope>runtime</scope>
-</dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.component.common</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-service</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>exo.jcr.component.core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>exo.jcr.component.ext</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.component.common</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
+  <build>
+    <finalName>gatein-exo-calendar-${project.version}</finalName>
+  </build>
 </project>
