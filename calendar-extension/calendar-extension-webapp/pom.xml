@@ -40,6 +40,10 @@
       <artifactId>exo.kernel.component.common</artifactId>
       <scope>runtime</scope>
     </dependency>
+	<dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-extension-config</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <finalName>gatein-exo-calendar-${project.version}</finalName>
