@@ -2,14 +2,15 @@ package org.exoplatform.cs.event;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
+import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.*;
-import org.exoplatform.webui.form.validator.MandatoryValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,9 @@ public class UICreateEvent extends UIForm {
 
 
         addUIFormInput(new UIFormRadioBoxInput(CHOIX, CHOIX, options));
-        addUIFormInput(new UIFormStringInput(TITLE, TITLE, null).addValidator(MandatoryValidator.class, new Object[0]));
-        addUIFormInput(new UIFormDateTimeInput(Start_EVENT, Start_EVENT, null, false).addValidator(MandatoryValidator.class, new Object[0]));
-        addUIFormInput(new UIFormDateTimeInput(END_EVENT, END_EVENT, null, false).addValidator(MandatoryValidator.class, new Object[0]));
+        addUIFormInput(new UIFormStringInput(TITLE, TITLE, null));
+        addUIFormInput(new UIFormDateTimeInput(Start_EVENT, Start_EVENT, null, false));
+        addUIFormInput(new UIFormDateTimeInput(END_EVENT, END_EVENT, null, false));
         addUIFormInput(new UIFormSelectBox(CALENDAR, CALENDAR, options));
 
 
@@ -84,8 +85,12 @@ public class UICreateEvent extends UIForm {
 
         public void execute(Event<UICreateEvent> event)
                 throws Exception {
-
-            log.info("#################### Cancel  Action was triggered");
+            UICreateEvent   uisource=event.getSource();
+            WebuiRequestContext ctx = event.getRequestContext();
+            Event<UIComponent> cancelEvent = uisource.<UIComponent>getParent().createEvent("Cancel", Event.Phase.DECODE, ctx);
+            if (cancelEvent != null) {
+                cancelEvent.broadcast();
+            }
 
 
         }

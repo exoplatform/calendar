@@ -1,6 +1,9 @@
 <div class="UIQuickAddEvent" id="QuickAddEventContainer">
    <div class="QuickAddEventContainer">
-  <% uiform.begin()
+  <%
+      def cancel="javascript:ajaxGet(eXo.env.server.createPortalURL('UICreateList','Cancel',true));"
+
+  uiform.begin()
     %>
 
   <div class="HorizontalLayout">
@@ -28,7 +31,7 @@
          	       <td class="FieldComponent" colspan="2"><% uicomponent.renderField(uicomponent.END_EVENT) %></td>
                       </div>
          </tr>
-		  
+
 
 		<tr>
                    <td class="FieldLabel"> <%=uicomponent.getLabel(uicomponent.CALENDAR )%>  </td>
@@ -51,9 +54,12 @@
     <div class="UIAction">
       <table class="ActionContainer" align="center">
       	<tr>
-      		<td align="center">
+
 	        <% for(action in uicomponent.getActions()) { %>
+	        <td align="center">
+
             <a href="<%=uicomponent.event(action)%>" class="ActionButton LightBlueStyle" >
+
               <div class="ButtonLeft">
                 <div class="ButtonRight">
                   <div class="ButtonMiddle">
@@ -62,8 +68,9 @@
                 </div>
               </div>
             </a>
+            </td>
 	        <% } %>
-					</td>
+
 				</tr>
       </table>
     </div>
