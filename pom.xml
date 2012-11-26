@@ -3,46 +3,48 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.exoplatform</groupId>
-    <artifactId>exo.parent</artifactId>
-    <version>7.1</version>
+    <artifactId>maven-parent-pom</artifactId>
+    <version>9-SNAPSHOT</version>
     <relativePath />
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
-  <version>4.0.0.Alpha1-SNAPSHOT</version>
+  <version>4.0.0.Alpha1-POC-CREATEEVENT-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Calendar</name>
   <description>eXo Calendar application</description>
-  <url>http://wiki.exoplatform.org/xwiki/bin/view/CS/</url>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
-	<developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
-	<url>http://fisheye.exoplatform.org/browse/cs</url>
+	  <developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
+	  <url>http://fisheye.exoplatform.org/browse/calendar</url>
   </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>https://jira.exoplatform.org/browse/CAL</url>
-  </issueManagement>
-  <ciManagement>
-    <system>hudson</system>
-    <url>https://ci.exoplatform.org/job/cs-2.2.x-ci/</url>
-  </ciManagement>
   <properties>
-    <org.exoplatform.kernel.version>2.3.6-GA</org.exoplatform.kernel.version>
-    <org.exoplatform.core.version>2.4.6-GA</org.exoplatform.core.version>
-    <org.exoplatform.ws.version>2.2.6-GA</org.exoplatform.ws.version>
-    <org.exoplatform.jcr.version>1.14.6-GA</org.exoplatform.jcr.version>
+    <!-- **************************************** -->
+    <!-- Jira Settings                            -->
+    <!-- **************************************** -->
+    <jira.project.key>CAL</jira.project.key>
+    <!-- **************************************** -->
+    <!-- Jenkins Settings                         -->
+    <!-- **************************************** -->
+    <jenkins.job.name>calendar-master-ci</jenkins.job.name>
+    <!-- **************************************** -->
+    <!-- Project Dependencies                     -->
+    <!-- **************************************** -->
+    <org.exoplatform.kernel.version>2.3.10-GA-SNAPSHOT</org.exoplatform.kernel.version>
+    <org.exoplatform.core.version>2.4.10-GA-SNAPSHOT</org.exoplatform.core.version>
+    <org.exoplatform.ws.version>2.2.10-GA-SNAPSHOT</org.exoplatform.ws.version>
+    <org.exoplatform.jcr.version>1.14.10-GA-SNAPSHOT</org.exoplatform.jcr.version>
     <org.exoplatform.portal.version>3.4.0.Final</org.exoplatform.portal.version>
     <org.exoplatform.ecms.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.ecms.version>
-    <exo.tool.framework.junit.version>1.2.0</exo.tool.framework.junit.version>
     <org.exoplatform.exopackage.version>1.1.4</org.exoplatform.exopackage.version>
     <version.chromattic>1.1.4</version.chromattic>    
      <!--commons dependencies-->
     <org.exoplatform.commons.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.commons.version>	      
-    <org.hsqldb.version>2.0.0</org.hsqldb.version>
+    <hsqldb.version>2.0.0</hsqldb.version>
      <!-- eXo extended service -->
      <org.exoplatform.social.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.social.version>
      <!-- 3rd parties -->
+     <docbook-xml.version>4.4</docbook-xml.version>
     <org.aspectj.version>1.6.10</org.aspectj.version>
     <ehcache.version>1.6.0</ehcache.version>
     <juel.version>2.1.2</juel.version>
@@ -50,8 +52,8 @@
     <commons-chain.version>1.2</commons-chain.version>
     <commons-logging.version>1.1.1</commons-logging.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
-    <org.apache.httpcomponents.httpclient.version>4.0</org.apache.httpcomponents.httpclient.version>
-    <com.google.guava.version>r07</com.google.guava.version>
+    <org.apache.httpcomponents.httpclient.version>4.0.1</org.apache.httpcomponents.httpclient.version>
+    <com.google.guava.version>r09</com.google.guava.version>
     <javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
     <javax.portlet.portlet-api.version>2.0</javax.portlet.portlet-api.version>
     <javax.mail.mail.version>1.4.4</javax.mail.mail.version>
@@ -98,7 +100,7 @@
     <com.sun.xml.bind.version>2.1.7</com.sun.xml.bind.version>
     <org.jvnet.jaxb2.maven2.version>0.7.4</org.jvnet.jaxb2.maven2.version>
     <commons-pool.version>1.5.5</commons-pool.version>
-    <asm.version>1.5.3</asm.version>
+    <asm.version>3.1</asm.version>
     <antlr.version>2.7.6rc1</antlr.version>
     <jcr.version>1.0</jcr.version>
     <stax.version>1.0</stax.version>
@@ -117,17 +119,12 @@
     <org.staxnav.version>0.9.6</org.staxnav.version>
     <nekohtml.version>1.9.14</nekohtml.version>
     <caja.version>r1</caja.version>
+    <commons.codec.version>1.4</commons.codec.version>
     <!-- ************** -->
     <!-- Build settings -->
     <!-- ************** -->
-    <!-- We enforce Java 6 to build to use Chromattic and APT -->
-    <jdk.min.version>1.6</jdk.min.version>
-    <!-- config-scm-maven-plugin -->
-    <version.release.plugin>2.2.1</version.release.plugin>
-	<org.apache.maven.scm.version>1.6</org.apache.maven.scm.version>
-	<version.buildnumber.plugin>1.1</version.buildnumber.plugin>
     <!-- maven-release-plugin -->
-    <arguments>-Prelease,pkg-tomcat,arc-tomcat,run-its -Dgatein.working.dir=target</arguments>
+    <arguments>-Ppkg-tomcat,arc-tomcat,run-its -Dgatein.working.dir=target</arguments>
   </properties>
   <dependencyManagement>
     <!-- TODO : import dependencyManagement of platform, instead of redefining those properties -->
@@ -138,36 +135,22 @@
          <version>${version.chromattic}</version>
        </dependency>
        <dependency>
-	<groupId>org.exoplatform.jcr</groupId>
-        <artifactId>exo.jcr.component.webdav</artifactId>
-	<version>${org.exoplatform.jcr.version}</version>
-	<type>jar</type>
-      </dependency>
-      <dependency>
-        <groupId>c3p0</groupId>
-        <artifactId>c3p0</artifactId>
-        <version>${c3p0.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.container</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.commons</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-      </dependency>
+         <groupId>commons-codec</groupId>
+         <artifactId>commons-codec</artifactId>
+         <version>${commons.codec.version}</version>
+       </dependency>
+       
+        <dependency>
+         <groupId>org.chromattic</groupId>
+         <artifactId>chromattic.ext</artifactId>
+         <version>${version.chromattic}</version>
+       </dependency>
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.component.common</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.exoplatform.jcr</groupId>
-        <artifactId>exo.jcr.component.core</artifactId>
-        <version>${org.exoplatform.jcr.version}</version>
-      </dependency>
+       
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.component.cache</artifactId>
@@ -244,10 +227,830 @@
         <version>${org.exoplatform.portal.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.exoplatform.tool</groupId>
-        <artifactId>exo.tool.framework.junit</artifactId>
-        <version>${exo.tool.framework.junit.version}</version>
+      <groupId>org.exoplatform.commons</groupId> 
+      <artifactId>commons-webui-component</artifactId>
+      <version>${org.exoplatform.commons.version}</version>
+      <scope>provided</scope>
       </dependency>
+      <dependency>
+      	<groupId>org.exoplatform.commons</groupId>
+      	<artifactId>commons-webui-ext</artifactId>
+      	<version>${org.exoplatform.commons.version}</version>
+      	<scope>provided</scope>
+      </dependency>
+      <!-- CS dependencies -->
+      <dependency>
+      	<groupId>org.exoplatform.calendar</groupId>
+      	<artifactId>calendar-webservice</artifactId>
+      	<version>${project.version}</version>
+      </dependency>
+       <dependency>
+      	<groupId>org.exoplatform.calendar</groupId>
+      	<artifactId>calendar-upgrade</artifactId>
+      	<version>${project.version}</version>
+      </dependency>
+       <dependency>
+      	<groupId>org.exoplatform.calendar</groupId>
+      	<artifactId>calendar-injector</artifactId>
+      	<version>${project.version}</version>
+      </dependency>
+      <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+	<dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-webapp</artifactId>
+      <version>${project.version}</version>   
+       <type>war</type>  
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-resources</artifactId>
+      <version>${project.version}</version>
+       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-extension-webapp</artifactId>
+      <version>${project.version}</version>
+       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+     <!-- end CS dependencies -->
+     <!-- packaging -->
+     <dependency>
+      <groupId>org.exoplatform.tool</groupId>
+      <artifactId>exopackage</artifactId>
+      <version>${org.exoplatform.exopackage.version}</version>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>kernel.packaging.module</artifactId>
+      <version>${org.exoplatform.kernel.version}</version>
+      <type>js</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.core</groupId>
+      <artifactId>core.packaging.module</artifactId>
+      <version>${org.exoplatform.core.version}</version>
+      <type>js</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.ws</groupId>
+      <artifactId>ws.packaging.module</artifactId>
+      <version>${org.exoplatform.ws.version}</version>
+      <type>js</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>jcr.packaging.module</artifactId>
+      <version>${org.exoplatform.jcr.version}</version>
+      <type>js</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>exo.jcr.component.ftp</artifactId>
+      <version>${org.exoplatform.jcr.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>exo.jcr.component.webdav</artifactId>
+      <version>${org.exoplatform.jcr.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>portal.packaging.module</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>js</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar.packaging.module</artifactId>
+      <version>${project.version}</version>
+      <type>js</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar.packaging.product</artifactId>
+      <version>${project.version}</version>
+      <type>js</type>
+    </dependency>
+	
+	<dependency>
+		<groupId>c3p0</groupId>
+		<artifactId>c3p0</artifactId>
+		<version>${c3p0.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.kernel</groupId>
+		<artifactId>exo.kernel.container</artifactId>
+		<version>${org.exoplatform.kernel.version}</version>		
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.kernel</groupId>
+		<artifactId>exo.kernel.commons</artifactId>
+		<version>${org.exoplatform.kernel.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.jcr</groupId>
+		<artifactId>exo.jcr.component.core</artifactId>
+		<version>${org.exoplatform.jcr.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.component.command</artifactId>
+      <version>${org.exoplatform.kernel.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
+	  <dependency>
+		<groupId>org.exoplatform.jcr</groupId>
+		<artifactId>exo.jcr.component.ext</artifactId>
+		<version>${org.exoplatform.jcr.version}</version>
+	  </dependency>	  
+	  <dependency>
+		<groupId>org.exoplatform.jcr</groupId>
+		<artifactId>exo.jcr.framework.command</artifactId>
+		<version>${org.exoplatform.jcr.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.jcr</groupId>
+		<artifactId>exo.jcr.framework.web</artifactId>
+		<version>${org.exoplatform.jcr.version}</version>
+	  </dependency>
+	  
+	  <dependency>
+		<groupId>org.exoplatform.ws</groupId>
+		<artifactId>exo.ws.rest.core</artifactId>
+		<version>${org.exoplatform.ws.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.ws</groupId>
+		<artifactId>exo.ws.frameworks.json</artifactId>
+		<version>${org.exoplatform.ws.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.ws</groupId>
+		<artifactId>exo.ws.frameworks.servlet</artifactId>
+		<version>${org.exoplatform.ws.version}</version>
+	  </dependency>
+	  
+	  <dependency>
+		<groupId>org.exoplatform.core</groupId>
+		<artifactId>exo.core.component.organization.api</artifactId>
+		<version>${org.exoplatform.core.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.core</groupId>
+		<artifactId>exo.core.component.security.core</artifactId>
+		<version>${org.exoplatform.core.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.commons</groupId>
+		<artifactId>commons-component-upgrade</artifactId>
+		<version>${org.exoplatform.commons.version}</version>
+	  </dependency>
+    <dependency>
+    <groupId>org.exoplatform.commons</groupId>
+    <artifactId>commons-component-product</artifactId>
+    <version>${org.exoplatform.commons.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.exoplatform.commons</groupId>
+    <artifactId>commons-webui-component</artifactId>
+    <version>${org.exoplatform.commons.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.exoplatform.commons</groupId>
+    <artifactId>commons-comet-service</artifactId>
+    <version>${org.exoplatform.commons.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>org.exoplatform.commons</groupId>
+    <artifactId>commons-comet-webapp</artifactId>
+    <version>${org.exoplatform.commons.version}</version>
+    <type>war</type>
+    </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.commons</groupId>
+		<artifactId>commons-fck</artifactId>
+		<version>${org.exoplatform.commons.version}</version>
+		<type>war</type>
+	  </dependency>
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-webui-resources</artifactId>
+      <version>${org.exoplatform.commons.version}</version>
+       <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-extension-webapp</artifactId>
+      <version>${org.exoplatform.commons.version}</version>
+       <type>war</type>
+    </dependency>
+      <dependency>
+          <groupId>org.exoplatform.commons</groupId>
+          <artifactId>commons-webui-ext</artifactId>
+          <version>${org.exoplatform.commons.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.exoplatform.commons</groupId>
+          <artifactId>commons-component-common</artifactId>
+          <version>${org.exoplatform.commons.version}</version>
+      </dependency>
+
+
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.component.portal</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.component.scripting</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.component.common</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.webui.eXo</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.webui.core</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.webui.portal</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.portlet.dashboard</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>
+    <dependency>
+    <groupId>org.exoplatform.portal</groupId>
+    <artifactId>exo.portal.webui.dashboard</artifactId>
+    <version>${org.exoplatform.portal.version}</version>
+    </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.component.management</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.web.rest</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>	  
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.eXoGadgets</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.web.portal</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.portlet.exoadmin</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.portlet.web</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.server.tomcat.plugin</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.web.eXoResources</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>
+	  <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.gadgets-server</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<type>war</type>
+	  </dependency>
+	  	  
+	  <dependency>
+		<groupId>org.exoplatform.tool</groupId>
+		<artifactId>exopackage</artifactId>
+		<version>${org.exoplatform.exopackage.version}</version>
+	  </dependency>
+    <dependency>
+      <groupId>org.jsecurity</groupId>
+      <artifactId>jsecurity</artifactId>
+      <version>${org.jsecurity.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>${ehcache.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-api</artifactId>
+      <version>${juel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.odysseus.juel</groupId>
+      <artifactId>juel-impl</artifactId>
+      <version>${juel.version}</version>
+    </dependency>
+	  <dependency>
+		<groupId>commons-lang</groupId>
+		<artifactId>commons-lang</artifactId>
+		<version>${commons-lang.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>servlet-api</artifactId>
+		<version>${javax.servlet.servlet-api.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>javax.portlet</groupId>
+		<artifactId>portlet-api</artifactId>
+		<version>${javax.portlet.portlet-api.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>javax.mail</groupId>
+		<artifactId>mail</artifactId>
+		<version>${javax.mail.mail.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>javax.xml.bind</groupId>
+		<artifactId>jaxb-api</artifactId>
+		<version>${javax.xml.bind.jaxb-api.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>javax.jcr</groupId>
+		<artifactId>jcr</artifactId>
+		<version>${javax.jcr.api.version}</version>
+	  </dependency>
+    <dependency>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector-api</artifactId>
+      <version>${javax.resource.connector-api.version}</version>
+    </dependency>
+	  <dependency>
+		<groupId>javax.ws.rs</groupId>
+		<artifactId>jsr311-api</artifactId>
+		<version>${javax.ws.rs.jsr311-api.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>xml-apis</groupId>
+		<artifactId>xml-apis</artifactId>
+		<version>${xml-apis.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>picocontainer</groupId>
+		<artifactId>picocontainer</artifactId>
+		<version>${picocontainer.version}</version>
+	  </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${org.apache.httpcomponents.httpclient.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${com.google.guava.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
+      <version>${rome.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+	  <dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>${junit.version}</version>
+	  </dependency>
+	   <dependency>
+		<groupId>xpp3</groupId>
+		<artifactId>xpp3</artifactId>
+		<version>${xpp3.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.mockito</groupId>
+		<artifactId>mockito-all</artifactId>
+		<version>${mockito.version}</version>
+	  </dependency>
+	  <!-- calendar-extension-ear-->
+	  <dependency>
+		<groupId>org.mortbay.jetty</groupId>
+		<artifactId>cometd-bayeux</artifactId>
+		<version>${org.mortbay.jetty.cometd-bayeux.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.mortbay.jetty</groupId>
+		<artifactId>cometd-api</artifactId>
+		<version>${org.mortbay.jetty.cometd-api.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.mortbay.jetty</groupId>
+		<artifactId>jetty-util</artifactId>
+		<version>${org.mortbay.jetty.jetty-util.version}</version>
+	  </dependency>
+	  <!-- test-calendar-selenium-->
+	  <dependency>
+		<groupId>org.openqa.selenium.client-drivers</groupId>
+		<artifactId>selenium-java-client-driver</artifactId>
+		<version>${selenium-java-client-driver.version}</version>
+	  </dependency>
+	  <!--calendar-service-->
+	  <dependency>
+		<groupId>ical4j</groupId>
+		<artifactId>ical4j</artifactId>
+		<version>${ical4j.version}</version>
+	  </dependency>
+	  <dependency>
+		<groupId>org.jcrom</groupId>
+		<artifactId>jcrom</artifactId>
+		<version>${jcrom.version}</version>
+		<scope>provided</scope>
+	  </dependency>
+	  <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>${org.apache.jackrabbit.version}</version>
+      </dependency>
+   	  <dependency>
+		  <groupId>org.exoplatform.portal</groupId>
+		  <artifactId>exo.portal.component.xml-parser</artifactId>
+		  <version>3.1.5-PLF</version>
+			<scope>provided</scope>
+	  </dependency>   
+	  <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>${org.slf4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${org.log4j.version}</version>
+      <scope>provided</scope> 
+    </dependency>
+    
+    <dependency>
+      <groupId>org.gatein.web</groupId>
+      <artifactId>redirect</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>jar</type>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.gatein.portal.portlet</groupId>
+      <artifactId>redirect</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>war</type>
+    </dependency>
+
+	<dependency>
+      <groupId>org.gatein.shindig</groupId>
+      <artifactId>shindig-social-api</artifactId>
+      <version>${org.gatein.shindig.version}</version>      
+    </dependency>
+    <dependency>
+      <groupId>org.gatein.wci</groupId>
+      <artifactId>wci-exo</artifactId>
+      <version>${org.gatein.wci.version}</version>
+	  <scope>provided</scope>
+    </dependency>
+	<dependency>
+      <groupId>org.gatein.wci</groupId>
+      <artifactId>wci-tomcat6</artifactId>
+      <version>${org.gatein.wci.version}</version>
+	  <scope>provided</scope>
+    </dependency>
+
+	<dependency>
+      <groupId>org.gatein.pc</groupId>
+      <artifactId>pc-controller</artifactId>
+      <version>${org.gatein.pc.version}</version>
+	  <scope>provided</scope>      
+    </dependency>
+	
+	<dependency>
+      <groupId>net.oauth</groupId>
+      <artifactId>core</artifactId>
+      <version>${net.oauth.version}</version>      
+    </dependency>
+	
+	<dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+      <version>${commons-pool.version}</version>      
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>${commons-dbcp.version}</version> 
+      <scope>provided</scope>  
+    </dependency>
+	<dependency>
+      <groupId>org.exoplatform.tool</groupId>
+      <artifactId>exo.tool.webunit</artifactId>
+      <version>${org.exoplatform.tool.version}</version>      
+    </dependency>	
+	<dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>${org.javassist.version}</version>      
+    </dependency>
+	<dependency>
+      <groupId>html-parser</groupId>
+      <artifactId>html-parser</artifactId>
+      <version>${html-parser.version}</version>      
+    </dependency>
+	<dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-impl</artifactId>
+      <version>${com.sun.xml.bind.version}</version>      
+    </dependency>
+	<dependency>
+      <groupId>org.jvnet.jaxb2.maven2</groupId>
+      <artifactId>maven-jaxb2-plugin</artifactId>
+      <version>${org.jvnet.jaxb2.maven2.version}</version>      
+    </dependency>
+	
+	<dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>${asm.version}</version>      
+    </dependency>
+	<dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>${cglib.version}</version>      
+    </dependency>
+	<dependency>
+        <groupId>antlr</groupId>
+        <artifactId>antlr</artifactId>
+        <version>${antlr.version}</version>
+	</dependency>
+	<dependency>
+        <groupId>jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>${jcr.version}</version>
+	</dependency>
+	<dependency>
+        <groupId>stax</groupId>
+        <artifactId>stax-api</artifactId>
+        <version>${stax.version}</version>
+	</dependency>
+
+	<!-- test -->
+  
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-server-tomcat-patch</artifactId>
+		<version>${project.version}</version>
+		<type>jar</type>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>${org.slf4j.version}</version>
+		<type>jar</type>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-resources</artifactId>
+		<version>${project.version}</version>
+		<type>war</type>
+	</dependency>
+	<dependency>
+		<groupId>org.reflext</groupId>
+		<artifactId>reflext.jlr</artifactId>
+		<version>${org.reflext.version}</version><type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>org.reflext</groupId>
+		<artifactId>reflext.spi</artifactId>
+		<version>${org.reflext.version}</version><type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>org.reflext</groupId>
+		<artifactId>reflext.api</artifactId>
+		<version>${org.reflext.version}</version><type>jar</type>
+	</dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-common</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-producer</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+    <type>war</type>
+  </dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-producer-lib</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-wsrp1-ws</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-wsrp2-ws</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-integration-api</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-admin-gui</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+    <type>war</type>
+  </dependency>
+  <dependency>
+    <groupId>org.gatein.wsrp</groupId>
+    <artifactId>wsrp-consumer</artifactId>
+    <version>${org.gatein.wsrp.version}</version>
+  </dependency>
+	<dependency>
+		<groupId>org.chromattic</groupId>
+		<artifactId>chromattic.core</artifactId>
+		<version>${version.chromattic}</version>
+		<type>jar</type>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-webservice</artifactId>
+		<version>${project.version}</version>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-demo-cometd</artifactId>
+		<version>${project.version}</version>
+		<type>war</type>
+	</dependency>
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-webapp</artifactId>
+		<version>${project.version}</version>
+		<type>war</type>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-demo-config</artifactId>
+		<version>${project.version}</version>
+		<type>jar</type>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-demo-webapp</artifactId>
+		<version>${project.version}</version>
+		<type>war</type>
+	</dependency>
+	 
+	<dependency>
+		<groupId>org.exoplatform.calendar</groupId>
+		<artifactId>calendar-service</artifactId>
+		<version>${project.version}</version>
+		<type>jar</type>
+	</dependency>
+	 
+ 	<dependency>
+ 		<groupId>org.exoplatform.calendar</groupId>
+ 		<artifactId>calendar-demo-rest</artifactId>
+ 		<version>${project.version}</version>
+ 		<type>war</type>
+ 	</dependency>
+	
+  
+	<dependency>
+		<groupId>commons-collections</groupId>
+		<artifactId>commons-collections</artifactId>
+		<version>${commons-collections.version}</version>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>xerces</groupId>
+		<artifactId>xercesImpl</artifactId>
+		<version>${xerces.version}</version>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>javax.activation</groupId>
+		<artifactId>activation</artifactId>
+		<version>${javax.activation.version}</version>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>commons-httpclient</groupId>
+		<artifactId>commons-httpclient</artifactId>
+		<version>${commons-httpclient.version}</version>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>org.jboss</groupId>
+		<artifactId>jboss-common-core</artifactId>
+		<version>${org.jboss.version}</version>
+		<type>jar</type>
+	</dependency>
+  <dependency>
+    <groupId>org.jboss</groupId>
+    <artifactId>jbossxb</artifactId>
+    <version>${org.jbossxb.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.staxnav</groupId>
+    <artifactId>staxnav.core</artifactId>
+    <version>${org.staxnav.version}</version>
+  </dependency>
+	<dependency>
+		<groupId>org.exoplatform.core</groupId>
+		<artifactId>exo.core.component.organization.jdbc</artifactId>
+		<version>${org.exoplatform.core.version}</version>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+		<groupId>org.exoplatform.kernel</groupId>
+		<artifactId>exo.kernel.component.ext.cache.impl.jboss.v3</artifactId>
+		<version>${org.exoplatform.kernel.version}</version>
+		<type>jar</type>
+	</dependency>
+	<dependency>
+          <groupId>caja</groupId>
+          <artifactId>json_simple</artifactId>
+          <version>${caja.version}</version>
+          <type>jar</type>
+    </dependency>
+     <dependency>
+      <groupId>org.exoplatform.social</groupId>
+      <artifactId>social-component-core</artifactId>
+      <version>${org.exoplatform.social.version}</version>
+      <scope>provided</scope>
+    </dependency>
+     <!-- end packaging -->   
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-component-common</artifactId>
+      <version>${org.exoplatform.commons.version}</version>
+    </dependency>
+       
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjrt</artifactId>
@@ -346,7 +1149,7 @@
       <dependency>
         <groupId>org.hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
-        <version>${org.hsqldb.version}</version>
+        <version>${hsqldb.version}</version>
       </dependency>
       <!-- exo.cs.extension.ear-->
       <dependency>
@@ -364,12 +1167,11 @@
         <artifactId>jetty-util</artifactId>
         <version>${org.mortbay.jetty.jetty-util.version}</version>
       </dependency>
-      <!-- test-calendar-selenium-->
       <dependency>
-        <groupId>org.openqa.selenium.client-drivers</groupId>
-        <artifactId>selenium-java-client-driver</artifactId>
-        <version>${selenium-java-client-driver.version}</version>
-      </dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+       <version>${commons-httpclient.version}</version>
+    </dependency>
       <!--exo.cs.eXoApplication.calendar.service-->
       <dependency>
         <groupId>ical4j</groupId>
@@ -406,6 +1208,69 @@
         <artifactId>json_simple</artifactId>
         <version>${caja.version}</version>
       </dependency>
+       <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.server.tomcat.patch</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.server.jboss.patch</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.server.jboss.patch-ear</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>commons-chain</groupId>
+      <artifactId>commons-chain</artifactId>
+      <version>${commons-chain.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>${commons-logging.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.test.core</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <scope>test</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.test.jcr</artifactId>
+      <version>${org.exoplatform.portal.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.identity</artifactId>
+       <version>${org.exoplatform.portal.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.wikbook</groupId>
+      <artifactId>wikbook.docbkxstyle</artifactId>
+      <version>${version.wikbook.plugin}</version>
+    </dependency>
+    
+    <dependency>
+		<groupId>org.exoplatform.portal</groupId>
+		<artifactId>exo.portal.component.xml-parser</artifactId>
+		<version>${org.exoplatform.portal.version}</version>
+		<scope>provided</scope>
+	 </dependency>   
+	 
+	   
     </dependencies>
   </dependencyManagement>
   
@@ -426,36 +1291,15 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <systemProperties>
-              <property>
-                <name>java.naming.factory.initial</name>
-                <value>org.exoplatform.services.naming.SimpleContextFactory</value>
-              </property>
-              <property>
-                <name>java.util.logging.config.class</name>
-                <value>org.exoplatform.component.test.logging.LogConfigurator</value>
-              </property>
-              <property>
-                <name>com.arjuna.ats.arjuna.objectstore.objectStoreDir</name>
-                <value>${project.build.directory}</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.driver</name>
-                <value>org.hsqldb.jdbcDriver</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.url</name>
-                <value>jdbc:hsqldb:file:${project.build.directory}/gateindb</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.username</name>
-                <value>sa</value>
-              </property>
-              <property>
-                <name>gatein.test.datasource.password</name>
-                <value />
-              </property>
-            </systemProperties>
+            <systemPropertyVariables>
+              <java.naming.factory.initial>org.exoplatform.services.naming.SimpleContextFactory</java.naming.factory.initial>
+              <java.util.logging.config.class>org.exoplatform.component.test.logging.LogConfigurator</java.util.logging.config.class>
+              <com.arjuna.ats.arjuna.objectstore.objectStoreDir>${project.build.directory}</com.arjuna.ats.arjuna.objectstore.objectStoreDir>
+              <gatein.test.datasource.driver>org.hsqldb.jdbcDriver</gatein.test.datasource.driver>
+              <gatein.test.datasource.url>jdbc:hsqldb:file:${project.build.directory}/gateindb</gatein.test.datasource.url>
+              <gatein.test.datasource.username>sa</gatein.test.datasource.username>
+              <gatein.test.datasource.password></gatein.test.datasource.password>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
       </plugins>
@@ -463,40 +1307,6 @@
   </build>
 
   <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.apache.resources</groupId>
-                <artifactId>apache-source-release-assembly-descriptor</artifactId>
-                <version>1.0.2</version>
-              </dependency>
-            </dependencies>
-            <executions>
-              <execution>
-                <id>source-release-assembly</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <configuration>
-                  <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-                  <descriptorRefs>
-                    <descriptorRef>source-release</descriptorRef>
-                  </descriptorRefs>
-                  <tarLongFileFormat>gnu</tarLongFileFormat>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
     <profile> <!-- profile for configuring hsql as database in test phase -->
       <id>hsqldb</id>
       <activation>
@@ -517,20 +1327,9 @@
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-surefire-plugin</artifactId>
               <configuration>
-                 <systemProperties>
-                    <property>
-                       <name>java.util.logging.config.class</name>
-                       <value>org.exoplatform.component.test.logging.LogConfigurator</value>
-                    </property>
-                    <property>
-                       <name>com.arjuna.ats.arjuna.objectstore.objectStoreDir</name>
-                       <value>${project.build.directory}</value>
-                    </property>
-                    <property>
-                       <name>exo.profiles</name>
-                       <value>hsqldb</value>
-                    </property>
-                 </systemProperties>
+                <systemPropertyVariables>
+                  <exo.profiles>hsqldb</exo.profiles>
+                </systemPropertyVariables>
               </configuration>
            </plugin>
         </plugins>
@@ -547,10 +1346,8 @@
     <module>calendar-webapp</module>
     <module>calendar-extension</module>
     <module>calendar-demo</module>
-    <module>calendar-docs</module>
     <module>calendar-server</module>
     <module>calendar-packaging</module>
-    <module>calendar-test</module>
     <module>calendar-resources</module>
     <module>calendar-webservice</module>
 	<module>calendar-CreateEventTask</module>

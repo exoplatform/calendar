@@ -4,18 +4,16 @@
   <parent>
     <groupId>org.exoplatform.calendar</groupId>
     <artifactId>calendar-server-tomcat</artifactId>
-    <version>4.0.0.Alpha1-SNAPSHOT</version>
+    <version>4.0.0.Alpha1-POC-CREATEEVENT-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-server-tomcat-patch</artifactId>
   <packaging>jar</packaging>
   <name>eXo Calendar Tomcat Server Patch</name>
   <description>eXo Tomcat Server</description>
-  <url>http://www.exoplatform.org</url>
   <dependencies>
     <dependency>
       <groupId>org.exoplatform.portal</groupId>
       <artifactId>exo.portal.server.tomcat.patch</artifactId>
-      <version>${org.exoplatform.portal.version}</version>
       <type>jar</type>
     </dependency>
   </dependencies>
@@ -44,7 +42,6 @@
                 <artifactItem>
                   <groupId>org.exoplatform.portal</groupId>
                   <artifactId>exo.portal.server.tomcat.patch</artifactId>
-                  <version>${org.exoplatform.portal.version}</version>
                   <type>jar</type>
                 </artifactItem>
               </artifactItems>

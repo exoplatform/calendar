@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.exoplatform.calendar</groupId>
     <artifactId>calendar</artifactId>
-    <version>4.0.0.Alpha1-SNAPSHOT</version>
+    <version>4.0.0.Alpha1-POC-CREATEEVENT-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-upgrade</artifactId>
   <name>eXo Calendar Upgrade Component</name>
@@ -12,64 +12,35 @@
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
-      <version>${org.exoplatform.kernel.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.core</artifactId>
-      <version>${org.exoplatform.jcr.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.ext</artifactId>
-      <version>${org.exoplatform.jcr.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-component-upgrade</artifactId>
-      <version>${org.exoplatform.commons.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
-      <version>${javax.jcr.api.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
-    <plugins>
-      <plugin>
-    	<groupId>org.apache.maven.scm</groupId>
- 		<artifactId>maven-scm-provider-gitexe</artifactId>
-		<version>${org.apache.maven.scm.version}</version>
-	  </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>${version.buildnumber.plugin}</version>
-        <executions>
-          <execution>
-            <phase>initialize</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <timestampFormat>{0, date,yyyyMMdd}</timestampFormat>
-        </configuration>
-      </plugin>
-    </plugins>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
