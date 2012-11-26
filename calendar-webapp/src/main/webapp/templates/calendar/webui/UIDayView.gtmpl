@@ -51,7 +51,8 @@
   requirejs.addScripts('cal.UICalendarPortlet.initSelection() ;') ;
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;  
-  rcontext.getJavascriptManager().addOnResizeJavascript('cal.UICalendarPortlet.browserResizeCallback') ;  
+  rcontext.getJavascriptManager().addOnResizeJavascript('cal.UICalendarPortlet.browserResizeCallback') ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIDayView\');');  
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
   //rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout();');  
   
