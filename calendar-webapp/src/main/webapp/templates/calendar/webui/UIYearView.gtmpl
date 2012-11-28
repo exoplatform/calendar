@@ -15,8 +15,7 @@
   
   requirejs.addScripts("cal.UICalendarPortlet.setSelected('"+uiform.id+"') ;") ;
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
-  
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIYearView\');');  
   int currentYear = uicomponent.getCurrentYear() ;
   Calendar cal =  new GregorianCalendar() ;
   cal.setTimeInMillis(uicomponent.getCurrentCalendar().getTimeInMillis()) ;
