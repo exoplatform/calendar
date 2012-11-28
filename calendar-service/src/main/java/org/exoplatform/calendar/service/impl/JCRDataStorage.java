@@ -84,7 +84,6 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.AccessControlEntry;
 import org.exoplatform.services.jcr.access.PermissionType;
-import org.exoplatform.services.jcr.access.SystemIdentity;
 import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.exoplatform.services.jcr.core.ManageableRepository;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
@@ -97,6 +96,7 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.IdentityConstants;
 
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
@@ -1707,7 +1707,7 @@ public class JCRDataStorage implements DataStorage {
     if (extNode.canAddMixin("exo:privilegeable"))
       extNode.addMixin("exo:privilegeable");
     String[] arrayPers = { PermissionType.READ, PermissionType.ADD_NODE, PermissionType.SET_PROPERTY, PermissionType.REMOVE };
-    extNode.setPermission(SystemIdentity.ANY, arrayPers);
+    extNode.setPermission(IdentityConstants.ANY, arrayPers);
     List<AccessControlEntry> permsList = extNode.getACL().getPermissionEntries();
     for (AccessControlEntry accessControlEntry : permsList) {
       extNode.setPermission(accessControlEntry.getIdentity(), arrayPers);
