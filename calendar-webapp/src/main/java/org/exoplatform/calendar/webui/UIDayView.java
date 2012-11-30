@@ -16,12 +16,7 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.jcr.PathNotFoundException;
 
@@ -136,8 +131,13 @@ public class UIDayView extends UICalendarView {
     }
     return dataMap ;
   }
-  
-  
+
+  // CAL-44
+  public boolean isEventDurationSmallerThanHalfHour(CalendarEvent anEvent)
+  {
+      long differenceInMin = ( anEvent.getToDateTime().getTime() - anEvent.getFromDateTime().getTime() ) / (1000 * 60);
+      return (differenceInMin <= 30);
+  }
   
   static  public class UpdateEventActionListener extends EventListener<UIDayView> {
     public void execute(Event<UIDayView> event) throws Exception {
