@@ -21,12 +21,14 @@
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
   DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
   boolean searchDisplay = uicomponent.isDisplaySearchResult();
-  if(searchDisplay) {
-%>
+  if(searchDisplay) { %>
     <div class="Result ListBar">
       <%=uiform.getLabel('searchResult')%>
+      <div class="UIAction" style=" display: inline; ">
+        <a href="<%= uicomponent.event('AdvancedSearch')%>" class="ActionButton LightBlueStyle"><%=uiform.getLabel('AdvancedSearch')%></a>
+      </div>
     </div>
-<%
+  <%
   }else {
     _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
   }
@@ -53,10 +55,10 @@
     <table cellspacing="0" borderspacing="0" id="UIListUsers" class="UIGrid">
       <thead>
         <tr>
-        <%if(!searchDisplay) {
-        %>
+        <% if(!searchDisplay) { %>
+        <!-- search results displaying is disabled, show Attachment Icon, Priority and Event -->
            <th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
-        <%}%>
+
           <th style="width: 24px;"><div class="AttachmentIcon">&nbsp;</div></th>
           <%
             String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
@@ -76,6 +78,19 @@
           }
           %>
           <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('Event')%></div></a></th>
+        <% } else { %>
+        <!-- Search result displaying enabled, replace Event by Title -->
+          <%
+            sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
+            classCss = "";
+            if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
+              if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
+              else classCss = "DownArrow1Icon";
+          }
+          %>
+          <th><a href="sortLink"><div class="classCss"><%=uiform.getLabel('Title')%></div></a></th>
+        <% } %>
+
           <%
             sortLink = uicomponent.event("Sort", uicomponent.EVENT_START.toString()) ;
             classCss = "";
@@ -120,10 +135,15 @@
               <%if(!searchDisplay) {%>
                 <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
               <%}%>
+
+              <!-- do not display attachment icon and priority icon in search results -->
+              <% if(!searchDisplay) { %>
                 <td style="padding: 0px 0px 0px 7px;"><div class="$attachIcon" >&nbsp;</div></td>
                 <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>      
+              <% } %>
                 <td class="text">
 				  <div class="EventDescription $color"><span></span></div>
+                  <div class="<%=event.eventState%>Icon" style=" margin-right:5px; "></div>
                   <span class="ControlButton" title="<%=event.summary%>">
                     <%=event.getSummary()%>
                   </span>  

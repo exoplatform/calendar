@@ -32,6 +32,8 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -70,7 +72,8 @@ import org.exoplatform.webui.form.UIFormSelectBox;
       @EventConfig(listeners = UIListView.SortActionListener.class ),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
+      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+      @EventConfig(listeners = UIListView.AdvancedSearchActionListener.class)
     }
 )
 public class UIListView extends UICalendarView {
@@ -467,7 +470,18 @@ public class UIListView extends UICalendarView {
     this.setCalClicked(true);
     super.processAction(context);
   }
-  
-  
+
+    static  public class AdvancedSearchActionListener extends EventListener<UIListView> {
+        public void execute(Event<UIListView> event) throws Exception {
+            UIListView uiListView = event.getSource() ;
+            UICalendarPortlet calendarPortlet = uiListView.getAncestorOfType(UICalendarPortlet.class) ;
+            UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
+            UIAdvancedSearchForm uiAdvancedSearchForm = popupAction.activate(UIAdvancedSearchForm.class, 600) ;
+            //uiAdvancedSearchForm.setSearchValue(calendarPortlet.getSearchValue()) ;
+            //uiForm.reset() ;
+            event.getRequestContext().addUIComponentToUpdateByAjax(uiListView) ;
+            event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
+        }
+    }
 }
 
