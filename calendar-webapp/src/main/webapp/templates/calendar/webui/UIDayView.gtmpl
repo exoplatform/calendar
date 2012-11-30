@@ -151,7 +151,7 @@
                       <div class="<%=ce.getPriority()%>PriorityIcon" style="float:left;"><span></span></div>
                     </div>
 
-                    <% if ( uicomponent.isEventDurationSmallerThanHalfHour(ce) ) { %>
+                    <% if ( ce.isEventDurationSmallerThanHalfHour() ) { %>
                     <!-- if event duration smaller than 30 mins then render event in the same line -->
                     <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>"
                      style=" display: inline; ">
