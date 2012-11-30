@@ -205,19 +205,39 @@
           <%
             }
           %>
-		  <div class="ClearFix">
-			   <div class="<%=event.eventState%>Icon">
-				 <div class="<%=event.getPriority()%>PriorityIcon">
-					<span></span>
-				  </div>
-				</div>
-			  <div class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>" >
-				<p unselectable="on">
-				  $begin - $end
-				</p>
+
+          <!-- if event duration smaller than 30 minutes then show only starting time and description -->
+          <% if (event.isEventDurationSmallerThanHalfHour()) { %>
+          <div class="ClearFix" style=" display:inline; " >
+	        <div class="<%=event.eventState%>Icon">
+			  <div class="<%=event.getPriority()%>PriorityIcon">
+				<span></span>
 			  </div>
+			</div>
+			<div class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>"
+			  style=" display:inline; margin-right: 2px; ">
+			  <p unselectable="on" style=" display:inline; ">
+			    $begin
+			  </p>
+			</div>
 		  </div>
+          <div unselectable="on" class="EventContainer" style=" display:inline !important; ">$event.summary</div>
+          <% } else { %>
+          <div class="ClearFix">
+            <div class="<%=event.eventState%>Icon">
+              <div class="<%=event.getPriority()%>PriorityIcon">
+                <span></span>
+              </div>
+            </div>
+            <div class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>" >
+              <p unselectable="on">
+                $begin - $end
+              </p>
+            </div>
+          </div>
           <div unselectable="on" class="EventContainer">$event.summary</div>
+          <% } %>
+
           <div class="ResizeEventContainer" unselectable="on">
             <span></span>
           </div>
