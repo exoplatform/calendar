@@ -88,7 +88,7 @@
       <artifactId>picocontainer</artifactId>
     </dependency>
     <dependency>
-      <groupId>quartz</groupId>
+      <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
     </dependency>
     <dependency>
@@ -135,6 +135,16 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+       <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

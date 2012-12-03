@@ -22,8 +22,8 @@
 
 <configuration
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
-   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
+   xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd http://www.exoplaform.org/xml/ns/kernel_1_2.xsd"
+   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd">
   <external-component-plugins>
     <target-component>org.exoplatform.services.organization.OrganizationService</target-component>
     <component-plugin>
@@ -46,7 +46,6 @@
           <name>configuration</name>
           <description>description</description>
           <object type="org.exoplatform.services.organization.OrganizationConfig">
-          
             <field  name="membershipType">
               <collection type="java.util.ArrayList">
               	<value>
@@ -265,6 +264,45 @@
           </object>
         </object-param>
       </init-params>
+    </component-plugin>
+           
+    <component-plugin>
+      <name>new.user.event.listener</name>
+      <set-method>addListenerPlugin</set-method>
+      <type>org.exoplatform.services.organization.impl.NewUserEventListener</type>
+      <description>this listener assign group and membership to a new created user</description>
+      <init-params>
+        <object-param>
+          <name>configuration</name>
+          <description>description</description>
+          <object type="org.exoplatform.services.organization.impl.NewUserConfig">
+            <field  name="group">
+              <collection type="java.util.ArrayList">
+                <value>
+                  <object type="org.exoplatform.services.organization.impl.NewUserConfig$JoinGroup">
+                    <field  name="groupId"><string>/platform/users</string></field>
+                    <field  name="membership"><string>member</string></field>
+                  </object>
+                </value>               
+              </collection>
+            </field>
+            <field  name="ignoredUser">
+              <collection type="java.util.HashSet">
+                <value><string>root</string></value>
+                <value><string>john</string></value>
+                <value><string>mary</string></value>
+                <value><string>demo</string></value>
+              </collection>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+    
+    <component-plugin>
+      <name>MembershipUpdateListener</name>
+      <set-method>addListenerPlugin</set-method>
+      <type>org.exoplatform.services.organization.impl.MembershipUpdateListener</type>
     </component-plugin>
   </external-component-plugins>
 </configuration>

@@ -190,7 +190,7 @@ public class JCRDataStorage implements DataStorage {
    */
   public Node getUserCalendarServiceHome(String username) throws Exception {
     // CS-2356
-    // SessionProvider sProvider = createSessionProvider();
+    //SessionProvider sProvider = createSessionProvider();
     SessionProvider sProvider = createSystemProvider();
     Node userNode = nodeHierarchyCreator_.getUserApplicationNode(sProvider, username);
     Node userApp = getNodeByPath(userNode.getPath(), sProvider);
@@ -1786,7 +1786,13 @@ public class JCRDataStorage implements DataStorage {
    */
   public CalendarSetting getCalendarSetting(String username) throws Exception {
     Node calendarHome = getUserCalendarServiceHome(username);
-    return getCalendarSetting(calendarHome);
+    CalendarSetting setting = getCalendarSetting(calendarHome);
+    if(setting == null) {
+      saveCalendarSetting(username, new CalendarSetting()) ;
+      setting = getCalendarSetting(calendarHome);
+    }
+     
+    return setting;
   }
 
   /**
@@ -4006,7 +4012,7 @@ public class JCRDataStorage implements DataStorage {
       log.info("No user session provider was available, trying to use a system session provider");
       provider = sessionProviderService_.getSystemSessionProvider(null);
     }
-    return provider;
+    return SessionProvider.createSystemProvider() ;
   }
 
   /**
@@ -4014,14 +4020,14 @@ public class JCRDataStorage implements DataStorage {
    */
   @SuppressWarnings("unused")
   public SessionProvider createUserProvider() {
-    return sessionProviderService_.getSessionProvider(null);
+    return SessionProvider.createSystemProvider() ;
   }
 
   /**
    * {@inheritDoc}
    */
   public SessionProvider createSystemProvider() {
-    return sessionProviderService_.getSystemSessionProvider(null);
+    return  SessionProvider.createSystemProvider() ;
   }
 
   /**

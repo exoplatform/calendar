@@ -39,7 +39,7 @@ import org.exoplatform.test.BasicTestCase;
  */
 public abstract class BaseCalendarTestCase extends BasicTestCase {
 
-  protected static Log                  log                    = ExoLogger.getLogger("cs.calendar.services.test");
+  protected static Log                  log                    = ExoLogger.getLogger("calendar:service-test");
 
   protected static RepositoryService    repositoryService;
 

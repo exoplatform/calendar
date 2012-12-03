@@ -40,13 +40,15 @@
     <!-- **************************************** -->
     <!-- Project Dependencies                     -->
     <!-- **************************************** -->
-    <org.exoplatform.kernel.version>2.4.0-CR2</org.exoplatform.kernel.version>
-	<org.exoplatform.core.version>2.5.0-CR2</org.exoplatform.core.version>
-	<org.exoplatform.ws.version>2.3.0-CR2</org.exoplatform.ws.version>
-	<org.exoplatform.jcr.version>1.15.0-CR2</org.exoplatform.jcr.version>
-    <org.exoplatform.portal.version>3.5.0.Beta02</org.exoplatform.portal.version>
+    <org.exoplatform.kernel.version>2.4.0-GA</org.exoplatform.kernel.version>
+<org.exoplatform.core.version>2.5.0-GA</org.exoplatform.core.version>
+<org.exoplatform.ws.version>2.3.0-GA</org.exoplatform.ws.version>
+<org.exoplatform.jcr.version>1.15.0-GA</org.exoplatform.jcr.version>
+    <org.exoplatform.portal.version>3.5.0.Final</org.exoplatform.portal.version>
     <org.exoplatform.commons.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.commons.version>
-    <org.gatein.wci.version>2.3.0.CR03</org.gatein.wci.version>
+    <org.gatein.wci.version>2.3.0.Final</org.gatein.wci.version>
+    <org.quartz-scheduler.version>2.1.6</org.quartz-scheduler.version>
+    <org.slf4j.slf4j-simple.version>1.6.1</org.slf4j.slf4j-simple.version>
     <!-- eXo extended service -->
     <org.exoplatform.social.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.social.version>
   </properties>
@@ -283,6 +285,27 @@
         <artifactId>wci-wci</artifactId>
         <version>${org.gatein.wci.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz</artifactId>
+        <version>${org.quartz-scheduler.version}</version>
+      </dependency>
+      <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${org.slf4j.slf4j-simple.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+         <version>${org.slf4j.slf4j-simple.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${org.slf4j.slf4j-simple.version}</version>
+    </dependency>
+    
     </dependencies>
   </dependencyManagement>
   <build>
