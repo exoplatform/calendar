@@ -16,12 +16,7 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.jcr.PathNotFoundException;
 
@@ -136,8 +131,6 @@ public class UIDayView extends UICalendarView {
     }
     return dataMap ;
   }
-  
-  
   
   static  public class UpdateEventActionListener extends EventListener<UIDayView> {
     public void execute(Event<UIDayView> event) throws Exception {

@@ -678,4 +678,14 @@ public class CalendarEvent {
     return repeatByDay;
   }
 
+  /**
+   * used in template for rendering event differently if its duration smaller than 30 minutes
+   *
+   * @return true, false
+   */
+  public boolean isEventDurationSmallerThanHalfHour()
+  {
+    long differenceInMin = ( getToDateTime().getTime() - getFromDateTime().getTime() ) / (1000 * 60);
+    return (differenceInMin <= 30);
+  }
 }

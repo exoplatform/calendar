@@ -150,8 +150,23 @@
                     <div class="<%=ce.eventState%>Icon">
                       <div class="<%=ce.getPriority()%>PriorityIcon" style="float:left;"><span></span></div>
                     </div>
+
+                    <% if ( ce.isEventDurationSmallerThanHalfHour() ) { %>
+                    <!-- if event duration smaller than 30 mins then render event in the same line -->
+                    <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>"
+                     style=" display: inline; ">
+                    <!-- event time -->
+                      <p style=" display: inline; margin-right: 5px; ">
+                        <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>
+                      </p>
+                    </div>
+                    <div class="EventContainer" style=" display: inline !important; ">
+                      <%=ce.getSummary()%>
+                    </div>
+
+                    <% } else { %>
                     <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>">
-                      
+                    <!-- event time -->
                       <p>
                         <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>
                       </p>
@@ -159,11 +174,12 @@
                     <div class="EventContainer">
                       <%=ce.getSummary()%>
                     </div>
+                    <% } %>
                     <div class="ResizeEventContainer">
                      <span></span>
                     </div>
                   </div>
-                  <%}%>
+                  <% } %>
                   <table cellspacing="0" cellpadding="0"  borderspacing="0" width="100%" class="TimeRule">
                     <tbody>
                       <%
