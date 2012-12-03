@@ -154,7 +154,7 @@
                     <% if ( ce.isEventDurationSmallerThanHalfHour() ) { %>
                     <!-- if event duration smaller than 30 mins then render event in the same line -->
                     <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>"
-                     style=" display: inline; ">
+                     style=" display: inline-block; width: 75px; ">
                     <!-- event time -->
                       <p style=" display: inline; margin-right: 5px; ">
                         <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>
