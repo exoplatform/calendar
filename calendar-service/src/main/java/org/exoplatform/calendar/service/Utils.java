@@ -443,7 +443,7 @@ public class Utils {
   public static PortalContainer getPortalContainer(JobExecutionContext context) {
     if (context == null)
       return null;
-    String portalName = context.getJobDetail().getKey().getGroup();
+    String portalName = context.getJobDetail().getGroup();
     if (portalName == null)
       return null;
     if (portalName.indexOf(COLON) > 0)
