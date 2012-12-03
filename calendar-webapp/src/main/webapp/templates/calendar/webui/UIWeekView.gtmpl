@@ -10,7 +10,7 @@
   import org.exoplatform.calendar.service.CalendarEvent;
   import java.text.ParseException;
   uiform.begin()
- 
+
    Calendar currentCalendar = uicomponent.getCurrentCalendar() ;
    int currentDay = uicomponent.getCurrentDay() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
@@ -22,25 +22,25 @@
   if(uicomponent.isShowCustomView()) {
     numberOfDays = 5 ;
     styleWidth = "width:19.8%;*width:20%;" ;
-  } 
+  }
   workingStart = uicomponent.getCalendarSetting().getWorkingTimeBegin() ;
   int defaultTimeInterval = uicomponent.getDefaultTimeInterval() ;
-  
+
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
-  
+
   requirejs.addScripts('cal.UICalendarPortlet.getWorkingdays('+numberOfDays+') ;') ;
-  
+
   //rcontext.getJavascriptManager().addOnLoadJavascript("eXo.calendar.UICalendarPortlet.onLoad") ; //error in addOnLoadJavascript
   requirejs.require("SHARED/base","base");
-  id = Integer.toString(Math.abs(new String("cal.UICalendarPortlet.onLoad").hashCode()));  
+  id = Integer.toString(Math.abs(new String("cal.UICalendarPortlet.onLoad").hashCode()));
   requirejs.addScripts("base.Browser.addOnLoadCallback('mid"+id+"',cal.UICalendarPortlet.onLoad);") ;
-  
+
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   rcontext.getJavascriptManager().addOnResizeJavascript('cal.UIWeekView.onResize') ;
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
-  
+
    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
    Locale locale = context.getParentAppRequestContext().getLocale() ;
    String currentMonthName = uicomponent.getMonthName(currentMonth) ;
@@ -64,7 +64,7 @@
   DateFormat dtf = new SimpleDateFormat(dateFormat+" "+CalendarUtils.TIMEFORMAT, locale) ;
   DateFormat wf = new  SimpleDateFormat("EEE, dd MMM", locale) ;
   DateFormat tempFormat =  new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;
-  tempFormat.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;  
+  tempFormat.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
   def eventList = [];
 %>
 <div class="UIWeekView">
@@ -133,7 +133,7 @@
                     eventList.add(event.id);
                   %>
                   <input type="hidden" name="${event.id}calType" value="$event.calType" />
-                  <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />          
+                  <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />
                   <input type="hidden" name="${event.id}startTime" value="" />
                   <input type="hidden" name="${event.id}finishTime" value="" />
                   <input type="hidden" name="${event.id}isOccur" value="$isOccur" />
@@ -162,20 +162,20 @@
     <div class="EventWeekContent MainWorkingPanel" style="position: relative;" onresize="eXo.calendar.UIWeekView.onResize() ;">
       <div class="EventBoard">
         <%
-        cl = uicomponent.getBeginDateOfWeek() ;        
-        t = 0 ; 
+        cl = uicomponent.getBeginDateOfWeek() ;
+        t = 0 ;
         while(t++ < numberOfDays) {
           day = cl.get(Calendar.DATE) ;
            month = cl.get(Calendar.MONTH) ;
            year = cl.get(Calendar.YEAR) ;
            key = uicomponent.keyGen(day, month, year) ;
            dayOfWeek = cl.get(Calendar.DAY_OF_WEEK) ;
-          events = uicomponent.getEventData().get(key) ; 
+          events = uicomponent.getEventData().get(key) ;
           if(events != null) {
-          for(event in events){ 
+          for(event in events){
             begin =  tf.format(event.fromDateTime) ;
             begindate = dtf.format(event.fromDateTime) ;
-            end = tf.format(event.toDateTime) ; 
+            end = tf.format(event.toDateTime) ;
             cal = CalendarUtils.getInstanceTempCalendar() ;
              cal.setTime(event.getFromDateTime()) ;
             beginTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
@@ -196,7 +196,7 @@
               eventList.add(event.id);
           %>
           <input type="hidden" name="${event.id}calType" value="$event.calType" />
-          <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />          
+          <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />
           <input type="hidden" name="${event.id}startTime" value="" />
           <input type="hidden" name="${event.id}finishTime" value="" />
           <input type="hidden" name="${event.id}isOccur" value="$isOccur" />
@@ -206,31 +206,62 @@
             }
           %>
 
+          <!---- DISPLAYING EVENT DURATION ---->
           <% if ( event.isEventDurationSmallerThanHalfHour() ) { %>
-	        <div class="<%=event.eventState%>Icon">
-			  <div class="<%=event.getPriority()%>PriorityIcon">
-				<span></span>
-			  </div>
+          <!-- if event duration smaller than 30 mins then render event in the same line -->
+          <div class="<%=event.eventState%>Icon">
+            <div class="<%=event.getPriority()%>PriorityIcon">
+              <span></span>
 			</div>
-			<div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>" style=" display: inline-block; width: 75px; ">
-			  <p unselectable="on" style=" display: inline; margin-right: 2px; ">
-				  $begin - $end
-			  </p>
-			</div>
-            <div unselectable="on" class="EventContainer" style=" display: inline !important; ">$event.summary</div>
+          </div>
+		  <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>" style=" display: inline-block; ">
+		    <p unselectable="on" style=" display: inline; margin-right: 2px; ">
+            <% if (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) { %>
+            <!-- if the element is of type TASK then displaying only starting time -->
+              $begin
+            <% } else { %>
+              $begin - $end
+            <% } %>
+	        </p>
+          </div>
+
+          <!---- DISPLAYING EVENT SUMMARY ---->
+          <% if ( (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
+          <!-- if the element is of type TASK check whether it's completed -->
+          <div unselectable="on" class="EventContainer" style=" display: inline !important; text-decoration:line-through; ">
+            <%=event.summary%>
+          </div>
           <% } else { %>
-            <div class="<%=event.eventState%>Icon">
-              <div class="<%=event.getPriority()%>PriorityIcon">
-                <span></span>
-              </div>
-            </div>
-            <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>">
-              <p unselectable="on">
-                $begin - $end
-              </p>
-            </div>
-            <div unselectable="on" class="EventContainer">$event.summary</div>
+          <div class="EventContainer" style=" display: inline !important; ">
+            <%=event.summary%>
+          </div>
           <% } %>
+
+          <% } else { %>
+          <!---- DISPLAYING EVENT DURATION ---->
+          <div class="<%=event.eventState%>Icon">
+            <div class="<%=event.getPriority()%>PriorityIcon">
+              <span></span>
+            </div>
+          </div>
+          <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>">
+            <p unselectable="on">
+              $begin - $end
+            </p>
+          </div>
+          <!---- DISPLAYING EVENT SUMMARY ---->
+          <% if ( (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
+          <!-- if the element is of type TASK check whether it's completed -->
+          <div unselectable="on" class="EventContainer" style=" text-decoration:line-through; ">
+            <%=event.summary%>
+          </div>
+          <% } else { %>
+          <div class="EventContainer">
+            <%=event.summary%>
+          </div>
+          <% } %>
+          <% } %>
+
           <div class="ResizeEventContainer" unselectable="on">
             <span></span>
           </div>
@@ -243,11 +274,11 @@
       </div>
       <table class="UIGrid" style="table-layout: fixed;" id="UIWeekViewGrid" lastupdatedid="<%=uicomponent.getLastUpdatedEventId()%>" cellspacing="0" cellpadding="0">
         <tbody>
-          <% 
+          <%
           boolean flag = false ;
           style = "none" ;
-          if(isShowWorkingTime) {style = "WorkOffTime" ;}  
-          
+          if(isShowWorkingTime) {style = "WorkOffTime" ;}
+
           String tempTimeFormat = CalendarUtils.TIMEFORMATPATTERNS[0] ;
           if (timeFormat.startsWith("HH")) tempTimeFormat = CalendarUtils.TIMEFORMATPATTERNS[1] ;
           def counter = 0 ;
@@ -279,19 +310,19 @@
               DateFormat fullDateFormat = new SimpleDateFormat(dateFormat+" "+CalendarUtils.TIMEFORMAT, Locale.ENGLISH) ;
               dayFormat.setCalendar(cl);
               fullDateFormat.setCalendar(cl);
-                       
-              t = 0 ; 
+
+              t = 0 ;
               while(t++ < numberOfDays) {
                 //df.setCalendar(cl) ;
                  startTime = dayFormat.format(cl.getTime()) + " " + time;
                  //dtf.setCalendar(cl) ;
                  fullDateFormat.setLenient(false);
-                 // add try-catch block to handle Daylight Saving Time problem 
+                 // add try-catch block to handle Daylight Saving Time problem
                  try {
                    cl.setTime(fullDateFormat.parse(startTime)) ;
                  } catch (ParseException e) {
                    fullDateFormat.setLenient(true);
-                   cl.setTime(fullDateFormat.parse(startTime));   
+                   cl.setTime(fullDateFormat.parse(startTime));
                  }
                  dayOfWeek = cl.get(Calendar.DAY_OF_WEEK) ;
                  if(uicomponent.isCurrentDay(cl.get(Calendar.DATE), cl.get(Calendar.MONTH), cl.get(Calendar.YEAR))) {
@@ -305,7 +336,7 @@
             <td startFull="<%=tempFormat.format(cl.getTime())%>" startTime="<%=cl.getTimeInMillis()%>" eventindex="$dayOfWeek" class="$styleClass $cssClass $style" style="$styleWidth">
               <span></span>
             </td>
-            <%    
+            <%
                  cl.add(Calendar.DATE, 1) ;
                }
              flag = ! flag ;

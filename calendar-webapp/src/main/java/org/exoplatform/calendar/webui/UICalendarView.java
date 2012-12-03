@@ -43,7 +43,6 @@ import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.popup.UIConfirmForm;
-import org.exoplatform.calendar.webui.popup.UIEventCategoryManager;
 import org.exoplatform.calendar.webui.popup.UIEventForm;
 import org.exoplatform.calendar.webui.popup.UIEventShareTab;
 import org.exoplatform.calendar.webui.popup.UIExportForm;
@@ -914,17 +913,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class EventSelectActionListener extends EventListener<UICalendarView> {
     public void execute(Event<UICalendarView> event) throws Exception {
-    }
-  }
-
-  static public class AddCategoryActionListener extends EventListener<UICalendarView> {
-    public void execute(Event<UICalendarView> event) throws Exception {
-      UICalendarView listView = event.getSource();
-      UICalendarPortlet calendarPortlet = listView.getAncestorOfType(UICalendarPortlet.class);
-      UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class);
-      UIEventCategoryManager uiCalendarViewMan = popupAction.activate(UIEventCategoryManager.class, 470);
-      uiCalendarViewMan.categoryId_ = listView.getSelectedCategory();
-      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }
 

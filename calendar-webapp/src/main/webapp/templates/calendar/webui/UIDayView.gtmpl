@@ -151,30 +151,53 @@
                       <div class="<%=ce.getPriority()%>PriorityIcon" style="float:left;"><span></span></div>
                     </div>
 
+                    <!---- DISPLAYING EVENT DURATION ---->
                     <% if ( ce.isEventDurationSmallerThanHalfHour() ) { %>
-                    <!-- if event duration smaller than 30 mins then render event in the same line -->
+                    <!-- if event duration lasts less than 30 mins then display event description right to event duration -->
                     <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>"
-                     style=" display: inline-block; width: 75px; ">
-                    <!-- event time -->
+                     style=" display: inline-block; ">
                       <p style=" display: inline; margin-right: 5px; ">
-                        <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>
+                        <% if (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) { %>
+                        <!-- if the element is of type TASK then displaying only starting time -->
+                          <%=tf.format(ce.getFromDateTime())%>
+                        <% } else { %>
+                          <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>
+                        <% } %>
                       </p>
                     </div>
-                    <div class="EventContainer" style=" display: inline !important; ">
+                    <!---- DISPLAYING EVENT SUMMARY ---->
+                    <% if ( (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (ce.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
+                    <!-- if the element is of type TASK check whether it's completed -->
+                    <div class="EventContainer" style=" display: inline !important; text-decoration:line-through; ">
                       <%=ce.getSummary()%>
                     </div>
+                    <% } else { %>
+                    <div class="EventContainer" style=" display: inline !important; ">
+                        <%=ce.getSummary()%>
+                    </div>
+                    <% } %>
 
                     <% } else { %>
+                    <!---- DISPLAYING EVENT DURATION ---->
                     <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>">
                     <!-- event time -->
                       <p>
                         <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>
                       </p>
                     </div>
-                    <div class="EventContainer">
+                    <!---- DISPLAYING EVENT SUMMARY ---->
+                    <% if ( (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (ce.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
+                    <!-- if the element is of type TASK check whether it's completed -->
+                    <div class="EventContainer" style=" text-decoration:line-through; ">
                       <%=ce.getSummary()%>
                     </div>
+                    <% } else { %>
+                    <div class="EventContainer">
+                        <%=ce.getSummary()%>
+                    </div>
                     <% } %>
+                    <% } %>
+
                     <div class="ResizeEventContainer">
                      <span></span>
                     </div>
