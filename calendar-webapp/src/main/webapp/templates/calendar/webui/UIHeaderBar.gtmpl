@@ -37,9 +37,6 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
       </div>
     </div>
 	-->
-	<div class="AddCategoryIcon" onclick="<%=uicomponent.event("AddCategory")%>" title="<%=_ctx.appRes('UIHeaderBar.label.addNewCategory')%>">
-	  <span></span>
-	</div>
 	<div class="EventCategory" msg="<%=_ctx.appRes('UICalendarView.msg.event-category-list-empty')%>">
 	  <% 
 		uiform.renderField("eventCategories") ;
