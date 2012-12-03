@@ -22,7 +22,6 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.webui.popup.UICalendarSettingFeedTab;
 import org.exoplatform.calendar.webui.popup.UICalendarSettingForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
@@ -47,7 +46,6 @@ import org.exoplatform.webui.event.EventListener;
         @EventConfig(listeners = UIActionBar.QuickAddEventActionListener.class),
         @EventConfig(listeners = UIActionBar.ChangeViewActionListener.class),
         @EventConfig(listeners = UIActionBar.SettingActionListener.class),
-        @EventConfig(listeners = UIActionBar.RSSActionListener.class),
         @EventConfig(listeners = UIActionBar.TodayActionListener.class)
     }
 )
@@ -160,21 +158,4 @@ public class UIActionBar extends UIContainer  {
     }
   }
 
-  static public class RSSActionListener extends EventListener<UIActionBar> {
-    @SuppressWarnings("unchecked")
-    public void execute(Event<UIActionBar> event) throws Exception {
-      UIActionBar uiActionBar = event.getSource() ;
-      UICalendarPortlet calendarPortlet = uiActionBar.getAncestorOfType(UICalendarPortlet.class) ;
-      UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
-      popupAction.deActivate() ;
-      UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 600) ;
-      uiPopupContainer.setId(UIPopupContainer.UICALENDAR_SETTING_POPUP);
-      UICalendarSettingForm uiCalendarSettingForm = uiPopupContainer.addChild(UICalendarSettingForm.class, null, null) ;
-      CalendarService cservice = CalendarUtils.getCalendarService() ;
-      CalendarSetting calendarSetting = calendarPortlet.getCalendarSetting() ;
-      uiCalendarSettingForm.init(calendarSetting, cservice) ;
-      uiCalendarSettingForm.setSelectedTab(uiCalendarSettingForm.getChild(UICalendarSettingFeedTab.class).getId());
-      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
-    }
-  }
 }
