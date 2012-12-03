@@ -28,7 +28,7 @@ requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarP
       <div class="Label">
        <%=uiform.getLabel('eventDetail')%>
       </div> 
-      <div id="UIEventPreview_fullSize" class="MaximizeButton" title="<%=uiform.getLabel('fullSize')%>" ><span></span></div>
+      <div id="UIEventPreview_fullSize" class="MaximizeButton" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><span></span></div>
     </div>
   <%}%>
   <div class="ViewContainer">
@@ -45,7 +45,7 @@ requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarP
            </div>
            <%for(attachFile in  event.getAttachment()){%>
              <div class="AttachmentIcon"  style="white-space: nowrap;">
-              <a href="<%=uicomponent.event("Download",attachFile.getId())%>" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name  </a>
+              <a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name  </a>
               (<%=CalendarUtils.convertSize(attachFile.size)%>) 
              </div>
               <%if(attachFile.getMimeType().startsWith("image"))  {

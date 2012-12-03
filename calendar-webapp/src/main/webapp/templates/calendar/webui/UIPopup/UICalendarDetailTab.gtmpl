@@ -28,7 +28,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
         }
         
         // CS-3361 replace "title=action.actionName" by "title=actionLabel"   
-        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        println "<a rel=\"tooltip\" data-placement=\"bottom\" title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
         if(action.actionType == action.TYPE_ICON) {
           println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
           if(action.isShowLabel) { println  actionLabel  ;}
@@ -119,7 +119,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
     </td>
     <td class="FieldComponent">
       <% if (!CalendarUtils.isEmpty(parent.calendar_.getPublicUrl())) { %>
-            <a title="<%= parent.getLabel(parent.ACT_OPEN)%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">
+            <a rel="tooltip" data-placement="bottom" title="<%= parent.getLabel(parent.ACT_OPEN)%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">
               <img class="ICalIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif">  
             </a>
             <span style="color:grey;font-style: italic;">

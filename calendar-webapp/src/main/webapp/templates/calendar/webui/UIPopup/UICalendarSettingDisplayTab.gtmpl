@@ -36,7 +36,7 @@
               if(fullLabel.length() > 35) {
                 label = fullLabel.substring(0,35) + "..." ;
               }
-              println "<div title='$fullLabel'>$label</div>" ;
+              println "<div rel=\"tooltip\" data-placement=\"bottom\" title='$fullLabel'>$label</div>" ;
             %>
             </td>
           </tr>
@@ -65,7 +65,7 @@
               if(fullLabel.length() > 35) {
                 label = fullLabel.substring(0,35) + "..." ;
               }
-              println "<div title='$fullLabel'>$label</div>" ;
+              println "<div rel=\"tooltip\" data-placement=\"bottom\" title='$fullLabel'>$label</div>" ;
             %>
             </td>
           </tr>
@@ -92,7 +92,7 @@
               if(fullLabel.length() > 35) {
                 label = fullLabel.substring(0,35) + "..." ;
               }
-              println "<div title='$fullLabel'>$label</div>" ;
+              println "<div rel=\"tooltip\" data-placement=\"bottom\" title='$fullLabel'>$label</div>" ;
               %>
             </td>
           </tr>

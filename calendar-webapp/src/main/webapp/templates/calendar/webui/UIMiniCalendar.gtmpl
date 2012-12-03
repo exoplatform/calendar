@@ -39,7 +39,7 @@
   <div class="MiniCalendarContainer">
     <div class="YearSelector ClearFix">
       <div onclick="$linkDayNext" class="RightControlButton">
-        <div class="NextYearSelector" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>"><span></span></div>
+        <div class="NextYearSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>"><span></span></div>
       </div>
       <div class="MonthSelector RightControlButton">
         <table>
@@ -47,7 +47,7 @@
             <tr>
               <td>
                 <div onclick="$linkYearPrevious">
-                  <div class="PreviousMonthSelector" title="<%=_ctx.appRes('UIYearView.label.previousYear')%>"><span></span></div>
+                  <div class="PreviousMonthSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIYearView.label.previousYear')%>"><span></span></div>
                 </div>
               </td>
               <td>
@@ -66,7 +66,7 @@
               </td>
               <td>
                 <div onclick="$linkYearNext">
-                  <div class="NextMonthSelector" title="<%=_ctx.appRes('UIYearView.label.nextYear')%>"><span></span></div>
+                  <div class="NextMonthSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIYearView.label.nextYear')%>"><span></span></div>
                 </div>
               </td>
             </tr>
@@ -74,7 +74,7 @@
         </table>
       </div>
       <div onclick="$linkDayPrevious" class="RightControlButton">
-        <div class="PreviousYearSelector" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>"><span></span></div>
+        <div class="PreviousYearSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>"><span></span></div>
       </div>
     </div> 
     <div class="MonthList">
@@ -183,6 +183,6 @@
     </div>
     
   </div>
-  <div id="UIMiniCalendar_1" class="DownArrow1Icon UIMiniCalendarToggleButton" style="background-position:center;cursor:pointer;" title="<%=_ctx.appRes('UIMiniCalendar.label.toggle-mini-calendar')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
+  <div id="UIMiniCalendar_1" class="DownArrow1Icon UIMiniCalendarToggleButton" style="background-position:center;cursor:pointer;" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMiniCalendar.label.toggle-mini-calendar')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
   </div>
 <%uiform.end();%>

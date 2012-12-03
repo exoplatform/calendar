@@ -26,7 +26,7 @@
       <h6 class="Title">
       <%=uiform.getLabel("calendars")%>
       </h6>
-    <div id="UICalendars_calendarActions" class="ActionsButton" title="<%=uiform.getLabel("calendarActions")%>" >
+    <div id="UICalendars_calendarActions" class="ActionsButton" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("calendarActions")%>" >
       <% /*Begin Popup Menu - Main */ %>
 	  
 		<div class="UIRightClickPopupMenu CalendarMainPopupMenu" style="display: none ;"> 
@@ -87,7 +87,7 @@
 			<div class="GroupItem ClearFix" id="$groupData.id">
 			  <div id="UICalendars_CalendarGroupPopupMenu" class="IconHoverSetting" ></div>
 				<a class="CollapserFlatStyle"></a>
-				<div class="CalendarGroupIcon" title="$groupData.name">$groupData.name</div>
+				<div class="CalendarGroupIcon" rel="tooltip" data-placement="bottom" title="$groupData.name">$groupData.name</div>
 			</div>
           <ul class="UIVTabContent" >
         <%  
@@ -111,7 +111,7 @@
                   		<span class="$css"></span>
                   	</span>
                   </a>
-                  <a class="CalendarName" href="javascript:void(0);" title="$calendar.name">$calendar.name</a>
+                  <a class="CalendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendar.name">$calendar.name</a>
                   <span style="display:none"><%uiform.renderField(calId)%></span>
                 </div>
             </li>
@@ -164,7 +164,7 @@
                   		<span class="$css"></span>
                   	</span>
                   </a>
-                  <a class="CalendarName" href="javascript:void(0);" title="<%=owner + calendar.getName()%>"><%=owner + calendar.getName()%></a>
+                  <a class="CalendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="<%=owner + calendar.getName()%>"><%=owner + calendar.getName()%></a>
   								<span style="display:none;"><%uiform.renderField(calendar.getId())%></span>
 								</div>
             </li>
@@ -183,7 +183,7 @@
     <!-- start public calendars -->
     <div class="MyCalendar">
       <div class="CalendarTitle ClearFix">
-        <h6 class="Label CollapserFlatStyle HStyle" title="Collapser my calendar">
+        <h6 class="Label CollapserFlatStyle HStyle" rel="tooltip" data-placement="bottom" title="Collapser my calendar">
           <%=_ctx.appRes("UICalendarSettingForm.label.publicCalendar")%>
         </h6>
       </div>
@@ -197,8 +197,8 @@
         %>
            
             <div class="GroupItem ClearFix">
-                <a class="CollapserFlatStyle" title="<%=uiform.getLabel("groupActions")%>"></a>
-                <div class="CalendarGroupIcon" title="$title">$label</div>
+                <a class="CollapserFlatStyle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("groupActions")%>"></a>
+                <div class="CalendarGroupIcon" rel="tooltip" data-placement="bottom" title="$title">$label</div>
 
             </div>
           <ul class="UIVTabContent" >
@@ -220,7 +220,7 @@
                 		<span class="$css"></span>
                 	</span>
                 	</a>
-                	<a class="CalendarName" href="javascript:void(0);" title="<%=calendar.getName()%>"><%=calendar.getName()%></a>
+                	<a class="CalendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="<%=calendar.getName()%>"><%=calendar.getName()%></a>
                 	<span style="display:none"><%uiform.renderField(calendar.getId())%></span>
                </div>
             </li>
@@ -421,7 +421,7 @@
 			</div>
 		</div>
     <% /*End Popup Menu*/ %>
-    <div id="UICalendars_toggle-calendars" class="DownArrow1Icon UICalendarsToggleButton ClearFix" title="<%=_ctx.appRes('UICalendars.label.toggle-calendars')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
+    <div id="UICalendars_toggle-calendars" class="DownArrow1Icon UICalendarsToggleButton ClearFix" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendars.label.toggle-calendars')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
  
     </div>
 <%uiform.end()%>

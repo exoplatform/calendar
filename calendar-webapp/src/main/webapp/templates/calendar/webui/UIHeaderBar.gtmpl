@@ -64,7 +64,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
       <tbody>
         <tr>
           <td>
-              <div onclick="$linkDayPrevious" class="BackIcon" title="<%=uiform.getLabel('previousWeek')%>">
+              <div onclick="$linkDayPrevious" class="BackIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('previousWeek')%>">
                 <span></span>
               </div>
           </td>
@@ -88,7 +88,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
             </div>
           </td>
           <td>
-        <div onclick="$linkDayNext" class="NextIcon" title="<%=uiform.getLabel('nextWeek')%>">
+        <div onclick="$linkDayNext" class="NextIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('nextWeek')%>">
         <span></span>
         </div>
           </td>
@@ -116,7 +116,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
         <tr>
           <td>
             <div onclick="$linkDayPrevious">
-              <div class="BackIcon" title="<%=uiform.getLabel('previousDay')%>"><span></span></div>
+              <div class="BackIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('previousDay')%>"><span></span></div>
             </div>
           </td>
           <td>
@@ -135,7 +135,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
           </td>
           <td>
             <div onclick="$linkDayNext">
-              <div class="NextIcon" title="<%=uiform.getLabel('nextDay')%>"><span></span></div>
+              <div class="NextIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('nextDay')%>"><span></span></div>
             </div>
           </td>
         </tr>
@@ -170,7 +170,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
           <tr>
             <td>
               <div onclick="$linkDayPrevious">
-                <div class="BackIcon" title="<%=uiform.getLabel('previousMonth')%>"><span></span></div>
+                <div class="BackIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('previousMonth')%>"><span></span></div>
               </div>
             </td>
             <td>
@@ -182,7 +182,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
             </td>
             <td>
               <div onclick="$linkDayNext">
-                <div class="NextIcon" title="<%=uiform.getLabel('nextMonth')%>"><span></span></div>
+                <div class="NextIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('nextMonth')%>"><span></span></div>
               </div>
             </td>
           </tr>
@@ -261,7 +261,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
           <tr>
             <td>
               <a href="$linkDayPrevious">
-                <div class="BackIcon" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>"><span></span></div>
+                <div class="BackIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>"><span></span></div>
               </a>
             </td>
             <td>
@@ -275,7 +275,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
             </td>
             <td>
               <a href="$linkDayNext">
-                <div class="NextIcon" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>"><span></span></div>
+                <div class="NextIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>"><span></span></div>
               </a>
             </td>
           </tr>
@@ -297,7 +297,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
         <tr>
           <td>
             <a href="$linkDayPrevious">
-              <div class="BackIcon" title="<%=uiform.getLabel('previousYear')%>"><span></span></div>
+              <div class="BackIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('previousYear')%>"><span></span></div>
             </a>
           </td>
           <td>
@@ -305,7 +305,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
           </td>
           <td>
             <a href="$linkDayNext">
-              <div class="NextIcon" title="<%=uiform.getLabel('nextYear')%>"><span></span></div>
+              <div class="NextIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('nextYear')%>"><span></span></div>
             </a>
           </td>
         </tr>

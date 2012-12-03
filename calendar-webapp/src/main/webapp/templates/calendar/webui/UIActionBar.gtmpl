@@ -91,7 +91,7 @@
             </span>
             -->
             <div id="CustomLayout" class="ControlButton  ActionBarButton">
-                <div class="IconHolder LayoutSwitcherIcon" title="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>">
+                <div class="IconHolder LayoutSwitcherIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>">
                   <span></span>
                 </div>
               <% /*Begin Popup Menu*/ %>
@@ -138,8 +138,8 @@
               <% /*End Popup Menu*/ %>
               </div>
               <div class="ScrollButtons" style="display: none;">
-					<div title="Previous" class="ScrollLeftButton">
-						<div title="Next" class="ScrollRightButton"><span></span></div>
+					<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">
+						<div rel="tooltip" data-placement="bottom" title="Next" class="ScrollRightButton"><span></span></div>
 					</div>
               </div>
               </div>
