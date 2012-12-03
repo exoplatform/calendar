@@ -97,8 +97,6 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     timeFormat.add(new SelectItemOption<String>(CalendarUtils.TWELVE_HOURS, CalendarUtils.TWELVE_HOURS)) ;
     timeFormat.add(new SelectItemOption<String>(CalendarUtils.TWENTY_FOUR_HOURS, CalendarUtils.TWENTY_FOUR_HOURS)) ;
     addUIFormInput(new UIFormSelectBox(TIME_FORMAT, TIME_FORMAT, timeFormat)) ;
-    UIFormSelectBox localeSelect = new UIFormSelectBox(LOCATION, LOCATION, getLocales()) ;
-    addUIFormInput(localeSelect) ;
     addUIFormInput(new UIFormSelectBox(TIMEZONE, TIMEZONE, getTimeZones(null))) ;
     addUIFormInput(new UIFormCheckBoxInput<Boolean>(ISSHOWWORKINGTIME, ISSHOWWORKINGTIME, false)) ;
     List<SelectItemOption<String>> startTimes = new ArrayList<SelectItemOption<String>>() ;
@@ -158,12 +156,7 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     if(CalendarUtils.TIMEFORMATPATTERNS[0].endsWith(value)) getUIFormSelectBox(TIME_FORMAT).setValue(CalendarUtils.TWELVE_HOURS) ;
     else getUIFormSelectBox(TIME_FORMAT).setValue(CalendarUtils.TWENTY_FOUR_HOURS) ;
   }
-  protected String getLocale() {
-    return getUIFormSelectBox(LOCATION).getValue() ;
-  }
-  protected void setLocale(String value) {
-    getUIFormSelectBox(LOCATION).setValue(value) ;
-  }
+
   protected String getTimeZone() {
     return getUIFormSelectBox(TIMEZONE).getValue() ;
   }

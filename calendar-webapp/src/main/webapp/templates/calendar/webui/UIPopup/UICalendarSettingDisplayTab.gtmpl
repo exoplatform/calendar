@@ -88,9 +88,10 @@
             <td class="FieldLabel">
               <%
               fullLabel = uiForm.getLabel(comp.getId()) ;
-              label = fullLabel ;
-              if(fullLabel.length() > 35) {
-                label = fullLabel.substring(0,35) + "..." ;
+              labelTmp = fullLabel.substring(0,fullLabel.indexOf('(')) ;
+              label = labelTmp;
+              if(labelTmp.length() > 35) {
+                label = labelTmp.substring(0,35) + "..." ;
               }
               println "<div title='$fullLabel'>$label</div>" ;
               %>

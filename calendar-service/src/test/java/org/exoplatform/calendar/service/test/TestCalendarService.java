@@ -202,7 +202,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
     // calendar setting
     CalendarSetting setting = new CalendarSetting();
     setting.setBaseURL("url");
-    setting.setLocation("location");
     calendarService_.saveCalendarSetting(username, setting);
     assertEquals("url", calendarService_.getCalendarSetting(username).getBaseURL());
   }
