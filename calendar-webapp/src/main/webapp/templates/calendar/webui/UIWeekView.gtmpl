@@ -206,8 +206,9 @@
             }
           %>
 
-          <!---- DISPLAYING EVENT DURATION ---->
+
           <% if ( event.isEventDurationSmallerThanHalfHour() ) { %>
+          <!---- DISPLAYING EVENT DURATION ---->
           <!-- if event duration smaller than 30 mins then render event in the same line -->
           <div class="<%=event.eventState%>Icon">
             <div class="<%=event.getPriority()%>PriorityIcon">
