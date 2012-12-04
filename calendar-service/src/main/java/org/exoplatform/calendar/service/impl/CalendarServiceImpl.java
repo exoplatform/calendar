@@ -574,6 +574,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     cal.setDataInit(true);
     cal.setCalendarOwner(userName);
     if (defaultCalendarSetting_ != null) {
+      if (defaultCalendarSetting_.getLocation() != null)
+        cal.setLocale(defaultCalendarSetting_.getLocation());
+      if (defaultCalendarSetting_.getTimeZone() != null)
         cal.setTimeZone(defaultCalendarSetting_.getTimeZone());
     }
     saveUserCalendar(userName, cal, true);

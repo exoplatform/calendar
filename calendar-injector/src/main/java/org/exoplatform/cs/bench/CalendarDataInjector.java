@@ -384,6 +384,7 @@ public class CalendarDataInjector extends DataInjector {
     setting.setWorkingTimeBegin("08:00");
     setting.setWorkingTimeEnd("18:00");
     setting.setShowWorkingTime(false);
+    setting.setLocation("VNM");
     setting.setTimeZone("Asia/Ho_Chi_Minh");
     return setting;
   }
@@ -402,6 +403,7 @@ public class CalendarDataInjector extends DataInjector {
     calendar.setPrivateUrl(EMPTY);
     calendar.setPublicUrl(EMPTY);
     calendar.setPublic(false);
+    calendar.setLocale(setting.getLocation());
     calendar.setTimeZone(setting.getTimeZone());
     return calendar;
   }
@@ -449,6 +451,7 @@ public class CalendarDataInjector extends DataInjector {
     time = randomDateTime(rand.nextInt(5), time);
     categoryEvent.setToDateTime(getTime(time));
 
+    categoryEvent.setLocation(setting.getLocation());
     categoryEvent.setMessage(randomWords(30));
 
     categoryEvent.setInvitation(new String[] { EMPTY });

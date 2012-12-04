@@ -2767,9 +2767,7 @@ eXo.calendar.EventTooltip = {
 			title: data.summary,
 			description: data.description,
 			time:time,
-			location: data.location,
-//			status: data.eventState,
-//			priority: data.priority
+			location: data.location
 		}
 	},
 	isAllday:function(eventObject){
