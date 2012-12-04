@@ -151,8 +151,8 @@
                       <div class="<%=ce.getPriority()%>PriorityIcon" style="float:left;"><span></span></div>
                     </div>
 
-                    <!---- DISPLAYING EVENT DURATION ---->
                     <% if ( ce.isEventDurationSmallerThanHalfHour() ) { %>
+                    <!---- DISPLAYING EVENT DURATION ---->
                     <!-- if event duration lasts less than 30 mins then display event description right to event duration -->
                     <div unselectable="on" class="EventContainerBar EventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>"
                      style=" display: inline-block; ">
