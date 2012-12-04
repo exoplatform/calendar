@@ -86,7 +86,6 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                    @EventConfig(phase=Phase.DECODE, listeners = UICalendars.RemoveCalendarActionListener.class, confirm="UICalendars.msg.confirm-delete-calendar"),
                    @EventConfig(phase=Phase.DECODE, listeners = UICalendars.RemoveSharedCalendarActionListener.class, confirm="UICalendars.msg.confirm-delete-sharedCalendar"),
                    @EventConfig(listeners = UICalendars.AddCalendarCategoryActionListener.class),
-                   @EventConfig(listeners = UICalendars.ShareCalendarActionListener.class),
                    @EventConfig(listeners = UICalendars.ChangeColorActionListener.class),
                    @EventConfig(listeners = UICalendars.TickActionListener.class),
                    @EventConfig(listeners = UICalendars.CalendarSettingActionListener.class),
@@ -482,6 +481,7 @@ public class UICalendars extends UIForm  {
       uiPopupContainer.setId(UIPopupContainer.UICALENDARPOPUP) ;
       UICalendarForm calendarForm = uiPopupContainer.addChild(UICalendarForm.class, null, null) ;
       calendarForm.setTimeZone(uiCalendarPortlet.getCalendarSetting().getTimeZone());
+      calendarForm.setLocale(uiCalendarPortlet.getCalendarSetting().getLocation()) ;
       calendarForm.setSelectedGroup(categoryId) ;
       calendarForm.groupCalId_ = categoryId ;
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
@@ -910,28 +910,6 @@ public class UICalendars extends UIForm  {
     }
   }
 
-  static  public class ShareCalendarActionListener extends EventListener<UICalendars> {
-    public void execute(Event<UICalendars> event) throws Exception {
-      UICalendars uiComponent = event.getSource() ;
-      String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
-      UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
-      popupAction.deActivate() ;
-      UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 500) ;
-      uiPopupContainer.setId("UIPermissionSelectPopup") ;
-      UIAddEditPermission uiAddNewEditPermission = uiPopupContainer.addChild(UIAddEditPermission.class, null, null);
-      CalendarService calService = CalendarUtils.getCalendarService() ;
-      String username = CalendarUtils.getCurrentUser() ;
-      Calendar cal = calService.getUserCalendar(username, selectedCalendarId) ;
-      if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName)) {
-        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-        cal.setName(newName);
-      }
-      uiAddNewEditPermission.init(null, cal, true) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
-    }
-  }
   static  public class ChangeColorActionListener extends EventListener<UICalendars> {
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiComponent = event.getSource() ;

@@ -63,6 +63,9 @@ import org.exoplatform.webui.form.UIFormTabPane;
       @EventConfig(listeners = UICalendarSettingForm.ChangeLocaleActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.ShowAllTimeZoneActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.CancelActionListener.class, phase = Phase.DECODE),
+      //@EventConfig(listeners = UICalendarSettingForm.DeleteActionListener.class, phase = Phase.DECODE),
+      //@EventConfig(listeners = UICalendarSettingForm.CalendarFeedActionListener.class, phase = Phase.DECODE),
+      //@EventConfig(listeners = UICalendarSettingForm.EditActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.AddActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.SelectTabActionListener.class, phase = Phase.DECODE)
     }
@@ -104,6 +107,9 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       settingTab.setTimeFormat(calendarSetting.getTimeFormat()) ;
       settingTab.getUIFormSelectBox(UICalendarSettingTab.WORKINGTIME_BEGIN).setOptions(CalendarUtils.getTimesSelectBoxOptions(calendarSetting.getTimeFormat(), 30)) ;
       settingTab.getUIFormSelectBox(UICalendarSettingTab.WORKINGTIME_END).setOptions(CalendarUtils.getTimesSelectBoxOptions(calendarSetting.getTimeFormat(), 30)) ;
+      if(calendarSetting.getLocation() == null) {
+        calendarSetting.setLocation(Util.getPortalRequestContext().getLocale().getISO3Country()) ;
+      }
       settingTab.setTimeZone(calendarSetting.getTimeZone()) ;
       settingTab.setShowWorkingTimes(calendarSetting.isShowWorkingTime()) ;
       if(calendarSetting.isShowWorkingTime()) {

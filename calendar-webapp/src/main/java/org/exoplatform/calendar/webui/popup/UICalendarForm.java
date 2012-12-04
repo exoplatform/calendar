@@ -128,6 +128,10 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     calendarDetail.addUIFormInput(new UIFormSelectBox(CATEGORY, CATEGORY, getCategory())) ;
 
     CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
+    UIFormStringInput country = new UIFormStringInput(LOCALE, LOCALE, CalendarUtils.getLocationDisplayString(setting.getLocation()));
+    country.setLabel(setting.getLocation());
+    country.setEditable(false);
+    calendarDetail.addUIFormInput(country) ;
     UIFormStringInput timeZone = new UIFormStringInput(TIMEZONE, TIMEZONE, CalendarUtils.generateTimeZoneLabel(setting.getTimeZone()));
     timeZone.setLabel(setting.getTimeZone());
     timeZone.setEditable(false);
@@ -252,7 +256,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       info.setLabel(setting.getTimeZone());
 
       info = calendarDetail.getUIStringInput(LOCALE);
-
+      info.setValue(CalendarUtils.getLocationDisplayString(setting.getLocation()));
+      info.setLabel(setting.getLocation());
     }
 
 
@@ -510,6 +515,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         UICalendarPortlet uiCalendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
         uiForm.setSelectedGroup(uiForm.groupCalId_) ;
         uiForm.setTimeZone(uiCalendarPortlet.getCalendarSetting().getTimeZone()) ;
+        uiForm.setLocale(uiCalendarPortlet.getCalendarSetting().getLocation()) ;
       }
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getParent()) ;
     }
@@ -539,11 +545,11 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         calendar.getId() +"/"+ uiForm.calType_ ;
         calendar.setPrivateUrl(url);
         if(CalendarUtils.PRIVATE_TYPE.equals(uiForm.calType_)) {
-          if(CalendarUtils.isEmpty(calendarCategoryId)) {
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.category-empty", null, ApplicationMessage.WARNING) ) ;
-            return ;
-          }
-          calendar.setCategoryId(calendarCategoryId) ;
+//          if(CalendarUtils.isEmpty(calendarCategoryId)) {
+//            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.category-empty", null, ApplicationMessage.WARNING) ) ;
+//            return ;
+//          }
+//          calendar.setCategoryId(calendarCategoryId) ;
           List<Calendar> pCals = calendarService.getUserCalendars(username, true) ;
           for(Calendar cal : pCals) {
             if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName)) {

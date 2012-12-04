@@ -86,6 +86,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
   final public static String PERMISSION = "permission" ;
   final public static String SELECT_COLOR = "selectColor" ;
   final public static String TIMEZONE = "timeZone" ;
+  final public static String LOCALE = "locale" ;
   final public static String PERMISSION_SUB = "_permission".intern() ;
   public Map<String, Map<String, String>> perms_ = new HashMap<String, Map<String, String>>() ;
 
@@ -115,6 +116,10 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     addUIFormInput(calCategory);
     addUIFormInput(new UIFormStringInput(PERMISSION, PERMISSION, null));
     CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
+    UIFormStringInput locale = new UIFormStringInput(LOCALE, LOCALE, CalendarUtils.getLocationDisplayString(setting.getLocation())) ;
+    locale.setLabel(setting.getLocation());
+    locale.setEditable(false);
+    addUIFormInput(locale);    
     UIFormStringInput timeZones = new UIFormStringInput(TIMEZONE, TIMEZONE, CalendarUtils.generateTimeZoneLabel(setting.getTimeZone())) ;
     timeZones.setEditable(false);
     timeZones.setLabel(setting.getTimeZone());
@@ -203,6 +208,9 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     return getUIStringInput(TIMEZONE).getLabel();
   }
 
+  protected String getLocale() {
+    return getUIStringInput(LOCALE).getLabel();
+  }
   public void switchMode(int flag) {
     flag_ = flag ;
     if(flag == UPDATE_EXIST) {
@@ -212,6 +220,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       getUIFormSelectBoxGroup(CATEGORY).setRendered(false);
       getUIStringInput(PERMISSION).setRendered(false);
       getUIStringInput(TIMEZONE).setRendered(false);
+      getUIStringInput(LOCALE).setRendered(false);
       getChild(UIFormColorPicker.class).setRendered(false);
     } else if(flag == ADD_NEW) {
       getUIFormSelectBoxGroup(FIELD_TO_CALENDAR).setRendered(false);
@@ -224,6 +233,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       else
         getUIStringInput(PERMISSION).setRendered(false);
       getUIStringInput(TIMEZONE).setRendered(true);
+      getUIStringInput(LOCALE).setRendered(true);
       getChild(UIFormColorPicker.class).setRendered(true);
     } else {
       log.warn("Wrong flag(" +flag+ ") only UPDATE_EXIST(1) or ADD_NEW(0) accept ");
@@ -306,6 +316,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
             Calendar calendar = new Calendar() ;
             calendar.setName(calendarName) ;
             calendar.setDescription(uiForm.getDescription()) ;
+            calendar.setLocale(uiForm.getLocale()) ;
             calendar.setTimeZone(uiForm.getTimeZone()) ;
             calendar.setCalendarColor(uiForm.getSelectedColor()) ;
             calendar.setCalendarOwner(username) ;

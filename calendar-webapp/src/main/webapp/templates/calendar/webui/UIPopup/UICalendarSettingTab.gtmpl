@@ -60,7 +60,7 @@
           <%uiForm.renderField(uicomponent.TIME_FORMAT)%>
         </td>
       </tr>
-
+      
       <tr>
         <td class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.TIMEZONE)%>

@@ -278,11 +278,6 @@
 					</a>
 				</li>
 				<li class="MenuItem">
-					<a class="ItemIcon  SharedCalendarIcon" href="<%=uicomponent.event("ShareCalendar","id")%>">
-					  <%=uiform.getLabel("ShareCalendar")%>
-					</a>
-				</li>
-				<li class="MenuItem">
 					<a class="ItemIcon  RefreshRemoteIcon" href="<%=uicomponent.event("RefreshRemoteCalendar","id")%>">
 					  <%=uiform.getLabel("RefreshRemoteCalendar")%>
 					</a> 
