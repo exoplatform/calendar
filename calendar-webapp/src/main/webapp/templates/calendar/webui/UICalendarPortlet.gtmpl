@@ -20,7 +20,7 @@
 
 <div id="CalendarApplicationMinWidth">
     <div class="UICalendarPortlet" id="$uicomponent.id">
-      <div class="UICalendarEventTooltip" title="Click to edit"><span></span></div>
+      <div class="UICalendarEventTooltip" rel="tooltip" data-placement="bottom" title="Click to edit"><span></span></div>
       <div class="UINotification" style="display:none;">
         <div class="UIControlInfo ClearFix">
           <div class="LeftControlInfo">

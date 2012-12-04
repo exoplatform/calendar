@@ -61,11 +61,11 @@
                 <td style="width:28%;">
                   <div class="LeftSide">
                     <a href="<%=uiForm.event("MovePrevious")%>">
-                      <img src="/eXoResources/skin/sharedImages/Blank.gif" class="BackIcon" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>"></a>
+                      <img src="/eXoResources/skin/sharedImages/Blank.gif" class="BackIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>"></a>
                     <span class="Title">
                       <%=uicomponent.getDateValue()%>
                     </span><a href="<%=uiForm.event("MoveNext")%>">
-                      <img src="/eXoResources/skin/sharedImages/Blank.gif" class="NextIcon" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>"></a>
+                      <img src="/eXoResources/skin/sharedImages/Blank.gif" class="NextIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>"></a>
                   </div>
                 </td>
                 <%
@@ -87,11 +87,11 @@
                 <td>
                   <div class="LeftSide">
                     <a href="<%=uiForm.event("DeleteUser")%>">
-                      <div class="DeleteUserIcon" title="<%=uiForm.getLabel('DeleteUsername')%>">
+                      <div class="DeleteUserIcon" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
                         <span></span>
                       </div>
                     </a><a href="<%=uiForm.event("AddUser",uicomponent.id)%>">
-                      <div class="AddUserIcon" title="<%=uiForm.getLabel('AddUsername')%>">
+                      <div class="AddUserIcon" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
                         <span></span>
                       </div>
                     </a>

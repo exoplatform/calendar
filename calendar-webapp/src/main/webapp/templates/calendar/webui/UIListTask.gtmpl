@@ -33,7 +33,7 @@
     <table cellspacing="0" borderspacing="0" id="UIListUsers" class="UIGrid">
        <thead>
          <tr>
-            <th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
+            <th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
             <th style="width: 24px;"><div class="AttachmentIcon">&nbsp;</div></th>
             <%
               String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
@@ -75,7 +75,7 @@
                 <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>
                 <td class="text">
 				  <div class="EventDescription $color"><span></span></div>
-                  <span class="ControlButton" title="<%=event.summary%>">
+                  <span class="ControlButton" rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
                   <%=event.getSummary()%>
                 </span>  
                 </td>

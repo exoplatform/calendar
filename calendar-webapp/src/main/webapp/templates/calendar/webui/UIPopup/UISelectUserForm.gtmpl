@@ -26,7 +26,7 @@
                     <div class="FilterSelect">
                       <%uiform.renderField(uiform.FIELD_FILTER)%>
                     </div>  
-                    <a class="SearchIcon" href="<%=uicomponent.event('Search')%>" title="<%=uiform.getLabel(uiform.FIELD_KEYWORD)%>"><span></span></a>
+                    <a class="SearchIcon" href="<%=uicomponent.event('Search')%>" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel(uiform.FIELD_KEYWORD)%>"><span></span></a>
                   </div>
                   <div class="AddressesGroup">
                     <div class="AddressLabel">

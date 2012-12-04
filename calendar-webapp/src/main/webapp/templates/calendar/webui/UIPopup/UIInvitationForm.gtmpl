@@ -7,10 +7,10 @@
     <div class="Label">   
       <span>
           <%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
-        <a href="<%=uiForm.event("AddUserParticipant")%>" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>">
+        <a href="<%=uiForm.event("AddUserParticipant")%>" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>">
           <img class="SelectUserIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
         </a>
-        <a style="display:none;" href="<%=uiForm.event("AddGroupParticipant")%>" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_GROUP)%>" >
+        <a style="display:none;" href="<%=uiForm.event("AddGroupParticipant")%>" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_GROUP)%>" >
           <img class="SelectGroupIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
         </a>
       </span>
