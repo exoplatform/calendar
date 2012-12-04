@@ -2768,8 +2768,8 @@ eXo.calendar.EventTooltip = {
 			description: data.description,
 			time:time,
 			location: data.location,
-			status: data.eventState,
-			priority: data.priority
+//			status: data.eventState,
+//			priority: data.priority
 		}
 	},
 	isAllday:function(eventObject){
@@ -2820,12 +2820,12 @@ eXo.calendar.EventTooltip = {
 		var self = eXo.calendar.EventTooltip;
 		var data = self.parseData(req);
 		if(!data) return ;
-		var html                   = '<div class="Time">' + data.time + '</div>';
-		html                      += '<div class="Title">' + data.title + '</div>';
-		if(data.description) html += '<div class="Description">' + data.description + '</div>';
+		var html = '<div class="Title">' + data.title + '</div>';
+		html += '<div class="Time">' + data.time + '</div>';
 		if(data.location)    html += '<div class="Location">' + data.location + '</div>';
-		if(data.priority)    html += '<div class="'+ data.priority.toLowerCase() +'PriorityIcon"><span></span></div>';
-		if(data.status != "null") html += '<div class="Status">' + data.status.replace("-"," ") + '</div>';
+		if(data.description) html += '<div class="Description">' + data.description + '</div>';
+//		if(data.priority)    html += '<div class="'+ data.priority.toLowerCase() +'PriorityIcon"><span></span></div>';
+//		if(data.status != "null") html += '<div class="Status">' + data.status.replace("-"," ") + '</div>';
 		self._container.style.display = "block";
 		//var topArrow = self.currentEvent.offsetHeight/2 - 7; 
 		self._container.innerHTML = '<div class="BgTLEvent"><div class="BgTREvent"><div class="BgTCEvent"><span></span></div></div></div><div class="BgMLEvent"><div class="BgMREvent"><div class="BgMCEvent">' + html + '</div></div></div><div class="BgBLEvent"><div class="BgBREvent"><div class="BgBCEvent"><span></span></div></div></div><div class="Clear"><span></span></div>';	
@@ -2837,10 +2837,10 @@ eXo.calendar.EventTooltip = {
 		var offsetEvent = this.currentEvent.offsetParent;
 		if(_module.UICalendarPortlet.viewType == "UIDayView") 
 			offsetEvent = gj(offsetEvent).parents(".EventDayContainer")[0];
-		var extraY = (this.currentEvent.offsetHeight - this._container.offsetHeight)/2
-		var extraX = 0;
-		var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + this.currentEvent.offsetWidth;
-		var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) + extraY;		
+		var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2
+		var extraY = 0;
+		var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
+		var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;		
 		this._container.style.top = y + "px";
 		this._container.style.left = x + "px";
 		var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
