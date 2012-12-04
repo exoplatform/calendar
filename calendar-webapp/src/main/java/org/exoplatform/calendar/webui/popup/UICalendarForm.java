@@ -60,6 +60,7 @@ import org.exoplatform.webui.form.UIFormTabPane;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
 import org.exoplatform.webui.form.ext.UIFormColorPicker;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
 
@@ -128,10 +129,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     calendarDetail.addUIFormInput(new UIFormSelectBox(CATEGORY, CATEGORY, getCategory())) ;
 
     CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
-    UIFormStringInput country = new UIFormStringInput(LOCALE, LOCALE, CalendarUtils.getLocationDisplayString(setting.getLocation()));
-    country.setLabel(setting.getLocation());
-    country.setEditable(false);
-    calendarDetail.addUIFormInput(country) ;
+
     UIFormStringInput timeZone = new UIFormStringInput(TIMEZONE, TIMEZONE, CalendarUtils.generateTimeZoneLabel(setting.getTimeZone()));
     timeZone.setLabel(setting.getTimeZone());
     timeZone.setEditable(false);
@@ -220,7 +218,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     UIGroupCalendarTab sharing = getChildById(INPUT_SHARE) ;
     for(Object obj : getPublicGroups()) {
       String groupId = ((Group)obj).getId() ;
-      UIFormCheckBoxInput checkbox = sharing.getUIFormCheckBoxInput(((Group)obj).getId()) ;
+      UICheckBoxInput checkbox = sharing.getUICheckBoxInput(((Group)obj).getId()) ;
       if(checkbox != null) checkbox.setChecked(false) ;
       UIFormStringInput uiInputIfo = sharing.getUIStringInput(groupId + PERMISSION_SUB);
       if(uiInputIfo != null) uiInputIfo.setValue(null) ;
@@ -231,7 +229,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       setDisplayName(null) ;
       setDescription(null) ;
       setSelectedGroup(null) ;
-      setLocale(null) ;
       setTimeZone(null) ;
       setSelectedColor(null) ;
       lockCheckBoxFields(false) ;
@@ -250,10 +247,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       UIFormStringInput info = calendarDetail.getUIStringInput(TIMEZONE);
       info.setValue(CalendarUtils.generateTimeZoneLabel(setting.getTimeZone()));
       info.setLabel(setting.getTimeZone());
-
-      info = calendarDetail.getUIStringInput(LOCALE);
-      info.setValue(CalendarUtils.getLocationDisplayString(setting.getLocation()));
-      info.setLabel(setting.getLocation());
     }
 
 
@@ -511,7 +504,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         UICalendarPortlet uiCalendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
         uiForm.setSelectedGroup(uiForm.groupCalId_) ;
         uiForm.setTimeZone(uiCalendarPortlet.getCalendarSetting().getTimeZone()) ;
-        uiForm.setLocale(uiCalendarPortlet.getCalendarSetting().getLocation()) ;
       }
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getParent()) ;
     }
@@ -527,7 +519,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         displayName = displayName.trim() ;
         CalendarService calendarService = CalendarUtils.getCalendarService() ;
         String username = CalendarUtils.getCurrentUser() ;
-        String calendarCategoryId = uiForm.getSelectedGroup() ;
         boolean isPublic = uiForm.isPublic() ;
         if(isPublic) uiForm.calType_ = CalendarUtils.PUBLIC_TYPE ;
         Calendar calendar = new Calendar() ;
