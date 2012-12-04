@@ -33,10 +33,10 @@ import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormRadioBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 
 /**
  * Created by The eXo Platform SARL
@@ -47,7 +47,7 @@ import org.exoplatform.webui.form.UIFormSelectBox;
 
 @ComponentConfig(
                  template = "app:/templates/calendar/webui/UIPopup/UICalendarSettingTab.gtmpl"
-) 
+    ) 
 public class UICalendarSettingTab extends UIFormInputWithActions {
   final public static String VIEW_TYPE = "viewType".intern() ;
   final public static String TIME_INTERVAL = "timeInterval".intern() ;
@@ -100,7 +100,7 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     UIFormSelectBox localeSelect = new UIFormSelectBox(LOCATION, LOCATION, getLocales()) ;
     addUIFormInput(localeSelect) ;
     addUIFormInput(new UIFormSelectBox(TIMEZONE, TIMEZONE, getTimeZones(null))) ;
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(ISSHOWWORKINGTIME, ISSHOWWORKINGTIME, false)) ;
+    addUIFormInput(new UICheckBoxInput(ISSHOWWORKINGTIME, ISSHOWWORKINGTIME, false)) ;
     List<SelectItemOption<String>> startTimes = new ArrayList<SelectItemOption<String>>() ;
     List<SelectItemOption<String>> endTimes = CalendarUtils.getTimesSelectBoxOptions(CalendarUtils.TIMEFORMAT, 30) ;
     addUIFormInput(new UIFormSelectBox(WORKINGTIME_BEGIN, WORKINGTIME_BEGIN, startTimes)) ;
@@ -124,11 +124,11 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
   protected void setViewType(String value) {
     getUIFormSelectBox(VIEW_TYPE).setValue(value) ;
   }
-  
+
   protected String getTimeInterval() {
     return String.valueOf(CalendarSetting.DEFAULT_TIME_INTERVAL);
   }
-  
+
   protected String getWeekStartOn() {
     String value = getUIFormSelectBox(WEEK_START_ON).getValue()  ;
     return value.substring(0, value.lastIndexOf("-wst")) ;
@@ -166,10 +166,10 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     getUIFormSelectBox(TIMEZONE).setValue(value) ;
   }
   protected boolean getShowWorkingTimes() {
-    return getUIFormCheckBoxInput(ISSHOWWORKINGTIME).isChecked() ;
+    return getUICheckBoxInput(ISSHOWWORKINGTIME).isChecked() ;
   }
   protected void setShowWorkingTimes(boolean value) {
-    getUIFormCheckBoxInput(ISSHOWWORKINGTIME).setChecked(value) ;
+    getUICheckBoxInput(ISSHOWWORKINGTIME).setChecked(value) ;
   }
   protected String getWorkingBegin() throws Exception {
     return getUIFormSelectBox(WORKINGTIME_BEGIN).getValue() ;

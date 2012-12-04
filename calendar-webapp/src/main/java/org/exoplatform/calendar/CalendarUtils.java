@@ -166,13 +166,13 @@ public class CalendarUtils {
   final public static String ITEM_ASK = "ask".intern();
   final public static String emailRegex = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-.]+";
   final public static String contactRegex = ".\\("+ emailRegex + "\\)";
-  
+
   public final static String INVITATION_URL = "/invitation/".intern();
   public final static String INVITATION_IMPORT_URL = "/invitation/import/".intern();
   public final static String INVITATION_DETAIL_URL = "/invitation/detail/".intern();
-  
+
   private static Log log = ExoLogger.getLogger(CalendarUtils.class);
-  
+
   public static final String[] getUserGroups(String username) throws Exception {
     ConversationState conversationState = ConversationState.getCurrent();
     Identity identity = conversationState.getIdentity();
@@ -203,12 +203,12 @@ public class CalendarUtils {
   static public OrganizationService getOrganizationService() throws Exception {
     return (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
   }
-  
+
   /**
    * calendar setting registry by user name. 
    */
   private static ConcurrentHashMap<String, CalendarSetting> calendarSettingsByUserName = new ConcurrentHashMap<String, CalendarSetting>();
-  
+
   /**
    * remove current calendar setting from registry.
    * @return
@@ -221,7 +221,7 @@ public class CalendarUtils {
       return null;
     }
   }
-  
+
   /**
    * change value of calendar setting of user in registry.
    * 
@@ -238,13 +238,13 @@ public class CalendarUtils {
       log.warn("could not set calendar setting for current user", e);
     }
   }
-  
+
   /**
    * 
    * @return calendar setting of current user. return null if any exception is thrown.
    */
   public static CalendarSetting getCurrentUserCalendarSetting() {
-    
+
     try {
       String user = getCurrentUser();
       CalendarSetting setting = calendarSettingsByUserName.get(user);
@@ -257,9 +257,9 @@ public class CalendarUtils {
       log.warn("could not get calendar setting of user", e);
       return null;
     }
-      
+
   }
-  
+
   /**
    * @return
    * @deprecated
@@ -267,7 +267,7 @@ public class CalendarUtils {
   public static Calendar getInstanceTempCalendar() {
     return getInstanceOfCurrentCalendar();
   }
-  
+
   /**
    * get calendar by user setting (timezone, first day of week)
    * @param calendarSetting
@@ -282,13 +282,13 @@ public class CalendarUtils {
     calendar.setMinimalDaysInFirstWeek(4);
     return calendar;
   }
-  
+
   /**
    * 
    * @return return an instance of Calendar class which contains user's setting, such as, time zone, first day of week.
    */
   public static Calendar getInstanceOfCurrentCalendar() {
-     try {
+    try {
       CalendarSetting setting = getCurrentUserCalendarSetting();
       return getCalendarInstanceBySetting(setting); 
     } catch (Exception e) {
@@ -308,7 +308,7 @@ public class CalendarUtils {
   }
 
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String labelFormat, String valueFormat, long timeInteval) {
-    
+
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     return getTimesSelectBoxOptions(labelFormat, valueFormat, timeInteval, locale);
@@ -324,7 +324,7 @@ public class CalendarUtils {
     dfLabel.setCalendar(cal) ;
     DateFormat dfValue = new SimpleDateFormat(valueFormat, locale) ;
     dfValue.setCalendar(cal) ;
-    
+
     int day = cal.get(Calendar.DAY_OF_MONTH);
     while (day == cal.get(Calendar.DAY_OF_MONTH)) {
       options.add(new SelectItemOption<String>(dfLabel.format(cal.getTime()), dfValue.format(cal.getTime()))) ;
@@ -368,13 +368,13 @@ public class CalendarUtils {
       }
       String minStr = (minutes < 10) ? ("0" + Integer.toString(minutes)) : Integer.toString(minutes);
       label = "(GMT " + ((timeZone.getRawOffset() >= 0) ? "+" : "") 
-      + hrStr + ":" + minStr + ") " + timeZoneID ;
+          + hrStr + ":" + minStr + ") " + timeZoneID ;
       //subZoneMap.put(tz,  str) ;
-      
+
     }
     return label;
   }
-  
+
   public static List<SelectItemOption<String>> getTimeZoneSelectBoxOptions(String[] timeZoneIds) {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
     for (String tz : timeZoneIds){
@@ -386,7 +386,7 @@ public class CalendarUtils {
     }
     return options ;
   }
-  
+
   /**
    * render display string for an ISO3 location name.
    * @param locationName - ISO3 location name
@@ -402,7 +402,7 @@ public class CalendarUtils {
         break;
       }
     }
-    
+
     if (locale != null) {
       String country = locale.getISO3Country();
       if (country != null && country.trim().length() > 0)
@@ -410,7 +410,7 @@ public class CalendarUtils {
     }
     return locationName;
   }
-  
+
   @SuppressWarnings("unchecked")
   public static List<SelectItemOption<String>> getLocaleSelectBoxOptions(Locale[] locale) {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
@@ -449,7 +449,7 @@ public class CalendarUtils {
     return ( date1.get(java.util.Calendar.DATE) == date2.get(java.util.Calendar.DATE) &&
         date1.get(java.util.Calendar.MONTH) == date2.get(java.util.Calendar.MONTH) &&
         date1.get(java.util.Calendar.YEAR) == date2.get(java.util.Calendar.YEAR)
-    ) ;
+        ) ;
   }
   public static boolean isSameDate(Date value1, Date value2) {
     Calendar date1 = getInstanceOfCurrentCalendar() ;
@@ -461,7 +461,7 @@ public class CalendarUtils {
 
   public static Calendar getBeginDay(Calendar cal) {
     Calendar newCal = (Calendar) cal.clone();
-    
+
     newCal.set(Calendar.HOUR_OF_DAY, 0) ;
     newCal.set(Calendar.MINUTE, 0) ;
     newCal.set(Calendar.SECOND, 0) ;
@@ -483,7 +483,7 @@ public class CalendarUtils {
     cal.setTime(date) ;
     return getBeginDay(cal) ;
   }
-  
+
   public static Calendar getEndDay(Date date)  {
     Calendar cal = getInstanceOfCurrentCalendar() ;
     cal.setTime(date) ;
@@ -526,9 +526,9 @@ public class CalendarUtils {
   public static String getServerBaseUrl() {
     PortletRequestContext portletRequestContext = PortletRequestContext.getCurrentInstance() ;
     String url = portletRequestContext.getRequest().getScheme() + "://" + 
-    portletRequestContext.getRequest().getServerName() + ":" +
-    String.format("%s",portletRequestContext.getRequest().getServerPort()) 
-    + "/" ;
+        portletRequestContext.getRequest().getServerName() + ":" +
+        String.format("%s",portletRequestContext.getRequest().getServerPort()) 
+        + "/" ;
     return url ;
   }
 
@@ -537,7 +537,7 @@ public class CalendarUtils {
     int rawOffset = timeZone.getRawOffset()  ;
     return String.valueOf(0 - (rawOffset /60000 + timeZone.getDSTSavings()/60000)) ;
   }
-  
+
   /**
    * 
    * @return the base URL to the current calendar application
@@ -572,8 +572,7 @@ public class CalendarUtils {
     String checkPerms = getCheckPermissionString();
     return CalendarUtils.hasEditPermission(savePerms, checkPerms.toString().split(CalendarUtils.COMMA)) ;
   }
-  
-  @SuppressWarnings("unchecked")
+
   public static String getCheckPermissionString() throws Exception {
     Identity identity = ConversationState.getCurrent().getIdentity();
     StringBuffer sb = new StringBuffer(identity.getUserId());
@@ -588,7 +587,7 @@ public class CalendarUtils {
     }
     return sb.toString();
   }
-  
+
   public static boolean isMemberShipType(Collection<Membership> mbsh, String value) {
     if(!isEmpty(value))
       for (String check : value.split(COMMA)) { 
@@ -631,15 +630,11 @@ public class CalendarUtils {
      * Modified by Philippe (philippe.aristote@gmail.com)
      * Uses SelectItemOptionGroup to differienciate private, shared and public groups
      */
-    
+
     // private calendars group
     SelectOptionGroup privGrp = new SelectOptionGroup(CalendarUtils.PRIVATE_CALENDARS);
     List<org.exoplatform.calendar.service.Calendar> calendars = calendarService.getUserCalendars(username, true) ;
     for(org.exoplatform.calendar.service.Calendar c : calendars) {
-      if (c.getId().equals(Utils.getDefaultCalendarId(username)) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-        c.setName(newName);
-      }
       if (!hash.containsKey(c.getId())) {
         hash.put(c.getId(), "");
         privGrp.addOption(new SelectOption(c.getName(), CalendarUtils.PRIVATE_TYPE + CalendarUtils.COLON + c.getId())) ;
@@ -652,10 +647,6 @@ public class CalendarUtils {
       SelectOptionGroup sharedGrp = new SelectOptionGroup(CalendarUtils.SHARED_CALENDARS);
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
         if(CalendarUtils.canEdit(null, Utils.getEditPerUsers(c), username)){
-          if (c.getId().equals(Utils.getDefaultCalendarId(c.getCalendarOwner())) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-            String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-            c.setName(newName);
-          }
           String owner = "" ;
           if(c.getCalendarOwner() != null) owner = c.getCalendarOwner() + " - " ;
           if (!hash.containsKey(c.getId())) {
@@ -668,7 +659,7 @@ public class CalendarUtils {
     }
     // public calendars group
     List<GroupCalendarData> lgcd = calendarService.getGroupCalendars(CalendarUtils.getUserGroups(username), true, username) ;
-    
+
     if(lgcd != null) {
       SelectOptionGroup pubGrp = new SelectOptionGroup(CalendarUtils.PUBLIC_CALENDARS);      
       String[] checkPerms = getCheckPermissionString().split(CalendarUtils.COMMA);
@@ -688,7 +679,7 @@ public class CalendarUtils {
     }
     return options ;
   }
-  
+
   public static String getGroupCalendarName(String groupName, String calendarName) {
     return calendarName + Utils.SPACE + OPEN_PARENTHESIS + groupName + CLOSE_PARENTHESIS;
   }
@@ -738,20 +729,12 @@ public class CalendarUtils {
     String username = getCurrentUser() ;
     List<org.exoplatform.calendar.service.Calendar> calendars = calendarService.getUserCalendars(username, true) ;
     for(org.exoplatform.calendar.service.Calendar c : calendars) {
-      if (c.getId().equals(Utils.getDefaultCalendarId(username)) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-        c.setName(newName);
-      }
       list.add(c) ;
     }
     GroupCalendarData gcd = calendarService.getSharedCalendars(username, true);
     if(gcd != null) {
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
         if(CalendarUtils.canEdit(null, Utils.getEditPerUsers(c), username)){
-          if (c.getId().equals(Utils.getDefaultCalendarId(username)) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-            String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-            c.setName(newName);
-          }
           list.add(c) ;
         }
       }
@@ -774,12 +757,12 @@ public class CalendarUtils {
 
   public static String encodeJCRText(String str) {
     return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").
-    replaceAll("'", "&apos;").replaceAll("\"", "&quot;");
+        replaceAll("'", "&apos;").replaceAll("\"", "&quot;");
   }
 
   public static String encodeHTML(String htmlContent) throws Exception {
     return htmlContent.replaceAll("&", "&amp;").replaceAll("\"", "&quot;")
-    .replaceAll("<", "&lt;").replaceAll(">", "&gt;") ;
+        .replaceAll("<", "&lt;").replaceAll(">", "&gt;") ;
   }
 
   static public MailService getMailService() throws Exception {
@@ -920,21 +903,21 @@ public class CalendarUtils {
     if(isEmpty(values)) return "";
     values = values.trim().replaceAll("(,\\s*)", COMMA).replaceAll("(\\s*,)", COMMA);
     String[] tmpArr = values.split(COMMA);
-      Set<String> set = new HashSet<String>(Arrays.asList(tmpArr));
-      StringBuilder data = new StringBuilder();
-      for (String s : set) {
-        if(s.trim().length() > 0) {
-          if(data.length() > 0) data.append(COMMA);
-          data.append(s.trim());
-        }
+    Set<String> set = new HashSet<String>(Arrays.asList(tmpArr));
+    StringBuilder data = new StringBuilder();
+    for (String s : set) {
+      if(s.trim().length() > 0) {
+        if(data.length() > 0) data.append(COMMA);
+        data.append(s.trim());
       }
+    }
     return data.toString();
   }
-  
-//  public static String getResourceBundle(String key) {
-//    return getResourceBundle(key, null);
-//  }
-  
+
+  //  public static String getResourceBundle(String key) {
+  //    return getResourceBundle(key, null);
+  //  }
+
   public static String getResourceBundle(String key, String defaultValue) {
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
     ResourceBundle res = context.getApplicationResourceBundle();
@@ -983,7 +966,7 @@ public class CalendarUtils {
     }
     return calendars;
   }   
-  
+
   public static String getLabel(String componentid, String id) throws Exception
   {
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
@@ -998,7 +981,7 @@ public class CalendarUtils {
       return id;
     }
   }
-  
+
   public static String enCodeTitle(String s) {
     StringBuffer buffer = new StringBuffer();
     if(s != null) {
@@ -1021,7 +1004,7 @@ public class CalendarUtils {
     }
     return buffer.toString();
   }
-  
+
   public static org.exoplatform.calendar.service.Calendar getCalendar(String calType, String calendarId) throws Exception {
     CalendarService calService = CalendarUtils.getCalendarService() ;
     String currentUser = CalendarUtils.getCurrentUser() ;
@@ -1036,7 +1019,7 @@ public class CalendarUtils {
     }
     return calendar;
   }
-  
+
   public static List<SelectItemOption<String>> getCategory() throws Exception {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
     CalendarService calendarService = getCalendarService() ;
@@ -1051,7 +1034,7 @@ public class CalendarUtils {
           break;
         }
       }
-      
+
       if (isDefaultEventCategory) {
         String newName = getResourceBundle("UICalendarView.label." + category.getId(), category.getId());
         options.add(new SelectItemOption<String>(newName, category.getId())) ;
@@ -1061,7 +1044,7 @@ public class CalendarUtils {
     }
     return options ;
   }
-  
+
   public static int getLimitUploadSize() {
     PortletRequestContext pcontext = (PortletRequestContext) WebuiRequestContext.getCurrentInstance();
     PortletPreferences portletPref = pcontext.getRequest().getPreferences();

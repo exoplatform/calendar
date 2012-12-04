@@ -34,7 +34,6 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.popup.UIAddEditPermission;
 import org.exoplatform.calendar.webui.popup.UICalendarCategoryForm;
 import org.exoplatform.calendar.webui.popup.UICalendarCategoryManager;
 import org.exoplatform.calendar.webui.popup.UICalendarForm;
@@ -250,10 +249,6 @@ public class UICalendars extends UIForm  {
       List<Calendar> calendars = group.getCalendars() ;
       if(calendars != null) {
         for(Calendar calendar : calendars) {
-          if (calendar.getId().equals(Utils.getDefaultCalendarId(username)) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-            String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-            calendar.setName(newName);
-          }
           colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
           UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
           if (checkbox == null) {
@@ -393,10 +388,6 @@ public class UICalendars extends UIForm  {
     if(groupCalendars != null) {
       List<Calendar> calendars = groupCalendars.getCalendars() ;
       for(Calendar calendar : calendars) {
-        if (calendar.getId().equals(Utils.getDefaultCalendarId(calendar.getCalendarOwner())) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-          String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-          calendar.setName(newName);
-        }
         String color = map.get(calendar.getId()) ;
         if(color == null) color = calendar.getCalendarColor() ;
         colorMap_.put(Calendar.TYPE_SHARED + CalendarUtils.COLON + calendar.getId(), color) ;
@@ -829,10 +820,6 @@ public class UICalendars extends UIForm  {
         if(gCalendarData != null) { 
           calendar = gCalendarData.getCalendarById(selectedCalendarId) ;
           if(calendar != null && !CalendarUtils.isEmpty(calendar.getCalendarOwner())){
-            if (calendar.getId().equals(Utils.getDefaultCalendarId(currentUser)) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-              String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-              calendar.setName(newName);
-            }
             calendar.setName(calendar.getCalendarOwner() + "-" + calendar.getName()) ;
           }
         }

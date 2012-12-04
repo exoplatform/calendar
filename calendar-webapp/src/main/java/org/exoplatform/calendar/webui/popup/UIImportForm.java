@@ -166,10 +166,6 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
     try {
       for(Calendar c : CalendarUtils.getCalendarService().getUserCalendars(CalendarUtils.getCurrentUser(), true)){
-        if (c.getId().equals(Utils.getDefaultCalendarId(CalendarUtils.getCurrentUser())) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-          String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-          c.setName(newName);
-        }
         options.add(new SelectItemOption<String>(c.getName(), c.getId())) ;
       }
     } catch (Exception e) {
@@ -304,10 +300,6 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
             } 
             List<Calendar> pCals = calendarService.getUserCalendars(username, true) ;
             for(Calendar cal : pCals) {
-              if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName)) {
-                String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-                cal.setName(newName);
-              }
               if(cal.getName().trim().equalsIgnoreCase(calendarName)) {
                 event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{calendarName}, ApplicationMessage.WARNING)) ;
                 return ;
