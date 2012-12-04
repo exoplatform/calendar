@@ -539,11 +539,11 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         calendar.getId() +"/"+ uiForm.calType_ ;
         calendar.setPrivateUrl(url);
         if(CalendarUtils.PRIVATE_TYPE.equals(uiForm.calType_)) {
-          if(CalendarUtils.isEmpty(calendarCategoryId)) {
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.category-empty", null, ApplicationMessage.WARNING) ) ;
-            return ;
-          }
-          calendar.setCategoryId(calendarCategoryId) ;
+//          if(CalendarUtils.isEmpty(calendarCategoryId)) {
+//            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.category-empty", null, ApplicationMessage.WARNING) ) ;
+//            return ;
+//          }
+//          calendar.setCategoryId(calendarCategoryId) ;
           List<Calendar> pCals = calendarService.getUserCalendars(username, true) ;
           for(Calendar cal : pCals) {
             if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName)) {

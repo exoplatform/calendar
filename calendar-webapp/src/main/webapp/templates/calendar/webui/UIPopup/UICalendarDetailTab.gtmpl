@@ -65,15 +65,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
       </tr>
       
       <% if (!parent.getCalType().equals(CalendarUtils.PUBLIC_TYPE)) {%>
-      <tr>
-        <td class="FieldLabel">
-          <%=parent.getLabel(parent.CATEGORY)%>
-        </td>
-        <td class="FieldComponent">
-          <%parent.renderField(parent.CATEGORY)%>
-          <%renderActions(parent.CATEGORY) ;%>
-        </td>
-      </tr>
+
       <% } %>
     
       <tr>
