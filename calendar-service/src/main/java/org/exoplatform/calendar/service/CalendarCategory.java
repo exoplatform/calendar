@@ -24,6 +24,7 @@ import org.exoplatform.services.jcr.util.IdGenerator;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
+@Deprecated
 public class CalendarCategory {
   private String  id;
 
