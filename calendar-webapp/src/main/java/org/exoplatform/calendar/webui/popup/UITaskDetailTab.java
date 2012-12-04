@@ -68,7 +68,8 @@ public class UITaskDetailTab extends UIFormInputWithActions {
   final public static String FIELD_DESCRIPTION = "description".intern() ;
   final public static String FIELD_STATUS = "status".intern() ;
   final static public String FIELD_ATTACHMENTS = "attachments".intern() ;
-
+  final static public String LABEL_ADD_ATTACHMENTS = "addfiles";
+  
   protected List<Attachment> attachments_ = new ArrayList<Attachment>() ;
   private Map<String, List<ActionData>> actionField_ ;
   public UITaskDetailTab(String arg0) throws Exception {

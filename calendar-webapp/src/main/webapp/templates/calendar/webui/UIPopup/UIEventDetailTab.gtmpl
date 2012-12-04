@@ -159,8 +159,8 @@
           <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
           </div>
           <div class="AddAttachmentIcon">
-            <a href="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".action.AddAttachment")%>">
-              <img class="AddNewNodeIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
+            <a href="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>">
+              <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%>
             </a>          
           </div>
         </td>
