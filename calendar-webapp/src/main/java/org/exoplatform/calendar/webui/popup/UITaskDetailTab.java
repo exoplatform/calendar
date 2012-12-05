@@ -30,13 +30,7 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
-import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormInputInfo;
-import org.exoplatform.webui.form.UIFormInputWithActions;
-import org.exoplatform.webui.form.UIFormSelectBox;
-import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
-import org.exoplatform.webui.form.UIFormStringInput;
-import org.exoplatform.webui.form.UIFormTextAreaInput;
+import org.exoplatform.webui.form.*;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
@@ -100,7 +94,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UIFormComboBox(FIELD_TO_TIME, FIELD_TO_TIME,  options));
 
     addUIFormInput(new UIFormDateTimePicker(FIELD_TO, FIELD_TO, new Date(), false));
-    addUIFormInput(new UICheckBoxInput(FIELD_CHECKALL, FIELD_CHECKALL, null));
+    addUIFormInput(new UIFormCheckBoxInput(FIELD_CHECKALL, FIELD_CHECKALL, null));
     addUIFormInput(new UIFormStringInput(FIELD_DELEGATION, FIELD_DELEGATION, null));
     addUIFormInput(new UIFormSelectBox(FIELD_PRIORITY, FIELD_PRIORITY, getPriority())) ;
 
