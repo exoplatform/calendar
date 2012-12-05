@@ -19,8 +19,6 @@
   long currentDayInMillis = uicomponent.getCurrentCalendar().getTimeInMillis();
   String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT,String.valueOf(uicomponent.TYPE_MONTH)) ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS,String.valueOf(uicomponent.TYPE_MONTH)) ;
-   String linkYearNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(uicomponent.TYPE_YEAR)) ;
-   String linkYearPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS,String.valueOf(uicomponent.TYPE_YEAR)) ;
    monthName = uicomponent.getMonthName(currentMonth) ;
    cssClass = "CalendarContentNomal" ;
    if(uicomponent.isCurrentMonth(currentMonth, currentYear)) {
@@ -45,16 +43,11 @@
         <table>
           <tbody>
             <tr>
-              <td>
-                <div onclick="$linkYearPrevious">
-                  <div class="PreviousMonthSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIYearView.label.previousYear')%>"><span></span></div>
-                </div>
-              </td>
+
               <td>
                 <div class="Title">
                 <%
                     monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-                    yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
                 %>
                 <a href="<%=uicomponent.event("GotoDate", monthViewAction)%>">
                   $monthName 
@@ -64,11 +57,7 @@
                 </a>
                 </div>
               </td>
-              <td>
-                <div onclick="$linkYearNext">
-                  <div class="NextMonthSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIYearView.label.nextYear')%>"><span></span></div>
-                </div>
-              </td>
+
             </tr>
           </tbody>
         </table>

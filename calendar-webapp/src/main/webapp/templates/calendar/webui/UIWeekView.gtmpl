@@ -53,10 +53,8 @@
   Calendar endDateOfWeek = uicomponent.getEndDateOfWeek();
   String startDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ startDateOfWeek.getTimeInMillis();
   String startMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ startDateOfWeek.getTimeInMillis();
-  String startYearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ startDateOfWeek.getTimeInMillis();
   String endDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ endDateOfWeek.getTimeInMillis();
   String endMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ endDateOfWeek.getTimeInMillis();
-  String endYearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ endDateOfWeek.getTimeInMillis();
   boolean isShowWorkingTime = uicomponent.isShowWorkingTime() ;
   DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
   DateFormat tf = new SimpleDateFormat(timeFormat, locale) ;
