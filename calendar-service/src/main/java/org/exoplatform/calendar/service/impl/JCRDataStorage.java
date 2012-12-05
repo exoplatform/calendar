@@ -691,7 +691,6 @@ public class JCRDataStorage implements DataStorage {
     }
     eventCategoryNode.setProperty(Utils.EXO_ID, eventCategory.getId());
     eventCategoryNode.setProperty(Utils.EXO_NAME, eventCategory.getName());
-    eventCategoryNode.setProperty(Utils.EXO_DESCRIPTION, eventCategory.getDescription());
     eventCategoryHome.getSession().save();
   }
 
@@ -731,8 +730,6 @@ public class JCRDataStorage implements DataStorage {
       eventCategory.setId(eventCatNode.getProperty(Utils.EXO_ID).getString());
     if (eventCatNode.hasProperty(Utils.EXO_NAME))
       eventCategory.setName(eventCatNode.getProperty(Utils.EXO_NAME).getString());
-    if (eventCatNode.hasProperty(Utils.EXO_DESCRIPTION))
-      eventCategory.setDescription(eventCatNode.getProperty(Utils.EXO_DESCRIPTION).getString());
     return eventCategory;
   }
 
