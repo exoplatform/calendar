@@ -65,7 +65,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
       <tr>
         <td class="FieldLabel">
           <span>
-          <%=uiform.getLabel(uicomponent.CALENDARS)%>
+          <%=uiform.getLabel(uicomponent.CALENDAR)%>
           </span>
         </td>
         <td class="FieldComponent">
