@@ -112,7 +112,9 @@ public class NewUserListener extends UserEventListener {
   public static String defaultCalendarCategoryId = DEFAULT_CALENDAR_CATEGORYID;
   public static String defaultCalendarCategoryName = DEFAULT_CALENDAR_CATEGORYNAME;
 
+  @Deprecated
   public static String defaultCalendarId = DEFAULT_CALENDAR_ID;
+  @Deprecated
   public static String defaultCalendarName = DEFAULT_CALENDAR_NAME;
   
   private List<String> ignore_users_;
@@ -259,6 +261,7 @@ public class NewUserListener extends UserEventListener {
           return;
       }
     try {
+      defaultCalendarName = user.getFullName();
       cservice_.initNewUser(user.getUserName(), defaultCalendarSetting_);
     } catch (Exception e) {
       LOG.error("Failed to initialize calendar account for " + user.getUserName());

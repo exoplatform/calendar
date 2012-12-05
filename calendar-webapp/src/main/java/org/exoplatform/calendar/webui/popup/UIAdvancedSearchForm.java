@@ -98,10 +98,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     CalendarService cservice = CalendarUtils.getCalendarService() ;
     options.add(new SelectItemOption<String>("", "")) ;
     for(Calendar cal : cservice.getUserCalendars(username, true)) {
-      if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName)) {
-        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-        cal.setName(newName);
-      }
       options.add(new SelectItemOption<String>(cal.getName(), Calendar.TYPE_PRIVATE + CalendarUtils.COLON + cal.getId())) ;
     }
     List<GroupCalendarData> groupCals  = cservice.getGroupCalendars(CalendarUtils.getUserGroups(username), true, username) ;
@@ -117,10 +113,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     GroupCalendarData sharedData  = cservice.getSharedCalendars(CalendarUtils.getCurrentUser(), true) ;
     if(sharedData != null) {
       for(Calendar cal : sharedData.getCalendars()) {
-        if (cal.getId().equals(Utils.getDefaultCalendarId(cal.getCalendarOwner())) && cal.getName().equals(NewUserListener.defaultCalendarName)) {
-          String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-          cal.setName(newName);
-        }
         String owner = "" ;
         if(cal.getCalendarOwner() != null) owner = cal.getCalendarOwner() + "- " ;
         options.add(new SelectItemOption<String>(owner + cal.getName(), Calendar.TYPE_SHARED + CalendarUtils.COLON + cal.getId())) ;

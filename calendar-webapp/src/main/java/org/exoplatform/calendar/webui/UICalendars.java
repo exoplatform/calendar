@@ -34,7 +34,6 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.popup.UIAddEditPermission;
 import org.exoplatform.calendar.webui.popup.UICalendarCategoryForm;
 import org.exoplatform.calendar.webui.popup.UICalendarCategoryManager;
 import org.exoplatform.calendar.webui.popup.UICalendarForm;
@@ -56,11 +55,11 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
-import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
 import org.exoplatform.webui.form.ext.UIFormColorPicker.Colors;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 
 /**
  * Created by The eXo Platform SARL
@@ -92,7 +91,7 @@ import org.exoplatform.webui.form.ext.UIFormColorPicker.Colors;
                    @EventConfig(listeners = UICalendars.RemoteCalendarActionListener.class),
                    @EventConfig(listeners = UICalendars.RefreshRemoteCalendarActionListener.class)
                  }
-)
+    )
 
 public class UICalendars extends UIForm  {
   private static final Log log = ExoLogger.getLogger(UICalendars.class);
@@ -100,8 +99,8 @@ public class UICalendars extends UIForm  {
   public static String CALTYPE = "calType".intern() ;
   public static String CALNAME = "calName".intern() ;
   public static String CALCOLOR = "calColor".intern() ;
-//  public static String CURRENTTIME = "ct".intern() ;
-//  public static String TIMEZONE = "tz".intern() ;
+  //  public static String CURRENTTIME = "ct".intern() ;
+  //  public static String TIMEZONE = "tz".intern() ;
 
   private boolean isShowTaskList_ = false ;
   private String[] publicCalendarIds = {} ;
@@ -175,27 +174,27 @@ public class UICalendars extends UIForm  {
           }
         }
         if(isCalendarOfSpace(groupIds)){
-          getUIFormCheckBoxInput(component.getId()).setChecked(true) ;
+          getUICheckBoxInput(component.getId()).setChecked(true) ;
         }else{
-          getUIFormCheckBoxInput(component.getId()).setChecked(false) ;
+          getUICheckBoxInput(component.getId()).setChecked(false) ;
         }
       }
       return;
     }
     for(UIComponent cpm : getChildren())
-      getUIFormCheckBoxInput(cpm.getId()).setChecked(true) ; 
+      getUICheckBoxInput(cpm.getId()).setChecked(true) ; 
   }
 
   public List<String> getCheckedCalendars() {
     List<String> list = new ArrayList<String>();
     for(UIComponent cpm : getChildren())
-      if (cpm instanceof UIFormCheckBoxInput) {
-        UIFormCheckBoxInput checkbox = (UIFormCheckBoxInput) cpm;
+      if (cpm instanceof UICheckBoxInput) {
+        UICheckBoxInput checkbox = (UICheckBoxInput) cpm;
         if (checkbox.isChecked()) list.add(cpm.getId());
       }    
     return list ;
   }
-  
+
   public String[] getCheckedPublicCalendars() {
     List<String> lstCheck = getCheckedCalendars();
     List<String> lstReturn = new ArrayList<String>();
@@ -209,7 +208,7 @@ public class UICalendars extends UIForm  {
     }
     return lstReturn.toArray(new String[lstReturn.size()]);
   }
-  
+
   public EventQuery getEventQuery(EventQuery eventQuery) throws Exception {
     List<String> checkedCals = getCheckedCalendars() ;  
     List<String> calendarIds = new ArrayList<String>() ; 
@@ -235,7 +234,8 @@ public class UICalendars extends UIForm  {
     eventQuery.setOrderBy(new String[] {Utils.EXO_SUMMARY});
     return eventQuery;
   }
-  
+
+  @Deprecated
   public List<GroupCalendarData> getPrivateCalendars() throws Exception{
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
@@ -249,14 +249,10 @@ public class UICalendars extends UIForm  {
       List<Calendar> calendars = group.getCalendars() ;
       if(calendars != null) {
         for(Calendar calendar : calendars) {
-          if (calendar.getId().equals(Utils.getDefaultCalendarId(username)) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-            String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-            calendar.setName(newName);
-          }
           colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
-          UIFormCheckBoxInput checkbox = getUIFormCheckBoxInput(calendar.getId());
+          UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
           if (checkbox == null) {
-            checkbox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), false);
+            checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
             checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
             addUIFormInput(checkbox);
           } else {
@@ -267,8 +263,33 @@ public class UICalendars extends UIForm  {
     }
     return groupCalendars;
   }
-  
-  private void setCheckedCheckbox(UIFormCheckBoxInput checkbox, Calendar calendar){
+
+  public List<Calendar> getAllPrivateCalendars() throws Exception{
+    CalendarService calendarService = CalendarUtils.getCalendarService() ;
+    String username = CalendarUtils.getCurrentUser() ;
+    boolean dontShowAll = false;
+    List<GroupCalendarData> groupCalendars = calendarService.getCalendarCategories(username, dontShowAll) ;
+    List<Calendar> calendars = new ArrayList<Calendar>();
+    for(GroupCalendarData group : groupCalendars) {
+      calendars.addAll(group.getCalendars()) ;
+      if(calendars != null) {
+        for(Calendar calendar : calendars) {
+          colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
+          UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
+          if (checkbox == null) {
+            checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
+            checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
+            addUIFormInput(checkbox);
+          } else {
+            setCheckedCheckbox(checkbox, calendar);
+          }
+        }
+      }
+    }
+    return calendars;
+  }
+
+  private void setCheckedCheckbox(UICheckBoxInput checkbox, Calendar calendar){
     UICalendarPortlet calendarPortlet = this.getAncestorOfType(UICalendarPortlet.class);
     UICalendarViewContainer uiViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
     boolean isListView = false;
@@ -302,7 +323,8 @@ public class UICalendars extends UIForm  {
     }
     return false;
   }
-  
+
+  @Deprecated
   public List<GroupCalendarData> getPublicCalendars() throws Exception{
     String username = CalendarUtils.getCurrentUser() ;
     String[] groups = CalendarUtils.getUserGroups(username) ;
@@ -314,9 +336,9 @@ public class UICalendars extends UIForm  {
       for(Calendar calendar : calendars) {
         map.put(calendar.getId(), calendar.getId()) ;
         colorMap_.put(Calendar.TYPE_PUBLIC + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
-        UIFormCheckBoxInput checkbox = getUIFormCheckBoxInput(calendar.getId());
+        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
         if (checkbox == null) {
-          checkbox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), false);
+          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
           checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
           addUIFormInput(checkbox);
         } else {
@@ -326,6 +348,33 @@ public class UICalendars extends UIForm  {
     }
     publicCalendarIds = map.values().toArray(new String[]{}) ;
     return groupCalendars ;
+  }
+
+
+  public List<Calendar> getAllPublicCalendars() throws Exception{
+    String username = CalendarUtils.getCurrentUser() ;
+    String[] groups = CalendarUtils.getUserGroups(username) ;
+    CalendarService calendarService = CalendarUtils.getCalendarService() ;
+    List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups, false, username) ;
+    Map<String, String> map = new HashMap<String, String> () ;
+    List<Calendar> calendars = new ArrayList<Calendar>();
+    for(GroupCalendarData group : groupCalendars) {
+      calendars.addAll(group.getCalendars()) ;
+      for(Calendar calendar : calendars) {
+        map.put(calendar.getId(), calendar.getId()) ;
+        colorMap_.put(Calendar.TYPE_PUBLIC + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
+        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
+        if (checkbox == null) {
+          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
+          checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
+          addUIFormInput(checkbox);
+        } else {
+          setCheckedCheckbox(checkbox, calendar);
+        }
+      }
+    }
+    publicCalendarIds = map.values().toArray(new String[]{}) ;
+    return calendars ;
   }
 
   public GroupCalendarData getSharedCalendars() throws Exception{
@@ -339,16 +388,12 @@ public class UICalendars extends UIForm  {
     if(groupCalendars != null) {
       List<Calendar> calendars = groupCalendars.getCalendars() ;
       for(Calendar calendar : calendars) {
-        if (calendar.getId().equals(Utils.getDefaultCalendarId(calendar.getCalendarOwner())) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-          String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-          calendar.setName(newName);
-        }
         String color = map.get(calendar.getId()) ;
         if(color == null) color = calendar.getCalendarColor() ;
         colorMap_.put(Calendar.TYPE_SHARED + CalendarUtils.COLON + calendar.getId(), color) ;
-        UIFormCheckBoxInput checkbox = getUIFormCheckBoxInput(calendar.getId());
+        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
         if (checkbox == null) {
-          checkbox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), false);
+          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
           checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
           addUIFormInput(checkbox);
         } else {
@@ -370,8 +415,8 @@ public class UICalendars extends UIForm  {
     CalendarService calService = CalendarUtils.getCalendarService() ;
     Calendar calendar = null;
     String currentUser = CalendarUtils.getCurrentUser() ;
-    
-    
+
+
     if(calType.equals(CalendarUtils.SHARED_TYPE)) {
       calendar = calService.getSharedCalendars(currentUser, true).getCalendarById(calendarId) ;
       return CalendarUtils.canEdit(null, Utils.getEditPerUsers(calendar), currentUser) ;
@@ -385,17 +430,17 @@ public class UICalendars extends UIForm  {
   public boolean canEdit(String[] savePerms, String[] checkPerms) throws Exception{
     return CalendarUtils.hasEditPermission(savePerms, checkPerms);
   }
-  
+
   public String getCheckPermissionString() throws Exception {
     return CalendarUtils.getCheckPermissionString();
   }
-  
+
   public boolean isRemoteCalendar(String calendarId) throws Exception {
     String username = CalendarUtils.getCurrentUser();
     CalendarService calService = CalendarUtils.getCalendarService();
     return calService.isRemoteCalendar(username, calendarId);    
   }
-  
+
   private void updateView(UICalendars uiComponent, Event<UICalendars> event) throws Exception {
     UICalendarPortlet uiPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
     UICalendarViewContainer uiViewContainer = uiPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
@@ -415,7 +460,7 @@ public class UICalendars extends UIForm  {
       }
     }  
   }
-  
+
   static  public class AddCalendarActionListener extends EventListener<UICalendars> {
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiComponent = event.getSource() ;
@@ -427,7 +472,6 @@ public class UICalendars extends UIForm  {
       uiPopupContainer.setId(UIPopupContainer.UICALENDARPOPUP) ;
       UICalendarForm calendarForm = uiPopupContainer.addChild(UICalendarForm.class, null, null) ;
       calendarForm.setTimeZone(uiCalendarPortlet.getCalendarSetting().getTimeZone());
-      calendarForm.setLocale(uiCalendarPortlet.getCalendarSetting().getLocation()) ;
       calendarForm.setSelectedGroup(categoryId) ;
       calendarForm.groupCalId_ = categoryId ;
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
@@ -449,6 +493,7 @@ public class UICalendars extends UIForm  {
       }
     }
   }
+  @Deprecated
   static  public class EditGroupActionListener extends EventListener<UICalendars> {
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiComponent = event.getSource() ;
@@ -486,7 +531,7 @@ public class UICalendars extends UIForm  {
       UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String currentUser = CalendarUtils.getCurrentUser() ;
-      
+
       try {
         String calendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
         String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
@@ -500,7 +545,7 @@ public class UICalendars extends UIForm  {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, ApplicationMessage.WARNING)) ;
             return;
           }        
-          
+
           if(!CalendarUtils.PRIVATE_TYPE.equals(calType) && !uiComponent.canAddTaskAndEvent(uiComponent, calendarId, calType)) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
             return;
@@ -511,7 +556,7 @@ public class UICalendars extends UIForm  {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarView.msg.event-category-list-empty", null)) ;
             return ;
           }  
-         
+
           String clientTime = CalendarUtils.getCurrentTime(uiComponent) ;
           //String clientTime = event.getRequestContext().getRequestParameter(CURRENTTIME) ;
           String categoryId = event.getRequestContext().getRequestParameter("categoryId") ;
@@ -532,10 +577,10 @@ public class UICalendars extends UIForm  {
         }
       } catch (PathNotFoundException e) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-        }
+      }
     }
   }
-  
+
   static  public class AddTaskActionListener extends EventListener<UICalendars> {
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiComponent = event.getSource() ;
@@ -558,7 +603,7 @@ public class UICalendars extends UIForm  {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, ApplicationMessage.WARNING)) ;
             return;
           }        
-          
+
           if(!CalendarUtils.PRIVATE_TYPE.equals(calType) && !uiComponent.canAddTaskAndEvent(uiComponent, calendarId, calType)) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
             return;
@@ -585,7 +630,7 @@ public class UICalendars extends UIForm  {
         }
       } catch (PathNotFoundException e) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-        }
+      }
     }
   }
 
@@ -599,9 +644,9 @@ public class UICalendars extends UIForm  {
       UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
       popupAction.deActivate() ;
       CalendarService calService = CalendarUtils.getCalendarService() ;
-      
+
       if(CalendarUtils.SHARED_TYPE.equalsIgnoreCase(calType)) {
-        
+
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.not-support-edit-share-calendar", null, 1)) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet) ;
         return ;
@@ -627,11 +672,11 @@ public class UICalendars extends UIForm  {
             event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
             return;
           }
-      
+
           // cs-4429: fix for group calendar permission
           String[] checkPerms = uiComponent.getCheckPermissionString().split(CalendarUtils.COMMA);
           if((CalendarUtils.SHARED_TYPE.equals(calType) && !uiComponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)) ||
-             (CalendarUtils.PUBLIC_TYPE.equals(calType) && !uiComponent.canEdit(calendar.getEditPermission(), checkPerms))) 
+              (CalendarUtils.PUBLIC_TYPE.equals(calType) && !uiComponent.canEdit(calendar.getEditPermission(), checkPerms))) 
           {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet) ;
@@ -647,7 +692,7 @@ public class UICalendars extends UIForm  {
         }
       }catch (PathNotFoundException e) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-        }
+      }
       UICalendarViewContainer uiViewContainer = uiCalendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
       CalendarSetting setting = calService.getCalendarSetting(username) ;
       uiViewContainer.refresh() ;
@@ -668,7 +713,7 @@ public class UICalendars extends UIForm  {
           calendar = calService.getUserCalendar(username, calendarId) ;
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-            } else {
+          } else {
             Boolean isRemote = calService.isRemoteCalendar(username, calendarId);
             calService.removeUserCalendar(username, calendarId) ; 
             if (isRemote) {
@@ -682,7 +727,7 @@ public class UICalendars extends UIForm  {
           calendar = calService.getGroupCalendar(calendarId) ;
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-            } else {
+          } else {
             boolean canEdit = false ;
             OrganizationService oService = uiComponent.getApplicationComponent(OrganizationService.class) ;
             for(GroupCalendarData groupCal : uiComponent.getPublicCalendars()) {
@@ -704,7 +749,7 @@ public class UICalendars extends UIForm  {
         }
       } catch (PathNotFoundException e) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-        }
+      }
       UICalendarPortlet uiPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
       uiPortlet.cancelAction() ;
       UICalendarViewContainer uiViewContainer = uiPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
@@ -715,7 +760,7 @@ public class UICalendars extends UIForm  {
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;
     }
   }
-  
+
   static  public class RemoveSharedCalendarActionListener extends EventListener<UICalendars> {
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiComponent = event.getSource() ;
@@ -728,12 +773,12 @@ public class UICalendars extends UIForm  {
           calendar = calService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
         if(calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-          } else {
+        } else {
           calService.removeSharedCalendar(username, calendarId) ;
         }      
       } catch (PathNotFoundException e) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-        }
+      }
       UICalendarPortlet uiPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
       uiPortlet.cancelAction() ;
       UICalendarViewContainer uiViewContainer = uiPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
@@ -745,6 +790,7 @@ public class UICalendars extends UIForm  {
     }
   }
 
+  @Deprecated
   static  public class AddCalendarCategoryActionListener extends EventListener<UICalendars> {
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiComponent = event.getSource() ;
@@ -764,7 +810,7 @@ public class UICalendars extends UIForm  {
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
-      
+
       Calendar calendar = null;
       if(calType.equals(CalendarUtils.PRIVATE_TYPE)) {
         calendar = calService.getUserCalendar(currentUser, selectedCalendarId) ;
@@ -773,10 +819,6 @@ public class UICalendars extends UIForm  {
         if(gCalendarData != null) { 
           calendar = gCalendarData.getCalendarById(selectedCalendarId) ;
           if(calendar != null && !CalendarUtils.isEmpty(calendar.getCalendarOwner())){
-            if (calendar.getId().equals(Utils.getDefaultCalendarId(currentUser)) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-              String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-              calendar.setName(newName);
-            }
             calendar.setName(calendar.getCalendarOwner() + "-" + calendar.getName()) ;
           }
         }
@@ -784,7 +826,7 @@ public class UICalendars extends UIForm  {
         try {
           calendar = calService.getGroupCalendar(selectedCalendarId) ;
         } catch (PathNotFoundException e) {
-          uiComponent.log.debug("\n\n calendar has been removed !");
+          log.debug("\n\n calendar has been removed !");
         }
       }  
       if(calendar == null) {
@@ -823,7 +865,7 @@ public class UICalendars extends UIForm  {
       List<Calendar> list = CalendarUtils.getCalendarService().getUserCalendarsByCategory(username, groupId) ;
       if(list.isEmpty()){
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.calendar-require", null)) ;
-        } else {
+      } else {
         UIExportForm exportForm = popupAction.activate(UIExportForm.class, 500) ;
         exportForm.initCheckBox(list, null) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
@@ -840,7 +882,7 @@ public class UICalendars extends UIForm  {
       List<GroupCalendarData> calendarCategories = CalendarUtils.getCalendarService().getCalendarCategories(user, showAll) ;
       if(calendarCategories== null || calendarCategories.isEmpty()) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.category-empty", null)) ;
-       }  else {
+      }  else {
         UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
         UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
         popupAction.deActivate() ;
@@ -869,7 +911,7 @@ public class UICalendars extends UIForm  {
           calendar = calService.getUserCalendar(username, calendarId) ;
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-           } else {
+          } else {
             calendar.setCalendarColor(color) ;
             calService.saveUserCalendar(username, calendar, false) ;
           }
@@ -878,7 +920,7 @@ public class UICalendars extends UIForm  {
             calendar = calService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-            } else {
+          } else {
             calendar.setCalendarColor(color) ;
             calService.saveSharedCalendar(username, calendar) ;
           }
@@ -886,14 +928,14 @@ public class UICalendars extends UIForm  {
           calendar = calService.getGroupCalendar(calendarId) ;
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-            } else {
+          } else {
             // cs-4429: fix for group calendar permission
             if(!CalendarUtils.canEdit(uiComponent.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username)){
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, ApplicationMessage.WARNING)) ;
               return ;
             }
             calendar.setCalendarColor(color) ;
-            calService.savePublicCalendar(calendar, false, username) ;
+            calService.savePublicCalendar(calendar, false) ;
           }
         }
       } catch (Exception e) {
@@ -924,7 +966,7 @@ public class UICalendars extends UIForm  {
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
   }
-  
+
   static public class TickActionListener extends EventListener<UICalendars> {
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiCalendars = event.getSource() ;
@@ -941,12 +983,12 @@ public class UICalendars extends UIForm  {
       event.getRequestContext().addUIComponentToUpdateByAjax(uiViewContainer) ;      
     }
   }  
-  
+
   public static class RemoteCalendarActionListener extends EventListener<UICalendars> {
 
     @Override
     public void execute(Event<UICalendars> event) throws Exception {
-        UICalendars uiCalendars = event.getSource();
+      UICalendars uiCalendars = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendars.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction popupAction = uiPortlet.getChild(UIPopupAction.class);
       popupAction.deActivate();
@@ -955,12 +997,12 @@ public class UICalendars extends UIForm  {
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
   }
-  
+
   public static class RefreshRemoteCalendarActionListener extends EventListener<UICalendars> {
 
     @Override
     public void execute(Event<UICalendars> event) throws Exception {
-        UICalendars uiCalendars = event.getSource();
+      UICalendars uiCalendars = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendars.getAncestorOfType(UICalendarPortlet.class);
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String remoteCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
@@ -968,11 +1010,6 @@ public class UICalendars extends UIForm  {
       Calendar calendar = calService.getUserCalendar(username, remoteCalendarId);
       try {    
         calService.refreshRemoteCalendar(username, remoteCalendarId);
-        
-        // activate SynchronizeRemoteCalendarJob
-        // calService.loadSynchronizeRemoteCalendarJob(username);
-        
-        UICalendarContainer uiVContainer = uiPortlet.findFirstComponentOfType(UICalendarContainer.class) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;      
       }
       catch (Exception e) {
@@ -980,9 +1017,9 @@ public class UICalendars extends UIForm  {
           log.debug("Fail to refresh remote calendar", e);
         }
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-refresh-remote-calendar", new String[] {calendar.getName()}, ApplicationMessage.WARNING)) ;
-        }
+      }
     }
-    
+
   }
-  
+
 }

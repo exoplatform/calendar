@@ -70,6 +70,7 @@ public interface CalendarService {
    * @throws Exception
    * @see CalendarCategory
    */
+  @Deprecated
   public CalendarCategory getCalendarCategory(String username, String calendarCategoryId) throws Exception;
 
   /**
@@ -79,6 +80,7 @@ public interface CalendarService {
    * @param isNew the boolean value to point out that add new category or update
    * @throws Exception
    */
+  @Deprecated
   public void saveCalendarCategory(String username, CalendarCategory calendarCategory, boolean isNew) throws Exception;
 
   /**
@@ -89,6 +91,7 @@ public interface CalendarService {
    * @throws Exception
    * @see CalendarCategory
    */
+  @Deprecated
   public CalendarCategory removeCalendarCategory(String username, String calendarCategoryId) throws Exception;
 
   /**

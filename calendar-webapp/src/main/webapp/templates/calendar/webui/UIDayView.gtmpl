@@ -18,11 +18,8 @@
   String currentMonthName = uicomponent.getMonthName(currentMonth) ;
   int currentYear = uicomponent.getCurrentYear();
   String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
-
-   
   monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-                    
+
   dateFormat = uicomponent.getDateFormat() ;
   timeFormat = uicomponent.getTimeFormat() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;

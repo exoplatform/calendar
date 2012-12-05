@@ -3,7 +3,7 @@
   import org.exoplatform.calendar.service.CalendarEvent;
   import org.exoplatform.calendar.CalendarUtils;
   import org.exoplatform.calendar.service.Utils;
-  import org.exoplatform.webui.form.UIFormCheckBoxInput;
+  import org.exoplatform.webui.form.input.UICheckBoxInput;
   import org.exoplatform.calendar.webui.UICalendarPortlet;
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
@@ -32,11 +32,6 @@
 		<div class="UIRightClickPopupMenu CalendarMainPopupMenu" style="display: none ;"> 
 			 <div class="UIContextMenuContainer ContextMenuContainer">
 				<ul>
-					<li class="MenuItem">
-					  <a class="ItemIcon AddGroupIcon" href="<%=uicomponent.event("AddCalendarCategory")%>">
-						<%=uiform.getLabel("AddGroup")%>
-					  </a>
-					</li>
 					<li class="MenuItem">
 					  <a class="ItemIcon AddCalendarIcon" href="<%=uicomponent.event('AddCalendar','id')%>">
 						<%=uiform.getLabel("AddCalendar")%>
@@ -78,20 +73,9 @@
         </h6>
       </div>
       <div class="MyCalendarContainer">
-        <%
-          List groupCalendars = uicomponent.getPrivateCalendars() ;
-          for(groupData in groupCalendars) {
-            if (groupData.getCalendars().size() > 0) {
-        %>
-         
-			<div class="GroupItem ClearFix" id="$groupData.id">
-			  <div id="UICalendars_CalendarGroupPopupMenu" class="IconHoverSetting" ></div>
-				<a class="CollapserFlatStyle"></a>
-				<div class="CalendarGroupIcon" rel="tooltip" data-placement="bottom" title="$groupData.name">$groupData.name</div>
-			</div>
           <ul class="UIVTabContent" >
         <%  
-            List calendars = groupData.getCalendars() ;
+            List calendars = uicomponent.getAllPrivateCalendars() ;
             for(calendar in calendars) {
               String calId = calendar.getId() ;
               String icon = "CalendarIcon" ;
@@ -100,7 +84,7 @@
               if(uicomponent.getChildById(calId) != null) {
                 def css = "IconCheckBox checkbox";
                 if(UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups()))  {css = "IconUnCheckBox checkbox";}
-                UIFormCheckBoxInput chk = (UIFormCheckBoxInput)uicomponent.getChildById(calId);
+                UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
                 if(chk.isChecked()){css = "IconCheckBox checkbox";}
         %>
             <li class="CalendarItem  CalendarItemPrivate ClearFix" calColor="$calendar.calendarColor" canEdit="true" id="$calId" calType="0" isRemote="$isRemote">
@@ -118,12 +102,7 @@
         <%     }
             }
         %>
-          </ul>
-
-        <%
-            }
-          }
-        %>          
+          </ul>        
       </div>
     </div>
     <!-- end private calendars -->
@@ -153,7 +132,7 @@
             }
             def css = "IconCheckBox checkbox";
             if(UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups()))  {css = "IconUnCheckBox checkbox";}
-            UIFormCheckBoxInput chk = (UIFormCheckBoxInput)uicomponent.getChildById(calId);
+            UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
             if(chk.isChecked()){css = "IconCheckBox checkbox";}
         %>
             <li class="CalendarItem CalendarItemShared ClearFix" calColor="$color" id="$calId" calType="1"  canEdit="<%=uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)%>">
@@ -188,28 +167,16 @@
         </h6>
       </div>
       <div class="MyCalendarContainer">
-        <%
-          List publicCalendars = uicomponent.getPublicCalendars() ;
-          for(groupData in publicCalendars) {
-            if (groupData.getCalendars().size() > 0) {
-              title = groupData.getName() ;
-              label = title.substring(title.lastIndexOf("/") + 1) ;  
-        %>
-           
-            <div class="GroupItem ClearFix">
-                <a class="CollapserFlatStyle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("groupActions")%>"></a>
-                <div class="CalendarGroupIcon" rel="tooltip" data-placement="bottom" title="$title">$label</div>
-
-            </div>
+         
           <ul class="UIVTabContent" >
-        <%  true
-            List calendarList = groupData.getCalendars() ;
+        <%  
+            List calendarList = uicomponent.getAllPublicCalendars() ;
             for(calendar in calendarList) {
               calId = calendar.getId() ;
               if(uicomponent.getChildById(calId) != null) {
                 def css = "IconCheckBox checkbox";
                 if(UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups()))  {css = "IconUnCheckBox checkbox";}
-                UIFormCheckBoxInput chk = (UIFormCheckBoxInput)uicomponent.getChildById(calId);
+                UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
                 if(chk.isChecked()){css = "IconCheckBox checkbox";}
         %>
             <li class="CalendarItem CalendarItemPublic ClearFix"  calColor="$calendar.calendarColor" canEdit="<%=uicomponent.canEdit(calendar.getEditPermission(), checkPerms)%>" id="$calId" calType="2" >
@@ -228,12 +195,7 @@
         }
             }
         %>
-          </ul>
-       
-        <%
-          }
-            }
-        %>          
+          </ul>      
       </div>
     </div>
     <!-- end public calendars -->

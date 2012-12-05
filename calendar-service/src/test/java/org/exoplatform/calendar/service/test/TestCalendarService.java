@@ -294,7 +294,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
   public void testEventCategory() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("categoryName");
-    calCategory.setDescription("Description");
     // calCategory.setCalendars(new String [] {""}) ;
     calendarService_.saveCalendarCategory(username, calCategory, true);
 
@@ -312,7 +311,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
     EventCategory eventCategory = new EventCategory();
     String name = "eventCategoryName";
     eventCategory.setName(name);
-    eventCategory.setDescription("description");
     calendarService_.saveEventCategory(username, eventCategory, true);
     assertEquals(1, calendarService_.getEventCategories(username).size());
     assertNotNull(calendarService_.getEventCategory(username, eventCategory.getId()));
@@ -375,7 +373,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
     EventCategory eventCategory = new EventCategory();
     eventCategory.setName("EventCategoryName1");
-    eventCategory.setDescription("EventCategoryDescription");
     calendarService_.saveEventCategory(username, eventCategory, true);
 
     CalendarEvent calEvent = new CalendarEvent();
@@ -414,7 +411,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
     EventCategory eventCategory = new EventCategory();
     eventCategory.setName("EventCategoryName2");
-    eventCategory.setDescription("EventCategoryDescription");
     calendarService_.saveEventCategory(username, eventCategory, true);
 
     CalendarEvent calEvent = new CalendarEvent();
@@ -459,7 +455,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
   public void testLastUpdatedTime() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("CalendarCategoryName");
-    calCategory.setDescription("CaldendarCategoryDescription");
     calendarService_.saveCalendarCategory(username, calCategory, true);
 
     Calendar cal = new Calendar();
@@ -471,7 +466,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
     EventCategory eventCategory = new EventCategory();
     eventCategory.setName("LastUpdatedTimeEventCategoryName");
-    eventCategory.setDescription("EventCategoryDescription");
     calendarService_.saveEventCategory(username, eventCategory, true);
 
     CalendarEvent calEvent = new CalendarEvent();
@@ -512,7 +506,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
     EventCategory eventCategory = new EventCategory();
     eventCategory.setName("EventCategoryName3");
-    eventCategory.setDescription("EventCategoryDescription");
     calendarService_.saveEventCategory(username, eventCategory, true);
 
     CalendarEvent calEvent = new CalendarEvent();
@@ -713,7 +706,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
       String newEventCategoryName = "newEventCategoryName";
       String newDescription = "newDescription";
       eventCategory.setName(newEventCategoryName);
-      eventCategory.setDescription(newDescription);
       calendarService_.saveEventCategory(username, eventCategory, false);
 
       // Check edited event category
@@ -1206,7 +1198,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
     try {
       EventCategory eventCategory = new EventCategory();
       eventCategory.setName(name);
-      eventCategory.setDescription("description");
       calendarService_.saveEventCategory(username, eventCategory, true);
       return eventCategory;
     } catch (Exception e) {

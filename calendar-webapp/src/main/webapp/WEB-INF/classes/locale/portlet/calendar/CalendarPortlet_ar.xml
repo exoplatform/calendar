@@ -288,7 +288,6 @@
       <option.0>Day view</option.0>
       <option.1>Week view</option.1>
       <option.2>Month view</option.2>
-      <option.3>Year view</option.3>
       <option.4>List view</option.4>
       <option.5>Schedule view</option.5>
       <option.6>Work week</option.6>
@@ -795,7 +794,6 @@
       <UIDayView>يوم</UIDayView>
       <UIWeekView>أسبوع</UIWeekView>
       <UIMonthView>شهر</UIMonthView>
-      <UIYearView>سنة</UIYearView>
       <UIListContainer>قائمة</UIListContainer>
       <UIScheduleView>جدول أعمال</UIScheduleView>
       <UIWorkingView>أسبوع العمل</UIWorkingView>
@@ -1004,19 +1002,7 @@
       </option>
     </label>
   </UIMonthView>
-  <!--
-  #org.exoplatform.calendar.webui.UIYearView
-  -->
-  <UIYearView>
-    <label>
-      <previousYear>السنة الفارطة</previousYear>
-      <nextYear>السنة المُـقبلة</nextYear>
-      <year>سنة</year>
-      <option>
-        <all>كـُـلّها</all>
-      </option>
-    </label>
-  </UIYearView>
+
   <!--
   #org.exoplatform.calendar.webui.UIListView
   -->

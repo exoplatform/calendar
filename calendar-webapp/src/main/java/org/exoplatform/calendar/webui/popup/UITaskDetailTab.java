@@ -27,20 +27,12 @@ import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
-import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
-import org.exoplatform.webui.form.UIFormInputInfo;
-import org.exoplatform.webui.form.UIFormInputWithActions;
-import org.exoplatform.webui.form.UIFormSelectBox;
-import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
-import org.exoplatform.webui.form.UIFormStringInput;
-import org.exoplatform.webui.form.UIFormTextAreaInput;
+import org.exoplatform.webui.form.*;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 
 /**
@@ -51,8 +43,8 @@ import org.exoplatform.webui.form.validator.MandatoryValidator;
  */
 
 @ComponentConfig(
-    template = "app:/templates/calendar/webui/UIPopup/UITaskDetailTab.gtmpl"
-) 
+                 template = "app:/templates/calendar/webui/UIPopup/UITaskDetailTab.gtmpl"
+    ) 
 public class UITaskDetailTab extends UIFormInputWithActions {
 
   final public static String FIELD_EVENT = "eventName".intern() ;
@@ -70,6 +62,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
   final public static String FIELD_DESCRIPTION = "description".intern() ;
   final public static String FIELD_STATUS = "status".intern() ;
   final static public String FIELD_ATTACHMENTS = "attachments".intern() ;
+  final static public String LABEL_ADD_ATTACHMENTS = "addfiles";
   
   protected List<Attachment> attachments_ = new ArrayList<Attachment>() ;
   private Map<String, List<ActionData>> actionField_ ;
@@ -96,12 +89,12 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     setActionField(FIELD_ATTACHMENTS, getUploadFileList()) ;
 
     addUIFormInput(new UIFormDateTimePicker(FIELD_FROM, FIELD_FROM, new Date(), false));
-    
+
     addUIFormInput(new UIFormComboBox(FIELD_FROM_TIME, FIELD_FROM_TIME, options));
     addUIFormInput(new UIFormComboBox(FIELD_TO_TIME, FIELD_TO_TIME,  options));
-   
+
     addUIFormInput(new UIFormDateTimePicker(FIELD_TO, FIELD_TO, new Date(), false));
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(FIELD_CHECKALL, FIELD_CHECKALL, null));
+    addUIFormInput(new UIFormCheckBoxInput(FIELD_CHECKALL, FIELD_CHECKALL, null));
     addUIFormInput(new UIFormStringInput(FIELD_DELEGATION, FIELD_DELEGATION, null));
     addUIFormInput(new UIFormSelectBox(FIELD_PRIORITY, FIELD_PRIORITY, getPriority())) ;
 
@@ -124,7 +117,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     setActionField(FIELD_DELEGATION, selectUsers) ;
 
   }
-  
+
   private List<SelectItemOption<String>> getStatus() {
     List<SelectItemOption<String>> status = new ArrayList<SelectItemOption<String>>() ;
     for(String taskStatus : CalendarEvent.TASK_STATUS) {
@@ -180,10 +173,6 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     String username = CalendarUtils.getCurrentUser() ;
     List<Calendar> calendars = calendarService.getUserCalendars(username, true) ;
     for(Calendar c : calendars) {
-      if (c.getId().equals(Utils.getDefaultCalendarId(username)) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-        c.setName(newName);
-      }
       options.add(new SelectItemOption<String>(c.getName(), c.getId())) ;
     }
     return options ;
@@ -206,15 +195,15 @@ public class UITaskDetailTab extends UIFormInputWithActions {
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }
-  
+
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}
 
   public UIFormComboBox getUIFormComboBox(String id) {
     return findComponentById(id);
   }  
-  
+
   public UIFormSelectBoxWithGroups getUIFormSelectBoxGroup(String id) {
     return findComponentById(id);
   }
-  
+
 }

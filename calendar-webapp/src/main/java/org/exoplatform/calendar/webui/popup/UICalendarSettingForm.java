@@ -28,8 +28,6 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.UIActionBar;
 import org.exoplatform.calendar.webui.UICalendarContainer;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
@@ -42,12 +40,12 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
-import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormTabPane;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 
 /**
  * Created by The eXo Platform SARL
@@ -136,9 +134,9 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       defaultCalendarsTab.addChild(new UIFormInputInfo(CalendarUtils.PRIVATE_CALENDARS, CalendarUtils.PRIVATE_CALENDARS, null)) ;    
       for(Calendar calendar : privateCals) {
         names_.put(calendar.getId(), calendar.getName()) ;
-        UIFormCheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
+        UICheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
         if(checkBox == null) {
-          checkBox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), true) ;
+          checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), true) ;
           defaultCalendarsTab.addUIFormInput(checkBox) ;
         }
         checkBox.setChecked(true) ;
@@ -149,9 +147,9 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       defaultCalendarsTab.addChild(new UIFormInputInfo(CalendarUtils.SHARED_CALENDARS, CalendarUtils.SHARED_CALENDARS, null)) ; 
       for(Calendar calendar : sharedCals) {
         names_.put(calendar.getId(), calendar.getName()) ;
-        UIFormCheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
+        UICheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
         if(checkBox == null) {
-          checkBox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), true) ;
+          checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), true) ;
           defaultCalendarsTab.addUIFormInput(checkBox) ;
         }
         checkBox.setChecked(true) ;
@@ -164,16 +162,16 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
         String groupName = cservice.getGroupCalendars(calendar.getGroups(), false, username).get(0).getName();
         names_.put(calendar.getId(), CalendarUtils.getGroupCalendarName(
           groupName.substring(groupName.lastIndexOf("/") + 1), calendar.getName())) ;
-        UIFormCheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
+        UICheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
         if(checkBox == null) {
-          checkBox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), true) ;
+          checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), true) ;
           defaultCalendarsTab.addUIFormInput(checkBox) ;
         }
         checkBox.setChecked(true) ;
       }
     }
     for(String calId : filteredCalendars) {
-      UIFormCheckBoxInput<Boolean> input = defaultCalendarsTab.getChildById(calId) ;
+      UICheckBoxInput input = defaultCalendarsTab.getChildById(calId) ;
       if(input != null) input.setChecked(false) ;
     }
     
@@ -186,10 +184,6 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     List<Calendar> calendars = new ArrayList<Calendar>() ;
     for(GroupCalendarData group : groupCalendars) {      
       for (Calendar calendar : group.getCalendars()) {
-        if (calendar.getId().equals(Utils.getDefaultCalendarId(username)) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-          String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-          calendar.setName(newName);
-        }
         calendars.add(calendar);
       }
     }
@@ -216,10 +210,6 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     List<Calendar> calendars = new ArrayList<Calendar>(); 
     if(groupCalendars != null) {    
       for (Calendar calendar : groupCalendars.getCalendars()) {
-        if (calendar.getId().equals(Utils.getDefaultCalendarId(calendar.getCalendarOwner())) && calendar.getName().equals(NewUserListener.defaultCalendarName)) {
-          String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
-          calendar.setName(newName);
-        }
         calendars.add(calendar);
       }
     }    
@@ -243,7 +233,7 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
   protected List<String> getUnCheckedList(List<Calendar> calendars) {
     List<String> list = new ArrayList<String>() ;
     for(Calendar cal : calendars) {
-      UIFormCheckBoxInput<Boolean> input = ((UIFormInputWithActions)getChildById(DEFAULT_CALENDAR_TAB)).getChildById(cal.getId()) ;
+      UICheckBoxInput input = ((UIFormInputWithActions)getChildById(DEFAULT_CALENDAR_TAB)).getChildById(cal.getId()) ;
       if(input != null && !input.isChecked()) list.add(input.getId()) ;
     }
     return list ;
