@@ -105,10 +105,6 @@ public class UIActionBar extends UIContainer  {
       if(uiViewContainer.getRenderedChild() instanceof UIListContainer) {
         UIListContainer listContainer = (UIListContainer)uiViewContainer.getRenderedChild() ;
         listContainer.setSelectedCategory(categoryId) ;
-      } else  if(uiViewContainer.getRenderedChild() instanceof UIYearView) {
-        UIYearView uiYearView = (UIYearView)uiViewContainer.getRenderedChild() ;
-        uiYearView.setCategoryId(categoryId) ;
-        uiYearView.refresh() ;
       }
       uiActionBar.setCurrentView(viewType) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiActionBar) ;

@@ -1,0 +1,56 @@
+<% String fieldName;
+def rcontext = _ctx.getRequestContext() ;
+def requireJS = rcontext.getJavascriptManager().getRequireJS();
+requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+requireJS.require("SHARED/jquery","gj");
+requireJS.addScripts("gj('label').hover( function() { if (gj(this).attr('name') != undefined) { gj(this).children('.popup').show(); } }, function() { if (gj(this).attr('name') != undefined) { gj(this).children('.popup').hide(); }} );");
+%>
+<div class="UIForm $uicomponent.id">
+<%uiform.begin()%>
+<div class="HorizontalLayout">
+<div class="FormContainer">
+<table class="UIFormGrid">
+<%
+for(field in uiform.getChildren()) {
+    if(field.isRendered()) {
+        %>
+        <tr>
+        <%fieldName = uicomponent.getLabel(field.getName());%>
+        <%
+        if(fieldName != null && fieldName.length() > 0 && !fieldName.equals(uicomponent.getId()) && !fieldName.equals(field.getName())) {
+            %>
+            <td class="FieldLabel">
+
+            <% if ( (field.getName() != uicomponent.NAME) && (field.getName() != uicomponent.TYPE) ) { %>
+                <label for="$field.id" name="<%=uicomponent.getCalendarName(field.getName()) %>">
+                <%=uicomponent.getLabel(field.getName()) %>
+                <div class="popup" style="display: none;"><%=uicomponent.getCalendarName(field.getName()) %></div>
+                </label>
+                <% } else { %>
+                <label for="$field.id">
+                <%=uicomponent.getLabel(field.getName()) %>
+                </label>
+                <% } %>
+
+            </td>
+                <td class="FieldComponent"><% uiform.renderField(field) %></td>
+            <%} else {%>
+            <td class="FieldComponent" colspan="2"><% uiform.renderField(field) %></td>
+                <%}%>
+            </tr>
+            <% }
+    }
+    %>
+    </table>
+            <div class="UIAction">
+            <% for(action in uicomponent.getActions()) {
+                String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action);
+                String link = uicomponent.event(action);
+                %>
+                <a href="javascript:void(0);" onclick="$link" class="ActionButton LightBlueStyle">$actionLabel</a>
+    <%}%>
+</div>
+                </div>
+</div>
+                <%uiform.end()%>
+                </div>

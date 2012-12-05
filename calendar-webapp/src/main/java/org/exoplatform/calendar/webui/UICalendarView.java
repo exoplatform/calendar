@@ -81,8 +81,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   final public static int       TYPE_MONTH       = 2;
 
-  final public static int       TYPE_YEAR        = 3;
-
   final public static String    ACT_NEXT         = "MoveNext".intern();
 
   final public static String    ACT_PREVIOUS     = "MovePrevious".intern();
@@ -427,9 +425,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       break;
     case TYPE_MONTH:
       cl.add(Calendar.MONTH, value);
-      break;
-    case TYPE_YEAR:
-      cl.add(Calendar.YEAR, value);
       break;
     default:
       break;
@@ -1282,14 +1277,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           uiView.setCurrentCalendar(cal);
           uiView.refresh();
           uiContainer.setRenderedChild(UIMonthView.class);
-        }
-        break;
-        case TYPE_YEAR: {
-          UIYearView uiView = uiContainer.getChild(UIYearView.class);
-          uiView.setCurrentCalendar(cal);
-          uiView.setCategoryId(calendarview.getSelectedCategory());
-          uiView.refresh();
-          uiContainer.setRenderedChild(UIYearView.class);
         }
         break;
         default:

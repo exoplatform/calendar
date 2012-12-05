@@ -196,8 +196,9 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
       }
 
       uiFileForm.createUploadInputNumber(uiFileForm.currentNumberOfUploadInput + 1);
-      UIPopupAction uiPopupAction = uiFileForm.getAncestorOfType(UIPopupAction.class) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiFileForm);
+      //UIPopupAction uiPopupAction = uiFileForm.getAncestorOfType(UIPopupAction.class) ;
+      //event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }
   }
 }
