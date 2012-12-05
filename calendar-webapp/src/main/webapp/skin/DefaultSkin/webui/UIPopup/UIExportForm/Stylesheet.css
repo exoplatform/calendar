@@ -1,0 +1,25 @@
+a.tooltip {outline:none; }
+a.tooltip strong {line-height:16px; text-align:center;}
+a.tooltip:hover {text-decoration:none;}
+a.tooltip span {
+  z-index:10;display:none; padding:14px 20px;
+  margin-top:30px; margin-left:-160px;
+  width:240px; line-height:16px;
+}
+a.tooltip:hover span{
+  display:inline; position:absolute;
+  border:2px solid #FFF;  color:#EEE;
+  background:#000 url('background/css-tooltip-gradient-bg.png') repeat-x 0 0;
+}
+
+/*CSS3 extras*/
+a.tooltip span
+{
+  border-radius:1px;
+  -moz-border-radius: 1px;
+  -webkit-border-radius: 1px;
+  -moz-box-shadow: 0px 0px 8px 4px #666;
+  -webkit-box-shadow: 0px 0px 8px 4px #666;
+  box-shadow: 0px 0px 8px 4px #666;
+  opacity: 0.8;
+}
