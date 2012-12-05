@@ -136,7 +136,7 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
       uiForm.setEventCategory(category) ;
       if (uiManager.defaultEventCategoriesMap.containsKey(categoryId)) 
         category.setName(uiManager.defaultEventCategoriesMap.get(categoryId));      
-      uiForm.setCategoryName(category.getName() + "...") ;
+      uiForm.setCategoryName(category.getName());
       event.getRequestContext().addUIComponentToUpdateByAjax(uiManager) ;
     }
   }
