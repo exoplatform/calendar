@@ -47,19 +47,10 @@
     <org.exoplatform.portal.version>3.4.0.Final</org.exoplatform.portal.version>
     <org.exoplatform.commons.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.commons.version>
     <org.gatein.wci.version>2.2.0-Beta02</org.gatein.wci.version>
-    <javax.servlet.version>2.5</javax.servlet.version>
-    <org.slf4j.version>1.5.8</org.slf4j.version>
-    <xstream.version>1.0.2</xstream.version>
-    <!-- eXo extended service -->
     <org.exoplatform.social.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.social.version>
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>${javax.servlet.version}</version>
-      </dependency>
       <!-- Import versions of external dependencies to use -->
       <dependency>
         <groupId>org.exoplatform</groupId>
@@ -153,6 +144,7 @@
             <artifactId>commons-logging</artifactId>
             <groupId>commons-logging</groupId>
           </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -164,6 +156,7 @@
         <artifactId>exo.core.component.organization.jdbc</artifactId>
         <version>${org.exoplatform.core.version}</version>
         <exclusions>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -203,6 +196,7 @@
             <artifactId>commons-logging</artifactId>
             <groupId>commons-logging</groupId>
           </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -226,6 +220,7 @@
             <artifactId>commons-logging</artifactId>
             <groupId>commons-logging</groupId>
           </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -274,6 +269,7 @@
             <artifactId>log4j</artifactId>
             <groupId>log4j</groupId>
           </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -301,6 +297,7 @@
             <artifactId>commons-logging</artifactId>
             <groupId>commons-logging</groupId>
           </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -347,6 +344,7 @@
             <artifactId>commons-logging</artifactId>
             <groupId>commons-logging</groupId>
           </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -376,6 +374,7 @@
         <artifactId>exo.portal.component.test.jcr</artifactId>
         <version>${org.exoplatform.portal.version}</version>
         <exclusions>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
@@ -478,16 +477,6 @@
         <groupId>org.gatein.wci</groupId>
         <artifactId>wci-wci</artifactId>
         <version>${org.gatein.wci.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${org.slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>xstream</groupId>
-        <artifactId>xstream</artifactId>
-        <version>${xstream.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
