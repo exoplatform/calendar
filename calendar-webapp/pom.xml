@@ -27,12 +27,6 @@
       <groupId>javax.portlet</groupId>
       <artifactId>portlet-api</artifactId>
     </dependency>
-    <!-- This dependency is required to runtime and missing in plf -->
-    <dependency>
-      <groupId>org.exoplatform.calendar</groupId>
-      <artifactId>calendar-common</artifactId>
-      <scope>runtime</scope>
-    </dependency>
     <!-- This dependency is required to compile our main classes but is erroneously reported as useless by dependency:analyze -->
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
@@ -124,6 +118,11 @@
       <artifactId>cometd-bayeux</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${org.slf4j.version}</version>
+    </dependency>
+    <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
     </dependency>
@@ -131,6 +130,12 @@
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <!-- This dependency is required to runtime and missing in plf -->
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-common</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <!-- This dependency is used for tests compilation but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
@@ -143,11 +148,6 @@
       <groupId>org.exoplatform.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${org.slf4j.version}</version>
     </dependency>
   </dependencies>
   <build>
