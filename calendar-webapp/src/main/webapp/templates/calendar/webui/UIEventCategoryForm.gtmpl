@@ -1,0 +1,44 @@
+<%
+
+String updateLabel = _ctx.appRes(uicomponent.getName() + ".action.Update");
+String addLabel = _ctx.appRes(uicomponent.getName() + ".action.Add");
+String closeLabel = _ctx.appRes(uicomponent.getName() + ".action.Cancel");
+String saveLink = uicomponent.event("Save");
+String closeLink = uicomponent.event("Cancel");
+String saveLabel = updateLabel;
+
+if(uicomponent.isAddNew()) {
+  saveLabel = addLabel;
+}
+%>
+<div class="UIEventCategoryForm" id="EventCategoryFormContainer">
+  <%uiform.begin();%>
+  <div class="EventCategoryFormContainer">
+    <div class="HorizontalLayout">
+      <div class="FormContainer">
+        <table class="UIFormGrid">
+          <tbody>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.EVENT_CATEGORY_NAME)%>
+              </td>
+              <td class="FieldComponent">
+                <%uicomponent.renderField(uicomponent.EVENT_CATEGORY_NAME)%>
+              </td>
+              <td>
+                <div class="UIAction">
+                  <a onclick="$saveLink" class="ActionButton LightBlueStyle">$saveLabel</a>
+                </div>
+              </td>
+            </tr>
+         </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div class="UIAction">
+	  <a onclick="$closeLink" class="ActionButton LightBlueStyle">$closeLabel</a>
+  </div>
+  <%uiform.end();%>
+</div>

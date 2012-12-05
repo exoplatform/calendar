@@ -48,10 +48,9 @@ import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
  */
 @ComponentConfig(
     lifecycle = UIFormLifecycle.class,
-    template = "system:/groovy/webui/form/UIForm.gtmpl",
+        template = "app:/templates/calendar/webui/UIEventCategoryForm.gtmpl",
     events = {
       @EventConfig(listeners = UIEventCategoryForm.SaveActionListener.class),
-      @EventConfig(listeners = UIEventCategoryForm.ResetActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UIEventCategoryForm.CancelActionListener.class, phase = Phase.DECODE)
     }
 )
@@ -59,19 +58,14 @@ public class UIEventCategoryForm extends UIForm {
   private static final Log log = ExoLogger.getExoLogger(UIEventCategoryForm.class);
   
   final private static String EVENT_CATEGORY_NAME = "eventCategoryName" ; 
-  final private static String DESCRIPTION = "description" ;
   private boolean isAddNew_ = true ;
   private EventCategory eventCategory_ = null ;
   public UIEventCategoryForm() throws Exception{
     addUIFormInput(new UIFormStringInput(EVENT_CATEGORY_NAME, EVENT_CATEGORY_NAME, null)
     .addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class)) ;
-    addUIFormInput(new UIFormTextAreaInput(DESCRIPTION, DESCRIPTION, null)) ;
   }
   protected String getCategoryName() {return getUIStringInput(EVENT_CATEGORY_NAME).getValue() ;}
   protected void setCategoryName(String value) {getUIStringInput(EVENT_CATEGORY_NAME).setValue(value) ;}
-
-  protected String getCategoryDescription() {return getUIFormTextAreaInput(DESCRIPTION).getValue() ;}
-  protected void setCategoryDescription(String value) {getUIFormTextAreaInput(DESCRIPTION).setValue(value) ;}
 
   public void reset() {
     super.reset() ;
@@ -97,19 +91,16 @@ public class UIEventCategoryForm extends UIForm {
     public void execute(Event<UIEventCategoryForm> event) throws Exception {
       UIEventCategoryForm uiForm = event.getSource() ;
       String name = uiForm.getUIStringInput(EVENT_CATEGORY_NAME).getValue() ;
-      String description = uiForm.getUIFormTextAreaInput(DESCRIPTION).getValue() ;
       if(!CalendarUtils.isEmpty(name)) {
         name = name.trim() ;
       }
       
       name = CalendarUtils.reduceSpace(name) ;
-      if(!CalendarUtils.isEmpty(description)) description = description.trim() ;
       UIEventCategoryManager uiManager = uiForm.getAncestorOfType(UIEventCategoryManager.class) ;
       CalendarService calendarService = CalendarUtils.getCalendarService();
       String username = CalendarUtils.getCurrentUser() ;
       EventCategory eventCat = new EventCategory() ;
       eventCat.setName(name) ;
-      eventCat.setDescription(description) ;
       try {
         if(uiForm.isAddNew_) {
           for (String defaultName : uiManager.defaultEventCategoriesMap.values()) {
@@ -126,7 +117,6 @@ public class UIEventCategoryForm extends UIForm {
             }
           }
           eventCat.setName(name) ;
-          eventCat.setDescription(description) ;
           calendarService.saveEventCategory(username, eventCat, false) ; 
         }
         Long currentPage = uiManager.getCurrentPage() ;
@@ -179,13 +169,6 @@ public class UIEventCategoryForm extends UIForm {
           log.debug("Fail to save event category", e);
         }
       }
-    }
-  }
-  static  public class ResetActionListener extends EventListener<UIEventCategoryForm> {
-    public void execute(Event<UIEventCategoryForm> event) throws Exception {
-      UIEventCategoryForm uiForm = event.getSource() ;
-      uiForm.reset() ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getParent());
     }
   }
 
