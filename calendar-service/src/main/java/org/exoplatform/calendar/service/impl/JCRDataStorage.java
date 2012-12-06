@@ -252,6 +252,7 @@ public class JCRDataStorage implements DataStorage {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   protected Node getCalendarCategoryHome(String username) throws Exception {
     Node calendarServiceHome = getUserCalendarServiceHome(username);
     try {
@@ -521,6 +522,7 @@ public class JCRDataStorage implements DataStorage {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public List<GroupCalendarData> getCalendarCategories(String username, boolean isShowAll) throws Exception {
     // try {
     Node calendarHome = getUserCalendarHome(username);
@@ -560,6 +562,7 @@ public class JCRDataStorage implements DataStorage {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public List<CalendarCategory> getCategories(String username) throws Exception {
     Node calendarCategoryHome = getCalendarCategoryHome(username);
     NodeIterator iter = calendarCategoryHome.getNodes();
@@ -581,6 +584,7 @@ public class JCRDataStorage implements DataStorage {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public void saveCalendarCategory(String username, CalendarCategory calendarCategory, boolean isNew) throws Exception {
     Node calCategoryHome = getCalendarCategoryHome(username);
     Node calCategoryNode;
@@ -2751,7 +2755,6 @@ public class JCRDataStorage implements DataStorage {
   private Node setCalendarProperties(Node calendarNode, Calendar calendar) throws Exception {
     calendarNode.setProperty(Utils.EXO_NAME, calendar.getName());
     calendarNode.setProperty(Utils.EXO_DESCRIPTION, calendar.getDescription());
-    calendarNode.setProperty(Utils.EXO_CATEGORY_ID, calendar.getCategoryId());
     calendarNode.setProperty(Utils.EXO_VIEW_PERMISSIONS, calendar.getViewPermission());
     calendarNode.setProperty(Utils.EXO_EDIT_PERMISSIONS, calendar.getEditPermission());
     calendarNode.setProperty(Utils.EXO_GROUPS, calendar.getGroups());
@@ -4361,36 +4364,8 @@ public class JCRDataStorage implements DataStorage {
   }
 
   public Calendar createRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception {
-    Node cat = null;
-    boolean isExists = false;
-    String categoryId;
-
-    // check if calendar category 'Remote' exists
-    NodeIterator iter = getCalendarCategoryHome(remoteCalendar.getUsername()).getNodes();
-    while (iter.hasNext()) {
-      cat = iter.nextNode();
-      if (cat.getProperty(Utils.EXO_NAME).getString().equals("Remote")) {
-        isExists = true;
-        break;
-      }
-    }
-
-    if (!isExists) {
-      CalendarCategory calendarCate = new CalendarCategory();
-      calendarCate.setDescription("Remote Calendar");
-      calendarCate.setName("Remote");
-      categoryId = calendarCate.getId();
-      saveCalendarCategory(remoteCalendar.getUsername(), calendarCate, true);
-    } else {
-      categoryId = cat.getProperty(Utils.EXO_ID).getString();
-    }
-
-    // create new eXo calendar in 'Remote' category
     Calendar eXoCalendar = new Calendar();
     eXoCalendar.setName(remoteCalendar.getCalendarName());
-    // exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[new Random().nextInt(org.exoplatform.calendar.service.Calendar.COLORS.length -1)]) ;
-    // exoCalendar.setDescription(iCalendar.getProductId().getValue()) ;
-    eXoCalendar.setCategoryId(categoryId);
     eXoCalendar.setPublic(false);
     eXoCalendar.setCalendarOwner(remoteCalendar.getUsername());
     saveUserCalendar(remoteCalendar.getUsername(), eXoCalendar, true);

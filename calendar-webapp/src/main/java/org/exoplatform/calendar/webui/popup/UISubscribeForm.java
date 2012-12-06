@@ -24,7 +24,9 @@ import java.util.ResourceBundle;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -97,8 +99,9 @@ public class UISubscribeForm extends UIForm implements UIPopupComponent {
     return this.getUIStringInput(URL).getValue();
   }
   
+  @Override
   public String getLabel(String id) throws Exception {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     ResourceBundle res = context.getApplicationResourceBundle() ;     
     String label = getId() + ".label." + id;
     try {
@@ -109,6 +112,7 @@ public class UISubscribeForm extends UIForm implements UIPopupComponent {
   } 
   
   public static class CancelActionListener extends EventListener<UISubscribeForm> {
+    @Override
     public void execute(Event<UISubscribeForm> event) throws Exception {
         UISubscribeForm uiform = event.getSource();
       UICalendarPortlet calendarPortlet = uiform.getAncestorOfType(UICalendarPortlet.class) ;
@@ -118,6 +122,7 @@ public class UISubscribeForm extends UIForm implements UIPopupComponent {
   }
 
   public static class NextActionListener extends EventListener<UISubscribeForm> {
+    @Override
     public void execute(Event<UISubscribeForm> event) throws Exception {
       UISubscribeForm uiform = event.getSource();
       UICalendarPortlet calendarPortlet = uiform.getAncestorOfType(UICalendarPortlet.class);
@@ -131,7 +136,7 @@ public class UISubscribeForm extends UIForm implements UIPopupComponent {
       if (CalendarUtils.isEmpty(type)) {
         event.getRequestContext()
              .getUIApplication()
-             .addMessage(new ApplicationMessage("UISubscribeForm.msg.remote-type-is-not-null", null, ApplicationMessage.WARNING));
+             .addMessage(new ApplicationMessage("UISubscribeForm.msg.remote-type-is-not-null", null, AbstractApplicationMessage.WARNING));
         return;
       }
       
@@ -141,7 +146,7 @@ public class UISubscribeForm extends UIForm implements UIPopupComponent {
              .getUIApplication()
              .addMessage(new ApplicationMessage("UISubscribeForm.msg.this-remote-calendar-already-exists",
                                                 null,
-                                                ApplicationMessage.WARNING));
+                                                AbstractApplicationMessage.WARNING));
         return;
       }
       

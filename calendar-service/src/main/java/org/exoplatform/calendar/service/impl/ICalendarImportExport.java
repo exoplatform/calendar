@@ -471,39 +471,17 @@ public class ICalendarImportExport implements CalendarImportExport {
 
     CalendarService calService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
 
+   
     if (isNew) {
-      NodeIterator iter = storage_.getCalendarCategoryHome(username).getNodes();
-      Node cat = null;
-      String categoryId;
-      boolean isExists = false;
-      while (iter.hasNext()) {
-        cat = iter.nextNode();
-        if (cat.getProperty(Utils.EXO_NAME).getString().equals("Imported")) {
-          isExists = true;
-          break;
-        }
-      }
-      if (!isExists) {
-        CalendarCategory calendarCate = new CalendarCategory();
-        calendarCate.setDescription("Imported icalendar category");
-        calendarCate.setName("Imported");
-        categoryId = calendarCate.getId();
-        calService.saveCalendarCategory(username, calendarCate, true);
-      } else {
-        categoryId = cat.getProperty(Utils.EXO_ID).getString();
-      }
-
       Calendar exoCalendar = new Calendar();
       exoCalendar.setName(calendarName);
       exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[new Random().nextInt(org.exoplatform.calendar.service.Calendar.COLORS.length - 1)]);
       exoCalendar.setDescription(iCalendar.getProductId().getValue());
-      exoCalendar.setCategoryId(categoryId);
       exoCalendar.setPublic(false);
       exoCalendar.setCalendarOwner(username);
       calService.saveUserCalendar(username, exoCalendar, true);
       calendarId = exoCalendar.getId();
-    }
-
+     }
     CalendarEvent exoEvent;
     ComponentList componentList = iCalendar.getComponents();
 

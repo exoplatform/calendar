@@ -35,7 +35,9 @@ public class NewUserListener extends UserEventListener {
 
   private static final Log   LOG                                    = ExoLogger.getLogger(NewUserListener.class);
 
+  @Deprecated
   final public static String CALENDAR_CATEGORY = "defaultCalendarCategory".intern();  
+  
   final public static String CALENDAR_NAME = "defaultCalendar".intern();
   final public static String EVENT_CATEGORIES = "defaultEventCategories".intern();
   final public static String COMA = ",".intern();
@@ -109,7 +111,9 @@ public class NewUserListener extends UserEventListener {
   public static String[] defaultEventCategoryNames = DEFAULT_EVENT_CATEGORY_NAMES;
 
   private CalendarService cservice_;
+  @Deprecated
   public static String defaultCalendarCategoryId = DEFAULT_CALENDAR_CATEGORYID;
+  @Deprecated
   public static String defaultCalendarCategoryName = DEFAULT_CALENDAR_CATEGORYNAME;
 
   @Deprecated

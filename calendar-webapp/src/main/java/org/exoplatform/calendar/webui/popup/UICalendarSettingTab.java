@@ -109,6 +109,7 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
   protected UIForm getParentFrom() {
     return (UIForm)getParent() ;
   }
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }
@@ -232,9 +233,9 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     return CalendarUtils.getLocaleSelectBoxOptions(java.util.Calendar.getAvailableLocales()) ;
   }
   public String getSendOption() {
-    return ((UIFormRadioBoxInput)getChild(UIFormRadioBoxInput.class)).getValue() ;
+    return getChild(UIFormRadioBoxInput.class).getValue() ;
   }
   public void setSendOption(String value) {
-    ((UIFormRadioBoxInput)getChild(UIFormRadioBoxInput.class)).setValue(value) ;
+    getChild(UIFormRadioBoxInput.class).setValue(value) ;
   }
 }

@@ -78,6 +78,7 @@ public class UISearchForm extends UIForm {
       return map.values().toArray(new String[map.values().size()] ) ;
   }
   static  public class SearchActionListener extends EventListener<UISearchForm> {
+    @Override
     @SuppressWarnings("unchecked")
     public void execute(Event<UISearchForm> event) throws Exception {
       UISearchForm uiForm = event.getSource() ;
@@ -108,7 +109,7 @@ public class UISearchForm extends UIForm {
 
         UICalendars uiCalendars = uiForm.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
         eventQuery = uiCalendars.getEventQuery(eventQuery);
-        uiListView.setViewType(UIListView.TYPE_BOTH);
+        uiListView.setViewType(UICalendarView.TYPE_BOTH);
         uiListView.setSortedField(UIListView.EVENT_START);
         uiListView.setIsAscending(false);
         eventQuery.setOrderBy(new String[] { Utils.EXO_FROM_DATE_TIME });
@@ -134,6 +135,7 @@ public class UISearchForm extends UIForm {
     }
   }
   static  public class AdvancedSearchActionListener extends EventListener<UISearchForm> {
+    @Override
     public void execute(Event<UISearchForm> event) throws Exception {
       UISearchForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;

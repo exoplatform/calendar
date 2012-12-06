@@ -48,7 +48,9 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.upload.UploadService;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
@@ -141,6 +143,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     addChild(eventReminderTab) ;
     setSelectedTab(uiTaskDetailTab.getId()) ;
   }
+  @Override
   public String getLabel(String id) {
     String label = id ;
     try {
@@ -152,6 +155,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     }
     return label ;
   }
+  @Override
   public void reset() {
     super.reset() ;
     calendarEvent_ = null;
@@ -248,12 +252,16 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     UITaskDetailTab uiTaskDetailTab = getChildById(TAB_TASKDETAIL) ;
     uiTaskDetailTab.getUIFormSelectBox(UITaskDetailTab.FIELD_STATUS).setValue(value) ;
   }
+  @Override
   public String[] getActions() {
     return new String[]{"Save", "Cancel"} ;
   }
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
 
+  @Override
   public void updateSelect(String selectField, String value) throws Exception {
     if(value.lastIndexOf("/") > 0) value = value.substring(value.lastIndexOf("/") + 1) ;
     delegators_.put(value, value) ;
@@ -379,7 +387,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   
   public static Date getBeginDate(boolean isAllDate,String dateFormat, String fromField,String timeFormat,String timeField) throws Exception {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     if(isAllDate) {
       DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
@@ -398,7 +406,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   protected void setEventFromDate(Date date,String dateFormat, String timeFormat) throws Exception{
     UITaskDetailTab taskDetailTab =  getChildById(TAB_TASKDETAIL) ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
     df.setCalendar(CalendarUtils.getInstanceOfCurrentCalendar()) ;
@@ -413,7 +421,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
 
   public static Date getToDate(boolean isAllDate,String dateFormat,String toField,String timeFormat,String timeField) throws Exception {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     if(isAllDate) {
       DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
@@ -438,7 +446,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   protected void setEventToDate(Date date,String dateFormat,  String timeFormat) throws Exception{
     UITaskDetailTab taskDetailTab =  getChildById(TAB_TASKDETAIL) ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
     df.setCalendar(CalendarUtils.getInstanceOfCurrentCalendar()) ;
@@ -452,11 +460,11 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
 
   protected boolean getEventAllDate() {
     UIFormInputWithActions taskDetailTab =  getChildById(TAB_TASKDETAIL) ;
-    return taskDetailTab.getUIFormCheckBoxInput(UITaskDetailTab.FIELD_CHECKALL).isChecked() ;
+    return taskDetailTab.getUICheckBoxInput(UITaskDetailTab.FIELD_CHECKALL).isChecked() ;
   }
   protected void setEventAllDate(boolean isCheckAll) {
     UIFormInputWithActions taskDetailTab =  getChildById(TAB_TASKDETAIL) ;
-    taskDetailTab.getUIFormCheckBoxInput(UITaskDetailTab.FIELD_CHECKALL).setChecked(isCheckAll) ;
+    taskDetailTab.getUICheckBoxInput(UITaskDetailTab.FIELD_CHECKALL).setChecked(isCheckAll) ;
   }
   protected String getEventDelegation() throws Exception {
     delegators_.clear() ;
@@ -510,11 +518,11 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
 
   protected boolean getEmailReminder() {
     UIEventReminderTab taskReminderTab =  getChildById(TAB_TASKREMINDER) ;
-    return taskReminderTab.getUIFormCheckBoxInput(UIEventReminderTab.REMIND_BY_EMAIL).isChecked() ;
+    return taskReminderTab.getUICheckBoxInput(UIEventReminderTab.REMIND_BY_EMAIL).isChecked() ;
   }
   protected void setEmailReminder(boolean isChecked) {
     UIEventReminderTab taskReminderTab =  getChildById(TAB_TASKREMINDER) ;
-    taskReminderTab.getUIFormCheckBoxInput(UIEventReminderTab.REMIND_BY_EMAIL).setChecked(isChecked) ;
+    taskReminderTab.getUICheckBoxInput(UIEventReminderTab.REMIND_BY_EMAIL).setChecked(isChecked) ;
   }
   protected String getEmailRemindBefore() {
     UIEventReminderTab taskReminderTab =  getChildById(TAB_TASKREMINDER) ;
@@ -522,12 +530,12 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   protected boolean isEmailRepeat() {
     UIEventReminderTab eventReminderTab =  getChildById(TAB_TASKREMINDER) ;
-    return Boolean.parseBoolean(eventReminderTab.getUIFormCheckBoxInput(UIEventReminderTab.EMAIL_IS_REPEAT).getValue().toString()) ;
+    return Boolean.parseBoolean(eventReminderTab.getUICheckBoxInput(UIEventReminderTab.EMAIL_IS_REPEAT).getValue().toString()) ;
   }
 
   public void setEmailRepeat(Boolean value) {
     UIEventReminderTab eventReminderTab =  getChildById(TAB_TASKREMINDER) ;
-    eventReminderTab.getUIFormCheckBoxInput(UIEventReminderTab.EMAIL_IS_REPEAT).setChecked(value) ;
+    eventReminderTab.getUICheckBoxInput(UIEventReminderTab.EMAIL_IS_REPEAT).setChecked(value) ;
   }
   
   protected String getEmailRepeatInterVal() {
@@ -551,11 +559,11 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
 
   protected boolean getPopupReminder() {
     UIEventReminderTab taskDetailTab =  getChildById(TAB_TASKREMINDER) ;
-    return taskDetailTab.getUIFormCheckBoxInput(UIEventReminderTab.REMIND_BY_POPUP).isChecked() ;
+    return taskDetailTab.getUICheckBoxInput(UIEventReminderTab.REMIND_BY_POPUP).isChecked() ;
   }
   protected void setPopupReminder(boolean isChecked) {
     UIFormInputWithActions taskDetailTab =  getChildById(TAB_TASKREMINDER) ;
-    taskDetailTab.getUIFormCheckBoxInput(UIEventReminderTab.REMIND_BY_POPUP).setChecked(isChecked) ;
+    taskDetailTab.getUICheckBoxInput(UIEventReminderTab.REMIND_BY_POPUP).setChecked(isChecked) ;
   }
   protected String getPopupReminderTime() {
     UIFormInputWithActions taskDetailTab =  getChildById(TAB_TASKREMINDER) ;
@@ -564,11 +572,11 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   
   protected Boolean isPopupRepeat() {
     UIEventReminderTab eventReminderTab =  getChildById(TAB_TASKREMINDER) ;
-    return Boolean.parseBoolean(eventReminderTab.getUIFormCheckBoxInput(UIEventReminderTab.POPUP_IS_REPEAT).getValue().toString()) ;
+    return Boolean.parseBoolean(eventReminderTab.getUICheckBoxInput(UIEventReminderTab.POPUP_IS_REPEAT).getValue().toString()) ;
   }
   protected void setPopupRepeat(Boolean value) {
     UIEventReminderTab eventReminderTab =  getChildById(TAB_TASKREMINDER) ;
-    eventReminderTab.getUIFormCheckBoxInput(UIEventReminderTab.POPUP_IS_REPEAT).setChecked(value) ;
+    eventReminderTab.getUICheckBoxInput(UIEventReminderTab.POPUP_IS_REPEAT).setChecked(value) ;
   }
 
   protected String getPopupRepeatInterVal() {
@@ -784,12 +792,14 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   
   
   static  public class DownloadAttachmentActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       UIEventForm.downloadAtt(event, uiForm, false);
     }
   }
   static  public class AddCategoryActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       UIPopupContainer uiContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
@@ -801,6 +811,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     }
   }
   static  public class AddEmailAddressActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       uiForm.setSelectedTab(TAB_TASKREMINDER) ;
@@ -816,6 +827,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   
   static  public class AddAttachmentActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       UIPopupContainer uiContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
@@ -826,6 +838,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     }
   }
   static  public class RemoveAttachmentActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       UIPopupContainer uiContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
@@ -835,7 +848,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       Attachment attachfile = new Attachment();
       for (Attachment att : uiTaskDetailTab.attachments_) {
         if (att.getId().equals(attFileId)) {
-          attachfile = (Attachment) att;
+          attachfile = att;
         }
       }
       uiTaskDetailTab.removeFromUploadFileList(attachfile);
@@ -845,11 +858,13 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     }
   }
   static  public class AddCalendarActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
     }
   }
 
   static  public class SelectUserActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       String value = uiForm.getEventDelegation() ;
@@ -868,6 +883,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     }
   }
   static  public class AddActionListener extends EventListener<UIUserSelector> {
+    @Override
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource();
       UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
@@ -888,6 +904,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   
   static  public class CloseActionListener extends EventListener<UIUserSelector> {
+    @Override
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUseSelector = event.getSource() ;
       UIPopupWindow uiPoupPopupWindow = uiUseSelector.getParent() ;
@@ -899,6 +916,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
 
   static  public class SaveActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -929,7 +947,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
             s = s.trim() ;
             if(!CalendarUtils.isEmpty(s))
               if(orgService.getUserHandler().findUserByName(s) == null) {
-                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIEventForm.msg.name-not-correct", new Object[]{s}, ApplicationMessage.WARNING)) ;
+                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIEventForm.msg.name-not-correct", new Object[]{s}, AbstractApplicationMessage.WARNING)) ;
                 return ;
               }  
           }
@@ -938,7 +956,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
         Date from = uiForm.getTaskFromDate(calendarPortlet.getCalendarSetting().getDateFormat(), calendarPortlet.getCalendarSetting().getTimeFormat()) ;
         Date to = uiForm.getTaskToDate(calendarPortlet.getCalendarSetting().getDateFormat(), calendarPortlet.getCalendarSetting().getTimeFormat()) ;
         if(from.after(to)) {
-          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.event-date-time-logic", null, ApplicationMessage.WARNING)) ;
+          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.event-date-time-logic", null, AbstractApplicationMessage.WARNING)) ;
           return ;
         } else if(from.equals(to)) {
           to = CalendarUtils.getEndDay(from).getTime() ;
@@ -972,7 +990,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
           }
         }
         if(!uiForm.isReminderValid()) {
-          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.errorMsg_, new String[] {uiForm.errorValues }, ApplicationMessage.WARNING));
+          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.errorMsg_, new String[] {uiForm.errorValues }, AbstractApplicationMessage.WARNING));
           uiForm.setSelectedTab(TAB_TASKREMINDER) ;
           event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UIPopupAction.class)) ;
           
@@ -1044,6 +1062,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   
   static  public class CancelActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       UIPopupAction uiPopupAction = uiForm.getAncestorOfType(UIPopupAction.class);
@@ -1057,6 +1076,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   
   static  public class RemoveEmailActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
       uiForm.setEmailAddress(uiForm.getEmailAddress());
@@ -1065,6 +1085,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   
   static public class SelectTabActionListener extends EventListener<UITaskForm> {
+    @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       event.getRequestContext().addUIComponentToUpdateByAjax(event.getSource()) ;      
     }

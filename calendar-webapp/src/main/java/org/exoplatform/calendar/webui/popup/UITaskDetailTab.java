@@ -94,7 +94,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UIFormComboBox(FIELD_TO_TIME, FIELD_TO_TIME,  options));
 
     addUIFormInput(new UIFormDateTimePicker(FIELD_TO, FIELD_TO, new Date(), false));
-    addUIFormInput(new UIFormCheckBoxInput(FIELD_CHECKALL, FIELD_CHECKALL, null));
+    addUIFormInput(new UICheckBoxInput(FIELD_CHECKALL, FIELD_CHECKALL, null));
     addUIFormInput(new UIFormStringInput(FIELD_DELEGATION, FIELD_DELEGATION, null));
     addUIFormInput(new UIFormSelectBox(FIELD_PRIORITY, FIELD_PRIORITY, getPriority())) ;
 
@@ -192,6 +192,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     }
     return options ;
   }
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }

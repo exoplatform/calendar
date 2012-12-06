@@ -53,7 +53,9 @@ import org.exoplatform.calendar.webui.popup.UITaskForm;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
@@ -181,7 +183,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     addUIFormInput(new UIFormSelectBox(EVENT_CATEGORIES, EVENT_CATEGORIES, null));
     update();
     applySeting();
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    WebuiRequestContext context = RequestContext.getCurrentInstance();
     Locale locale = context.getParentAppRequestContext().getLocale();
     dfs_ = new DateFormatSymbols(locale);
     for (int i = 0; i < dfs_.getMonths().length; i++) {
@@ -224,6 +226,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return  CalendarUtils.getCalendarInstanceBySetting(calendarSetting_);
   }
 
+  @Override
   public void applySeting() throws Exception {
     displayTimes_ = null;
     timeSteps_ = null;
@@ -254,10 +257,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return views;
   }
 
+  @Override
   public void setLastUpdatedEventId(String eventId) {
     editedEventId_ = eventId;
   }
 
+  @Override
   public String getLastUpdatedEventId() {
     return editedEventId_;
   }
@@ -333,6 +338,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
   }
 
+  @Override
   public void refresh() throws Exception {
   }
 
@@ -362,6 +368,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return timeFormat.format(date);
   }
 
+  @Override
   public void update() throws Exception {
     CalendarService calendarService = CalendarUtils.getCalendarService();
     String username = CalendarUtils.getCurrentUser();
@@ -390,12 +397,13 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return getUIFormSelectBox(EVENT_CATEGORIES).getValue();
   }
 
+  @Override
   public void setSelectedCategory(String id) {
     getUIFormSelectBox(EVENT_CATEGORIES).setValue(id);
   }
 
   protected String[] getMonthsName() {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    WebuiRequestContext context = RequestContext.getCurrentInstance();
     Locale locale = context.getParentAppRequestContext().getLocale();
     dfs_ = new DateFormatSymbols(locale);
     for (int i = 0; i < dfs_.getMonths().length; i++) {
@@ -405,7 +413,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   protected String[] getDaysName() {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    WebuiRequestContext context = RequestContext.getCurrentInstance();
     Locale locale = context.getParentAppRequestContext().getLocale();
     dfs_ = new DateFormatSymbols(locale);
     for (int i = 1; i < dfs_.getWeekdays().length; i++) {
@@ -517,10 +525,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return CalendarUtils.isSameDate(value1, value2);
   }
 
+  @Override
   public void setCurrentCalendar(Calendar value) {
     calendar_ = value;
   }
 
+  @Override
   public Calendar getCurrentCalendar() {
     return calendar_;
   }
@@ -645,7 +655,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   protected List<String> getDisplayTimes(String timeFormat, int timeInterval, Locale locale) {
     List<String> displayTimes = new ArrayList<String>();
     // Calendar cal = CalendarUtils.getInstanceOfCurrentCalendar() ;
-    Calendar cal = GregorianCalendar.getInstance(locale);
+    Calendar cal = Calendar.getInstance(locale);
     cal.set(Calendar.HOUR_OF_DAY, 0);
     cal.set(Calendar.MINUTE, 0);
     cal.set(Calendar.MILLISECOND, 0);
@@ -727,6 +737,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return priorityMap_.get(key);
   }
 
+  @Override
   public String getLabel(String arg) {
     if (CalendarUtils.isEmpty(arg))
       return "";
@@ -778,6 +789,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class AddEventActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiForm = event.getSource();
       String username = CalendarUtils.getCurrentUser();
@@ -831,6 +843,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class DeleteEventActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
 
@@ -854,7 +867,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             if (log.isDebugEnabled()) {
               log.debug("Fail to delete the events", e);
             }
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error", null, ApplicationMessage.WARNING));
+            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error", null, AbstractApplicationMessage.WARNING));
             return;
           }
         }
@@ -883,7 +896,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           if (log.isDebugEnabled()) {
             log.debug("Fail to delete the events", e);
           }
-          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error", null, ApplicationMessage.WARNING));
+          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error", null, AbstractApplicationMessage.WARNING));
           return;
         }
       } else {
@@ -898,16 +911,19 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class ChangeCategoryActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
     }
   }
 
   static public class EventSelectActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
     }
   }
 
   static public class ViewActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
@@ -967,6 +983,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class EditActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
@@ -1077,6 +1094,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class DeleteActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -1117,7 +1135,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           // if calendar is remote calendar
           if (calendarService.isRemoteCalendar(CalendarUtils.getCurrentUser(), calendarId)) {
 
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, ApplicationMessage.WARNING));
+            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, AbstractApplicationMessage.WARNING));
             return;
           }
 
@@ -1191,6 +1209,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class TaskViewActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       String viewType = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -1218,6 +1237,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class GotoDateActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       try {
         UICalendarView calendarview = event.getSource();
@@ -1297,6 +1317,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class SwitchViewActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiView = event.getSource();
       String viewType = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -1321,6 +1342,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class QuickAddActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiForm = event.getSource();
       if (CalendarUtils.getCalendarOption().isEmpty()) {
@@ -1367,6 +1389,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class MoveNextActionListener extends EventListener<UIMonthView> {
+    @Override
     public void execute(Event<UIMonthView> event) throws Exception {
       UICalendarView calendarview = event.getSource();
       try {
@@ -1389,6 +1412,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class MovePreviousActionListener extends EventListener<UIMonthView> {
+    @Override
     public void execute(Event<UIMonthView> event) throws Exception {
       UICalendarView calendarview = event.getSource();
       try {
@@ -1411,6 +1435,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class ExportEventActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiComponent = event.getSource();
       UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class);
@@ -1474,6 +1499,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   static public class MoveEventActionListener extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiComponent = event.getSource();
       String eventIds = event.getRequestContext().getRequestParameter("objectId");
@@ -1489,6 +1515,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   public static class ConfirmDeleteOnlyInstance extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       // delete the only selected event
 
@@ -1530,6 +1557,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   public static class ConfirmDeleteAllSeries extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
@@ -1578,6 +1606,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   public static class ConfirmDeleteCancel extends EventListener<UICalendarView> {
+    @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       uiCalendarView.setCurrentOccurrence(null);

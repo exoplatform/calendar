@@ -28,6 +28,7 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -70,6 +71,7 @@ public class UIYearView extends UICalendarView {
   }
   protected Map<Integer, String> getValueMap() { return yearData_ ; }
   
+  @Override
   public void refresh() throws Exception { 
     yearData_.clear() ;
     Calendar cal =  calendarSetting_.createCalendar(calendar_.getTime());
@@ -101,6 +103,7 @@ public class UIYearView extends UICalendarView {
   public LinkedHashMap<String, CalendarEvent> getDataMap() {
     return null;
   }
+  @Override
   public String getSelectedCategory() {
     return categoryId_ ;
   }
@@ -111,7 +114,7 @@ public class UIYearView extends UICalendarView {
 
   // CS-3357
   protected String[] getDaysNameTitle() { 
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     DateFormatSymbols dfs = new DateFormatSymbols(locale) ;
     Map<Integer, String> days = new LinkedHashMap<Integer, String>();
@@ -129,6 +132,7 @@ public class UIYearView extends UICalendarView {
   }
   
   static  public class OnchangeActionListener extends EventListener<UIYearView> {
+    @Override
     public void execute(Event<UIYearView> event) throws Exception {
       UIYearView uiYearView = event.getSource() ;
       String categoryId = uiYearView.getUIFormSelectBox(EVENT_CATEGORIES).getValue() ;

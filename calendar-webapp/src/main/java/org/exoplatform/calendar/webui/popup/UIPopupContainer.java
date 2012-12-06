@@ -16,6 +16,7 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
@@ -40,13 +41,15 @@ public class UIPopupContainer extends UIContainer implements UIPopupComponent {
     uiPopupAction.getChild(UIPopupWindow.class).setId("UICalendarChildPopupWindow") ;
     
   }
+  @Override
   public void activate() throws Exception {
   }
 
+  @Override
   public void deActivate() throws Exception {
     UIPopupAction uiPopupAction = getChild(UIPopupAction.class) ;
     uiPopupAction.deActivate() ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     context.addUIComponentToUpdateByAjax(uiPopupAction) ;
   }
 }

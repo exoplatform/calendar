@@ -36,7 +36,6 @@ import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormStringInput;
-import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
 
@@ -67,6 +66,7 @@ public class UIEventCategoryForm extends UIForm {
   protected String getCategoryName() {return getUIStringInput(EVENT_CATEGORY_NAME).getValue() ;}
   protected void setCategoryName(String value) {getUIStringInput(EVENT_CATEGORY_NAME).setValue(value) ;}
 
+  @Override
   public void reset() {
     super.reset() ;
     setAddNew(true);
@@ -88,6 +88,7 @@ public class UIEventCategoryForm extends UIForm {
   }
 
   static  public class SaveActionListener extends EventListener<UIEventCategoryForm> {
+    @Override
     public void execute(Event<UIEventCategoryForm> event) throws Exception {
       UIEventCategoryForm uiForm = event.getSource() ;
       String name = uiForm.getUIStringInput(EVENT_CATEGORY_NAME).getValue() ;
@@ -173,6 +174,7 @@ public class UIEventCategoryForm extends UIForm {
   }
 
   static  public class CancelActionListener extends EventListener<UIEventCategoryForm> {
+    @Override
     public void execute(Event<UIEventCategoryForm> event) throws Exception {
       UIEventCategoryForm uiForm = event.getSource() ;
       UIPopupAction uiPopupAction = uiForm.getAncestorOfType(UIPopupAction.class) ;

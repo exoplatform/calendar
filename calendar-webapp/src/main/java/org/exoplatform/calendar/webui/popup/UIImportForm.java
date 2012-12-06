@@ -27,8 +27,6 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UICalendars;
@@ -41,6 +39,7 @@ import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -111,9 +110,6 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     addUIFormInput(privateCal);
     addUIFormInput(new UIFormStringInput(DISPLAY_NAME, DISPLAY_NAME, null).addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class));
     addUIFormInput(new UIFormTextAreaInput(DESCRIPTION, DESCRIPTION, null));
-    UIFormSelectBoxWithGroups calCategory = new UIFormSelectBoxWithGroups(CATEGORY, CATEGORY, CalendarUtils.getCalendarCategoryOption());
-    calCategory.setOnChange("OnChange");
-    addUIFormInput(calCategory);
     addUIFormInput(new UIFormStringInput(PERMISSION, PERMISSION, null));
     CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
     UIFormStringInput locale = new UIFormStringInput(LOCALE, LOCALE, CalendarUtils.getLocationDisplayString(setting.getLocation())) ;
@@ -141,6 +137,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     } 
   }
 
+  @Override
   public String getLabel(String id) {
     try {
       return super.getLabel(id) ;
@@ -152,15 +149,18 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
   @SuppressWarnings("unchecked")
   private List getSelectedGroups(String groupId) throws Exception {
     List groups = new ArrayList() ;
-    Group g = (Group)getApplicationComponent(OrganizationService.class).getGroupHandler().findGroupById(groupId) ;
+    Group g = getApplicationComponent(OrganizationService.class).getGroupHandler().findGroupById(groupId) ;
     groups.add(g);
     return groups;
   }
   
+  @Override
   public String[] getActions(){
     return new String[]{"Save", "Cancel"} ;
   }
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
   public List<SelectItemOption<String>> getPrivateCalendars() {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
@@ -249,6 +249,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     return value ;
   }
   
+  @Override
   public void updateSelect(String selectField, String value) throws Exception {
     UIFormStringInput fieldInput = getUIStringInput(selectField);
     StringBuilder sb = new StringBuilder() ;
@@ -277,6 +278,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
   }
   
   static  public class SaveActionListener extends EventListener<UIImportForm> {
+    @Override
     @SuppressWarnings({ "unchecked", "deprecation" })
     public void execute(Event<UIImportForm> event) throws Exception {
       String username = CalendarUtils.getCurrentUser() ;
@@ -301,7 +303,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
             List<Calendar> pCals = calendarService.getUserCalendars(username, true) ;
             for(Calendar cal : pCals) {
               if(cal.getName().trim().equalsIgnoreCase(calendarName)) {
-                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{calendarName}, ApplicationMessage.WARNING)) ;
+                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{calendarName}, AbstractApplicationMessage.WARNING)) ;
                 return ;
               }
             }
@@ -328,7 +330,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
               for (GroupCalendarData groupCalendarData : groupCalendars) {
                 for (Calendar calendar2 : groupCalendarData.getCalendars()) {
                   if(calendar2.getName().equalsIgnoreCase(calendarName.trim())) {
-                    event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{calendarName}, ApplicationMessage.WARNING)) ;
+                    event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{calendarName}, AbstractApplicationMessage.WARNING)) ;
                     return ;
                   }
                 }
@@ -362,7 +364,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
             
             // if this is remote calendar
             if(calendarService.isRemoteCalendar(CalendarUtils.getCurrentUser(), calendarId)) {
-              event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, ApplicationMessage.WARNING));
+              event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, AbstractApplicationMessage.WARNING));
               return;
             }
             
@@ -395,10 +397,11 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     }
   }
   static  public class ImportActionListener extends EventListener<UIImportForm> {
+    @Override
     public void execute(Event<UIImportForm> event) throws Exception {
       UIImportForm uiForm = event.getSource() ;
       if(uiForm.getPrivateCalendars().isEmpty()) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar",null, ApplicationMessage.WARNING));
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar",null, AbstractApplicationMessage.WARNING));
       } else {
         uiForm.switchMode(UPDATE_EXIST) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
@@ -406,6 +409,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     }
   }  
   static  public class AddActionListener extends EventListener<UIImportForm> {
+    @Override
     public void execute(Event<UIImportForm> event) throws Exception {
       UIImportForm uiForm = event.getSource() ;
       uiForm.switchMode(ADD_NEW) ;
@@ -413,6 +417,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     }
   } 
   static  public class CancelActionListener extends EventListener<UIImportForm> {
+    @Override
     public void execute(Event<UIImportForm> event) throws Exception {
       UIImportForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -424,6 +429,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
   }
   
   static  public class SelectPermissionActionListener extends EventListener<UIImportForm> {
+    @Override
     public void execute(Event<UIImportForm> event) throws Exception {
       UIImportForm uiForm = event.getSource() ;
       String value = event.getRequestContext().getRequestParameter(OBJECTID) ;
@@ -443,9 +449,10 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
   }
   
   static  public class OnChangeActionListener extends EventListener<UIImportForm> {
+    @Override
     public void execute(Event<UIImportForm> event) throws Exception {
       UIImportForm uiImportForm = event.getSource();
-      uiImportForm.log.info("Goes here on change");
+      UIImportForm.log.info("Goes here on change");
       String groupType = uiImportForm.getSelectedTypeGroup();
       if(!CalendarUtils.isEmpty(groupType)&& groupType.equals(CalendarUtils.PUBLIC_TYPE))
         uiImportForm.getUIStringInput(PERMISSION).setRendered(true);
