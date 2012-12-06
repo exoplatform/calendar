@@ -56,7 +56,7 @@
         <tr>
         <% if(!searchDisplay) { %>
         <!-- search results displaying is disabled, show Attachment Icon, Priority and Event -->
-           <th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
+          <th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
 
           <th style="width: 24px;"><div class="AttachmentIcon">&nbsp;</div></th>
           <%
@@ -77,17 +77,16 @@
           }
           %>
           <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('Event')%></div></a></th>
-        <% } else { %>
-        <!-- Search result displaying enabled, replace Event by Title -->
-          <%
+        <% } else {
+         /* Search result displaying enabled, replace Event by Title */
             sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
             classCss = "";
             if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
               if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
               else classCss = "DownArrow1Icon";
-          }
+            }
           %>
-          <th><a href="sortLink"><div class="classCss"><%=uiform.getLabel('Title')%></div></a></th>
+          <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('Title')%></div></a></th>
         <% } %>
 
           <%
@@ -108,7 +107,8 @@
             }
           %>
            <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('End')%></div></a></th>
-          <%
+
+          <% if(!searchDisplay) {
             sortLink = uicomponent.event("Sort", uicomponent.EVENT_DESCRIPTION.toString()) ;
             classCss = "";
             if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
@@ -116,7 +116,10 @@
               else classCss = "DownArrow1Icon";
             }
           %>
-           <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('EventDescription')%></div></a></th>
+            <th><a href="$sortLink"><div class="$classCss"><%=uiform.getLabel('EventDescription')%></div></a></th>
+          <% } else { %>
+            <th><div><%=uiform.getLabel('EventDescription')%></div></th>
+          <% } %>
          </tr>
        </thead>
          <tbody>
