@@ -563,19 +563,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       saveEventCategory(userName, eventCategory, true);
     }
 
-    // save default calendar category
-    /*
-    CalendarCategory calCategory = new CalendarCategory();
-    calCategory.setId(NewUserListener.defaultCalendarCategoryId);
-    calCategory.setName(NewUserListener.defaultCalendarCategoryName);
-    calCategory.setDataInit(true);
-    saveCalendarCategory(userName, calCategory, true);
-    */ 
     // save default calendar
     Calendar cal = new Calendar();
     cal.setId(Utils.getDefaultCalendarId(userName));
-    cal.setName(NewUserListener.defaultCalendarName);
-    //cal.setCategoryId(calCategory.getId());
+    cal.setName(userName);
     cal.setDataInit(true);
     cal.setCalendarOwner(userName);
     if (defaultCalendarSetting_ != null) {

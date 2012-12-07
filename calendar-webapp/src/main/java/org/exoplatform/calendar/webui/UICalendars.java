@@ -95,8 +95,6 @@ public class UICalendars extends UIForm  {
   public static String CALTYPE = "calType".intern() ;
   public static String CALNAME = "calName".intern() ;
   public static String CALCOLOR = "calColor".intern() ;
-  //  public static String CURRENTTIME = "ct".intern() ;
-  //  public static String TIMEZONE = "tz".intern() ;
 
   private boolean isShowTaskList_ = false ;
   private String[] publicCalendarIds = {} ;
@@ -209,8 +207,8 @@ public class UICalendars extends UIForm  {
   public EventQuery getEventQuery(EventQuery eventQuery) throws Exception {
     List<String> checkedCals = getCheckedCalendars() ;  
     List<String> calendarIds = new ArrayList<String>() ; 
-      for (org.exoplatform.calendar.service.Calendar cal : getAllPrivateCalendars())
-        if (checkedCals.contains(cal.getId())) calendarIds.add(cal.getId());
+    for (org.exoplatform.calendar.service.Calendar cal : getAllPrivateCalendars())
+      if (checkedCals.contains(cal.getId())) calendarIds.add(cal.getId());
     for (GroupCalendarData calendarData : getPublicCalendars())
       for (org.exoplatform.calendar.service.Calendar  calendar : calendarData.getCalendars())
         if (checkedCals.contains(calendar.getId())) calendarIds.add(calendar.getId());
@@ -237,19 +235,19 @@ public class UICalendars extends UIForm  {
     String username = CalendarUtils.getCurrentUser() ;
     boolean dontShowAll = false;
     List<Calendar> calendars = calendarService.getUserCalendars(username, dontShowAll) ;
-      if(calendars != null) {
-        for(Calendar calendar : calendars) {
-          colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
-          UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
-          if (checkbox == null) {
-            checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-            checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
-            addUIFormInput(checkbox);
-          } else {
-            setCheckedCheckbox(checkbox, calendar);
-          }
+    if(calendars != null) {
+      for(Calendar calendar : calendars) {
+        colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
+        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
+        if (checkbox == null) {
+          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
+          checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
+          addUIFormInput(checkbox);
+        } else {
+          setCheckedCheckbox(checkbox, calendar);
         }
-    }
+      }
+    } else return new ArrayList<Calendar>();
     return calendars;
   }
 
@@ -458,7 +456,7 @@ public class UICalendars extends UIForm  {
       }
     }
   }
-  
+
   static  public class DeleteGroupActionListener extends EventListener<UICalendars> {
     @Override
     public void execute(Event<UICalendars> event) throws Exception {
@@ -825,15 +823,15 @@ public class UICalendars extends UIForm  {
       UICalendars uiComponent = event.getSource() ;
       String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
-        UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
-        UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
-        popupAction.deActivate() ;
-        UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 600) ;
-        uiPopupContainer.setId(UIPopupContainer.UICALENDARPOPUP) ;
-        UIImportForm form = uiPopupContainer.addChild(UIImportForm.class,null,null); 
-        form.init(selectedCalendarId, calType) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent.getParent()) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
+      UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
+      UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+      popupAction.deActivate() ;
+      UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 600) ;
+      uiPopupContainer.setId(UIPopupContainer.UICALENDARPOPUP) ;
+      UIImportForm form = uiPopupContainer.addChild(UIImportForm.class,null,null); 
+      form.init(selectedCalendarId, calType) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent.getParent()) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
   }
 

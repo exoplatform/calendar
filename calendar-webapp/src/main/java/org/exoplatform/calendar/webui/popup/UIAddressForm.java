@@ -173,32 +173,6 @@ public class UIAddressForm extends UIForm implements UIPopupComponent {
           sb.append(uiEventForm.getEmailAddress()) ;
         }
       }
-      List<String> listMail = Arrays.asList( sb.toString().split(CalendarUtils.COMMA)) ; 
-      String info = null ;
-      
-      //TODO update this for new code
-      /**
-      for(ContactData c : uiForm.getCheckedContact()) {
-        if(!uiForm.checkedList_.contains(c.getId())){
-          Contact con = new Contact() ;
-          con.setId(c.getId()) ;
-          con.setEmailAddress(c.getEmail()) ;
-          con.setFullName(c.getFullName()) ;
-          if (!uiForm.checkedList_.contains(c.getId())) uiForm.checkedList_.add(c.getId()) ;
-        }
-        if(uiInvitationForm != null) {
-          info = c.getFullName() + org.exoplatform.calendar.service.Utils.SPACE + 
-            CalendarUtils.OPEN_PARENTHESIS + c.getEmail() + CalendarUtils.CLOSE_PARENTHESIS;
-        } else {
-          info = c.getEmail();
-        }
-        if(!CalendarUtils.isEmpty(info) && !listMail.contains(info)) {
-          if(sb != null && sb.length() > 0) sb.append(CalendarUtils.COMMA) ;
-          if(info != null) sb.append(info.replace(";", ",")) ;
-        }
-      }
-      **/
-      
       if(uiTaskForm != null) {
         uiTaskForm.setSelectedTab(UITaskForm.TAB_TASKREMINDER) ;
         uiTaskForm.setEmailAddress(sb.toString()) ;

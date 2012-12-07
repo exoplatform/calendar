@@ -75,7 +75,7 @@
       <div class="MyCalendarContainer">
           <ul class="UIVTabContent" >
         <%  
-            List calendars = uicomponent.getAllPrivateCalendars() ;
+            List calendars = uicomponent.getAllPrivateCalendars();
             for(calendar in calendars) {
               String calId = calendar.getId() ;
               String icon = "CalendarIcon" ;

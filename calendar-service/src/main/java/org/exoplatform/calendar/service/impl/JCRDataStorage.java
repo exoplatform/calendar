@@ -303,7 +303,8 @@ public class JCRDataStorage implements DataStorage {
     List<Calendar> calList = new ArrayList<Calendar>();
     String[] defaultCalendars = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterPrivateCalendars();
     while (iter.hasNext()) {
-      calList.add(getCalendar(defaultCalendars, username, iter.nextNode(), isShowAll));
+      Calendar cal = getCalendar(defaultCalendars, username, iter.nextNode(), isShowAll);
+      if(cal != null) calList.add(cal);
     }
     return calList;
   }
@@ -472,10 +473,8 @@ public class JCRDataStorage implements DataStorage {
    */
   public Calendar getCalendar(String[] defaultFilterCalendars, String username, Node calNode, boolean isShowAll) throws Exception {
     Calendar calendar = null;
-
     if (!isShowAll && defaultFilterCalendars != null && Arrays.asList(defaultFilterCalendars).contains(calNode.getName()))
-      return null;
-
+      return calendar;
     calendar = new Calendar();
     if (calNode.hasProperty(Utils.EXO_ID))
       calendar.setId(calNode.getProperty(Utils.EXO_ID).getString());
@@ -483,8 +482,6 @@ public class JCRDataStorage implements DataStorage {
       calendar.setName(calNode.getProperty(Utils.EXO_NAME).getString());
     if (calNode.hasProperty(Utils.EXO_DESCRIPTION))
       calendar.setDescription(calNode.getProperty(Utils.EXO_DESCRIPTION).getString());
-    if (calNode.hasProperty(Utils.EXO_CATEGORY_ID))
-      calendar.setCategoryId(calNode.getProperty(Utils.EXO_CATEGORY_ID).getString());
     if (calNode.hasProperty(Utils.EXO_LOCALE))
       calendar.setLocale(calNode.getProperty(Utils.EXO_LOCALE).getString());
     if (calNode.hasProperty(Utils.EXO_TIMEZONE))

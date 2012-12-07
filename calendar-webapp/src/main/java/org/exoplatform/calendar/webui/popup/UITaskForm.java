@@ -747,7 +747,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   
   public static void showAddressForm(UIAddressForm uiAddressForm, String oldAddress) throws Exception {
-    uiAddressForm.setContactList("") ;
     List<ContactData> contacts = uiAddressForm.getContactList() ;
     if(!CalendarUtils.isEmpty(oldAddress)) {
       for(String address : oldAddress.split(",")) {

@@ -96,7 +96,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
 		// Init config
 		InitParams params = new InitParams();
-		params.put(NewUserListener.CALENDAR_NAME, defaultCalendarIdParam);
 		params.put(NewUserListener.EVENT_CATEGORIES, defaultEventCategoriesConfigParam);
 		NewUserListener newUserListener = new NewUserListener(calendarService_, params);
 		organizationService.addListenerPlugin(newUserListener);
@@ -119,7 +118,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
 		// Test default calendar
 		List<Calendar> calendars = calendarService_.getUserCalendars(newUserName, true);
 		assertEquals(1, calendars.size());
-		assertEquals(newUserName + "-" + defaultCalendarId, calendars.get(0).getId());
+		assertEquals(newUserName,calendars.get(0).getName());
 
 		// Test default event categories
 		List<EventCategory> eventCategories = calendarService_.getEventCategories(newUserName);
