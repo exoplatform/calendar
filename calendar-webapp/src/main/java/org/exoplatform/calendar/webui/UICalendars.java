@@ -56,7 +56,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.calendar.webui.UICalendarColor;
+import org.exoplatform.calendar.webui.UIFormColorPicker;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 
 /**
@@ -370,7 +370,7 @@ public class UICalendars extends UIForm  {
     return colorMap_;
   }
   public String[] getColors() {
-    return UICalendarColor.COLORNAMES ;
+    return UIFormColorPicker.Colors.COLORNAMES ;
   }
 
   private boolean canAddTaskAndEvent(UICalendars uiComponent, String calendarId, String calType) throws Exception {
