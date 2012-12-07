@@ -80,10 +80,9 @@
               </div>
             </span>
             -->
-
-              <div class="ScrollButtons" style="display: none;">
-					<div title="Previous" class="ScrollLeftButton">
-						<div title="Next" class="ScrollRightButton"><span></span></div>
+            <div class="ScrollButtons" style="display: none;">
+					<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">
+						<div rel="tooltip" data-placement="bottom" title="Next" class="ScrollRightButton"><span></span></div>
 					</div>
               </div>
               </div>

@@ -21,7 +21,7 @@
           if(temp.length() > 30) {
           actionLabel = temp.substring(0, 30) + "..." + sizeLabel ;}
         }
-        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        println "<a rel=\"tooltip\" data-placement=\"bottom\" title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
         if(action.actionType == action.TYPE_ICON) {
           println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
           if(action.isShowLabel) { println  actionLabel  ;}
@@ -154,8 +154,8 @@
           <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
           </div>
           <div class="AddAttachmentIcon">
-            <a href="<%= uicomponent.getParent().event("AddAttachment") %>" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".action.AddAttachment")%>">
-              <img class="AddNewNodeIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
+            <a href="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>">
+              <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%>
             </a>          
           </div>
         </td>

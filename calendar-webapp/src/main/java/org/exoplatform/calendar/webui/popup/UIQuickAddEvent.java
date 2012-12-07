@@ -38,7 +38,9 @@ import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -50,7 +52,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
 import org.exoplatform.webui.form.UIFormStringInput;
@@ -97,7 +99,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     addUIFormInput(new UIFormDateTimePicker(FIELD_TO, FIELD_TO, new Date(), false));
     addUIFormInput(new UIFormComboBox(FIELD_FROM_TIME, FIELD_FROM_TIME, options));
     addUIFormInput(new UIFormComboBox(FIELD_TO_TIME, FIELD_TO_TIME, options));
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(FIELD_ALLDAY, FIELD_ALLDAY, false));
+    addUIFormInput(new UICheckBoxInput(FIELD_ALLDAY, FIELD_ALLDAY, false));
     addUIFormInput(new UIFormSelectBoxWithGroups(FIELD_CALENDAR, FIELD_CALENDAR, CalendarUtils.getCalendarOption())) ;
     addUIFormInput(new UIFormSelectBox(FIELD_CATEGORY, FIELD_CATEGORY, CalendarUtils.getCategory())) ;
   }
@@ -135,7 +137,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   private void setEventFromDate(Date value, String dateFormat, String timeFormat) {
     UIFormDateTimePicker fromField = getChildById(FIELD_FROM) ;
     UIFormComboBox timeFile = getChildById(FIELD_FROM_TIME) ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     DateFormat df = new SimpleDateFormat(dateFormat ,locale) ;
     fromField.setValue(df.format(value));
@@ -147,7 +149,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       UIFormDateTimePicker fromField = getChildById(FIELD_FROM) ;
       UIFormComboBox timeFile = getChildById(FIELD_FROM_TIME) ;
       
-      WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+      WebuiRequestContext context = RequestContext.getCurrentInstance() ;
       Locale locale = context.getParentAppRequestContext().getLocale() ;
       
       if(getIsAllDay()) {
@@ -170,7 +172,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   private void setEventToDate(Date value,String dateFormat,  String timeFormat) {
     UIFormDateTimePicker toField =  getChildById(FIELD_TO) ;
     UIFormComboBox timeField =  getChildById(FIELD_TO_TIME) ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
     toField.setValue(df.format(value)) ;
@@ -181,7 +183,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     try {
       UIFormDateTimePicker toField = getChildById(FIELD_TO) ;
       UIFormComboBox timeFile = getChildById(FIELD_TO_TIME) ;
-      WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+      WebuiRequestContext context = RequestContext.getCurrentInstance() ;
       Locale locale = context.getParentAppRequestContext().getLocale() ;
       
       if(getIsAllDay()) {
@@ -204,6 +206,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     return CalendarUtils.getCalendarOption() ;
   }
 
+  @Override
   public String getLabel(String id) {
     try {
       return super.getLabel(id) ;
@@ -218,10 +221,10 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
 
 
   private boolean getIsAllDay() {
-    return getUIFormCheckBoxInput(FIELD_ALLDAY).isChecked() ;
+    return getUICheckBoxInput(FIELD_ALLDAY).isChecked() ;
   }
   public void setIsAllday(boolean isChecked) {
-    getUIFormCheckBoxInput(FIELD_ALLDAY).setChecked(isChecked) ;
+    getUICheckBoxInput(FIELD_ALLDAY).setChecked(isChecked) ;
   }
   private String getEventCalendar() {
     String values = getUIFormSelectBoxGroup(FIELD_CALENDAR).getValue() ;
@@ -243,7 +246,9 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   
   private String getEventCategory() {return getUIFormSelectBox(FIELD_CATEGORY).getValue() ;}
 
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
   public void setEvent(boolean isEvent) { isEvent_ = isEvent ; }
   public boolean isEvent() { return isEvent_ ; }
@@ -262,6 +267,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   }
   
   static  public class SaveActionListener extends EventListener<UIQuickAddEvent> {
+    @Override
     public void execute(Event<UIQuickAddEvent> event) throws Exception {
       UIQuickAddEvent uiForm = event.getSource() ;
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -269,7 +275,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       String summary = uiForm.getEventSummary();
       if (summary == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId()
-            + ".msg.summary-field-required", null, ApplicationMessage.WARNING));
+            + ".msg.summary-field-required", null, AbstractApplicationMessage.WARNING));
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
         return;
       }
@@ -283,12 +289,12 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       String description = uiForm.getEventDescription() ;
       if(!CalendarUtils.isEmpty(description)) description = description.replaceAll(CalendarUtils.GREATER_THAN, "").replaceAll(CalendarUtils.SMALLER_THAN,"") ;
       if(CalendarUtils.isEmpty(uiForm.getEventCalendar())) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.calendar-field-required", null, ApplicationMessage.WARNING)) ;
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.calendar-field-required", null, AbstractApplicationMessage.WARNING)) ;
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
         return ;
       }
       if(CalendarUtils.isEmpty(uiForm.getEventCategory())) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.category-field-required", null, ApplicationMessage.WARNING)) ;
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.category-field-required", null, AbstractApplicationMessage.WARNING)) ;
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
         return ;
       }
@@ -296,24 +302,24 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       Date from = uiForm.getEventFromDate(uiPortlet.getCalendarSetting().getDateFormat() ,uiPortlet.getCalendarSetting().getTimeFormat()) ;
       Date to = uiForm.getEventToDate(uiPortlet.getCalendarSetting().getDateFormat(), uiPortlet.getCalendarSetting().getTimeFormat()) ;
       if(from == null) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.fromDate-format", null, ApplicationMessage.WARNING)) ;
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.fromDate-format", null, AbstractApplicationMessage.WARNING)) ;
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
         return ;
       }
       if(to == null) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.toDate-format", null, ApplicationMessage.WARNING)) ;
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.toDate-format", null, AbstractApplicationMessage.WARNING)) ;
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
         return ;
       }
       if(from.after(to) || from.equals(to)) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.logic-required", null, ApplicationMessage.WARNING)) ;
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.logic-required", null, AbstractApplicationMessage.WARNING)) ;
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
         return ;
       }
       
       CalendarService calService =  CalendarUtils.getCalendarService() ;
       if(calService.isRemoteCalendar(CalendarUtils.getCurrentUser(), uiForm.getEventCalendar())) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, ApplicationMessage.WARNING));
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, AbstractApplicationMessage.WARNING));
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
         return;
       }
@@ -440,6 +446,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     }
   }
   static  public class MoreDetailActionListener extends EventListener<UIQuickAddEvent> {
+    @Override
     public void execute(Event<UIQuickAddEvent> event) throws Exception {
       UIQuickAddEvent uiForm = event.getSource() ;
       UICalendarPortlet porlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -511,6 +518,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     }
   }
   static  public class CancelActionListener extends EventListener<UIQuickAddEvent> {
+    @Override
     public void execute(Event<UIQuickAddEvent> event) throws Exception {      
       UIQuickAddEvent uiQuickAddEvent = event.getSource() ;
       uiQuickAddEvent.reset() ;

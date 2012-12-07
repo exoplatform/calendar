@@ -82,12 +82,15 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
   public void setCurrentPage(int page) throws Exception {
     getChild(UIGrid.class).getUIPageIterator().setCurrentPage(page) ;
   }
+  @Override
   public void activate() throws Exception {}
 
+  @Override
   public void deActivate() throws Exception {}
   public void resetForm() {
     getChild(UIEventCategoryForm.class).reset() ;
   }
+  @Override
   public void processRender(WebuiRequestContext context) throws Exception {
     Writer w =  context.getWriter() ;
     w.write("<div id=\"UIEventCategoryManager\" class=\"UIEventCategoryManager\">");
@@ -125,6 +128,7 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
     return SessionProviderFactory.createSessionProvider() ;
   }*/
   static  public class EditActionListener extends EventListener<UIEventCategoryManager> {
+    @Override
     public void execute(Event<UIEventCategoryManager> event) throws Exception {
       UIEventCategoryManager uiManager = event.getSource() ;
       UIEventCategoryForm uiForm = uiManager.getChild(UIEventCategoryForm.class) ;
@@ -136,12 +140,12 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
       uiForm.setEventCategory(category) ;
       if (uiManager.defaultEventCategoriesMap.containsKey(categoryId)) 
         category.setName(uiManager.defaultEventCategoriesMap.get(categoryId));      
-      uiForm.setCategoryName(category.getName()) ;
-      uiForm.setCategoryDescription(category.getDescription()) ;
+      uiForm.setCategoryName(category.getName());
       event.getRequestContext().addUIComponentToUpdateByAjax(uiManager) ;
     }
   }
   static  public class DeleteActionListener extends EventListener<UIEventCategoryManager> {
+    @Override
     public void execute(Event<UIEventCategoryManager> event) throws Exception {
       UIEventCategoryManager uiManager = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiManager.getAncestorOfType(UICalendarPortlet.class) ;

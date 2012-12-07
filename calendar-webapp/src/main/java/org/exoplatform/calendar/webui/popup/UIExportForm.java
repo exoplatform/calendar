@@ -36,6 +36,7 @@ import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -46,7 +47,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 
@@ -58,7 +59,7 @@ import org.exoplatform.webui.form.UIFormStringInput;
  */
 @ComponentConfig(
     lifecycle = UIFormLifecycle.class,
-    template = "system:/groovy/webui/form/UIForm.gtmpl",
+    template = "app:/templates/calendar/webui/UIPopup/UIExportForm.gtmpl",
     events = {
       @EventConfig(listeners = UIExportForm.SaveActionListener.class),      
       @EventConfig(listeners = UIExportForm.CancelActionListener.class, phase = Phase.DECODE)
@@ -69,6 +70,9 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   final static private String TYPE = "type".intern() ;
   private String calType = "0" ;
   private Map<String,String> names_ = new HashMap<String, String>() ;
+
+  private Map<String,String> longNames_ = new HashMap<String, String>() ;
+
   public String eventId = null ;
   public UIExportForm() throws Exception {
     addUIFormInput(new UIFormStringInput(NAME, NAME, null)) ;
@@ -77,31 +81,78 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
     addUIFormInput(new UIFormSelectBox(TYPE, TYPE, options)) ;
   }
   public void setCalType(String type) {calType = type ; }
-  public void update(String type, List<Calendar> calendars, String selectedCalendarId) throws Exception {
+
+  public void update(String type, List<Calendar> calendars, String selectedCalendarId) throws Exception
+  {
     calType = type ;
     names_.clear() ;
+    longNames_.clear();
     Iterator iter = getChildren().iterator() ;
     while(iter.hasNext()) {
-      if(iter instanceof UIFormCheckBoxInput) {
+      if(iter instanceof UICheckBoxInput) {
         iter.remove() ;
       }
       iter.next() ;
     }
     initCheckBox(calendars, selectedCalendarId) ;
   }
-  public void initCheckBox(List<Calendar> calendars, String selectedCalendarId) {
+
+  public void initCheckBox(List<Calendar> calendars, String selectedCalendarId)
+  {
     for(Calendar calendar : calendars) {
-      UIFormCheckBoxInput checkBox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), false);
+      UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
       if(calendar.getId().equals(selectedCalendarId)) checkBox.setChecked(true) ; 
       else checkBox.setChecked(false) ;
       if(eventId != null) checkBox.setEnable(false) ;
       else checkBox.setEnable(true) ;
       addUIFormInput(checkBox) ;
-      names_.put(calendar.getId(), calendar.getName()) ;
+      names_.put(calendar.getId(), truncateLongName(calendar.getName())) ;
+      longNames_.put(calendar.getId(), calendar.getName()) ;
     }
   }
+
+  private String getCalendarName(String calendarId)
+  {
+    return longNames_.get(calendarId);
+  }
+
+  /**
+   * truncate a long name into a name with .. if length of name is larger than 20 characters
+   * or return a name from the starting position to the second white space position
+   *
+   * @param longName
+   * @return
+   */
+  private String truncateLongName(String longName)
+  {
+    int secondWhiteSpacePos = getPositionOfSecondWhiteSpaceFrom(longName);
+    if ( ( -1 < secondWhiteSpacePos) && (secondWhiteSpacePos < 20 ) )
+      return longName.substring(0,secondWhiteSpacePos);
+
+    if (longName.length() > 20) return longName.substring(0, 17) + "..";
+    return longName;
+  }
+
+  /**
+   * get index of second white space if the string has one
+   * return -1 if not
+   *
+   * @param name
+   * @return position
+   */
+  private int getPositionOfSecondWhiteSpaceFrom(String name)
+  {
+    int firstWhiteSpacePos = name.indexOf(" ");
+    if (firstWhiteSpacePos == -1)  return -1;
+
+    int secondWhiteSpacePos = name.indexOf(" ", firstWhiteSpacePos + 1);
+    if (secondWhiteSpacePos == -1) return -1;
+    return secondWhiteSpacePos;
+  }
+
+  @Override
   public String getLabel(String id) throws Exception {
-      WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+      WebuiRequestContext context = RequestContext.getCurrentInstance() ;
       ResourceBundle res = context.getApplicationResourceBundle() ;     
       String label = getId() + ".label." + id;
       try {
@@ -112,19 +163,22 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       return id ;
   } 
 
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
 
   static  public class SaveActionListener extends EventListener<UIExportForm> {
+    @Override
     public void execute(Event<UIExportForm> event) throws Exception {
       UIExportForm uiForm = event.getSource() ;
       CalendarService calendarService = CalendarUtils.getCalendarService() ;
       List<UIComponent> children = uiForm.getChildren() ;
       List<String> calendarIds = new ArrayList<String> () ;
       for(UIComponent child : children) {
-        if(child instanceof UIFormCheckBoxInput) {
-          UIFormCheckBoxInput input =   ((UIFormCheckBoxInput)child) ;
-          if(input.isChecked()) calendarIds.add(((UIFormCheckBoxInput)child).getBindingField()) ;
+        if(child instanceof UICheckBoxInput) {
+          UICheckBoxInput input =   ((UICheckBoxInput)child) ;
+          if(input.isChecked()) calendarIds.add(((UICheckBoxInput)child).getBindingField()) ;
         }
       }
       if(calendarIds.isEmpty()) {
@@ -165,6 +219,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   }
 
   static  public class CancelActionListener extends EventListener<UIExportForm> {
+    @Override
     public void execute(Event<UIExportForm> event) throws Exception {
       UIExportForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;

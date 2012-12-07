@@ -51,10 +51,13 @@ public class UIFeed extends UIForm implements UIPopupComponent{
   public List getFeeds() {
     return feeds_ ;
   }
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}  
   
   static  public class SelectActionListener extends EventListener<UIFeed> {
+    @Override
     public void execute(Event<UIFeed> event) throws Exception {
       UIFeed uiForm = event.getSource() ;
       
@@ -65,6 +68,7 @@ public class UIFeed extends UIForm implements UIPopupComponent{
   }
   
   static  public class CloseActionListener extends EventListener<UIFeed> {
+    @Override
     public void execute(Event<UIFeed> event) throws Exception {
       UIFeed uiForm = event.getSource() ;
       UIPopupAction popupAction = uiForm.getAncestorOfType(UIPopupAction.class);

@@ -8,7 +8,7 @@
 %>
 <div class="UISearchForm">
   <div class="Input Search" onclick="$action">
-    <div class="SearchIcon" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
+    <div class="SearchIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
   </div>
 </div>
 <%uiform.end();%>

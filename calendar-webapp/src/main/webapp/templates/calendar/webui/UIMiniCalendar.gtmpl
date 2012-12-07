@@ -19,8 +19,6 @@
   long currentDayInMillis = uicomponent.getCurrentCalendar().getTimeInMillis();
   String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT,String.valueOf(uicomponent.TYPE_MONTH)) ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS,String.valueOf(uicomponent.TYPE_MONTH)) ;
-   String linkYearNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(uicomponent.TYPE_YEAR)) ;
-   String linkYearPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS,String.valueOf(uicomponent.TYPE_YEAR)) ;
    monthName = uicomponent.getMonthName(currentMonth) ;
    cssClass = "CalendarContentNomal" ;
    if(uicomponent.isCurrentMonth(currentMonth, currentYear)) {
@@ -39,22 +37,17 @@
   <div class="MiniCalendarContainer">
     <div class="YearSelector ClearFix">
       <div onclick="$linkDayNext" class="RightControlButton">
-        <div class="NextYearSelector" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>"><span></span></div>
+        <div class="NextYearSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>"><span></span></div>
       </div>
       <div class="MonthSelector RightControlButton">
         <table>
           <tbody>
             <tr>
-              <td>
-                <div onclick="$linkYearPrevious">
-                  <div class="PreviousMonthSelector" title="<%=_ctx.appRes('UIYearView.label.previousYear')%>"><span></span></div>
-                </div>
-              </td>
+
               <td>
                 <div class="Title">
                 <%
                     monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-                    yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
                 %>
                 <a href="<%=uicomponent.event("GotoDate", monthViewAction)%>">
                   $monthName 
@@ -64,17 +57,13 @@
                 </a>
                 </div>
               </td>
-              <td>
-                <div onclick="$linkYearNext">
-                  <div class="NextMonthSelector" title="<%=_ctx.appRes('UIYearView.label.nextYear')%>"><span></span></div>
-                </div>
-              </td>
+
             </tr>
           </tbody>
         </table>
       </div>
       <div onclick="$linkDayPrevious" class="RightControlButton">
-        <div class="PreviousYearSelector" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>"><span></span></div>
+        <div class="PreviousYearSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>"><span></span></div>
       </div>
     </div> 
     <div class="MonthList">
@@ -183,6 +172,6 @@
     </div>
     
   </div>
-  <div id="UIMiniCalendar_1" class="DownArrow1Icon UIMiniCalendarToggleButton" style="background-position:center;cursor:pointer;" title="<%=_ctx.appRes('UIMiniCalendar.label.toggle-mini-calendar')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
+  <div id="UIMiniCalendar_1" class="DownArrow1Icon UIMiniCalendarToggleButton" style="background-position:center;cursor:pointer;" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMiniCalendar.label.toggle-mini-calendar')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
   </div>
 <%uiform.end();%>

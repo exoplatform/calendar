@@ -32,6 +32,7 @@ import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -40,7 +41,7 @@ import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormHiddenInput;
 import org.exoplatform.webui.form.UIFormRadioBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
@@ -93,14 +94,14 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
    UIFormRadioBoxInput monthlyType = new UIFormRadioBoxInput(FIELD_MONTHLY_TYPE, FIELD_MONTHLY_TYPE, monthlyTypes);
    addUIFormInput(monthlyType);
    
-   WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+   WebuiRequestContext context = RequestContext.getCurrentInstance() ;
    Locale locale = context.getParentAppRequestContext().getLocale() ;
    DateFormatSymbols symbols = new DateFormatSymbols(locale);
    String[] dayNames = symbols.getWeekdays();
-   UIFormCheckBoxInput<Boolean> checkbox;
+   UICheckBoxInput checkbox;
    // weekly by day
    for (int i = 0; i < 7; i++) {
-     checkbox = new UIFormCheckBoxInput<Boolean>(CalendarEvent.RP_WEEKLY_BYDAY[i], CalendarEvent.RP_WEEKLY_BYDAY[i], false);
+     checkbox = new UICheckBoxInput(CalendarEvent.RP_WEEKLY_BYDAY[i], CalendarEvent.RP_WEEKLY_BYDAY[i], false);
      int dayOfWeek = convertToDayOfWeek(CalendarEvent.RP_WEEKLY_BYDAY[i]);
      checkbox.setLabel(dayNames[dayOfWeek].substring(0, 2).toUpperCase());
      addUIFormInput(checkbox);
@@ -270,7 +271,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
           }
         }
       }
-      repeatEvent.setRepeatCount((long)count);
+      repeatEvent.setRepeatCount(count);
       repeatEvent.setRepeatUntilDate(until);
       
       if (repeatEvent.getRepeatType().equals(CalendarEvent.RP_WEEKLY)) {
@@ -280,7 +281,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
           java.util.Calendar start = CalendarUtils.getInstanceOfCurrentCalendar();
           start.setTime(uiForm.startDate);
           int dayOfWeek = start.get(java.util.Calendar.DAY_OF_WEEK);
-          String[] byDay = new String[] {uiForm.convertToDayOfWeek(dayOfWeek)};
+          String[] byDay = new String[] {UIRepeatEventForm.convertToDayOfWeek(dayOfWeek)};
           repeatEvent.setRepeatByDay(byDay);
         }
       }
@@ -307,7 +308,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
           start.setTime(uiForm.startDate);
           int dayOfMonth = start.get(java.util.Calendar.DAY_OF_MONTH);
           long[] daysOfMonth = new long[1];
-          daysOfMonth[0] = (long)dayOfMonth;
+          daysOfMonth[0] = dayOfMonth;
           repeatEvent.setRepeatByMonthDay(daysOfMonth);
         }
       }
@@ -355,7 +356,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
   
   // value: MO, TU, FR, ..
   protected void setWeeklyByDay(String value) {
-    UIFormCheckBoxInput checkbox = this.getUIFormCheckBoxInput(value);
+    UICheckBoxInput checkbox = this.getUICheckBoxInput(value);
     checkbox.setChecked(true);
   }
   
@@ -363,7 +364,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
   protected List<String> getWeeklyByDay() {
     List<String> byDays = new ArrayList<String>();
     for (int i = 0; i < 7; i++) {
-      UIFormCheckBoxInput checkbox = this.getUIFormCheckBoxInput(CalendarEvent.RP_WEEKLY_BYDAY[i]);
+      UICheckBoxInput checkbox = this.getUICheckBoxInput(CalendarEvent.RP_WEEKLY_BYDAY[i]);
       if (checkbox.isChecked()) byDays.add(CalendarEvent.RP_WEEKLY_BYDAY[i]);
     }
     return byDays;
@@ -402,7 +403,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
   
   protected Date getEndDate(String dateFormat) throws Exception {
     UIFormDateTimePicker endDate = this.getChildById(FIELD_END_BYDATE) ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     
     DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
@@ -412,7 +413,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
   
   protected void setEndDate(Date date,String dateFormat) {
     UIFormDateTimePicker endDate = this.getChildById(FIELD_END_BYDATE) ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
     df.setCalendar(CalendarUtils.getInstanceOfCurrentCalendar()) ;

@@ -53,10 +53,8 @@
   Calendar endDateOfWeek = uicomponent.getEndDateOfWeek();
   String startDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ startDateOfWeek.getTimeInMillis();
   String startMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ startDateOfWeek.getTimeInMillis();
-  String startYearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ startDateOfWeek.getTimeInMillis();
   String endDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ endDateOfWeek.getTimeInMillis();
   String endMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ endDateOfWeek.getTimeInMillis();
-  String endYearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ endDateOfWeek.getTimeInMillis();
   boolean isShowWorkingTime = uicomponent.isShowWorkingTime() ;
   DateFormat df = new SimpleDateFormat(dateFormat, locale) ;
   DateFormat tf = new SimpleDateFormat(timeFormat, locale) ;
@@ -206,15 +204,16 @@
             }
           %>
 
-          <!---- DISPLAYING EVENT DURATION ---->
+
           <% if ( event.isEventDurationSmallerThanHalfHour() ) { %>
+          <!---- DISPLAYING EVENT DURATION ---->
           <!-- if event duration smaller than 30 mins then render event in the same line -->
           <div class="<%=event.eventState%>Icon">
             <div class="<%=event.getPriority()%>PriorityIcon">
               <span></span>
 			</div>
           </div>
-		  <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>" style=" display: inline-block; ">
+		  <div unselectable="on" class="EventContainerBar EventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>" style=" display: inline-block; ">
 		    <p unselectable="on" style=" display: inline; margin-right: 2px; ">
             <% if (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) { %>
             <!-- if the element is of type TASK then displaying only starting time -->
@@ -244,7 +243,7 @@
               <span></span>
             </div>
           </div>
-          <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>">
+          <div unselectable="on" class="EventContainerBar EventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>">
             <p unselectable="on">
               $begin - $end
             </p>

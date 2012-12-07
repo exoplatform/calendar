@@ -824,7 +824,6 @@
       <UIDayView>Theo ngày</UIDayView>
       <UIWeekView>Theo tuần</UIWeekView>
       <UIMonthView>Theo tháng</UIMonthView>
-      <UIYearView>Theo năm</UIYearView>
       <UIListContainer>Danh sách</UIListContainer>
       <UIScheduleView>Xắp xếp</UIScheduleView>
       <UIWorkingView>Ngày làm việc</UIWorkingView>
@@ -1033,19 +1032,7 @@
       </option>
     </label>
   </UIMonthView>
-  <!--
-  #org.exoplatform.calendar.webui.UIYearView
-  -->
-  <UIYearView>
-    <label>
-      <previousYear>Năm trước</previousYear>
-      <nextYear>Năm sau</nextYear>
-      <year>Năm</year>
-      <option>
-        <all>Tất cả</all>
-      </option>
-    </label>
-  </UIYearView>
+
   <!--
   #org.exoplatform.calendar.webui.UIListView
   -->

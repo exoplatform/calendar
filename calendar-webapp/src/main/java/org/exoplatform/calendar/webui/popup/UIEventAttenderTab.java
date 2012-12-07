@@ -31,13 +31,14 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 
 /**
  * Created by The eXo Platform SARL
@@ -60,15 +61,11 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     setComponentConfig(getClass(), null) ;
     calendar_ = CalendarUtils.getInstanceOfCurrentCalendar() ;
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
-    //Map<String, String> fromJsActions = new HashMap<String, String>() ;
-    //fromJsActions.put(UIFormComboBox.ON_BLUR, "eXo.calendar.UICombobox.synchronize(this)") ;
-    /*addUIFormInput(new UIFormComboBox(UIEventAttenderTab.FIELD_FROM_TIME, UIEventAttenderTab.FIELD_FROM_TIME, options , fromJsActions)) ;
-    addUIFormInput(new UIFormComboBox(UIEventAttenderTab.FIELD_TO_TIME, UIEventAttenderTab.FIELD_TO_TIME, options, fromJsActions)) ;*/
     addUIFormInput(new UIFormComboBox(UIEventAttenderTab.FIELD_FROM_TIME, UIEventAttenderTab.FIELD_FROM_TIME, options)) ;
     addUIFormInput(new UIFormComboBox(UIEventAttenderTab.FIELD_TO_TIME, UIEventAttenderTab.FIELD_TO_TIME, options)) ;
     
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(FIELD_DATEALL, FIELD_DATEALL, false)) ;
-    UIFormCheckBoxInput<Boolean> checkFreeInput = new UIFormCheckBoxInput<Boolean>(FIELD_CHECK_TIME, FIELD_CHECK_TIME, false) ;
+    addUIFormInput(new UICheckBoxInput(FIELD_DATEALL, FIELD_DATEALL, false)) ;
+    UICheckBoxInput checkFreeInput = new UICheckBoxInput(FIELD_CHECK_TIME, FIELD_CHECK_TIME, false) ;
     checkFreeInput.setOnChange("OnChange") ;
     addUIFormInput(checkFreeInput) ;
   }
@@ -90,7 +87,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
         }
       }
     }
-    //boolean isCheckFreeTime = getUIFormCheckBoxInput(FIELD_CHECK_TIME).isChecked() ;
+    //boolean isCheckFreeTime = getUICheckBoxInput(FIELD_CHECK_TIME).isChecked() ;
     if(newPars.size() > 0) {
       EventQuery eventQuery = new EventQuery() ;
       eventQuery.setFromDate(CalendarUtils.getBeginDay(calendar_)) ;
@@ -104,12 +101,12 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   }
   
   public boolean isCheckFreeTime() {
-    return getUIFormCheckBoxInput(FIELD_CHECK_TIME).isChecked() ;
+    return getUICheckBoxInput(FIELD_CHECK_TIME).isChecked() ;
   }
   protected Map<String, String> getMap() { 
     for(String id : parMap_.keySet()) {
-      if(getUIFormCheckBoxInput(id) == null) {
-        addUIFormInput(new UIFormCheckBoxInput<Boolean>(id, id, false)) ;
+      if(getUICheckBoxInput(id) == null) {
+        addUIFormInput(new UICheckBoxInput(id, id, false)) ;
       }
     }
     return parMap_ ;
@@ -121,7 +118,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   
   private DateFormat getSimpleFormatDate() throws Exception {
     CalendarSetting calSetting = getAncestorOfType(UICalendarPortlet.class).getCalendarSetting() ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     return new SimpleDateFormat(calSetting.getDateFormat(),context.getParentAppRequestContext().getLocale());
   }
 
@@ -182,7 +179,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   }  
 
   protected boolean isAllDateFieldChecked() {
-    return getUIFormCheckBoxInput(FIELD_DATEALL).isChecked() ;
+    return getUICheckBoxInput(FIELD_DATEALL).isChecked() ;
   }
   @Override
   public void processRender(WebuiRequestContext arg0) throws Exception {

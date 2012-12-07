@@ -14,7 +14,7 @@
         }else {
           actionLink = (uiForm.event(action.actionListener)) ;
         }
-        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        println "<a rel=\"tooltip\" data-placement=\"bottom\" title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
         if(action.actionType == action.TYPE_ICON) {
           println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
           if(action.isShowLabel) { println  actionLabel  ;}
@@ -36,7 +36,7 @@
           <%=uiForm.getLabel(uicomponent.FIELD_NAME)%>
         </td>
         <td class="FieldComponent">
-          <div title="$uicomponent.calendarName_">
+          <div rel="tooltip" data-placement="bottom" title="$uicomponent.calendarName_">
             <%uiForm.renderField(uicomponent.FIELD_NAME)%>
           </div>
         </td>

@@ -50,6 +50,7 @@ public class UISharedTab extends UIFormInputWithActions {
   protected UIForm getParentFrom() {
     return (UIForm)getParent() ;
   }
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }

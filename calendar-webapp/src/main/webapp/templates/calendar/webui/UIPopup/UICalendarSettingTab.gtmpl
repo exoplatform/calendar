@@ -14,7 +14,7 @@
         }else {
           actionLink = (uiForm.event(action.actionListener)) ;
         }
-        println "<a title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        println "<a rel=\"tooltip\" data-placement=\"bottom\" title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
         if(action.actionType == action.TYPE_ICON) {
           println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
           if(action.isShowLabel) { println  actionLabel  ;}
@@ -60,14 +60,7 @@
           <%uiForm.renderField(uicomponent.TIME_FORMAT)%>
         </td>
       </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.LOCATION)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.LOCATION)%>
-        </td>
-      </tr>
+      
       <tr>
         <td class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.TIMEZONE)%>

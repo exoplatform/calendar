@@ -429,7 +429,6 @@ public class CalendarDataInjector extends DataInjector {
   private EventCategory newEventCategory() {
     EventCategory eventCategory = new EventCategory();
     eventCategory.setDataInit(true);
-    eventCategory.setDescription(randomWords(20));
     eventCategory.setName(calRandomWords(5));
     return eventCategory;
   }

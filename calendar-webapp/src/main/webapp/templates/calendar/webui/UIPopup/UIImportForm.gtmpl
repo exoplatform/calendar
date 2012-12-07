@@ -20,21 +20,13 @@
                       <td class="FieldComponent">
                       <% uiform.renderField(field) %>
                       <% if(uicomponent.FIELD_TO_CALENDAR.equals(field.getName())) { %>
-                          <a href="<%= uicomponent.event("Add") %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
+                          <a href="<%= uicomponent.event("Add") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
                           <img class="AddNewNodeIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
                           </a>
                        <% } %>
                        <% if(uicomponent.DISPLAY_NAME.equals(field.getName())) { %>
-                          <a href="<%= uicomponent.event("Import") %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
+                          <a href="<%= uicomponent.event("Import") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
                           <img class="BlueCircleMinus" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
-                          </a>
-                       <% } %> 
-                       <% if(uicomponent.PERMISSION.equals(field.getName())) { %>
-                          <a href="<%= uicomponent.event("SelectPermission",UISelectComponent.TYPE_USER) %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
-                          <img class="SelectUserIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
-                          </a>
-                          <a href="<%= uicomponent.event("SelectPermission",UISelectComponent.TYPE_MEMBERSHIP) %>" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
-                          <img class="SelectMemberIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
                           </a>
                        <% } %> 
                       </td>

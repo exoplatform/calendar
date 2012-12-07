@@ -27,6 +27,8 @@ import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -75,6 +77,7 @@ public class UISearchForm extends UIForm {
       return map.values().toArray(new String[map.values().size()] ) ;
   }
   static  public class SearchActionListener extends EventListener<UISearchForm> {
+    @Override
     @SuppressWarnings("unchecked")
     public void execute(Event<UISearchForm> event) throws Exception {
       UISearchForm uiForm = event.getSource() ;
@@ -105,7 +108,7 @@ public class UISearchForm extends UIForm {
 
         UICalendars uiCalendars = uiForm.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
         eventQuery = uiCalendars.getEventQuery(eventQuery);
-        uiListView.setViewType(UIListView.TYPE_BOTH);
+        uiListView.setViewType(UICalendarView.TYPE_BOTH);
         uiListView.setSortedField(UIListView.EVENT_START);
         uiListView.setIsAscending(false);
         eventQuery.setOrderBy(new String[] { Utils.EXO_FROM_DATE_TIME });
@@ -131,4 +134,17 @@ public class UISearchForm extends UIForm {
     }
   }
 
+  static  public class AdvancedSearchActionListener extends EventListener<UISearchForm> {
+    @Override
+    public void execute(Event<UISearchForm> event) throws Exception {
+      UISearchForm uiForm = event.getSource() ;
+      UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
+      UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
+      UIAdvancedSearchForm uiAdvancedSearchForm = popupAction.activate(UIAdvancedSearchForm.class, 600) ;
+      uiAdvancedSearchForm.setSearchValue(uiForm.getSearchValue()) ;
+      uiForm.reset() ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
+    }
+  }
 }

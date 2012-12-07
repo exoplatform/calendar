@@ -120,6 +120,7 @@ public class UIDayView extends UICalendarView {
   protected List<CalendarEvent> getEventData() { return eventData_; }
   protected List<CalendarEvent> getAllDayEvents() { return allDayEvent_; } ;
 
+  @Override
   public LinkedHashMap<String, CalendarEvent> getDataMap() {
     LinkedHashMap<String, CalendarEvent> dataMap = new LinkedHashMap<String, CalendarEvent>() ;
     for (CalendarEvent ce : eventData_) {
@@ -132,6 +133,7 @@ public class UIDayView extends UICalendarView {
   }
   
   static  public class UpdateEventActionListener extends EventListener<UIDayView> {
+    @Override
     public void execute(Event<UIDayView> event) throws Exception {
       UIDayView calendarview = event.getSource();
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);

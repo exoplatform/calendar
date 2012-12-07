@@ -41,7 +41,7 @@ import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 
 /**
  * Created by The eXo Platform SARL
@@ -90,6 +90,7 @@ public class UIMonthView extends UICalendarView {
     cal.setMinimalDaysInFirstWeek(1);
     return cal.getActualMaximum(java.util.Calendar.WEEK_OF_MONTH) ;
   }
+  @Override
   public void refresh() throws Exception {
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
@@ -131,7 +132,7 @@ public class UIMonthView extends UICalendarView {
     Iterator childIter = getChildren().iterator() ;
     while(childIter.hasNext()) {
       UIComponent comp = (UIComponent)childIter.next() ;
-      if (comp instanceof UIFormCheckBoxInput ) {
+      if (comp instanceof UICheckBoxInput ) {
         childIter.remove() ;
       }
     }
@@ -144,11 +145,11 @@ public class UIMonthView extends UICalendarView {
       dataMap_.put(event.getId(), event) ;
       eventData_.add(event);
       // if event is a occurrence
-      UIFormCheckBoxInput<Boolean> input;
+      UICheckBoxInput input;
       if (!CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && !CalendarUtils.isEmpty(event.getRecurrenceId())) {
-        input = new UIFormCheckBoxInput<Boolean>(getCheckboxId(event), getCheckboxId(event), false) ;
+        input = new UICheckBoxInput(getCheckboxId(event), getCheckboxId(event), false) ;
       } else {
-        input = new UIFormCheckBoxInput<Boolean>(event.getId(), event.getId(), false) ;
+        input = new UICheckBoxInput(event.getId(), event.getId(), false) ;
       }
       input.setBindingField(event.getCalendarId()) ;
       addChild(input) ;
@@ -197,7 +198,7 @@ public class UIMonthView extends UICalendarView {
 
   protected List<CalendarEvent> getSelectedEvents() {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>() ;
-    UIFormCheckBoxInput<Boolean>  checkbox;
+    UICheckBoxInput  checkbox;
     for(String id : dataMap_.keySet()) {
       checkbox = getChildById(id )  ;
       if (checkbox != null && checkbox.isChecked()) {
@@ -223,6 +224,7 @@ public class UIMonthView extends UICalendarView {
     return events ; 
   }
   
+  @Override
   public LinkedHashMap<String, CalendarEvent> getDataMap() {
     return dataMap_ ;
   }
@@ -232,6 +234,7 @@ public class UIMonthView extends UICalendarView {
   }
   
   static  public class ChangeViewActionListener extends EventListener<UIMonthView> {
+    @Override
     public void execute(Event<UIMonthView> event) throws Exception {
       UIMonthView calendarview = event.getSource() ;
       UICalendarViewContainer uiContainer = calendarview.getAncestorOfType(UICalendarViewContainer.class) ;
@@ -241,6 +244,7 @@ public class UIMonthView extends UICalendarView {
     }
   }
   static  public class UpdateEventActionListener extends EventListener<UIMonthView> {
+    @Override
     public void execute(Event<UIMonthView> event) throws Exception {
       UIMonthView calendarview = event.getSource() ;
       UICalendarPortlet uiPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class) ;

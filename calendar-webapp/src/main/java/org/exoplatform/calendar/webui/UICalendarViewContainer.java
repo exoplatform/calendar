@@ -38,12 +38,11 @@ public class UICalendarViewContainer extends UIContainer  {
   final public static String DAY_VIEW = "UIDayView".intern() ;
   final public static String WEEK_VIEW = "UIWeekView".intern() ;
   final public static String MONTH_VIEW = "UIMonthView".intern() ;
-  final public static String YEAR_VIEW = "UIYearView".intern() ;
   final public static String LIST_VIEW = "UIListContainer".intern() ;
   final public static String SCHEDULE_VIEW = "UIScheduleView".intern() ;
   final public static String WORKING_VIEW = "UIWorkingView".intern() ;
 
-  final public static String[] TYPES = {DAY_VIEW, WEEK_VIEW, MONTH_VIEW, YEAR_VIEW, LIST_VIEW, SCHEDULE_VIEW, WORKING_VIEW} ;
+  final public static String[] TYPES = {DAY_VIEW, WEEK_VIEW, MONTH_VIEW, LIST_VIEW, SCHEDULE_VIEW, WORKING_VIEW} ;
   
   private String currentViewType_;
   
@@ -79,14 +78,7 @@ public class UICalendarViewContainer extends UIContainer  {
           if(uiView == null) uiView =  addChild(UIMonthView.class, null, null) ;
           if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
           setRenderedChild(viewType) ;
-        } else
-          if(YEAR_VIEW.equals(viewType)) {
-            UIYearView uiView = getChild(UIYearView.class) ;
-            if(uiView == null) uiView =  addChild(UIYearView.class, null, null) ;
-            if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-            setRenderedChild(viewType) ;
-          } else
-            if(LIST_VIEW.equals(viewType)) {
+        } else if(LIST_VIEW.equals(viewType)) {
               UIListContainer uiView = getChild(UIListContainer.class) ;
               if(uiView == null) uiView =  addChild(UIListContainer.class, null, null) ;
               UIListView uiListView = uiView.getChild(UIListView.class) ;

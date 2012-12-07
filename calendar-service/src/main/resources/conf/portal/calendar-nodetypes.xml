@@ -176,9 +176,6 @@
         <propertyDefinition name="exo:name" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>        
-        <propertyDefinition name="exo:description" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>        
       </propertyDefinitions>
       <childNodeDefinitions>
         <childNodeDefinition name="*" defaultPrimaryType="" autoCreated="false" mandatory="false"

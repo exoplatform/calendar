@@ -55,7 +55,7 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
     CalendarService calendarService = CalendarUtils.getCalendarService();
     String  username = CalendarUtils.getCurrentUser() ;
     for(Calendar c :((UICalendarSettingForm)getParentFrom()).getPrivateCalendars(calendarService, username)) {
-      if(getUIFormCheckBoxInput(c.getId()) != null) infoFields.add(getUIFormCheckBoxInput(c.getId())) ;
+      if(getUICheckBoxInput(c.getId()) != null) infoFields.add(getUICheckBoxInput(c.getId())) ;
     }
     return  infoFields;
   }
@@ -64,7 +64,7 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
     CalendarService calendarService = CalendarUtils.getCalendarService();
     String  username = CalendarUtils.getCurrentUser() ;
     for(Calendar c :((UICalendarSettingForm)getParentFrom()).getSharedCalendars(calendarService, username)) {
-      if(getUIFormCheckBoxInput(c.getId()) != null) infoFields.add(getUIFormCheckBoxInput(c.getId())) ;
+      if(getUICheckBoxInput(c.getId()) != null) infoFields.add(getUICheckBoxInput(c.getId())) ;
     }
     return  infoFields;
   }
@@ -78,10 +78,11 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
     CalendarService calendarService = CalendarUtils.getCalendarService();
     String  username = CalendarUtils.getCurrentUser() ;
     for(Calendar c :((UICalendarSettingForm)getParentFrom()).getPublicCalendars(calendarService, username)) {
-      if(getUIFormCheckBoxInput(c.getId()) != null) infoFields.add(getUIFormCheckBoxInput(c.getId())) ;
+      if(getUICheckBoxInput(c.getId()) != null) infoFields.add(getUICheckBoxInput(c.getId())) ;
     }
     return  infoFields;
   }
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }

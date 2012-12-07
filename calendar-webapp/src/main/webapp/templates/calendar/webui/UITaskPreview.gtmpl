@@ -23,7 +23,7 @@ uiform.begin() ;
 	  requireJS.addScripts("gj('div.MaximizeButton').click(function() {cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'uicomponent.id');});");
 	  %>
       <!--div class="MaximizeButton" title="View full - size task" onclick = "eXo.cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>')"><span></span></div-->
-	  <div class="MaximizeButton" title="View full - size task" ><span></span></div>
+	  <div class="MaximizeButton" rel="tooltip" data-placement="bottom" title="View full - size task" ><span></span></div>
     </div>
   <%}%>    
     <div class="ViewContainer SpliterResizableListArea">
@@ -34,7 +34,7 @@ uiform.begin() ;
 				<td style="border-right: 1px solid #c7c7c7;width: 185px;">
 				<%for(attachFile in task.getAttachment()){%>
 				 <div class="AttachmentIcon"  style="">
-				  <a href="<%=uicomponent.event('Download',attachFile.getId())%>" title="<%=attachFile.name + '(' +CalendarUtils.convertSize(attachFile.size) + ')'%>">$attachFile.name</a>  
+				  <a href="<%=uicomponent.event('Download',attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' +CalendarUtils.convertSize(attachFile.size) + ')'%>">$attachFile.name</a>  
 				   (<%=CalendarUtils.convertSize(attachFile.size)%>) 
 				 </div>
 				  <%if(attachFile.getMimeType().startsWith("image")) {
@@ -102,7 +102,7 @@ uiform.begin() ;
 						  else subDelegators = delegators ;  
 						}
 					 %>
-					  <td class="Text" title="$delegators"><%=subDelegators%></td>
+					  <td class="Text" rel="tooltip" data-placement="bottom" title="$delegators"><%=subDelegators%></td>
 					</tr>  
 					<tr>
 					  <td class="Text">

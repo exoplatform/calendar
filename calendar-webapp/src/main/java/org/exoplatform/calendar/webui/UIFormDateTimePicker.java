@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.form.UIFormInputBase;
@@ -126,6 +127,7 @@ public class UIFormDateTimePicker extends UIFormInputBase<String>  {
     timeStyle_ = timeStyle ;
     value_ = getFormater().format(date_) ;
   }
+  @Override
   @SuppressWarnings("unused")
   public void decode(Object input, WebuiRequestContext context) throws Exception {
     if(input != null) value_ = ((String)input).trim();
@@ -135,16 +137,17 @@ public class UIFormDateTimePicker extends UIFormInputBase<String>  {
     return dateStyle_ ;
   }
   private String getLang() {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     return locale.getLanguage();
   }
   private DateFormat getFormater() {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     if(locale_ == null) locale_ = locale ;
     return new SimpleDateFormat(getFormatStyle(), locale_) ;
   }
+  @Override
   public void processRender(WebuiRequestContext context) throws Exception {
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     locale_ = locale ;    

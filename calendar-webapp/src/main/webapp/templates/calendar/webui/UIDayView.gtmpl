@@ -18,11 +18,8 @@
   String currentMonthName = uicomponent.getMonthName(currentMonth) ;
   int currentYear = uicomponent.getCurrentYear();
   String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
-
-   
   monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-                    
+
   dateFormat = uicomponent.getDateFormat() ;
   timeFormat = uicomponent.getTimeFormat() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
@@ -86,7 +83,7 @@
               <input type="hidden" name="${ce.id}isOccur" value="$isOccur" />
               <input type="hidden" name="${ce.id}recurId" value="$recurId" />
               <input type="hidden" name="${ce.id}currentDate" value="" />
-              <div class="EventContainer"  title="<%=dtf.format(ce.getFromDateTime())%>:-><%=dtf.format(ce.getToDateTime())%>">
+              <div class="EventContainer" rel="tooltip" data-placement="bottom" title="<%=dtf.format(ce.getFromDateTime())%>:-><%=dtf.format(ce.getToDateTime())%>">
                 <%=ce.getSummary()%>
               </div>
             </div>
@@ -151,10 +148,10 @@
                       <div class="<%=ce.getPriority()%>PriorityIcon" style="float:left;"><span></span></div>
                     </div>
 
-                    <!---- DISPLAYING EVENT DURATION ---->
                     <% if ( ce.isEventDurationSmallerThanHalfHour() ) { %>
+                    <!---- DISPLAYING EVENT DURATION ---->
                     <!-- if event duration lasts less than 30 mins then display event description right to event duration -->
-                    <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>"
+                    <div unselectable="on" class="EventContainerBar EventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>"
                      style=" display: inline-block; ">
                       <p style=" display: inline; margin-right: 5px; ">
                         <% if (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) { %>
@@ -179,7 +176,7 @@
 
                     <% } else { %>
                     <!---- DISPLAYING EVENT DURATION ---->
-                    <div unselectable="on" class="EventContainerBar EventTitle" title="<%=uiform.getLabel('moveEvent')%>">
+                    <div unselectable="on" class="EventContainerBar EventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>">
                     <!-- event time -->
                       <p>
                         <%=tf.format(ce.getFromDateTime())%> - <%=tf.format(ce.getToDateTime())%>

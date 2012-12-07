@@ -34,10 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 
-import org.exoplatform.calendar.service.CalendarCategory;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
@@ -289,31 +286,10 @@ public class CsvImportExport implements CalendarImportExport {
     CalendarService calService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
 
     if (isNew) {
-      NodeIterator iter = storage_.getCalendarCategoryHome(username).getNodes();
-      Node cat = null;
-      String categoryId;
-      boolean isExists = false;
-      while (iter.hasNext()) {
-        cat = iter.nextNode();
-        if (cat.getProperty(Utils.EXO_NAME).getString().equals("Imported")) {
-          isExists = true;
-          break;
-        }
-      }
-      if (!isExists) {
-        CalendarCategory calendarCate = new CalendarCategory();
-        calendarCate.setDescription("Imported icalendar category");
-        calendarCate.setName("Imported");
-        categoryId = calendarCate.getId();
-        storage_.saveCalendarCategory(username, calendarCate, true);
-      } else {
-        categoryId = cat.getProperty(Utils.EXO_ID).getString();
-      }
       org.exoplatform.calendar.service.Calendar exoCalendar = new org.exoplatform.calendar.service.Calendar();
       exoCalendar.setName(calendarName);
       exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[new Random().nextInt(org.exoplatform.calendar.service.Calendar.COLORS.length - 1)]);
       exoCalendar.setDescription(Utils.EMPTY_STR);
-      exoCalendar.setCategoryId(categoryId);
       exoCalendar.setPublic(true);
       exoCalendar.setCalendarOwner(username);
       storage_.saveUserCalendar(username, exoCalendar, true);

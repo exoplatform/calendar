@@ -37,6 +37,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -44,7 +45,8 @@ import org.exoplatform.webui.core.UIGrid;
 import org.exoplatform.webui.core.lifecycle.UIContainerLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
+
 
 /**
  * Created by The eXo Platform SAS
@@ -74,7 +76,9 @@ public class UIAddEditPermission extends UIContainer implements UIPopupComponent
     permissionList.getUIPageIterator().setId("PermissionListIterator") ;
     addChild(UISharedForm.class, null, null) ;
   }
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
 
   public void init(String username, Calendar cal, boolean isAddNew) throws Exception{
@@ -92,7 +96,7 @@ public class UIAddEditPermission extends UIContainer implements UIPopupComponent
   @SuppressWarnings("unchecked")
   public void updateGrid(Calendar cal, int currentPage) throws Exception {
     List<data> dataRow = new ArrayList<data>() ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     ResourceBundle res = context.getApplicationResourceBundle() ;   
     if(cal.getViewPermission() != null) {
       for(String username : cal.getViewPermission() ) {
@@ -119,11 +123,12 @@ public class UIAddEditPermission extends UIContainer implements UIPopupComponent
   }
 
   static public class EditActionListener extends EventListener<UIAddEditPermission> {
+    @Override
     public void execute(Event<UIAddEditPermission> event) throws Exception {
       UIAddEditPermission addEdit = event.getSource();
       UISharedForm shareForm = addEdit.getChild(UISharedForm.class);
       String resiceUser = event.getRequestContext().getRequestParameter(OBJECTID);
-      UIFormCheckBoxInput checkBox = shareForm.getUIFormCheckBoxInput(UISharedTab.FIELD_EDIT) ;
+      UICheckBoxInput checkBox = shareForm.getUICheckBoxInput(UISharedTab.FIELD_EDIT) ;
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String username = CalendarUtils.getCurrentUser() ;
       
@@ -139,6 +144,7 @@ public class UIAddEditPermission extends UIContainer implements UIPopupComponent
     }
   }
   static public class DeleteActionListener extends EventListener<UIAddEditPermission> {
+    @Override
     public void execute(Event<UIAddEditPermission> event) throws Exception {
       UIAddEditPermission addEdit = event.getSource();
       String resiceUser = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -222,7 +228,8 @@ public class UIAddEditPermission extends UIContainer implements UIPopupComponent
     }
   }
   
-  static public class UserDataComparator implements Comparator{
+  static public class UserDataComparator implements Comparator<Object>{
+    @Override
     public int compare(Object o1, Object o2) throws ClassCastException {
       String name1 = ((data) o1).getViewPermission() ;
       String name2 = ((data) o2).getViewPermission() ;
