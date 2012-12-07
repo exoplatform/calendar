@@ -51,8 +51,7 @@ import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
     lifecycle = UIFormLifecycle.class,
     template = "app:/templates/calendar/webui/UISearchForm.gtmpl",
     events = {
-      @EventConfig(listeners = UISearchForm.SearchActionListener.class),
-      @EventConfig(listeners = UISearchForm.AdvancedSearchActionListener.class)
+      @EventConfig(listeners = UISearchForm.SearchActionListener.class)
     }
 )
 public class UISearchForm extends UIForm {
@@ -134,6 +133,7 @@ public class UISearchForm extends UIForm {
       }
     }
   }
+
   static  public class AdvancedSearchActionListener extends EventListener<UISearchForm> {
     @Override
     public void execute(Event<UISearchForm> event) throws Exception {

@@ -11,12 +11,6 @@
   requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
   requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
-  requireJS.addScripts("gj('div#CustomLayout').click(function(event) {cal.UICalendarPortlet.showView(this, event);});")
-
-  requireJS.addScripts("gj('div#DefaultLayout').click(function() {cal.UICalendarPortlet.switchLayout(0);});")
-  requireJS.addScripts("gj('div#ShowHideAll').click(function() {cal.UICalendarPortlet.switchLayout(1);});")
-  requireJS.addScripts("gj('div#ShowHideMinicalendar').click(function() {cal.UICalendarPortlet.switchLayout(2);});")
-  requireJS.addScripts("gj('div#ShowHideCalendarList').click(function() {cal.UICalendarPortlet.switchLayout(3);});")
   %>
 <div id="$uicomponent.id" class="UIActionBar"> 
   <div class="UIToolbar">
@@ -77,11 +71,7 @@
                 <%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>
               </div>
             </div>
-			<div onclick="<%=uicomponent.event("RSS")%>" class="ControlButton  ActionBarButton">
-              <div class="IconHolder CalendarRssIcon">
-                <%=_ctx.appRes(uicomponent.id + ".label.RSS")%>
-              </div>
-            </div>
+
             <!--
             <div class="SeparatorLine"><span></span></div>
             <span class="ControlButton  ActionBarButton" style="color:gray;margin-top: 4px;">
@@ -90,53 +80,7 @@
               </div>
             </span>
             -->
-            <div id="CustomLayout" class="ControlButton  ActionBarButton">
-                <div class="IconHolder LayoutSwitcherIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.id + ".label.ShowHide")%>">
-                  <span></span>
-                </div>
-              <% /*Begin Popup Menu*/ %>
-                  <div class="UIRightClickPopupMenu" style="display: none;">
-                    <div class="UIContextMenuContainer">
-                      <div class="TopLeftRightClickPopupMenu">
-                        <div class="TopRightRightClickPopupMenu">
-                          <div class="TopCenterRightClickPopupMenu"><span></span></div>
-                        </div>
-                      </div>
-                      <div class="MiddleLeftRightClickPopupMenu">
-                        <div class="MiddleRightRightClickPopupMenu">
-                          <div class="UIRightPopupMenuContainer">
-                            <div id="DefaultLayout" class="MenuItem"  >   
-                              <div class="ItemIcon HidenAllCalendar">
-                                 <%=_ctx.appRes(uicomponent.id + ".label.DefaultLayout")%>
-                              </div>
-                            </div>
-                            <div id="ShowHideAll"  class="MenuItem">   
-                              <div class="ItemIcon ShowMinicalendar">
-                                <%=_ctx.appRes(uicomponent.id + ".label.ShowHideAll")%>
-                              </div>
-                            </div>
-                            <div id="ShowHideMinicalendar" class="MenuItem" >   
-                              <div class="ItemIcon ShowMinicalendar">
-                                <%=_ctx.appRes(uicomponent.id + ".label.ShowHideMinicalendar")%>
-                              </div>
-                            </div>
-                            <div id="ShowHideCalendarList"    class="MenuItem">
-                              <div class="ItemIcon HidenMinicalendar">
-                                <%=_ctx.appRes(uicomponent.id + ".label.ShowHideCalendarList")%>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="BottomLeftRightClickPopupMenu">
-                      <div class="BottomRightRightClickPopupMenu">
-                        <div class="BottomCenterRightClickPopupMenu"><span></span></div>
-                      </div>
-                    </div>
-                    </div>
-                  </div>
-              <% /*End Popup Menu*/ %>
-              </div>
+
               <div class="ScrollButtons" style="display: none;">
 					<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">
 						<div rel="tooltip" data-placement="bottom" title="Next" class="ScrollRightButton"><span></span></div>

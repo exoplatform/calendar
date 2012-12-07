@@ -55,11 +55,10 @@ import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTabPane;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
-import org.exoplatform.webui.form.ext.UIFormColorPicker;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
-import org.exoplatform.calendar.webui.UICalendarColor;
+import org.exoplatform.calendar.webui.UIFormColorPicker;
 
 /**
  * Created by The eXo Platform SARL
@@ -128,7 +127,10 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     timeZone.setLabel(setting.getTimeZone());
     timeZone.setEditable(false);
     calendarDetail.addUIFormInput(timeZone);
-    calendarDetail.addUIFormInput(new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR, UICalendarColor.NEWCOLORS));
+
+    UIFormColorPicker colorPicker = new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR);
+    colorPicker.setNumberItemsPerLine(6);
+    calendarDetail.addUIFormInput(colorPicker);
 
     List<ActionData> actions = new ArrayList<ActionData>() ;
     ActionData addCategory = new ActionData() ;

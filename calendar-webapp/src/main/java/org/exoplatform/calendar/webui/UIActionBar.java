@@ -47,7 +47,6 @@ import org.exoplatform.webui.event.EventListener;
         @EventConfig(listeners = UIActionBar.QuickAddEventActionListener.class),
         @EventConfig(listeners = UIActionBar.ChangeViewActionListener.class),
         @EventConfig(listeners = UIActionBar.SettingActionListener.class),
-        @EventConfig(listeners = UIActionBar.RSSActionListener.class),
         @EventConfig(listeners = UIActionBar.TodayActionListener.class)
     }
 )
