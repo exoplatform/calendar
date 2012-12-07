@@ -59,6 +59,7 @@ import org.exoplatform.webui.form.ext.UIFormColorPicker;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
+import org.exoplatform.calendar.webui.UICalendarColor;
 
 /**
  * Created by The eXo Platform SARL
@@ -127,7 +128,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     timeZone.setLabel(setting.getTimeZone());
     timeZone.setEditable(false);
     calendarDetail.addUIFormInput(timeZone);
-    calendarDetail.addUIFormInput(new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR));
+    calendarDetail.addUIFormInput(new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR, UICalendarColor.NEWCOLORS));
 
     List<ActionData> actions = new ArrayList<ActionData>() ;
     ActionData addCategory = new ActionData() ;
@@ -186,7 +187,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     UIGroupCalendarTab sharing = getChildById(INPUT_SHARE) ;
     for(Object obj : getPublicGroups()) {
       String groupId = ((Group)obj).getId() ;
-      UICheckBoxInput checkbox = sharing.getUICheckBoxInput(((Group)obj).getId()) ;
+      UICheckBoxInput checkbox = sharing.getUICheckBoxInput(((Group) obj).getId()) ;
       if(checkbox != null) checkbox.setChecked(false) ;
       UIFormStringInput uiInputIfo = sharing.getUIStringInput(groupId + PERMISSION_SUB);
       if(uiInputIfo != null) uiInputIfo.setValue(null) ;
