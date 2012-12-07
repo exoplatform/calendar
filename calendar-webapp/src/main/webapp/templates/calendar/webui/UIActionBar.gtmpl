@@ -19,6 +19,9 @@
         <div class="RightBar">
           <div class="CenterBar">
 		    <%uicomponent.renderChild(UISearchForm.class)%>
+		    <div onclick="<%=uicomponent.event("Setting")%>" class="ControlButton ActionBarButton SettingButton">
+              	<i class="uiIconSetting"></i>
+              </div>
 		        <div class="LeftActionBar">
 		        <div class="CalendarActionBar ClearFix">
             <div class="Title ControlButton ActionBarButton">
