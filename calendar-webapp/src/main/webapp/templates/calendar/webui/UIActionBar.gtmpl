@@ -57,7 +57,7 @@
                style = "ControlButton ControlButtonHover ActionBarButton" ;
               }
                   
-              if(!viewType.equals("UIScheduleView")) {
+             
                 %>
                     <div class="$style">
                       <a href="$actionLink" class="IconHolder $icon">
@@ -65,10 +65,7 @@
                       </a>
                     </div>
                   
-          <%   } 
-              
-            }
-          %>
+             <%}%>
 
 
               <div class="ScrollButtons" style="display: none;">

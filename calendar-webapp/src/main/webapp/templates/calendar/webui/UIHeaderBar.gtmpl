@@ -23,19 +23,6 @@ requirejs.addScripts("gj('div#UIHeaderBar_2').click(function() {cs.Utils.confirm
 requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirmAction(this,'"+msg+"','"+parent+"');});")
 %>
 <div class="UIHeaderBar ListBar ClearFix">
-    <!--
-	<div onclick="<%=uicomponent.event("AddEvent",uicomponent.TYPE_EVENT)%>" class="ControlButton">
-      <div class="IconHolder AddNewEvent">
-        <%=_ctx.appRes("UIHeaderBar.label.AddEvent")%>
-      </div>
-    </div>
-    <div class="SeparatorLine"><span></span></div>
-    <div onclick="<%=uicomponent.event("AddEvent", uicomponent.TYPE_TASK)%>" class="ControlButton">
-      <div class="IconHolder AddNewTask">
-        <%=_ctx.appRes("UIHeaderBar.label.AddTask")%>
-      </div>
-    </div>
-	-->
 	<div class="EventCategory" msg="<%=_ctx.appRes('UICalendarView.msg.event-category-list-empty')%>">
 	  <% 
 		uiform.renderField("eventCategories") ;
@@ -155,9 +142,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
 	 
 	 <div class="SeparatorLine"><span></span></div>
       <div id="UIHeaderBar_2"  actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
-        <div class="IconHolder DeleteEventIcon">
-          <%=_ctx.appRes("UIHeaderBar.label.Delete")%>
-        </div>
+        <i class="uiIconDelete"></i>
       </div>
 	  
 	  <div class="TitleBar">
@@ -199,9 +184,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
 	 %>
 	 <div class="SeparatorLine"><span></span></div>
       <div id="UIHeaderBar_3" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
-        <div class="IconHolder DeleteEventIcon">
-          <%=_ctx.appRes("UIHeaderBar.label.Delete")%>
-        </div>
+        <i class="uiIconDelete"></i>
       </div>
 	  
 	  <div class="SeparatorLine"><span></span></div>
@@ -220,10 +203,9 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
                     <div class="UIRightPopupMenuContainer">
                        <%for(type in uicomponent.getViews()){
                            if(!type.equals(uicomponent.getViewType())){
-                           icon = type + "Icon" ;  
                         %>
                         <div onclick="<%=uicomponent.event("SwitchView",type)%>" class="MenuItem">   
-                          <div class="ItemIcon $icon">
+                          <div>
                             <%=_ctx.appRes("UIHeaderBar.label."+type)%>
                           </div>
                         </div>
@@ -243,7 +225,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
           </div>
     <% /*End Popup Menu*/ %>
       <div class="ControlButton">
-        <div class="IconHolder <%=uicomponent.getViewType()%>Icon">
+        <div>
           <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%>
         </div>
       </div>

@@ -32,6 +32,7 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -474,12 +475,14 @@ public class UIListView extends UICalendarView {
   }
 
   static  public class AdvancedSearchActionListener extends EventListener<UIListView> {
-    @Override
     public void execute(Event<UIListView> event) throws Exception {
-      UIListView uiListView = event.getSource() ;
-      UICalendarPortlet calendarPortlet = uiListView.getAncestorOfType(UICalendarPortlet.class) ;
+      UIListView currentView = event.getSource() ;
+      UICalendarPortlet calendarPortlet = currentView.getAncestorOfType(UICalendarPortlet.class) ;
       UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiListView) ;
+      UIAdvancedSearchForm uiAdvancedSearchForm = popupAction.activate(UIAdvancedSearchForm.class, 600) ;
+      uiAdvancedSearchForm.setSearchValue(currentView.getKeyWords()) ;
+      //uiForm.reset() ;
+     // event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
   }

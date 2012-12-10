@@ -74,7 +74,7 @@ import org.exoplatform.calendar.webui.UIFormColorPicker;
                    @EventConfig(listeners = UICalendarForm.SelectPermissionActionListener.class, phase=Phase.DECODE),
                    @EventConfig(listeners = UICalendarForm.ResetActionListener.class, phase=Phase.DECODE),
                    @EventConfig(listeners = UICalendarForm.CancelActionListener.class, phase=Phase.DECODE),
-                   @EventConfig(listeners = UICalendarForm.SelectTabActionListener.class, phase=Phase.DECODE),
+                   @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase=Phase.DECODE),
                    @EventConfig(listeners = UICalendarForm.OpenActionListener.class, phase=Phase.DECODE),
                    @EventConfig(listeners = UICalendarForm.ShowPublicURLActionListener.class, phase=Phase.DECODE),
                    @EventConfig(listeners = UICalendarForm.ActiveActionListener.class, phase=Phase.DECODE),
@@ -125,7 +125,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
     UIFormStringInput timeZone = new UIFormStringInput(TIMEZONE, TIMEZONE, CalendarUtils.generateTimeZoneLabel(setting.getTimeZone()));
     timeZone.setLabel(setting.getTimeZone());
-    timeZone.setEditable(false);
+    timeZone.setReadOnly(true);
     calendarDetail.addUIFormInput(timeZone);
 
     UIFormColorPicker colorPicker = new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR);
@@ -328,7 +328,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     timeZone.setLabel(value) ;
   }
   @Override
-  @SuppressWarnings("unchecked")
   public void updateSelect(String selectField, String value) throws Exception {
     UIGroupCalendarTab shareTab = getChildById(INPUT_SHARE) ;
     UIFormStringInput fieldInput = shareTab.getUIStringInput(selectField) ;
@@ -376,10 +375,9 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     return organization.getGroupHandler().findGroupsOfUser(currentUser).toArray() ;
   }
 
-  @SuppressWarnings("unchecked")
-  private List getSelectedGroups(String groupId) throws Exception {
+  private List<Group> getSelectedGroups(String groupId) throws Exception {
     UIGroupCalendarTab sharing = getChildById(INPUT_SHARE) ;
-    List groups = new ArrayList() ;
+    List<Group> groups = new ArrayList<Group>() ;
     Group g = getApplicationComponent(OrganizationService.class).getGroupHandler().findGroupById(groupId) ;
     UICheckBoxInput input =  sharing.getUICheckBoxInput(groupId) ;
     if(input != null && input.isChecked()) {
@@ -465,7 +463,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   }
   static  public class SaveActionListener extends EventListener<UICalendarForm> {
     @Override
-    @SuppressWarnings({ "unchecked", "deprecation" })
     public void execute(Event<UICalendarForm> event) throws Exception {
       try {
         UICalendarForm uiForm = event.getSource() ;
@@ -624,13 +621,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       UICalendarForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       calendarPortlet.cancelAction() ;
-    }
-  }
-
-  static public class SelectTabActionListener extends EventListener<UICalendarForm> {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception {
-      event.getRequestContext().addUIComponentToUpdateByAjax(event.getSource()) ;      
     }
   }
 

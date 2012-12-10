@@ -62,11 +62,8 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
       @EventConfig(listeners = UICalendarSettingForm.ChangeLocaleActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.ShowAllTimeZoneActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.CancelActionListener.class, phase = Phase.DECODE),
-      //@EventConfig(listeners = UICalendarSettingForm.DeleteActionListener.class, phase = Phase.DECODE),
-      //@EventConfig(listeners = UICalendarSettingForm.CalendarFeedActionListener.class, phase = Phase.DECODE),
-      //@EventConfig(listeners = UICalendarSettingForm.EditActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.AddActionListener.class, phase = Phase.DECODE),
-      @EventConfig(listeners = UICalendarSettingForm.SelectTabActionListener.class, phase = Phase.DECODE)
+      @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase = Phase.DECODE)
     }
 )
 public class UICalendarSettingForm extends UIFormTabPane implements UIPopupComponent{
@@ -338,13 +335,6 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     }
   }
   
-  static public class SelectTabActionListener extends EventListener<UICalendarSettingForm> {
-    @Override
-    public void execute(Event<UICalendarSettingForm> event) throws Exception {
-      event.getRequestContext().addUIComponentToUpdateByAjax(event.getSource()) ;      
-    }
-  }  
-    
   static  public class AddActionListener extends EventListener<UICalendarSettingForm> {
     @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {

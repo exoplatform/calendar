@@ -107,7 +107,6 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
                      @EventConfig(listeners = UIEventForm.MoveNextActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.MovePreviousActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.DeleteUserActionListener.class, phase = Phase.DECODE),
-                     //@EventConfig(listeners = UIEventForm.DeleteActionListener.class, confirm = "UIEventForm.msg.confirm-delete", phase = Phase.DECODE ),
                      @EventConfig(listeners = UIEventForm.AddAttachmentActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.RemoveAttachmentActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.DownloadAttachmentActionListener.class, phase = Phase.DECODE),
@@ -115,7 +114,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
                      @EventConfig(listeners = UIEventForm.AddUserActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.OnChangeActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.CancelActionListener.class, phase = Phase.DECODE),
-                     @EventConfig(listeners = UIEventForm.SelectTabActionListener.class, phase = Phase.DECODE),
+                     @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.ConfirmOKActionListener.class, name = "ConfirmOK", phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.ConfirmCancelActionListener.class, name = "ConfirmCancel", phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.ConfirmUpdateOnlyInstance.class, phase = Phase.DECODE),
@@ -2068,13 +2067,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }
   }
-  
-  static public class SelectTabActionListener extends EventListener<UIEventForm> {
-    @Override
-    public void execute(Event<UIEventForm> event) throws Exception {
-      event.getRequestContext().addUIComponentToUpdateByAjax(event.getSource()) ;      
-    }
-  }
+   
   
   static public class ConfirmOKActionListener extends EventListener<UIEventForm> {
     @Override
