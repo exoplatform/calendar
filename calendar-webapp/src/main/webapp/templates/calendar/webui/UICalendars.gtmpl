@@ -377,7 +377,5 @@
 			</div>
 		</div>
     <% /*End Popup Menu*/ %>
-    <div id="UICalendars_toggle-calendars" class="DownArrow1Icon UICalendarsToggleButton ClearFix" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendars.label.toggle-calendars')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
- 
     </div>
 <%uiform.end()%>
