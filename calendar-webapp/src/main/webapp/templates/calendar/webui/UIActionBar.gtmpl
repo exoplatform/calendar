@@ -45,6 +45,7 @@
                 </a>
             </div>
             
+          <div class="SeparatorLine"><span></span></div>  
       <%for(viewType in uicomponent.getViewTypes()){
             
                   icon = viewType + "Icon" ;
@@ -69,20 +70,6 @@
             }
           %>
 
-            <div onclick="<%=uicomponent.event("Setting")%>" class="ControlButton ActionBarButton">
-              <div class="IconHolder SettingCalendarIcon">
-                <%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>
-              </div>
-            </div>
-
-            <!--
-            <div class="SeparatorLine"><span></span></div>
-            <span class="ControlButton  ActionBarButton" style="color:gray;margin-top: 4px;">
-              <div class="IconHolder PrintCalendarIcon">
-                <%=_ctx.appRes(uicomponent.id + ".label.Print")%>
-              </div>
-            </span>
-            -->
 
               <div class="ScrollButtons" style="display: none;">
 					<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">

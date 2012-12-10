@@ -592,8 +592,6 @@ UICalendarPortlet.prototype.switchLayoutCallback = function(layout,status){
 UICalendarPortlet.prototype.checkLayoutCallback = function(layoutcookie){
   var CalendarLayout = _module.CalendarLayout;
   CalendarLayout.updateCalendarContainerLayout();
-  CalendarLayout.updateMiniCalendarLayout();
-  CalendarLayout.updateUICalendarsLayout();
 };
 
 UICalendarPortlet.prototype.resetSpaceDefaultLayout = function(){

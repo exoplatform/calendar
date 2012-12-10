@@ -9,7 +9,6 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts('cal.CalendarLayout.updateUICalendarsLayout();') ;
   requirejs.addScripts('cal.UICalendars.init("' + uiform.id + '") ;') ;
   requirejs.addScripts("gj('div#UICalendars_calendarActions').click(function(event) {cal.UICalendars.showMenu(this, event, 'CalendarMainPopupMenu', cal.UICalendars.mainMenuCallback); });");
   requirejs.addScripts("gj('div#UICalendars_CalendarGroupPopupMenu').click(function(event) {cal.UICalendars.showMenu(this, event, 'CalendarGroupPopupMenu', cal.UICalendars.calendarMenuCallback); });");
