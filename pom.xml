@@ -1350,6 +1350,6 @@
     <module>calendar-packaging</module>
     <module>calendar-resources</module>
     <module>calendar-webservice</module>
-	<module>calendar-CreateEventTask</module>
+	<module>calendar-createcomponent</module>
   </modules>
 </project>
