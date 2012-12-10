@@ -64,12 +64,6 @@ UICalendarPortlet.prototype.attachSwapClass = function(compId,className,hoverCla
     	'mouseout':function(){
     		cs.Utils.swapClass(this,hoverClass);
     	}});
-//    	items[i].onmouseover = function(){
-//    		eXo.cs.Utils.swapClass(this,hoverClass);
-//    	};
-//    	items[i].onmouseout = function(){
-//    		eXo.cs.Utils.swapClass(this,hoverClass);
-//    	}; 
     };
 } ;
 
@@ -2697,16 +2691,6 @@ eXo.calendar.EventTooltip = {
 					self.hideElement();
 					self.editEvent(self.currentEvent);
 				}});
-//			self._container.onmouseover = function(evt){
-//				self.cleanupTimer(evt);
-//				}; 
-//		    self._container.onmouseout = function(evt){
-//				self.hide(evt);
-//			}; 	
-//			self._container.onclick = function(evt){
-//				self.hideElement();
-//				self.editEvent(self.currentEvent);
-//			}; 
 		}
 	},
 	editEvent: function(eventNode){				
@@ -2768,42 +2752,72 @@ eXo.calendar.EventTooltip = {
 			location: data.location
 		}
 	},
+	// return 1 if event is all day, 2 if event happens in 1 day, 3 for other cases. 
 	isAllday:function(eventObject){
-		var startDate = eventObject.startDateTime;
-		var endDate = eventObject.endDateTime;
-		var delta = endDate - startDate;
-		if((startDate == endDate) && (delta == (24*60 - 1)*60*1000)) return 1;
-		if((startDate != endDate) && (delta >= 24*60*60.1000) ) return 2;
-		return 0;
+	    var startDate = new Date(parseInt(eventObject.startDateTime) + parseInt(eventObject.startTimeOffset));
+	    var endDate = new Date(parseInt(eventObject.endDateTime) + parseInt(eventObject.endTimeOffset));
+	    var delta = eventObject.endDateTime - eventObject.startDateTime;
+	    if(startDate.getUTCDate() == endDate.getUTCDate() && startDate.getUTCMonth() == endDate.getUTCMonth()) {
+		return delta == (24*60 - 1)*60*1000 ? 1 : 2;
+	    } else {
+		return 3;
+	    }
 	},
+	// returns the string for event time
+	// all day: Thu, December 05, 00:00 - 23:59
+	// 1 day: Thu, December 05, 09:00AM - 10:00AM
+	// > 2 days: Thu, December 05, 09:00AM - Fri, December 06, 10:00PM
 	getRealTime: function(data){
-		var time = "";
-		var type = this.isAllday(data);
-		
-		var timeFormat = null;
-		if (_module.UICalendarPortlet.timeFormat.indexOf("HH") > -1) {
-			timeFormat = String(_module.UICalendarPortlet.timeFormat).toUpperCase();
-		} else {
-			var formater = cs.DateTimeFormater ;
-			timeFormat = formater.masks.shortTime ;
-		}
-		var currentDate = new Date();
-		var d = new Date(parseInt(data.startDateTime) + parseInt(data.startTimeOffset));
-		var d1 = new Date(parseInt(data.endDateTime) + parseInt(data.endTimeOffset));
-		var dateFormat = data.dateFormat.toLowerCase();
-		var df = cs.DateTimeFormater;
-		if(type == 1){
-			time = df.format(d, dateFormat, this.UTC_0);
-		}
-		else if(type == 2){
-			time = df.format(d, dateFormat, this.UTC_0) + " " + df.format(d, timeFormat, this.UTC_0) + " - ";
-			time += df.format(d1, dateFormat, this.UTC_0) + " " + df.format(d1, timeFormat, this.UTC_0);
-		}
-		else{
-			time = df.format(d, dateFormat, this.UTC_0) + " " + df.format(d, timeFormat, this.UTC_0);
-			time += " - " + df.format(d1, timeFormat, this.UTC_0);
-		}
+	    var time = "";
+	    var type = this.isAllday(data);
+	    var startDate = new Date(parseInt(data.startDateTime) + parseInt(data.startTimeOffset));
+	    var endDate = new Date(parseInt(data.endDateTime) + parseInt(data.endTimeOffset));
+
+	    var startDayName = gj(".ShortDayName").get(startDate.getUTCDay()).getAttribute("name");
+	    var startMonthName = gj(".LocalizedMonthName").get(startDate.getUTCMonth()).getAttribute("name");
+
+	    var endDayName = gj(".ShortDayName").get(endDate.getUTCDay()).getAttribute("name");
+	    var endMonthName = gj(".LocalizedMonthName").get(endDate.getUTCMonth()).getAttribute("name");
+
+	    var startDateInMonth = startDate.getUTCDate() < 10 ? '0' + startDate.getUTCDate() : startDate.getUTCDate();
+	    var endDateInMonth = endDate.getUTCDate() < 10 ? '0' + endDate.getUTCDate() : endDate.getUTCDate();
+
+	    if(type == 1 ) {
+		return startDayName + ', ' + startMonthName + ' ' + startDateInMonth;
+	    }
+	    if(type == 2) {
+		time = startDayName + ', ' + startMonthName + ' ' + startDateInMonth;
+		time += ', ' + this.getFormattedHour(startDate) + ' - ' + this.getFormattedHour(endDate);
 		return time;
+	    }
+	    else {
+		time = startDayName + ', ' + startMonthName + ' ' + startDateInMonth + ', ' + this.getFormattedHour(startDate);
+		time += ' - ' + endDayName + ', ' + endMonthName + ' ' + endDateInMonth + ', ' + this.getFormattedHour(endDate);
+		return time;
+	    }
+	},
+	// get time string with AM or PM localized if needed, for ex: 08:00 AM 
+	getFormattedHour: function(date) {
+	    var hours = date.getUTCHours();
+	    var mins = date.getUTCMinutes();
+	    mins = mins < 10 ? '0' + mins : mins;
+	    // if timeFormat = "HH:mm" -> no AM or PM
+	    if(_module.UICalendarPortlet.timeFormat.length == 5) {
+		hours = hours < 10 ? '0' + hours : hours;
+		return hours + ':' + mins;
+	    } else {
+		var amOrPm = hours >= 12 ? gj("#PMString")[0].getAttribute("name") : gj("#AMString")[0].getAttribute("name");
+		hours = hours - 12;
+		if(hours > 0) {
+			hours = hours < 10 ? '0' + hours : hours;
+			return hours + ':' + mins + ' ' + amOrPm;
+ 
+		} else {
+		    hours = hours + 12;
+		    hours = hours < 10 ? '0' + hours : hours;
+		    return hours + ':' + mins + ' ' + amOrPm;
+		}
+	    }
 	},
 	convertTimezone: function(datetime){
 		var time = parseInt(datetime.time);
@@ -2820,10 +2834,7 @@ eXo.calendar.EventTooltip = {
 		html += '<div class="Time">' + data.time + '</div>';
 		if(data.location)    html += '<div class="Location">' + data.location + '</div>';
 		if(data.description) html += '<div class="Description">' + data.description + '</div>';
-//		if(data.priority)    html += '<div class="'+ data.priority.toLowerCase() +'PriorityIcon"><span></span></div>';
-//		if(data.status != "null") html += '<div class="Status">' + data.status.replace("-"," ") + '</div>';
 		self._container.style.display = "block";
-		//var topArrow = self.currentEvent.offsetHeight/2 - 7; 
 		self._container.innerHTML = '<div class="BgTLEvent"><div class="BgTREvent"><div class="BgTCEvent"><span></span></div></div></div><div class="BgMLEvent"><div class="BgMREvent"><div class="BgMCEvent">' + html + '</div></div></div><div class="BgBLEvent"><div class="BgBREvent"><div class="BgBCEvent"><span></span></div></div></div><div class="Clear"><span></span></div>';	
 		self._container.style.zIndex = 1000;
 		self.positioning();
