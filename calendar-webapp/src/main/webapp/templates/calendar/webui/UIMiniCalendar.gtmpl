@@ -30,9 +30,20 @@
   DateFormat sdtf = new  SimpleDateFormat("MM/d", locale) ;
    sdtf.setCalendar(uicomponent.getInstanceTempCalendar()) ;
   Map data = uicomponent.getData() ;
+  DateFormatSymbols dfs_ = new DateFormatSymbols(locale) ;
+  
 %>
 <%uiform.begin();%>
   <div class="UIMiniCalendar">
+  <% 
+  String[] monthNames = dfs_.getMonths();
+  for(int i = 0; i < 12; i++) {
+    String monthName = monthNames[i];
+  %>
+    <div class="LocalizedMonthName" style="display:none" name="$monthName"></div>
+  <% } %>
+  <div id="AMString" style="display:none" name="<%=dfs_.getAmPmStrings()[0]%>"></div>
+  <div id="PMString" style="display:none" name="<%=dfs_.getAmPmStrings()[1]%>"></div>
   <div class="MiniCalendarContainer">
     <div class="YearSelector ClearFix">
       <div onclick="$linkDayNext" class="RightControlButton">
@@ -68,15 +79,16 @@
     <div class="MonthList">
       <div class="WeekList ClearFix">
         <%
-        dfs_ = new DateFormatSymbols(locale) ;
         Calendar calendar = uicomponent.getInstanceTempCalendar();
         String[] dayNames = dfs_.getShortWeekdays();
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         for(int i = 0; i < 7; i++) {
           cssStyle = "DayTitle" ;
           if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) cssStyle = "SundayTitle" ;
+          String shortDayName = dayNames[calendar.get(Calendar.DAY_OF_WEEK)];
         %>
-      <div class="$cssStyle"><%=dayNames[calendar.get(Calendar.DAY_OF_WEEK)].substring(0,1)%></div>
+        <div class="ShortDayName" style="dislay:none" name="$shortDayName"></div>
+      <div class="$cssStyle"><%=shortDayName.substring(0,1)%></div>
         <%
           calendar.add(Calendar.DAY_OF_WEEK, 1);
         }
