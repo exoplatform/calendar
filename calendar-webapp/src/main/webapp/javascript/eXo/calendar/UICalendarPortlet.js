@@ -180,10 +180,19 @@ UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type){
  * @param {obj, type} has action object, type of form : event 1 | task 2 | calendarId selected calendar
  */
 UICalendarPortlet.prototype.addQuickShowHiddenWithId = function(obj, type, id){
-	var startTime = new Date().getTime() ;
-		var calType = (id.match(/calType=\s*\d\s*\&/ig)).toString().match(/\d/ig);
-    var id = calType + ":" + (id.match(/calendar[a-zA-Z0-9]+\&/ig)).toString().replace("&","");
-    this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 15*60*1000, id) ;
+    var startTime = new Date().getTime() ;
+    /**
+     * @since relooking
+     * for relooking, we change default calendar Id(calendar created when new user is created) to username 
+     * so we need to change the way to get calendar Id
+     * id is in form: 'objectId=X&calType=Y&...
+     * get calType and calId by splitting
+     */
+    var calType = id.split('&')[1].split('=')[1];
+    var calId = id.split('&')[0].split('=')[1];
+    var selectedCalId = calType + ":" + calId;
+    this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 15*60*1000, selectedCalId) ;
+
 } ;
 
 
