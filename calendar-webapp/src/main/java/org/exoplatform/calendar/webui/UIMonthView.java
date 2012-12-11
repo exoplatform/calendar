@@ -195,6 +195,27 @@ public class UIMonthView extends UICalendarView {
     temCal.set(java.util.Calendar.DATE, getDaysInMonth()) ;
     return getEndDay(temCal) ;
   }
+  
+  public java.util.Calendar getBeginDateOfWeek() throws Exception{
+    java.util.Calendar temCal = getInstanceTempCalendar() ;
+    temCal.setTime(calendar_.getTime()) ;
+    temCal.setFirstDayOfWeek(Calendar.MONDAY) ;    
+    if(temCal.getFirstDayOfWeek() > temCal.get(Calendar.DAY_OF_WEEK)) {
+      temCal.add(java.util.Calendar.WEEK_OF_YEAR, -1) ;
+    }
+    int amout = temCal.getFirstDayOfWeek() - temCal.get(Calendar.DAY_OF_WEEK);
+    temCal.add(Calendar.DATE, amout) ;
+    return getBeginDay(temCal) ;
+  }
+
+  public java.util.Calendar getEndDateOfWeek() throws Exception{
+    java.util.Calendar temCal = getInstanceTempCalendar() ;
+    temCal.setFirstDayOfWeek(Calendar.MONDAY) ; 
+    temCal.setTime(getBeginDateOfWeek().getTime()) ;
+    int amout = 6 ;
+    temCal.add(Calendar.DATE, amout) ;
+    return getEndDay(temCal) ;
+  }
 
   protected List<CalendarEvent> getSelectedEvents() {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>() ;

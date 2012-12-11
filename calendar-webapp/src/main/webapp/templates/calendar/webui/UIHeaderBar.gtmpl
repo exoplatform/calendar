@@ -139,9 +139,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
   Calendar calendar = uicomponent.getCurrentCalendar() ;
 
 	 %> 
-	 
-	 <div class="SeparatorLine"><span></span></div>
-      <div id="UIHeaderBar_2"  actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
+      <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>"  actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
         <i class="uiIconDelete"></i>
       </div>
 	  
@@ -182,8 +180,7 @@ requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirm
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
 	 %>
-	 <div class="SeparatorLine"><span></span></div>
-      <div id="UIHeaderBar_3" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
+      <div id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>"  actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="ControlButton">
         <i class="uiIconDelete"></i>
       </div>
 	  

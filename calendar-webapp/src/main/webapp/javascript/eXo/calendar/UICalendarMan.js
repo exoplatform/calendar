@@ -1031,7 +1031,9 @@ GUIMan.prototype.setOverMonth = function(eventObj,beginMonth,endMonth){
 		var realEnd = Date.parse(eventNode.getAttribute("endTimeFull"));
 		if(realStart < parseInt(beginMonth)){
 			var EventOnDayContent = gj(eventObj.rootNode).find('div.EventOnDayContent')[0];
-			gj(EventOnDayContent).addClass("LeftContinueEvent");
+			gj(EventOnDayContent).css('margin-right','10px');
+			var leftNode = gj(eventObj.rootNode).find('div.NextLeft')[0];
+			gj(leftNode).addClass("NextLeftEvent");
 			this.removeContinueClass(eventObj.cloneNodes);
 		}
 };
@@ -1041,8 +1043,8 @@ GUIMan.prototype.removeContinueClass = function(eventClones){
 	var i = eventClones.length;
 	var EventOnDayContent = null ;
 	while(i--){
-		EventOnDayContent = gj(eventClones[i]).find('div.EventOnDayContent')[0]; 
-		gj(EventOnDayContent).toggleClass("LeftContinueEvent");
+		EventOnDayContent = gj(eventClones[i]).find('div.NextLeft')[0]; 
+		gj(EventOnDayContent).toggleClass("NextLeftEvent");
 	}
 }	;
 
@@ -1067,8 +1069,10 @@ GUIMan.prototype.addContinueClass = function(){
 			}else{
 				eventNode = events[i].rootNode;
 			}
-			var EventSummary = gj(eventNode).find('div.EventSummary')[0];
-			gj(EventSummary.parentNode).addClass("RightContinueEvent");				
+			var EventOnDayContent = gj(eventNode).find('div.EventOnDayContent')[0];
+			gj(EventOnDayContent).css('margin-left','10px');
+			var rightNode = gj(eventNode).find('div.NextRight')[0];
+			gj(rightNode).addClass("NextRightEvent");			
 		}
 	}
 }	;
