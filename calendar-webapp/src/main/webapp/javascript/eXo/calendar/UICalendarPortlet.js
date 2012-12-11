@@ -2773,10 +2773,10 @@ eXo.calendar.EventTooltip = {
 	    var startDate = new Date(parseInt(data.startDateTime) + parseInt(data.startTimeOffset));
 	    var endDate = new Date(parseInt(data.endDateTime) + parseInt(data.endTimeOffset));
 
-	    var startDayName = gj(".ShortDayName").get(startDate.getUTCDay()).getAttribute("name");
+	    var startDayName = gj(".ShortDayName").get(startDate.getUTCDay() - 1).getAttribute("name");
 	    var startMonthName = gj(".LocalizedMonthName").get(startDate.getUTCMonth()).getAttribute("name");
 
-	    var endDayName = gj(".ShortDayName").get(endDate.getUTCDay()).getAttribute("name");
+	    var endDayName = gj(".ShortDayName").get(endDate.getUTCDay() - 1).getAttribute("name");
 	    var endMonthName = gj(".LocalizedMonthName").get(endDate.getUTCMonth()).getAttribute("name");
 
 	    var startDateInMonth = startDate.getUTCDate() < 10 ? '0' + startDate.getUTCDate() : startDate.getUTCDate();

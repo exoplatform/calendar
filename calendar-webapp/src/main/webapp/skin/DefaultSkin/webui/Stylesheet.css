@@ -19,6 +19,7 @@
 @import url("UIPopup/UIRepeatEventForm/Stylesheet.css");
 @import url("UIFormColorPicker/Stylesheet.css");
 
+@import url('/calendar/skin/css/calendar.css');
 /*=========================== MailBanner ==================================*/
 
 .UIWindow .UICalendarPortlet {
