@@ -18,7 +18,7 @@
   WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
    Locale locale = context.getParentAppRequestContext().getLocale() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
-  DateFormat df = new SimpleDateFormat("MMM dd, yyyy hh:mm aaa", locale) ;
+  DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
   boolean searchDisplay = uicomponent.isDisplaySearchResult();
   if(searchDisplay) { %>
     <div class="Result ListBar">
