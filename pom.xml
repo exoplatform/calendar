@@ -4,7 +4,7 @@
   <parent>
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
-    <version>9-SNAPSHOT</version>
+    <version>9-alpha-3</version>
     <relativePath></relativePath>
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
@@ -41,15 +41,12 @@
     <!-- Project Dependencies                     -->
     <!-- **************************************** -->
     <org.exoplatform.kernel.version>2.4.0-GA</org.exoplatform.kernel.version>
-<org.exoplatform.core.version>2.5.0-GA</org.exoplatform.core.version>
-<org.exoplatform.ws.version>2.3.0-GA</org.exoplatform.ws.version>
-<org.exoplatform.jcr.version>1.15.0-GA</org.exoplatform.jcr.version>
+    <org.exoplatform.core.version>2.5.0-GA</org.exoplatform.core.version>
+    <org.exoplatform.ws.version>2.3.0-GA</org.exoplatform.ws.version>
+    <org.exoplatform.jcr.version>1.15.0-GA</org.exoplatform.jcr.version>
     <org.exoplatform.portal.version>3.5.0.Final</org.exoplatform.portal.version>
     <org.exoplatform.commons.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.commons.version>
     <org.gatein.wci.version>2.3.0.Final</org.gatein.wci.version>
-    <org.quartz-scheduler.version>2.1.6</org.quartz-scheduler.version>
-    <org.slf4j.slf4j-simple.version>1.6.1</org.slf4j.slf4j-simple.version>
-    <!-- eXo extended service -->
     <org.exoplatform.social.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.social.version>
   </properties>
   <dependencyManagement>
@@ -58,7 +55,7 @@
       <dependency>
         <groupId>org.exoplatform</groupId>
         <artifactId>maven-depmgt-pom</artifactId>
-        <version>1-SNAPSHOT</version>
+        <version>1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -142,33 +139,117 @@
         <groupId>org.exoplatform.core</groupId>
         <artifactId>exo.core.component.organization.api</artifactId>
         <version>${org.exoplatform.core.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.core</groupId>
         <artifactId>exo.core.component.organization.jdbc</artifactId>
         <version>${org.exoplatform.core.version}</version>
+        <exclusions>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.core</groupId>
         <artifactId>exo.core.component.security.core</artifactId>
         <version>${org.exoplatform.core.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- To be replaced by an import of JCR parent POM -->
       <dependency>
         <groupId>org.exoplatform.jcr</groupId>
         <artifactId>exo.jcr.component.core</artifactId>
         <version>${org.exoplatform.jcr.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.jcr</groupId>
         <artifactId>exo.jcr.component.ext</artifactId>
         <version>${org.exoplatform.jcr.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- To be replaced by an import of kernel Parent POM -->
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.commons</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
@@ -179,11 +260,77 @@
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.component.common</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
         <artifactId>exo.kernel.container</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- To be replaced by an import of calendar parent POM -->
+      <!-- Didn't we have to not use cross products deps ?? -->
+      <dependency>
+        <groupId>org.exoplatform.social</groupId>
+        <artifactId>social-component-core</artifactId>
+        <version>${org.exoplatform.social.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- To be replaced by an import of WS parent POM -->
+      <dependency>
+        <groupId>org.exoplatform.ws</groupId>
+        <artifactId>exo.ws.frameworks.json</artifactId>
+        <version>${org.exoplatform.ws.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.ws</groupId>
+        <artifactId>exo.ws.rest.core</artifactId>
+        <version>${org.exoplatform.ws.version}</version>
       </dependency>
       <!-- To be replaced by an import of GateIn Portal parent POM -->
       <dependency>
@@ -195,6 +342,12 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.identity</artifactId>
         <version>${org.exoplatform.portal.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -206,6 +359,29 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.portal</artifactId>
         <version>${org.exoplatform.portal.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jsp-api</artifactId>
+            <groupId>javax.servlet.jsp</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -221,6 +397,13 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.test.jcr</artifactId>
         <version>${org.exoplatform.portal.version}</version>
+        <exclusions>
+          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
+          <exclusion>
+            <artifactId>xstream</artifactId>
+            <groupId>xstream</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -241,6 +424,12 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.core</artifactId>
         <version>${org.exoplatform.portal.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -256,56 +445,39 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.portal</artifactId>
         <version>${org.exoplatform.portal.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>commons-logging</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>el-api</artifactId>
+            <groupId>org.apache.tomcat</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jasper-el</artifactId>
+            <groupId>org.apache.tomcat</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jsp-api</artifactId>
+            <groupId>javax.servlet.jsp</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.portlet</artifactId>
         <version>${org.exoplatform.portal.version}</version>
       </dependency>
-      <!-- To be replaced by an import of calendar parent POM -->
-      <!-- Didn't we have to not use cross products deps ?? -->
-      <dependency>
-        <groupId>org.exoplatform.social</groupId>
-        <artifactId>social-component-core</artifactId>
-        <version>${org.exoplatform.social.version}</version>
-      </dependency>
-      <!-- To be replaced by an import of WS parent POM -->
-      <dependency>
-        <groupId>org.exoplatform.ws</groupId>
-        <artifactId>exo.ws.frameworks.json</artifactId>
-        <version>${org.exoplatform.ws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.ws</groupId>
-        <artifactId>exo.ws.rest.core</artifactId>
-        <version>${org.exoplatform.ws.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.gatein.wci</groupId>
         <artifactId>wci-wci</artifactId>
         <version>${org.gatein.wci.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.quartz-scheduler</groupId>
-        <artifactId>quartz</artifactId>
-        <version>${org.quartz-scheduler.version}</version>
-      </dependency>
-      <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${org.slf4j.slf4j-simple.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-         <version>${org.slf4j.slf4j-simple.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${org.slf4j.slf4j-simple.version}</version>
-    </dependency>
-    
     </dependencies>
   </dependencyManagement>
   <build>

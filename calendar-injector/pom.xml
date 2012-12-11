@@ -13,10 +13,22 @@
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-component-common</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.core</groupId>
