@@ -78,8 +78,6 @@ public class CalendarSetting {
 
   private String           timeFormat;
 
-  private String           location;
-
   private String           timeZone;
 
   private String           baseURL;
@@ -108,7 +106,6 @@ public class CalendarSetting {
     timeFormat = "hh:mm a";
     isShowWorkingTime = true;
     timeZone = TimeZone.getDefault().getID();
-    location = Locale.getDefault().getISO3Country();
     filterPrivateCalendars = new String[] {};
     filterPublicCalendars = new String[] {};
     filterSharedCalendars = new String[] {};
@@ -154,14 +151,6 @@ public class CalendarSetting {
 
   public String getTimeFormat() {
     return timeFormat;
-  }
-
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
-  public String getLocation() {
-    return location;
   }
 
   public void setBaseURL(String url) {

@@ -59,7 +59,6 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
     template = "system:/groovy/webui/form/UIFormTabPane.gtmpl",
     events = {
       @EventConfig(listeners = UICalendarSettingForm.SaveActionListener.class),
-      @EventConfig(listeners = UICalendarSettingForm.ChangeLocaleActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.ShowAllTimeZoneActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.CancelActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.AddActionListener.class, phase = Phase.DECODE),
@@ -105,9 +104,6 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       settingTab.setTimeFormat(calendarSetting.getTimeFormat()) ;
       settingTab.getUIFormSelectBox(UICalendarSettingTab.WORKINGTIME_BEGIN).setOptions(CalendarUtils.getTimesSelectBoxOptions(calendarSetting.getTimeFormat(), 30)) ;
       settingTab.getUIFormSelectBox(UICalendarSettingTab.WORKINGTIME_END).setOptions(CalendarUtils.getTimesSelectBoxOptions(calendarSetting.getTimeFormat(), 30)) ;
-      if(calendarSetting.getLocation() == null) {
-        calendarSetting.setLocation(Util.getPortalRequestContext().getLocale().getISO3Country()) ;
-      }
       settingTab.setTimeZone(calendarSetting.getTimeZone()) ;
       settingTab.setShowWorkingTimes(calendarSetting.isShowWorkingTime()) ;
       if(calendarSetting.isShowWorkingTime()) {
@@ -307,16 +303,7 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet) ;
     }
   }
-  static  public class ChangeLocaleActionListener extends EventListener<UICalendarSettingForm> {
-    @Override
-    public void execute(Event<UICalendarSettingForm> event) throws Exception {
-      UICalendarSettingForm uiForm = event.getSource() ;
-      String locale = uiForm.getUIFormSelectBox(UICalendarSettingTab.LOCATION).getValue() ;
-      UICalendarSettingTab calendarSettingTab = uiForm.getChildById(UICalendarSettingForm.SETTING_CALENDAR_TAB) ;
-      uiForm.getUIFormSelectBox(UICalendarSettingTab.TIMEZONE).setOptions(calendarSettingTab.getTimeZones(locale)) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UIPopupAction.class)) ;
-    }
-  }
+
   static  public class ShowAllTimeZoneActionListener extends EventListener<UICalendarSettingForm> {
     @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {
