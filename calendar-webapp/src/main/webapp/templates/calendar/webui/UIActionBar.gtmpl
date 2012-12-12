@@ -19,6 +19,9 @@
         <div class="RightBar">
           <div class="CenterBar">
 		    <%uicomponent.renderChild(UISearchForm.class)%>
+		    <div onclick="<%=uicomponent.event("Setting")%>" class="ControlButton ActionBarButton SettingButton">
+              	<i class="uiIconSetting"></i>
+              </div>
 		        <div class="LeftActionBar">
 		        <div class="CalendarActionBar ClearFix">
             <div class="Title ControlButton ActionBarButton">
@@ -42,6 +45,7 @@
                 </a>
             </div>
             
+          <div class="SeparatorLine"><span></span></div>  
       <%for(viewType in uicomponent.getViewTypes()){
             
                   icon = viewType + "Icon" ;
@@ -53,7 +57,7 @@
                style = "ControlButton ControlButtonHover ActionBarButton" ;
               }
                   
-              if(!viewType.equals("UIScheduleView")) {
+             
                 %>
                     <div class="$style">
                       <a href="$actionLink" class="IconHolder $icon">
@@ -61,25 +65,8 @@
                       </a>
                     </div>
                   
-          <%   } 
-              
-            }
-          %>
+             <%}%>
 
-            <div onclick="<%=uicomponent.event("Setting")%>" class="ControlButton ActionBarButton">
-              <div class="IconHolder SettingCalendarIcon">
-                <%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>
-              </div>
-            </div>
-
-            <!--
-            <div class="SeparatorLine"><span></span></div>
-            <span class="ControlButton  ActionBarButton" style="color:gray;margin-top: 4px;">
-              <div class="IconHolder PrintCalendarIcon">
-                <%=_ctx.appRes(uicomponent.id + ".label.Print")%>
-              </div>
-            </span>
-            -->
 
               <div class="ScrollButtons" style="display: none;">
 					<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">

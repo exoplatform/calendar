@@ -1117,15 +1117,23 @@
   overflow: hidden;
 }
 
-.UIMonthView .EventMonthContent .RightContinueEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat right -287px;  
-  padding-right: 9px;
-  height: 17px;
+.UIMonthView .EventMonthContent .NextRight {
+  float:right;
 }
 
-.UIMonthView .EventMonthContent .LeftContinueEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat left -303px;  
-  padding-left: 9px;
+.UIMonthView .EventMonthContent .NextLeft {
+  float:left;
+}
+
+
+.UIMonthView .EventMonthContent .NextLeftEvent { 
+  height: 20px;
+  width: 10px;
+}
+
+.UIMonthView .EventMonthContent .NextRightEvent {
+  height: 20px;
+  width: 10px;
 }
 
 .UIMonthView .EventMonthContent .EventLabel {

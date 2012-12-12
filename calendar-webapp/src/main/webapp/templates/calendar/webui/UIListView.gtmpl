@@ -124,12 +124,9 @@
             for(event in uicomponent.getEvents()){
               rowStyle = "" ;
               if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#F5F5F5;";}
-              attachIcon = "" ;
-              if(!event.getAttachment().isEmpty()) {attachIcon = "AttachmentIcon" ;}
               String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
 			  def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
           %>
-              <!--tr actionLink="$actionLink" onclick="eXo.calendar.UICalendarPortlet.listViewClickCallback(this);" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>-->
 			  <tr actionLink="$actionLink" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
               <%if(!searchDisplay) {%>
                 <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
@@ -137,7 +134,9 @@
 
               <!-- do not display attachment icon and priority icon in search results -->
               <% if(!searchDisplay) { %>
-                <td style="padding: 0px 0px 0px 7px;"><div class="$attachIcon" >&nbsp;</div></td>
+                <td style="padding: 0px 0px 0px 7px;">
+                	<div><%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%></div>
+                </td>
                 <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>      
               <% } %>
                 <td class="text">

@@ -1,4 +1,10 @@
-<div class="UICalendarViewContainer" id="$uicomponent.id">
+<%
+ def rcontext = _ctx.getRequestContext();
+ def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ requireJS.addScripts("gj('div#ShowHideAll').click(function() {cal.UICalendarPortlet.switchLayout(1);});");
+%>
+<div class="UICalendarViewContainer" id="$uicomponent.id" style="position: relative;">
+<div id="ShowHideAll" class="resizeButton "  style="position: absolute; top: 0px; left: -8px; width: 3px; height:500px; "><i class="uiIconMiniArrowLeft"></i></div>
   <%
     List children = uicomponent.getChildren() ;
     for(child in children) {

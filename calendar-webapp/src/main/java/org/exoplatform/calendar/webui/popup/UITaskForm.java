@@ -91,7 +91,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
             @EventConfig(listeners = UITaskForm.SelectUserActionListener.class, phase = Phase.DECODE),
             @EventConfig(listeners = UITaskForm.CancelActionListener.class, phase = Phase.DECODE),
             @EventConfig(listeners = UITaskForm.RemoveEmailActionListener.class, phase = Phase.DECODE),
-            @EventConfig(listeners = UITaskForm.SelectTabActionListener.class, phase = Phase.DECODE)
+            @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase = Phase.DECODE)
           }
   ),
   @ComponentConfig(
@@ -1080,13 +1080,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       UITaskForm uiForm = event.getSource() ;
       uiForm.setEmailAddress(uiForm.getEmailAddress());
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getChild(UIEventReminderTab.class)) ;
-    }
-  }
-  
-  static public class SelectTabActionListener extends EventListener<UITaskForm> {
-    @Override
-    public void execute(Event<UITaskForm> event) throws Exception {
-      event.getRequestContext().addUIComponentToUpdateByAjax(event.getSource()) ;      
     }
   }
 }

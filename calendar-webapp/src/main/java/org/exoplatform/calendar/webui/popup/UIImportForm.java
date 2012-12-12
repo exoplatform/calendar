@@ -17,7 +17,6 @@
 package org.exoplatform.calendar.webui.popup;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UICalendars;
@@ -35,7 +33,6 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
@@ -71,7 +68,7 @@ import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
                    @EventConfig(listeners = UIImportForm.SaveActionListener.class),  
                    @EventConfig(listeners = UIImportForm.ImportActionListener.class, phase = Phase.DECODE),
                    @EventConfig(listeners = UIImportForm.AddActionListener.class, phase = Phase.DECODE),
-                   @EventConfig(listeners = UIImportForm.CancelActionListener.class, phase = Phase.DECODE),
+                   @EventConfig(listeners = UIImportForm.CancelActionListener.class, phase = Phase.DECODE)
                  }
     )
 public class UIImportForm extends UIForm implements UIPopupComponent, UISelector{

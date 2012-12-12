@@ -133,18 +133,4 @@ public class UISearchForm extends UIForm {
       }
     }
   }
-
-  static  public class AdvancedSearchActionListener extends EventListener<UISearchForm> {
-    @Override
-    public void execute(Event<UISearchForm> event) throws Exception {
-      UISearchForm uiForm = event.getSource() ;
-      UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
-      UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
-      UIAdvancedSearchForm uiAdvancedSearchForm = popupAction.activate(UIAdvancedSearchForm.class, 600) ;
-      uiAdvancedSearchForm.setSearchValue(uiForm.getSearchValue()) ;
-      uiForm.reset() ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
-    }
-  }
 }
