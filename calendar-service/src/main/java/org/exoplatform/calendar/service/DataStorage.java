@@ -181,7 +181,7 @@ public interface DataStorage {
   public Calendar getCalendar(String[] defaultFilterCalendars, String username, Node calNode, boolean isShowAll) throws Exception;
 
   /**
-   * 
+   * @deprecated
    * @param username
    * @param isShowAll
    * @return

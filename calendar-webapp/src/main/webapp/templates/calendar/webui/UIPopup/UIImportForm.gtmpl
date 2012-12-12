@@ -29,14 +29,6 @@
                           <img class="BlueCircleMinus" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
                           </a>
                        <% } %> 
-                       <% if(uicomponent.PERMISSION.equals(field.getName())) { %>
-                          <a href="<%= uicomponent.event("SelectPermission",UISelectComponent.TYPE_USER) %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
-                          <img class="SelectUserIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
-                          </a>
-                          <a href="<%= uicomponent.event("SelectPermission",UISelectComponent.TYPE_MEMBERSHIP) %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
-                          <img class="SelectMemberIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
-                          </a>
-                       <% } %> 
                       </td>
                 <%} else {%>
                   <td class="FieldComponent" colspan="2"><% uiform.renderField(field) %></td>

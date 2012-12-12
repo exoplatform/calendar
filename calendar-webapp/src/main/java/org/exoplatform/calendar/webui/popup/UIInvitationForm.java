@@ -25,6 +25,7 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
@@ -85,7 +86,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
   protected CalendarEvent event_ ;
 
   protected UIForm getParentFrom() {
-    return (UIForm)this ;
+    return this ;
   }
   public UIInvitationForm() throws Exception {
     this.setId("UIInvitationForm");
@@ -189,6 +190,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
   }
   
   static public class SaveActionListener extends EventListener<UIInvitationForm>{
+    @Override
     public void execute(Event<UIInvitationForm> event) throws Exception{
       UIInvitationForm uiInvitationForm = event.getSource();
       UIPopupContainer uiParentPopup = (UIPopupContainer)uiInvitationForm.getParent() ;
@@ -225,12 +227,13 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
              .getUIApplication()
              .addMessage(new ApplicationMessage("UIEventForm.msg.event-participant-invalid",
                                                 new String[] { uiInvitationForm.escapeGroupReferences(builder.toString()) },
-                                                ApplicationMessage.WARNING));
+                                                AbstractApplicationMessage.WARNING));
       }      
     }
   }
 
   static public class SelectGroupActionListener extends EventListener<UIGroupSelector>{
+    @Override
     public void execute(Event<UIGroupSelector> event) throws Exception{
       UIGroupSelector uiSelectGroupForm = event.getSource();
       UIInvitationForm uiInvitationForm = uiSelectGroupForm.<UIComponent>getParent().getParent();
@@ -242,6 +245,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     }
   }
   static public class CancelActionListener extends EventListener<UIInvitationForm>{
+    @Override
     public void execute(Event<UIInvitationForm> event) throws Exception{
       UIInvitationForm uiInvitationForm = event.getSource();
       UIPopupAction uiPopupAction = uiInvitationForm.getAncestorOfType(UIPopupAction.class) ;
@@ -250,6 +254,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     }
   }
   static public class AddUserParticipantActionListener extends EventListener<UIInvitationForm>{
+    @Override
     public void execute(Event<UIInvitationForm> event) throws Exception{
       UIInvitationForm uiInvitationForm = event.getSource();
       UIPopupContainer uiPopupContainer = uiInvitationForm.getParent();  
@@ -269,6 +274,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
   }
 
   static public class AddGroupParticipantActionListener extends EventListener<UIInvitationForm>{
+    @Override
     public void execute(Event<UIInvitationForm> event) throws Exception{
       UIInvitationForm uiInvitationForm = event.getSource();  
       UIPopupWindow uiPopupWindow = uiInvitationForm.getChild(UIPopupWindow.class) ;
@@ -284,6 +290,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
 
 
   static  public class AddActionListener extends EventListener<UIUserSelector> {
+    @Override
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource();
       UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
@@ -301,6 +308,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
   }
 
   static  public class CloseActionListener extends EventListener<UIUserSelector> {
+    @Override
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource() ;
       UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;
@@ -311,9 +319,11 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     }
   }
 
+  @Override
   public void activate() throws Exception {
 
   }
+  @Override
   public void deActivate() throws Exception {
 
   }

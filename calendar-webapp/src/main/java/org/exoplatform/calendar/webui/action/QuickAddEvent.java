@@ -38,6 +38,7 @@ import org.exoplatform.webui.event.Event;
 public class QuickAddEvent extends UIComponent {
 
   static public class AddActionListener extends ActionListener<QuickAddEvent> {
+    @Override
     protected void processEvent(Event<QuickAddEvent> event) throws Exception {
         
     }

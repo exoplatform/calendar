@@ -29,7 +29,7 @@ import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormSelectBox;
@@ -96,11 +96,11 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UIFormComboBox(FIELD_TO_TIME, FIELD_TO_TIME,  options));
     addUIFormInput(new UIFormDateTimePicker(FIELD_FROM, FIELD_FROM, new Date(), false));
     addUIFormInput(new UIFormDateTimePicker(FIELD_TO, FIELD_TO, new Date(), false));
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(FIELD_CHECKALL, FIELD_CHECKALL, null));
+    addUIFormInput(new UICheckBoxInput(FIELD_CHECKALL, FIELD_CHECKALL, null));
     addUIFormInput(new UIFormStringInput(FIELD_PLACE, FIELD_PLACE, null));
     //addUIFormInput(new UIFormSelectBox(FIELD_REPEAT, FIELD_REPEAT, getRepeater())) ;
     
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(FIELD_ISREPEAT, FIELD_ISREPEAT, false));
+    addUIFormInput(new UICheckBoxInput(FIELD_ISREPEAT, FIELD_ISREPEAT, false));
     
     ActionData editRepeatAction = new ActionData() ;
     editRepeatAction.setActionType(ActionData.TYPE_ICON) ;
@@ -180,6 +180,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     }
     return options ;
   }*/
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }

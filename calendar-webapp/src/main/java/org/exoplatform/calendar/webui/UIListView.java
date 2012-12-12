@@ -42,8 +42,8 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 
 /**
  * Created by The eXo Platform SARL
@@ -52,29 +52,29 @@ import org.exoplatform.webui.form.UIFormSelectBox;
  * Aus 01, 2007 2:48:18 PM 
  */
 @ComponentConfig(   
-    lifecycle = UIFormLifecycle.class,
-    events = {
-      @EventConfig(listeners = UICalendarView.AddEventActionListener.class),      
-      @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-      @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
-      @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
-      @EventConfig(listeners = UICalendarView.ViewActionListener.class),
-      @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-      @EventConfig(listeners = UIListView.CloseSearchActionListener.class),
-      @EventConfig(listeners = UIListView.ViewDetailActionListener.class),
-      @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
-      @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class), 
-      @EventConfig(listeners = UIListView.ShowPageActionListener.class ),
-      @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
-      @EventConfig(listeners = UIListView.OnchangeActionListener.class ),   
-      @EventConfig(listeners = UIListView.SortActionListener.class ),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
-      @EventConfig(listeners = UIListView.AdvancedSearchActionListener.class)
-    }
-)
+                 lifecycle = UIFormLifecycle.class,
+                 events = {
+                   @EventConfig(listeners = UICalendarView.AddEventActionListener.class),      
+                   @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
+                   @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ViewActionListener.class),
+                   @EventConfig(listeners = UICalendarView.EditActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UIListView.CloseSearchActionListener.class),
+                   @EventConfig(listeners = UIListView.ViewDetailActionListener.class),
+                   @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class), 
+                   @EventConfig(listeners = UIListView.ShowPageActionListener.class ),
+                   @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
+                   @EventConfig(listeners = UIListView.OnchangeActionListener.class ),   
+                   @EventConfig(listeners = UIListView.SortActionListener.class ),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+                   @EventConfig(listeners = UIListView.AdvancedSearchActionListener.class)
+                 }
+    )
 public class UIListView extends UICalendarView {
   private static final Log log = ExoLogger.getLogger("org.exoplatform.calendar.webui.UIListView");
   private LinkedHashMap<String, CalendarEvent> eventMap_ = new LinkedHashMap<String, CalendarEvent>() ;
@@ -87,7 +87,7 @@ public class UIListView extends UICalendarView {
   private String keyWords_ = null ;
   private int currentPage_ = 0 ;
   private EventQuery query = null;
-  
+
   public static final String EVENT_SUMMARY = Utils.EXO_SUMMARY;
   public static final String EVENT_PRIORITY = Utils.EXO_PRIORITY;
   public static final String EVENT_DESCRIPTION = Utils.EXO_DESCRIPTION;
@@ -95,15 +95,16 @@ public class UIListView extends UICalendarView {
   public static final String EVENT_END = Utils.EXO_TO_DATE_TIME;
   private String sortedField_ = EVENT_SUMMARY;
   private boolean isAscending_ = true;
-  
+
   private boolean calClicked = true;
-  
+
   public UIListView() throws Exception{
     if(getEvents().length > 0 ) {
       selectedEvent_ = getEvents()[0].getId() ;
     }
   } 
 
+  @Override
   public String getTemplate() {
     if( getViewType().equals(TYPE_TASK)) {
       return "app:/templates/calendar/webui/UIListTask.gtmpl" ;
@@ -113,16 +114,17 @@ public class UIListView extends UICalendarView {
       return "app:/templates/calendar/webui/UIListView.gtmpl" ;
     }
   }
-  
+
   public void setSortedField(String field) { sortedField_ = field; }
   public String getSortedField() { return sortedField_; }
-  
+
   public void setIsAscending(boolean b) { isAscending_ = b; }
   public boolean isAscending() { return isAscending_; }
-  
+
   public void setEventQuery(EventQuery eventQuery) { query = eventQuery; }
   public EventQuery getEventQuery() { return query; }
-  
+
+  @Override
   public void refresh() throws Exception{
     UIListContainer uiListContainer = getParent() ;
     this.setCalClicked(true);
@@ -132,7 +134,7 @@ public class UIListView extends UICalendarView {
         && !categoryId_.equals("calId") && !categoryId_.equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL)) {
       query.setCategoryId(new String[] { categoryId_ });
     }
-    
+
     java.util.Calendar fromcalendar = getBeginDay(new GregorianCalendar(getCurrentYear(),  getCurrentMonth(),  getCurrentDay())) ;
     query.setFromDate(fromcalendar) ;
     java.util.Calendar tocalendar = getEndDay(new GregorianCalendar(getCurrentYear(), getCurrentMonth(), getCurrentDay())) ;
@@ -142,7 +144,7 @@ public class UIListView extends UICalendarView {
       query.setEventType(getViewType()) ;
     }
     query.setExcludeRepeatEvent(true);
-   
+
     List<String> calendarIds = findCalendarIds();
     if (calendarIds.size() > 0)
       query.setCalendarId(calendarIds.toArray(new String[] {}));
@@ -151,7 +153,7 @@ public class UIListView extends UICalendarView {
     }
     query.setOrderBy(new String[] {Utils.EXO_SUMMARY});
     List<CalendarEvent> allEvents = getAllEvents(query);
-    
+
     if(uiListContainer.isDisplaySearchResult())  { 
       update(pageList_) ;
     } else {
@@ -192,34 +194,30 @@ public class UIListView extends UICalendarView {
         setLastUpdatedEventId(null) ;
       }
     }
-    
+
   }
 
   private List<String> findCalendarIds() throws Exception {
     List<String> calendarIds = new ArrayList<String>();
     UICalendars uiCalendars = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
     List<String> checkedCals = uiCalendars.getCheckedCalendars();
-    List<GroupCalendarData> privateCalendar = uiCalendars.getPrivateCalendars();
-    List<GroupCalendarData> publicCalendar = uiCalendars.getPublicCalendars();
+    List<org.exoplatform.calendar.service.Calendar> privateCalendar = uiCalendars.getAllPrivateCalendars();
+    List<org.exoplatform.calendar.service.Calendar> publicCalendar = uiCalendars.getAllPublicCalendars();
     GroupCalendarData shareClas = uiCalendars.getSharedCalendars();
-    
-    for (GroupCalendarData groupCalendarData : privateCalendar) {
-      for (org.exoplatform.calendar.service.Calendar cal : groupCalendarData.getCalendars()) {
-        if (checkedCals.contains(cal.getId())) {
-          calendarIds.add(cal.getId());
-        }
-      }
-    }
-    
-    for (GroupCalendarData calendarData : publicCalendar) {
-      for (org.exoplatform.calendar.service.Calendar calendar : calendarData.getCalendars()) {
-        if (checkedCals.contains(calendar.getId())) {
-          calendarIds.add(calendar.getId());
-        }
+
+    for (org.exoplatform.calendar.service.Calendar cal :privateCalendar) {
+      if (checkedCals.contains(cal.getId())) {
+        calendarIds.add(cal.getId());
       }
     }
 
-    
+    for (org.exoplatform.calendar.service.Calendar calendar : publicCalendar) {
+      if (checkedCals.contains(calendar.getId())) {
+        calendarIds.add(calendar.getId());
+      }
+    }
+
+
     if (shareClas != null) {
       for (org.exoplatform.calendar.service.Calendar cal : shareClas.getCalendars()) {
         if (checkedCals.contains(cal.getId())) {
@@ -229,7 +227,7 @@ public class UIListView extends UICalendarView {
     }
     return calendarIds;
   }
-  
+
   public List<CalendarEvent> getAllEvents (EventQuery eventQuery) throws Exception {
     CalendarService calendarService = CalendarUtils.getCalendarService();
     String username = CalendarUtils.getCurrentUser() ;
@@ -260,8 +258,7 @@ public class UIListView extends UICalendarView {
     pageList_ = pageList ;
     updateCurrentPage(pageList_.getCurrentPage()) ;
   }
-  
-  @SuppressWarnings("unchecked")
+
   protected void updateCurrentPage(long page) throws Exception{
     getChildren().clear() ;
     update();
@@ -271,7 +268,7 @@ public class UIListView extends UICalendarView {
     eventMap_.clear();
     if(pageList_ != null) {
       for(CalendarEvent calendarEvent : pageList_.getPage(page ,CalendarUtils.getCurrentUser())) {
-        UIFormCheckBoxInput<Boolean> checkbox = new UIFormCheckBoxInput<Boolean>(calendarEvent.getId(),calendarEvent.getId(), false) ;
+        UICheckBoxInput checkbox = new UICheckBoxInput(calendarEvent.getId(),calendarEvent.getId(), false) ;
         addUIFormInput(checkbox);
         if(getViewType().equals(TYPE_BOTH)){
           eventMap_.put(calendarEvent.getId(), calendarEvent) ;
@@ -290,8 +287,8 @@ public class UIListView extends UICalendarView {
       return eventMap_.values().toArray(new CalendarEvent[]{}) ;
     } 
   }
-  
-  
+
+
   protected void refreshBrowser(){
     UIListContainer uiListContainer = getParent() ;
     if (uiListContainer.isDisplaySearchResult()) return ;
@@ -308,7 +305,7 @@ public class UIListView extends UICalendarView {
   public long getAvailablePage(){
     return pageList_.getAvailablePage() ; 
   }
-  
+
   public void setCurrentPage(int page) { currentPage_ = page ;} 
   public long getCurrentPage() { return pageList_.getCurrentPage();}
   protected boolean isShowEvent() {return isShowEvent_ ;}
@@ -330,10 +327,12 @@ public class UIListView extends UICalendarView {
     this.calClicked = clickChkCalendar;
   }
 
+  @Override
   public LinkedHashMap<String, CalendarEvent> getDataMap(){
     return eventMap_ ;
   }
   static public class ViewDetailActionListener extends EventListener<UIListView> {
+    @Override
     public void execute(Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource();
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -358,7 +357,7 @@ public class UIListView extends UICalendarView {
   public List<CalendarEvent> getSelectedEvents() {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>() ;
     for(CalendarEvent ce : eventMap_.values()) {
-      UIFormCheckBoxInput<Boolean>  checkbox = getChildById(ce.getId())  ;
+      UICheckBoxInput checkbox = getChildById(ce.getId())  ;
       if(checkbox != null && checkbox.isChecked()) events.add(ce) ;
     }
     return events ; 
@@ -374,10 +373,12 @@ public class UIListView extends UICalendarView {
     categoryId_  = catetoryId ;
     setSelectedCategory(catetoryId) ;
   }
+  @Override
   public String getSelectedCategory() {
     return categoryId_ ;
   }
   static public class CloseSearchActionListener extends EventListener<UIListView> {
+    @Override
     public void execute(Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       uiListView.setDisplaySearchResult(false) ;
@@ -397,6 +398,7 @@ public class UIListView extends UICalendarView {
     }
   }
   static  public class ShowPageActionListener extends EventListener<UIListView> {
+    @Override
     public void execute(Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       int page = Integer.parseInt(event.getRequestContext().getRequestParameter(OBJECTID)) ;
@@ -406,6 +408,7 @@ public class UIListView extends UICalendarView {
     }
   }
   static  public class OnchangeActionListener extends EventListener<UIListView> {
+    @Override
     public void execute(Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       String categoryId = uiListView.getUIFormSelectBox(EVENT_CATEGORIES).getValue() ;
@@ -434,14 +437,15 @@ public class UIListView extends UICalendarView {
   public String getKeyWords() {
     return keyWords_;
   }
-  
+
   static  public class SortActionListener extends EventListener<UIListView> {
+    @Override
     public void execute(Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       long currentPage = uiListView.getCurrentPage();
       String fieldId =  event.getRequestContext().getRequestParameter(OBJECTID) ;
       EventQuery query = uiListView.query ;
-      
+
       List<String> calendarIds = uiListView.findCalendarIds();
       if (calendarIds.size() > 0)
         query.setCalendarId(calendarIds.toArray(new String[] {}));
@@ -470,17 +474,17 @@ public class UIListView extends UICalendarView {
     super.processAction(context);
   }
 
-    static  public class AdvancedSearchActionListener extends EventListener<UIListView> {
-        public void execute(Event<UIListView> event) throws Exception {
-            UIListView uiListView = event.getSource() ;
-            UICalendarPortlet calendarPortlet = uiListView.getAncestorOfType(UICalendarPortlet.class) ;
-            UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
-            UIAdvancedSearchForm uiAdvancedSearchForm = popupAction.activate(UIAdvancedSearchForm.class, 600) ;
-            //uiAdvancedSearchForm.setSearchValue(calendarPortlet.getSearchValue()) ;
-            //uiForm.reset() ;
-            event.getRequestContext().addUIComponentToUpdateByAjax(uiListView) ;
-            event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
-        }
+  static  public class AdvancedSearchActionListener extends EventListener<UIListView> {
+    public void execute(Event<UIListView> event) throws Exception {
+      UIListView currentView = event.getSource() ;
+      UICalendarPortlet calendarPortlet = currentView.getAncestorOfType(UICalendarPortlet.class) ;
+      UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
+      UIAdvancedSearchForm uiAdvancedSearchForm = popupAction.activate(UIAdvancedSearchForm.class, 600) ;
+      uiAdvancedSearchForm.setSearchValue(currentView.getKeyWords()) ;
+      //uiForm.reset() ;
+     // event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
+  }
 }
 

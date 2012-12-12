@@ -40,7 +40,9 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
@@ -96,7 +98,7 @@ public class UICalendarPortlet extends UIPortletApplication {
     return String.valueOf(TimeZone.getTimeZone(getCalendarSetting().getTimeZone()).getRawOffset()/1000/60) ;
   }
   public void cancelAction() throws Exception {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     UIPopupAction popupAction = getChild(UIPopupAction.class) ;
     popupAction.deActivate() ;
     context.addUIComponentToUpdateByAjax(popupAction) ;
@@ -130,7 +132,7 @@ public class UICalendarPortlet extends UIPortletApplication {
    * @return 
    */
   public static String getSpaceId() {
-    PortletRequestContext pContext = WebuiRequestContext.getCurrentInstance();
+    PortletRequestContext pContext = RequestContext.getCurrentInstance();
     String spaceIdStr = (String) pContext.getAttribute(SPACE_ID_KEY);
     if (spaceIdStr == null) {
       try {
@@ -157,7 +159,7 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   public void processInvitationURL(WebuiRequestContext context) throws Exception {
     PortalRequestContext pContext = Util.getPortalRequestContext();
-    String url = ((HttpServletRequest)pContext.getRequest()).getRequestURL().toString();
+    String url = pContext.getRequest().getRequestURL().toString();
     if (url.contains(CalendarUtils.INVITATION_URL)) {
       String isAjax = pContext.getRequestParameter("ajaxRequest");
       if(isAjax != null && Boolean.parseBoolean(isAjax)) return;
@@ -196,7 +198,7 @@ public class UICalendarPortlet extends UIPortletApplication {
           uiEventForm.setEmailRepeat(false) ;
           context.addUIComponentToUpdateByAjax(uiParentPopup);
         } else {
-          context.getUIApplication().addMessage(new ApplicationMessage("UICalendarPortlet.msg.event-was-not-found", null, ApplicationMessage.ERROR));
+          context.getUIApplication().addMessage(new ApplicationMessage("UICalendarPortlet.msg.event-was-not-found", null, AbstractApplicationMessage.ERROR));
         }
         return;
       }
@@ -248,7 +250,7 @@ public class UICalendarPortlet extends UIPortletApplication {
             context.addUIComponentToUpdateByAjax(uiParentPopup);
           }
           else {
-            this.addMessage(new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
+            this.addMessage(new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, AbstractApplicationMessage.WARNING ));
             context.addUIComponentToUpdateByAjax(this.getUIPopupMessages());
           }
         }
@@ -256,6 +258,7 @@ public class UICalendarPortlet extends UIPortletApplication {
     }
   }
   
+  @Override
   public void processRender(WebuiApplication app, WebuiRequestContext context) throws Exception {
     try {
       processInvitationURL(context);

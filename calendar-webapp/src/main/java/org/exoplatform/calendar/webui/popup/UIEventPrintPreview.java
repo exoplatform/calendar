@@ -43,10 +43,12 @@ public class UIEventPrintPreview extends UIComponent {
   }
   
   static  public class SaveActionListener extends EventListener<UIEventPrintPreview> {
+    @Override
     public void execute(Event<UIEventPrintPreview> event) throws Exception {
     }
   }
   static  public class CancelActionListener extends EventListener<UIEventPrintPreview> {
+    @Override
     public void execute(Event<UIEventPrintPreview> event) throws Exception {
     }
   }

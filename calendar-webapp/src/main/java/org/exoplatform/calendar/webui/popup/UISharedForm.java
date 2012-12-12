@@ -41,7 +41,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
@@ -104,7 +104,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
     selectGroupAction.setActionParameter(UISelectComponent.TYPE_GROUP) ;
     actionGroups.add(selectGroupAction) ;
     inputset.setActionField(UISharedTab.FIELD_GROUP, actionGroups) ;
-    inputset.addChild(new UIFormCheckBoxInput<Boolean>(UISharedTab.FIELD_EDIT, UISharedTab.FIELD_EDIT, null)) ;
+    inputset.addChild(new UICheckBoxInput(UISharedTab.FIELD_EDIT, UISharedTab.FIELD_EDIT, null)) ;
     addChild(inputset) ;
   }
 
@@ -118,6 +118,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
     }
     setCanEdit(canEdit) ;
   }
+  @Override
   public String getLabel(String id) {
     try {
       return super.getLabel(id) ;
@@ -134,11 +135,11 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
   }
   protected void setCanEdit(boolean canEdit) {
     UISharedTab inputset = getChildById(SHARED_TAB) ;
-    inputset.getUIFormCheckBoxInput(UISharedTab.FIELD_EDIT).setChecked(canEdit) ;
+    inputset.getUICheckBoxInput(UISharedTab.FIELD_EDIT).setChecked(canEdit) ;
   }
   protected boolean canEdit() {
     UISharedTab inputset = getChildById(SHARED_TAB) ;
-    return inputset.getUIFormCheckBoxInput(UISharedTab.FIELD_EDIT).isChecked() ;
+    return inputset.getUICheckBoxInput(UISharedTab.FIELD_EDIT).isChecked() ;
   }
   protected void setSharedUser(String value) {
     UISharedTab inputset = getChildById(SHARED_TAB) ;
@@ -156,12 +157,16 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
     UISharedTab inputset = getChildById(SHARED_TAB) ;
     return inputset.getUIStringInput(UISharedTab.FIELD_GROUP).getValue() ;
   }
+  @Override
   public String[] getActions() {
     return new String[] {"Save","Cancel"} ;
   }
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
 
+  @Override
   public void updateSelect(String selectField, String value) throws Exception {
     UISharedTab inputset = getChildById(SHARED_TAB) ;
     UIFormStringInput fieldInput = inputset.getUIStringInput(selectField) ;
@@ -173,6 +178,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
   }  
 
   static  public class SaveActionListener extends EventListener<UISharedForm> {
+    @Override
     public void execute(Event<UISharedForm> event) throws Exception { 
       UISharedForm uiForm = event.getSource() ;
       String names = uiForm.getUIStringInput(UISharedTab.FIELD_USER).getValue() ;
@@ -281,6 +287,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
   }
    
   static  public class SelectGroupActionListener extends EventListener<UIGroupSelector> {   
+    @Override
     public void execute(Event<UIGroupSelector> event) throws Exception {
       UIGroupSelector uiForm = event.getSource() ;
       String user = event.getRequestContext().getRequestParameter(OBJECTID) ;
@@ -290,6 +297,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
   }
   
   static  public class SelectPermissionActionListener extends EventListener<UISharedForm> {
+    @Override
     public void execute(Event<UISharedForm> event) throws Exception {
       UISharedForm uiForm = event.getSource() ;
       String permType = event.getRequestContext().getRequestParameter(OBJECTID) ;
@@ -323,6 +331,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
     }
   }
   static  public class AddActionListener extends EventListener<UIUserSelector> {
+    @Override
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource();
       UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
@@ -342,6 +351,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
   }
 
   static  public class CancelActionListener extends EventListener<UISharedForm> {
+    @Override
     public void execute(Event<UISharedForm> event) throws Exception {
       UISharedForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;

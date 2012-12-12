@@ -31,21 +31,20 @@ import org.exoplatform.webui.core.UIComponent;
  */
 
 @ComponentConfig(
-    template =  "app:/templates/calendar/webui/UICalendarViewContainer.gtmpl"
-)
+                 template =  "app:/templates/calendar/webui/UICalendarViewContainer.gtmpl"
+    )
 public class UICalendarViewContainer extends UIContainer  {
 
   final public static String DAY_VIEW = "UIDayView".intern() ;
   final public static String WEEK_VIEW = "UIWeekView".intern() ;
   final public static String MONTH_VIEW = "UIMonthView".intern() ;
   final public static String LIST_VIEW = "UIListContainer".intern() ;
-  final public static String SCHEDULE_VIEW = "UIScheduleView".intern() ;
   final public static String WORKING_VIEW = "UIWorkingView".intern() ;
 
-  final public static String[] TYPES = {DAY_VIEW, WEEK_VIEW, MONTH_VIEW, LIST_VIEW, SCHEDULE_VIEW, WORKING_VIEW} ;
-  
+  final public static String[] TYPES = {DAY_VIEW, WEEK_VIEW, MONTH_VIEW, LIST_VIEW, WORKING_VIEW} ;
+
   private String currentViewType_;
-  
+
   public UICalendarViewContainer() throws Exception {
     initView(null) ;
   }  
@@ -79,71 +78,64 @@ public class UICalendarViewContainer extends UIContainer  {
           if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
           setRenderedChild(viewType) ;
         } else if(LIST_VIEW.equals(viewType)) {
-              UIListContainer uiView = getChild(UIListContainer.class) ;
-              if(uiView == null) uiView =  addChild(UIListContainer.class, null, null) ;
-              UIListView uiListView = uiView.getChild(UIListView.class) ;
-              uiListView.setShowEventAndTask(false) ;
-              //uiListView.setDisplaySearchResult(false) ;
-              uiListView.setCategoryId(null) ;
-              uiListView.refresh() ;
-              uiListView.isShowEvent_ = true ;
-              if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-              setRenderedChild(viewType) ;
-            } else
-              if(SCHEDULE_VIEW.equals(viewType)) {
-                UIScheduleView uiView = getChild(UIScheduleView.class) ;
-                if(uiView == null) uiView =  addChild(UIScheduleView.class, null, null) ;
-                if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-                setRenderedChild(viewType) ;
-              } else if(WORKING_VIEW.equals(viewType)) {
-                UIWeekView uiView = getChild(UIWeekView.class) ;
-                if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
-                uiView.isShowCustomView_ = true ;
-                if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-                setRenderedChild(WEEK_VIEW) ;
-              }
+          UIListContainer uiView = getChild(UIListContainer.class) ;
+          if(uiView == null) uiView =  addChild(UIListContainer.class, null, null) ;
+          UIListView uiListView = uiView.getChild(UIListView.class) ;
+          uiListView.setShowEventAndTask(false) ;
+          uiListView.setCategoryId(null) ;
+          uiListView.refresh() ;
+          uiListView.isShowEvent_ = true ;
+          if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+          setRenderedChild(viewType) ;
+        } else if(WORKING_VIEW.equals(viewType)) {
+          UIWeekView uiView = getChild(UIWeekView.class) ;
+          if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
+          uiView.isShowCustomView_ = true ;
+          if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+          setRenderedChild(WEEK_VIEW) ;
+        }
     refresh() ;
   }
-  
-  
+
+
   /**
    * @return the currentViewType_
    */
-  public String getCurrentViewType() {
-    return currentViewType_;
-  }
-  /**
-   * @param currentViewType the currentViewType_ to set
-   */
-  public void setCurrentViewType_(String currentViewType) {
-    currentViewType_ = currentViewType;
-  }
-  public void refresh() throws Exception {
-    for(UIComponent comp : getChildren()) {
-      if(comp.isRendered() && comp instanceof CalendarView){
-        ((CalendarView)comp).refresh() ;
-      }
-    }
-  }
-  protected boolean isShowPane() {
-    return getAncestorOfType(UICalendarWorkingContainer.class).getChild(UICalendarContainer.class).isRendered() ;
-  }
-  public UIComponent getRenderedChild() {
-    for(UIComponent comp : getChildren()) {
-      if(comp.isRendered()) return comp ;
-    }
-    return null ;
-  }
-  public void updateCategory() throws Exception{
-    for(UIComponent comp : getChildren()) {
-      if(comp instanceof CalendarView) {
-        ((CalendarView)comp).update() ;
-      }
-    }
-  }
-  public void applySeting() throws Exception {
-    for(UIComponent comp : getChildren()) {
-      if((comp instanceof CalendarView)) ((CalendarView)comp).applySeting() ;  
-    }
-  }
+   public String getCurrentViewType() {
+     return currentViewType_;
+   }
+   /**
+    * @param currentViewType the currentViewType_ to set
+    */
+   public void setCurrentViewType_(String currentViewType) {
+     currentViewType_ = currentViewType;
+   }
+   public void refresh() throws Exception {
+     for(UIComponent comp : getChildren()) {
+       if(comp.isRendered() && comp instanceof CalendarView){
+         ((CalendarView)comp).refresh() ;
+       }
+     }
+   }
+   protected boolean isShowPane() {
+     return getAncestorOfType(UICalendarWorkingContainer.class).getChild(UICalendarContainer.class).isRendered() ;
+   }
+   public UIComponent getRenderedChild() {
+     for(UIComponent comp : getChildren()) {
+       if(comp.isRendered()) return comp ;
+     }
+     return null ;
+   }
+   public void updateCategory() throws Exception{
+     for(UIComponent comp : getChildren()) {
+       if(comp instanceof CalendarView) {
+         ((CalendarView)comp).update() ;
+       }
+     }
+   }
+   public void applySeting() throws Exception {
+     for(UIComponent comp : getChildren()) {
+       if((comp instanceof CalendarView)) ((CalendarView)comp).applySeting() ;  
+     }
+   }
 }

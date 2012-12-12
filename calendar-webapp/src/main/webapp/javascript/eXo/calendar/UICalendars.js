@@ -43,15 +43,6 @@ UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
   }
 };
 
-UICalendars.prototype.mainMenuCallback = function(anchorElm, evt) {
-  var d = new Date();
-  var currentTime = d.getTime();
-  var timezoneOffset = d.getTimezoneOffset();
-  var menu = _module.UICalendars.currentMenuElm;
-  var actions = gj(menu).find('div');
-  actions[0].onclick = String(actions[0].onclick).replace(/&.*/, "&ct=" + currentTime + "&tz=" + timezoneOffset + "')");
-};
-
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   var obj = cs.EventManager.getEventTargetByClass(evt,"CalendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
   var calType = obj.getAttribute("calType");

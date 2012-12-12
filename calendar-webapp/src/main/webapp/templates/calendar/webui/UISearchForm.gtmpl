@@ -7,9 +7,6 @@
   requirejs.addScripts('cs.Utils.captureInput("value") ;') ;
 %>
 <div class="UISearchForm">
-  <div onclick="<%=uicomponent.event("AdvancedSearch")%>">
-    <div class="AdvancedSearch" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('AdvancedSearch')%>"><span></span></div>
-  </div>
   <div class="Input Search" onclick="$action">
     <div class="SearchIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
   </div>

@@ -11,8 +11,6 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts('cal.CalendarLayout.updateMiniCalendarLayout();');
-  requirejs.addScripts("gj('div#UIMiniCalendar_1').click(function() {cal.UICalendarPortlet.switchLayout(2); });");
   int currentYear = uicomponent.getCurrentYear() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
   int currentDay = uicomponent.getCurrentCalendar().get(Calendar.DAY_OF_YEAR) ;
@@ -31,9 +29,20 @@
   DateFormat sdtf = new  SimpleDateFormat("MM/d", locale) ;
    sdtf.setCalendar(uicomponent.getInstanceTempCalendar()) ;
   Map data = uicomponent.getData() ;
+  DateFormatSymbols dfs_ = new DateFormatSymbols(locale) ;
+  
 %>
 <%uiform.begin();%>
   <div class="UIMiniCalendar">
+  <% 
+  String[] monthNames = dfs_.getMonths();
+  for(int i = 0; i < 12; i++) {
+    String monthName = monthNames[i];
+  %>
+    <div class="LocalizedMonthName" style="display:none" name="$monthName"></div>
+  <% } %>
+  <div id="AMString" style="display:none" name="<%=dfs_.getAmPmStrings()[0]%>"></div>
+  <div id="PMString" style="display:none" name="<%=dfs_.getAmPmStrings()[1]%>"></div>
   <div class="MiniCalendarContainer">
     <div class="YearSelector ClearFix">
       <div onclick="$linkDayNext" class="RightControlButton">
@@ -69,15 +78,16 @@
     <div class="MonthList">
       <div class="WeekList ClearFix">
         <%
-        dfs_ = new DateFormatSymbols(locale) ;
         Calendar calendar = uicomponent.getInstanceTempCalendar();
         String[] dayNames = dfs_.getShortWeekdays();
         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         for(int i = 0; i < 7; i++) {
           cssStyle = "DayTitle" ;
           if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) cssStyle = "SundayTitle" ;
+          String shortDayName = dayNames[calendar.get(Calendar.DAY_OF_WEEK)];
         %>
-      <div class="$cssStyle"><%=dayNames[calendar.get(Calendar.DAY_OF_WEEK)].substring(0,1)%></div>
+        <div class="ShortDayName" style="dislay:none" name="$shortDayName"></div>
+      <div class="$cssStyle"><%=shortDayName.substring(0,1)%></div>
         <%
           calendar.add(Calendar.DAY_OF_WEEK, 1);
         }
@@ -172,6 +182,5 @@
     </div>
     
   </div>
-  <div id="UIMiniCalendar_1" class="DownArrow1Icon UIMiniCalendarToggleButton" style="background-position:center;cursor:pointer;" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMiniCalendar.label.toggle-mini-calendar')%>" upCssClass="UpArrow1Icon" downCssClass="DownArrow1Icon">&nbsp;</div>
   </div>
 <%uiform.end();%>
