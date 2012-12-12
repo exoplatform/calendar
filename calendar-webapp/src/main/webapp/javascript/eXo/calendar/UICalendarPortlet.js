@@ -1961,14 +1961,6 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
     var uiDesktop = document.getElementById("UIPageDesktop");
     if (document.getElementById("tmpMenuElement")) 
         gj("#tmpMenuElement").remove();  
-/*
-    var tmpMenuElement = oldmenu.cloneNode(true); 
-    tmpMenuElement.setAttribute("id", "tmpMenuElement");
-    tmpMenuElement.style.zIndex = 1 ;
-    this.menuElement = tmpMenuElement;
- 	if(Browser.isIE6()) this.menuElement.style.width = "140px";
-    document.body.appendChild(this.menuElement);
-*/
     var tmpMenuElement = gj(oldmenu).clone(true,true);
     tmpMenuElement.attr("id","tmpMenuElement");
     var style = tmpMenuElement.attr("style") + "zIndex = 1;";
@@ -1989,12 +1981,13 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
     if (arguments.length > 2) {
         menuY -= arguments[2].scrollTop;
     }
-		if (base.I18n.isRT()) {
+    if (base.I18n.isRT()) {
       menuX -= (cs.Utils.getElementWidth(this.menuElement) - clickobj.offsetWidth);// - uiWorkSpaceWidth;      
     }
-    this.menuElement.style.top = menuY + "px";
-    this.menuElement.style.left =  menuX + "px";
- 		if (base.I18n.isRT() && Browser.isIE6()) {
+    // relooking, reposition the menu
+    this.menuElement.style.top = menuY - 40 + "px";
+    this.menuElement.style.left =  menuX + cs.Utils.getElementWidth(this.menuElement) + "px";
+    if (base.I18n.isRT() && Browser.isIE6()) {
       menuX = Browser.findPosXInContainer(clickobj,this.menuElement.offsetParent,true);
       //menuX += uiWorkSpaceWidth/2 ;
       this.menuElement.style.right = menuX + "px";
