@@ -52,7 +52,6 @@ public class UIGroupCalendarTab extends UIFormInputWithActions {
     super(id) ;
     setComponentConfig(getClass(), null) ;
     actionField_ = new HashMap<String, List<ActionData>>() ;
-    
   }
   
   @Override
