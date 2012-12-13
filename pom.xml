@@ -44,7 +44,7 @@
     <org.exoplatform.core.version>2.5.0-GA</org.exoplatform.core.version>
     <org.exoplatform.ws.version>2.3.0-GA</org.exoplatform.ws.version>
     <org.exoplatform.jcr.version>1.15.0-GA</org.exoplatform.jcr.version>
-    <org.exoplatform.portal.version>3.5.0.Final</org.exoplatform.portal.version>
+    <org.gatein.portal.version>3.5.0.Final</org.gatein.portal.version>
     <org.exoplatform.commons.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.commons.version>
     <org.gatein.wci.version>2.3.0.Final</org.gatein.wci.version>
     <org.exoplatform.social.version>4.0.0.Alpha1-kill-exobuild-SNAPSHOT</org.exoplatform.social.version>
@@ -424,7 +424,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.common</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <!-- To be fixed in the original project -->
@@ -436,7 +436,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.identity</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>log4j</artifactId>
@@ -447,13 +447,13 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.identity</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.portal</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <!-- To be fixed in the original project -->
@@ -490,17 +490,17 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.resources</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.test.core</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.test.jcr</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
           <exclusion>
@@ -512,12 +512,12 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.web.controller</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.web.resources</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <!-- To be fixed in the original project -->
@@ -548,7 +548,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.web.server</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>servlet-api</artifactId>
@@ -559,7 +559,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.core</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>servlet-api</artifactId>
@@ -570,7 +570,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.eXo</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <!-- To be fixed in the original project -->
@@ -582,7 +582,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.framework</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <!-- To be fixed in the original project -->
@@ -594,7 +594,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.portal</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>commons-logging</artifactId>
@@ -630,7 +630,7 @@
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.portlet</artifactId>
-        <version>${org.exoplatform.portal.version}</version>
+        <version>${org.gatein.portal.version}</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.wci</groupId>
