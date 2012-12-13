@@ -107,14 +107,6 @@
                   <% for (event in uicomponent.allDayEvent) {
                     begindate =  event.getFromDateTime().getTime() ;  
                     enddate = event.getToDateTime().getTime() ; 
-                    leftClass = "LeftResizeEvent ResizableSign" ;
-                    if(event.fromDateTime.before(uicomponent.getBeginDateOfWeek().getTime())){
-                      leftClass = "LeftContinueEvent" ;
-                    }  
-                    rightClass = "RightResizeEvent ResizableSign" ;
-                    if(event.toDateTime.after(uicomponent.getEndDateOfWeek().getTime())){
-                      rightClass = "RightContinueEvent" ;
-                    }      
                     long   startTime = event.getFromDateTime().getTime() ;  
                     long  finishTime = event.getToDateTime().getTime() ;  
                     color = uicomponent.getColors().get(event.calType +CalendarUtils.COLON+ event.getCalendarId()) ;
@@ -123,7 +115,7 @@
                     Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
                     String recurId = event.getRecurrenceId();
                   %>
-                  <div class="EventContainer EventAlldayContainer WeekViewEventBoxes $color" eventcat="$event.eventCategoryId" style="position:absolute; border: solid 1px grey;" caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate" 
+                  <div class="EventContainer EventAlldayContainer WeekViewEventBoxes ClearFix $color" eventcat="$event.eventCategoryId" style="position:absolute; border: solid 1px grey;" caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate" 
                   startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
                     actionlink="$actionLink">
                   <%
@@ -140,14 +132,10 @@
                   <%
                   }
                   %>
-                    <div class="$leftClass">
-                      <span></span>
-                    </div>
+                    <div class="LeftResizeEvent LeftContinueEvent"><i class="uiIconMiniArrowLeft"></i></div>
+                    <div class="RightResizeEvent RightContinueEvent"><i class="uiIconMiniArrowRight"></i></div>
                     <div class="EventAlldayContent">
                       <%=event.summary%>
-                    </div>
-                    <div class="$rightClass">
-                      <span></span>
                     </div>
                   </div>
                   <%}%>

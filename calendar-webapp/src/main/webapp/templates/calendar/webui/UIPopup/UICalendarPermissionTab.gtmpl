@@ -1,0 +1,47 @@
+<%
+  import org.exoplatform.calendar.webui.popup.UICalendarForm
+  import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
+
+  UICalendarForm uiCalendarForm = uicomponent.getParent();
+%>
+<div class="UIForm $uicomponent.id">
+  <div class="HorizontalLayout">
+    <div class="FormContainer">
+    <%
+      List children = uicomponent.getChildren() ;
+      for(component in children) {
+        if(component.isRendered()) {
+          uicomponent.renderChild(component) ;
+        }
+      }
+    %>
+
+      <div class="UIAction UIActionBorder">
+      <% Iterator<ActionData> it = uicomponent.getActionField(uiCalendarForm.PERMISSION_OWNER).iterator();
+        while (it.hasNext())
+        {
+          ActionData action  = it.next();
+          String actionLabel = _ctx.appRes(uiCalendarForm.id + ".action." + action.getActionName());
+          String actionLink  = uiCalendarForm.event(action.getActionListener());
+          String cssClass    = action.getCssIconClass();
+
+          if (action.getActionType() == action.TYPE_ICON)
+          {
+            %>
+              <img title="$actionLabel" onclick="$actionLink" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"
+              class="$cssClass" />
+            <%
+          }
+          else if (action.getActionType() == uiCalendarForm.TYPE_BUTTON)
+          {
+            %>
+              <button onclick="$actionLink" href="javascript:void(0);" class="btn">$actionLabel</button>
+            <%
+          }
+        }
+      %>
+
+      </div>
+    </div>
+  </div>
+</div>

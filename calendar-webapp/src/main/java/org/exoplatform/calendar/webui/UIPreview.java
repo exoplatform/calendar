@@ -54,6 +54,7 @@ public class UIPreview extends UICalendarView implements UIPopupComponent {
 
   public UIPreview() throws Exception {}
 
+  @Override
   public String getTemplate(){
     if(event_ == null) return "app:/templates/calendar/webui/UIDefaultPreview.gtmpl" ;
     if(event_.getEventType().equals(CalendarEvent.TYPE_EVENT))
@@ -66,14 +67,17 @@ public class UIPreview extends UICalendarView implements UIPopupComponent {
   public CalendarEvent getEvent(){ return event_ ; }
   public void setEvent(CalendarEvent event) { event_ = event ; }
 
+  @Override
   public void refresh() throws Exception {
     if(getAncestorOfType(UIListContainer.class) != null) {
      event_ = getAncestorOfType(UIListContainer.class).findFirstComponentOfType(UIListView.class).getSelectedEventObj() ;
     }
   }
 
+  @Override
   public void activate() throws Exception {}
 
+  @Override
   public void deActivate() throws Exception {}
 
   public void setShowPopup(boolean isShow) {
@@ -117,6 +121,7 @@ public class UIPreview extends UICalendarView implements UIPopupComponent {
     return rService.getCurrentRepository().getConfiguration().getName() ;
   }
   static  public class DownloadActionListener extends EventListener<UIPreview> {
+    @Override
     public void execute(Event<UIPreview> event) throws Exception {
       UIPreview uiPreview = event.getSource() ;
       String attId = event.getRequestContext().getRequestParameter(OBJECTID) ;

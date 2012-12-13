@@ -38,6 +38,7 @@ public class UIFormInputInfoAction extends UIFormInputBase<String> {
 
   final public static int TYPE_BUTTON = 2;
 
+  @Override
   public void processRender(WebuiRequestContext context) throws Exception
   {
     Writer w = context.getWriter();

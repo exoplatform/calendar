@@ -33,11 +33,10 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.organization.account.UIUserSelector;
-import org.gatein.common.i18n.BundleName.Iterator;
 
 /**
  * Created by The eXo Platform SARL
@@ -89,11 +88,11 @@ public class UIEventReminderTab extends UIFormInputWithActions {
 
     List<SelectItemOption<String>> emailRemindRepeatOptions = getReminderTimes(5,60) ;
     List<SelectItemOption<String>> emailRemindBeforeOptions = getReminderTimes(5,60) ;
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(REMIND_BY_EMAIL, REMIND_BY_EMAIL, true)) ;
+    addUIFormInput(new UICheckBoxInput(REMIND_BY_EMAIL, REMIND_BY_EMAIL, true)) ;
     addUIFormInput(new UIFormSelectBox(EMAIL_REMIND_BEFORE, EMAIL_REMIND_BEFORE, emailRemindBeforeOptions));
     //addUIFormInput(new UIFormTextAreaInput(FIELD_EMAIL_ADDRESS, FIELD_EMAIL_ADDRESS, null)) ;
     addUIFormInput(new UIEmailInput(FIELD_EMAIL_ADDRESS, FIELD_EMAIL_ADDRESS, null)) ;
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(EMAIL_IS_REPEAT, EMAIL_IS_REPEAT, false));
+    addUIFormInput(new UICheckBoxInput(EMAIL_IS_REPEAT, EMAIL_IS_REPEAT, false));
     addUIFormInput(new UIFormSelectBox(EMAIL_REPEAT_INTERVAL, EMAIL_REPEAT_INTERVAL, emailRemindRepeatOptions));
     ActionData addEmailAddress = new ActionData() ;
     addEmailAddress.setActionType(ActionData.TYPE_ICON) ;
@@ -106,9 +105,9 @@ public class UIEventReminderTab extends UIFormInputWithActions {
 
     List<SelectItemOption<String>> popupRemindRepeatOptions = getReminderTimes(5,60) ;
     List<SelectItemOption<String>> popupRemindBeforeOptions = getReminderTimes(5,60) ;
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(REMIND_BY_POPUP, REMIND_BY_POPUP, false)) ;
+    addUIFormInput(new UICheckBoxInput(REMIND_BY_POPUP, REMIND_BY_POPUP, false)) ;
     addUIFormInput(new UIFormSelectBox(POPUP_REMIND_BEFORE, POPUP_REMIND_BEFORE, popupRemindBeforeOptions));
-    addUIFormInput(new UIFormCheckBoxInput<Boolean>(POPUP_IS_REPEAT, POPUP_IS_REPEAT, false));
+    addUIFormInput(new UICheckBoxInput(POPUP_IS_REPEAT, POPUP_IS_REPEAT, false));
     addUIFormInput(new UIFormSelectBox(POPUP_REPEAT_INTERVAL, POPUP_REPEAT_INTERVAL, popupRemindRepeatOptions));
 
   }
@@ -124,6 +123,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
     return options ;
   }
 
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }
@@ -135,6 +135,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
   
   
   static  public class AddEmailAddressActionListener extends EventListener<UIEventReminderTab> {
+    @Override
     public void execute(Event<UIEventReminderTab> event) throws Exception {
       UIEventReminderTab uiEventReminderTab = event.getSource() ;
       UIPopupContainer uiPopupContainer = uiEventReminderTab.getParent().getParent();  
@@ -154,6 +155,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
   }
   
   static  public class AddActionListener extends EventListener<UIUserSelector> {
+    @Override
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource();
       UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
@@ -178,6 +180,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
   }
   
   static  public class CloseActionListener extends EventListener<UIUserSelector> {
+    @Override
     public void execute(Event<UIUserSelector> event) throws Exception {
       UIUserSelector uiUserSelector = event.getSource() ;
       UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;

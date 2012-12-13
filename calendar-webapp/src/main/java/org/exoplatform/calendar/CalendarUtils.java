@@ -67,6 +67,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.core.UIComponent;
@@ -264,6 +265,7 @@ public class CalendarUtils {
    * @return
    * @deprecated
    */
+  @Deprecated
   public static Calendar getInstanceTempCalendar() {
     return getInstanceOfCurrentCalendar();
   }
@@ -274,7 +276,7 @@ public class CalendarUtils {
    * @return calendar object
    */
   public static Calendar getCalendarInstanceBySetting(final CalendarSetting calendarSetting) {
-    Calendar  calendar = GregorianCalendar.getInstance() ;
+    Calendar  calendar = Calendar.getInstance() ;
     calendar.setLenient(false);
     calendar.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
     calendar.setFirstDayOfWeek(Integer.parseInt(calendarSetting.getWeekStartOn()));
@@ -293,13 +295,13 @@ public class CalendarUtils {
       return getCalendarInstanceBySetting(setting); 
     } catch (Exception e) {
       if (log.isWarnEnabled()) log.warn("Could not get calendar setting!", e);
-      Calendar calendar = GregorianCalendar.getInstance() ;
+      Calendar calendar = Calendar.getInstance() ;
       calendar.setLenient(false);
       return calendar;
     }
   }
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String timeFormat) {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     return getTimesSelectBoxOptions(timeFormat, TIMEFORMAT, CalendarSetting.DEFAULT_TIME_INTERVAL, locale);
   }
@@ -309,7 +311,7 @@ public class CalendarUtils {
 
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String labelFormat, String valueFormat, long timeInteval) {
 
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     return getTimesSelectBoxOptions(labelFormat, valueFormat, timeInteval, locale);
   }
@@ -338,7 +340,7 @@ public class CalendarUtils {
     return options ;
   }
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String timeFormat, int timeInteval) {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     return getTimesSelectBoxOptions(timeFormat, TIMEFORMAT, timeInteval, locale);
   }
@@ -524,7 +526,7 @@ public class CalendarUtils {
   }
 
   public static String getServerBaseUrl() {
-    PortletRequestContext portletRequestContext = PortletRequestContext.getCurrentInstance() ;
+    PortletRequestContext portletRequestContext = RequestContext.getCurrentInstance() ;
     String url = portletRequestContext.getRequest().getScheme() + "://" + 
         portletRequestContext.getRequest().getServerName() + ":" +
         String.format("%s",portletRequestContext.getRequest().getServerPort()) 
@@ -605,6 +607,7 @@ public class CalendarUtils {
     return false ;
   }
   static public class SelectComparator implements Comparator{
+    @Override
     public int compare(Object o1, Object o2) throws ClassCastException {
       String name1 = ((SelectItemOption) o1).getLabel() ;
       String name2 = ((SelectItemOption) o2).getLabel() ;
@@ -612,6 +615,7 @@ public class CalendarUtils {
     }
   }
   static public class ContactComparator implements Comparator{
+    @Override
     public int compare(Object o1, Object o2) throws ClassCastException {
       String name1 = ((ContactData) o1).getFullName() ;
       String name2 = ((ContactData) o2).getFullName() ;
@@ -682,45 +686,6 @@ public class CalendarUtils {
 
   public static String getGroupCalendarName(String groupName, String calendarName) {
     return calendarName + Utils.SPACE + OPEN_PARENTHESIS + groupName + CLOSE_PARENTHESIS;
-  }
-
-  public static List<SelectItem> getCalendarCategoryOption() throws Exception {
-    List<SelectItem> options = new ArrayList<SelectItem>() ;
-    CalendarService calendarService = getCalendarService() ;
-    String username = getCurrentUser();
-    //private calendars 
-    List<GroupCalendarData> groupPrivateCalendars = calendarService.getCalendarCategories(username, true) ;
-    if(groupPrivateCalendars != null) {
-      SelectOptionGroup privGrp = new SelectOptionGroup(CalendarUtils.PRIVATE_CALENDARS);
-      for(GroupCalendarData group: groupPrivateCalendars){
-        if (group.getId().equals(NewUserListener.defaultCalendarCategoryId) && group.getName().equals(NewUserListener.defaultCalendarCategoryName)) {
-          String newName = CalendarUtils.getResourceBundle("UICalendars.label." + group.getId(), group.getId());
-          group.setName(newName);
-        }        
-        privGrp.addOption(new SelectOption(group.getName(),CalendarUtils.PRIVATE_TYPE + CalendarUtils.COLON + group.getId()));
-      }
-      if(privGrp.getOptions().size() > 0) options.add(privGrp);
-    }
-    /*//share calendars
-    GroupCalendarData groupShareCalendar = calendarService.getSharedCalendars(username, true) ;
-    if(groupShareCalendar != null) {
-      SelectOptionGroup sharedGrp = new SelectOptionGroup(CalendarUtils.SHARED_CALENDARS);
-      sharedGrp.addOption(new SelectOption(groupShareCalendar.getName(),CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + groupShareCalendar.getId()));
-      options.add(sharedGrp);
-    }*/
-    //public calendars
-    String[] groups = CalendarUtils.getUserGroups(username) ;
-    List<GroupCalendarData> groupPublicCalendars = calendarService.getGroupCalendars(groups, true, username) ;
-    if(groupPublicCalendars!=null){
-      SelectOptionGroup pubGrp = new SelectOptionGroup(CalendarUtils.PUBLIC_CALENDARS);
-      for(GroupCalendarData group : groupPublicCalendars){
-        pubGrp.addOption(new SelectOption(group.getName(),CalendarUtils.PUBLIC_TYPE + CalendarUtils.COLON + group.getId()));
-      }
-      if(pubGrp.getOptions().size()>0) options.add(pubGrp);
-    }
-
-    return options ;
-
   }
 
   public static List<org.exoplatform.calendar.service.Calendar> getAllOfCurrentUserCalendars() throws Exception {
@@ -919,7 +884,7 @@ public class CalendarUtils {
   //  }
 
   public static String getResourceBundle(String key, String defaultValue) {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    WebuiRequestContext context = RequestContext.getCurrentInstance();
     ResourceBundle res = context.getApplicationResourceBundle();
     try {
       return res.getString(key);
@@ -939,12 +904,10 @@ public class CalendarUtils {
     List<org.exoplatform.calendar.service.Calendar> calendars = new ArrayList<org.exoplatform.calendar.service.Calendar>();
     CalendarService calendarService = getCalendarService();
     /*---- get private calendars ----*/
-    List<GroupCalendarData> groupCalendars = calendarService.getCalendarCategories(username, true);
-    for (GroupCalendarData group : groupCalendars) {
-      for (org.exoplatform.calendar.service.Calendar calendar : group.getCalendars()) {
+    List<GroupCalendarData> groupCalendars  ;
+      for (org.exoplatform.calendar.service.Calendar calendar : calendarService.getUserCalendars(username, true)) {
         calendars.add(calendar);
       }
-    }
 
     /*---- get public calendars ----*/
     String[] groups = CalendarUtils.getUserGroups(username);
@@ -969,7 +932,7 @@ public class CalendarUtils {
 
   public static String getLabel(String componentid, String id) throws Exception
   {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    WebuiRequestContext context = RequestContext.getCurrentInstance();
     ResourceBundle res = context.getApplicationResourceBundle();
     String label = componentid + ".label." + id;
     try
@@ -991,9 +954,9 @@ public class CalendarUtils {
       s.replaceAll("&", "&amp;").replaceAll("'", "&apos;");
       for (int j = 0; j < s.trim().length(); j++) {
         char c = s.charAt(j);
-        if((int)c == 60){
+        if(c == 60){
           buffer.append("&lt;") ;
-        } else if((int)c == 62){
+        } else if(c == 62){
           buffer.append("&gt;") ;
         } else if(c == '\''){
           buffer.append("&#39") ;
@@ -1046,7 +1009,7 @@ public class CalendarUtils {
   }
 
   public static int getLimitUploadSize() {
-    PortletRequestContext pcontext = (PortletRequestContext) WebuiRequestContext.getCurrentInstance();
+    PortletRequestContext pcontext = (PortletRequestContext) RequestContext.getCurrentInstance();
     PortletPreferences portletPref = pcontext.getRequest().getPreferences();
     int limitMB;
     try {

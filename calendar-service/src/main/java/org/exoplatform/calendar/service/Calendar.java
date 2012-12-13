@@ -125,6 +125,7 @@ public class Calendar {
 
   private boolean              isPublic      = false;
 
+  @Deprecated
   private String               categoryId;
 
   private String[]             groups;
@@ -197,10 +198,12 @@ public class Calendar {
     this.groups = groups;
   }
 
+  @Deprecated
   public String getCategoryId() {
     return categoryId;
   }
 
+  @Deprecated
   public void setCategoryId(String categoryId) {
     this.categoryId = categoryId;
   }

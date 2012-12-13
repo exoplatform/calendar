@@ -20,7 +20,7 @@ for(field in uiform.getChildren()) {
 
             <% if ( (field.getName() != uicomponent.NAME) && (field.getName() != uicomponent.TYPE) ) { %>
                 <label for="$field.id">
-                <a href="#" class="tooltip"><%=uicomponent.getLabel(field.getName()) %>
+                <a href="#" rel="tooltip" data-placement="bottom" title="<%=uicomponent.getCalendarName(field.getName()) %>"><%=uicomponent.getLabel(field.getName()) %>
                     <span>
                         <strong><center><%=uicomponent.getCalendarName(field.getName()) %></center></strong>
                     </span>

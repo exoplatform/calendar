@@ -32,12 +32,12 @@ import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webservice.cs.calendar.CalendarWebservice;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -50,8 +50,8 @@ import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
+import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
-import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
 
@@ -84,7 +84,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
   //final static private String SELECT_CALENDAR = "selectCalendar".intern() ;
   final static private String URL = "url".intern() ;
   final static private String NAME = "name".intern() ;
-  final static private String CALENDARS = "calendars".intern() ;
+  final static private String CALENDAR = "calendar".intern() ;
   final static private String ADDMORE = "addMore".intern() ;
   private Map<String, List<ActionData>> actionField_ = new HashMap<String, List<ActionData>>() ;
   private LinkedHashMap<String, String> feedCalendars = new LinkedHashMap<String, String>() ;
@@ -119,10 +119,10 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     actions.add(generateURL) ;
     setActionField(URL, actions) ;
     
-    addUIFormInput(new UIFormInputInfo(CALENDARS, CALENDARS, null)) ;
-    
-    UIFormComboBox comboBox = new UIFormComboBox(ADDMORE, ADDMORE, getCalendarsOptions());
-    addUIFormInput(comboBox);
+    addUIFormInput(new UIFormInputInfo(CALENDAR, CALENDAR, null)) ;
+
+    UIFormSelectBox selectBox = new UIFormSelectBox(ADDMORE, ADDMORE, getCalendarsOptions());
+    addUIFormInput(selectBox);
 
     List<ActionData> actions2 = new ArrayList<ActionData>() ;
     ActionData addCalendar = new ActionData() ;
@@ -131,12 +131,11 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     addCalendar.setActionName("AddCalendar") ;
     actions2.add(addCalendar) ;
     setActionField(ADDMORE, actions2) ;
-    comboBox.setValue(null);
-    comboBox.addJsActions(UIFormComboBox.ON_BLUR, "javascript:void(0);");
+    selectBox.setValue(null);
   }
   
   private String getDefaultFeedName() {
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     ResourceBundle res = context.getApplicationResourceBundle() ;
     try {
       return res.getString("UIEditFeed.label.defaultFeedName");
@@ -180,6 +179,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     return options;
   }
   
+  @Override
   public String[] getActions() {
     return new String[]{"Save", "Close"} ;
   }
@@ -189,7 +189,9 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
   }
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}
   
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}  
 
   @SuppressWarnings("unchecked")
@@ -243,10 +245,11 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
   }
   
   static  public class AddCalendarActionListener extends EventListener<UIEditFeed> {
+    @Override
     public void execute(Event<UIEditFeed> event) throws Exception {
       UIEditFeed uiForm = event.getSource() ;
-      UIFormComboBox comboBox = (UIFormComboBox)uiForm.getChildById(UIEditFeed.ADDMORE);
-      String value = comboBox.getValue();
+      UIFormSelectBox selectBox = (UIFormSelectBox)uiForm.getChildById(UIEditFeed.ADDMORE);
+      String value = selectBox.getValue();
       if (CalendarUtils.isEmpty(value)) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIEditFeed.msg.selectCalendar", null)) ;
         return ;
@@ -280,12 +283,13 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
       }
       uiForm.feedCalendars.put(value, cal.getName());
       
-      comboBox.setValue(null);
+      selectBox.setValue(null);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm);
     }
   }
   
   static  public class SaveActionListener extends EventListener<UIEditFeed> {
+    @Override
     public void execute(Event<UIEditFeed> event) throws Exception {
       UIEditFeed uiForm = event.getSource() ;
       
@@ -350,6 +354,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     }
   }
   static  public class DeleteCalendarActionListener extends EventListener<UIEditFeed> {
+    @Override
     public void execute(Event<UIEditFeed> event) throws Exception {
       UIEditFeed uiForm = event.getSource() ;
       String calId = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -359,6 +364,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
   }
   
   static  public class ResetURLActionListener extends EventListener<UIEditFeed> {
+    @Override
     public void execute(Event<UIEditFeed> event) throws Exception {
       UIEditFeed uiForm = event.getSource() ;
       UIFormStringInput url = (UIFormStringInput)uiForm.getChildById(UIEditFeed.URL);
@@ -372,6 +378,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
   }
   
   static  public class GenerateURLActionListener extends EventListener<UIEditFeed> {
+    @Override
     public void execute(Event<UIEditFeed> event) throws Exception {
       UIEditFeed uiForm = event.getSource() ;
       String feedName = uiForm.getUIStringInput(UIEditFeed.NAME).getValue();
@@ -383,6 +390,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
   }
   
   static  public class CloseActionListener extends EventListener<UIEditFeed> {
+    @Override
     public void execute(Event<UIEditFeed> event) throws Exception {
       UIEditFeed uiForm = event.getSource() ;
       UIPopupAction popupAction = uiForm.getAncestorOfType(UIPopupAction.class);

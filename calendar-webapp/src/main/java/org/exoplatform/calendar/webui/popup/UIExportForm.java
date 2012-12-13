@@ -36,6 +36,7 @@ import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -46,7 +47,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 
@@ -88,7 +89,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
     longNames_.clear();
     Iterator iter = getChildren().iterator() ;
     while(iter.hasNext()) {
-      if(iter instanceof UIFormCheckBoxInput) {
+      if(iter instanceof UICheckBoxInput) {
         iter.remove() ;
       }
       iter.next() ;
@@ -99,7 +100,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   public void initCheckBox(List<Calendar> calendars, String selectedCalendarId)
   {
     for(Calendar calendar : calendars) {
-      UIFormCheckBoxInput checkBox = new UIFormCheckBoxInput<Boolean>(calendar.getId(), calendar.getId(), false);
+      UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
       if(calendar.getId().equals(selectedCalendarId)) checkBox.setChecked(true) ; 
       else checkBox.setChecked(false) ;
       if(eventId != null) checkBox.setEnable(false) ;
@@ -149,8 +150,9 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
     return secondWhiteSpacePos;
   }
 
+  @Override
   public String getLabel(String id) throws Exception {
-      WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+      WebuiRequestContext context = RequestContext.getCurrentInstance() ;
       ResourceBundle res = context.getApplicationResourceBundle() ;     
       String label = getId() + ".label." + id;
       try {
@@ -161,19 +163,22 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       return id ;
   } 
 
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
 
   static  public class SaveActionListener extends EventListener<UIExportForm> {
+    @Override
     public void execute(Event<UIExportForm> event) throws Exception {
       UIExportForm uiForm = event.getSource() ;
       CalendarService calendarService = CalendarUtils.getCalendarService() ;
       List<UIComponent> children = uiForm.getChildren() ;
       List<String> calendarIds = new ArrayList<String> () ;
       for(UIComponent child : children) {
-        if(child instanceof UIFormCheckBoxInput) {
-          UIFormCheckBoxInput input =   ((UIFormCheckBoxInput)child) ;
-          if(input.isChecked()) calendarIds.add(((UIFormCheckBoxInput)child).getBindingField()) ;
+        if(child instanceof UICheckBoxInput) {
+          UICheckBoxInput input =   ((UICheckBoxInput)child) ;
+          if(input.isChecked()) calendarIds.add(((UICheckBoxInput)child).getBindingField()) ;
         }
       }
       if(calendarIds.isEmpty()) {
@@ -214,6 +219,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   }
 
   static  public class CancelActionListener extends EventListener<UIExportForm> {
+    @Override
     public void execute(Event<UIExportForm> event) throws Exception {
       UIExportForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;

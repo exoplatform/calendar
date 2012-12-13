@@ -94,6 +94,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public List<CalendarCategory> getCategories(String username) throws Exception {
     return storage_.getCategories(username);
   }
@@ -101,6 +102,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public List<GroupCalendarData> getCalendarCategories(String username, boolean isShowAll) throws Exception {
     return storage_.getCalendarCategories(username, isShowAll);
   }
@@ -148,6 +150,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public List<Calendar> getUserCalendarsByCategory(String username, String calendarCategoryId) throws Exception {
     return storage_.getUserCalendarsByCategory(username, calendarCategoryId);
   }
@@ -183,6 +186,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public void savePublicCalendar(Calendar calendar, boolean isNew, String username) throws Exception {
     storage_.savePublicCalendar(calendar, isNew, username);
   }
@@ -559,23 +563,13 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       saveEventCategory(userName, eventCategory, true);
     }
 
-    // save default calendar category
-    CalendarCategory calCategory = new CalendarCategory();
-    calCategory.setId(NewUserListener.defaultCalendarCategoryId);
-    calCategory.setName(NewUserListener.defaultCalendarCategoryName);
-    calCategory.setDataInit(true);
-    saveCalendarCategory(userName, calCategory, true);
-
     // save default calendar
     Calendar cal = new Calendar();
     cal.setId(Utils.getDefaultCalendarId(userName));
-    cal.setName(NewUserListener.defaultCalendarName);
-    cal.setCategoryId(calCategory.getId());
+    cal.setName(userName);
     cal.setDataInit(true);
     cal.setCalendarOwner(userName);
     if (defaultCalendarSetting_ != null) {
-      if (defaultCalendarSetting_.getLocation() != null)
-        cal.setLocale(defaultCalendarSetting_.getLocation());
       if (defaultCalendarSetting_.getTimeZone() != null)
         cal.setTimeZone(defaultCalendarSetting_.getTimeZone());
     }

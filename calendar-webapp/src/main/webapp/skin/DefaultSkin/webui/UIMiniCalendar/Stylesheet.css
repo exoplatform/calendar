@@ -1,9 +1,6 @@
 .UICalendarPortlet .UIMiniCalendar {
   color: #464646;
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 0px;
+
 }
 
 .UICalendarPortlet .UIMiniCalendar .MiniCalendarContainer {

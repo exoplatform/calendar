@@ -91,6 +91,8 @@ public class CalendarDataInjector extends DataInjector {
   private String[]               groups             = new String[] { EMPTY };
 
   private Random                 rand               = new Random();
+  
+  private static final String DEFAULT_LOCATION = "VNM";
 
   public CalendarDataInjector(CalendarService calService, InitParams params) {
     initParams(params);
@@ -384,7 +386,6 @@ public class CalendarDataInjector extends DataInjector {
     setting.setWorkingTimeBegin("08:00");
     setting.setWorkingTimeEnd("18:00");
     setting.setShowWorkingTime(false);
-    setting.setLocation("VNM");
     setting.setTimeZone("Asia/Ho_Chi_Minh");
     return setting;
   }
@@ -403,7 +404,7 @@ public class CalendarDataInjector extends DataInjector {
     calendar.setPrivateUrl(EMPTY);
     calendar.setPublicUrl(EMPTY);
     calendar.setPublic(false);
-    calendar.setLocale(setting.getLocation());
+    calendar.setLocale(DEFAULT_LOCATION);
     calendar.setTimeZone(setting.getTimeZone());
     return calendar;
   }
@@ -429,7 +430,6 @@ public class CalendarDataInjector extends DataInjector {
   private EventCategory newEventCategory() {
     EventCategory eventCategory = new EventCategory();
     eventCategory.setDataInit(true);
-    eventCategory.setDescription(randomWords(20));
     eventCategory.setName(calRandomWords(5));
     return eventCategory;
   }
@@ -451,7 +451,7 @@ public class CalendarDataInjector extends DataInjector {
     time = randomDateTime(rand.nextInt(5), time);
     categoryEvent.setToDateTime(getTime(time));
 
-    categoryEvent.setLocation(setting.getLocation());
+    categoryEvent.setLocation(DEFAULT_LOCATION);
     categoryEvent.setMessage(randomWords(30));
 
     categoryEvent.setInvitation(new String[] { EMPTY });

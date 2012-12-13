@@ -78,6 +78,7 @@ public class UIMiniCalendar extends UICalendarView  {
   }
   
   protected Map<Integer, String> getData(){ return dataMap ; }
+  @Override
   public LinkedHashMap<String, CalendarEvent> getDataMap(){ return null ; }
 
   public java.util.Calendar getBeginDateOfMonthView() throws Exception{
@@ -111,9 +112,11 @@ public class UIMiniCalendar extends UICalendarView  {
   public void setCategoryId(String categoryId) {
     categoryId_ = categoryId ;
   }
+  @Override
   public String getSelectedCategory() {
     return categoryId_  ;
   }
+  @Override
   public void refresh() throws Exception {
     dataMap.clear() ;
     EventQuery eventQuery = new EventQuery() ;
@@ -128,6 +131,7 @@ public class UIMiniCalendar extends UICalendarView  {
     dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars(), timezone));
   }
   static  public class MoveNextActionListener extends EventListener<UIMiniCalendar> {
+    @Override
     public void execute(Event<UIMiniCalendar> event) throws Exception {
       UIMiniCalendar miniCal = event.getSource() ;
       String type = event.getRequestContext().getRequestParameter(OBJECTID) ;
@@ -142,6 +146,7 @@ public class UIMiniCalendar extends UICalendarView  {
   }
 
   static  public class MovePreviousActionListener extends EventListener<UIMiniCalendar> {
+    @Override
     public void execute(Event<UIMiniCalendar> event) throws Exception {
       UIMiniCalendar miniCal = event.getSource() ;
       String type = event.getRequestContext().getRequestParameter(OBJECTID) ;

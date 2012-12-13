@@ -1,0 +1,32 @@
+<div id="$uicomponent.id" class="UIPermissionGrid">
+  <table class="UIGrid">
+  <thead>
+    <tr>
+      <th><%=_ctx.appRes("UIPermissionGrid.label.Owner")%></th>
+      <th class="center"><%=_ctx.appRes("UIPermissionGrid.label.ViewCalendar")%></th>
+      <th class="center"><%=_ctx.appRes("UIPermissionGrid.label.EditCalendar")%></th>
+      <th class="center"><%=_ctx.appRes("UIPermissionGrid.label.Action")%></th>
+    </tr>
+  </thead>
+  <tbody>
+  <%
+    List children = uicomponent.getChildren() ;
+    int index = 0;
+    String rowClass;
+    for(component in children) {
+      if(component.isRendered()) {
+        index++;
+        if(index%2 == 1){
+            rowClass = "EvenRow";
+        }else{
+            rowClass = "OddRow";
+        }
+        %>
+        <tr><% uicomponent.renderChild(component); %></tr>
+    <% }
+    }
+  %>
+
+  </tbody>
+  </table>
+</div>

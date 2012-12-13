@@ -37,7 +37,9 @@ import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -197,7 +199,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     setRemotePassword(remoteCalendar.getRemotePassword());
     getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX).setValue(remoteCalendar.getBeforeDateSave()) ;
     getUIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX).setValue(remoteCalendar.getAfterDateSave()) ;
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+    WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     Locale locale = context.getParentAppRequestContext().getLocale() ;
     DateFormat df = new SimpleDateFormat(calSettings.getDateFormat() + " " + calSettings.getTimeFormat(), locale) ;
     df.setTimeZone(TimeZone.getTimeZone(calSettings.getTimeZone()));
@@ -289,6 +291,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
   }
   
   public static class SaveActionListener extends EventListener<UIRemoteCalendar> {
+    @Override
     public void execute(Event<UIRemoteCalendar> event) throws Exception {
       UIRemoteCalendar uiform = event.getSource();
       UICalendarPortlet calendarPortlet = uiform.getAncestorOfType(UICalendarPortlet.class);
@@ -307,7 +310,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
           // check valid url
           if(!calService.isValidRemoteUrl(remoteCalendar.getRemoteUrl(), remoteCalendar.getType(), "", "")) {
             // pop-up error message: invalid ics url
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.url-is-invalid", null, ApplicationMessage.WARNING));
+            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.url-is-invalid", null, AbstractApplicationMessage.WARNING));
             return;
           }
         } else {
@@ -315,25 +318,25 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
           remoteCalendar.setRemotePassword(uiform.getRemotePassword());
           if(CalendarUtils.isEmpty(remoteCalendar.getRemoteUser())) {
             // pop-up error message: require remote username
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.remote-user-name-required", null, ApplicationMessage.WARNING));
+            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.remote-user-name-required", null, AbstractApplicationMessage.WARNING));
             return;
           }
           
           //check valid url
           if(!calService.isValidRemoteUrl(remoteCalendar.getRemoteUrl(), remoteCalendar.getType(), remoteCalendar.getRemoteUser(), remoteCalendar.getRemotePassword())) {
             // pop-up error message: invalid caldav url
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.url-is-invalid-or-wrong-authentication", null, ApplicationMessage.WARNING));
+            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.url-is-invalid-or-wrong-authentication", null, AbstractApplicationMessage.WARNING));
             return;
           }          
         }
       }
       catch (UnsupportedOperationException e) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.remote-server-doesnt-support-caldav-access", null, ApplicationMessage.WARNING));
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.remote-server-doesnt-support-caldav-access", null, AbstractApplicationMessage.WARNING));
         
         return;
       }
       catch (IOException e) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.cannot-connect-to-remote-server", null, ApplicationMessage.WARNING));
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.cannot-connect-to-remote-server", null, AbstractApplicationMessage.WARNING));
         return;
       }
       catch (Exception e) {
@@ -359,13 +362,13 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       }
       catch (Exception e) {
         logger.warn("Exception occurs when importing remote calendar", e);
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.cant-import-remote-calendar", null, ApplicationMessage.ERROR));
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg.cant-import-remote-calendar", null, AbstractApplicationMessage.ERROR));
         return;
       }
       
       calendarPortlet.cancelAction() ;
       UICalendarWorkingContainer uiWorkingContainer = calendarPortlet.getChild(UICalendarWorkingContainer.class) ;
-      event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg-import-succesfully", null, ApplicationMessage.INFO));
+      event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg-import-succesfully", null, AbstractApplicationMessage.INFO));
       event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;      
       
     }

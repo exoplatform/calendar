@@ -29,8 +29,6 @@ public class EventCategory {
 
   private String  name;
 
-  private String  description;
-
   private boolean isDataInit = false;
 
   public EventCategory() {
@@ -43,14 +41,6 @@ public class EventCategory {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public void setDataInit(boolean isDataInit) {

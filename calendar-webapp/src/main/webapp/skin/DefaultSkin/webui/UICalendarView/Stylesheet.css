@@ -39,7 +39,18 @@
   background-color: #f4f4f4;
   border: 1px solid #c7c7c7;
   border-top: none;
-  height: 28px;
+}
+
+.UIDayView .EventAllDay .RightContinueEvent { 
+  height: 13px;
+  width: 10px;
+  float:right;
+}
+
+.UIDayView .EventAllDay .LeftContinueEvent {
+  height: 13px;
+  width: 10px;
+  float:left;
 }
 
 .UIDayView .MainWorkingPanel {
@@ -104,7 +115,7 @@
 
 .UIDayView .EventAllDay .EventContainerBorder{
   border:1px solid #808080;
-  width: 100%; height: 24px;
+  width: 100%; height: 14px;
 }
 
 .UIDayView .EventAllDay .EventContainerBorder .EventContainerBar{
@@ -344,7 +355,6 @@
 }
 
 .UIWeekView .EventAlldayContainer .LeftResizeEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat left -130px;
   width: 2px;
   height: 11px;
   cursor: w-resize;
@@ -362,7 +372,6 @@
 }
 
 .UIWeekView .EventAlldayContainer .RightResizeEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat right -130px;  
   width: 2px;
   height: 11px;
   cursor: w-resize;
@@ -372,24 +381,16 @@
   right:0px;
 }
 
-.UIWeekView .EventAlldayContainer .RightContinueEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat left -292px;  
-  width: 8px;
-  height: 9px;
-  margin: 2px 0px 0px 0px ;
-  position:absolute;
-  top:0px;
-  right:0px;
+.UIWeekView .EventAlldayContainer .RightContinueEvent { 
+  height: 13px;
+  width: 10px;
+  float:right;
 }
 
 .UIWeekView .EventAlldayContainer .LeftContinueEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat left -308px;  
-  width: 8px;
-  height: 9px;
-  margin: 2px 0px 0px 0px ;
-  position:absolute;
-  top:0px;
-  left:0px;
+  height: 13px;
+  width: 10px;
+  float:left;
 }
 
 .UIWeekView .WorkOffTime {
@@ -1117,15 +1118,23 @@
   overflow: hidden;
 }
 
-.UIMonthView .EventMonthContent .RightContinueEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat right -287px;  
-  padding-right: 9px;
-  height: 17px;
+.UIMonthView .EventMonthContent .NextRight {
+  float:right;
 }
 
-.UIMonthView .EventMonthContent .LeftContinueEvent {
-  background: url('../background/CalendarBackground.gif') no-repeat left -303px;  
-  padding-left: 9px;
+.UIMonthView .EventMonthContent .NextLeft {
+  float:left;
+}
+
+
+.UIMonthView .EventMonthContent .NextLeftEvent { 
+  height: 20px;
+  width: 10px;
+}
+
+.UIMonthView .EventMonthContent .NextRightEvent {
+  height: 20px;
+  width: 10px;
 }
 
 .UIMonthView .EventMonthContent .EventLabel {

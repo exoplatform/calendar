@@ -46,12 +46,9 @@
  
   requirejs.addScripts('cal.UICalendarPortlet.showEvent() ;') ;
   requirejs.addScripts('cal.UICalendarPortlet.initSelection() ;') ;
-  //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;  
   rcontext.getJavascriptManager().addOnResizeJavascript('cal.UICalendarPortlet.browserResizeCallback') ;  
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  //rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout();');  
-  
   cssClass = "Day" ;
   
   DateFormat tempFormat = new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;
@@ -64,18 +61,17 @@
   <div class="EventAllDay">
     <table>
       <tbody>
-        <tr>
+        
           <%
-            int size = uicomponent.getAllDayEvents().size() ;
             for(ce in uicomponent.getAllDayEvents()) {             
             actionLink = uicomponent.event("UpdateEvent",ce.id);
-            long precent = (99 / size) ;
             color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;
             Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
             String recurId = ce.getRecurrenceId();
           %>
-           <td width="$precent%">
-            <div unselectable="on" class="EventContainerBorder EventBoxes $color" style="height:20px;border:solid 1px white;" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink" isOccur="$isOccur" recurId="$recurId">
+          <tr>
+           <td>
+            <div unselectable="on" class="EventContainerBorder EventBoxes ClearFix $color" style="border:solid 1px white;" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink" isOccur="$isOccur" recurId="$recurId">
               <input type="hidden" name="${ce.id}calType" value="$ce.calType" />
               <input type="hidden" name="${ce.id}calendarId" value="$ce.calendarId" />          
               <input type="hidden" name="${ce.id}startTime" value="" />
@@ -83,13 +79,20 @@
               <input type="hidden" name="${ce.id}isOccur" value="$isOccur" />
               <input type="hidden" name="${ce.id}recurId" value="$recurId" />
               <input type="hidden" name="${ce.id}currentDate" value="" />
+              <%if(!uicomponent.isSameDate(ce.getFromDateTime(), uicomponent.calendar_.getTime())){%>
+            	<div class="LeftContinueEvent"><i class="uiIconMiniArrowLeft"></i></div>
+              <%}%>
+              <%if(!uicomponent.isSameDate(ce.getToDateTime(), uicomponent.calendar_.getTime())){%>
+                <div class="RightContinueEvent"><i class="uiIconMiniArrowRight"></i></div>
+              <%}%>
               <div class="EventContainer" rel="tooltip" data-placement="bottom" title="<%=dtf.format(ce.getFromDateTime())%>:-><%=dtf.format(ce.getToDateTime())%>">
                 <%=ce.getSummary()%>
               </div>
             </div>
           </td>
+        </tr>
         <%}%>
-    </tr>
+   
     </tbody>
     </table>
   </div>

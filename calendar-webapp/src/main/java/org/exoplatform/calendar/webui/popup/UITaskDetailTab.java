@@ -30,13 +30,7 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
-import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormInputInfo;
-import org.exoplatform.webui.form.UIFormInputWithActions;
-import org.exoplatform.webui.form.UIFormSelectBox;
-import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
-import org.exoplatform.webui.form.UIFormStringInput;
-import org.exoplatform.webui.form.UIFormTextAreaInput;
+import org.exoplatform.webui.form.*;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
@@ -198,6 +192,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     }
     return options ;
   }
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }

@@ -47,7 +47,6 @@ import org.exoplatform.webui.event.EventListener;
         @EventConfig(listeners = UIActionBar.QuickAddEventActionListener.class),
         @EventConfig(listeners = UIActionBar.ChangeViewActionListener.class),
         @EventConfig(listeners = UIActionBar.SettingActionListener.class),
-        @EventConfig(listeners = UIActionBar.RSSActionListener.class),
         @EventConfig(listeners = UIActionBar.TodayActionListener.class)
     }
 )
@@ -71,6 +70,7 @@ public class UIActionBar extends UIContainer  {
   protected void setShowPane(boolean isShow) {isShowPane_ = isShow ;}
   
   static public class QuickAddEventActionListener extends EventListener<UIActionBar> {
+    @Override
     public void execute(Event<UIActionBar> event) throws Exception {
       UIActionBar uiActionBar = event.getSource() ;
       if(CalendarUtils.getCalendarOption().isEmpty()) {
@@ -90,6 +90,7 @@ public class UIActionBar extends UIContainer  {
   }
 
   static public class ChangeViewActionListener extends EventListener<UIActionBar> {
+    @Override
     public void execute(Event<UIActionBar> event) throws Exception {
       UIActionBar uiActionBar = event.getSource() ;     
       String viewType = event.getRequestContext().getRequestParameter(OBJECTID) ;
@@ -114,6 +115,7 @@ public class UIActionBar extends UIContainer  {
   }  
 
   static public class TodayActionListener extends EventListener<UIActionBar> {
+    @Override
     public void execute(Event<UIActionBar> event) throws Exception {
       UIActionBar uiActionBar = event.getSource() ;     
       UICalendarPortlet uiPortlet = uiActionBar.getAncestorOfType(UICalendarPortlet.class) ;
@@ -141,6 +143,7 @@ public class UIActionBar extends UIContainer  {
     }
   }  
   static public class SettingActionListener extends EventListener<UIActionBar> {
+    @Override
     public void execute(Event<UIActionBar> event) throws Exception {
       UIActionBar uiActionBar = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiActionBar.getAncestorOfType(UICalendarPortlet.class) ;
@@ -157,6 +160,7 @@ public class UIActionBar extends UIContainer  {
   }
 
   static public class RSSActionListener extends EventListener<UIActionBar> {
+    @Override
     @SuppressWarnings("unchecked")
     public void execute(Event<UIActionBar> event) throws Exception {
       UIActionBar uiActionBar = event.getSource() ;

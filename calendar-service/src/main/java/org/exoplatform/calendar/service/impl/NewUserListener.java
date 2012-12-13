@@ -35,8 +35,7 @@ public class NewUserListener extends UserEventListener {
 
   private static final Log   LOG                                    = ExoLogger.getLogger(NewUserListener.class);
 
-  final public static String CALENDAR_CATEGORY = "defaultCalendarCategory".intern();  
-  final public static String CALENDAR_NAME = "defaultCalendar".intern();
+  
   final public static String EVENT_CATEGORIES = "defaultEventCategories".intern();
   final public static String COMA = ",".intern();
   
@@ -109,7 +108,9 @@ public class NewUserListener extends UserEventListener {
   public static String[] defaultEventCategoryNames = DEFAULT_EVENT_CATEGORY_NAMES;
 
   private CalendarService cservice_;
+  @Deprecated
   public static String defaultCalendarCategoryId = DEFAULT_CALENDAR_CATEGORYID;
+  @Deprecated
   public static String defaultCalendarCategoryName = DEFAULT_CALENDAR_CATEGORYNAME;
 
   @Deprecated
@@ -132,31 +133,6 @@ public class NewUserListener extends UserEventListener {
   @SuppressWarnings("unchecked")
   public NewUserListener(CalendarService cservice, InitParams params) throws Exception {
     cservice_ = cservice;
-        
-    // Get default calendar category
-    if (params.getValueParam(CALENDAR_CATEGORY) != null) {
-      defaultCalendarCategoryId = params.getValueParam(CALENDAR_CATEGORY).getValue().trim();
-      if (defaultCalendarCategoryId.equals(DEFAULT_CALENDAR_CATEGORYID)) {
-        defaultCalendarCategoryName = DEFAULT_CALENDAR_CATEGORYNAME;
-      } else {
-        defaultCalendarCategoryName = defaultCalendarCategoryId;
-      }
-    } else {
-      LOG.warn("Config for Default calendar category does not exist!");
-    }
-
-    // Get default calendars
-    if (params.getValueParam(CALENDAR_NAME) != null) {
-      defaultCalendarId = params.getValueParam(CALENDAR_NAME).getValue().trim();
-      if (defaultCalendarId.equals(DEFAULT_CALENDAR_ID)) {
-        defaultCalendarName = DEFAULT_CALENDAR_NAME;
-      } else {
-        defaultCalendarName = defaultCalendarId;
-      }
-    } else {
-      LOG.warn("Config for Default calendar does not exist!");
-    }
-
     // Get default event categories
     if (params.getValueParam(EVENT_CATEGORIES) != null) {
       // Get config value
@@ -209,9 +185,6 @@ public class NewUserListener extends UserEventListener {
     if (params.getValueParam(ST_TIME_FORMAT) != null) {
       defaultCalendarSetting_.setTimeFormat(params.getValueParam(ST_TIME_FORMAT).getValue());
     }
-    if (params.getValueParam(ST_LOCALE) != null) {
-      defaultCalendarSetting_.setLocation(params.getValueParam(ST_LOCALE).getValue());
-    }
     if (params.getValueParam(ST_TIMEZONE) != null) {
       defaultCalendarSetting_.setTimeZone(params.getValueParam(ST_TIMEZONE).getValue());
     }
@@ -261,7 +234,6 @@ public class NewUserListener extends UserEventListener {
           return;
       }
     try {
-      defaultCalendarName = user.getFullName();
       cservice_.initNewUser(user.getUserName(), defaultCalendarSetting_);
     } catch (Exception e) {
       LOG.error("Failed to initialize calendar account for " + user.getUserName());

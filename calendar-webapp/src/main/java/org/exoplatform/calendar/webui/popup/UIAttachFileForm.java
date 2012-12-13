@@ -25,6 +25,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -89,7 +90,9 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
 
   public long getAttSize() {return attSize ;}
   public void setAttSize(long value) { attSize = value ;}
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
 
   public static void removeUploadTemp(UploadService uservice, String uploadId) {
@@ -103,6 +106,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
   }
 
   static  public class SaveActionListener extends EventListener<UIAttachFileForm> {
+    @Override
     public void execute(Event<UIAttachFileForm> event) throws Exception {
       UIAttachFileForm uiForm = event.getSource();
       List<Attachment> files = new ArrayList<Attachment>() ;
@@ -119,7 +123,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
                  .getUIApplication()
                  .addMessage(new ApplicationMessage("UIAttachFileForm.msg.total-attachts-size-over10M",
                                                     null,
-                                                    ApplicationMessage.WARNING));
+                                                    AbstractApplicationMessage.WARNING));
             return ;
           }
           Attachment attachfile = new Attachment() ;
@@ -134,7 +138,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
       if(files.isEmpty()){
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIAttachFileForm.msg.fileName-error",
                                                                                        null,
-                                                                                       ApplicationMessage.WARNING));
+                                                                                       AbstractApplicationMessage.WARNING));
         return ;
       } else {
         UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
@@ -165,6 +169,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
   }
 
   static  public class CancelActionListener extends EventListener<UIAttachFileForm> {
+    @Override
     public void execute(Event<UIAttachFileForm> event) throws Exception {
       UIAttachFileForm uiFileForm = event.getSource() ;
       int i = 0 ;
@@ -182,6 +187,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
 
   public static class AddOneMoreFileActionListener extends EventListener<UIAttachFileForm>
   {
+    @Override
     public void execute(Event<UIAttachFileForm> event) throws Exception
     {
       UIAttachFileForm uiFileForm = event.getSource() ;
@@ -191,14 +197,12 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
             .getUIApplication()
             .addMessage(new ApplicationMessage("UIAttachFileForm.msg.over-max-number-of-upload-field",
                 null,
-                ApplicationMessage.WARNING));
+                AbstractApplicationMessage.WARNING));
         return ;
       }
 
       uiFileForm.createUploadInputNumber(uiFileForm.currentNumberOfUploadInput + 1);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiFileForm);
-      //UIPopupAction uiPopupAction = uiFileForm.getAncestorOfType(UIPopupAction.class) ;
-      //event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }
   }
 }

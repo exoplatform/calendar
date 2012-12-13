@@ -12,9 +12,11 @@ public class UIEmailInput extends UIFormStringInput {
     super(arg0, arg1);
     this.value_ = value;
   }
+  @Override
   public void decode(Object input, WebuiRequestContext context) throws Exception {
     if(input != null) value_ = ((String)input).trim();
   }
+  @Override
   public void processRender(WebuiRequestContext context) throws Exception {
     context.getJavascriptManager().loadScriptResource("eXo.cs.UIEmailInput") ;
 	

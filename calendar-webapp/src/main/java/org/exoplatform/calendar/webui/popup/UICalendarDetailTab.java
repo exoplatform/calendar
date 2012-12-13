@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.webui.config.Component;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 
@@ -34,13 +37,17 @@ import org.exoplatform.webui.form.UIFormInputWithActions;
 )
 public class UICalendarDetailTab extends UIFormInputWithActions {
   private Map<String, List<ActionData>> actionField_ = new HashMap<String, List<ActionData>>() ;
-  
+
+  private static final Log LOG = ExoLogger.getExoLogger(UICalendarDetailTab.class);
+
   public UICalendarDetailTab(String id) throws Exception {
-    super(id) ; 
+    super(id) ;
+
     setComponentConfig(getClass(), null) ;
   }
   
 
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }

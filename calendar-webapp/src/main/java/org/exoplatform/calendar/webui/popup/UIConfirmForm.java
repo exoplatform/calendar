@@ -66,11 +66,13 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
 
   
   
+  @Override
   public void activate() throws Exception {
     
   }
 
 
+  @Override
   public void deActivate() throws Exception {
     
   }

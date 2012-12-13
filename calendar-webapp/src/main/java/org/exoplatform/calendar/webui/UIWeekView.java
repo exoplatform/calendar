@@ -87,6 +87,7 @@ public class UIWeekView extends UICalendarView {
     super() ;
   }
 
+  @Override
   public void refresh() throws Exception {
     eventData_.clear() ;
     allDayEvent.clear();
@@ -131,7 +132,7 @@ public class UIWeekView extends UICalendarView {
     
     Iterator<CalendarEvent> iter = allEvents.iterator() ;
     while(iter.hasNext()) {
-      CalendarEvent event = (CalendarEvent)iter.next() ;
+      CalendarEvent event = iter.next() ;
       Date beginEvent = event.getFromDateTime() ;
       Date endEvent = event.getToDateTime() ;
       long eventAmount = endEvent.getTime() - beginEvent.getTime() ;
@@ -176,6 +177,7 @@ public class UIWeekView extends UICalendarView {
 
   protected Map<String, List<CalendarEvent>> getEventData() {return eventData_ ;}
 
+  @Override
   public LinkedHashMap<String, CalendarEvent> getDataMap() {
     LinkedHashMap<String, CalendarEvent> dataMap = new LinkedHashMap<String,  CalendarEvent>() ;
     for (CalendarEvent ce : allDayEvent) {
@@ -191,6 +193,7 @@ public class UIWeekView extends UICalendarView {
   public boolean isShowCustomView() {return isShowCustomView_ ;}
   
   static  public class UpdateEventActionListener extends EventListener<UIWeekView> {
+    @Override
     public void execute(Event<UIWeekView> event) throws Exception {
       UIWeekView calendarview = event.getSource() ;
       
@@ -296,6 +299,7 @@ public class UIWeekView extends UICalendarView {
   }
 
   static  public class UpdateAllDayEventActionListener extends EventListener<UIWeekView> {
+    @Override
     public void execute(Event<UIWeekView> event) throws Exception {
       UIWeekView calendarview = event.getSource() ;
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);

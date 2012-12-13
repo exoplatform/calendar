@@ -15,7 +15,6 @@
   String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
   WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
    Locale locale = context.getParentAppRequestContext().getLocale() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
@@ -90,14 +89,12 @@
             for(event in uicomponent.getEvents()){
               rowStyle = "" ;
               if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#F5F5F5;";}
-              attachIcon = "" ;
-              if(!event.getAttachment().isEmpty()) {attachIcon = "AttachmentIcon" ;}
               String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
 			  def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
           %>
               <tr id="UIListEvent_1" actionLink="$actionLink"  class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
                 <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
-                <td style="padding: 0px 0px 0px 7px;"><div class="$attachIcon" >&nbsp;</div></td>
+                <td style="padding: 0px 0px 0px 7px;"><div><%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%></div></td>
                 <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>      
                 <td class="text">
 				  <div class="EventDescription $color"><span></span></div>

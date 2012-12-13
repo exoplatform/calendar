@@ -54,7 +54,6 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
   final public static String WEEK_START_ON = "weekStartOn".intern() ;
   final public static String DATE_FORMAT = "dateFormat".intern() ;
   final public static String TIME_FORMAT = "timeFormat".intern() ;
-  final public static String LOCATION = "location".intern() ;
   final public static String TIMEZONE = "timeZone".intern() ;
   final public static String ISSHOWWORKINGTIME = "showWorkingTime".intern() ;
   final public static String WORKINGTIME_BEGIN = "beginTime".intern() ;
@@ -70,11 +69,10 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     List<SelectItemOption<String>> viewTypes = new ArrayList<SelectItemOption<String>>() ;
     viewTypes.add(new SelectItemOption<String>(CalendarSetting.DAY_VIEW, CalendarSetting.DAY_VIEW)) ;
     viewTypes.add(new SelectItemOption<String>(CalendarSetting.WEEK_VIEW, CalendarSetting.WEEK_VIEW)) ;
-    viewTypes.add(new SelectItemOption<String>(CalendarSetting.WORKING_VIEW, CalendarSetting.WORKING_VIEW)) ;
     viewTypes.add(new SelectItemOption<String>(CalendarSetting.MONTH_VIEW, CalendarSetting.MONTH_VIEW)) ;
     viewTypes.add(new SelectItemOption<String>(CalendarSetting.LIST_VIEW, CalendarSetting.LIST_VIEW)) ;
-    //viewTypes.add(new SelectItemOption<String>("Schedule view", CalendarSetting.SCHEDULE_VIEW)) ;
-
+    viewTypes.add(new SelectItemOption<String>(CalendarSetting.WORKING_VIEW, CalendarSetting.WORKING_VIEW)) ;
+    
     addUIFormInput(new UIFormSelectBox(VIEW_TYPE, VIEW_TYPE, viewTypes)) ;
 
     List<SelectItemOption<String>> weekStartOn = new ArrayList<SelectItemOption<String>>() ;
@@ -96,8 +94,6 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     timeFormat.add(new SelectItemOption<String>(CalendarUtils.TWELVE_HOURS, CalendarUtils.TWELVE_HOURS)) ;
     timeFormat.add(new SelectItemOption<String>(CalendarUtils.TWENTY_FOUR_HOURS, CalendarUtils.TWENTY_FOUR_HOURS)) ;
     addUIFormInput(new UIFormSelectBox(TIME_FORMAT, TIME_FORMAT, timeFormat)) ;
-    UIFormSelectBox localeSelect = new UIFormSelectBox(LOCATION, LOCATION, getLocales()) ;
-    addUIFormInput(localeSelect) ;
     addUIFormInput(new UIFormSelectBox(TIMEZONE, TIMEZONE, getTimeZones(null))) ;
     addUIFormInput(new UICheckBoxInput(ISSHOWWORKINGTIME, ISSHOWWORKINGTIME, false)) ;
     List<SelectItemOption<String>> startTimes = new ArrayList<SelectItemOption<String>>() ;
@@ -109,6 +105,7 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
   protected UIForm getParentFrom() {
     return (UIForm)getParent() ;
   }
+  @Override
   public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
     actionField_.put(fieldName, actions) ;
   }
@@ -232,9 +229,9 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     return CalendarUtils.getLocaleSelectBoxOptions(java.util.Calendar.getAvailableLocales()) ;
   }
   public String getSendOption() {
-    return ((UIFormRadioBoxInput)getChild(UIFormRadioBoxInput.class)).getValue() ;
+    return getChild(UIFormRadioBoxInput.class).getValue() ;
   }
   public void setSendOption(String value) {
-    ((UIFormRadioBoxInput)getChild(UIFormRadioBoxInput.class)).setValue(value) ;
+    getChild(UIFormRadioBoxInput.class).setValue(value) ;
   }
 }

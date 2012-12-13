@@ -44,6 +44,7 @@ public interface CalendarService {
 
   /**
    * The method gets all calendar category of current user from data base
+   * @deprecated
    * @param username current user name
    * @return List of CalendarCategory object
    * @throws Exception
@@ -53,6 +54,9 @@ public interface CalendarService {
 
   /**
    * The method gets all groups of private calendar, and each GroupCalendar contains List of Calendar object
+   * @deprecated
+   * Since calendar 4 we decided that remove group of private calendar so all private calendar should be single belong to user
+   * @since calendar 4.0
    * @param username current user name
    * @param isShowAll The parameter to make sure that the user want to show all calendar or not, if it is <b>true</b> then 
    * it gets all calendars, if <b>false</b> it will check from calendar setting to know which calendar will be shown
@@ -61,7 +65,8 @@ public interface CalendarService {
    * @see GroupCalendarData
    */
   public List<GroupCalendarData> getCalendarCategories(String username, boolean isShowAll) throws Exception;
-
+  
+ 
   /**
    * The method gets the calendar category by given id
    * @param username current user name 
@@ -117,6 +122,7 @@ public interface CalendarService {
 
   /**
    * The method look up all private calendars by given category id
+   * @deprecated
    * @param username current user name(or user id)
    * @param calendarCategoryId given calendar category id
    * @return List calendar object

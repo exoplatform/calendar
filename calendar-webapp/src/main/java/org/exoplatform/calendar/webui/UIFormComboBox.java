@@ -118,6 +118,7 @@ public class UIFormComboBox extends UIFormInputBase<String>  {
     value_ = options_.get(0).getValue();
     return this ;
   }
+  @Override
   public void decode(Object input, WebuiRequestContext context) throws Exception {
     value_ = (String) input;
     if(value_ != null && value_.length() == 0) value_ = null ;
@@ -142,8 +143,9 @@ public class UIFormComboBox extends UIFormInputBase<String>  {
     return sb.toString() ;
   }
   
+  @Override
   public void processRender(WebuiRequestContext context) throws Exception {
-    String parentId = ((UIComponent) this.getParent()).getId();
+    String parentId = this.getParent().getId();
     
     RequireJS requirejs = context.getJavascriptManager().getRequireJS();
     requirejs.require("SHARED/webui-ext", "wx");    

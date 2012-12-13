@@ -35,6 +35,7 @@ import org.exoplatform.calendar.webui.UICalendarView;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UICalendars;
 import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -58,14 +59,10 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
     template = "system:/groovy/webui/form/UIFormTabPane.gtmpl",
     events = {
       @EventConfig(listeners = UICalendarSettingForm.SaveActionListener.class),
-      @EventConfig(listeners = UICalendarSettingForm.ChangeLocaleActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.ShowAllTimeZoneActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.CancelActionListener.class, phase = Phase.DECODE),
-      //@EventConfig(listeners = UICalendarSettingForm.DeleteActionListener.class, phase = Phase.DECODE),
-      //@EventConfig(listeners = UICalendarSettingForm.CalendarFeedActionListener.class, phase = Phase.DECODE),
-      //@EventConfig(listeners = UICalendarSettingForm.EditActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UICalendarSettingForm.AddActionListener.class, phase = Phase.DECODE),
-      @EventConfig(listeners = UICalendarSettingForm.SelectTabActionListener.class, phase = Phase.DECODE)
+      @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase = Phase.DECODE)
     }
 )
 public class UICalendarSettingForm extends UIFormTabPane implements UIPopupComponent{
@@ -89,7 +86,9 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     addUIFormInput(uiFeedTab);
   }
 
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {}
   public Map<String, String> getChildIds() {return names_ ;}
   public void init(CalendarSetting calendarSetting, CalendarService cservice) throws Exception{
@@ -105,9 +104,6 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       settingTab.setTimeFormat(calendarSetting.getTimeFormat()) ;
       settingTab.getUIFormSelectBox(UICalendarSettingTab.WORKINGTIME_BEGIN).setOptions(CalendarUtils.getTimesSelectBoxOptions(calendarSetting.getTimeFormat(), 30)) ;
       settingTab.getUIFormSelectBox(UICalendarSettingTab.WORKINGTIME_END).setOptions(CalendarUtils.getTimesSelectBoxOptions(calendarSetting.getTimeFormat(), 30)) ;
-      if(calendarSetting.getLocation() == null) {
-        calendarSetting.setLocation(Util.getPortalRequestContext().getLocale().getISO3Country()) ;
-      }
       settingTab.setTimeZone(calendarSetting.getTimeZone()) ;
       settingTab.setShowWorkingTimes(calendarSetting.isShowWorkingTime()) ;
       if(calendarSetting.isShowWorkingTime()) {
@@ -179,15 +175,7 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
   }
  
   protected List<Calendar> getPrivateCalendars(CalendarService calendarService, String username) throws Exception{
-    boolean showAll = true;
-    List<GroupCalendarData> groupCalendars = calendarService.getCalendarCategories(username, showAll) ;
-    List<Calendar> calendars = new ArrayList<Calendar>() ;
-    for(GroupCalendarData group : groupCalendars) {      
-      for (Calendar calendar : group.getCalendars()) {
-        calendars.add(calendar);
-      }
-    }
-    return calendars;
+    return calendarService.getUserCalendars(username, true);
   }
 
   protected List<Calendar> getPublicCalendars(CalendarService calendarService, String username) throws Exception{
@@ -215,12 +203,14 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     }    
     return calendars ;
   }
+  @Override
   public String getLabel(ResourceBundle res, String id) {
     if(names_.get(id) != null) return names_.get(id) ;
     String label = getId() + ".label." + id;    
     return res.getString(label);
   }
 
+  @Override
   public String getLabel(String id) {
     String label;
     try {
@@ -238,10 +228,12 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     }
     return list ;
   }
+  @Override
   public String[] getActions(){
     return new String[]{"Save", "Cancel"} ;
   }
   static  public class SaveActionListener extends EventListener<UICalendarSettingForm> {
+    @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {
       UICalendarSettingForm uiForm = event.getSource() ;      
       CalendarSetting calendarSetting = uiForm.calendarSetting_;
@@ -260,7 +252,7 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
                .getUIApplication()
                .addMessage(new ApplicationMessage("UICalendarSettingForm.msg.working-time-logic",
                                                   null,
-                                                  ApplicationMessage.WARNING));
+                                                  AbstractApplicationMessage.WARNING));
           return ;
         }
         calendarSetting.setShowWorkingTime(settingTab.getShowWorkingTimes()) ;
@@ -311,16 +303,9 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet) ;
     }
   }
-  static  public class ChangeLocaleActionListener extends EventListener<UICalendarSettingForm> {
-    public void execute(Event<UICalendarSettingForm> event) throws Exception {
-      UICalendarSettingForm uiForm = event.getSource() ;
-      String locale = uiForm.getUIFormSelectBox(UICalendarSettingTab.LOCATION).getValue() ;
-      UICalendarSettingTab calendarSettingTab = uiForm.getChildById(UICalendarSettingForm.SETTING_CALENDAR_TAB) ;
-      uiForm.getUIFormSelectBox(UICalendarSettingTab.TIMEZONE).setOptions(calendarSettingTab.getTimeZones(locale)) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UIPopupAction.class)) ;
-    }
-  }
+
   static  public class ShowAllTimeZoneActionListener extends EventListener<UICalendarSettingForm> {
+    @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {
       UICalendarSettingForm uiForm = event.getSource() ;
       UICalendarSettingTab calendarSettingTab = uiForm.getChildById(UICalendarSettingForm.SETTING_CALENDAR_TAB) ;
@@ -329,6 +314,7 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     }
   }
   static  public class CancelActionListener extends EventListener<UICalendarSettingForm> {
+    @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {
       UICalendarSettingForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -336,13 +322,8 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     }
   }
   
-  static public class SelectTabActionListener extends EventListener<UICalendarSettingForm> {
-    public void execute(Event<UICalendarSettingForm> event) throws Exception {
-      event.getRequestContext().addUIComponentToUpdateByAjax(event.getSource()) ;      
-    }
-  }  
-    
   static  public class AddActionListener extends EventListener<UICalendarSettingForm> {
+    @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {
       UICalendarSettingForm uiform = event.getSource() ;   
       UIPopupContainer popupContainer = uiform.getAncestorOfType(UIPopupContainer.class) ;

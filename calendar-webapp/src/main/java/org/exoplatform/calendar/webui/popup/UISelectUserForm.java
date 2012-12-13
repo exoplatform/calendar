@@ -41,7 +41,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 
@@ -84,11 +84,11 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
   public List<User> getData() throws Exception {
     for(Object obj : uiIterator_.getCurrentPageData()){
       User user = (User)obj ;
-      if(getUIFormCheckBoxInput(user.getUserName()) == null)
-        addUIFormInput(new UIFormCheckBoxInput<Boolean>(user.getUserName(),user.getUserName(), false)) ;
+      if(getUICheckBoxInput(user.getUserName()) == null)
+        addUIFormInput(new UICheckBoxInput(user.getUserName(),user.getUserName(), false)) ;
     }
     for(String s : pars_) {
-      if(getUIFormCheckBoxInput(s) != null) getUIFormCheckBoxInput(s).setChecked(true) ;
+      if(getUICheckBoxInput(s) != null) getUICheckBoxInput(s).setChecked(true) ;
     }
     return  new ArrayList<User>(uiIterator_.getCurrentPageData());
   }
@@ -132,9 +132,13 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
     return options;
   }
 
+  @Override
   public String[] getActions() { return new String[]{"Add", "Replace", "Close"}; }
+  @Override
   public void activate() throws Exception {}
+  @Override
   public void deActivate() throws Exception {} 
+  @Override
   public String getLabel(String id) {
     try {
       return super.getLabel(id) ;
@@ -157,6 +161,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
     groupId_ = selectedGroup ;
   }
   static  public class AddActionListener extends EventListener<UISelectUserForm> {
+    @Override
     public void execute(Event<UISelectUserForm> event) throws Exception { 
       UISelectUserForm uiForm = event.getSource();
       UIPopupContainer uiContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
@@ -166,7 +171,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
         int count = 0;
         for(Object o : uiForm.uiIterator_.getCurrentPageData()) {
           User u = (User)o ;
-          UIFormCheckBoxInput input = uiForm.getUIFormCheckBoxInput(u.getUserName()) ;
+          UICheckBoxInput input = uiForm.getUICheckBoxInput(u.getUserName()) ;
           if(input != null && input.isChecked()) {
             count++ ;
             if(!uiForm.pars_.contains(u.getUserName())) {
@@ -198,6 +203,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
     getUIStringInput(FIELD_KEYWORD).setValue(value) ;
   }
   static  public class ReplaceActionListener extends EventListener<UISelectUserForm> {
+    @Override
     public void execute(Event<UISelectUserForm> event) throws Exception { 
       UISelectUserForm uiForm = event.getSource();
       UIPopupContainer uiContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
@@ -206,7 +212,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
         StringBuilder sb = new StringBuilder() ;
         for(Object o : uiForm.uiIterator_.getCurrentPageData()) {
           User u = (User)o ;
-          UIFormCheckBoxInput input = uiForm.getUIFormCheckBoxInput(u.getUserName()) ;
+          UICheckBoxInput input = uiForm.getUICheckBoxInput(u.getUserName()) ;
           if(input != null && input.isChecked()) {
             if(sb != null && sb.length() > 0) sb.append(CalendarUtils.COMMA) ;
             sb.append(u.getUserName()) ;
@@ -227,6 +233,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
   } 
   @SuppressWarnings("unchecked")
   static  public class SearchActionListener extends EventListener<UISelectUserForm> {
+    @Override
     public void execute(Event<UISelectUserForm> event) throws Exception {
       UISelectUserForm uiForm = event.getSource() ;
       OrganizationService service = uiForm.getApplicationComponent(OrganizationService.class) ;
@@ -271,6 +278,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
     }
   }
   static  public class ChangeActionListener extends EventListener<UISelectUserForm> {
+    @Override
     public void execute(Event<UISelectUserForm> event) throws Exception {
       UISelectUserForm uiForm = event.getSource() ;
       uiForm.setSelectedGroup(uiForm.getSelectedGroup()) ;
@@ -282,12 +290,13 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
         uiForm.uiIterator_.setPageList(service.getUserHandler().getUserPageList(0));
       }
       for(String s : uiForm.pars_) {
-        if(uiForm.getUIFormCheckBoxInput(s) != null) uiForm.getUIFormCheckBoxInput(s).setChecked(true) ;
+        if(uiForm.getUICheckBoxInput(s) != null) uiForm.getUICheckBoxInput(s).setChecked(true) ;
       }
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
     }
   }
   static  public class CloseActionListener extends EventListener<UISelectUserForm> {
+    @Override
     public void execute(Event<UISelectUserForm> event) throws Exception {
       UISelectUserForm uiAddressForm = event.getSource();  
       UIPopupContainer uiContainer = uiAddressForm.getAncestorOfType(UIPopupContainer.class) ;
@@ -297,6 +306,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
     }
   }
   static  public class ShowPageActionListener extends EventListener<UISelectUserForm> {
+    @Override
     public void execute(Event<UISelectUserForm> event) throws Exception {
       UISelectUserForm uiSelectUserForm = event.getSource() ;
       int page = Integer.parseInt(event.getRequestContext().getRequestParameter(OBJECTID)) ;

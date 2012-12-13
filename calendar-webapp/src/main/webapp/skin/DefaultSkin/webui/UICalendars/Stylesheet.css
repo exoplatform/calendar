@@ -2,12 +2,7 @@
   background-color: #ffffff;
   border: 1px solid #c7c7c7;
   margin-top: 4px;
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 14px;
-  bottom: 0px;
-    
+ 
 }
 
 .UICalendarPortlet .UICalendars .UIForm {
@@ -16,10 +11,6 @@
 
 .UICalendarPortlet .UICalendars .ContentContainer {
   display: block;
-  position: absolute;
-  left: 0pt;
-  top: 0pt;
-  bottom: 0pt;
   margin-top: 27px;
   margin-bottom: 14px;
   overflow: auto;
@@ -195,7 +186,7 @@
 	width: 16px;
 }
 
-.UICalendarPortlet .UICalendars a {
+.UICalendarPortlet .UICalendars .CalendarCheckboxBlock a {
 	color: #000000;
 	display: block;
     float: left;
@@ -207,7 +198,7 @@
 	padding: 1px;
 }
 
-.UICalendarPortlet .UICalendars a:hover {
+.UICalendarPortlet .UICalendars .CalendarCheckboxBlock a:hover {
   color: #058ee6;
 }
 
@@ -289,10 +280,7 @@
 	border-bottom: 1px solid #c7c7c7;
 	height: 26px;
 	line-height: 26px;
-  position:absolute;
-  left: 0px;
-  right: 0px;
-  top: 0px;
+  
 }
 
 .UICalendarPortlet .UICalendarTasks .Title {

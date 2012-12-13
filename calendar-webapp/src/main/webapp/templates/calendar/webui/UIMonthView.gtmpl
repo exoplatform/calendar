@@ -52,15 +52,37 @@
   dtf.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
   DateFormat tempFormat = new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;
   tempFormat.setCalendar(uicomponent.getInstanceTempCalendar()) ;
+  DateFormat wf = new  SimpleDateFormat("EEE", locale) ;
+  numberOfDays = 7 ;
+  styleWidth = "width:13.8%;*width:14%;" ;
   %>
   <div class="UIMonthView">
     <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%>
+    <div class="DayTitleBar">
+    <table class="UIGrid"  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
+          <tr>
+            <%
+              cl = uicomponent.getBeginDateOfWeek() ;
+              t = 0 ; 
+              while(t++ <numberOfDays) {
+              wf.setCalendar(cl) ;
+            %>
+            <td class="UICellBlock" style="$styleWidth">
+                <%=wf.format(cl.getTime()).toUpperCase()%>
+            </td>
+            <%
+              cl.add(Calendar.DATE,1) ;
+             }
+            %>
+          </tr>
+      </table>    
+    </div>  
+    
     <div class="EventMonthContainer">
       <div class="EventMonthContent">
         <div class="RowContainerDay MainWorkingPanel" style="position:relative ;" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
-          
       <table class="UIGrid"  style="table-layout: fixed;" id="UIMonthViewGrid" cellspacing="0" borderspacing="0" eXoCallback="eXo.calendar.UICalendarMan.GUIMan.callbackHighlighter() ;">
-        <col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%">
+        <col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%">      
         <tbody>
         
           <%
@@ -150,12 +172,15 @@
           %>
           
           
-          <div class="DayContentContainer EventBoxes" startIndex="$startIndex" calType="$event.calType" eventId="$event.id" calId="$event.calendarId" eventCat="$event.eventCategoryId" 
+          <div class="DayContentContainer EventBoxes" tartIndex="$startIndex" calType="$event.calType" eventId="$event.id" calId="$event.calendarId" eventCat="$event.eventCategoryId" 
           startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
           startTime="$startTime" endTime="$endTime" moveAction="$moveAction" isOccur="$isOccur" recurId="$recurId">
             <div class="EventOnDayBorder $color">
+              <div class="ClearFix">
+              <div class="NextLeft"></div>
+              <div class="NextRight"></div>
               <div class="EventOnDayContent">
-                <div class="ClearFix">
+                
                   <div class="EventCheckbox">
                     <%uicomponent.renderField(uicomponent.getChildById(uicomponent.getCheckboxId(event)))%>
                   </div>
@@ -166,7 +191,9 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                
+              </div>
+              
               </div>
             </div>
           </div>

@@ -165,3 +165,10 @@
 .UIRightClickPopupMenu .MenuItem:hover .ItemIcon {
     color: orange;
 }
+.UICalendarPortlet .UIActionBar .UIForm{
+	float:right;
+}
+
+.UICalendarPortlet .UIActionBar .SettingButton{
+	float:right;
+}
