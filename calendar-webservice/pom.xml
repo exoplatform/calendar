@@ -55,12 +55,6 @@
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.component.command</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>commons-logging</artifactId>
-          <groupId>commons-logging</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
@@ -71,12 +65,12 @@
       <artifactId>exo.kernel.container</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
-      <artifactId>exo.portal.component.common</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.exoplatform.ws</groupId>
       <artifactId>exo.ws.rest.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gatein.portal</groupId>
+      <artifactId>exo.portal.component.common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
@@ -103,28 +97,33 @@
       <artifactId>chromattic.core</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-       <groupId>org.gatein.portal</groupId>
-      <artifactId>exo.portal.component.identity</artifactId>
-      <type>test-jar</type>
+      <groupId>org.exoplatform.tool</groupId>
+      <artifactId>exo.tool.framework.junit</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
+      <artifactId>exo.portal.component.identity</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
+    <dependency>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.jcr</artifactId>
       <scope>test</scope>
     </dependency>

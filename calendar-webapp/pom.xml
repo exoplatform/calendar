@@ -70,48 +70,48 @@
       <artifactId>exo.kernel.container</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.social</groupId>
+      <artifactId>social-component-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.common</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.web.controller</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.web.resources</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.web.server</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.core</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.eXo</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.framework</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.portal</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.portlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.social</groupId>
-      <artifactId>social-component-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -145,8 +145,14 @@
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-       <groupId>org.gatein.portal</groupId>
+      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
