@@ -149,6 +149,12 @@
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <finalName>calendar</finalName>
