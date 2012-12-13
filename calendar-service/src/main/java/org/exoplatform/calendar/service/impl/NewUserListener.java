@@ -185,9 +185,6 @@ public class NewUserListener extends UserEventListener {
     if (params.getValueParam(ST_TIME_FORMAT) != null) {
       defaultCalendarSetting_.setTimeFormat(params.getValueParam(ST_TIME_FORMAT).getValue());
     }
-    if (params.getValueParam(ST_LOCALE) != null) {
-      defaultCalendarSetting_.setLocation(params.getValueParam(ST_LOCALE).getValue());
-    }
     if (params.getValueParam(ST_TIMEZONE) != null) {
       defaultCalendarSetting_.setTimeZone(params.getValueParam(ST_TIMEZONE).getValue());
     }

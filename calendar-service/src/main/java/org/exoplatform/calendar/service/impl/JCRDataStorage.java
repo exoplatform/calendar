@@ -1764,7 +1764,6 @@ public class JCRDataStorage implements DataStorage {
     settingNode.setProperty(Utils.EXO_WEEK_START_ON, setting.getWeekStartOn());
     settingNode.setProperty(Utils.EXO_DATE_FORMAT, setting.getDateFormat());
     settingNode.setProperty(Utils.EXO_TIME_FORMAT, setting.getTimeFormat());
-    settingNode.setProperty(Utils.EXO_LOCATION, setting.getLocation());
     settingNode.setProperty(Utils.EXO_TIMEZONE, setting.getTimeZone());
     settingNode.setProperty(Utils.EXO_IS_SHOW_WORKING_TIME, setting.isShowWorkingTime());
     if (setting.isShowWorkingTime()) {
@@ -1809,8 +1808,6 @@ public class JCRDataStorage implements DataStorage {
         calendarSetting.setSendOption(settingNode.getProperty(Utils.EXO_SEND_OPTION).getString());
       if (settingNode.hasProperty(Utils.EXO_BASE_URL))
         calendarSetting.setBaseURL(settingNode.getProperty(Utils.EXO_BASE_URL).getString());
-      if (settingNode.hasProperty(Utils.EXO_LOCATION))
-        calendarSetting.setLocation(settingNode.getProperty(Utils.EXO_LOCATION).getString());
       if (settingNode.hasProperty(Utils.EXO_TIMEZONE))
         calendarSetting.setTimeZone(settingNode.getProperty(Utils.EXO_TIMEZONE).getString());
       if (settingNode.hasProperty(Utils.EXO_IS_SHOW_WORKING_TIME)) {

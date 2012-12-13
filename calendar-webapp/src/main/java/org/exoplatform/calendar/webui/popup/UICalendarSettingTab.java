@@ -54,7 +54,6 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
   final public static String WEEK_START_ON = "weekStartOn".intern() ;
   final public static String DATE_FORMAT = "dateFormat".intern() ;
   final public static String TIME_FORMAT = "timeFormat".intern() ;
-  final public static String LOCATION = "location".intern() ;
   final public static String TIMEZONE = "timeZone".intern() ;
   final public static String ISSHOWWORKINGTIME = "showWorkingTime".intern() ;
   final public static String WORKINGTIME_BEGIN = "beginTime".intern() ;
@@ -95,8 +94,6 @@ public class UICalendarSettingTab extends UIFormInputWithActions {
     timeFormat.add(new SelectItemOption<String>(CalendarUtils.TWELVE_HOURS, CalendarUtils.TWELVE_HOURS)) ;
     timeFormat.add(new SelectItemOption<String>(CalendarUtils.TWENTY_FOUR_HOURS, CalendarUtils.TWENTY_FOUR_HOURS)) ;
     addUIFormInput(new UIFormSelectBox(TIME_FORMAT, TIME_FORMAT, timeFormat)) ;
-    UIFormSelectBox localeSelect = new UIFormSelectBox(LOCATION, LOCATION, getLocales()) ;
-    addUIFormInput(localeSelect) ;
     addUIFormInput(new UIFormSelectBox(TIMEZONE, TIMEZONE, getTimeZones(null))) ;
     addUIFormInput(new UICheckBoxInput(ISSHOWWORKINGTIME, ISSHOWWORKINGTIME, false)) ;
     List<SelectItemOption<String>> startTimes = new ArrayList<SelectItemOption<String>>() ;
