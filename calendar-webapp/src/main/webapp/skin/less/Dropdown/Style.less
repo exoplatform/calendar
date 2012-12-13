@@ -1,0 +1,27 @@
+
+// The dropdown menu (ul)
+// ----------------------
+
+.uiDropdownWithIcon{
+	.uiDropDownCal{
+		&:after {
+		    content: '';
+		    display: inline-block;
+		    border-left:   6px solid transparent;
+		    border-right:  6px solid @dropdownBackground;
+		    border-bottom: 6px solid transparent;
+		    border-top: 6px solid transparent;
+		    position: absolute;
+		    top: 24px;
+		    left: -12px;
+		  }
+	
+	  li > a {
+		padding: 6px 19px;
+		i{
+			margin-right: 5px;
+		}
+	  }
+	}
+
+}

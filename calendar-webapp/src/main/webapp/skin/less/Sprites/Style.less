@@ -15,7 +15,7 @@
 // <i class="iconinbox iconwhite"></i>
 
 [class^="uiIconCal"]{
-	background-image: url("/calendar/skin/images/Icons/uiIconsCalDarkGrey.png");
+	background-image: url("/calendar/skin/images/Icons/uiIconsCalLightGrey.png");
 }
 
 /* Blue icons with optional class, or on hover/active states of certain elements */
@@ -37,9 +37,11 @@
 /* light grey icons with optional class, or on  */
 
 
-.dropdown-menu > li > a > [class^="uiIconCal"],
-.dropdown-menu > .active > a > [class^="uiIconCal"],
-.uiDropdownWithIcon .dropdown-submenu> a > [class^="uiIconCal"]
+.dropdown-menu li a > [class^="uiIconCal"],
+.dropdown-menu .active a > [class^="uiIconCal"],
+.uiDropdownWithIcon .dropdown-submenu a [class^="uiIconCal"],
+.uiDropDownCal li a [class^="uiIconCal"],
+.uiDropDownCal .active a [class^="uiIconCal"]
 {
 	background-image: url("/calendar/skin/images/Icons/uiIconsCalLightGrey.png");
 
@@ -55,7 +57,10 @@
 .uiDropdownWithIcon .dropdown-menu > .active > a > [class^="uiIconCal"],
 .uiDropdownWithIcon .dropdown-submenu:hover > a > [class^="uiIconCal"],
 .btn-primary [class^="uiIconCal"], 
-.btn-primary:hover [class^="uiIconCal"]
+.btn-primary:hover [class^="uiIconCal"],
+.uiDropDownCal > li > a:hover > [class^="uiIconCal"],
+.uiDropDownCal > .active > a > [class^="uiIconCal"],
+
 {
 	background-image: url("/calendar/skin/images/Icons/uiIconsCalWhite.png");
 

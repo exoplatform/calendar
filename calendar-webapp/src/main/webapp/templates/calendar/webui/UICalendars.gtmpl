@@ -19,62 +19,60 @@
   String[] checkPerms = uicomponent.getCheckPermissionString().split(CalendarUtils.COMMA);
 %>
 <%uiform.begin()%>
-  <div class="UICalendars">
-    <div class="TitleBar ClearFix">
-      <h6 class="Title">
-      <%=uiform.getLabel("calendars")%>
-      </h6>
-    <div id="UICalendars_calendarActions" class="ActionsButton" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("calendarActions")%>" >
-      <% /*Begin Popup Menu - Main */ %>
-	  
-		<div class="UIRightClickPopupMenu CalendarMainPopupMenu dropdown-menu" style="display: none ;"> 
+  <div class="uiBox uiCalendars">
+    <h5 class="title">
+		<div id="UICalendars_calendarActions" class="pull-right">
+		  <% /*Begin Popup Menu - Main */ %>
+			<a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("calendarActions")%>"><i class="uiIconCalSimplePlus"></i></a>
+			<div class="uiRightClickPopupMenu CalendarMainPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none ;"> 
 				<ul class="uiDropDownCal" style="display:block;">
 					<li>
 					  <a href="<%=uicomponent.event('AddCalendar','id')%>">
-						<i class=""></i>
+						<i class="uiIconCalAddCalendar"></i>
 						<%=uiform.getLabel("AddCalendar")%>
 					  </a>
 					</li>
 					<li>
 					  <a href="<%=uicomponent.event("RemoteCalendar")%>">
-						<i class=""></i>
+						<i class="uiIconCalRemoteCalendar"></i>
 						<%=uiform.getLabel("RemoteCalendar")%>
 					  </a>
 					</li>
 					<li>
 					  <a href="<%=uicomponent.event("AddEventCategory")%>">
-						<i class=""></i>
+						<i class="uiIconCalCreateEvent"></i>
 						<%=uiform.getLabel("AddEventCategory")%>
 					  </a>
 					</li>
 					<li>
 					  <a href="<%=uicomponent.event("ImportCalendar")%>">
-						<i class=""></i>
+						<i class="uiIconCalImportCalendar"></i>
 						<%=uiform.getLabel("ImportCalendar")%>
 					  </a>
 					</li>
 					<li>
 					  <a href="<%=uicomponent.event("CalendarSetting")%>">
-						<i class=""></i>
+						<i class="uiIconSetting"></i>
 						<%=uiform.getLabel("CalendarSetting")%>
 					  </a>
 					</li>
 				</ul>
+			</div>
+				
+		  <% /*End Popup Menu*/ %>
 		</div>
-            
-      <% /*End Popup Menu*/ %>
-    </div>
-  </div>
-  <div class="ContentContainer">
+		
+      <%=uiform.getLabel("calendars")%>
+ 
+	</h5>
+  <div class="contentContainer">
   <!-- start private calendars -->
-    <div class="MyCalendar">
-      <div class="CalendarTitle ClearFix">
-        <h6 class="Label CollapserFlatStyle HStyle">
+    <div class="myCalendar">
+        <h6 class="calendarTitle">
           <%=_ctx.appRes("UICalendarSettingForm.label.privateCalendar")%>
         </h6>
-      </div>
-      <div class="MyCalendarContainer">
-          <ul class="UIVTabContent" >
+      <div class="myCalendarContainer">
+          <ul class="uiVTabContent" >
         <%  
             List calendars = uicomponent.getAllPrivateCalendars();
             for(calendar in calendars) {
@@ -83,20 +81,20 @@
               Boolean isRemote = uicomponent.isRemoteCalendar(calId);
               if(calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) { icon = "SharedCalendarIcon"}
               if(uicomponent.getChildById(calId) != null) {
-                def css = "IconCheckBox checkbox";
+                def css = "iconCheckBox checkbox";
                 if(UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups()))  {css = "IconUnCheckBox checkbox";}
                 UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
-                if(chk.isChecked()){css = "IconCheckBox checkbox";}
+                if(chk.isChecked()){css = "iconCheckBox checkbox";}
         %>
             <li class="CalendarItem  CalendarItemPrivate ClearFix" calColor="$calendar.calendarColor" canEdit="true" id="$calId" calType="0" isRemote="$isRemote">
-                <div id="UICalendars_CalendarPopupMenu1" class="IconHoverSetting"></div>
+                <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini pull-right"></div>
                 <div class="CalendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$calendar.calendarColor">
-                  	<span class="ColorOpacity">
+                  	<span class="colorOpacity">
                   		<span class="$css"></span>
                   	</span>
                   </a>
-                  <a class="CalendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendar.name">$calendar.name</a>
+                  <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendar.name">$calendar.name</a>
                   <span style="display:none"><%uiform.renderField(calId)%></span>
                 </div>
             </li>
@@ -108,19 +106,18 @@
     </div>
     <!-- end private calendars -->
     <!-- shared calendars -->
-    <div class="MyCalendar">
-      <div class="CalendarTitle ClearFix">
-        <h6 class="Label CollapserFlatStyle HStyle">
+    <div class="myCalendar">
+      
+        <h6 class="calendarTitle">
           <%=_ctx.appRes("UICalendarSettingForm.label.sharedCalendar")%>
         </h6>
-      </div>
-      <div class="MyCalendarContainer">
+      <div class="myCalendarContainer">
         <%
           GroupCalendarData sharedCalendars = uicomponent.getSharedCalendars() ;
           if(sharedCalendars != null) {
         %>
            
-          <ul class="UIVTabContent" >
+          <ul class="uiVTabContent" >
         <%  
             List calendarList = sharedCalendars.getCalendars() ;
             for(calendar in calendarList) {
@@ -131,20 +128,20 @@
             if(calendar.getCalendarOwner() != null) {
               owner = calendar.getCalendarOwner() + "- " ;
             }
-            def css = "IconCheckBox checkbox";
+            def css = "iconCheckBox checkbox";
             if(UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups()))  {css = "IconUnCheckBox checkbox";}
             UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
-            if(chk.isChecked()){css = "IconCheckBox checkbox";}
+            if(chk.isChecked()){css = "iconCheckBox checkbox";}
         %>
             <li class="CalendarItem CalendarItemShared ClearFix" calColor="$color" id="$calId" calType="1"  canEdit="<%=uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)%>">
-            <div id="UICalendars_CalendarPopupMenu2" class="IconHoverSetting" ></div>
+            <div id="UICalendars_CalendarPopupMenu2" class="uiIconCalSettingMini pull-right" ></div>
                 <div class="CalendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$color">
-                  	<span class="ColorOpacity">
+                  	<span class="colorOpacity">
                   		<span class="$css"></span>
                   	</span>
                   </a>
-                  <a class="CalendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="<%=owner + calendar.getName()%>"><%=owner + calendar.getName()%></a>
+                  <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="<%=owner + calendar.getName()%>"><%=owner + calendar.getName()%></a>
   								<span style="display:none;"><%uiform.renderField(calendar.getId())%></span>
 								</div>
             </li>
@@ -161,34 +158,32 @@
     </div>
     <!-- end shared calendars -->
     <!-- start public calendars -->
-    <div class="MyCalendar">
-      <div class="CalendarTitle ClearFix">
-        <h6 class="Label CollapserFlatStyle HStyle" rel="tooltip" data-placement="bottom" title="Collapser my calendar">
+    <div class="myCalendar">
+        <h6 class="calendarTitle" rel="tooltip" data-placement="bottom" title="Collapser my calendar">
           <%=_ctx.appRes("UICalendarSettingForm.label.publicCalendar")%>
         </h6>
-      </div>
-      <div class="MyCalendarContainer">
+      <div class="myCalendarContainer">
          
-          <ul class="UIVTabContent" >
+          <ul class="uiVTabContent" >
         <%  
             List calendarList = uicomponent.getAllPublicCalendars() ;
             for(calendar in calendarList) {
               calId = calendar.getId() ;
               if(uicomponent.getChildById(calId) != null) {
-                def css = "IconCheckBox checkbox";
+                def css = "iconCheckBox checkbox";
                 if(UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups()))  {css = "IconUnCheckBox checkbox";}
                 UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
-                if(chk.isChecked()){css = "IconCheckBox checkbox";}
+                if(chk.isChecked()){css = "iconCheckBox checkbox";}
         %>
             <li class="CalendarItem CalendarItemPublic ClearFix"  calColor="$calendar.calendarColor" canEdit="<%=uicomponent.canEdit(calendar.getEditPermission(), checkPerms)%>" id="$calId" calType="2" >
-            <div id="UICalendars_CalendarPopupMenu3" class="IconHoverSetting" ></div>
+            <div id="UICalendars_CalendarPopupMenu3" class="uiIconCalSettingMini pull-right" ></div>
                 <div class="CalendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$calendar.calendarColor">
-                	<span class="ColorOpacity">
+                	<span class="colorOpacity">
                 		<span class="$css"></span>
                 	</span>
                 	</a>
-                	<a class="CalendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="<%=calendar.getName()%>"><%=calendar.getName()%></a>
+                	<a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="<%=calendar.getName()%>"><%=calendar.getName()%></a>
                 	<span style="display:none"><%uiform.renderField(calendar.getId())%></span>
                </div>
             </li>
@@ -204,47 +199,47 @@
     
   <% /*Begin Popup Menu - Calendar*/ %>
         
-	<div class="UIRightClickPopupMenu CalendarPopupMenu dropdown-menu" style="display: none;" id="CalendarPopupMenu" eXoCallback="eXo.calendar.UICalendarPortlet.calendarMenuCallback">
+	<div class="uiRightClickPopupMenu CalendarPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none;" id="CalendarPopupMenu" eXoCallback="eXo.calendar.UICalendarPortlet.calendarMenuCallback">
 			<ul class="uiDropDownCal" style="display:block;">
 				<li>
 					<a href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithId(this, 1, 'objectId=id');">
-					  <i class=""></i>
+					  <i class="uiIconCalCreateEvent"></i>
 					  <%=uiform.getLabel("AddEvent")%>
 					</a>
 				</li>
 				<li>
 					<a href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithId(this, 2, 'objectId=id');">
-					  <i class=""></i>
+					  <i class="uiIconCalCreateTask"></i>
 					  <%=uiform.getLabel("AddTask")%>
 					</a> 
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("EditCalendar","id")%>">
-					  <i class=""></i>
+					  <i class="uiIconEdit"></i>
 					  <%=uiform.getLabel("EditCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("RemoveCalendar",uicomponent.id,"id")%>">
-					  <i class=""></i>
+					  <i class="uiIconDelete"></i>
 					  <%=uiform.getLabel("RemoveCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event('ImportCalendar','id')%>">
-					  <i class=""></i>
+					  <i class="uiIconCalImportCalendar"></i>
 					  <%=uiform.getLabel("ImportCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("ExportCalendar","id")%>">
-					  <i class=""></i>
+					  <i class="uiIconCalExportCalendar"></i>
 					  <%=uiform.getLabel("ExportCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("RefreshRemoteCalendar","id")%>">
-					  <i class=""></i>
+					  <i class="uiIconCalRefresh"></i>
 					  <%=uiform.getLabel("RefreshRemoteCalendar")%>
 					</a> 
 				</li>

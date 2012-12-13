@@ -208,7 +208,7 @@
 <%uiform.end();%>
 <% /*Begin Popup Menu*/ %>
         
-          <div class="UIRightClickPopupMenu" id="UIMonthViewRightMenu" eXoCallback="eXo.calendar.UICalendarPortlet.monthViewCallback">
+          <div class="uiRightClickPopupMenu" id="UIMonthViewRightMenu" eXoCallback="eXo.calendar.UICalendarPortlet.monthViewCallback">
             <div class="UIContextMenuContainer">
               <div class="TopLeftRightClickPopupMenu">
                 <div class="TopRightRightClickPopupMenu">
@@ -242,7 +242,7 @@
       <% /*End Popup Menu*/ %>
       <% /*Begin Popup Menu*/ %>
         
-          <div class="UIRightClickPopupMenu" id="UIMonthViewEventRightMenu" eXoCallback="eXo.calendar.UICalendarPortlet.monthViewCallback">
+          <div class="uiRightClickPopupMenu" id="UIMonthViewEventRightMenu" eXoCallback="eXo.calendar.UICalendarPortlet.monthViewCallback">
             <div class="UIContextMenuContainer">
               <div class="TopLeftRightClickPopupMenu">
                 <div class="TopRightRightClickPopupMenu">

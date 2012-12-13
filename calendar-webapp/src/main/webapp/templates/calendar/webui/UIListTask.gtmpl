@@ -108,8 +108,8 @@
   </div>  
     <% /*Begin Popup Menu*/ %>
 	
-  <!--div class="UIRightClickPopupMenu" id="UIListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallack"-->
-	<div class="UIRightClickPopupMenu" id="UIListViewEventRightMenu">
+  <!--div class="uiRightClickPopupMenu" id="UIListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallack"-->
+	<div class="uiRightClickPopupMenu" id="UIListViewEventRightMenu">
     <div class="UIContextMenuContainer">
       <div class="TopLeftRightClickPopupMenu">
         <div class="TopRightRightClickPopupMenu">

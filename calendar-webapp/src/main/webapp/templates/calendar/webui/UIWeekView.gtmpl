@@ -340,7 +340,7 @@
 </div>
 <%uiform.end();%>
 <% /*Begin Popup Menu*/ %>
-<div class="UIRightClickPopupMenu" id="UIWeekViewRightMenu" exocallback="eXo.calendar.UICalendarPortlet.weekViewCallback">
+<div class="uiRightClickPopupMenu" id="UIWeekViewRightMenu" exocallback="eXo.calendar.UICalendarPortlet.weekViewCallback">
   <div class="UIContextMenuContainer">
     <div class="TopLeftRightClickPopupMenu">
       <div class="TopRightRightClickPopupMenu">

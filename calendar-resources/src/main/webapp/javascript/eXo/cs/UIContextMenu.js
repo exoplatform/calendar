@@ -89,7 +89,7 @@ UIContextMenu.prototype.getReturnValue = function() {
 
 UIContextMenu.prototype.hasChild = function(root, obj) {
 	if(typeof(obj) == "string") obj = document.getElementById(obj) ;
-	var children = gj(root).children("div.UIRightClickPopupMenu") ;
+	var children = gj(root).children("div.uiRightClickPopupMenu") ;
 	var len = children.length ;
   for(var i = 0 ; i < len ; i ++) {
   	if (children[i].id == obj.id) return children[i] ;    

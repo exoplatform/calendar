@@ -1,0 +1,89 @@
+
+/*============== ContentContainer uiCalendars ================*/
+
+.uiCalendars{
+	margin-top: 24px;
+	.iconCheckBox{
+		background: url("/calendar/skin/images/background/iconCheckBox.png") no-repeat left top;
+		display: inline-block;
+		width: 12px;
+		height: 12px;
+		margin: 0;
+		padding: 0;
+		min-height: 12px;
+	}
+
+
+	.contentContainer{
+			padding: 7px;
+			margin: 0px;
+			a{
+				line-height: 12px;
+				.border-radius(2px);
+				float: left;
+				margin: 1px 4px 0 0;
+				color: @textColor;
+			}
+		}
+
+	.calendarTitle{
+		background-color: #f2f2f2;
+		.border-radius(2px);
+		line-height: 26px;
+		padding: 0 14px;
+		margin: 0px;
+		font-weight: normal;
+	}
+	
+	.myCalendarContainer{
+		li:hover .IconHoverSetting {
+		background: url('../skinIcons/icons/CalendarIcons.gif') no-repeat right -2077px;
+		float: right; 
+		height: 15px;
+		width: 20px;
+		cursor: pointer;
+		}
+	
+		li{
+			height: 14px;
+			background-color: @white;
+			border:solid 1px @white;
+			padding: 3px 3px 3px 6px;
+			margin: 3px 0;
+			
+			.uiIconCalSettingMini{
+					display: none;
+				}
+				
+			&:hover{
+				background-color: #fafafa;
+				border:solid 1px #f1f1f1;
+				.border-radius(3px);
+				.uiIconCalSettingMini{
+					display: inline-block;
+					cursor: pointer;
+				}
+					
+			}
+			
+		}
+		
+		.colorOpacity {
+			.border-radius(3px);
+			display: block;
+			height: 12px;
+			width: 12px;
+		}
+		
+		.calendarName{
+			overflow: hidden;
+			width: 130px;
+		}
+		
+		.uiVTabContent{
+			padding: 4px 0 4px 9px;
+		}
+	
+	
+	}
+}

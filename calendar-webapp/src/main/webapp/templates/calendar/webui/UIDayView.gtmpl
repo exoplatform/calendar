@@ -253,7 +253,7 @@
   </div>
 </div>
 <% /*Begin Popup Menu*/ %>
-<div class="UIRightClickPopupMenu" id="UIDayViewRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback">
+<div class="uiRightClickPopupMenu" id="UIDayViewRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback">
   <div class="UIContextMenuContainer">
     <div class="TopLeftRightClickPopupMenu">
       <div class="TopRightRightClickPopupMenu">
@@ -289,7 +289,7 @@
 </div>
 <% /*End Popup Menu*/ %>
 <% /*Begin Popup Menu*/ %>
-<div class="UIRightClickPopupMenu" id="UIDayViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback">
+<div class="uiRightClickPopupMenu" id="UIDayViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback">
   <div class="UIContextMenuContainer">
     <div class="TopLeftRightClickPopupMenu">
       <div class="TopRightRightClickPopupMenu">

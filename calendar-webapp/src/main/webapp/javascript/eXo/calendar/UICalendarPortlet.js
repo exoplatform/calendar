@@ -1668,11 +1668,11 @@ UICalendarPortlet.prototype.filterByCalendar = function(){
     if(checked){
     	stylEvent = hide;
     	checkBox.checked = false;
-    	imgChk.className = "IconUnCheckBox checkbox";
+    	imgChk.className = "iconUnCheckBox checkbox";
     }else{
     	checkBox.checked = true;
     	stylEvent = show;
-    	imgChk.className = "IconCheckBox checkbox";
+    	imgChk.className = "iconCheckBox checkbox";
     }
     
     if ((!events || events.length == 0)&& _module.UICalendarPortlet.getElementById("UIListView")) {
@@ -1916,7 +1916,7 @@ UICalendarPortlet.prototype.showView = function(obj, evt){
 //    var _e = window.event || evt;
 //    _e.cancelBubble = true;
 		cs.EventManager.cancelBubble(evt);
-    var oldmenu = gj(obj).find('div.UIRightClickPopupMenu')[0];
+    var oldmenu = gj(obj).find('div.uiRightClickPopupMenu')[0];
     var actions = gj(oldmenu).find("a.ItemLabel");
     if (!this.selectedCategory) 
         this.selectedCategory = null;
@@ -1938,7 +1938,7 @@ UICalendarPortlet.prototype.swapIeMenu = function(menu, clickobj){
     var x = Browser.findPosXInContainer(clickobj, menu.offsetParent) - cs.Utils.getScrollLeft(clickobj);
     var y = Browser.findPosYInContainer(clickobj, menu.offsetParent) - cs.Utils.getScrollTop(clickobj) + clickobj.offsetHeight;
     var browserHeight = document.documentElement.clientHeight;
-    var uiRightClickPopupMenu = (!gj(menu).hasClass("UIRightClickPopupMenu")) ? gj(menu).find('div.UIRightClickPopupMenu')[0] : menu;
+    var uiRightClickPopupMenu = (!gj(menu).hasClass("uiRightClickPopupMenu")) ? gj(menu).find('div.uiRightClickPopupMenu')[0] : menu;
     this.showHide(menu);
     if ((y + uiRightClickPopupMenu.offsetHeight) > browserHeight) {
         y = browserHeight - uiRightClickPopupMenu.offsetHeight;
@@ -1994,7 +1994,7 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
       this.menuElement.style.left =  "";
     }
     this.showHide(this.menuElement);
-    var uiRightClick = (gj(UICalendarPortlet.menuElement).find('div.UIRightClickPopupMenu')[0]) ? gj(UICalendarPortlet.menuElement).find('div.UIRightClickPopupMenu')[0] : UICalendarPortlet.menuElement;
+    var uiRightClick = (gj(UICalendarPortlet.menuElement).find('div.uiRightClickPopupMenu')[0]) ? gj(UICalendarPortlet.menuElement).find('div.uiRightClickPopupMenu')[0] : UICalendarPortlet.menuElement;
     var mnuBottom = UICalendarPortlet.menuElement.offsetTop + uiRightClick.offsetHeight - window.document.documentElement.scrollTop;
     if (window.document.documentElement.clientHeight < mnuBottom) {
         menuY += (window.document.documentElement.clientHeight - mnuBottom);

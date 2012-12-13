@@ -131,9 +131,9 @@ Utils.prototype.show = function(obj, evt){
 	if(!evt) evt = window.event ;
 	evt.cancelBubble = true ;
 	var DOMUtil = _module.DOMUtil ;
-	var uiPopupCategory = gj(obj).find('ul.UIRightClickPopupMenu')[0] ;	
+	var uiPopupCategory = gj(obj).find('ul.uiRightClickPopupMenu')[0] ;	
 	if (!uiPopupCategory) 
-		uiPopupCategory = gj(obj).find('div.UIRightClickPopupMenu')[0] ;
+		uiPopupCategory = gj(obj).find('div.uiRightClickPopupMenu')[0] ;
 	if(uiPopupCategory.style.display == "none") {
 		DOMUtil.cleanUpHiddenElements() ;
 		uiPopupCategory.style.display = "block" ;
