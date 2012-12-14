@@ -720,7 +720,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     // find synchronize job
     List<JobDetail> list = schedulerService.getAllJobs();
     for (JobDetail jobDetail : list) {
-      if (jobDetail.getName().equals(SynchronizeRemoteCalendarJob.getRemoteCalendarName(username))) {
+      if (jobDetail.getKey().getName().equals(SynchronizeRemoteCalendarJob.getRemoteCalendarName(username))) {
         return jobDetail;
       }
     }
