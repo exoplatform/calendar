@@ -39,12 +39,11 @@
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   rcontext.getJavascriptManager().addOnResizeJavascript('cal.UIWeekView.onResize') ;
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
-
-   WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
-   Locale locale = context.getParentAppRequestContext().getLocale() ;
-   String currentMonthName = uicomponent.getMonthName(currentMonth) ;
-   dateFormat = uicomponent.getDateFormat() ;
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIWeekView\');');
+  WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
+  Locale locale = context.getParentAppRequestContext().getLocale() ;
+  String currentMonthName = uicomponent.getMonthName(currentMonth) ;
+  dateFormat = uicomponent.getDateFormat() ;
   timeFormat = uicomponent.getTimeFormat() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
   String startWorkingTime = uicomponent.getStartTime() ;

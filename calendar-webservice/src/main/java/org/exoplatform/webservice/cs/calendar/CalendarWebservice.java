@@ -533,7 +533,7 @@ public class CalendarWebservice implements ResourceContainer{
    */
   @GET
   @RolesAllowed("users")
-  @Path("/updatestatus/{taskid}")
+  @Path("/updatestatus/{taskid}/{statusid}")
   public Response updateStatus(@PathParam("taskid") String taskid, @QueryParam("statusid") int statusId) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug(String.format("Update status [%1$s] for task [%2$s] ..............", statusId, taskid));
@@ -610,11 +610,12 @@ public class CalendarWebservice implements ResourceContainer{
       String username = ConversationState.getCurrent().getIdentity().getUserId();
       CalendarEvent calEvent = calendarService.getEvent(username, eventid);
       CalendarSetting calSetting = calendarService.getCalendarSetting(username);
-      if(!calEvent.getAttachment().isEmpty()) calEvent.setAttachment(null);
+      if(calEvent.getAttachment()!= null && !calEvent.getAttachment().isEmpty()) calEvent.setAttachment(null);
       SingleEvent data = makeSingleEvent(calSetting, calEvent);
       //data.setCalendars(calList);
       return Response.ok(data, MediaType.APPLICATION_JSON).cacheControl(cc).build();
     }catch(Exception e){
+      e.printStackTrace();
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
     }
   }

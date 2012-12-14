@@ -19,8 +19,7 @@
   requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
   requireJS.require("SHARED/csResources","cs");
   requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
-  
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListTask\');');  
   //INLINE Scripts
   requireJS.require("SHARED/jquery","gj");
   requireJS.addScripts("gj('tr.UIListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this);});");

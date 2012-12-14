@@ -117,8 +117,8 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
 		// Test default calendar
 		List<Calendar> calendars = calendarService_.getUserCalendars(newUserName, true);
-		assertEquals(1, calendars.size());
-		assertEquals(newUserName,calendars.get(0).getName());
+		assertEquals(calendars.size(),1);
+		assertEquals(calendars.get(0).getName(),newUserName);
 
 		// Test default event categories
 		List<EventCategory> eventCategories = calendarService_.getEventCategories(newUserName);
@@ -126,6 +126,14 @@ public class TestCalendarService extends BaseCalendarTestCase {
 		for (EventCategory eventCategory : eventCategories) {
 			assertTrue(defaultEventCategories.contains(eventCategory.getId()));
 		}
+		
+		for (EventCategory eventCategory : eventCategories) {
+		  calendarService_.removeEventCategory(newUserName, eventCategory.getId());
+    }
+		
+		calendarService_.removeUserCalendar(newUserName, calendars.get(0).getId());
+		//calendarService_.removeSharedCalendar(newUserName, calendars.get(0).getId());
+		
 	}
 
 	public void testCalendar() throws Exception {
@@ -137,9 +145,9 @@ public class TestCalendarService extends BaseCalendarTestCase {
 		cal.setPublic(true);
 		calendarService_.saveUserCalendar(username, cal, true);
 		Calendar myCal = calendarService_.getUserCalendar(username, cal.getId());
-		assertNotNull(myCal);
+		assertNotNull(myCal);              
 		assertEquals(myCal.getName(), "myCalendar");
-
+		
 		// create/get calendar in public folder
 		cal.setPublic(false);
 		cal.setGroups(new String[] { "users", "admin" });
@@ -149,11 +157,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
 		Calendar publicCal = calendarService_.getGroupCalendar(cal.getId());
 		assertNotNull(publicCal);
 		assertEquals(publicCal.getName(), "myCalendar");
-
-		// get calendar in private folder by categoryID
-		List<Calendar> calendares = calendarService_.getUserCalendars(username, true);
-		assertNotNull(calendares);
-		assertEquals(calendares.size(), 1);
 
 		// get calendar in public folder by groupId
 		List<GroupCalendarData> groupCalendarList = calendarService_.getGroupCalendars(new String[] { "users" }, true, username);
@@ -1023,4 +1026,5 @@ public class TestCalendarService extends BaseCalendarTestCase {
 		}
 	}
 
+	 
 }

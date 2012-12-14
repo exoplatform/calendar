@@ -129,7 +129,7 @@
 
 .UICalendarPortlet .ResizeReadingPane {
   background: url('background/CalendarBackground.gif') repeat-x center -75px;
-  width: 40px; height: 4px;
+  width: 41px; height: 4px;
   cursor: n-resize;
   margin: 3px auto;
 }

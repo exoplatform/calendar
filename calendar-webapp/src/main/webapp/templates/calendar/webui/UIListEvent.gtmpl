@@ -27,7 +27,7 @@
   requirejs.require("SHARED/csResources","cs");
   requirejs.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
   requirejs.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListEvent\');');
   requirejs.addScripts("gj('tr#UIListEvent_1').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
 %>
  

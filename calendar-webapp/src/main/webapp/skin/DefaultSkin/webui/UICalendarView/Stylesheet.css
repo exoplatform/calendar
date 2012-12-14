@@ -651,6 +651,16 @@
   width: auto;
   text-align: center;
 }
+
+.UIYearView .DayWorkingArea .UIGrid{
+	border: none;
+}
+
+.UIYearView .UIGrid td.CalendarContentNomal{
+	border-left: none;
+	border-right: none;
+}
+
 /*====================Event List View=====================*/
 
 .UIListView {
@@ -743,9 +753,12 @@
 
 .UIListView table {
   width: 100%;
-  _width: 99%;
   background-color: #ffffff;
   margin: 0px;
+}
+
+*+html .UIListView table {
+  width: 98%;
 }
 
 .UICalendarPortlet .UICalendarViewContainer .UIListView td {

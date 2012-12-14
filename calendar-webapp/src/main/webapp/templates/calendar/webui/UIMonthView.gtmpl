@@ -21,8 +21,7 @@
   //requireJS.addScripts("base.Browser.addOnLoadCallback('mid"+id1+"',cal.UICalendarPortlet.onLoad);") ;      
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   requireJS.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
-  
+  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIMonthView\');');
   requireJS.require("SHARED/jquery","gj");
   //requireJS.addScripts("gj('table#UIMonthViewGrid.UIGrid').parent().resize(function(){eXo.calendar.UICalendarMan.initMonth() ;});");
   rcontext.getJavascriptManager().addOnResizeJavascript('function(){cal.UICalendarMan.initMonth();}') ;
