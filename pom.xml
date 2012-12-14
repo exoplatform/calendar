@@ -640,22 +640,28 @@
     </dependencies>
   </dependencyManagement>
   <build>
-    <pluginManagement>
+     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <systemPropertyVariables>
+              <org.apache.commons.logging.Log>org.apache.commons.logging.impl.SimpleLog</org.apache.commons.logging.Log>
+              <org.apache.commons.logging.simplelog.defaultlog>info</org.apache.commons.logging.simplelog.defaultlog>
+              <org.apache.commons.logging.simplelog.log.org.exoplatform>debug</org.apache.commons.logging.simplelog.log.org.exoplatform>
+              <org.apache.commons.logging.simplelog.log.net.hibernate>warn</org.apache.commons.logging.simplelog.log.net.hibernate>
               <java.naming.factory.initial>org.exoplatform.services.naming.SimpleContextFactory</java.naming.factory.initial>
-              <java.util.logging.config.class>org.exoplatform.component.test.logging.LogConfigurator</java.util.logging.config.class>
+              <gatein.test.tmp.dir>${project.build.directory}</gatein.test.tmp.dir>
               <com.arjuna.ats.arjuna.objectstore.objectStoreDir>${project.build.directory}</com.arjuna.ats.arjuna.objectstore.objectStoreDir>
-              <gatein.test.datasource.driver>org.hsqldb.jdbcDriver</gatein.test.datasource.driver>
-              <gatein.test.datasource.url>jdbc:hsqldb:file:${project.build.directory}/gateindb</gatein.test.datasource.url>
-              <gatein.test.datasource.username>sa</gatein.test.datasource.username>
-              <gatein.test.datasource.password></gatein.test.datasource.password>
               <exo.profiles>hsqldb</exo.profiles>
             </systemPropertyVariables>
+            <systemProperties>
+              <property>
+                <name>gatein.test.output.path</name>
+                <value>${project.build.directory}</value>
+              </property>
+            </systemProperties>
           </configuration>
         </plugin>
         <plugin>

@@ -16,20 +16,14 @@
  */
 package org.exoplatform.calendar.service.test;
 
-import java.util.List;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-
-import org.exoplatform.container.StandaloneContainer;
-import org.exoplatform.services.jcr.RepositoryService;
-import org.exoplatform.services.jcr.ext.app.SessionProviderService;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.commons.testing.BaseExoTestCase;
+import org.exoplatform.component.test.AbstractKernelTest;
+import org.exoplatform.component.test.ConfigurationUnit;
+import org.exoplatform.component.test.ConfiguredBy;
+import org.exoplatform.component.test.ContainerScope;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.services.security.Identity;
-import org.exoplatform.test.BasicTestCase;
 
 /**
  * Created by The eXo Platform SAS
@@ -37,108 +31,43 @@ import org.exoplatform.test.BasicTestCase;
  *          hung.nguyen@exoplatform.com
  * May 7, 2008  
  */
-public abstract class BaseCalendarServiceTestCase extends BasicTestCase {
+
+@ConfiguredBy({
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.core.test.configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.jcr-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.portal-configuration.xml")
+})
+
+public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
 
   protected static Log                  log                    = ExoLogger.getLogger("cs.calendar.services.test");
 
-  protected static RepositoryService    repositoryService;
-
-  protected static StandaloneContainer  container;
-
-  protected final static String         REPO_NAME              = "repository".intern();
-
-  protected final static String         SYSTEM_WS              = "system".intern();
-
-  protected final static String         COLLABORATION_WS       = "collaboration".intern();
-
-  protected static Node                 root_                  = null;
-
-  protected SessionProvider             sessionProvider;
-
-  private static SessionProviderService sessionProviderService = null;
-
-  static {
-    // we do this in static to save a few cycles
-    initContainer();
-    initJCR();
-  }
-
-  public BaseCalendarServiceTestCase() throws Exception {
-  }
-
+  
+ 
+  
+  @Override
   public void setUp() throws Exception {
-    startSystemSession();
+    begin();
   }
 
+  @Override
   public void tearDown() throws Exception {
 
+    removeAllData();
+    end();
+  }
+  
+
+  private void removeAllData() {
+    // TODO Auto-generated method stub
+    
   }
 
-  protected void startSystemSession() {
-    sessionProvider = sessionProviderService.getSystemSessionProvider(null);
+  @SuppressWarnings("unchecked")
+  public <T> T getService(Class<T> clazz) {
+    return (T) getContainer().getComponentInstanceOfType(clazz);
   }
-
-  protected void startSessionAs(String user) {
-    Identity identity = new Identity(user);
-    ConversationState state = new ConversationState(identity);
-    sessionProviderService.setSessionProvider(null, new SessionProvider(state));
-    sessionProvider = sessionProviderService.getSessionProvider(null);
-  }
-
-  protected void endSession() {
-    sessionProviderService.removeSessionProvider(null);
-    startSystemSession();
-  }
-
-  /**
-   * All elements of a list should be contained in the expected array of String
-   * @param message
-   * @param expected
-   * @param actual
-   */
-  public static void assertContainsAll(String message, List<String> expected, List<String> actual) {
-    assertEquals(message, expected.size(), actual.size());
-    assertTrue(message, expected.containsAll(actual));
-  }
-
-  /**
-   * Assertion method on string arrays
-   * @param message
-   * @param expected
-   * @param actual
-   */
-  public static void assertEquals(String message, String[] expected, String[] actual) {
-    assertEquals(message, expected.length, actual.length);
-    for (int i = 0; i < expected.length; i++) {
-      assertEquals(message, expected[i], actual[i]);
-    }
-  }
-
-  private static void initContainer() {
-    try {
-      String containerConf = BaseCalendarServiceTestCase.class.getResource("/conf/portal/test-configuration.xml").toString();
-      StandaloneContainer.addConfigurationURL(containerConf);
-      container = StandaloneContainer.getInstance();
-      String loginConf = Thread.currentThread().getContextClassLoader().getResource("conf/portal/login.conf").toString();
-
-      if (System.getProperty("java.security.auth.login.config") == null)
-        System.setProperty("java.security.auth.login.config", loginConf);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to initialize standalone container: " + e.getMessage(), e);
-    }
-  }
-
-  private static void initJCR() {
-    try {
-      repositoryService = (RepositoryService) container.getComponentInstanceOfType(RepositoryService.class);
-
-      // Initialize datas
-      Session session = repositoryService.getRepository(REPO_NAME).getSystemSession(COLLABORATION_WS);
-      root_ = session.getRootNode();
-      sessionProviderService = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to initialize JCR: " + e.getMessage(), e);
-    }
-  }
-
 }
