@@ -2,120 +2,159 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.exoplatform.calendar</groupId>
     <artifactId>calendar</artifactId>
+    <groupId>org.exoplatform.calendar</groupId>
     <version>4.0.0.Alpha1-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-webapp</artifactId>
   <packaging>war</packaging>
-  <name>eXo Calendar application</name>
-  <description>eXo Calendar application</description>
+  <name>eXo Calendar Application</name>
+  <description>eXo Calendar Application</description>
   <dependencies>
     <dependency>
-      <groupId>org.exoplatform.kernel</groupId>
-      <artifactId>exo.kernel.container</artifactId>
-      <scope>provided</scope>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.kernel</groupId>
-      <artifactId>exo.kernel.component.common</artifactId>
-      <scope>provided</scope>
+      <groupId>javax.jcr</groupId>
+      <artifactId>jcr</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.kernel</groupId>
-      <artifactId>exo.kernel.commons</artifactId>
-      <scope>provided</scope>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.portal</groupId>
-      <artifactId>exo.portal.webui.portal</artifactId>
-      <scope>provided</scope>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
     </dependency>
+    <!-- This dependency is required to compile our main classes but is erroneously reported as useless by dependency:analyze -->
     <dependency>
-      <groupId>org.exoplatform.portal</groupId>
-      <artifactId>exo.portal.webui.core</artifactId>
-      <scope>provided</scope>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-service</artifactId>
     </dependency>
+    <!-- This dependency is required to compile our main classes but is erroneously reported as useless by dependency:analyze -->
     <dependency>
-      <groupId>org.exoplatform.portal</groupId>
-      <artifactId>exo.portal.webui.eXo</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.core</groupId>
-      <artifactId>exo.core.component.organization.api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.jcr</groupId>
-      <artifactId>exo.jcr.component.core</artifactId>
-      <scope>provided</scope>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-webservice</artifactId>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-comet-service</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.exoplatform.calendar</groupId>
-      <artifactId>calendar-service</artifactId>
-      <scope>provided</scope>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-webui-ext</artifactId>
     </dependency>
-    
-    
     <dependency>
-      <groupId>org.exoplatform.calendar</groupId>
-      <artifactId>calendar-webservice</artifactId>
-      <scope>provided</scope>
+      <groupId>org.exoplatform.core</groupId>
+      <artifactId>exo.core.component.organization.api</artifactId>
     </dependency>
-    
+    <dependency>
+      <groupId>org.exoplatform.core</groupId>
+      <artifactId>exo.core.component.security.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.jcr</groupId>
+      <artifactId>exo.jcr.component.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.component.common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.kernel</groupId>
+      <artifactId>exo.kernel.container</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.portal</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.web.controller</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.web.resources</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.web.server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.eXo</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.framework</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.portal</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.portlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.social</groupId>
+      <artifactId>social-component-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>cometd-bayeux</artifactId>
-      <scope>provided</scope>
+    </dependency>
+    <!-- commons-logging is forbidden and must be replaced by org.slf4j:jcl-over-slf4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>rome</groupId>
+      <artifactId>rome</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- This dependency is required to runtime and missing in plf -->
     <dependency>
-      <groupId>javax.portlet</groupId>
-      <artifactId>portlet-api</artifactId>
-      <scope>provided</scope>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-common</artifactId>
+      <scope>runtime</scope>
     </dependency>
+    <!-- This dependency is used for tests compilation but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>javax.jcr</groupId>
-      <artifactId>jcr</artifactId>
-      <scope>provided</scope>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
+    <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <scope>provided</scope>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.component.test.core</artifactId>
+      <scope>test</scope>
     </dependency>
+    <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-      <scope>provided</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
     </dependency>
-    
-    <dependency>
-      <groupId>org.exoplatform.social</groupId>
-      <artifactId>social-component-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.exoplatform.commons</groupId>
-      <artifactId>commons-webui-ext</artifactId>
-      <scope>provided</scope>
-    </dependency>   
-    <dependency>
-  <groupId>junit</groupId>
-  <artifactId>junit</artifactId>
-  <scope>test</scope>
-</dependency>
   </dependencies>
   <build>
     <finalName>calendar</finalName>

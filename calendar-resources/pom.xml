@@ -2,13 +2,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.exoplatform.calendar</groupId>
     <artifactId>calendar</artifactId>
+    <groupId>org.exoplatform.calendar</groupId>
     <version>4.0.0.Alpha1-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-resources</artifactId>
   <packaging>war</packaging>
   <name>eXo Calendar web resources</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.portal</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.gatein.wci</groupId>
+      <artifactId>wci-wci</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
   <build>
     <finalName>csResources</finalName>
   </build>
