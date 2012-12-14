@@ -24,6 +24,7 @@
     <module>calendar-statistics</module>
     <module>calendar-createcomponent</module>
   </modules>
+
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
