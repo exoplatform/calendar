@@ -345,6 +345,11 @@
           </exclusion>
           <exclusion>
             <!-- To be fixed in the original project -->
+            <artifactId>commons-logging-api</artifactId>
+            <groupId>commons-logging</groupId>
+          </exclusion>
+          <exclusion>
+            <!-- To be fixed in the original project -->
             <artifactId>xstream</artifactId>
             <groupId>xstream</groupId>
           </exclusion>
@@ -602,6 +607,10 @@
           </exclusion>
           <exclusion>
             <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>javax.servlet-api</artifactId>
             <groupId>javax.servlet</groupId>
           </exclusion>
           <exclusion>
