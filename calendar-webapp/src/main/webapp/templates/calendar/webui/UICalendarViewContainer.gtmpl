@@ -1,6 +1,7 @@
 <%
  def rcontext = _ctx.getRequestContext();
  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
  requireJS.addScripts("gj('div#ShowHideAll').click(function() {cal.UICalendarPortlet.switchLayout(1);});");
 %>
 <div class="UICalendarViewContainer" id="$uicomponent.id" style="position: relative;">

@@ -15,7 +15,7 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/base","base");  
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close').click(function() {base.UIPopup.hide('"+popupId+"'); });")
+  requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close')[0].click(function() {base.UIPopup.hide('"+popupId+"'); });")
   String show = "none";
   
   requirejs.require("SHARED/webui","webui");
