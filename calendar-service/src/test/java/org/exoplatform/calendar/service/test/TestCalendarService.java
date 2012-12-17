@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
@@ -953,7 +952,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       eventQuery.setToDate(toCal);
       eventQuery.setParticipants(new String[] { "root" });
       eventQuery.setNodeType("exo:calendarPublicEvent");
-      Map<String, String> parsMap = calendarService_.checkFreeBusy(eventQuery);
+      calendarService_.checkFreeBusy(eventQuery);
 
       calendarService_.removePublicEvent(publicCalendar.getId(), publicEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());

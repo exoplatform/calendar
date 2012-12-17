@@ -16,8 +16,6 @@
  */
 package org.exoplatform.calendar.service.test;
 
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.commons.testing.BaseExoTestCase;
 import org.exoplatform.component.test.AbstractKernelTest;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
