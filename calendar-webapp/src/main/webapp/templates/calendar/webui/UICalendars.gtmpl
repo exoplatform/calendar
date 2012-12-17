@@ -22,49 +22,14 @@
   <div class="uiBox uiCalendars">
     <h5 class="title">
 		<div id="UICalendars_calendarActions" class="pull-right">
-		  <% /*Begin Popup Menu - Main */ %>
-			<a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("calendarActions")%>"><i class="uiIconCalSimplePlus"></i></a>
-			<div class="uiRightClickPopupMenu CalendarMainPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none ;"> 
-				<ul class="uiDropDownCal" style="display:block;">
-					<li>
-					  <a href="<%=uicomponent.event('AddCalendar','id')%>">
-						<i class="uiIconCalAddCalendar"></i>
-						<%=uiform.getLabel("AddCalendar")%>
-					  </a>
-					</li>
-					<li>
-					  <a href="<%=uicomponent.event("RemoteCalendar")%>">
-						<i class="uiIconCalRemoteCalendar"></i>
-						<%=uiform.getLabel("RemoteCalendar")%>
-					  </a>
-					</li>
-					<li>
-					  <a href="<%=uicomponent.event("AddEventCategory")%>">
-						<i class="uiIconCalCreateEvent"></i>
-						<%=uiform.getLabel("AddEventCategory")%>
-					  </a>
-					</li>
-					<li>
-					  <a href="<%=uicomponent.event("ImportCalendar")%>">
-						<i class="uiIconCalImportCalendar"></i>
-						<%=uiform.getLabel("ImportCalendar")%>
-					  </a>
-					</li>
-					<li>
-					  <a href="<%=uicomponent.event("CalendarSetting")%>">
-						<i class="uiIconSetting"></i>
-						<%=uiform.getLabel("CalendarSetting")%>
-					  </a>
-					</li>
-				</ul>
-			</div>
-				
-		  <% /*End Popup Menu*/ %>
+      <div class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("calendarActions")%>">
+        <i class="uiIconCalSimplePlus"></i>
+      </div>
 		</div>
 		
       <%=uiform.getLabel("calendars")%>
  
-	</h5>
+	  </h5>
   <div class="contentContainer">
   <!-- start private calendars -->
     <div class="myCalendar">
@@ -196,8 +161,46 @@
     </div>
     <!-- end public calendars -->
   </div>
+  
+  <% /*Begin Popup Menu - Calendar Actions */ %>
+  <div class="uiRightClickPopupMenu CalendarMainPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none ;">
+    <ul class="uiDropDownCal" style="display:block;">
+      <li>
+        <a href="<%=uicomponent.event('AddCalendar','id')%>">
+        <i class="uiIconCalAddCalendar"></i>
+        <%=uiform.getLabel("AddCalendar")%>
+        </a>
+      </li>
+      <li>
+        <a href="<%=uicomponent.event("RemoteCalendar")%>">
+        <i class="uiIconCalRemoteCalendar"></i>
+        <%=uiform.getLabel("RemoteCalendar")%>
+        </a>
+      </li>
+      <li>
+        <a href="<%=uicomponent.event("AddEventCategory")%>">
+        <i class="uiIconCalCreateEvent"></i>
+        <%=uiform.getLabel("AddEventCategory")%>
+        </a>
+      </li>
+      <li>
+        <a href="<%=uicomponent.event("ImportCalendar")%>">
+        <i class="uiIconCalImportCalendar"></i>
+        <%=uiform.getLabel("ImportCalendar")%>
+        </a>
+      </li>
+      <li>
+        <a href="<%=uicomponent.event("CalendarSetting")%>">
+        <i class="uiIconSetting"></i>
+        <%=uiform.getLabel("CalendarSetting")%>
+        </a>
+      </li>
+    </ul>
+  </div>
     
-  <% /*Begin Popup Menu - Calendar*/ %>
+  <% /*End Popup Menu*/ %>
+  
+  <% /*Begin Popup Menu - Calendar Menu*/ %>
         
 	<div class="uiRightClickPopupMenu CalendarPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none;" id="CalendarPopupMenu" eXoCallback="eXo.calendar.UICalendarPortlet.calendarMenuCallback">
 			<ul class="uiDropDownCal" style="display:block;">
@@ -268,8 +271,14 @@
 				</li>
 			</ul>
 	</div>
-    <% /*End Popup Menu*/ %>
+  <% /*End Popup Menu*/ %>
     
+  <% /*Arrow for menu*/ %>
+  <span class="uiArrowCalDropdown" style="display: none;position:absolute;
+                                   border-left: 6px solid transparent;border-right: 6px solid black;
+                                         border-bottom: 6px solid transparent;
+                                         border-top: 6px solid transparent;">
+  </span>
       
-     </div>
+ </div>
 <%uiform.end()%>

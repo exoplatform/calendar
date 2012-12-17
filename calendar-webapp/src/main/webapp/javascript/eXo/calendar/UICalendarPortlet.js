@@ -567,16 +567,15 @@ UICalendarPortlet.prototype.autoHide = function(evt){
  */
 UICalendarPortlet.prototype.showHide = function(obj){
     if (obj.style.display != "block") {
-        cs.DOMUtil.cleanUpHiddenElements();
-        obj.style.display = "block";
-        gj(obj).on({'mouseover':_module.UICalendarPortlet.autoHide,
-        	'mouseout':_module.UICalendarPortlet.autoHide});
-//        obj.onmouseover = _module.UICalendarPortlet.autoHide;
-//        obj.onmouseout = _module.UICalendarPortlet.autoHide;
-        cs.DOMUtil.listHideElements(obj);
+	cs.DOMUtil.cleanUpHiddenElements();
+	obj.style.display = "block";
+	this.arrow.style.display = "inline-block";
+	cs.DOMUtil.listHideElements(obj);
+	cs.DOMUtil.listHideElements(this.arrow);
+
     }
     else {
-        obj.style.display = "none";
+	this.arrow.style.display = "none";
     }
 };
 
@@ -1956,51 +1955,47 @@ UICalendarPortlet.prototype.swapIeMenu = function(menu, clickobj){
  * @param {Object} clickobj clickobj Click DOM element
  */
 UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
-    var Browser = base.Browser;
-    var UICalendarPortlet = _module.UICalendarPortlet;
     var uiDesktop = document.getElementById("UIPageDesktop");
     if (document.getElementById("tmpMenuElement")) 
-        gj("#tmpMenuElement").remove();  
+	gj("#tmpMenuElement").remove();  
     var tmpMenuElement = gj(oldmenu).clone(true,true);
     tmpMenuElement.attr("id","tmpMenuElement");
     var style = tmpMenuElement.attr("style") + "zIndex = 1;";
-    if(Browser.isIE6())
-    	style = style + "width = 140px;";
+
     tmpMenuElement.attr("style",style) ;
+
     gj('body').append(tmpMenuElement);
-    this.menuElement = document.getElementById("tmpMenuElement");
+
+    this.menuElement = gj("#tmpMenuElement")[0];
 
     if (uiDesktop) {
-        this.swapIeMenu(this.menuElement, clickobj);
-        return;
+	this.swapIeMenu(this.menuElement, clickobj);
+	return;
     }
-    
-	gj(this.menuElement).addClass("UICalendarPortlet UIEmpty");
-    var menuX = base.Browser.findPosX(clickobj) ;
-    var menuY = cs.Browser.findPosY(clickobj) + clickobj.offsetHeight;
-    if (arguments.length > 2) {
-        menuY -= arguments[2].scrollTop;
+
+    gj(this.menuElement).addClass("UICalendarPortlet UIEmpty");
+
+    this.arrow = gj('.uiArrowCalDropdown')[0];
+
+    var menuTop = gj(clickobj).offset().top - 40;
+
+    var d = menuTop + gj(this.menuElement).height() - gj(document).scrollTop() - gj(window).height();
+    if(d > 0) {
+	menuTop -= d;
     }
-    if (base.I18n.isRT()) {
-      menuX -= (cs.Utils.getElementWidth(this.menuElement) - clickobj.offsetWidth);// - uiWorkSpaceWidth;      
-    }
-    // relooking, reposition the menu
-    this.menuElement.style.top = menuY - 40 + "px";
-    this.menuElement.style.left =  menuX + cs.Utils.getElementWidth(this.menuElement) + "px";
-    if (base.I18n.isRT() && Browser.isIE6()) {
-      menuX = Browser.findPosXInContainer(clickobj,this.menuElement.offsetParent,true);
-      //menuX += uiWorkSpaceWidth/2 ;
-      this.menuElement.style.right = menuX + "px";
-      this.menuElement.style.left =  "";
-    }
+    var arrowLeft = gj(clickobj).position().left + gj(clickobj).width() - 2;
+
+    gj(this.arrow).css('left', arrowLeft + 'px');
+    gj(this.arrow).css('top', gj(clickobj).position().top + 'px');
+    gj(this.arrow).css('display','inline-block');
+    var menuLeft = gj(this.arrow).position().left + gj(this.arrow).width() + gj(this.menuElement).width() + 2;
+
+    gj(this.menuElement).css('left', menuLeft + 'px');
+    gj(this.menuElement).css('top', menuTop + 'px');
+
+
     this.showHide(this.menuElement);
-    var uiRightClick = (gj(UICalendarPortlet.menuElement).find('div.uiRightClickPopupMenu')[0]) ? gj(UICalendarPortlet.menuElement).find('div.uiRightClickPopupMenu')[0] : UICalendarPortlet.menuElement;
-    var mnuBottom = UICalendarPortlet.menuElement.offsetTop + uiRightClick.offsetHeight - window.document.documentElement.scrollTop;
-    if (window.document.documentElement.clientHeight < mnuBottom) {
-        menuY += (window.document.documentElement.clientHeight - mnuBottom);
-        UICalendarPortlet.menuElement.style.top = menuY + "px";
-    }
-    
+
 };
 
 UICalendarPortlet.prototype.isAllday = function(form,selecedCalendarID){
