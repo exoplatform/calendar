@@ -1,6 +1,6 @@
 <div id="$uicomponent.id" class="$uicomponent.id">
   <%uicomponent.renderChildren();%>
-	<div class="UIAction">
-		<a href="<%=uicomponent.getParentFrom().event("Add")%>" class="ActionButton LightBlueStyle"><%= _ctx.appRes(uicomponent.getName() + ".action.add") %></a>
-	</div>
+  <div class="uiAction">
+    <a href="<%=uicomponent.getParentFrom().event("Add")%>" class="btn"><%= _ctx.appRes(uicomponent.getName() + ".action.add") %></a>
+  </div>
 </div>

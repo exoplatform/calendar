@@ -16,7 +16,7 @@
       }
     %>
 
-      <div class="UIAction UIActionBorder">
+      <div class="uiAction uiActionBorder">
       <% Iterator<ActionData> it = uicomponent.getActionField(uiCalendarForm.PERMISSION_OWNER).iterator();
         while (it.hasNext())
         {
@@ -28,8 +28,9 @@
           if (action.getActionType() == action.TYPE_ICON)
           {
             %>
-              <img title="$actionLabel" onclick="$actionLink" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"
-              class="$cssClass" />
+              <a class="actionIcon" onclick="$actionLink" rel="tooltip" data-placement="bottom" title="$actionLabel">
+                <i class="$cssClass"></i>
+              </a>
             <%
           }
           else if (action.getActionType() == uiCalendarForm.TYPE_BUTTON)
