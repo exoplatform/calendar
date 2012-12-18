@@ -81,7 +81,7 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-extension-webapp</artifactId>
         <version>${project.version}</version>
-        <classifier>classes</classifier>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -98,7 +98,7 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-resources</artifactId>
         <version>${project.version}</version>
-        <classifier>classes</classifier>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -120,7 +120,7 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-webapp</artifactId>
         <version>${project.version}</version>
-        <classifier>classes</classifier>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
