@@ -9,8 +9,8 @@
   requireJS.require("SHARED/jquery","gj");
   requireJS.addScripts('cal.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
   requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
-  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
-  requireJS.addScripts("gj('div#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
+  requireJS.addScripts("gj('button#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
+  requireJS.addScripts("gj('button#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
   %>
 <div id="$uicomponent.id" class="UIActionBar"> 
   <div class="UIToolbar">
@@ -27,46 +27,48 @@
             <div class="Title ControlButton ActionBarButton">
               <span></span>
             </div>
-            <div id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>" class="ControlButton ActionBarButton">
+            <button type="button" class="btn btn-primary actionBarButton controlButton" id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>">
               <a class="IconHolder QuickAddEvent">
                 <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
               </a>
-            </div>
-            <div id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>" class="ControlButton ActionBarButton">
+            </button>
+            <button type="button" class="btn btn-primary actionBarButton controlButton" id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>">
               <a class="IconHolder AddNewTask">
                 <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
               </a>
-            </div>
+            </button>
             
            
-            <div onclick="<%=uicomponent.event("Today")%>" class="ControlButton ActionBarButton">
-                <a class="IconHolder TodayIcon">
+            
+                <a class="iconHolder todayIcon">
                   <%=_ctx.appRes(uicomponent.id + ".label.Today")%>
                 </a>
-            </div>
+            
             
           <div class="SeparatorLine"><span></span></div>  
+          <div class="btn-group">
       <%for(viewType in uicomponent.getViewTypes()){
             
                   icon = viewType + "Icon" ;
                   Parameter[] params = [new Parameter("categoryId", "calId")];
                   actionLink = uicomponent.event("ChangeView",viewType, params) ;
                   String label = _ctx.appRes(uicomponent.id + ".label." + viewType) ;
-                  String style = "ControlButton  ActionBarButton" ;
+                  String style = "btn" ;
               if(viewType.equals(uicomponent.getCurrentView())) {
-               style = "ControlButton ControlButtonHover ActionBarButton" ;
+               style = "btn active" ;
               }
                   
-             
+            
                 %>
-                    <div class="$style">
-                      <a href="$actionLink" class="IconHolder $icon">
-                        $label
-                      </a>
-                    </div>
+                    <button type="button" class="$style" onclick="$actionLink">
+                      $label
+                    </button>
                   
-             <%}%>
-
+          <%  
+              
+            }
+          %>
+          </div>
 
               <div class="ScrollButtons" style="display: none;">
 					<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">

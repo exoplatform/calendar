@@ -87,20 +87,26 @@
               </td>
               <td class="FieldComponent">
                 <div>
-                  <input id="endNever" class="radio" type="radio" value="$uicomponent.RP_END_NEVER" name="$uicomponent.FIELD_END_REPEAT" <%if(isNever){%>checked<%}%> >
-                  <span><%=uicomponent.getLabel(uicomponent.RP_END_NEVER)%></span>
+                  <label class="uiRadio">
+                    <input id="endNever" type="radio" value="$uicomponent.RP_END_NEVER" name="$uicomponent.FIELD_END_REPEAT" <%if(isNever){%>checked<%}%> >
+                    <span><%=uicomponent.getLabel(uicomponent.RP_END_NEVER)%></span>
+                  </label>
                 </div>
                 <div>
-                  <input id="endAfter" class="radio" type="radio" value="$uicomponent.RP_END_AFTER" name="$uicomponent.FIELD_END_REPEAT" <%if(isEndAfter){%>checked<%}%> >
-                  <span><%=uicomponent.getLabel(uicomponent.RP_END_AFTER)%></span>
+                  <label class="uiRadio">
+                    <input id="endAfter" type="radio" value="$uicomponent.RP_END_AFTER" name="$uicomponent.FIELD_END_REPEAT" <%if(isEndAfter){%>checked<%}%> >
+                    <span><%=uicomponent.getLabel(uicomponent.RP_END_AFTER)%></span>
                   <%uicomponent.renderField(uicomponent.FIELD_END_AFTER)%> &nbsp; <%=uicomponent.getLabel(uicomponent.OCCURRENCES)%>
+                  </label>
                 </div>
                 <div id="endByDateContainer">
-                  <input id="endByDate" class="radio" type="radio" value="$uicomponent.RP_END_BYDATE" name="$uicomponent.FIELD_END_REPEAT" <%if(isEndByDate){%>checked<%}%> >
-                  <span style="float:left"><%=uicomponent.getLabel(uicomponent.RP_END_BYDATE)%></span>
-                  <div id="endDate">
-                  <%uicomponent.renderField(uicomponent.FIELD_END_BYDATE)%>
-                  </div>
+                  <label class="uiRadio">
+                    <input id="endByDate" type="radio" value="$uicomponent.RP_END_BYDATE" name="$uicomponent.FIELD_END_REPEAT" <%if(isEndByDate){%>checked<%}%> >
+                    <span style="float:left"><%=uicomponent.getLabel(uicomponent.RP_END_BYDATE)%></span>
+                    <div id="endDate">
+                      <%uicomponent.renderField(uicomponent.FIELD_END_BYDATE)%>
+                    </div>
+                  </label>
                 </div>
               </td>
             </tr> 
@@ -108,14 +114,16 @@
       </table>
       
       <div class="UIAction"> 
-	      <% for(action in uicomponent.getActions()) { 
-	           String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
-	           String link = uicomponent.event(action) ;
-	      %>
-	      <a href="$link" class="ActionButton LightBlueStyle">
-	      	$actionLabel
-	      </a>
-	      <%}%>        
+        <% for(action in uicomponent.getActions()) { 
+             String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+             String link = uicomponent.event(action) ;
+             String style = "";
+             if (action == "Save") style = "btn-primary";
+        %>
+        <button onclick="$link" class="btn $style">
+          $actionLabel
+        </button>
+        <%}%>        
       </div>
     </div>
   </div>
