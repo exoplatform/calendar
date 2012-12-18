@@ -207,7 +207,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     }
     addChild(sharing) ;
 
-    initPermissionTab();
+    //initPermissionTab();
   }
 
   private void initPermissionTab() throws Exception
@@ -353,11 +353,13 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     calendarDetail.setActionField(PRIVATE_URL, Arrays.asList(privateAction));
 
     /* init permission tab */
+    /*
     UICalendarPermissionTab permissionTab = getChildById(PERMISSION_TAB);
     permissionTab.setCalendarPermissions( Permission.valueOf(calendar_.getEditPermission()) );
     Permission.addRightToGroupOfPermissions( permissionTab.getCalendarPermissions(), PermissionType.VIEW_CALENDAR );
     Permission.addRightToGroupOfPermissions( permissionTab.getCalendarPermissions(), PermissionType.EDIT_CALENDAR );
     permissionTab.init();
+    */
   }
 
   protected String getDisplayName() {
