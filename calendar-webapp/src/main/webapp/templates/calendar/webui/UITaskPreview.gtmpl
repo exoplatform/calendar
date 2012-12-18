@@ -139,19 +139,13 @@ uiform.begin() ;
 					</tr>  
 				  </table>
 				  <%if(!uicomponent.isShowPopup()){%>
-				  <div class="ActionsContainer ClearFix">
-					<a href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
-					  <div class="IconHolder EditTaskIcon">
-						<%=uiform.getLabel('EditTask')%>
-					  </div>
-					</a>
-					<div class="SeparatorDotLine"><span></span></div>
-					<a href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
-					  <div class="IconHolder DeleteTaskIcon">
-						<%=uiform.getLabel('DeleteTask')%>
-					  </div>
-					</a>
-				  </div>
+				  <button class="btn" href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>">
+            <i class="uiIconEdit"></i> <%=uiform.getLabel('EditTask')%>
+          </button>
+           
+          <button class="btn" href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>">
+            <i class="uiIconDelete"></i> <%=uiform.getLabel('DeleteTask')%>
+          </button>
 				  <%}%>
 				</td>
 			  </tr>                                

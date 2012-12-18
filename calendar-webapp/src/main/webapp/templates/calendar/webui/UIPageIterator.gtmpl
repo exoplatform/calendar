@@ -1,40 +1,63 @@
 <%
-  def totalPage = uicomponent.getAvailablePage();
-  def currentPage = uicomponent.getCurrentPage();
+def totalPage = uicomponent.getAvailablePage();
+def currentPage = uicomponent.getCurrentPage();
 %>
 
-<div class="UIPageIterator ClearFix">
-      
-      <% if(currentPage +1 <= totalPage) { %>
-           <a href="<%=uicomponent.event("ShowPage","${currentPage + 1}")%>" class="Icon NextPageIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.next")%>"></a>
-      <% } else { %>
-           <a class="Icon DisableNextPageIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.next")%>"><span></span></a>
+<div class="pagination uiPageIterator clearfix">
+<ul class="pull-right">
+    
+    <%if( currentPage == 1 ){%>
+     <li class="disabled">
+        <a rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.previous")%>">
+          <i class="uiIconPrevArrow"></i>
+        </a>
+     </li>
+                  
+    <% } else {%>
+     <li>
+          <a href="<%=uicomponent.event("ShowPage","${currentPage - 1}")%>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.previous")%>">
+            <i class="uiIconPrevArrow"></i>
+          </a>
+     </li>
+                    
+    <%}%>
+      <%
+      int min = 1;
+      int max = totalPage;
+      if(totalPage > 5 && currentPage > 2){
+        min = currentPage - 2;
+        max = currentPage + 3;
+        if (max > totalPage) max = totalPage;
+      } else if( totalPage > 5 && currentPage < 3 ){
+        min = 1;
+        max = 6;
+      }
+      for(i = min ; i <= max; i++) { %>
+      <%  if( i == currentPage) { %>
+            <li class="active"><a href="<%=uicomponent.event("ShowPage","$i")%>"><%=i%></a></li>
+      <%  } else { %>
+            <li><a href="<%=uicomponent.event("ShowPage","$i")%>"><%=i%></a></li>
+      <%  } %>
       <%}%>
-      
-        <%
-        int min = 1;
-        int max = totalPage;
-        if(totalPage > 5 && currentPage > 2){
-          min = currentPage - 2;
-          max = currentPage + 3;
-          if (max > totalPage) max = totalPage;
-        } else if( totalPage > 5 && currentPage < 3 ){
-          min = 1;
-          max = 6;
-        }
-        for(i = max ; i >= min; i--) { %>
-        <%  if( i == currentPage) { %>
-              <a href="<%=uicomponent.event("ShowPage","$i")%>" class="Number PageSelected"><%=i%></a>
-        <%  } else { %>
-              <a href="<%=uicomponent.event("ShowPage","$i")%>" class="Number"><%=i%></a>
-        <%  } %> 
-        <%}%>
-      <%if( currentPage - 1 > 0 ){%>
-          <a href="<%=uicomponent.event("ShowPage","${currentPage - 1}")%>" class="Icon LastPageIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.previous")%>"></a>
-      <% } else {%>
-          <a class="Icon DisableLastPageIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.previous")%>"><span></span></a>
-      <%}%>  
 
-    <a class="PagesTotalNumber"><%=totalPage%></a>
-    <a class="TotalPages"><%=_ctx.appRes("UIPageIterator.label.totalPage")%>:</a>
+    
+    <% if(currentPage + 1 <= totalPage) { %>
+         <li>
+           <a href="<%=uicomponent.event("ShowPage","${currentPage + 1}")%>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.next")%>">
+             <i class="uiIconNextArrow"></i>
+           </a>
+         </li>
+    <% } else { %>
+         <li class="disabled">
+           <a rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes("UIPageIterator.label.next")%>">
+             <i class="uiIconNextArrow"></i>
+           </a>
+         </li>
+    <%}%>
+</ul>
+
+<p class="pull-right">
+  <span><%=_ctx.appRes("UIPageIterator.label.totalPage")%>: </span>
+  <span class="pagesTotalNumber"><%=totalPage%></span>
+</p>
 </div>
