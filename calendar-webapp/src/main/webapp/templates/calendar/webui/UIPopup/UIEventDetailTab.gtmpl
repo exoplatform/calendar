@@ -18,22 +18,22 @@
         {
           String temp = actionLabel.substring(0, actionLabel.lastIndexOf("-(")) ;
           String sizeLabel = actionLabel.substring(actionLabel.lastIndexOf("-(")) ;
-          if(temp.length() > 30) {
-          actionLabel = temp.substring(0, 30) + "..." + sizeLabel ;}
+          if(temp.length() > 21) {
+          actionLabel = temp.substring(0, 21) + "..." + sizeLabel ;}
         }
-        
-        // CS-3361 replace "title=action.actionName" by "title=actionLabel"   
-        println "<a rel=\"tooltip\" data-placement=\"bottom\" title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        %>
+        <a rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
+        <%
         if(action.actionType == action.TYPE_ICON) {
-          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
-          if(action.isShowLabel) { println  actionLabel  ;}
+        %>
+          <i class="$action.cssIconClass"></i>
+        <%  
+          if(action.isShowLabel) {println  actionLabel;}
         }else if(action.actionType == action.TYPE_LINK){
          println actionLabel ;
         }
-        
-        println  "</a>";
-        println "&nbsp;"; 
-        if(action.isBreakLine) { println "<br/>" ;} 
+        println "</a>"; 
+        if(action.isBreakLine) { println "</br>" ;} 
       }
     }
   }
@@ -44,6 +44,7 @@
   requireJS.addScripts('cal.UICalendarPortlet.isAllday("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
   requireJS.addScripts("cal.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
   requireJS.addScripts("gj('td#"+uicomponent.FIELD_CHECKALL+"').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
+
 %>
 <div id="$uicomponent.id" class="UIAddNewEvent">
   <table class="UIFormGrid">
@@ -118,7 +119,7 @@
         <td class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.FIELD_ISREPEAT)%>
         </td>
-        <td class="FieldComponent" id="repeatContainer">
+        <td class="FieldComponent" id="repeatContainer" onlcik="alert(this)">
           <%
             uiForm.renderField(uicomponent.FIELD_ISREPEAT);
           %>
@@ -153,16 +154,9 @@
         <td class="FieldLabel">
           <%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>
         </td>
-        <td class="">
-          <div style="width:242px;">
-          <%uiForm.renderField(uicomponent.FIELD_ATTACHMENTS) ;%>
+        <td class="FieldComponent">
           <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
-          </div>
-          <div class="AddAttachmentIcon">
-            <a href="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>">
-              <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%>
-            </a>          
-          </div>
+          <button rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>" onclick="<%= uicomponent.getParent().event("AddAttachment") %>" type="button" class="btn"><i class="uiIconAttach"></i> <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%></button>
         </td>
       </tr>
     </tbody>

@@ -1,42 +1,40 @@
+
 <%
  import org.exoplatform.webui.core.UIPopupWindow;
  uiForm = uicomponent.getParentFrom() ;
 %>
 <%uiForm.begin();%>
-  <div class="$uicomponent.id"> 
-    <div class="Label">   
-      <span>
-          <%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
-        <a href="<%=uiForm.event("AddUserParticipant")%>" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>">
-          <img class="SelectUserIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
-        </a>
-        <a style="display:none;" href="<%=uiForm.event("AddGroupParticipant")%>" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_GROUP)%>" >
-          <img class="SelectGroupIcon" src="/eXoResources/skin/DefaultSkin/background/Blank.gif"/>
-        </a>
-      </span>
-    </div>
-    <div class="Participant Field">
-      <% uiFormTextAreaInput = uiForm.getChildById(uicomponent.FIELD_PARTICIPANT);
+<div class="$uicomponent.id">
+	<div class="Label">
+		<%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
+		<a href="<%=uiForm.event("AddUserParticipant")%>"> <i
+			rel="tooltip" data-placement="bottom"
+			title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>"
+			class="uiIconUser"></i>
+		</a>
+	</div>
+	<div class="Participant Field">
+		<% uiFormTextAreaInput = uiForm.getChildById(uicomponent.FIELD_PARTICIPANT);
           uiFormTextAreaInput.setRows(6);
       %>
-      <%uiForm.renderField(uicomponent.FIELD_PARTICIPANT)%>
-    </div>
-    <div class="InvitationGroup">
-      <div class="Label">
-        <%=uiForm.getLabel(uicomponent.FIELD_INVITATION_MSG)%>  
-      </div>
-      <div class="Invitation Field">
-        <%uiForm.renderField(uicomponent.FIELD_INVITATION_MSG)%>
-      </div>
-    </div>
-  </div>
-	<div class="UIAction">
+		<%uiForm.renderField(uicomponent.FIELD_PARTICIPANT)%>
+	</div>
+	<div class="InvitationGroup">
+		<div class="Label">
+			<%=uiForm.getLabel(uicomponent.FIELD_INVITATION_MSG)%>
+		</div>
+		<div class="Invitation Field">
+			<%uiForm.renderField(uicomponent.FIELD_INVITATION_MSG)%>
+		</div>
+	</div>
+</div>
+<div class="uiAction">
 	<% for(action in uicomponent.getActions()) { 
-	           String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
-	           String link = uicomponent.event(action) ;
-	      %>
-		<a href="javascript:void(0);" onclick="$link" class="ActionButton LightBlueStyle">$actionLabel</a>
+             String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+             String link = uicomponent.event(action) ;
+        %>
+	<button onclick="$link" class="btn">$actionLabel</button>
 	<%}%>
 	<%uicomponent.renderChild(UIPopupWindow.class);%>
-	</div>
+</div>
 <%uiForm.end();%>

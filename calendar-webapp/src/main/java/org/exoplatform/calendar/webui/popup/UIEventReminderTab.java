@@ -90,12 +90,11 @@ public class UIEventReminderTab extends UIFormInputWithActions {
     List<SelectItemOption<String>> emailRemindBeforeOptions = getReminderTimes(5,60) ;
     addUIFormInput(new UICheckBoxInput(REMIND_BY_EMAIL, REMIND_BY_EMAIL, true)) ;
     addUIFormInput(new UIFormSelectBox(EMAIL_REMIND_BEFORE, EMAIL_REMIND_BEFORE, emailRemindBeforeOptions));
-    //addUIFormInput(new UIFormTextAreaInput(FIELD_EMAIL_ADDRESS, FIELD_EMAIL_ADDRESS, null)) ;
     addUIFormInput(new UIEmailInput(FIELD_EMAIL_ADDRESS, FIELD_EMAIL_ADDRESS, null)) ;
     addUIFormInput(new UICheckBoxInput(EMAIL_IS_REPEAT, EMAIL_IS_REPEAT, false));
     addUIFormInput(new UIFormSelectBox(EMAIL_REPEAT_INTERVAL, EMAIL_REPEAT_INTERVAL, emailRemindRepeatOptions));
     ActionData addEmailAddress = new ActionData() ;
-    addEmailAddress.setActionType(ActionData.TYPE_ICON) ;
+    addEmailAddress.setActionType(ActionData.TYPE_ICON);
     addEmailAddress.setActionName(UIEventForm.ACT_ADDEMAIL) ;
     addEmailAddress.setActionListener(UIEventForm.ACT_ADDEMAIL) ;
 

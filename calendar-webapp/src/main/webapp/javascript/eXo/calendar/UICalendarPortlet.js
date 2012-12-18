@@ -3108,12 +3108,12 @@ UICalendarPortlet.prototype.editRepeat = function(id) {
     var eventForm = _module.UICalendarPortlet.getElementById(id);
     var portletFragment = gj(eventForm).parents(".PORTLET-FRAGMENT")[0];    
     var repeatContainer = gj(eventForm).find('#repeatContainer')[0];
-    var repeatCheck = gj(repeatContainer).children("input")[0];
+    var repeatCheck = gj(repeatContainer).find('#isRepeat')[0];
     var summary = gj(repeatContainer).find('span.repeatSummary')[0];
     var editButton = gj(repeatContainer).children("a")[0];
     if(repeatCheck) {
 	if (repeatCheck.checked) {
-	    editButton.style.display = "";
+	    editButton.style.display="inline-block";
 	} else {
 	    editButton.style.display="none";
 	}

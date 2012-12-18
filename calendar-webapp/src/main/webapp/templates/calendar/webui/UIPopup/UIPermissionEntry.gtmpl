@@ -23,7 +23,7 @@
   }
 %>
 <td class="center">
-  <a class="ActionIcon"  title="<%= _ctx.appRes("UIPermissionEntry.title.DeletePermission"); %>" href="$deleteLink" >
-    <img class="IconDelete" src="/calendar/skin/DefaultSkin/webui/background/DeleteTemplateIcon.gif"/>
+  <a  rel="tooltip" data-placement="bottom" title="<%= _ctx.appRes("UIPermissionEntry.title.DeletePermission"); %>" href="$deleteLink" >
+    <i class="uiIconDelete"></i>
   </a>
 </td>

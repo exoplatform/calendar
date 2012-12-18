@@ -85,11 +85,13 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UIFormSelectBox(FIELD_CATEGORY, FIELD_CATEGORY, CalendarUtils.getCategory())) ;
     ActionData addCategoryAction = new ActionData() ;
     addCategoryAction.setActionType(ActionData.TYPE_ICON) ;
+    addCategoryAction.setCssIconClass("uiIconCalPlus");
     addCategoryAction.setActionName(UIEventForm.ACT_ADDCATEGORY) ;
     addCategoryAction.setActionListener(UIEventForm.ACT_ADDCATEGORY) ;
     List<ActionData> addCategoryActions = new ArrayList<ActionData>() ;
     addCategoryActions.add(addCategoryAction) ;
     setActionField(FIELD_CATEGORY, addCategoryActions) ;
+    
     addUIFormInput(new UIFormInputInfo(FIELD_ATTACHMENTS, FIELD_ATTACHMENTS, null)) ;
     setActionField(FIELD_ATTACHMENTS, getUploadFileList()) ;
     addUIFormInput(new UIFormComboBox(FIELD_FROM_TIME, FIELD_FROM_TIME, options));
@@ -101,9 +103,9 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     //addUIFormInput(new UIFormSelectBox(FIELD_REPEAT, FIELD_REPEAT, getRepeater())) ;
     
     addUIFormInput(new UICheckBoxInput(FIELD_ISREPEAT, FIELD_ISREPEAT, false));
-    
     ActionData editRepeatAction = new ActionData() ;
     editRepeatAction.setActionType(ActionData.TYPE_ICON) ;
+    editRepeatAction.setCssIconClass("uiIconEdit");
     editRepeatAction.setActionName(UIEventForm.ACT_EDITREPEAT) ;
     editRepeatAction.setActionListener(UIEventForm.ACT_EDITREPEAT) ;
     List<ActionData> editRepeatActions = new ArrayList<ActionData>() ;
@@ -131,7 +133,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
       fileUpload.setActionListener(UIEventForm.ACT_DOWNLOAD) ;
       fileUpload.setActionParameter(attachdata.getId()) ;
       fileUpload.setActionType(ActionData.TYPE_LINK) ;
-      fileUpload.setCssIconClass("AttachmentIcon ZipFileIcon") ;
+      fileUpload.setCssIconClass("") ;
       fileUpload.setActionName(attachdata.getName() + "-(" + CalendarUtils.convertSize(attachdata.getSize()) + ")" ) ;
       fileUpload.setShowLabel(true) ;
       uploadedFiles.add(fileUpload) ;
@@ -140,7 +142,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
       removeAction.setActionName(UIEventForm.ACT_REMOVE);
       removeAction.setActionParameter(attachdata.getId());
       removeAction.setActionType(ActionData.TYPE_ICON) ;
-      removeAction.setCssIconClass("RemoveFile");
+      removeAction.setCssIconClass("uiIconDelete");
       removeAction.setBreakLine(true) ;
       uploadedFiles.add(removeAction) ;
     }
