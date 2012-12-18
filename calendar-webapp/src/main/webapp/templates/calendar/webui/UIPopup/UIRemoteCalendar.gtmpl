@@ -152,7 +152,7 @@
                String style = "";
                if (action == "Save") style = "btn-primary";
           %>
-        <button onclick="$link" class="ActionButton btn $style">
+        <button onclick="$link" class="btn $style">
           $actionLabel
         </button>
       <%}%>        

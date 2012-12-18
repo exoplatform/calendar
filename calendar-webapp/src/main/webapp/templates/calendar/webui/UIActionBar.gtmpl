@@ -46,16 +46,16 @@
             
             
           <div class="SeparatorLine"><span></span></div>  
-          <div class="btn-group" data-toggle="buttons-radio">
+          <div class="btn-group">
       <%for(viewType in uicomponent.getViewTypes()){
             
                   icon = viewType + "Icon" ;
                   Parameter[] params = [new Parameter("categoryId", "calId")];
                   actionLink = uicomponent.event("ChangeView",viewType, params) ;
                   String label = _ctx.appRes(uicomponent.id + ".label." + viewType) ;
-                  String style = "btn controlButton actionBarButton" ;
+                  String style = "btn" ;
               if(viewType.equals(uicomponent.getCurrentView())) {
-               style = "btn controlButton controlButtonHover actionBarButton" ;
+               style = "btn active" ;
               }
                   
             

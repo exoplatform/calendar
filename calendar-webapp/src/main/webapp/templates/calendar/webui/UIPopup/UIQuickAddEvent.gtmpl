@@ -93,7 +93,7 @@ requireJS.addScripts("gj('td#"+uicomponent.FIELD_ALLDAY+"').click(function() {ca
            String style = "";
            if (action == "Save") style = "btn-primary"
           %>
-    <button onclick="$link" class="ActionButton btn $style">$actionLabel</button>
+    <button onclick="$link" class="btn $style">$actionLabel</button>
   <%}%>
   </div>
 </div>
