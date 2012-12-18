@@ -1,5 +1,5 @@
 <div id="$uicomponent.id" class="UIPermissionGrid">
-  <table class="UIGrid">
+  <table class="uiGrid table table-hover table-striped">
   <thead>
     <tr>
       <th><%=_ctx.appRes("UIPermissionGrid.label.Owner")%></th>
@@ -15,12 +15,6 @@
     String rowClass;
     for(component in children) {
       if(component.isRendered()) {
-        index++;
-        if(index%2 == 1){
-            rowClass = "EvenRow";
-        }else{
-            rowClass = "OddRow";
-        }
         %>
         <tr><% uicomponent.renderChild(component); %></tr>
     <% }

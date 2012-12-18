@@ -108,14 +108,16 @@
       </table>
       
       <div class="UIAction"> 
-	      <% for(action in uicomponent.getActions()) { 
-	           String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
-	           String link = uicomponent.event(action) ;
-	      %>
-	      <a href="$link" class="ActionButton LightBlueStyle">
-	      	$actionLabel
-	      </a>
-	      <%}%>        
+        <% for(action in uicomponent.getActions()) { 
+             String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+             String link = uicomponent.event(action) ;
+             String style = "";
+             if (action == "Save") style = "btn-primary";
+        %>
+        <button onclick="$link" class="ActionButton btn $style">
+          $actionLabel
+        </button>
+        <%}%>        
       </div>
     </div>
   </div>

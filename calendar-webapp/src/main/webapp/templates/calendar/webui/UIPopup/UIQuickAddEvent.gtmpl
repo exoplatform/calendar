@@ -87,11 +87,13 @@ requireJS.addScripts("gj('td#"+uicomponent.FIELD_ALLDAY+"').click(function() {ca
     <%uiform.end();%>
   </div>
 	<div class="UIAction">
-	<% for(action in uicomponent.getActions()) { 
+  <% for(action in uicomponent.getActions()) { 
            String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
            String link = uicomponent.event(action) ;
+           String style = "";
+           if (action == "Save") style = "btn-primary"
           %>
-		<a onclick="$link" class="ActionButton LightBlueStyle">$actionLabel</a>
-	<%}%>
-	</div>
+    <button onclick="$link" class="ActionButton btn $style">$actionLabel</button>
+  <%}%>
+  </div>
 </div>
