@@ -1,0 +1,52 @@
+
+/*============== TableView ================*/
+.table{
+	margin-bottom: 0;
+}
+
+.uiGrid {
+	.title{
+		padding: 0;
+	}
+}
+
+.uiGrid.table
+{
+	border: 0px;
+	.colsTime{
+			.displayBorderTop{
+				border-top: solid 1px #e6e6e6;
+			}
+			.noDisplayBorderTop{
+				border-top: solid 1px @white;
+			}
+		}
+	
+	td{
+		padding: 0;
+		border-left: 1px solid #e6e6e6;
+		line-height: 19px;
+		.tdDotLine{
+			border-top: dotted 1px #e5e5e5;
+		}
+		.tdLine{
+			border-top: solid 1px #e5e5e5;
+		}
+		&:first-child{
+			border-left: 0px solid transparent;
+		}
+	}
+	
+	td:first-child{
+		width: 55px;
+	}
+	
+	tr{
+		line-height: 19px;
+	}
+	
+	tr:first-child, tr th:first-child{
+		border-top: none;
+	}
+	
+}
