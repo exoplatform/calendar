@@ -245,7 +245,7 @@ UIWeekView.prototype.drop = function(evt) {
 //	document.onmouseup = null;
 	var _e = window.event || evt ;
 	var UIWeekView = _module.UIWeekView ;
-	var isEventbox = cs.EventManager.getEventTargetByClass(evt,"WeekViewEventBoxes");
+	var isEventbox = cs.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
 	if (!UIWeekView.isCol(_e) || !isEventbox) return ;
 	var currentCol = UIWeekView.currentCol ;
 	var sourceCol = UIWeekView.dragElement.parentNode ;
@@ -387,8 +387,8 @@ UIWeekView.prototype.initAllDayRightResize = function(evt) {
 	_e.cancelBubble = true ;
 	if (_e.button == 2) return ;
 	var UIHorizontalResize = eXo.calendar.UIHorizontalResize ;
-	var outerElement = gj(this).parents('.WeekViewEventBoxes')[0];
-	var innerElement = gj(outerElement).find('div.EventAlldayContent')[0];
+	var outerElement = gj(this).parents('.weekViewEventBoxes')[0];
+	var innerElement = gj(outerElement).find('div.eventAlldayContent')[0];
 	UIHorizontalResize.start(_e, outerElement, innerElement) ;
 	UIHorizontalResize.dragCallback = _module.UIWeekView.rightDragResizeCallback ;
 	UIHorizontalResize.callback = _module.UIWeekView.rightResizeCallback ;
@@ -401,8 +401,8 @@ UIWeekView.prototype.initAllDayLeftResize = function(evt) {
 	_e.cancelBubble = true ;
 	if (_e.button == 2) return ;	
 	var UIHorizontalResize = eXo.calendar.UIHorizontalResize ;
-	var outerElement = gj(this).parents('.WeekViewEventBoxes')[0];
-	var innerElement = gj(outerElement).find("div.EventAlldayContent")[0];
+	var outerElement = gj(this).parents('.weekViewEventBoxes')[0];
+	var innerElement = gj(outerElement).find("div.eventAlldayContent")[0];
 	UIHorizontalResize.start(_e, outerElement, innerElement, true) ;
 	UIHorizontalResize.dragCallback = _module.UIWeekView.leftDragResizeCallback ;
 	UIHorizontalResize.callback = _module.UIWeekView.leftResizeCallback ;
@@ -515,7 +515,7 @@ UIWeekView.prototype.initAlldayDND = function(evt) {
 	if (_e.button == 2) return ;
 	var UIWeekView = _module.UIWeekView ;
 	var DragDrop = cs.DragDrop ;
-	var EventAllday = gj(this).parents('.EventAllday')[0];
+	var EventAllday = gj(this).parents('.eventAllday')[0];
 	dragObject = this ;
 	UIWeekView.totalWidth = EventAllday.offsetWidth ;
 	UIWeekView.elementTop = dragObject.offsetTop ;
@@ -592,7 +592,7 @@ UIWeekView.prototype.initAllday = function() {
 	var UIWeekView = _module.UIWeekView ;
 	var uiWeekView = document.getElementById("UIWeekView") ;
 	var uiWeekViewGridAllDay = gj(uiWeekView).find('table.UIGrid')[0]; 
-	this.eventAlldayContainer = gj(uiWeekView).find('div.EventAlldayContainer');
+	this.eventAlldayContainer = gj(uiWeekView).find('div.eventAlldayContainer');
 	var eventAllday = new Array() ;
 	for(var i = 0 ; i < this.eventAlldayContainer.length ; i ++) {
 		if (this.eventAlldayContainer[i].style.display != "none") eventAllday.push(this.eventAlldayContainer[i]) ;
@@ -618,7 +618,7 @@ UIWeekView.prototype.initAllday = function() {
 //		eventAllday[i].onmousedown = eXo.calendar.UIWeekView.initAlldayDND;
 //		eventAllday[i].ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback;
 	}
-	var EventAlldayContainer = gj(uiWeekViewGridAllDay).find('td.EventAllday')[0]; 
+	var EventAlldayContainer = gj(uiWeekViewGridAllDay).find('td.eventAllday')[0]; 
 	this.weekdays = gj(uiWeekViewGridAllDay).find('td.UICellBlock');
 	this.startWeek = 	UIWeekView.weekdays[1] ;
 	this.endWeek = 	UIWeekView.weekdays[UIWeekView.weekdays.length-1] ;

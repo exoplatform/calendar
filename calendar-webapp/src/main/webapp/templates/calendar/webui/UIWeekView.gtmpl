@@ -64,11 +64,10 @@
   tempFormat.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
   def eventList = [];
 %>
-<div class="UIWeekView">
- <%_ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%>
-  <div class="EventWeekContainer">
-    <div class="EventWeekBar">
-      <table class="UIGrid"  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
+<div class="UIWeekView uiBox uiWeekView">
+	<div class="title"><%_ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%></div>
+    <div class="eventWeekBar">
+      <table class="uiGrid table rounded-corners"  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
           <tr>
             <td style="width: 55px;" class="UIEmtyBlock"><div style="width: 55px;"><span></span></div></td>
             <%
@@ -77,7 +76,7 @@
               while(t++ <numberOfDays) {
                 cssClass = "Day" ;
                 if(uicomponent.isCurrentDay(cl.get(Calendar.DATE), cl.get(Calendar.MONTH), cl.get(Calendar.YEAR))) {
-                  cssClass = "Today" ;
+                  cssClass = "today" ;
                 }
                 dayActionLink = uicomponent.TYPE_DAY +"&currentTime="+ cl.getTimeInMillis() ;
                 actionLink =  uicomponent.event("GotoDate",dayActionLink) ;
@@ -87,7 +86,7 @@
                 }
                  wf.setCalendar(cl) ;
             %>
-            <td class="$cssClass UICellBlock" style="$styleWidth" startTime="<%=cl.getTimeInMillis()%>"  startTimeFull="<%=tempFormat.format(cl.getTime())%>">
+            <td class="$cssClass UICellBlock center" style="$styleWidth" startTime="<%=cl.getTimeInMillis()%>"  startTimeFull="<%=tempFormat.format(cl.getTime())%>">
               <a href="$actionLink" style="$styleCss">
                 <%=wf.format(cl.getTime())%>
               </a>
@@ -99,53 +98,53 @@
           </tr>
       </table>
     
-    <div id="UIWeekViewGridAllDay" class="EventAllday" style="" numberOfDays="$numberOfDays">
+    <div id="UIWeekViewGridAllDay" class="eventAllday" numberOfDays="$numberOfDays">
       <div class="Space"><span></span></div>
       <div style="margin-left: 55px;">
-        <div class="EventAlldayBoard">
-                  <% for (event in uicomponent.allDayEvent) {
-                    begindate =  event.getFromDateTime().getTime() ;  
-                    enddate = event.getToDateTime().getTime() ; 
-                    long   startTime = event.getFromDateTime().getTime() ;  
-                    long  finishTime = event.getToDateTime().getTime() ;  
-                    color = uicomponent.getColors().get(event.calType +CalendarUtils.COLON+ event.getCalendarId()) ;
-                    title = tf.format(event.getFromDateTime()) + "->" + tf.format(event.getToDateTime())+ ":&#013; " + event.summary ;
-                    actionLink =  uicomponent.event("UpdateAllDayEvent",event.getId());
-                    Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
-                    String recurId = event.getRecurrenceId();
-                  %>
-                  <div class="EventContainer EventAlldayContainer WeekViewEventBoxes ClearFix $color" eventcat="$event.eventCategoryId" style="position:absolute; border: solid 1px grey;" caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate" 
-                  startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
-                    actionlink="$actionLink">
-                  <%
-                  if (!eventList.contains(event.id)) {
-                    eventList.add(event.id);
-                  %>
-                  <input type="hidden" name="${event.id}calType" value="$event.calType" />
-                  <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />
-                  <input type="hidden" name="${event.id}startTime" value="" />
-                  <input type="hidden" name="${event.id}finishTime" value="" />
-                  <input type="hidden" name="${event.id}isOccur" value="$isOccur" />
-                  <input type="hidden" name="${event.id}recurId" value="$recurId" />
-                  <input type="hidden" name="${event.id}currentDate" value="" />
-                  <%
-                  }
-                  %>
-                    <div class="LeftResizeEvent LeftContinueEvent"><i class="uiIconMiniArrowLeft"></i></div>
-                    <div class="RightResizeEvent RightContinueEvent"><i class="uiIconMiniArrowRight"></i></div>
-                    <div class="EventAlldayContent">
-                      <%=event.summary%>
-                    </div>
-                  </div>
-                  <%}%>
-              </div>
+        <div class="eventAlldayBoard">
+		  <% for (event in uicomponent.allDayEvent) {
+			begindate =  event.getFromDateTime().getTime() ;  
+			enddate = event.getToDateTime().getTime() ; 
+			long   startTime = event.getFromDateTime().getTime() ;  
+			long  finishTime = event.getToDateTime().getTime() ;  
+			color = uicomponent.getColors().get(event.calType +CalendarUtils.COLON+ event.getCalendarId()) ;
+			title = tf.format(event.getFromDateTime()) + "->" + tf.format(event.getToDateTime())+ ":&#013; " + event.summary ;
+			actionLink =  uicomponent.event("UpdateAllDayEvent",event.getId());
+			Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+			String recurId = event.getRecurrenceId();
+		  %>
+		  <div class="eventContainerBorder eventAlldayContainer weekViewEventBoxes clearfix" eventcat="$event.eventCategoryId" style="position:absolute;" caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate" 
+		  startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
+			actionlink="$actionLink">
+		  <%
+		  if (!eventList.contains(event.id)) {
+			eventList.add(event.id);
+		  %>
+		  <input type="hidden" name="${event.id}calType" value="$event.calType" />
+		  <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />
+		  <input type="hidden" name="${event.id}startTime" value="" />
+		  <input type="hidden" name="${event.id}finishTime" value="" />
+		  <input type="hidden" name="${event.id}isOccur" value="$isOccur" />
+		  <input type="hidden" name="${event.id}recurId" value="$recurId" />
+		  <input type="hidden" name="${event.id}currentDate" value="" />
+		  <%
+		  }
+		  %>
+			<div class="LeftResizeEvent leftContinueEvent pull-left  $color"><i class="uiIconMiniArrowLeft"></i></div>
+			<div class="RightResizeEvent rightContinueEvent pull-right  $color"><i class="uiIconMiniArrowRight"></i></div>
+			<div class="eventContainer $color">
+			  <%=event.summary%>
+			</div>
+		  </div>
+		  <%}%>
+	  </div>
        </div>
 
     </div>
     
     </div>
-    <div class="EventWeekContent MainWorkingPanel" style="position: relative;" onresize="eXo.calendar.UIWeekView.onResize() ;">
-      <div class="EventBoard">
+    <div class="eventWeekContent eventWeekContent mainWorkingPanel" style="position: relative;" onresize="eXo.calendar.UIWeekView.onResize() ;">
+      <div class="eventBoard">
         <%
         cl = uicomponent.getBeginDateOfWeek() ;
         t = 0 ;
@@ -167,12 +166,11 @@
             cal.setTime(event.getToDateTime()) ;
             endTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
             color = uicomponent.getColors().get(event.calType +CalendarUtils.COLON+ event.getCalendarId()) ;
-            //actionLink =  uicomponent.event("UpdateEvent",event.getId()+"&calendarId="+event.getCalendarId()+"&startTime=beginTime&finishTime=endTime") ;
             actionLink =  uicomponent.event("UpdateEvent",event.id) ;
             Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
             String recurId = event.getRecurrenceId();
         %>
-        <div class="EventContainerBorder WeekViewEventBoxes $color" eventindex="$dayOfWeek"
+        <div class="eventContainerBorder weekViewEventBoxes $color" eventindex="$dayOfWeek"
           style="position: absolute;" eventcat="$event.eventCategoryId" caltype="$event.calType"
           eventid="$event.id" calid="$event.calendarId" actionlink="$actionLink" unselectable="on"
           startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId">
@@ -195,60 +193,60 @@
           <% if ( event.isEventDurationSmallerThanHalfHour() ) { %>
           <!---- DISPLAYING EVENT DURATION ---->
           <!-- if event duration smaller than 30 mins then render event in the same line -->
-          <div class="<%=event.eventState%>Icon">
-            <div class="<%=event.getPriority()%>PriorityIcon">
-              <span></span>
-			</div>
-          </div>
-		  <div unselectable="on" class="EventContainerBar EventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>" style=" display: inline-block; ">
-		    <p unselectable="on" style=" display: inline; margin-right: 2px; ">
-            <% if (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) { %>
-            <!-- if the element is of type TASK then displaying only starting time -->
+          <div class="clearfix">
+		  <div unselectable="on" class="eventContainerBar eventTitle pull-left" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>" style=" display: inline-block; ">
+		    
+            <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
+								<i class="uiIconCalTaskMini"></i>
+								<%} else {%>
+								<i class="uiIconCalClockMini"></i>
+								<%}%>
+								<i class="uiIconCal<%=event.getPriority()%>Priority"></i>
               $begin
-            <% } else { %>
-              $begin - $end
-            <% } %>
-	        </p>
+           
+	        
           </div>
 
           <!---- DISPLAYING EVENT SUMMARY ---->
           <% if ( (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
           <!-- if the element is of type TASK check whether it's completed -->
-          <div unselectable="on" class="EventContainer" style=" display: inline !important; text-decoration:line-through; ">
+          <div unselectable="on" class="eventContainer pull-left" style=" display: inline !important; text-decoration:line-through; ">
             <%=event.summary%>
           </div>
           <% } else { %>
-          <div class="EventContainer" style=" display: inline !important; ">
+          <div class="eventContainer pull-left" style=" display: inline !important; ">
             <%=event.summary%>
           </div>
           <% } %>
-
+		  </div>
           <% } else { %>
           <!---- DISPLAYING EVENT DURATION ---->
-          <div class="<%=event.eventState%>Icon">
-            <div class="<%=event.getPriority()%>PriorityIcon">
-              <span></span>
-            </div>
-          </div>
-          <div unselectable="on" class="EventContainerBar EventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>">
-            <p unselectable="on">
+         
+          <div unselectable="on" class="eventContainerBar eventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>">
+            <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
+								<i class="uiIconCalTaskMini"></i>
+								<%} else {%>
+								<i class="uiIconCalClockMini"></i>
+								<%}%>
+								<i class="uiIconCal<%=event.getPriority()%>Priority"></i>
+		    
               $begin - $end
-            </p>
+            
           </div>
           <!---- DISPLAYING EVENT SUMMARY ---->
           <% if ( (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
           <!-- if the element is of type TASK check whether it's completed -->
-          <div unselectable="on" class="EventContainer" style=" text-decoration:line-through; ">
+          <div unselectable="on" class="eventContainer" style=" text-decoration:line-through; ">
             <%=event.summary%>
           </div>
           <% } else { %>
-          <div class="EventContainer">
+          <div class="eventContainer">
             <%=event.summary%>
           </div>
           <% } %>
           <% } %>
 
-          <div class="ResizeEventContainer" unselectable="on">
+          <div class="resizeEventContainer" unselectable="on">
             <span></span>
           </div>
         </div>
@@ -258,7 +256,7 @@
           }
         %>
       </div>
-      <table class="UIGrid" style="table-layout: fixed;" id="UIWeekViewGrid" lastupdatedid="<%=uicomponent.getLastUpdatedEventId()%>" cellspacing="0" cellpadding="0">
+      <table class="uiGrid table rounded-corners" id="UIWeekViewGrid" lastupdatedid="<%=uicomponent.getLastUpdatedEventId()%>" cellspacing="0" cellpadding="0">
         <tbody>
           <%
           boolean flag = false ;
@@ -281,15 +279,19 @@
 				if(time.equals(startWorkingTime)) {style = "" ;}
 				if(time.equals(endWorkingTime)) {style = "WorkOffTime" ;}
 				}
-				if(flag) {styleClass = "TdDotLine" ;}
-				else {styleClass = "TdLine";}
+				if(flag) {styleClass = "tdDotLine" ;}
+				else {styleClass = "tdLine";}
           %>
           <tr class="$style $timeName">
-            <td class="TdTime">
-              <div class="TdTime">
-                <%if(!flag) {println display;} else {println "&nbsp;";} %>
-              </div>
-            </td>
+			<%if(!flag) {%>
+				<td class="tdTime center">
+			<%} else {%>
+				<td class="">
+			<%}%>
+					<div style="width: 55px;">
+					<%if(!flag) {println display;} else {println "&nbsp;";} %>
+					</div>
+				</td>
             <%
                cl = uicomponent.getBeginDateOfWeek() ;
                DateFormat dayFormat = new SimpleDateFormat(dateFormat, Locale.ENGLISH) ;
@@ -312,7 +314,7 @@
                  }
                  dayOfWeek = cl.get(Calendar.DAY_OF_WEEK) ;
                  if(uicomponent.isCurrentDay(cl.get(Calendar.DATE), cl.get(Calendar.MONTH), cl.get(Calendar.YEAR))) {
-                  cssClass = "Today" ;
+                  cssClass = "today" ;
                 }else if(dayOfWeek == 1 || dayOfWeek == 7){
                    cssClass = "Weekend" ;
                  } else {
@@ -335,7 +337,6 @@
         </tbody>
       </table>
     </div>
-  </div>
 </div>
 <%uiform.end();%>
 <% /*Begin Popup Menu*/ %>

@@ -497,7 +497,7 @@ UICalendarPortlet.prototype.setting = function(){
 UICalendarPortlet.prototype.setFocus = function(){
   if(_module.UICalendarPortlet.getElementById("UIWeekView")){
     var obj = _module.UICalendarPortlet.getElementById("UIWeekViewGrid") ;
-    var container = gj(obj).parents(".EventWeekContent")[0] ;
+    var container = gj(obj).parents(".eventWeekContent")[0] ;
   }
   else if(_module.UICalendarPortlet.getElementById("UIDayView")){
     var obj = _module.UICalendarPortlet.getElementById("UIDayView") ;
@@ -1273,7 +1273,7 @@ UICalendarPortlet.prototype.showContextMenu = function(compid){
     UIContextMenu.attach("EventOnDayContent", "UIMonthViewEventRightMenu");
     UIContextMenu.attach("TimeRule", "UIDayViewRightMenu");
     UIContextMenu.attach("eventBoxes", "UIDayViewEventRightMenu");
-    UIContextMenu.attach(["Weekday","Weekend","Today", "EventAlldayContainer"], "UIWeekViewRightMenu");
+    UIContextMenu.attach(["Weekday","Weekend","Today", "eventAlldayContainer"], "UIWeekViewRightMenu");
     UIContextMenu.attach("UIListViewRow", "UIListViewEventRightMenu");
     if(document.getElementById("UIPageDesktop")) this.firstRun = false ;
     this.fixIE();
@@ -1389,7 +1389,7 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
     var src = cs.EventManager.getEventTarget(evt);
     var UIContextMenu = cs.UIContextMenu;
     var map = null;
-    var obj = cs.EventManager.getEventTargetByClass(evt,"WeekViewEventBoxes");
+    var obj = cs.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
     var items = gj(UIContextMenu.menuElement).find("a");
     if (obj) {
 				var eventId = obj.getAttribute("eventid");
@@ -1419,8 +1419,8 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
             }
         }
         
-		if(!gj(obj).hasClass("EventAlldayContainer")){
-			var container = gj(src).parents(".EventWeekContent")[0];
+		if(!gj(obj).hasClass("eventAlldayContainer")){
+			var container = gj(src).parents(".eventWeekContent")[0];
 			var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
 			obj =parseInt(gj(src).parents("td")[0].getAttribute("startTime")) + mouseY;
 		} else obj = null;
@@ -1451,7 +1451,7 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
             }
         }
     } else {
-		var container = gj(src).parents(".EventWeekContent")[0];
+		var container = gj(src).parents(".eventWeekContent")[0];
 		var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
         obj = cs.EventManager.getEventTargetByTagName(evt,"td");
 				map = Date.parse(obj.getAttribute("startFull"));
@@ -1600,7 +1600,7 @@ UICalendarPortlet.prototype.runFilterByCalendar = function(calid, checked){
         return;
     var className = "eventBoxes";
     if (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")) 
-        className = "WeekViewEventBoxes"; // TODO : review event box gettting
+        className = "weekViewEventBoxes"; // TODO : review event box gettting
     var events = gj(uiCalendarViewContainer).find("div." + className);
     if (!events) 
         return;
@@ -1657,7 +1657,7 @@ UICalendarPortlet.prototype.filterByCalendar = function(){
     }
     var className = "eventBoxes";
     if (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")){
-			className = "WeekViewEventBoxes";  
+			className = "weekViewEventBoxes";  
     }
     var events = gj(uiCalendarViewContainer).find('div.' + className);
 
@@ -1704,7 +1704,7 @@ UICalendarPortlet.prototype.filterByCategory = function(){
     _module.UICalendarPortlet.selectedCategory = category;
     var className = "eventBoxes";
     if (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")) 
-        className = "WeekViewEventBoxes"; // TODO : review event box gettting
+        className = "weekViewEventBoxes"; // TODO : review event box gettting
     var allEvents = gj(uiCalendarViewContainer).find("div." + className);
     var events = _module.UICalendarPortlet.getEventsForFilter(allEvents);
     if (!events) 
@@ -1736,7 +1736,7 @@ UICalendarPortlet.prototype.runFilterByCategory = function(){
 		if (selectobj.selectedIndex >= 0 ) category = selectobj.options[selectobj.selectedIndex].value;
     var className = "eventBoxes";
     if (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")) 
-        className = "WeekViewEventBoxes"; // TODO : review event box gettting
+        className = "weekViewEventBoxes"; // TODO : review event box gettting
     var allEvents = gj(uiCalendarViewContainer).find("div." + className);
     var events = _module.UICalendarPortlet.getEventsForFilter(allEvents);
     

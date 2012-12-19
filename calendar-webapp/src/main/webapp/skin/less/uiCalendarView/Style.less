@@ -1,39 +1,39 @@
 
 /*============== uiCalendarView ================*/
 
-.uiDayView{
-	.eventAllDay{
-		.eventContainerBorder{
-			 border-top: solid 2px @white;
-			&:last-child{
-				border-bottom: solid 2px @white;
-			}
-		 }
-	}
 
-	.leftContinueEvent{
-		.border-radius(2px 0 0 2px);
-		border-right: solid 1px @white;
-	}
-	
-	.rightContinueEvent{
-		.border-radius(0 2px 2px 0);
-		border-left: solid 1px @white;
-	}
+.eventAllDay, eventAlldayContainer {
+	.eventContainerBorder{
+		 border-top: solid 2px @white;
+		&:last-child{
+			border-bottom: solid 2px @white;
+		}
+	 }
+}
 
-	.mainWorkingPanel{
-	    height: 400px;
-	    overflow-x: hidden;
-	    overflow-y: auto;
-	}
+.leftContinueEvent{
+	.border-radius(2px 0 0 2px);
+	border-right: solid 1px @white;
+}
+
+.rightContinueEvent{
+	.border-radius(0 2px 2px 0);
+	border-left: solid 1px @white;
+}
+
+.mainWorkingPanel{
+    height: 400px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.eventContainer{
+    overflow: hidden;
+    padding-left: 5px;
+    color: @white;
+}
 	
-	.eventContainer{
-	    overflow: hidden;
-	    padding-left: 5px;
-	    color: @white;
-	}
-		
-	.eventDayContent{
+.eventDayContent, .eventWeekContent{
 		.eventContainerBorder{
 			position: absolute;
 			color: @white;
@@ -43,31 +43,51 @@
 			}
 		}
 	}
-		
-		
-		.eventContainerBar{
-		    -moz-user-select: none;
-		    cursor: move;
-		    font-size: 11px;
-		    overflow: hidden;
-		    white-space: nowrap;
-		    padding-right: 5px;
-		}
-		
-		.resizeEventContainer{
-		    background: none;
-		    border-bottom: 1px solid @white;
-		    border-top: 1px solid @white;
-		    cursor: n-resize;
-		    height: 1px;
-		    margin: auto auto 1px;
-		    max-width: 3%;
-		    min-width: 2%;
-		    display: none;
-		}
-		
+	
+	
+	.eventContainerBar{
+	    -moz-user-select: none;
+	    cursor: move;
+	    font-size: 11px;
+	    overflow: hidden;
+	    white-space: nowrap;
+	    padding-right: 5px;
 	}
+	
+	.resizeEventContainer{
+	    background: none;
+	    border-bottom: 1px solid @white;
+	    border-top: 1px solid @white;
+	    cursor: n-resize;
+	    height: 1px;
+	    margin: auto auto 1px;
+	    max-width: 3%;
+	    min-width: 2%;
+	    display: none;
+	}
+	
+}
 
+.uiWeekView .today{
+	background: #f8f8f8;
+	a{
+		line-height: 32px;
+		font-size: @baseFontSize - 1;
+	}
+}
+
+.eventWeekBar{
+	background: #f8f8f8;
+	padding: 0 16px 0 0;
+}
+
+
+.eventAllday{
+    background: #F4F4F4;
+    border-bottom: 1px solid @white;
+    border-top: none;
+    height: 28px;
+    position: relative;
 }
 
 .eventTitle{
