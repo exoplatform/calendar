@@ -149,15 +149,11 @@
           <%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>
         </td>
         <td class="FieldComponent">
-          <div style="width:242px;">
-          <%uiForm.renderField(uicomponent.FIELD_ATTACHMENTS) ;%>
           <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
-          </div>
-          <div class="AddAttachmentIcon">
-            <a href="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>">
+            <button onclick="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>" type="button" class="btn">
+              <i class="uiIconAttach"></i>
               <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%>
-            </a>          
-          </div>
+            </button>
         </td>
       </tr>
     </tbody>

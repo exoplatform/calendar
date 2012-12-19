@@ -43,39 +43,27 @@
   <% } %>
   <div id="AMString" style="display:none" name="<%=dfs_.getAmPmStrings()[0]%>"></div>
   <div id="PMString" style="display:none" name="<%=dfs_.getAmPmStrings()[1]%>"></div>
-  <div class="MiniCalendarContainer">
-    <div class="YearSelector ClearFix">
-      <div onclick="$linkDayNext" class="RightControlButton">
-        <div class="NextYearSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>"><span></span></div>
+  <div class="uiBox MiniCalendarContainer">
+    <h5 class="title">
+      <div onclick="$linkDayPrevious" class="pull-left">
+        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>">
+          <i class="uiIconMiniArrowLeft"></i>
+        </a>
       </div>
-      <div class="MonthSelector RightControlButton">
-        <table>
-          <tbody>
-            <tr>
 
-              <td>
-                <div class="Title">
-                <%
-                    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-                %>
-                <a href="<%=uicomponent.event("GotoDate", monthViewAction)%>">
-                  $monthName 
-                </a>,  
-                <a>
-                  $currentYear
-                </a>
-                </div>
-              </td>
-
-            </tr>
-          </tbody>
-        </table>
+      <div onclick="$linkDayNext" class="pull-right">
+        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>">
+          <i class="uiIconMiniArrowRight"></i>
+        </a>
       </div>
-      <div onclick="$linkDayPrevious" class="RightControlButton">
-        <div class="PreviousYearSelector" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>"><span></span></div>
+        
+      <div class="Title">
+        <%  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis(); %>
+        <a href="<%=uicomponent.event("GotoDate", monthViewAction)%>"> $monthName </a>,  
+        <a> $currentYear </a>
       </div>
-    </div> 
-    <div class="MonthList">
+    </h5> 
+    <div class="contentContainer">
       <div class="WeekList ClearFix">
         <%
         Calendar calendar = uicomponent.getInstanceTempCalendar();
@@ -87,7 +75,7 @@
           String shortDayName = dayNames[calendar.get(Calendar.DAY_OF_WEEK)];
         %>
         <div class="ShortDayName" style="dislay:none" name="$shortDayName"></div>
-      <div class="$cssStyle"><%=shortDayName.substring(0,1)%></div>
+      <div class="$cssStyle"><%=shortDayName.substring(0,3).toUpperCase()%></div>
         <%
           calendar.add(Calendar.DAY_OF_WEEK, 1);
         }
