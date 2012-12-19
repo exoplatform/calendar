@@ -4,7 +4,7 @@
   <parent>
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
-    <version>9-alpha-3</version>
+    <version>9-SNAPSHOT</version>
     <relativePath></relativePath>
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
@@ -82,7 +82,7 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-extension-webapp</artifactId>
         <version>${project.version}</version>
-        <classifier>classes</classifier>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -99,7 +99,7 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-resources</artifactId>
         <version>${project.version}</version>
-        <classifier>classes</classifier>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -121,7 +121,7 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-webapp</artifactId>
         <version>${project.version}</version>
-        <classifier>classes</classifier>
+        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
