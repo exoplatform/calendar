@@ -70,7 +70,7 @@ UICalendarDragDrop.prototype.getAllDropableSets = function() {
   }
 	// For moving events between calendars.
 	var uiCalendars = document.getElementById("UICalendars");
-	var calendarItems = gj(uiCalendars).find('div.CalendarItem'); 
+	var calendarItems = gj(uiCalendars).find('div.calendarItem'); 
 	this.dropableSets.pushAll(calendarItems);
 } ;
 
@@ -223,7 +223,7 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
     this.foundTargetObjectCatch.style.backgroundColor = this.foundTargetObjectCatchStyle ;
   }
   this.foundTargetObjectCatch = dndEvent.foundTargetObject ;
-	if (this.foundTargetObjectCatch && gj(this.foundTargetObjectCatch).hasClass("CalendarItem")) {
+	if (this.foundTargetObjectCatch && gj(this.foundTargetObjectCatch).hasClass("calendarItem")) {
 		var moveAction = gj(dndEvent.dragObject).find('div.EventBoxes')[0].getAttribute("moveAction"); 
 		ajaxAsyncGetRequest(cs.Utils.createUrl(moveAction,null), false) ;
 		return ;

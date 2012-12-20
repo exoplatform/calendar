@@ -51,9 +51,9 @@
                 UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
                 if(chk.isChecked()){css = "iconCheckBox checkbox";}
         %>
-            <li class="CalendarItem  CalendarItemPrivate ClearFix" calColor="$calendar.calendarColor" canEdit="true" id="$calId" calType="0" isRemote="$isRemote">
+            <li class="calendarItem  CalendarItemPrivate ClearFix" calColor="$calendar.calendarColor" canEdit="true" id="$calId" calType="0" isRemote="$isRemote">
                 <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini pull-right"></div>
-                <div class="CalendarCheckboxBlock" calId="$calId">
+                <div class="calendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$calendar.calendarColor">
                   	<span class="colorOpacity">
                   		<span class="$css"></span>
@@ -98,9 +98,9 @@
             UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
             if(chk.isChecked()){css = "iconCheckBox checkbox";}
         %>
-            <li class="CalendarItem CalendarItemShared ClearFix" calColor="$color" id="$calId" calType="1"  canEdit="<%=uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)%>">
+            <li class="calendarItem CalendarItemShared ClearFix" calColor="$color" id="$calId" calType="1"  canEdit="<%=uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)%>">
             <div id="UICalendars_CalendarPopupMenu2" class="uiIconCalSettingMini pull-right" ></div>
-                <div class="CalendarCheckboxBlock" calId="$calId">
+                <div class="calendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$color">
                   	<span class="colorOpacity">
                   		<span class="$css"></span>
@@ -108,7 +108,7 @@
                   </a>
                   <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="<%=owner + calendar.getName()%>"><%=owner + calendar.getName()%></a>
   								<span style="display:none;"><%uiform.renderField(calendar.getId())%></span>
-								</div>
+				</div>
             </li>
         <%
         }
@@ -140,9 +140,9 @@
                 UICheckBoxInput chk = (UICheckBoxInput)uicomponent.getChildById(calId);
                 if(chk.isChecked()){css = "iconCheckBox checkbox";}
         %>
-            <li class="CalendarItem CalendarItemPublic ClearFix"  calColor="$calendar.calendarColor" canEdit="<%=uicomponent.canEdit(calendar.getEditPermission(), checkPerms)%>" id="$calId" calType="2" >
+            <li class="calendarItem calendarItemPublic ClearFix"  calColor="$calendar.calendarColor" canEdit="<%=uicomponent.canEdit(calendar.getEditPermission(), checkPerms)%>" id="$calId" calType="2" >
             <div id="UICalendars_CalendarPopupMenu3" class="uiIconCalSettingMini pull-right" ></div>
-                <div class="CalendarCheckboxBlock" calId="$calId">
+                <div class="calendarCheckboxBlock" calId="$calId">
                   <a href="javascript:void(0);" class="$calendar.calendarColor">
                 	<span class="colorOpacity">
                 		<span class="$css"></span>
@@ -246,7 +246,8 @@
 					  <%=uiform.getLabel("RefreshRemoteCalendar")%>
 					</a> 
 				</li>
-				<li class="CalendarTableColor" >
+				<li class="lineSplit"></li>
+				<li class="calendarTableColor">
 					<%
 					  int i = 0 ;
 					  int index = 0 ;
@@ -255,12 +256,12 @@
 					  int rows = size/items ;
 					  int count = 0 ;
 					  while(i <= rows)  {
-						print "<div style='margin:4px 0px;'>" ;  
+						print "<div>" ;  
 						j = 0 ;
 						while(j <= items && count < size){
 						 color = uicomponent.getColors()[count] ;
 						 actionLink = uicomponent.event('ChangeColor','id&calColor='+color);  
-						 print "<a href=\"$actionLink\" class=\"$color ColorCell\"><img alt='' src=\"/eXoResources/skin/sharedImages/Blank.gif\" /></a>" ;
+						 print "<a href=\"$actionLink\" class=\"$color colorCell\"><i class=\"iconCheckBox\"></i></a>" ;
 						 count++
 						 j++;
 						}
@@ -274,11 +275,7 @@
   <% /*End Popup Menu*/ %>
     
   <% /*Arrow for menu*/ %>
-  <span class="uiArrowCalDropdown" style="display: none;position:absolute;
-                                   border-left: 6px solid transparent;border-right: 6px solid black;
-                                         border-bottom: 6px solid transparent;
-                                         border-top: 6px solid transparent;">
-  </span>
-      
+  
+  <span class="uiArrowCalDropdown"></span>
  </div>
 <%uiform.end()%>

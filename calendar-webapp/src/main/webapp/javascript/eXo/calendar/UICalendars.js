@@ -12,14 +12,14 @@ UICalendars.prototype.init = function(calendarsForm) {
   UICalendarPortlet.filterForm = calendarsForm;
   this.calsFormElem = calendarsForm;
   var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
-  var CalendarItem = gj(calendarsForm).find('li.CalendarItem'); 
+  var CalendarItem = gj(calendarsForm).find('li.calendarItem'); 
   var len = CalendarGroup.length;
   var clen = CalendarItem.length;
   for (var i = 0; i < len; i++) {
       CalendarGroup[i].onclick = UICalendarPortlet.filterByGroup;
   }
   for (var j = 0; j < clen; j++) {
-    var checkBox = gj(CalendarItem[j]).find('div.CalendarCheckboxBlock')[0];
+    var checkBox = gj(CalendarItem[j]).find('div.calendarCheckboxBlock')[0];
     checkBox.onclick = UICalendarPortlet.filterByCalendar;
 }
 };
@@ -44,7 +44,7 @@ UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
 };
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
-  var obj = cs.EventManager.getEventTargetByClass(evt,"CalendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var obj = cs.EventManager.getEventTargetByClass(evt,"calendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
   var calType = obj.getAttribute("calType");
   var calName = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");
@@ -81,12 +81,12 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   }
   var items = gj(menu).find("a");  
   for (var i = 0; i < items.length; i++) {
-      if (gj(items[i].firstChild).hasClass("SelectedColorCell")) {
-          items[i].firstChild.className = items[i].firstChild.className.toString().replace(/SelectedColorCell/, "");
+      if (gj(items[i].firstChild).hasClass("iconCheckBox")) {
+          items[i].firstChild.className = items[i].firstChild.className.toString().replace(/iconCheckBox/, "");
       }
       if (gj(items[i]).hasClass(calColor)) {
           var selectedCell = items[i].firstChild;
-          gj(selectedCell).addClass("SelectedColorCell");
+          gj(selectedCell).addClass("iconCheckBox");
       }
       if (items[i].href.indexOf("ChangeColor") != -1) {
           value = value.replace(/calColor\s*=\s*\w*/, "calColor=" + items[i].className.split(" ")[0]);
@@ -94,7 +94,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       items[i].href = String(items[i].href).replace(/objectId\s*=.*(?='|")/, value);
   }
   
-  if (gj(obj).hasClass("CalendarItem")) {
+  if (gj(obj).hasClass("calendarItem")) {
       items[0].href = String(items[0].href).replace("')", "&categoryId=" + selectedCategory + "')");
       items[1].href = String(items[1].href).replace("')", "&categoryId=" + selectedCategory + "')");      
   }
