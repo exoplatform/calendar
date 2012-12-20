@@ -1,0 +1,41 @@
+
+/*============== uiActionBar ================*/
+
+.uiActionBar{
+	.UIForm{
+		float: right;
+	}
+	.settingActionBar{
+		margin: 5px 15px 0 9px;
+		display: inline-block;
+	}
+	.leftActionBar{
+		margin-right: 260px;
+	}
+	.separatorLine{
+		background: #cbcbcb;
+		.box-shadow(1px 0 0 #fff);
+		width: 1px;
+		height: 25px;
+		display: inline-block;
+		vertical-align: middle;
+		margin-right: 7px;
+	}
+	.alignBtnGroup{
+		text-align: center;
+	}
+	.pull-left 
+		{
+			.btn-primary{
+				margin-right: 8px;
+				&+.btn-primary{
+					margin-right: 43px;
+				}
+			}
+			.todayActionBar{
+				margin: 0 29px 0 17px;
+				color: @textColor;
+			}
+		}
+	
+}

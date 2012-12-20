@@ -12,75 +12,67 @@
   requireJS.addScripts("gj('button#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
   requireJS.addScripts("gj('button#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
   %>
-<div id="$uicomponent.id" class="UIActionBar"> 
-  <div class="UIToolbar">
-    <div class="HeaderToolbar">
-      <div class="LeftBar">
-        <div class="RightBar">
-          <div class="CenterBar">
-		    <%uicomponent.renderChild(UISearchForm.class)%>
-		    <div onclick="<%=uicomponent.event("Setting")%>" class="ControlButton ActionBarButton SettingButton">
-              	<i class="uiIconSetting"></i>
-              </div>
-		        <div class="LeftActionBar">
-		        <div class="CalendarActionBar ClearFix">
-            <div class="Title ControlButton ActionBarButton">
-              <span></span>
-            </div>
-            <button type="button" class="btn btn-primary actionBarButton controlButton" id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>">
-              <a class="IconHolder QuickAddEvent">
-                <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
-              </a>
-            </button>
-            <button type="button" class="btn btn-primary actionBarButton controlButton" id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>">
-              <a class="IconHolder AddNewTask">
-                <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
-              </a>
-            </button>
-            
-           
-            
-                <a class="iconHolder todayIcon">
-                  <%=_ctx.appRes(uicomponent.id + ".label.Today")%>
-                </a>
-            
-            
-          <div class="SeparatorLine"><span></span></div>  
-          <div class="btn-group">
-      <%for(viewType in uicomponent.getViewTypes()){
-            
-                  icon = viewType + "Icon" ;
-                  Parameter[] params = [new Parameter("categoryId", "calId")];
-                  actionLink = uicomponent.event("ChangeView",viewType, params) ;
-                  String label = _ctx.appRes(uicomponent.id + ".label." + viewType) ;
-                  String style = "btn" ;
-              if(viewType.equals(uicomponent.getCurrentView())) {
-               style = "btn active" ;
-              }
-                  
-            
-                %>
-                    <button type="button" class="$style" onclick="$actionLink">
-                      $label
-                    </button>
-                  
-          <%  
-              
-            }
-          %>
-          </div>
+<div id="$uicomponent.id" class="uiActionBar uiGrayLightBox clearfix"> 
+	<div class="pull-right">
+		<%uicomponent.renderChild(UISearchForm.class)%>
+		<span class="separatorLine"></span>
+		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar">
+			<i class="uiIconSetting"></i>
+		</a>
+		
+	</div>
+	<div class="pull-left">
+		<div class="Title ControlButton ActionBarButton">
+		<span></span>
+		</div>
+		
+		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>">
+			<i class="uiIconCalCreateEvent"></i> <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
+		</button>
+		 
+		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>">
+			<i class="uiIconCalCreateTask"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
+		</button>
 
-              <div class="ScrollButtons" style="display: none;">
-					<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">
-						<div rel="tooltip" data-placement="bottom" title="Next" class="ScrollRightButton"><span></span></div>
-					</div>
-              </div>
-              </div>
-            </div>
-          </div>
-         
-        </div>
-      </div>
-    </div>
-  </div>
+		
+		<span class="separatorLine"></span> 
+		
+		<a href="" class="todayActionBar">
+			<%=_ctx.appRes(uicomponent.id + ".label.Today")%>
+		</a>
+
+		<span class="separatorLine"></span>  
+	</div>
+	
+	<div class="alignBtnGroup">
+		<div class="btn-group">
+			<%for(viewType in uicomponent.getViewTypes()){
+
+			  icon = viewType + "Icon" ;
+			  Parameter[] params = [new Parameter("categoryId", "calId")];
+			  actionLink = uicomponent.event("ChangeView",viewType, params) ;
+			  String label = _ctx.appRes(uicomponent.id + ".label." + viewType) ;
+			  String style = "btn" ;
+			if(viewType.equals(uicomponent.getCurrentView())) {
+			style = "btn active" ;
+			}
+			  
+
+			%>
+				<button type="button" class="$style" onclick="$actionLink">
+				  $label
+				</button>
+			  
+			<%  
+
+			}
+			%>
+		</div>
+	</div>
+	
+	<div class="ScrollButtons" style="display: none;">
+		<div rel="tooltip" data-placement="bottom" title="Previous" class="ScrollLeftButton">
+			<div rel="tooltip" data-placement="bottom" title="Next" class="ScrollRightButton"><span></span></div>
+		</div>
+	</div>
 </div>

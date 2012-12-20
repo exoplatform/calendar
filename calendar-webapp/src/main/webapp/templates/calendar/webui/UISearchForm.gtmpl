@@ -6,9 +6,7 @@
   requirejs.require("SHARED/csResources","cs");
   requirejs.addScripts('cs.Utils.captureInput("value") ;') ;
 %>
-<div class="UISearchForm">
-  <div class="Input Search" onclick="$action">
-    <div class="SearchIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
-  </div>
+<div class="uiSearchForm uiSearchInput pull-right">
+    <div rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
 </div>
 <%uiform.end();%>
