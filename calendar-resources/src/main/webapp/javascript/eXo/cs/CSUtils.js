@@ -611,9 +611,9 @@ function UINavigation() {
 
 UINavigation.prototype.loadScroll = function() {
   var uiNav = _module.UINavigation ;
-  var container = document.getElementById("UIActionBar") ;
+  var container = document.getElementById("uiActionBar") ;
   if(container) {    
-    this.scrollMgr = eXo.portal.UIPortalControl.newScrollManager("UIActionBar") ;
+    this.scrollMgr = eXo.portal.UIPortalControl.newScrollManager("uiActionBar") ;
     this.scrollMgr.initFunction = uiNav.iniScroll ;
     
     this.scrollMgr.mainContainer = gj(container).find('div.CenterBar')[0];

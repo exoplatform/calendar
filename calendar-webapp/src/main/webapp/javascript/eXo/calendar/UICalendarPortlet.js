@@ -2604,7 +2604,7 @@ function CalendarScrollManager(){
 
 CalendarScrollManager.prototype.load = function(){ 
   var uiNav = _module.CalendarScrollManager ;
-  var container = _module.UICalendarPortlet.getElementById("UIActionBar") ;
+  var container = _module.UICalendarPortlet.getElementById("uiActionBar") ;
   if(container) {
     var mainContainer = gj(container).find('div.CalendarActionBar')[0];
     var randomId = cs.DOMUtil.generateId("CalendarScrollbar");
