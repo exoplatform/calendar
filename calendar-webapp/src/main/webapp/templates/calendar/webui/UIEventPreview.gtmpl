@@ -8,13 +8,13 @@ import org.exoplatform.webui.application.WebuiRequestContext;
 
 WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
 Locale locale = context.getParentAppRequestContext().getLocale() ;
-  
+
 dateTimeFormat = uicomponent.getDateTimeFormat() ;
 DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
 df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
-CalendarEvent event = uicomponent.getEvent() ;    
+CalendarEvent event = uicomponent.getEvent() ;
 color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
-uiform.begin() 
+uiform.begin()
 def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
 requirejs.require("SHARED/csResources","cs");
 requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
@@ -23,90 +23,90 @@ requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() {cs.Uti
 requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
 %>
 <div id="<%uicomponent.getId()%>"class="UIPreview">
-  <%if(!uicomponent.isShowPopup()){%>
-    <div class="ViewBar ClearFix">
-      <div class="Label">
-       <%=uiform.getLabel('eventDetail')%>
-      </div> 
+<%if(!uicomponent.isShowPopup()){%>
+<div class="ViewBar ClearFix">
+<div class="Label">
+<%=uiform.getLabel('eventDetail')%>
+</div>
       <div id="UIEventPreview_fullSize" class="MaximizeButton" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><span></span></div>
     </div>
-  <%}%>
-  <div class="ViewContainer">
-   <div class="DecoratorBox SpliterResizableListArea">
-    <div class="ViewBoxStyle">
-        <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
-         <tr>
-          <td style="border-right: 1px solid #c7c7c7;width: 185px;">
-           <div class="Text">
-              <%=uiform.getLabel('From')%><span style="color: #1756d5;"><%=df.format(event.getFromDateTime())%></span> 
+<%}%>
+<div class="ViewContainer">
+<div class="DecoratorBox SpliterResizableListArea">
+<div class="ViewBoxStyle">
+<table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
+<tr>
+<td style="border-right: 1px solid #c7c7c7;width: 185px;">
+<div class="Text">
+<%=uiform.getLabel('From')%><span style="color: #1756d5;"><%=df.format(event.getFromDateTime())%></span>
            </div>
-           <div class="Text">
-             <%=uiform.getLabel('To')%><span style="color: #1756d5;"><%=df.format(event.getToDateTime())%></span> 
+<div class="Text">
+<%=uiform.getLabel('To')%><span style="color: #1756d5;"><%=df.format(event.getToDateTime())%></span>
            </div>
-           <%for(attachFile in  event.getAttachment()){%>
-             <div class="AttachmentIcon"  style="white-space: nowrap;">
-              <a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name  </a>
+<%for(attachFile in  event.getAttachment()){%>
+<div class="AttachmentIcon"  style="white-space: nowrap;">
+<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name  </a>
               (<%=CalendarUtils.convertSize(attachFile.size)%>) 
              </div>
-              <%if(attachFile.getMimeType().startsWith("image"))  {
-              String src = uicomponent.getImageSource(attachFile) ;
-              %>   
-                 <img id="$attachFile.id" src="$src" class="Img" style="display:none;"/>
-              <%}%>
-             <div class="Actions" style="white-space: nowrap;">
-             <%if(attachFile.getMimeType().startsWith("image"))  {
-                 String rndString = String.valueOf(new Date().getTime());
-                 //String src = uicomponent.getDownloadLink(attachFile) ; 
-             %>
-             <% 
-                 String View = uiform.getLabel('View') ;
-                 String Close = uiform.getLabel('Close') ;
-              %>             
-                <a id="UIEventPreview_1" viewLabel="$View" closeLabel="$Close" class="IconHolder ViewAttachmentIcon">
-                 <%=uiform.getLabel('View')%>
-               </a> 
+<%if(attachFile.getMimeType().startsWith("image"))  {
+String src = uicomponent.getImageSource(attachFile) ;
+%>
+<img id="$attachFile.id" src="$src" class="Img" style="display:none;"/>
+<%}%>
+<div class="Actions" style="white-space: nowrap;">
+<%if(attachFile.getMimeType().startsWith("image"))  {
+String rndString = String.valueOf(new Date().getTime());
+//String src = uicomponent.getDownloadLink(attachFile) ;
+%>
+<%
+String View = uiform.getLabel('View') ;
+String Close = uiform.getLabel('Close') ;
+%>
+<a id="UIEventPreview_1" viewLabel="$View" closeLabel="$Close" class="IconHolder ViewAttachmentIcon">
+<%=uiform.getLabel('View')%>
+</a>
              <%}%>
-             </div> 
-           <%}%>
-          </td>
+             </div>
+<%}%>
+</td>
               <td >
                <div class="EventDescription $color"><span></span></div>
                <div style="font-weight: bold;">$event.summary</div>
-               
-               <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
-                <tr>
-                <% 
-                  prio = event.getPriority() + "PriorityIcon" ;
-                 %>
-                 <td style="width: 26px;"><div class="$prio"><span></span></div></td>
+
+<table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
+<tr>
+<%
+prio = event.getPriority() + "PriorityIcon" ;
+%>
+<td style="width: 26px;"><div class="$prio"><span></span></div></td>
                  <td class="Text" style="width: 100px;">
                      <%=uiform.getLabel('Place')%>
                  </td>
-                 <td class="Text"><%=(CalendarUtils.isEmpty(event.getLocation()))? "" : event.getLocation()%></td>
-                </tr> 
-                <tr>
-                 <td ><div class="<%=event.getEventState()%>Icon"><span></span></div></td>
+<td class="Text"><%=(CalendarUtils.isEmpty(event.getLocation()))? "" : event.getLocation()%></td>
+                </tr>
+<tr>
+<td ><div class="<%=event.getEventState()%>Icon"><span></span></div></td>
                  <td class="Text"><%=uiform.getLabel('RepeatEvent')%></td>
-                 <td class="Text"><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
-                </tr> 
-                <tr>
-                 <td ></td>
+<td class="Text"><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
+                </tr>
+<tr>
+<td ></td>
                  <td class="Text"><%=uiform.getLabel('Description')%></td>
-                 <td class="Text">
-                   <div class="ViewDescription">
-                   <%
-                    String des = "" ;
-                    if(!CalendarUtils.isEmpty(event.getDescription())) {
-                     des = event.getDescription().replaceAll("\n","<br/>") ; ;
-                    }
-                    println des ; 
-                   %>
-                   </div>
+<td class="Text">
+<div class="ViewDescription">
+<%
+String des = "" ;
+if(!CalendarUtils.isEmpty(event.getDescription())) {
+	des = event.getDescription().replaceAll("\n","<br/>") ; ;
+}
+println des ;
+%>
+</div>
                  </td>
-                </tr> 
+</tr>
                 <tr>
                  <td ></td>
-                 <td class="Text"><%=uiform.getLabel('EventReminder')%></td>
+<td class="Text"><%=uiform.getLabel('EventReminder')%></td>
                  <td class="Text">
                  <%                    
                        for(reminder in event.getReminders()) {
@@ -114,66 +114,63 @@ requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarP
                         %>
                           <div style="float:left;margin-right: 10px;">
                             <a class="ControlButton" style="color:gray;"><%=reminder.getReminderType()%></a>
-                          </div>
+</div>
                         <%          
                        }                    
                  %>
                  </td>
-                </tr>                 
+</tr>
                 <tr>
                  <td ></td>
-                 <td class="Text">
-                   <%=uiform.getLabel('EventSharing')%>
-                 </td>
+<td class="Text">
+<%=uiform.getLabel('EventSharing')%>
+</td>
                  <td class="Text"><%=(CalendarUtils.isEmpty(String.valueOf(event.isPrivate())))? "" : uicomponent.getLabel(String.valueOf(!event.isPrivate()))%></td>
-                </tr> 
+</tr>
                 <tr>
                  <td ></td>
-                 <td class="Text"><%=uiform.getLabel('ShowAs')%></td>
+<td class="Text"><%=uiform.getLabel('ShowAs')%></td>
                  <td class="Text"><%=(CalendarUtils.isEmpty(event.getEventState()))? "" : uicomponent.getLabel(event.getEventState())%></td>
-                </tr> 
+</tr>
                 <tr>
                  <td ></td>
-                 <td class="Text">
-                   <%=uiform.getLabel('Invitation')%>
-                 </td>
+<td class="Text">
+<%=uiform.getLabel('Invitation')%>
+</td>
                  <td class="Text">
                    <%for(invit in event.getInvitation()) {%>
                      <div>$invit</div>
-                    <%}%>
-                 </td>
-                </tr>                    
-                <tr>
-                 <td ></td>
+<%}%>
+</td>
+                </tr>
+<tr>
+<td ></td>
                  <td class="Text">
                    <%=uiform.getLabel('Participant')%>
                  </td>
-                 <td class="Text">
-                   <%  for(par in event.getParticipant()) {%>
-                   <div>$par</div>
+<td class="Text">
+<%  for(par in event.getParticipant()) {%>
+<div>$par</div>
                    <%}%>
                  </td>
-                </tr>
+</tr>
                </table>
-               <%if(!uicomponent.isShowPopup()){%>                
-                <a href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>" class="ControlButton BntEvenPreview">
-                 <div class="IconHolder EditEventIcon">
+<%if(!uicomponent.isShowPopup()){%>
+<div class="ActionsContainer ClearFix">
+<a class="btn ControlButton BntEvenPreview" href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
+<i class="uiIconEdit"></i>
                     <%=uiform.getLabel('EditEvent')%>
-                 </div>
                 </a>
-                <div class="SeparatorDotLine"><span></span></div>
-                <a href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>" class="ControlButton">
-                 <div class="IconHolder DeleteEventIcon">
-                    <%=uiform.getLabel('DeleteEvent')%>
-                  </div>
+<a class="btn ControlButton" href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
+<i class="uiIconDelete"></i><%=uiform.getLabel('DeleteEvent')%>
                 </a>
-               </div>
+</div>
                <%}%>
           </td>
-         </tr>                    
+</tr>
         </table>
-    </div>
+</div>
    </div>
-  </div>
+</div>
 </div>
 <%uiform.end();%>

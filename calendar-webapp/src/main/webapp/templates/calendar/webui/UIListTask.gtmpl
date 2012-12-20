@@ -1,37 +1,38 @@
 <%
 
-  import org.exoplatform.calendar.CalendarUtils;
-  uiform.begin();
-  
-  int currentDay = uicomponent.getCurrentDay() ;
-  int currentMonth = uicomponent.getCurrentMonth() ;
-  String currentMonthName = uicomponent.getMonthName(currentMonth) ;
-  int currentYear = uicomponent.getCurrentYear() ;
-  String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
-  String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
-   String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
-  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-  _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
-  def rcontext = _ctx.getRequestContext() ;
-  def requireJS = rcontext.getJavascriptManager().getRequireJS();
-  
-  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-  requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
-  requireJS.require("SHARED/csResources","cs");
-  requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
-  rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListTask\');');  
-  //INLINE Scripts
-  requireJS.require("SHARED/jquery","gj");
-  requireJS.addScripts("gj('tr.UIListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this);});");
-  requireJS.addScripts("gj('div#UIListViewEventRightMenu').attr('exocallback','cal.UICalendarPortlet.listViewCallack');");
-  
+import org.exoplatform.calendar.CalendarUtils;
+uiform.begin();
+
+int currentDay = uicomponent.getCurrentDay() ;
+int currentMonth = uicomponent.getCurrentMonth() ;
+String currentMonthName = uicomponent.getMonthName(currentMonth) ;
+int currentYear = uicomponent.getCurrentYear() ;
+String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
+String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
+String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
+monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+_ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
+def rcontext = _ctx.getRequestContext() ;
+def requireJS = rcontext.getJavascriptManager().getRequireJS();
+
+requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
+requireJS.require("SHARED/csResources","cs");
+requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
+rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
+
+//INLINE Scripts
+requireJS.require("SHARED/jquery","gj");
+requireJS.addScripts("gj('tr.UIListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this);});");
+requireJS.addScripts("gj('div#UIListViewEventRightMenu').attr('exocallback','cal.UICalendarPortlet.listViewCallack');");
+
 %>
 
 <div class="UIListView SpliterResizableListArea MainWorkingPanel">
-    <table cellspacing="0" borderspacing="0" id="UIListUsers" class="UIGrid">
-       <thead>
-         <tr>
-            <th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
+<table cellspacing="0" borderspacing="0" id="UIListUsers" class="uiGrid table table-hover table-striped">
+<thead>
+<tr>
+<th style="width: 30px; padding-left: 4px;"><input style="float: left; margin-top: 9px; margin-left: 6px;" type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/></th>
             <th style="width: 24px;"><div class="AttachmentIcon">&nbsp;</div></th>
             <%
               String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
@@ -42,69 +43,69 @@
               }
              %>
             <th style="width: 46px;"><a href="$sortLink" ><div class="$classCss"><%=uiform.getLabel('Priority')%></div></a></th>
-            <%
-              sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
-              classCss = "";
-              if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
-                if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
-                else classCss = "DownArrow1Icon";
-            }
-            %>
-            <th ><a href="$sortLink" ><div class="$classCss"><%=uiform.getLabel('Task')%></div></a></th>
+<%
+sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
+classCss = "";
+if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
+	if (uicomponent.isAscending()) classCss = "UpArrow1Icon";
+	else classCss = "DownArrow1Icon";
+}
+%>
+<th ><a href="$sortLink" ><div class="$classCss"><%=uiform.getLabel('Task')%></div></a></th>
             <th ><%=uiform.getLabel('Status')%></th>
-            <th ><%=uiform.getLabel('DueDate')%></th>
+<th ><%=uiform.getLabel('DueDate')%></th>
              <th ><%=uiform.getLabel('TaskDelegation')%></th>
-          </tr>
+</tr>
         </thead>
-        <tbody>
-          <%
-                  for(event in uicomponent.getEvents()){
-                    rowStyle = "" ;
-                    if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#f5f5f5;";}
-                    String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;  
-					def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
-                %>
-            <!--tr actionLink="$actionLink" onclick="eXo.calendar.UICalendarPortlet.listViewClickCallback(this);" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>-->
-			<tr actionLink="$actionLink" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
-              <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
+<tbody>
+<%
+for(event in uicomponent.getEvents()){
+	rowStyle = "" ;
+	if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#f5f5f5;";}
+	String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;
+	def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+	%>
+	<!--tr actionLink="$actionLink" onclick="eXo.calendar.UICalendarPortlet.listViewClickCallback(this);" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>-->
+	<tr actionLink="$actionLink" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
+	<td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
                 <td style="padding: 0px 0px 0px 7px;"><div><%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%></div></td>
                 <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>
                 <td class="text">
 				  <div class="EventDescription $color"><span></span></div>
                   <span class="ControlButton" rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
                   <%=event.getSummary()%>
-                </span>  
-                </td>
+                </span>
+	</td>
               <td class="text"><%=(event.getEventState() == null)? "" :  uiform.getLabel(event.getEventState())%></td>
-              <td class="text">
-              <%
-               def amount = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
-               long days = (((amount/1000)/60)/60)/24 ; 
-              %>
-              $days <%=uiform.getLabel('days')%>
-              </td>
+	<td class="text">
+	<%
+	def amount = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
+	long days = (((amount/1000)/60)/60)/24 ;
+	%>
+	$days <%=uiform.getLabel('days')%>
+	</td>
               <td class="text">
                 <%=(event.getTaskDelegator() == null)? "": event.getTaskDelegator()%>
               </td>
-            </tr>    
+	</tr>
             <%
             }
           %>
        </tbody>
-    </table>
+	</table>
     <%if(uicomponent.getEvents().size() <= 0) { %>
     <table>
       <tr>
         <td class="Null">
           <%=uiform.getLabel('noData')%> 
         </td>
-      </tr>
+	</tr>
     </table>
-    <%} else { 
-       _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
-      }
-    %>
-  </div>  
+	<%} else {
+_ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
+}
+%>
+</div>
     <% /*Begin Popup Menu*/ %>
 	
   <!--div class="uiRightClickPopupMenu" id="UIListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallack"-->
@@ -114,9 +115,9 @@
         <div class="TopRightRightClickPopupMenu">
           <div class="TopCenterRightClickPopupMenu">
             <span></span>
-          </div>
+</div>
         </div>
-      </div>
+</div>
       <div class="MiddleLeftRightClickPopupMenu">
         <div class="MiddleRightRightClickPopupMenu">
           <div class="UIRightPopupMenuContainer">
@@ -129,19 +130,19 @@
               <div class="ItemIcon $icon">
                 <%=_ctx.appRes("ContextMenu.label."+act)%>
                </div>
-            </a>
+</a>
             <%}%>
           </div>
-        </div>
+</div>
       </div>
-      <div class="BottomLeftRightClickPopupMenu">
-      <div class="BottomRightRightClickPopupMenu">
-        <div class="BottomCenterRightClickPopupMenu">
-          <span></span>
+<div class="BottomLeftRightClickPopupMenu">
+<div class="BottomRightRightClickPopupMenu">
+<div class="BottomCenterRightClickPopupMenu">
+<span></span>
         </div>
-      </div>
+</div>
     </div>
-    </div>
+</div>
   </div>
-  <% /*End Popup Menu*/ %>
+<% /*End Popup Menu*/ %>
 <%uiform.end();%>

@@ -8,37 +8,36 @@ String closeLink = uicomponent.event("Cancel");
 String saveLabel = updateLabel;
 
 if(uicomponent.isAddNew()) {
-  saveLabel = addLabel;
+	saveLabel = addLabel;
 }
 %>
 <div class="UIEventCategoryForm" id="EventCategoryFormContainer">
-  <%uiform.begin();%>
-  <div class="EventCategoryFormContainer">
-    <div class="HorizontalLayout">
-      <div class="FormContainer">
-        <table class="UIFormGrid">
-          <tbody>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.EVENT_CATEGORY_NAME)%>
-              </td>
+<%uiform.begin();%>
+<div class="EventCategoryFormContainer">
+<div class="FormContainer">
+<table class="UIFormGrid">
+<tbody>
+<tr>
+<td class="FieldLabel">
+<%=uicomponent.getLabel(uicomponent.EVENT_CATEGORY_NAME)%>
+</td>
               <td class="FieldComponent">
                 <%uicomponent.renderField(uicomponent.EVENT_CATEGORY_NAME)%>
               </td>
-              <td>
-                <div class="UIAction">
-                  <a onclick="$saveLink" class="ActionButton LightBlueStyle">$saveLabel</a>
+<td>
+<div class="uiAction">
+<button type="button" onclick="$saveLink" class="btn">$saveLabel
+</button>
                 </div>
-              </td>
+</td>
             </tr>
-         </tbody>
+</tbody>
         </table>
-      </div>
-    </div>
+</div>
   </div>
-  
-  <div class="UIAction">
-	  <a onclick="$closeLink" class="ActionButton LightBlueStyle">$closeLabel</a>
+
+<div class="uiAction uiActionBorder">
+<button type="button" onclick="$closeLink" class="btn">$closeLabel</button>
   </div>
-  <%uiform.end();%>
+<%uiform.end();%>
 </div>
