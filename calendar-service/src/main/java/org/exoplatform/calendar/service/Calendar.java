@@ -35,71 +35,58 @@ public class Calendar {
 
   public static final int      TYPE_PUBLIC   = 2;
 
-  public static final String   OLIVE         = "Olive".intern();
+  public static final String N_ASPARAGUS = "asparagus";
 
-  public static final String   OLIVEDRAB     = "OliveDrab".intern();
+  public static final String N_MUNSELL_BLUE =  "munsell_blue";
 
-  public static final String   ORANGERED     = "OrangeRed".intern();
+  public static final String N_NAVY_BLUE = "navy_blue";
 
-  public static final String   ORCHID        = "Orchid".intern();
+  public static final String N_PURPLE = "purple";
 
-  public static final String   PALEGOLDENROD = "PaleGoldenRod".intern();
+  public static final String N_RED = "red";
 
-  public static final String   PALEGREEN     = "PaleGreen".intern();
+  public static final String N_BROWN = "brown";
 
-  public static final String   PALETURQUOISE = "PaleTurquoise".intern();
+  public static final String N_LAUREL_GREEN = "laurel_green";
 
-  public static final String   PALEVIOLETRED = "PaleVioletRed".intern();
+  public static final String N_SKY_BLUE = "sky_blue";
 
-  public static final String   PAPAYAWHIP    = "PapayaWhip".intern();
+  public static final String N_BLUE_GRAY = "blue_gray";
 
-  public static final String   PEACHPUFF     = "PeachPuff".intern();
+  public static final String N_LIGHT_PURPLE = "light_purple";
 
-  public static final String   PERU          = "Peru".intern();
+  public static final String N_HOT_PINK = "hot_pink";
 
-  public static final String   PINK          = "Pink".intern();
+  public static final String N_LIGHT_BROWN = "light_brown";
 
-  public static final String   PLUM          = "Plum".intern();
+  public static final String N_MOSS_GREEN = "moss_green";
 
-  public static final String   POWDERBLUE    = "PowderBlue".intern();
+  public static final String N_POWDER_BLUE = "powder_blue";
 
-  public static final String   PURPLE        = "Purple".intern();
+  public static final String N_LIGHT_BLUE = "light_blue";
 
-  public static final String   RED           = "Red".intern();
+  public static final String N_PINK = "pink";
 
-  public static final String   ROSYBROWN     = "RosyBrown".intern();
+  public static final String N_ORANGE = "orange";
 
-  public static final String   ROYALBLUE     = "RoyalBlue".intern();
+  public static final String N_GRAY = "gray";
 
-  public static final String   SADDLEBROWN   = "SaddleBrown".intern();
+  public static final String N_GREEN = "green";
 
-  public static final String   SALMON        = "Salmon".intern();
+  public static final String N_BABY_BLUE = "baby_blue";
 
-  public static final String   SANDYBROWN    = "SandyBrown".intern();
+  public static final String N_LIGHT_GRAY = "light_gray";
 
-  public static final String   SEAGREEN      = "SeaGreen".intern();
+  public static final String N_BEIGE = "beige";
 
-  public static final String   SEASHELL      = "SeaShell".intern();
+  public static final String N_YELLOW = "yellow";
 
-  public static final String   SIANNA        = "Sienna".intern();
+  public static final String N_PLUM_PURPLE = "#CEA6AC";
 
-  public static final String   SILVER        = "Silver".intern();
-
-  public static final String   SKYBLUE       = "SkyBlue".intern();
-
-  public static final String   THISTLE       = "Thistle".intern();
-
-  public static final String   TOMATO        = "Tomato".intern();
-
-  public static final String   TURQUOISE     = "Turquoise".intern();
-
-  public static final String   VIOLET        = "Violet".intern();
-
-  public static final String   WHEAT         = "Wheat".intern();
-
-  public static final String   YELLOW        = "Yellow".intern();
-
-  public static final String[] COLORS        = { POWDERBLUE, ORCHID, PALEGOLDENROD, PALEGREEN, OLIVE, OLIVEDRAB, ORANGERED, PALETURQUOISE, PALEVIOLETRED, PAPAYAWHIP, PEACHPUFF, PERU, PINK, PLUM, PURPLE, RED, ROSYBROWN, ROYALBLUE, SADDLEBROWN, SALMON, SANDYBROWN, SEAGREEN, SEASHELL, SIANNA, SILVER, SKYBLUE, THISTLE, TOMATO, TURQUOISE, VIOLET, WHEAT, YELLOW };
+  public static final String[] COLORS        = { N_ASPARAGUS, N_MUNSELL_BLUE, N_NAVY_BLUE, N_PURPLE, N_RED, N_BROWN,
+    N_LAUREL_GREEN, N_SKY_BLUE, N_BLUE_GRAY, N_LIGHT_PURPLE, N_HOT_PINK, N_LIGHT_BROWN,
+    N_MOSS_GREEN, N_POWDER_BLUE, N_LIGHT_BLUE, N_PINK, N_ORANGE, N_GRAY,
+    N_GREEN, N_BABY_BLUE, N_LIGHT_GRAY, N_BEIGE, N_YELLOW, N_PLUM_PURPLE };
 
   private String               id;
 
@@ -107,7 +94,7 @@ public class Calendar {
 
   private String               calendarPath;
 
-  private String               calendarColor = POWDERBLUE;
+  private String               calendarColor = N_POWDER_BLUE;
 
   private String               description;
 
