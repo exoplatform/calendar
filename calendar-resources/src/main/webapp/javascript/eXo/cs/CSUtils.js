@@ -191,12 +191,12 @@ Utils.prototype.onEnter = function(evt) {
 
 Utils.prototype.doAction = function(obj){
 	var uiSeachForm = gj(obj).parents(".UIForm")[0];
-	var actionNode = this.getElementByClass(uiSeachForm,"Search");
+	var actionNode = gj(uiSeachForm).find(".uiSearchInput")[0];
 	var nodeName = String(actionNode.nodeName).toLowerCase();
 	switch(nodeName){
 		case "a":	gj.globalEval(actionNode.href);break;
-		case "div": actionNode.onclick();break;
-		default:actionNode.onclick(); 
+		case "div": gj(actionNode).click();break;
+		default:gj(actionNode).click(); 
 	}
 };
 
