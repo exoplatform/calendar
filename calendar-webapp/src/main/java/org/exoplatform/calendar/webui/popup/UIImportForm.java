@@ -51,7 +51,7 @@ import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.UIFormUploadInput;
-import org.exoplatform.webui.form.ext.UIFormColorPicker;
+import org.exoplatform.calendar.webui.UIFormColorPicker;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
 
@@ -107,7 +107,10 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
     timeZones.setEditable(false);
     timeZones.setLabel(setting.getTimeZone());
     addUIFormInput(timeZones);
-    addUIFormInput(new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR));
+
+    UIFormColorPicker uiFormColorPicker = new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR);
+    uiFormColorPicker.setNumberItemsPerLine(6);
+    addUIFormInput(uiFormColorPicker);
   }
 
   public void init(String calId, String calType) {
