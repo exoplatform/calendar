@@ -47,6 +47,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
@@ -76,9 +77,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   public String eventId = null ;
   public UIExportForm() throws Exception {
     addUIFormInput(new UIFormStringInput(NAME, NAME, null)) ;
-    List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ; 
-    options.add(new SelectItemOption<String>(CalendarService.ICALENDAR, CalendarService.ICALENDAR)) ;
-    addUIFormInput(new UIFormSelectBox(TYPE, TYPE, options)) ;
+    addUIFormInput(new UIFormInputInfo(TYPE, TYPE, CalendarService.ICALENDAR));
   }
   public void setCalType(String type) {calType = type ; }
 
@@ -188,7 +187,8 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
         
         return ;
       }
-      String type = uiForm.getUIFormSelectBox(TYPE).getValue() ;
+
+      String type = uiForm.getUIFormInputInfo(TYPE).getValue();
       String name = uiForm.getUIStringInput(NAME).getValue() ;
       CalendarImportExport importExport = calendarService.getCalendarImportExports(type) ;
       OutputStream out = null ;
