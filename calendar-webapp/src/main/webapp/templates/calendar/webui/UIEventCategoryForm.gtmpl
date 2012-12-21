@@ -24,7 +24,7 @@
                 <%uicomponent.renderField(uicomponent.EVENT_CATEGORY_NAME)%>
               </td>
               <td>
-                <button type="button" onclick="$saveLink" class="btn">
+                <button type="button" onclick="$saveLink" class="btn btn-primary">
                   $saveLabel
                 </button>
               </td>
