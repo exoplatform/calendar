@@ -849,7 +849,6 @@ UICalendarPortlet.prototype.showEvent = function(){
     this.init();
     var EventDayContainer = gj(this.viewer).parents(".eventDayContainer")[0];
 	if (!EventDayContainer) return ;
-//    this.setFocus(this.viewer, EventDayContainer);
     this.editAlldayEvent(EventDayContainer);
     if (!this.init()) 
         return;
@@ -865,13 +864,8 @@ UICalendarPortlet.prototype.showEvent = function(){
         	'mouseout':eXo.calendar.EventTooltip.hide,
         	'mousedown':_module.UICalendarPortlet.initDND,
         	'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-//        el[i].onmouseover = eXo.calendar.EventTooltip.show;
-//        el[i].onmouseout = eXo.calendar.EventTooltip.hide;
-//        el[i].onmousedown = _module.UICalendarPortlet.initDND;
-//	    el[i].ondblclick = _module.UICalendarPortlet.ondblclickCallback;        
         marker = gj(el[i]).children("div.resizeEventContainer")[0];
         gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
-//        marker.onmousedown = eXo.calendar.UIResizeEvent.init;
     }
     this.items = el;
     this.adjustWidth(this.items);
@@ -1009,8 +1003,6 @@ UIResizeEvent.prototype.start = function(evt, innerElement, outerElement, contai
     this.interval = (interval != "undefined") ? parseInt(interval) : 15;
     gj(document).on({'mousemove':UIResizeEvent.execute,
     	'mouseup':UIResizeEvent.end});
-//    document.onmousemove = UIResizeEvent.execute;
-//    document.onmouseup = UIResizeEvent.end;
     this.beforeHeight = this.getOriginalHeight(this.outerElement);
     this.innerElementHeight = this.getOriginalHeight(this.innerElement);
     this.posY = _e.clientY;
@@ -1055,8 +1047,6 @@ UIResizeEvent.prototype.execute = function(evt){
  */
 UIResizeEvent.prototype.end = function(evt){
 	gj(document).off("mousemove mouseup");
-//	document.onmousemove = null;
-//  document.onmouseup = null;
   var _e = window.event || evt;
   var UIResizeEvent = eXo.calendar.UIResizeEvent;
 	_module.UICalendarPortlet.checkPermission(UIResizeEvent.outerElement) ;
@@ -1145,8 +1135,6 @@ UICalendarPortlet.prototype.initDND = function(evt){
     UICalendarPortlet.eventTop = UICalendarPortlet.dragObject.offsetTop;
     gj(UICalendarPortlet.dragContainer).on({'mousemove':UICalendarPortlet.dragStart,
     	'mouseup':UICalendarPortlet.dragEnd});
-//    UICalendarPortlet.dragContainer.onmousemove = UICalendarPortlet.dragStart;
-//    UICalendarPortlet.dragContainer.onmouseup = UICalendarPortlet.dragEnd;
     UICalendarPortlet.title = gj(UICalendarPortlet.dragObject).find("span")[0].innerHTML;
 	UICalendarPortlet.dropCallback = UICalendarPortlet.dayviewDropCallback;
 	UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
@@ -1206,7 +1194,6 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
 
 UICalendarPortlet.prototype.dragEnd = function(){
 	gj(this).off('mousemove');
-//	this.onmousemove = null;
 	var me = _module.UICalendarPortlet;
 	var dragObject = me.dragObject;
 	var eventTop = me.eventTop ;
@@ -1235,16 +1222,12 @@ UICalendarPortlet.prototype.dayviewDropCallback = function(){
     var currentStart = UICalendarPortlet.pixelsToMins(dragObject.offsetTop);
     var currentEnd = currentStart + delta;
     var eventDayContainer = gj(dragObject).parents(".eventDayContainer")[0];
-    //var eventTop = UICalendarPortlet.eventTop;
     gj(eventDayContainer).off("mousemove mouseup");
-//    eventDayContainer.onmousemove = null;
-//    eventDayContainer.onmouseup = null;
     UICalendarPortlet.dragObject = null;
     UICalendarPortlet.eventTop = null;
     UICalendarPortlet.eventY = null;
     UICalendarPortlet.dragContainer = null;
     UICalendarPortlet.title = null;
-    //if (dragObject.offsetTop != eventTop) {
     var actionLink = dragObject.getAttribute("actionLink");    
     var form = gj(dragObject).parents("form")[0];
     form.elements[eventId + "startTime"].value = currentStart;
@@ -1255,7 +1238,6 @@ UICalendarPortlet.prototype.dayviewDropCallback = function(){
 		_module.UICalendarPortlet.showEvent();
 		gj.globalEval(actionLink);
     //}
-    //title.innerHTML = titleName;
 };
 
 /* for showing context menu */
@@ -1814,7 +1796,6 @@ UICalendarPortlet.prototype.listViewDblClick = function(form){
 	var chk = null ;
 	while(i--){
 		tr[i].ondblclick = this.listViewDblClickCallback;		
-//gj(tr[i]).on('dblclick',this.listViewDblClickCallback);
 	}
 };
 
@@ -2112,7 +2093,6 @@ UICalendarPortlet.prototype.initSelection = function(){
     UISelection.block.className = "UserSelectionBlock";
     UISelection.container.appendChild(UISelection.block);
     gj(UISelection.container).on('mousedown',UISelection.start);
-//    UISelection.container.onmousedown = UISelection.start;
     UISelection.relativeObject = gj(UISelection.container).parents(".eventDayContainer")[0];
     UISelection.viewType = "UIDayView";
 };
@@ -2150,11 +2130,8 @@ UISelection.prototype.start = function(evt){
         UISelection.block.style.top = UISelection.startY + "px";
         UISelection.block.style.height = UISelection.step + "px";
         UISelection.block.style.zIndex = 1;
-        //_module.UICalendarPortlet.resetZIndex(UISelection.block);
         gj(document).on({'mousemove':UISelection.execute,
         	'mouseup':UISelection.clear});
-//        document.onmousemove = UISelection.execute;
-//        document.onmouseup = UISelection.clear;
     } 
     catch (e) {
         window.status = e.message ;
@@ -2218,14 +2195,11 @@ UISelection.prototype.clear = function(){
 	if(bottom >= UISelection.container.offsetHeight) endTime -= 1;
 	var container = UICalendarPortlet.getElementById("UICalendarViewContainer");
 	UICalendarPortlet.addQuickShowHiddenWithTime(container, 1, startTime, endTime) ;
-	//eXo.webui.UIForm.submitEvent(UISelection.viewType, 'QuickAdd', '&objectId=Event&startTime=' + startTime + '&finishTime=' + endTime);
 	cs.DOMUtil.listHideElements(UISelection.block);
 	UISelection.startTime = null;
 	UISelection.startY = null;
 	UISelection.startX = null;
 	gj(document).off("mousemove mouseup");
-//	document.onmousemove = null;
-//	document.onmouseup = null;
 };
 
 // check free/busy time
@@ -2460,7 +2434,6 @@ UICalendarPortlet.prototype.initSettingTab = function(cpid){
     var div = gj(ck).parents("div")[0];
     _module.UICalendarPortlet.workingSetting = gj(div).nextAll("div")[0];
     gj(ck).on('click',_module.UICalendarPortlet.showHideWorkingSetting);
-//    ck.onclick = _module.UICalendarPortlet.showHideWorkingSetting;
     _module.UICalendarPortlet.checkWorkingSetting(ck);
 }
 
@@ -2627,7 +2600,6 @@ CalendarScrollManager.prototype.load = function(){
     var mainContainer = gj(container).find('div.CalendarActionBar')[0];
     var randomId = cs.DOMUtil.generateId("CalendarScrollbar");
     mainContainer.setAttribute("id",randomId);
-//    uiNav.scrollMgr = new ScrollManager(randomId) ;
   uiNav.scrollMgr = new gtnav.ScrollManager(randomId) ;
 
     uiNav.scrollMgr.initFunction = uiNav.initScroll ;

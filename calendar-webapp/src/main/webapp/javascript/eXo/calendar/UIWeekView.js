@@ -13,7 +13,7 @@ UIWeekView.prototype.init = function() {
 	var UICalendarPortlet = _module.UICalendarPortlet ;
 	var UIWeekView = _module.UIWeekView ;
 	var uiCalendarViewContainer = document.getElementById("UICalendarViewContainer") ;
-	var allEvents = gj(uiCalendarViewContainer).find('div.EventContainerBorder');
+	var allEvents = gj(uiCalendarViewContainer).find('div.eventContainerBorder');
 	this.container = document.getElementById("UIWeekViewGrid") ;
 	var EventWeekContent = gj(this.container).parents(".EventWeekContent")[0] ;
 	this.items = new Array() ;
@@ -22,7 +22,6 @@ UIWeekView.prototype.init = function() {
 		if(allEvents[i].style.display != "none") this.items.push(allEvents[i]) ;
 	}
 	var len = UIWeekView.items.length ;
-  //UICalendarPortlet.setFocus() ;
 	if (len <= 0) {
 		this.initAllday() ;
 		return;
@@ -34,13 +33,8 @@ UIWeekView.prototype.init = function() {
 			'mouseover':eXo.calendar.EventTooltip.show,
 			'mouseout':eXo.calendar.EventTooltip.hide,
 			'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-//		this.items[i].onmousedown = UIWeekView.dragStart;
-//		this.items[i].onmouseover = eXo.calendar.EventTooltip.show;
-//		this.items[i].onmouseout = eXo.calendar.EventTooltip.hide;
-//		this.items[i].ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback;
 		marker = gj(this.items[i]).find('div.ResizeEventContainer')[0];
 		gj(marker).on('mousedown',UIWeekView.initResize);
-//		marker.onmousedown = UIWeekView.initResize;
 	}
 	var tr = gj(this.container).find('tr'); 
 	var firstTr = null ;
@@ -61,7 +55,7 @@ UIWeekView.prototype.distributeEvent = function() {
 	var UIWeekView = _module.UIWeekView ;
 	var len = UIWeekView.cols.length ;
 	for(var i = 1 ; i < len ; i ++) {
-		if (gj(UIWeekView.cols[i]).children('div.EventContainerBorder').length < 0)
+		if (gj(UIWeekView.cols[i]).children('div.eventContainerBorder').length < 0)
 			return ;
 		var colIndex = parseInt(UIWeekView.cols[i].getAttribute("eventindex")) ;
 		var eventIndex = null ;
@@ -343,7 +337,7 @@ UIWeekView.prototype.initResize = function(evt) {
 	//_e.cancelBubble = true ;
 	if(_e.button == 2) return ;
 	var UIResizeEvent = eXo.calendar.UIResizeEvent ;
-	var outerElement = gj(this).parents('.EventContainerBorder')[0]; 
+	var outerElement = gj(this).parents('.eventContainerBorder')[0]; 
 	var innerElement = gj(this).prevAll('div')[0];
 	var container = gj("#UIWeekViewGrid").parents('.EventWeekContent')[0];
 	var minHeight = 15 ;
