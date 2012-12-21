@@ -320,6 +320,10 @@ UICalendarPortlet.prototype.minToTime = function(min, timeFormat){
         minutes = "0" + minutes;
     if (_module.UICalendarPortlet.timeFormat != "hh:mm a") 
         return hour + ":" + minutes;
+    if(hour == 0) {
+        hour = 12; //00:00 AM -> 12:00 AM
+        return hour + ":" + minutes + timeFormat.am; 
+    }
     var time = hour + ":" + minutes;
     if (!timeFormat) 
         return time;
@@ -2251,7 +2255,7 @@ UICalendarPortlet.prototype.checkAllInBusy = function(chk){
  */
 UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone){
     if (typeof(container) == "string") 
-        container = document.getElementById(container);
+	container = document.getElementById(container);
     var dateAll = gj(container).find("input.checkbox")[1];
     var table = gj(container).find('table.UIGrid')[0];
     var tr = gj(table).find("tr");
@@ -2259,14 +2263,32 @@ UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone)
     this.busyCell = gj(firstTr).find("td").slice(1);
     var len = tr.length;
     for (var i = 2; i < len; i++) {
-        this.showBusyTime(tr[i], userSettingTimezone);
+	this.showBusyTime(tr[i], userSettingTimezone);
     }
     if (_module.UICalendarPortlet.allDayStatus) 
-        dateAll.checked = _module.UICalendarPortlet.allDayStatus.checked;
+	dateAll.checked = _module.UICalendarPortlet.allDayStatus.checked;
     _module.UICalendarPortlet.checkAllInBusy(dateAll);
     gj(dateAll).on('click', function(){
-        _module.UICalendarPortlet.checkAllInBusy(this);
+	_module.UICalendarPortlet.checkAllInBusy(this);
+	var cells = _module.UICalendarPortlet.busyCell;
+	if(gj(this).is(':checked')) {
+	    for(var i = 0; i < cells.length; i++) {
+		gj(cells[i]).addClass('UserSelection');
+	    }
+	} else {
+	    for(var i = 0; i < cells.length; i++) {
+
+		gj(cells[i]).removeClass('UserSelection');
+	    }
+	}
     });
+    var UIComboboxInputs = gj(container).find("input.UIComboboxInput");
+    for(var i = 0; i < UIComboboxInputs.length; i++) {
+	gj(UIComboboxInputs[i]).live('change', function() {
+	    _module.ScheduleSupport.applyPeriod();
+	    _module.ScheduleSupport.syncTimeBetweenEventTabs();
+	});
+    }
     _module.UICalendarPortlet.initSelectionX(firstTr);
 };
 
@@ -2364,11 +2386,10 @@ UICalendarPortlet.prototype.ceil = function(number, dividend){
  * @param {Object} tr Tr tag contains event data
  */
 UICalendarPortlet.prototype.initSelectionX = function(tr){
-    cell = gj(tr).find("td.UICellBlock").slice(1);
+    cell = gj(tr).find("td.UICellBlock");
     var len = cell.length;
     for (var i = 0; i < len; i++) {
     	gj(cell[i]).on('mousedown',eXo.calendar.UIHSelection.start);
-//        cell[i].onmousedown = eXo.calendar.UIHSelection.start;//eXo.calendar.Highlighter.start ;
     }
 };
 
@@ -2378,13 +2399,9 @@ UICalendarPortlet.prototype.initSelectionX = function(tr){
  * @return Object contains two properties that are AM and PM
  */
 UICalendarPortlet.prototype.getTimeFormat = function(input){
-    var am = input.getAttribute("value").match(/[A-Z]+/);
-    if (!am) 
-        return null;
-    var pm = a[a.length - 1].getAttribute("value").match(/[A-Z]+/);
     return {
-        "am": am,
-        "pm": pm
+        "am": gj("#AMString")[0].getAttribute("name"),
+        "pm": gj("#PMString")[0].getAttribute("name") 
     };
 };
 
@@ -2398,7 +2415,7 @@ UICalendarPortlet.prototype.callbackSelectionX = function(){
     var end = start + len * 15;
     var timeTable = gj(Highlighter.firstCell).parents("table")[0];
     var dateValue = timeTable.getAttribute("datevalue");
-    var uiTabContentContainer = gj(Highlighter.firstCell).parents(".UITabContentContainer")[0];
+    var uiTabContentContainer = gj('#eventAttender-tab')[0];
     var UIComboboxInputs = gj(uiTabContentContainer).find("input.UIComboboxInput");
     len = UIComboboxInputs.length;
     var name = null;
@@ -2406,24 +2423,25 @@ UICalendarPortlet.prototype.callbackSelectionX = function(){
     start = this.minToTime(start, timeFormat);
     end = this.minToTime(end, timeFormat);
     if (dateValue) {
-        var DateContainer = gj(uiTabContentContainer).parents("form")[0];
-        DateContainer.from.value = dateValue;
-        DateContainer.to.value = dateValue;
+	var DateContainer = gj(uiTabContentContainer).parents("form")[0];
+	DateContainer.from.value = dateValue;
+	DateContainer.to.value = dateValue;
     }
     for (var i = 0; i < len; i++) {
-        name = this.synTime(UIComboboxInputs[i]).name.toLowerCase();
-        if (name.indexOf("from") >= 0) {
-            UIComboboxInputs[i].value = start;
-						this.synTime(UIComboboxInputs[i],start);
-				}
-        else {
-            UIComboboxInputs[i].value = end;
-						this.synTime(UIComboboxInputs[i],end);					
-				}
-
+	name = this.synTime(UIComboboxInputs[i]).name.toLowerCase();
+	if (name.indexOf("from") >= 0) {
+	    UIComboboxInputs[i].value = start;
+	    this.synTime(UIComboboxInputs[i],start);
+	}
+	else {
+	    UIComboboxInputs[i].value = end;
+	    this.synTime(UIComboboxInputs[i],end);					
+	}
     }
     var cells = gj(Highlighter.firstCell.parentNode).children("td");
+
     Highlighter.setAttr(Highlighter.firstCell.cellIndex, Highlighter.lastCell.cellIndex, cells);
+    _module.ScheduleSupport.syncTimeBetweenEventTabs();    
 };
 
 UICalendarPortlet.prototype.synTime = function(o,v){
@@ -2932,141 +2950,6 @@ UIWindow.prototype.maximizeWindowEvt = function(evt){
 };
 }
 
-/*
- * Override Comobobox
- * TODO : remove this method when portal fix it
- * REQUIREJS: UICombobox in webui-ext module : wx.UICombobox; dont use global variable eXo.webui
- */
-//eXo.webui.UICombobox.init = function() {
-wx.UICombobox.init = function() {
-	var uiWorkingWorkspace = gj("#UIWorkingWorkspace")[0];
-	var uiCombobox = wx.UICombobox ;
-	var comboList = gj(uiWorkingWorkspace).find('input.UIComboboxInput');
-	var i = comboList.length ;
-	while(i--){
-		comboList[i].value = gj(comboList[i]).prevAll('input')[0].value;
-	  var onfocus = comboList[i].getAttribute("onfocus") ;
-	  var onclick = comboList[i].getAttribute("onclick") ;
-	  var onblur = comboList[i].getAttribute("onblur") ;
-	  if(!onfocus) gj(comboList[i]).on('focus', uiCombobox.show) ;
-	  if(!onclick) gj(comboList[i]).on('click', uiCombobox.show) ;
-	  if(!onblur)  gj(comboList[i]).on('blur',uiCombobox.correct) ;
-	}
-};
-
-
-//fix for onblur event on calendar
-//For validating
-
-wx.UICombobox.correct = function() {	
-	var UICombobox = wx.UICombobox ; 
-	var value = this.value ;
-	this.value = UICombobox.setValue(value) ;
-	var hiddenField = gj(this).prevAll('input')[0];
-	hiddenField.value = this.value;
-	UICombobox.hide();
-} ;
-
-wx.UICombobox.setValue = function(value) {
-	var value = String(value).trim().toLowerCase();
-	var UICombobox = wx.UICombobox;
-	var time = UICombobox.digitToTime(value);
-	var hour = Number(time.hour);
-	var min = Number(time.minutes);
-	var timeFormat = UICombobox.getTimeFormat();
-	var formatTime = "";
-	if (timeFormat.am) {
-		var am = String(timeFormat.am).toLowerCase();
-		var pm = String(timeFormat.pm).toLowerCase();
-		if (!time) {
-			return UICombobox.defaultValue;
-		}
-		if (hour > 24) {
-			hour = "0";
-			formatTime = " AM";
-		} else if (hour == 12 || hour == 24) {
-			hour = "0"
-			formatTime = " PM";
-		} else if (hour > 12 && hour < 24) {
-			hour = hour - 12;
-			formatTime = " PM";
-		} else {
-			hour = time.hour;
-			formatTime = " AM";
-		}
-	} else {
-		if (!time) {
-			return "12:00";
-		}
-		if (hour > 23)
-			hour = "23";
-		else
-			hour = time.hour;
-	}
-	var strHour = hour < 10 ? "0" + Number(hour) : "" + hour;
-	var strMinute = min < 10 ? "0" + Number(min) : "" + min;
-	return strHour + ":" + strMinute + formatTime;
-};
-
-wx.UICombobox.getTimeFormat= function() {
-	var items = wx.UICombobox.items ;
-	if (items.length <= 0) return {am:"AM", pm:"PM"} ;
-	var first = gj(items[0]).find('div.UIComboboxLabel')[0].innerHTML; 
-	var last =  gj(items[items.length - 1]).find('div.UIComboboxLabel')[0].innerHTML;
-	var am = first.match(/[A-Z]+/) ;
-	var pm = last.match(/[A-Z]+/) ;
-	return {am:am, pm:pm} ;
-} ;
-
-wx.UICombobox.digitToTime = function(stringNo) {
-	stringNo = new String(wx.UICombobox.getDigit(stringNo));
-	var len = stringNo.length;
-	var hour = 0;
-	var minute = 0;
-	if (len <= 0) {
-		return false;
-	}
-	hour = Number(stringNo.substring(0, 2));
-	minute = Number(stringNo.substring(2, 4));
-	if (minute == 60) {
-		hour = hour + 1;
-		minute = 0;
-		if (hour == 24) {
-			hour = 0;
-		}
-	} else if (minute > 60) {
-		minute = 0;
-	}
-	return { "hour" : hour, "minutes" : minute };
-};
-
-wx.UICombobox.getDigit = function(stringNo) {
-	var parsedNo = "";
-	var index = stringNo.indexOf(':');
-	for ( var n = 0; n < stringNo.length; n++) {
-		var i = stringNo.substring(n, n + 1);
-		if (i == "1" || i == "2" || i == "3" || i == "4" || i == "5" || i == "6" || i == "7" || i == "8" || i == "9" || i == "0")
-			parsedNo += i;
-	}
-	if (parsedNo.length == 1) {
-		parsedNo = "0" + parsedNo + "00"
-	} else if (parsedNo.length == 2) {
-		if (index == 1) {
-			parsedNo = "0" + parsedNo + "0";
-		} else {
-			parsedNo = parsedNo + 00;
-		}
-	} else if (parsedNo.length == 3) {
-		if (index == 1) {
-			parsedNo = "0" + parsedNo;
-		} else {
-			parsedNo = parsedNo + "0";
-		}
-	} else if (parsedNo.length >= 4) {
-		parsedNo = parsedNo.substring(0, 4);
-	}
-	return parsedNo;
-};
 
 UICalendarPortlet.prototype.useAuthenticationForRemoteCalendar = function(id) {
   var USE_AUTHENTICATION = "useAuthentication";
@@ -3197,6 +3080,47 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
   });
 
 };
+
+/*
+ * Override Combobox
+ * TODO : remove this method when portal fix it
+ * REQUIREJS: UICombobox in webui-ext module : wx.UICombobox; dont use global variable eXo.webui
+ */
+//eXo.webui.UICombobox.init = function() {
+wx.UICombobox.init = function() {
+	var uiWorkingWorkspace = gj("#UIWorkingWorkspace")[0];
+	var uiCombobox = wx.UICombobox ;
+	var comboList = gj(uiWorkingWorkspace).find('input.UIComboboxInput');
+	var i = comboList.length ;
+	while(i--){
+		comboList[i].value = gj(comboList[i]).prevAll('input')[0].value;
+	  var onfocus = comboList[i].getAttribute("onfocus") ;
+	  var onclick = comboList[i].getAttribute("onclick") ;
+	  var onblur = comboList[i].getAttribute("onblur") ;
+	  if(!onfocus) gj(comboList[i]).on('focus', uiCombobox.show) ;
+	  if(!onclick) gj(comboList[i]).on('click', uiCombobox.show) ;
+	  if(!onblur)  gj(comboList[i]).on('blur',uiCombobox.correct) ;
+	}
+};
+
+/**
+Override combobox onchange
+*/
+
+wx.UICombobox.getValue = function(obj){
+   var UICombobox = eXo.webui.UICombobox;
+   var val = obj.getAttribute("value");
+   var hiddenField = gj(UICombobox.list.parentNode).next("input");
+   hiddenField.attr("value", val);
+   var text = hiddenField.next("input");
+   text.attr("value", gj(obj).find(".UIComboboxLabel").first().html());
+   _module.ScheduleSupport.syncTimeBetweenEventTabs();
+
+   _module.ScheduleSupport.applyPeriod();
+   UICombobox.list.style.display = "none";
+}
+
+// ==========================================================
 
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;

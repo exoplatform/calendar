@@ -155,12 +155,9 @@ Highlighter.prototype.start = function(evt) {
 	Highlighter.startBlock.style.width = Highlighter.dimension.x + "px" ;
 	Highlighter.startBlock.style.height = Highlighter.dimension.y + "px" ;
 	gj(document).on({'mousemove':Highlighter.execute, 'mouseup':Highlighter.end});
-//	document.onmousemove = Highlighter.execute;
-//	document.onmouseup = Highlighter.end;
 	Highlighter.firstCell = Highlighter.startCell ;
 	Highlighter.lastCell = Highlighter.startCell ;
 	} catch(e) {
-		//alert(e.message) ;
 	}
 } ;
 
@@ -259,8 +256,6 @@ Highlighter.prototype.end = function(evt) {
 	var Highlighter = _module.Highlighter;
 	if (Highlighter.callback) eval(Highlighter.callback) ;
 	gj(document).off("mousemove mouseup")
-//	document.onmousemove = null ;
-//	document.onmouseup = null ;
 } ;
 
 Highlighter.prototype.setCallback = function(str) {
@@ -374,8 +369,6 @@ UIHSelection.prototype.start = function(){
 	UIHSelection.removeAllAttr() ;
 	gj(this).addClass("UserSelection") ;
 	gj(document).on({'mousemove':UIHSelection.execute,'mouseup':UIHSelection.end});
-//	document.onmousemove = UIHSelection.execute ;
-//	document.onmouseup =  UIHSelection.end ;
 	UIHSelection.firstCell = UIHSelection.cells[UIHSelection.startIndex] ;
 	UIHSelection.lastCell = UIHSelection.cells[UIHSelection.startIndex] ;
 } ;
@@ -415,8 +408,6 @@ UIHSelection.prototype.end = function(){
 	UIHSelection.cells = null ;
 	UIHSelection.container = null ;
 	gj(document).off("mousemove mouseup")
-//	document.onmousemove = null ;
-//	document.onmouseup = null ;
 	if (UIHSelection.callback) eval(UIHSelection.callback) ;
 } ;
 
