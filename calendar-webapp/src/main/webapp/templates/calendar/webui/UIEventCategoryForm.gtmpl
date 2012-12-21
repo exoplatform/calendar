@@ -1,43 +1,40 @@
 <%
+  String updateLabel = _ctx.appRes(uicomponent.getName() + ".action.Update");
+  String addLabel = _ctx.appRes(uicomponent.getName() + ".action.Add");
+  String closeLabel = _ctx.appRes(uicomponent.getName() + ".action.Cancel");
+  String saveLink = uicomponent.event("Save");
+  String closeLink = uicomponent.event("Cancel");
+  String saveLabel = updateLabel;
 
-String updateLabel = _ctx.appRes(uicomponent.getName() + ".action.Update");
-String addLabel = _ctx.appRes(uicomponent.getName() + ".action.Add");
-String closeLabel = _ctx.appRes(uicomponent.getName() + ".action.Cancel");
-String saveLink = uicomponent.event("Save");
-String closeLink = uicomponent.event("Cancel");
-String saveLabel = updateLabel;
-
-if(uicomponent.isAddNew()) {
-	saveLabel = addLabel;
-}
+  if(uicomponent.isAddNew()) {
+	  saveLabel = addLabel;
+  }
 %>
 <div class="UIEventCategoryForm" id="EventCategoryFormContainer">
-<%uiform.begin();%>
-<div class="EventCategoryFormContainer">
-<div class="FormContainer">
-<table class="UIFormGrid">
-<tbody>
-<tr>
-<td class="FieldLabel">
-<%=uicomponent.getLabel(uicomponent.EVENT_CATEGORY_NAME)%>
-</td>
+  <%uiform.begin();%>
+    <div class="EventCategoryFormContainer">
+      <div class="FormContainer">
+        <table class="UIFormGrid">
+          <tbody>
+            <tr>
+              <td class="FieldLabel">
+                <%=uicomponent.getLabel(uicomponent.EVENT_CATEGORY_NAME)%>
+              </td>
               <td class="FieldComponent">
                 <%uicomponent.renderField(uicomponent.EVENT_CATEGORY_NAME)%>
               </td>
-<td>
-<div class="uiAction">
-<button type="button" onclick="$saveLink" class="btn">$saveLabel
-</button>
-                </div>
-</td>
+              <td>
+                <button type="button" onclick="$saveLink" class="btn">
+                  $saveLabel
+                </button>
+              </td>
             </tr>
-</tbody>
+          </tbody>
         </table>
-</div>
-  </div>
-
-<div class="uiAction uiActionBorder">
-<button type="button" onclick="$closeLink" class="btn">$closeLabel</button>
-  </div>
-<%uiform.end();%>
+      </div>
+    </div>
+    <div class="uiAction uiActionBorder">
+      <button type="button" onclick="$closeLink" class="btn">$closeLabel</button>
+    </div>
+  <%uiform.end();%>
 </div>
