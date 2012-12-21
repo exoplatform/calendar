@@ -2360,7 +2360,7 @@ UICalendarPortlet.prototype.ceil = function(number, dividend){
  * @param {Object} tr Tr tag contains event data
  */
 UICalendarPortlet.prototype.initSelectionX = function(tr){
-    cell = gj(tr).find("td.UICellBlock");
+    cell = gj(tr).find("td.uiCellBlock");
     var len = cell.length;
     for (var i = 0; i < len; i++) {
     	gj(cell[i]).on('mousedown',eXo.calendar.UIHSelection.start);

@@ -69,7 +69,7 @@
 }
 
 .uiWeekView .today{
-	background: #f8f8f8;
+	background: #fbfbfb;
 	a{
 		line-height: 32px;
 		font-size: @baseFontSize - 1;
@@ -79,6 +79,19 @@
 .eventWeekBar{
 	background: #f8f8f8;
 	padding: 0 16px 0 0;
+	tr td{
+		border-bottom: solid 1px #e6e6e6;
+		&.today{
+			background: #f4f4f4;
+		}
+		a{
+			color: @textColor;
+		}
+	}
+	.eventAlldayBoard{
+		margin-left: 55px;
+	}
+	
 }
 
 

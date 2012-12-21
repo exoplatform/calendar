@@ -500,7 +500,7 @@ EventMan.prototype.initWeek = function(rootNode) {
     this.events.push(eventObj);
   }
   var table = gj(this.rootNode).prevAll('table')[0]; 
-  this.dayNodes = gj(table).find('td.UICellBlock');
+  this.dayNodes = gj(table).find('td.uiCellBlock');
   this.week = new WeekMan();
   this.week.weekIndex = 0;
 //  this.week.startWeek = parseInt(this.dayNodes[0].getAttribute('startTime'));
@@ -578,7 +578,7 @@ GUIMan.prototype.initMonth = function(){
   var rows = eXo.calendar.UICalendarMan.EventMan.UIMonthViewGrid.getElementsByTagName('tr');
   this.tableData = new Array();
   for (var i = 0; i < rows.length; i++) {
-    var rowData = gj(rows[i]).find('td.UICellBlock'); 
+    var rowData = gj(rows[i]).find('td.uiCellBlock'); 
     this.tableData[i] = rowData;
   }
   this.paintMonth();
@@ -596,7 +596,7 @@ GUIMan.prototype.initWeek = function() {
   }
   for (var i=0; i<events.length; i++) {
     var eventObj = events[i];
-    var eventLabelNode = gj(eventObj.rootNode).find('div.EventAlldayContent')[0]; 
+    var eventLabelNode = gj(eventObj.rootNode).find('div.eventAlldayContent')[0]; 
     eventObj.rootNode.setAttribute('used', 'false');
   }
   this.eventAlldayNode = EventMan.rootNode ;
@@ -676,7 +676,7 @@ GUIMan.prototype.drawEventByMiliseconds = function(eventObj, startTime, endTime,
 GUIMan.prototype.setOverWeek = function(eventNode,startTime,endTime){
 	var realStart = Date.parse(eventNode.getAttribute("startTimeFull"));
 	var realEnd = Date.parse(eventNode.getAttribute("endTimeFull"));
-	var eventAlldayContent = gj(eventNode).find('div.EventAlldayContent')[0]; 
+	var eventAlldayContent = gj(eventNode).find('div.eventAlldayContent')[0]; 
 	if(realStart < startTime){
 		eventAlldayContent.style.marginLeft = "10px";
 	}

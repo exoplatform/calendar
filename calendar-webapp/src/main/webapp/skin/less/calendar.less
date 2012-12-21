@@ -19,6 +19,11 @@
 .uiArrowCalDropdown{
 	display: none;
 	position: absolute;
+	border-left:   7px solid transparent;
+    border-right:  7px solid @borderColor;
+    border-bottom: 7px solid transparent;
+    border-top: 7px solid transparent;
+    content: '';
 	&:after {
 	    border-left:   7px solid transparent;
 	    border-right:  7px solid @white;
@@ -26,6 +31,8 @@
 	    border-top: 7px solid transparent;
 	    content: '';
 	    position: absolute;
+	    top: -7px;
+	    left: -7px;
 	  }
 }
 

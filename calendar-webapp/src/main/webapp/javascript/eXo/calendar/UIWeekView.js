@@ -509,7 +509,7 @@ UIWeekView.prototype.initAlldayDND = function(evt) {
 	if (_e.button == 2) return ;
 	var UIWeekView = _module.UIWeekView ;
 	var DragDrop = cs.DragDrop ;
-	var EventAllday = gj(this).parents('.eventAllday')[0];
+	var EventAllday = gj(this).parents('.eventAllDay')[0];
 	dragObject = this ;
 	UIWeekView.totalWidth = EventAllday.offsetWidth ;
 	UIWeekView.elementTop = dragObject.offsetTop ;
@@ -612,8 +612,8 @@ UIWeekView.prototype.initAllday = function() {
 //		eventAllday[i].onmousedown = eXo.calendar.UIWeekView.initAlldayDND;
 //		eventAllday[i].ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback;
 	}
-	var EventAlldayContainer = gj(uiWeekViewGridAllDay).find('td.eventAllday')[0]; 
-	this.weekdays = gj(uiWeekViewGridAllDay).find('td.UICellBlock');
+	var EventAlldayContainer = gj(uiWeekViewGridAllDay).find('td.eventAllDay')[0]; 
+	this.weekdays = gj(uiWeekViewGridAllDay).find('td.uiCellBlock');
 	this.startWeek = 	UIWeekView.weekdays[1] ;
 	this.endWeek = 	UIWeekView.weekdays[UIWeekView.weekdays.length-1] ;
 } ;

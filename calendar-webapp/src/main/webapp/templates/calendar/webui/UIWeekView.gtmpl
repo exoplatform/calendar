@@ -74,7 +74,7 @@
               cl = uicomponent.getBeginDateOfWeek() ;
               t = 0 ; 
               while(t++ <numberOfDays) {
-                cssClass = "Day" ;
+                cssClass = "day" ;
                 if(uicomponent.isCurrentDay(cl.get(Calendar.DATE), cl.get(Calendar.MONTH), cl.get(Calendar.YEAR))) {
                   cssClass = "today" ;
                 }
@@ -86,7 +86,7 @@
                 }
                  wf.setCalendar(cl) ;
             %>
-            <td class="$cssClass UICellBlock center" style="$styleWidth" startTime="<%=cl.getTimeInMillis()%>"  startTimeFull="<%=tempFormat.format(cl.getTime())%>">
+            <td class="$cssClass uiCellBlock center" style="$styleWidth" startTime="<%=cl.getTimeInMillis()%>"  startTimeFull="<%=tempFormat.format(cl.getTime())%>">
               <a href="$actionLink" style="$styleCss">
                 <%=wf.format(cl.getTime())%>
               </a>
@@ -98,9 +98,7 @@
           </tr>
       </table>
     
-    <div id="UIWeekViewGridAllDay" class="eventAllday" numberOfDays="$numberOfDays">
-      <div class="Space"><span></span></div>
-      <div style="margin-left: 55px;">
+    <div id="UIWeekViewGridAllDay" class="eventAllDay" numberOfDays="$numberOfDays">
         <div class="eventAlldayBoard">
 		  <% for (event in uicomponent.allDayEvent) {
 			begindate =  event.getFromDateTime().getTime() ;  
@@ -132,13 +130,12 @@
 		  %>
 			<div class="LeftResizeEvent leftContinueEvent pull-left  $color"><i class="uiIconMiniArrowLeft"></i></div>
 			<div class="RightResizeEvent rightContinueEvent pull-right  $color"><i class="uiIconMiniArrowRight"></i></div>
-			<div class="eventContainer $color">
+			<div class="eventContainer eventAlldayContent $color">
 			  <%=event.summary%>
 			</div>
 		  </div>
 		  <%}%>
-	  </div>
-       </div>
+		</div>
 
     </div>
     
