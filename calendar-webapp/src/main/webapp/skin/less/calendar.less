@@ -7,10 +7,30 @@
 @import "uiCalendarView/Style.less";
 @import "uiHeaderBar/Style.less";
 @import "uiActionBar/Style.less";
+@import "uiFormColorPicker/Style.less";
 /*============== uiCalendars actionIcon ================*/
 
 .actionIcon{
 	margin: 0px;
 	padding: 0 1px;
 	line-height: @baseLineHeight - 6;
+}
+
+.uiArrowCalDropdown{
+	display: none;
+	position: absolute;
+	&:after {
+	    border-left:   7px solid transparent;
+	    border-right:  7px solid @white;
+	    border-bottom: 7px solid transparent;
+	    border-top: 7px solid transparent;
+	    content: '';
+	    position: absolute;
+	  }
+}
+
+.lineSplit{
+	background: @borderColor;
+	height: 1px;
+	margin: 10px 0 0 0;
 }

@@ -27,6 +27,10 @@
         <name>eXo.calendar.UICalendarPortlet</name>
         <path>/javascript/eXo/calendar/UICalendarPortlet.js</path>
       </script>
+       <script>
+        <name>eXo.calendar.ScheduleSupport</name>
+        <path>/javascript/eXo/calendar/ScheduleSupport.js</path>
+      </script>
       <script>
         <name>eXo.calendar.Highlighter</name>
         <path>/javascript/eXo/calendar/Highlighter.js</path>
