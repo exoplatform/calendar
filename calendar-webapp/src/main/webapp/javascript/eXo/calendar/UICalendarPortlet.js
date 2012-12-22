@@ -1175,7 +1175,7 @@ UICalendarPortlet.prototype.dragStart = function(evt){
 UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
   var min = this.pixelsToMins(posY);
     var timeFormat = events.getAttribute("timeFormat");
-    var title = gj(events).find("p")[0];
+    var title = gj(events).find("div.eventTitle")[0];
 		var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
     timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
         am: "AM",

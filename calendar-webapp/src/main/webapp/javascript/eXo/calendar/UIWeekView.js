@@ -168,7 +168,7 @@ UIWeekView.prototype.dragStart = function(evt) {
 		"x" : base.Browser.findPosX(UIWeekView.container.parentNode),
 		"y" : cs.Browser.findPosY(UIWeekView.container.parentNode)
 	}
-	UIWeekView.title = gj(UIWeekView.dragElement).find('p')[0].innerHTML;
+	UIWeekView.title = gj(UIWeekView.dragElement).find('div.eventTitle')[0].innerHTML;
 	gj(document).on({'mousemove':UIWeekView.drag,'mouseup':UIWeekView.drop});
 //	document.onmousemove = UIWeekView.drag ;
 //	document.onmouseup = UIWeekView.drop ;
