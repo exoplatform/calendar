@@ -33,16 +33,8 @@ import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.webui.popup.UICalendarForm;
-import org.exoplatform.calendar.webui.popup.UICalendarSettingForm;
-import org.exoplatform.calendar.webui.popup.UIEventCategoryManager;
-import org.exoplatform.calendar.webui.popup.UIExportForm;
-import org.exoplatform.calendar.webui.popup.UIImportForm;
-import org.exoplatform.calendar.webui.popup.UIPopupAction;
-import org.exoplatform.calendar.webui.popup.UIPopupContainer;
-import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
-import org.exoplatform.calendar.webui.popup.UIRemoteCalendar;
-import org.exoplatform.calendar.webui.popup.UISubscribeForm;
+import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.webui.popup.*;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -85,7 +77,8 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                    @EventConfig(listeners = UICalendars.TickActionListener.class),
                    @EventConfig(listeners = UICalendars.CalendarSettingActionListener.class),
                    @EventConfig(listeners = UICalendars.RemoteCalendarActionListener.class),
-                   @EventConfig(listeners = UICalendars.RefreshRemoteCalendarActionListener.class)
+                   @EventConfig(listeners = UICalendars.RefreshRemoteCalendarActionListener.class),
+                   @EventConfig(listeners = UICalendars.ShareCalendarActionListener.class)
                  }
     )
 
@@ -964,4 +957,31 @@ public class UICalendars extends UIForm  {
 
   }
 
+  public static class ShareCalendarActionListener extends EventListener<UICalendars>
+  {
+    public void execute(Event<UICalendars> event) throws Exception
+    {
+      UICalendars uiComponent = event.getSource() ;
+      String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
+      UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
+      UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+      popupAction.deActivate() ;
+      UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 500) ;
+      uiPopupContainer.setId("UIPermissionSelectPopup") ;
+      UIAddEditPermission uiAddNewEditPermission = uiPopupContainer.addChild(UIAddEditPermission.class, null, null);
+      CalendarService calService = CalendarUtils.getCalendarService() ;
+      String username = CalendarUtils.getCurrentUser() ;
+      Calendar cal = calService.getUserCalendar(username, selectedCalendarId) ;
+
+      if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName))
+      {
+        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+        cal.setName(newName);
+      }
+
+      uiAddNewEditPermission.init(null, cal, true) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
+    }
+  }
 }

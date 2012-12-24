@@ -223,6 +223,12 @@
 					</a>
 				</li>
 				<li>
+				  <a href="<%=uicomponent.event("ShareCalendar","id")%>">
+            <i class=""></i>
+            <%=uiform.getLabel("ShareCalendar")%>
+          </a>
+        </li>
+				<li>
 					<a href="<%=uicomponent.event("RemoveCalendar",uicomponent.id,"id")%>">
 					  <i class="uiIconDelete"></i>
 					  <%=uiform.getLabel("RemoveCalendar")%>
