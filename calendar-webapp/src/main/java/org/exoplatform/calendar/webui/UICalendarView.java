@@ -378,8 +378,11 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     List<String> defaultEvCatName = Arrays.asList(NewUserListener.defaultEventCategoryNames);
     for (EventCategory category : eventCategories) {
       if (defaultEvCatId.contains(category.getId()) || defaultEvCatName.contains(category.getName())) {
-        String newName = CalendarUtils.getResourceBundle("UICalendarView.label." + category.getId(), category.getId());
-        options.add(new SelectItemOption<String>(newName, category.getId()));
+        String displayName;
+        if (isAnEventCategoryDefaultDisplayName( category.getName() ))
+          displayName = CalendarUtils.getResourceBundle("UICalendarView.label." + category.getId(), category.getName());
+        else displayName = category.getName();
+        options.add(new SelectItemOption<String>(displayName, category.getId()));
       } else {
         options.add(new SelectItemOption<String>(category.getName(), category.getId()));
       }
@@ -391,6 +394,17 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
     selectBox.setOptions(options);
     selectBox.setValue(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+  }
+
+  /**
+   * checking whether the name of event category is a default one
+   *
+   * @param eventCategoryName
+   * @return true, false
+   */
+  private boolean isAnEventCategoryDefaultDisplayName(String eventCategoryName)
+  {
+    return eventCategoryName.contains("defaultEventCategoryName");
   }
 
   protected String getSelectedCategory() {
