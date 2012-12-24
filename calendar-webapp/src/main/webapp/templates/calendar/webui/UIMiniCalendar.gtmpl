@@ -33,7 +33,7 @@
   
 %>
 <%uiform.begin();%>
-  <div class="UIMiniCalendar">
+  <div class="uiMiniCalendar uiBox">
   <% 
   String[] monthNames = dfs_.getMonths();
   for(int i = 0; i < 12; i++) {
@@ -43,132 +43,123 @@
   <% } %>
   <div id="AMString" style="display:none" name="<%=dfs_.getAmPmStrings()[0]%>"></div>
   <div id="PMString" style="display:none" name="<%=dfs_.getAmPmStrings()[1]%>"></div>
-  <div class="uiBox MiniCalendarContainer">
-    <h5 class="title">
-      <div onclick="$linkDayPrevious" class="pull-left">
-        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>">
+
+    <h5 class="title clearfix">
+        <a class="actionIcon pull-left" onclick="$linkDayPrevious" rel="tooltip" data-placement="right" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>">
           <i class="uiIconMiniArrowLeft"></i>
         </a>
-      </div>
-
-      <div onclick="$linkDayNext" class="pull-right">
-        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>">
+		<span>
+			<%  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis(); %>
+			<a href="<%=uicomponent.event("GotoDate", monthViewAction)%>"> $monthName </a>,  
+			<span> $currentYear </span>
+		</span>
+		
+        <a class="actionIcon pull-right" onclick="$linkDayNext" rel="tooltip" data-placement="right" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>">
           <i class="uiIconMiniArrowRight"></i>
         </a>
-      </div>
-        
-      <div class="Title">
-        <%  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis(); %>
-        <a href="<%=uicomponent.event("GotoDate", monthViewAction)%>"> $monthName </a>,  
-        <a> $currentYear </a>
-      </div>
+   
     </h5> 
-    <div class="contentContainer">
-      <div class="WeekList ClearFix">
-        <%
-        Calendar calendar = uicomponent.getInstanceTempCalendar();
-        String[] dayNames = dfs_.getShortWeekdays();
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        for(int i = 0; i < 7; i++) {
-          cssStyle = "DayTitle" ;
-          if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) cssStyle = "SundayTitle" ;
-          String shortDayName = dayNames[calendar.get(Calendar.DAY_OF_WEEK)];
-        %>
-        <div class="ShortDayName" style="dislay:none" name="$shortDayName"></div>
-      <div class="$cssStyle"><%=shortDayName.substring(0,3).toUpperCase()%></div>
-        <%
-          calendar.add(Calendar.DAY_OF_WEEK, 1);
-        }
-        %>
-          </div>
-          <div class="DayList">
-            <table class="UIGrid" id="" cellspacing="0" cellpadding="0">
-              <tbody>
-              <%
-               calendar = uicomponent.getInstanceTempCalendar()  ;
-               calendar.setTime(uicomponent.getBeginDateOfMonthView().getTime()) ;
-               
-          week = 0 ; 
-          dayOfMonth = 1 ;
-          validDay = 1 ;
-          daysInMonth = uicomponent.getDaysInMonth(currentMonth, currentYear) ;
-          currentDate = Integer.parseInt(sdf.format(calendar.getTime()));
-          def currentWeekClass = "";
-          while (week++ < uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1) ||  (dayOfMonth <= daysInMonth) ) {
-            println "<tr>";
-            dayOfWeek = 0 ;
-            
-            def firstDayOfWeekInMillis = calendar.getTimeInMillis();
-            calendar.add(Calendar.WEEK_OF_MONTH, 1) ;
-            def lastDayOfWeekInMillis = calendar.getTimeInMillis();
-            calendar.add(Calendar.WEEK_OF_MONTH, -1) ;
-            if (firstDayOfWeekInMillis <= currentDayInMillis && currentDayInMillis < lastDayOfWeekInMillis) {
-              currentWeekClass = "CurrentWeek";
-            } else {
-              currentWeekClass = "";
-            }
-            while (dayOfWeek++ < 7) {
-              if ((week == 1 && currentDate > 8) || (week >= (uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1)-1) && currentDate < 8)) {
-                validDay = 0;
-              } else {
-                validDay = 1 ;
-              }
-              
-                 styleClass = "" ;
-                 highlight = "" ;
-                dayStyle = ""
-               dayActionLink = uicomponent.TYPE_NONE +"&currentTime="+ calendar.getTime().getTime() ;
-               actionLink = uicomponent.event("GotoDate", dayActionLink) ;
-              if (validDay) {
-                if(data.get(calendar.get(Calendar.DAY_OF_YEAR)) != null) {
-                  highlight = "Highlight" ;
-                } 
-                if (uicomponent.isCurrentDay(dayOfMonth, currentMonth, currentYear )) {
-                   styleClass = "Today";
-                } else if(calendar.get(Calendar.DAY_OF_YEAR) == currentDay)  {
-                    styleClass = "SelectedDay";
-                } 
-                if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                  dayStyle = "Sunday" ;
-                } else if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-                  dayStyle = "Saturday" ;
-                }
-               %>
-              
-                <td class="$highlight $styleClass $dayStyle $currentWeekClass">
-                  <div class="MiniCalendarActions" onclick="$actionLink">
-                    <%=sdf.format(calendar.getTime())%> 
-                   </div>
-                 </td>
-               <% 
-               dayOfMonth++ ;
-              } else {
-                styleClassOutDate = "";
-                boolean isCurrDay = uicomponent.isCurrentDay(calendar.get(Calendar.DATE), calendar.get(Calendar.MONTH), currentYear );
-                if (isCurrDay) {
-                   styleClassOutDate = " Today ";
-                }
-                %>
-                <td class="$currentWeekClass OtherMonth $styleClassOutDate">
-                  <div class="MiniCalendarActions" onclick="$actionLink">
-                     <%=sdf.format(calendar.getTime())%> 
-                   </div>
-                 </td>
-              <%
-              }
-             calendar.add(Calendar.DATE, 1) ;
-             currentDate = Integer.parseInt(sdf.format(calendar.getTime()));
-            }
-            println "</tr>" ;
-          }  
-           
-        %>
-          </tbody>
-        </table>
-              
-      </div>
-    </div>
-    
-  </div>
-  </div>
+	<table class="weekList">
+		<tbody>
+			<tr>
+				 <%
+	Calendar calendar = uicomponent.getInstanceTempCalendar();
+	String[] dayNames = dfs_.getShortWeekdays();
+	calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+	for(int i = 0; i < 7; i++) {
+	  if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) cssStyle = "SundayTitle" ;
+	  String shortDayName = dayNames[calendar.get(Calendar.DAY_OF_WEEK)];
+	%>
+	<div class="ShortDayName" style="dislay:none" name="$shortDayName"></div>
+	<td><%=shortDayName.substring(0,3).toUpperCase()%></td>
+	<%
+	  calendar.add(Calendar.DAY_OF_WEEK, 1);
+	}
+	%>
+			</tr>
+		</tbody>
+	</table>
+	<hr>
+	<table class="weekDays" id="" cellspacing="0" cellpadding="0">
+		<tbody>
+		<%
+		calendar = uicomponent.getInstanceTempCalendar()  ;
+		calendar.setTime(uicomponent.getBeginDateOfMonthView().getTime()) ;
+
+		week = 0 ; 
+		dayOfMonth = 1 ;
+		validDay = 1 ;
+		daysInMonth = uicomponent.getDaysInMonth(currentMonth, currentYear) ;
+		currentDate = Integer.parseInt(sdf.format(calendar.getTime()));
+		def currentWeekClass = "";
+		while (week++ < uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1) ||  (dayOfMonth <= daysInMonth) ) {
+		def firstDayOfWeekInMillis = calendar.getTimeInMillis();
+		calendar.add(Calendar.WEEK_OF_MONTH, 1) ;
+		def lastDayOfWeekInMillis = calendar.getTimeInMillis();
+		calendar.add(Calendar.WEEK_OF_MONTH, -1) ;
+		if (firstDayOfWeekInMillis <= currentDayInMillis && currentDayInMillis < lastDayOfWeekInMillis) {
+		currentWeekClass = "currentWeek";
+		} else {
+		currentWeekClass = "";
+		}
+		println "<tr class=\"" + currentWeekClass + "\">";
+		dayOfWeek = 0 ;
+
+
+		while (dayOfWeek++ < 7) {
+		if ((week == 1 && currentDate > 8) || (week >= (uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1)-1) && currentDate < 8)) {
+		validDay = 0;
+		} else {
+		validDay = 1 ;
+		}
+
+		styleClass = "";
+		highlight = "";
+		dayStyle = "";
+		dayActionLink = uicomponent.TYPE_NONE +"&currentTime="+ calendar.getTime().getTime() ;
+		actionLink = uicomponent.event("GotoDate", dayActionLink) ;
+		if (validDay) {
+		if(data.get(calendar.get(Calendar.DAY_OF_YEAR)) != null) {
+		  highlight="highLight";
+		} 
+		if (uicomponent.isCurrentDay(dayOfMonth, currentMonth, currentYear )) {
+		   styleClass="today";
+		} else if(calendar.get(Calendar.DAY_OF_YEAR) == currentDay)  {
+			styleClass="selected";
+		} 
+		if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+		  dayStyle = "Sunday" ;
+		} else if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+		  dayStyle = "Saturday" ;
+		}
+		%>
+
+		<td class="$highlight $styleClass $dayStyle " onclick="$actionLink">
+			<%=sdf.format(calendar.getTime())%> 
+		 </td>
+		<% 
+		dayOfMonth++ ;
+		} else {
+		styleClassOutDate = "";
+		boolean isCurrDay = uicomponent.isCurrentDay(calendar.get(Calendar.DATE), calendar.get(Calendar.MONTH), currentYear );
+		if (isCurrDay) {
+		   styleClassOutDate = "today";
+		}
+		%>
+		<td class="otherMonth $styleClassOutDate" onclick="$actionLink">
+			 <%=sdf.format(calendar.getTime())%>
+		 </td>
+		<%
+		}
+		calendar.add(Calendar.DATE, 1) ;
+		currentDate = Integer.parseInt(sdf.format(calendar.getTime()));
+		}
+		println "</tr>" ;
+		}  
+
+		%>
+		</tbody>
+	</table>
+
+</div>
 <%uiform.end();%>
