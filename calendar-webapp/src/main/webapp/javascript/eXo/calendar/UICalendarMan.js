@@ -489,7 +489,7 @@ EventMan.prototype.initWeek = function(rootNode) {
   rootNode = typeof(rootNode) == 'string' ? document.getElementById(rootNode) : rootNode;
   this.rootNode = rootNode;
   // Parse all event node to event object
-  var allEvents = gj(rootNode).find('div.EventContainer'); 
+  var allEvents = gj(rootNode).find('div.eventContainer'); 
   // Create and init all event
   for (var i=0; i < allEvents.length; i++) {
     if (allEvents[i].style.display == 'none') {

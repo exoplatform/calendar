@@ -348,31 +348,31 @@ UIWeekView.prototype.initResize = function(evt) {
 } ;
 
 UIWeekView.prototype.resizeCallback = function(evt) {
-  var UICalendarPortlet = _module.UICalendarPortlet;
-	var UIResizeEvent = eXo.calendar.UIResizeEvent ;
-	var eventBox = UIResizeEvent.outerElement ;
-	var start =  parseInt(eventBox.getAttribute("startTime")) ;
-	var end =  start + UICalendarPortlet.pixelsToMins(eventBox.offsetHeight);
-	var calType = parseInt(eventBox.getAttribute("calType")) ;
-	var isOccur = eventBox.getAttribute("isoccur");
-	var eventId = eventBox.getAttribute("eventid");
-  var recurId = eventBox.getAttribute("recurid");
-  if (recurId == "null") recurId = "";
-    
-	if (eventBox.offsetHeight != UIResizeEvent.beforeHeight) {
-		var actionLink = eventBox.getAttribute("actionLink");
-		var currentDate = eventBox.parentNode.getAttribute("startTime").toString() ;
-		var form = gj(eventBox).parents('form')[0];
-    form.elements[eventId + "startTime"].value = start;
-    form.elements[eventId + "finishTime"].value = end;
-    form.elements[eventId + "currentDate"].value = currentDate;
-    form.elements[eventId + "isOccur"].value = isOccur;
-    form.elements[eventId + "recurId"].value = recurId;
-		_module.UICalendarPortlet.setTimeValue(eventBox,start,end);	
-		_module.UIWeekView.setSize();	
-		 eval(actionLink);
-	}
-	eXo.calendar.EventTooltip.enable();
+    var UICalendarPortlet = _module.UICalendarPortlet;
+    var UIResizeEvent = eXo.calendar.UIResizeEvent ;
+    var eventBox = UIResizeEvent.outerElement ;
+    var start =  parseInt(eventBox.getAttribute("startTime")) ;
+    var end =  start + UICalendarPortlet.pixelsToMins(eventBox.offsetHeight);
+    var calType = parseInt(eventBox.getAttribute("calType")) ;
+    var isOccur = eventBox.getAttribute("isoccur");
+    var eventId = eventBox.getAttribute("eventid");
+    var recurId = eventBox.getAttribute("recurid");
+    if (recurId == "null") recurId = "";
+
+    if (eventBox.offsetHeight != UIResizeEvent.beforeHeight) {
+	var actionLink = eventBox.getAttribute("actionLink");
+	var currentDate = eventBox.parentNode.getAttribute("startTime").toString() ;
+	var form = gj(eventBox).parents('form')[0];
+	form.elements[eventId + "startTime"].value = start;
+	form.elements[eventId + "finishTime"].value = end;
+	form.elements[eventId + "currentDate"].value = currentDate;
+	form.elements[eventId + "isOccur"].value = isOccur;
+	form.elements[eventId + "recurId"].value = recurId;
+	_module.UICalendarPortlet.setTimeValue(eventBox,start,end);	
+	_module.UIWeekView.setSize();	
+	eval(actionLink);
+    }
+    eXo.calendar.EventTooltip.enable();
 } ;
 
 UIWeekView.prototype.initAllDayRightResize = function(evt) {
@@ -443,62 +443,62 @@ UIWeekView.prototype.leftDragResizeCallback = function(evt) {
 } ;
 
 UIWeekView.prototype.rightResizeCallback = function() {
-	var UIWeekView = _module.UIWeekView ;
-	var UIHorizontalResize = eXo.calendar.UIHorizontalResize ;	
-	var outer = UIHorizontalResize.outerElement ;
-	var totalWidth = outer.parentNode.offsetWidth;
-	var delta = outer.offsetWidth - UIHorizontalResize.beforeWidth ;
-	if (delta != 0) {
-  	var weekdays = parseInt(document.getElementById("UIWeekViewGridAllDay").getAttribute("numberofdays"));
-  	var UICalendarPortlet = _module.UICalendarPortlet
-  	var delta = parseInt(delta * (24 * weekdays * 60 * 60 * 1000) / totalWidth);
-  	var start = parseInt(outer.getAttribute("startTime"));
-  	var end = parseInt(outer.getAttribute("endTime")) + delta;
-  	var calType = parseInt(outer.getAttribute("calType"));
-  	var isOccur = outer.getAttribute("isoccur");
-  	 var eventId = outer.getAttribute("eventid");
-  	var recurId = outer.getAttribute("recurid");
-  	if (recurId == "null") recurId = "";
-  	var actionLink = outer.getAttribute("actionLink");
-  	var form = gj(outer).parents('form')[0]; 
-    form.elements[eventId + "startTime"].value = start;
-    form.elements[eventId + "finishTime"].value = end;
-    form.elements[eventId + "isOccur"].value = isOccur;
-    form.elements[eventId + "recurId"].value = recurId;
-    eval(actionLink);
-  }
-	_module.UIWeekView.removeTooltip();
-	eXo.calendar.EventTooltip.enable();
+    var UIWeekView = _module.UIWeekView ;
+    var UIHorizontalResize = eXo.calendar.UIHorizontalResize ;	
+    var outer = UIHorizontalResize.outerElement ;
+    var totalWidth = outer.parentNode.offsetWidth;
+    var delta = outer.offsetWidth - UIHorizontalResize.beforeWidth ;
+    if (delta != 0) {
+	var weekdays = parseInt(document.getElementById("UIWeekViewGridAllDay").getAttribute("numberofdays"));
+	var UICalendarPortlet = _module.UICalendarPortlet
+	var delta = parseInt(delta * (24 * weekdays * 60 * 60 * 1000) / totalWidth);
+	var start = parseInt(outer.getAttribute("startTime"));
+	var end = parseInt(outer.getAttribute("endTime")) + delta;
+	var calType = parseInt(outer.getAttribute("calType"));
+	var isOccur = outer.getAttribute("isoccur");
+	var eventId = outer.getAttribute("eventid");
+	var recurId = outer.getAttribute("recurid");
+	if (recurId == "null") recurId = "";
+	var actionLink = outer.getAttribute("actionLink");
+	var form = gj(outer).parents('form')[0]; 
+	form.elements[eventId + "startTime"].value = start;
+	form.elements[eventId + "finishTime"].value = end;
+	form.elements[eventId + "isOccur"].value = isOccur;
+	form.elements[eventId + "recurId"].value = recurId;
+	eval(actionLink);
+    }
+    _module.UIWeekView.removeTooltip();
+    eXo.calendar.EventTooltip.enable();
 } ;
 
 UIWeekView.prototype.leftResizeCallback = function() {
-	var UIWeekView = _module.UIWeekView ;
-	var UIHorizontalResize = eXo.calendar.UIHorizontalResize ;
-	var outer = UIHorizontalResize.outerElement ;
-	var totalWidth = outer.parentNode.offsetWidth;
-	var delta = UIHorizontalResize.beforeWidth - outer.offsetWidth ;
-	if (delta != 0) {
-  	var weekdays = parseInt(document.getElementById("UIWeekViewGridAllDay").getAttribute("numberofdays"));
-  	var UICalendarPortlet = _module.UICalendarPortlet
-  	var delta = Math.round(delta * (24 * weekdays * 60 * 60 * 1000) / totalWidth);
-  	var start = parseInt(outer.getAttribute("startTime")) + delta;
-  	var end = parseInt(outer.getAttribute("endTime"));
-  	var calType = parseInt(outer.getAttribute("calType"));
-  	var isOccur = outer.getAttribute("isoccur");
-  	var eventId = outer.getAttribute("eventid");
-  	var recurId = outer.getAttribute("recurid");
-  	if (recurId == "null") recurId = "";
-  	var actionLink = outer.getAttribute("actionLink");
-    var form = gj(outer).parents('form')[0]; 
-    form.elements[eventId + "startTime"].value = start;
-    form.elements[eventId + "finishTime"].value = end;
-    form.elements[eventId + "isOccur"].value = isOccur;
-    form.elements[eventId + "recurId"].value = recurId;
-    eval(actionLink);
-  }
-	if(_module.UIWeekView.extraWidth) delete _module.UIWeekView.extraWidth;
-	_module.UIWeekView.removeTooltip();
-	eXo.calendar.EventTooltip.enable();
+    var UIWeekView = _module.UIWeekView ;
+    var UIHorizontalResize = eXo.calendar.UIHorizontalResize ;
+    var outer = UIHorizontalResize.outerElement ;
+    var totalWidth = outer.parentNode.offsetWidth;
+    var delta = UIHorizontalResize.beforeWidth - outer.offsetWidth ;
+    if (delta != 0) {
+	var weekdays = parseInt(document.getElementById("UIWeekViewGridAllDay").getAttribute("numberofdays"));
+	var UICalendarPortlet = _module.UICalendarPortlet
+	var delta = Math.round(delta * (24 * weekdays * 60 * 60 * 1000) / totalWidth);
+	var start = parseInt(outer.getAttribute("startTime")) + delta;
+	var end = parseInt(outer.getAttribute("endTime"));
+	var calType = parseInt(outer.getAttribute("calType"));
+	var isOccur = outer.getAttribute("isoccur");
+	var eventId = outer.getAttribute("eventid");
+	var recurId = outer.getAttribute("recurid");
+	if (recurId == "null") recurId = "";
+	var actionLink = outer.getAttribute("actionLink");
+	var form = gj(outer).parents('form')[0]; 
+	form.elements[eventId + "startTime"].value = start;
+	form.elements[eventId + "finishTime"].value = end;
+	form.elements[eventId + "isOccur"].value = isOccur;
+	form.elements[eventId + "recurId"].value = recurId;
+	eval(actionLink);
+    }
+    if(_module.UIWeekView.extraWidth) delete _module.UIWeekView.extraWidth;
+    _module.UIWeekView.removeTooltip();
+    eXo.calendar.EventTooltip.enable();
 } ;
 
 // For all day event
@@ -583,39 +583,33 @@ UIWeekView.prototype.allDayDropCallback = function(evt) {
 } ;
 
 UIWeekView.prototype.initAllday = function() {
-	var UIWeekView = _module.UIWeekView ;
-	var uiWeekView = document.getElementById("UIWeekView") ;
-	var uiWeekViewGridAllDay = gj(uiWeekView).find('table.UIGrid')[0]; 
-	this.eventAlldayContainer = gj(uiWeekView).find('div.eventAlldayContainer');
-	var eventAllday = new Array() ;
-	for(var i = 0 ; i < this.eventAlldayContainer.length ; i ++) {
-		if (this.eventAlldayContainer[i].style.display != "none") eventAllday.push(this.eventAlldayContainer[i]) ;
+    var UIWeekView = _module.UIWeekView ;
+    var uiWeekView = document.getElementById("UIWeekView") ;
+    var uiWeekViewGridAllDay = gj(uiWeekView).find('table.UIGrid')[0]; 
+    this.eventAlldayContainer = gj(uiWeekView).find('div.eventAlldayContainer');
+    var eventAllday = new Array() ;
+    for(var i = 0 ; i < this.eventAlldayContainer.length ; i ++) {
+	if (this.eventAlldayContainer[i].style.display != "none") eventAllday.push(this.eventAlldayContainer[i]) ;
+    }
+    var len = eventAllday.length ;
+    if (len <= 0) return ;
+    var resizeMark = null ;
+    for(var i = 0 ; i < len ; i ++) {
+	resizeMark = gj(eventAllday[i]).children("div") ;
+	if (gj(resizeMark[0]).hasClass("leftResizeEvent"))
+	    gj(resizeMark[0]).on('mousedown',UIWeekView.initAllDayLeftResize);
+	if (gj(resizeMark[2]).hasClass("rightResizeEvent")) {
+	    gj(resizeMark[2]).on('mousedown',UIWeekView.initAllDayRightResize);
 	}
-	var len = eventAllday.length ;
-	if (len <= 0) return ;
-	var resizeMark = null ;
-	for(var i = 0 ; i < len ; i ++) {
-		resizeMark = gj(eventAllday[i]).children("div") ;
-		if (gj(resizeMark[0]).hasClass("ResizableSign"))
-			gj(resizeMark[0]).on('mousedown',UIWeekView.initAllDayLeftResize);
-//			resizeMark[0].onmousedown = UIWeekView.initAllDayLeftResize;
-		if (gj(resizeMark[2]).hasClass("ResizableSign")) {
-			gj(resizeMark[2]).on('mousedown',UIWeekView.initAllDayRightResize);
-//			resizeMark[2].onmousedown = UIWeekView.initAllDayRightResize;
-		}
-		gj(eventAllday[i]).on({'mouseover':eXo.calendar.EventTooltip.show,
-			'mouseout':eXo.calendar.EventTooltip.hide,
-			'mousedown':_module.UIWeekView.initAlldayDND,
-			'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-//		eventAllday[i].onmouseover = eXo.calendar.EventTooltip.show;
-//		eventAllday[i].onmouseout = eXo.calendar.EventTooltip.hide;
-//		eventAllday[i].onmousedown = eXo.calendar.UIWeekView.initAlldayDND;
-//		eventAllday[i].ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback;
-	}
-	var EventAlldayContainer = gj(uiWeekViewGridAllDay).find('td.eventAllDay')[0]; 
-	this.weekdays = gj(uiWeekViewGridAllDay).find('td.uiCellBlock');
-	this.startWeek = 	UIWeekView.weekdays[1] ;
-	this.endWeek = 	UIWeekView.weekdays[UIWeekView.weekdays.length-1] ;
+	gj(eventAllday[i]).on({'mouseover':eXo.calendar.EventTooltip.show,
+	    'mouseout':eXo.calendar.EventTooltip.hide,
+	    'mousedown':_module.UIWeekView.initAlldayDND,
+	    'dblclick':_module.UICalendarPortlet.ondblclickCallback});
+    }
+    var EventAlldayContainer = gj(uiWeekViewGridAllDay).find('td.eventAllDayContainer')[0]; 
+    this.weekdays = gj(uiWeekViewGridAllDay).find('td.uiCellBlock');
+    this.startWeek = 	UIWeekView.weekdays[1] ;
+    this.endWeek = 	UIWeekView.weekdays[UIWeekView.weekdays.length-1] ;
 } ;
 
 UIWeekView.prototype.sortByWidth = function(obj) {
