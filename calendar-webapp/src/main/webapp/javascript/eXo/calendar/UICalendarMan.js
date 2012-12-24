@@ -696,7 +696,7 @@ GUIMan.prototype.initSelectionDayEvent = function() {
   gj(container).prevAll('div')[0].appendChild(UISelection.block) ;
   gj(UISelection.container).on('mousedown',UISelection.start);
 //  UISelection.container.onmousedown = UISelection.start ;
-  UISelection.relativeObject = gj(UISelection.container).parents('.EventWeekContent')[0]; 
+  UISelection.relativeObject = gj(UISelection.container).parents('.eventWeekContent')[0]; 
   UISelection.viewType = "UIWeekView" ;
 } ;
 

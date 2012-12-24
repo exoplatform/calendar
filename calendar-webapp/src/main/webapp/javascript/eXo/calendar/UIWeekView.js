@@ -15,7 +15,7 @@ UIWeekView.prototype.init = function() {
 	var uiCalendarViewContainer = document.getElementById("UICalendarViewContainer") ;
 	var allEvents = gj(uiCalendarViewContainer).find('div.eventContainerBorder');
 	this.container = document.getElementById("UIWeekViewGrid") ;
-	var EventWeekContent = gj(this.container).parents(".EventWeekContent")[0] ;
+	var EventWeekContent = gj(this.container).parents(".eventWeekContent")[0] ;
 	this.items = new Array() ;
 	_module.UICalendarPortlet.viewType = "UIWeekView" ;
 	for(var i = 0 ; i < allEvents.length ; i ++) {
@@ -33,7 +33,7 @@ UIWeekView.prototype.init = function() {
 			'mouseover':eXo.calendar.EventTooltip.show,
 			'mouseout':eXo.calendar.EventTooltip.hide,
 			'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-		marker = gj(this.items[i]).find('div.ResizeEventContainer')[0];
+		marker = gj(this.items[i]).find('div.resizeEventContainer')[0];
 		gj(marker).on('mousedown',UIWeekView.initResize);
 	}
 	var tr = gj(this.container).find('tr'); 
@@ -339,7 +339,7 @@ UIWeekView.prototype.initResize = function(evt) {
 	var UIResizeEvent = eXo.calendar.UIResizeEvent ;
 	var outerElement = gj(this).parents('.eventContainerBorder')[0]; 
 	var innerElement = gj(this).prevAll('div')[0];
-	var container = gj("#UIWeekViewGrid").parents('.EventWeekContent')[0];
+	var container = gj("#UIWeekViewGrid").parents('.eventWeekContent')[0];
 	var minHeight = 15 ;
 	var interval = _module.UICalendarPortlet.interval ;
 	UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval) ;
@@ -828,7 +828,7 @@ UIWeekView.prototype.initSelection = function() {
 	gj(container).prevAll('div')[0].appendChild(UISelection.block) ;
 	gj(UISelection.container).on('mousedown',UISelection.start);
 //	UISelection.container.onmousedown = UISelection.start ;
-	UISelection.relativeObject = gj(UISelection.container).parents('.EventWeekContent')[0]; 
+	UISelection.relativeObject = gj(UISelection.container).parents('.eventWeekContent')[0]; 
 	UISelection.viewType = "UIWeekView" ;
 } ;
 
