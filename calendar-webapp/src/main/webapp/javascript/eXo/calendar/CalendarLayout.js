@@ -5,7 +5,7 @@ function CalendarLayout() {
     this.UI_CALENDAR_VIEW_CONTAINER = 'UICalendarViewContainer';
     this.TOGGLE_BUTTON_HEIGHT = 14;
     this.UI_CALENDARS_MIN_HEIGHT = 40;
-    this.UI_LIST_VIEW = "UIListView";
+    this.UI_LIST_VIEW = "uiListView";
 }
 
 CalendarLayout.prototype.init = function() {

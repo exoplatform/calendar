@@ -63,7 +63,7 @@
 		<table class="uiGrid table rounded-corners">
 			<tbody>
 				<tr>
-					<td class="center"></td>
+					<td class="center" style="width: 55px;"></td>
 					<td>
 					<%
 						for(ce in uicomponent.getAllDayEvents()) {             

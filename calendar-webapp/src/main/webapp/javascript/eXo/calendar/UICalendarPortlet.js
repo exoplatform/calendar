@@ -1260,7 +1260,7 @@ UICalendarPortlet.prototype.showContextMenu = function(compid){
     UIContextMenu.attach("TimeRule", "UIDayViewRightMenu");
     UIContextMenu.attach("eventBoxes", "UIDayViewEventRightMenu");
     UIContextMenu.attach(["Weekday","Weekend","Today", "eventAlldayContainer"], "UIWeekViewRightMenu");
-    UIContextMenu.attach("UIListViewRow", "UIListViewEventRightMenu");
+    UIContextMenu.attach("uiListViewRow", "uiListViewEventRightMenu");
     if(document.getElementById("UIPageDesktop")) this.firstRun = false ;
     this.fixIE();
 };
@@ -1294,8 +1294,8 @@ UICalendarPortlet.prototype.fixIE = function(){
 UICalendarPortlet.prototype.listViewCallack = function(evt){
     var _e = window.event || evt;
     var src = _e.srcElement || _e.target;
-    if (!gj(src).hasClass("UIListViewRow")) 
-        src = gj(src).parents(".UIListViewRow")[0];
+    if (!gj(src).hasClass("uiListViewRow")) 
+        src = gj(src).parents(".uiListViewRow")[0];
     var eventId = src.getAttribute("eventid");
     var calendarId = src.getAttribute("calid");
     var calType = src.getAttribute("calType");
@@ -1657,7 +1657,7 @@ UICalendarPortlet.prototype.filterByCalendar = function(){
     	imgChk.className = "iconCheckBox checkbox";
     }
     
-    if ((!events || events.length == 0)&& _module.UICalendarPortlet.getElementById("UIListView")) {
+    if ((!events || events.length == 0)&& _module.UICalendarPortlet.getElementById("uiListView")) {
         webui.UIForm.submitForm('UICalendars','Tick', true)		
     }
     if (!events) return;
@@ -1727,7 +1727,7 @@ UICalendarPortlet.prototype.runFilterByCategory = function(){
     var events = _module.UICalendarPortlet.getEventsForFilter(allEvents);
     
      //CS-3152
-    if ((!events || events.length == 0)&& _module.UICalendarPortlet.getElementById("UIListView")) {
+    if ((!events || events.length == 0)&& _module.UICalendarPortlet.getElementById("uiListView")) {
         webui.UIForm.submitForm('UICalendars','Tick', true)		
     }
     
@@ -1762,7 +1762,7 @@ UICalendarPortlet.prototype.runAction = function(obj){
 UICalendarPortlet.prototype.getFilterSelect = function(form){
     if (typeof(form) == "string") 
         form = _module.UICalendarPortlet.getElementById(form);
-    var eventCategory = gj(form).find("div.eventCategory")[0];
+    var eventCategory = gj(form).find("div.EventCategory")[0];
 		if (!eventCategory) return ;
     var select = gj(eventCategory).find("select")[0];
     var onchange = select.getAttribute("onchange");
@@ -1790,9 +1790,9 @@ UICalendarPortlet.prototype.setSelected = function(form){
 UICalendarPortlet.prototype.listViewDblClick = function(form){
 	form = (typeof(form) == "string")? _module.UICalendarPortlet.getElementById(form):form ;
 	if(!form) return ;
-	var tr = gj(form).find("tr.UIListViewRow");
+	var tr = gj(form).find("tr.uiListViewRow");
 	var i = tr.length ;
-	_module.UICalendarPortlet.viewType = "UIListView";
+	_module.UICalendarPortlet.viewType = "uiListView";
 	var chk = null ;
 	while(i--){
 		tr[i].ondblclick = this.listViewDblClickCallback;		

@@ -86,7 +86,7 @@ LayoutSpliter.prototype.doResize = function(e , markerobj) {
   this.posY = _module.Browser.findMouseYInPage(_e) ;
   var marker = (typeof(markerobj) == "string")? document.getElementById(markerobj):markerobj ;
   var container = marker.parentNode ;
-  var areas = gj(container).find('div.SpliterResizableListArea'); 
+  var areas = gj(container).find('div.spliterResizableListArea'); 
   if((areas.length < 2) || (areas[0].style.display=="none")) return ;
   this.beforeArea = areas[0] ;
   this.afterArea = areas[1] ;
@@ -145,7 +145,7 @@ Utils.prototype.show = function(obj, evt){
 
 Utils.prototype.showHidePane = function(clickobj, beforeobj, afterobj) {
   var container = gj(clickobj).parents('.SpliterContainer')[0]; 
-  var areas = gj(container).find('div.SpliterResizableListArea'); 
+  var areas = gj(container).find('div.spliterResizableListArea'); 
   var uiGrid = gj(areas[1]).find('table.UIGrid')[0]; 
   var uiPreview = gj(areas[1]).parents(".UIPreview")[0] ;
   if(areas.length < 2) return ;
