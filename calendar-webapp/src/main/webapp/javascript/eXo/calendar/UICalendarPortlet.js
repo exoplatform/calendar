@@ -1291,7 +1291,7 @@ UICalendarPortlet.prototype.fixIE = function(){
  * Callback method when right click in list view
  * @param {Object} evt Mouse event
  */
-UICalendarPortlet.prototype.listViewCallack = function(evt){
+UICalendarPortlet.prototype.listViewCallback = function(evt){
     var _e = window.event || evt;
     var src = _e.srcElement || _e.target;
     if (!gj(src).hasClass("uiListViewRow")) 
@@ -1749,7 +1749,7 @@ UICalendarPortlet.prototype.runAction = function(obj){
 UICalendarPortlet.prototype.getFilterSelect = function(form){
     if (typeof(form) == "string") 
         form = _module.UICalendarPortlet.getElementById(form);
-    var eventCategory = gj(form).find("div.EventCategory")[0];
+    var eventCategory = gj(form).find("div.eventCategory")[0];
 		if (!eventCategory) return ;
     var select = gj(eventCategory).find("select")[0];
     var onchange = select.getAttribute("onchange");

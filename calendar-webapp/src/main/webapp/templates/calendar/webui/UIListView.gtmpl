@@ -187,7 +187,7 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
   <%}%>
 
 <% /*Begin Popup Menu - Calendar Actions */ %>
-  <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu"  style="display: none ;" >
+  <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallback" style="display: none ;" >
     <ul class="uiDropDownCal" style="display:block;">
       <li>
           <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
