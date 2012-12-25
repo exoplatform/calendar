@@ -1,7 +1,9 @@
-var eXo = eXo || {}
-if(!eXo.cs){
-	eXo.cs = {} ;
-}
+(function(DOMUtil, base, gj){
+var _module = {};
+_module.DOMUtil = DOMUtil ;
+eXo = eXo || {}
+eXo.cs = eXo.cs || {} ;
+
 /********************* Checkbox Manager ******************/
 function CheckBoxManager() {
 } ;
@@ -600,7 +602,6 @@ EventManager.prototype.cancelEvent = function(evt) {
     evt.preventDefault() ;
 };
 
-//eXo.cs.EventManager = new EventManager() ;
 _module.EventManager = new EventManager() ;
 
 /********************* Scroll Manager ******************/
@@ -820,3 +821,5 @@ DateTimeFormater.prototype.format = function (date, mask, utc) {
 _module.DateTimeFormater = new DateTimeFormater();
 
 document.onclick = _module.DOMUtil.cleanUpHiddenElements;
+return _module;
+})(DOMUtil, base, gj);

@@ -9,9 +9,9 @@
 
  requireJS.require("SHARED/csResoures","cs");
  requireJS.addScripts('cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+actionLink+'") ;');
- requireJS.addScripts('cs.CheckBox.init("' + uiform.id + '"); ') ;
+ requireJS.addScripts('cs.CSUtils.CheckBox.init("' + uiform.id + '"); ') ;
  //rcontext.getJavascriptManager().addJavascript('cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+actionLink+'") ;') ;
- //rcontext.getJavascriptManager().addJavascript('cs.CheckBox.init("' + uiform.id + '"); ') ;
+ //rcontext.getJavascriptManager().addJavascript('cs.CSUtils.CheckBox.init("' + uiform.id + '"); ') ;
 %>
 <div class="UIInsertAddress">
   <div class="InsertAddressContainer">
@@ -60,13 +60,13 @@
             </thead>
             <tbody>
               <%
-			    def rowClass = "";
-				boolean even = true;
+          def rowClass = "";
+        boolean even = true;
                 for (ContactData contact : uicomponent.getContacts()) {
                   checkboxField = uicomponent.getChildById(contact.getId());
-				   if (even) rowClass = "EvenRow";
-				   else rowClass = "OddRow";
-				   even = !even;
+           if (even) rowClass = "EvenRow";
+           else rowClass = "OddRow";
+           even = !even;
               %>
                 <tr class="$rowClass">
                   <td class="BorderAddress">
@@ -87,13 +87,13 @@
 
   </div>
   
-	<div class="UIAction">
-		<%for(String action : uicomponent.getActions()){
-	          String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
-	        %>
-			<a href="<%=uicomponent.event(action)%>" class="ActionButton LightBlueStyle">$actionLabel</a>
-		<%}%>
-	</div>
+  <div class="UIAction">
+    <%for(String action : uicomponent.getActions()){
+            String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+          %>
+      <a href="<%=uicomponent.event(action)%>" class="ActionButton LightBlueStyle">$actionLabel</a>
+    <%}%>
+  </div>
   
 </div>
 <% uiform.end() %>

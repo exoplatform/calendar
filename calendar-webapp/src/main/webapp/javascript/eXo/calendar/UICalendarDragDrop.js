@@ -1,14 +1,14 @@
 (function(cs){
 var _module = {};
-eXo.calendar = {};
+eXo.calendar = eXo.calendar || {};
 // Create new method for special context
 cs.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
   if(dropableTargets == null) return null ;
   var UICalendarDragDropObj = _module.UICalendarDragDrop;
   var additionX = UICalendarDragDropObj.RowContainerDay.scrollLeft;
   var additionY = UICalendarDragDropObj.RowContainerDay.scrollTop;
-  var mousexInPage = cs.Browser.findMouseXInPage(mouseEvent) + additionX ;
-  var mouseyInPage = cs.Browser.findMouseYInPage(mouseEvent) + additionY ;
+  var mousexInPage = cs.Browser.Browser.findMouseXInPage(mouseEvent) + additionX ;
+  var mouseyInPage = cs.Browser.Browser.findMouseYInPage(mouseEvent) + additionY ;
   if(gj.browser.msie != undefined && base.I18n.isRT())
   	mousexInPage = mousexInPage / 2;
   
@@ -19,8 +19,8 @@ cs.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEv
   for(var i = 0 ; i < len ; i++) {
     var ele =  dropableTargets[i] ;
     if(document.getElementById("UIPageDesktop")) {
-		mousexInPage = cs.Browser.findMouseXInPage(mouseEvent) + cs.Utils.getScrollLeft(ele) ;
-  		mouseyInPage = cs.Browser.findMouseYInPage(mouseEvent) + cs.Utils.getScrollTop(ele) ;
+		mousexInPage = cs.Browser.Browser.findMouseXInPage(mouseEvent) + cs.Utils.getScrollLeft(ele) ;
+  		mouseyInPage = cs.Browser.Browser.findMouseYInPage(mouseEvent) + cs.Utils.getScrollTop(ele) ;
 	}
     if(dragObject != ele && this.isIn(mousexInPage, mouseyInPage, ele)) {
       if(foundTarget == null) {
@@ -148,8 +148,8 @@ UICalendarDragDrop.prototype.synDragObjectPos = function(dndEvent) {
     }
   }
   var dragObject = dndEvent.dragObject ;
-  var mouseX = cs.Browser.findMouseXInPage(dndEvent.backupMouseEvent);
-  var mouseY = cs.Browser.findMouseYInPage(dndEvent.backupMouseEvent);
+  var mouseX = cs.Browser.Browser.findMouseXInPage(dndEvent.backupMouseEvent);
+  var mouseY = cs.Browser.Browser.findMouseYInPage(dndEvent.backupMouseEvent);
   dragObject.style.top = mouseY + 'px' ;
   dragObject.style.left = mouseX + 'px' ;
   if (base.I18n.isRT()) {
@@ -302,4 +302,4 @@ _module.UICalendarDragDrop = new UICalendarDragDrop();
 eXo.calendar.UICalendarDragDrop = _module.UICalendarDragDrop;
 
 return _module;
-})(cs)
+})(cs);

@@ -3,8 +3,8 @@
 function Highlighter() {
 
 }
-_module = {};
-eXo.calendar = {};
+var _module = {};
+eXo.calendar = eXo.calendar || {};
 /**
  * Gets index of cell in time table in the month view
  * @param {Object} cell A cell in time table
@@ -26,14 +26,14 @@ Highlighter.prototype.getPos = function(cell) {
 Highlighter.prototype.isInCell = function(cell, _e) {
 	var Highlighter = _module.Highlighter ;
 	var cellX = base.Browser.findPosX(cell) - Highlighter.container.scrollLeft ;
-	var cellY = cs.Browser.findPosY(cell) - Highlighter.container.scrollTop ;
-	var mouseX = cs.Browser.findMouseXInPage(_e) ;
-	var mouseY = cs.Browser.findMouseYInPage(_e) ;
+	var cellY = cs.Browser.Browser.findPosY(cell) - Highlighter.container.scrollTop ;
+	var mouseX = cs.Browser.Browser.findMouseXInPage(_e) ;
+	var mouseY = cs.Browser.Browser.findMouseYInPage(_e) ;
 	if(document.getElementById("UIPageDesktop")) {
-		mouseX = cs.Browser.findMouseXInPage(_e) ;
-		mouseY = cs.Browser.findMouseYInPage(_e) ;
+		mouseX = cs.Browser.Browser.findMouseXInPage(_e) ;
+		mouseY = cs.Browser.Browser.findMouseYInPage(_e) ;
 		cellX = base.Browser.findPosX(cell)() - cs.CSUtils.Utils.getScrollLeft(cell) ;
-		cellY = cs.Browser.findPosY(cell) - cs.CSUtils.Utils.getScrollTop(cell) ;
+		cellY = cs.Browser.Browser.Browser.findPosY(cell) - cs.CSUtils.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
 	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") ||  base.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
@@ -284,14 +284,14 @@ function UIHSelection() {
 UIHSelection.prototype.isInCell = function(cell, _e) {
 	var UIHSelection = eXo.calendar.UIHSelection ;
 	var cellX = base.Browser.findPosX(cell) - UIHSelection.container.scrollLeft ;
-	var cellY = cs.Browser.findPosY(cell) - UIHSelection.container.scrollTop ;
-	var mouseX = cs.Browser.findMouseXInPage(_e) ;
-	var mouseY = cs.Browser.findMouseYInPage(_e) ;
+	var cellY = cs.Browser.Browser.findPosY(cell) - UIHSelection.container.scrollTop ;
+	var mouseX = cs.Browser.Browser.findMouseXInPage(_e) ;
+	var mouseY = cs.Browser.Browser.findMouseYInPage(_e) ;
 	if(document.getElementById("UIPageDesktop")) {
-		mouseX = cs.Browser.findMouseXInPage(_e) ;
-		mouseY = cs.Browser.findMouseYInPage(_e) ;
+		mouseX = cs.Browser.Browser.findMouseXInPage(_e) ;
+		mouseY = cs.Browser.Browser.findMouseYInPage(_e) ;
 		cellX = base.Browser.findPosX(cell) - cs.CSUtils.Utils.getScrollLeft(cell) ;
-		cellY = cs.Browser.findPosY(cell) - cs.CSUtils.Utils.getScrollTop(cell) ;
+		cellY = cs.Browser.Browser.findPosY(cell) - cs.CSUtils.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
 	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") || base.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;

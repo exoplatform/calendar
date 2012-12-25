@@ -1,4 +1,4 @@
-(function(cs, gj){
+(function(cs, gj, base){
 function UICalendars() {
   this.POPUP_CONTAINER_ID = "tmpMenuElement";
   this.calsFormElem = null;
@@ -7,13 +7,14 @@ function UICalendars() {
   
 }
 
-_module = {} ;
+var _module = {} ;
+eXo.calendar = eXo.calendar || {}
 
 UICalendars.prototype.init = function(calendarsForm) {
 _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
   if (typeof(calendarsForm) == "string") 
     calendarsForm = _module.UICalendarPortlet.UICalendarPortlet.getElementById(calendarsForm);
-  var UICalendarPortlet = _module.UICalendarPortlet;
+  var UICalendarPortlet = _module.UICalendarPortlet.UICalendarPortlet;
   _module.UICalendarPortlet.UICalendarPortlet.filterForm = calendarsForm;
   this.calsFormElem = calendarsForm;
   var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
@@ -40,7 +41,8 @@ UICalendars.prototype.showSettingButtonStably = function(settingButton) {
 };
 
 UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
-  var UICalendarPortlet = _module.UICalendarPortlet;
+_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+  var UICalendarPortlet = _module.UICalendarPortlet.UICalendarPortlet;
   UICalendarPortlet.swapMenu(menuElm, anchorElm);
   this.currentMenuElm = UICalendarPortlet.menuElement;
   if (!base.I18n.isRT()) {
@@ -58,7 +60,7 @@ UICalendars.prototype.mainMenuCallback = function(anchorElm, evt) {
 };
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
-  var obj = cs.EventManager.getEventTargetByClass(evt,"CalendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"CalendarItem") || cs.CSUtils.EventManager.getEventTargetByClass(evt,"GroupItem");
   var calType = obj.getAttribute("calType");
   var calName = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");
@@ -67,7 +69,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   var menu = UICalendars.currentMenuElm;
   var contentContainerElm = gj(anchorElm).parents(".ContentContainer")[0];
   if (contentContainerElm) {
-    menu.style.top = (cs.Browser.findPosY(menu) - contentContainerElm.scrollTop) + 'px';
+    menu.style.top = (cs.Browser.Browser.findPosY(menu) - contentContainerElm.scrollTop) + 'px';
   }
   try {
     var selectedCategory = (_module.UICalendarPortlet.filterSelect) ? _module.UICalendarPortlet.filterSelect : null;
@@ -153,7 +155,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
 UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCallback) {
   var _e = window.event || evt;
   _e.cancelBubble = true;
-  cs.EventManager.cancelBubble(evt);
+  cs.CSUtils.EventManager.cancelBubble(evt);
   var menuTemplateElm = gj(this.calsFormElem).find('div.' + menuClassName)[0]; 
   this.renderMenu(menuTemplateElm, anchorElm);
   // invoke callback
@@ -165,4 +167,4 @@ eXo.calendar.UICalendars = _module.UICalendars;
 
 return _module.UICalendars;
 
-})(cs, gj);
+})(cs, gj, base);

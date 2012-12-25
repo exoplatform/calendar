@@ -48,10 +48,6 @@
       <module>base</module>
     </depends>
     <depends>
-      <module>webui</module>
-      <as>webui</as>
-    </depends>
-    <depends>
       <module>webui-ext</module>
       <as>wx</as>
     </depends>
@@ -69,6 +65,10 @@
     <script>
       <path>/javascript/eXo/core/DOMUtil.js</path>
     </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
   </module>
   <module>
     <name>Keyboard</name>
@@ -86,6 +86,10 @@
     </depends>
     <depends>
       <module>base</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
     </depends>
   </module>
   <module>

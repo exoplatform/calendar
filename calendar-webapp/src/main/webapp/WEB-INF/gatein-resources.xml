@@ -43,6 +43,9 @@
       <as>base</as>
     </depends>
     <depends>
+      <module>uiPopup</module>
+    </depends>
+    <depends>
       <module>navigation</module>
       <as>gtnav</as>
     </depends>
@@ -51,8 +54,10 @@
       <as>cometd</as>
     </depends>
     <depends>
-      <module>webui</module>
-      <as>webui</as>
+      <module>uiForm</module>
+    </depends>
+    <depends>
+      <module>uiPopupWindow</module>
     </depends>
     <depends>
       <module>webui-ext</module>
@@ -135,6 +140,9 @@
       <module>csResources</module>
       <as>cs</as>
     </depends>
+    <depends>
+      <module>base</module>
+    </depends>
   </module>
   <module>
     <name>UICalendarDragDrop</name>
@@ -159,7 +167,9 @@
       <module>csResources</module>
       <as>cs</as>
     </depends>
-
+    <depends>
+      <module>UICalendarMan</module>
+    </depends> 
   </module>
   <module>
     <name>UICalendarMan</name>
@@ -176,10 +186,7 @@
     </depends>
     <depends>
       <module>Highlighter</module>
-    </depends>
-    <depends>
-      <module>UIWeekView</module>
-    </depends>  
+    </depends> 
   </module>
 </gatein-resources>
 
