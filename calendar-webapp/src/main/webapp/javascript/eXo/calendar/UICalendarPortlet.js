@@ -1259,7 +1259,7 @@ UICalendarPortlet.prototype.showContextMenu = function(compid){
     UIContextMenu.attach("EventOnDayContent", "UIMonthViewEventRightMenu");
     UIContextMenu.attach("TimeRule", "UIDayViewRightMenu");
     UIContextMenu.attach("eventBoxes", "UIDayViewEventRightMenu");
-    UIContextMenu.attach(["Weekday","Weekend","Today", "eventAlldayContainer"], "UIWeekViewRightMenu");
+    UIContextMenu.attach(["Weekday","Weekend","today", "eventAlldayContainer"], "UIWeekViewRightMenu");
     UIContextMenu.attach("uiListViewRow", "uiListViewEventRightMenu");
     if(document.getElementById("UIPageDesktop")) this.firstRun = false ;
     this.fixIE();
