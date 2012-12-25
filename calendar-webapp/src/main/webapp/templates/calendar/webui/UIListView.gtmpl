@@ -185,47 +185,37 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
       <button type="button" onclick="<%= uicomponent.event('CloseSearch')%>" class="btn pull-left"><%=uiform.getLabel('CloseSearch')%></button>
 </div>
   <%}%>
-    <% /*Begin Popup Menu*/ %>
-  <!--div class="uiRightClickPopupMenu" id="uiListView" exocallback="eXo.calendar.UICalendarPortlet.listViewCallack"-->
-  <div class="uiRightClickPopupMenu" id="uiListView">
-    <div class="UIContextMenuContainer">
-      <div class="TopLeftRightClickPopupMenu">
-        <div class="TopRightRightClickPopupMenu">
-          <div class="TopCenterRightClickPopupMenu">
-            <span></span>
-</div>
-        </div>
-</div>
-      <div class="MiddleLeftRightClickPopupMenu">
-        <div class="MiddleRightRightClickPopupMenu">
-          <div class="UIRightPopupMenuContainer">
-            <%
-              for(String act : uicomponent.getQuickEditMenu()) {
-              link = uicomponent.event(act,"id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype") ;
-              icon = act + "EventIcon" ;
-            %>
-            <a class="MenuItem" style="display: block;" href="$link">
-              <div class="ItemIcon $icon">
-                 <%=_ctx.appRes("ContextMenu.label."+act)%>
-               </div>
-</a>
-            <%}%>
-            <a class="MenuItem" style="display: block;" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
-              <div class="ItemIcon ExportCalendarIcon">
-                 <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
-               </div>
-</a>
-          </div>
-</div>
-      </div>
-<div class="BottomLeftRightClickPopupMenu">
-<div class="BottomRightRightClickPopupMenu">
-<div class="BottomCenterRightClickPopupMenu">
-<span></span>
-        </div>
-</div>
-    </div>
-</div>
+
+<% /*Begin Popup Menu - Calendar Actions */ %>
+  <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu"  style="display: none ;" >
+    <ul class="uiDropDownCal" style="display:block;">
+      <li>
+          <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+            <i class="uiIconWatch"></i>
+            <%=_ctx.appRes("ContextMenu.label.View")%>
+          </a>
+      </li>
+      <li>
+          <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+            <i class="uiIconEdit"></i>
+            <%=_ctx.appRes("ContextMenu.label.Edit")%>
+          </a>
+      </li>
+      <li>
+          <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+            <i class="uiIconDelete"></i>
+            <%=_ctx.appRes("ContextMenu.label.Delete")%>
+          </a>
+      </li>
+      <li>
+          <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+            <i class="uiIconCalExportCalendar"></i>
+            <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
+          </a>
+        </li>
+
+    </ul>
   </div>
-<% /*End Popup Menu*/ %>
+    
+  <% /*End Popup Menu*/ %>
 <%uiform.end();%>
