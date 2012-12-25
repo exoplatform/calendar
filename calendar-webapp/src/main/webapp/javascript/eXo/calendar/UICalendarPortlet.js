@@ -1,9 +1,6 @@
+(function(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars) {
 
-/** 
- * Class to cover common actions of Calendar portlet
- * @author <a href="mailto:dung14000@gmail.com">Hoang Manh Dung</a>
- * @constructor
- */
+var _module = {};
 eXo.calendar = eXo.calendar || {};
 
 function UICalendarPortlet(){
@@ -59,16 +56,16 @@ UICalendarPortlet.prototype.attachSwapClass = function(compId,className,hoverCla
     var i = items.length;
     while(i--){
     	gj(items[i]).on({'mouseover':function(){
-    		cs.Utils.swapClass(this,hoverClass);
+    		cs.CSUtils.Utils.swapClass(this,hoverClass);
     	},
     	'mouseout':function(){
-    		cs.Utils.swapClass(this,hoverClass);
+    		cs.CSUtils.Utils.swapClass(this,hoverClass);
     	}});
 //    	items[i].onmouseover = function(){
-//    		eXo.cs.Utils.swapClass(this,hoverClass);
+//    		eXo.cs.CSUtils.Utils.swapClass(this,hoverClass);
 //    	};
 //    	items[i].onmouseout = function(){
-//    		eXo.cs.Utils.swapClass(this,hoverClass);
+//    		eXo.cs.CSUtils.Utils.swapClass(this,hoverClass);
 //    	}; 
     };
 } ;
@@ -1632,7 +1629,7 @@ UICalendarPortlet.prototype.resortEvents = function(){
             _module.UICalendarPortlet.showEvent();
         if (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")) {
             _module.UICalendarMan.initWeek();
-            _module.UIWeekView.init();
+            _module.UIWeekView.UIWeekView.init();
         }
     } 
     catch (e) {
@@ -1934,8 +1931,8 @@ UICalendarPortlet.prototype.showView = function(obj, evt){
  */
 UICalendarPortlet.prototype.swapIeMenu = function(menu, clickobj){
     var Browser = base.Browser;
-    var x = Browser.findPosXInContainer(clickobj, menu.offsetParent) - cs.Utils.getScrollLeft(clickobj);
-    var y = Browser.findPosYInContainer(clickobj, menu.offsetParent) - cs.Utils.getScrollTop(clickobj) + clickobj.offsetHeight;
+    var x = Browser.findPosXInContainer(clickobj, menu.offsetParent) - cs.CSUtils.Utils.getScrollLeft(clickobj);
+    var y = Browser.findPosYInContainer(clickobj, menu.offsetParent) - cs.CSUtils.Utils.getScrollTop(clickobj) + clickobj.offsetHeight;
     var browserHeight = document.documentElement.clientHeight;
     var uiRightClickPopupMenu = (!gj(menu).hasClass("UIRightClickPopupMenu")) ? gj(menu).find('div.UIRightClickPopupMenu')[0] : menu;
     this.showHide(menu);
@@ -1989,7 +1986,7 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
         menuY -= arguments[2].scrollTop;
     }
 		if (base.I18n.isRT()) {
-      menuX -= (cs.Utils.getElementWidth(this.menuElement) - clickobj.offsetWidth);// - uiWorkSpaceWidth;      
+      menuX -= (cs.CSUtils.Utils.getElementWidth(this.menuElement) - clickobj.offsetWidth);// - uiWorkSpaceWidth;      
     }
     this.menuElement.style.top = menuY + "px";
     this.menuElement.style.left =  menuX + "px";
@@ -2180,7 +2177,7 @@ UISelection.prototype.execute = function(evt){
     var _e = window.event || evt;
     var delta = null;
 	var containerHeight = UISelection.container.offsetHeight;
-    var scrollTop = cs.Utils.getScrollTop(UISelection.block);
+    var scrollTop = cs.CSUtils.Utils.getScrollTop(UISelection.block);
     var mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e);// + UISelection.relativeObject.scrollTop;
     if (document.getElementById("UIPageDesktop")) 
         mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e) + scrollTop;
@@ -3194,6 +3191,13 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
   });
 
 };
-
+_module.LayoutManager = CalendarLayout.LayoutManager;
+_module.CalendarLayout = CalendarLayout.CalendarLayout;
+_module.UICalendars = UICalendars ;
+_module.UIWeekView = UIWeekView ;
+_module.Reminder = Reminder;
+_module.UICalendarMan = UICalendarMan;
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
+return _module;
+})(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars);

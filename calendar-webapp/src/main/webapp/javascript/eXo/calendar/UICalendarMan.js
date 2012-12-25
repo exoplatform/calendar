@@ -1,7 +1,7 @@
-/**
- * @author Uoc Nguyen
- */
-
+(function(cs, gj, Highlighter){
+var _module = {};
+eXo.calendar = eXo.calendar || {};
+eXo.calendar.UIHSelection = Highlighter ;
 function QuickSortObject(){
   this.processArray = false;
   this.desc = false;
@@ -1117,3 +1117,6 @@ eXo.calendar.UICalendarMan = {
 }
 
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
+
+return _module.UICalendarMan;
+})(cs, gj, Highlighter);

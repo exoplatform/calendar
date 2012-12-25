@@ -1,3 +1,6 @@
+(function(cs){
+var _module = {};
+eXo.calendar = {};
 // Create new method for special context
 cs.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
   if(dropableTargets == null) return null ;
@@ -297,3 +300,6 @@ UICalendarDragDrop.prototype.isCheckedObject = function(eventObj){
 _module.UICalendarDragDrop = new UICalendarDragDrop();
 
 eXo.calendar.UICalendarDragDrop = _module.UICalendarDragDrop;
+
+return _module;
+})(cs)

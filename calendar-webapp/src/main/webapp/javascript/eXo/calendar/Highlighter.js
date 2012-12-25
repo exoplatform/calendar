@@ -1,13 +1,10 @@
+(function(cs, gj){
 
-/**
- * Class control dragging selection in the month view
- * @author <a href="mailto:dung14000@gmail.com">Hoang Manh Dung</a>
- * @constructor
- */
 function Highlighter() {
 
 }
-
+_module = {};
+eXo.calendar = {};
 /**
  * Gets index of cell in time table in the month view
  * @param {Object} cell A cell in time table
@@ -35,8 +32,8 @@ Highlighter.prototype.isInCell = function(cell, _e) {
 	if(document.getElementById("UIPageDesktop")) {
 		mouseX = cs.Browser.findMouseXInPage(_e) ;
 		mouseY = cs.Browser.findMouseYInPage(_e) ;
-		cellX = base.Browser.findPosX(cell)() - cs.Utils.getScrollLeft(cell) ;
-		cellY = cs.Browser.findPosY(cell) - cs.Utils.getScrollTop(cell) ;
+		cellX = base.Browser.findPosX(cell)() - cs.CSUtils.Utils.getScrollLeft(cell) ;
+		cellY = cs.Browser.findPosY(cell) - cs.CSUtils.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
 	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") ||  base.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
@@ -293,8 +290,8 @@ UIHSelection.prototype.isInCell = function(cell, _e) {
 	if(document.getElementById("UIPageDesktop")) {
 		mouseX = cs.Browser.findMouseXInPage(_e) ;
 		mouseY = cs.Browser.findMouseYInPage(_e) ;
-		cellX = base.Browser.findPosX(cell) - cs.Utils.getScrollLeft(cell) ;
-		cellY = cs.Browser.findPosY(cell) - cs.Utils.getScrollTop(cell) ;
+		cellX = base.Browser.findPosX(cell) - cs.CSUtils.Utils.getScrollLeft(cell) ;
+		cellY = cs.Browser.findPosY(cell) - cs.CSUtils.Utils.getScrollTop(cell) ;
 	}
 	var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
 	if(document.all && uiControlWorkspace && (!document.getElementById("UIPageDesktop") || base.Browser.isIE7())) cellX -= uiControlWorkspace.offsetWidth ;
@@ -422,3 +419,6 @@ UIHSelection.prototype.end = function(){
 
 _module.UIHSelection = new UIHSelection() ;
 eXo.calendar.UIHSelection = _module.UIHSelection;
+return _module;
+
+})(cs, gj);

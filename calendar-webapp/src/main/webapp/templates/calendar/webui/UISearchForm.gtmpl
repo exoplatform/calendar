@@ -4,7 +4,7 @@
   action = uicomponent.event("Search") ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/csResources","cs");
-  requirejs.addScripts('cs.Utils.captureInput("value") ;') ;
+  requirejs.addScripts('cs.CSUtils.Utils.captureInput("value") ;') ;
 %>
 <div class="UISearchForm">
   <div onclick="<%=uicomponent.event("AdvancedSearch")%>">

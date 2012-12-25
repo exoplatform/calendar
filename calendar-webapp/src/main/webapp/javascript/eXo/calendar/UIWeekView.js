@@ -1,7 +1,9 @@
+(function(cs, gj, UICalendarMan){
 function UIWeekView() {
 	
 }
-
+_module = {};
+eXo.calendar = eXo.calendar || {} ;
 UIWeekView.prototype.mousePos = function(evt){
 	return {
 		"x" : cs.Browser.findMouseXInPage(evt) ,
@@ -10,6 +12,7 @@ UIWeekView.prototype.mousePos = function(evt){
 } ;
 
 UIWeekView.prototype.init = function() {
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
 	var UICalendarPortlet = _module.UICalendarPortlet ;
 	var UIWeekView = _module.UIWeekView ;
 	var uiCalendarViewContainer = document.getElementById("UICalendarViewContainer") ;
@@ -876,3 +879,6 @@ UIWeekView.prototype.callbackSelectionX = function() {
 eXo.calendar.UIHorizontalResize = new UIHorizontalResize() ;
 _module.UIWeekView = new UIWeekView() ;
 eXo.calendar.UIWeekView = _module.UIWeekView;
+
+return _module;
+})(cs, gj, UICalendarMan);

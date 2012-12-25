@@ -1,3 +1,7 @@
+(function(cs, gj){
+var _module = {};
+eXo.calendar = eXo.calendar || {};
+
 function CalendarLayout() {
     this.UI_WORKING_WORKSPACE = 'UIWorkingWorkspace';
     this.MAIN_WORKING_PANEL = 'MainWorkingPanel';
@@ -9,6 +13,7 @@ function CalendarLayout() {
 }
 
 CalendarLayout.prototype.init = function() {
+  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
   this.loadDOMElements();
   var uiWorkingWorkspace = document.getElementById(this.UI_WORKING_WORKSPACE);
   var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
@@ -164,7 +169,10 @@ CalendarLayout.prototype.expandUICalendars = function() {
 };
 
 if (!eXo.calendar.CalendarLayout) eXo.calendar.CalendarLayout = new CalendarLayout();
-if(!eXo.calendar.LayoutManager) eXo.calendar.LayoutManager = cs.LayoutManager("calendarlayout");
+if(!eXo.calendar.LayoutManager) eXo.calendar.LayoutManager = cs.CSUtils.LayoutManager("calendarlayout");
 
 _module.CalendarLayout = eXo.calendar.CalendarLayout;
 _module.LayoutManager = eXo.calendar.LayoutManager;
+
+return _module;
+})(cs, gj);
