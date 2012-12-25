@@ -1,5 +1,8 @@
-(function(){
+(function(DOMUtil, CSUtils, base){
 var _module = {};
+
+_module.DOMUtil = DOMUtil;
+_module.Browser = CSUtils.Browser;
 
 function DragDropEvent(clickObject, dragObject) {
   this.clickObject = clickObject ;
@@ -178,4 +181,4 @@ DragDrop.prototype.isJunkMove = function(src, target) {
 
 _module.DragDrop = new DragDrop() ;
 return _module.DragDrop;
-})(); 
+})(DOMUtil, CSUtils, base); 

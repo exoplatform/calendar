@@ -37,6 +37,7 @@ CalendarLayout.prototype.adjustApplicationHeight = function() {
 };
 
 CalendarLayout.prototype.updateUICalendarViewLayout = function(view) {
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
     var CalendarLayout = _module.CalendarLayout;
     var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
     var UICalendarViewContainer = gj(UICalendarPortlet).find('div.' + CalendarLayout.UI_CALENDAR_VIEW_CONTAINER)[0];
@@ -61,6 +62,7 @@ CalendarLayout.prototype.updateHeightParams = function() {
 };
 
 CalendarLayout.prototype.loadDOMElements = function() {
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
   var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
   this.UICalendarContainer = gj(UICalendarPortlet).find("div.UICalendarContainer")[0];
   this.UIMiniCalendar = gj(this.UICalendarContainer).find("div.UIMiniCalendar")[0];

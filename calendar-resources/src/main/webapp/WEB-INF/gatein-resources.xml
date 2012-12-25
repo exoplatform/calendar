@@ -107,6 +107,15 @@
     <script>
       <path>/javascript/eXo/core/CalDragDrop.js</path>
     </script>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>DOMUtil</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
+    </depends>
   </module>
   <module>
     <name>UIContextMenu</name>
