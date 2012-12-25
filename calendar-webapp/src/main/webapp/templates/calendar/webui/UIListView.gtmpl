@@ -29,9 +29,12 @@ if(searchDisplay) { %>
 		</div>
 	</div>
   <%
-  }else {
-    _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
-}
+  }else { %>
+  <div class="uiBox">
+   <div class="title">
+   <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl"); %>
+   </div>
+<% } 
 selectedEvent = uicomponent.getSelectedEvent() ;
 def rcontext = _ctx.getRequestContext() ;
 def requireJS = rcontext.getJavascriptManager().getRequireJS();
@@ -170,7 +173,7 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
    <%if(uicomponent.getEvents().size() <= 0) { %>
     <table>
       <tr>
-        <td class="Null">
+        <td class="Null" style="text-align:center">
           <%=uiform.getLabel('noData')%> 
         </td>
 </tr>
@@ -180,12 +183,13 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
 }
 %>
 </div>
+
   <%if(searchDisplay) {%>
     <div class="uiAction">
       <button type="button" onclick="<%= uicomponent.event('CloseSearch')%>" class="btn pull-left"><%=uiform.getLabel('CloseSearch')%></button>
 </div>
   <%}%>
-
+</div>
 <% /*Begin Popup Menu - Calendar Actions */ %>
   <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallback" style="display: none ;" >
     <ul class="uiDropDownCal" style="display:block;">
