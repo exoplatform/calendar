@@ -357,55 +357,47 @@ def eventList = [];
   </div>
 </div>
 <%uiform.end();%>
-<% /*Begin Popup Menu*/ %>
-<div class="uiRightClickPopupMenu" id="UIWeekViewRightMenu" exocallback="eXo.calendar.UICalendarPortlet.weekViewCallback">
-<div class="UIContextMenuContainer">
-  <div class="TopLeftRightClickPopupMenu">
-    <div class="TopRightRightClickPopupMenu">
-      <div class="TopCenterRightClickPopupMenu">
-        <span></span>
-      </div>
-    </div>
-  </div>
-  <div class="MiddleLeftRightClickPopupMenu">
-    <div class="MiddleRightRightClickPopupMenu">
-      <div class="UIRightPopupMenuContainer">
-        <%
-                  for(String act : uicomponent.getQuickEditMenu()) {
-                  link = uicomponent.event(act,uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ;
-                  icon = act + "EventIcon" ;
-        %>
-        <div style="display: none;" class="EventActionMenu MenuItem">
-          <a class="ItemIcon $icon" href="$link">
-            <%=_ctx.appRes("ContextMenu.label."+act)%>
+
+<% /*Begin Popup Menu - Calendar Actions */ %>
+  <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="UIWeekViewRightMenu" exocallback="eXo.calendar.UICalendarPortlet.weekViewCallback" style="display: none ;" >
+    <ul class="uiDropDownCal" style="display:block;">
+      <li style="display: none;">
+          <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+            <i class="uiIconWatch"></i>
+            <%=_ctx.appRes("ContextMenu.label.View")%>
           </a>
-        </div>
-        <%}%>
-        <div class="MenuItem EventActionMenu" style="display: none;">
-          <a class="ItemIcon ExportCalendarIcon" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+      </li>
+      <li style="display: none;">
+          <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+            <i class="uiIconEdit"></i>
+            <%=_ctx.appRes("ContextMenu.label.Edit")%>
+          </a>
+      </li>
+      <li style="display: none;">
+          <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+            <i class="uiIconDelete"></i>
+            <%=_ctx.appRes("ContextMenu.label.Delete")%>
+          </a>
+      </li>
+      <li style="display: none;">
+          <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+            <i class="uiIconCalExportCalendar"></i>
             <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
           </a>
-        </div>
-        <div class="MenuItem"  >
-          <a class="ItemIcon QuickAddEvent" href="#">
-            <%=_ctx.appRes("ContextMenu.label.addEvent")%>
-          </a>
-        </div>
-    <div class="MenuItem">
-          <a class="ItemIcon QuickAddTask" href="#">
-            <%=_ctx.appRes("ContextMenu.label.addTask")%>
-          </a>
-        </div>
-      </div>
-    </div>
+        </li>
+      <li>
+        <a class="createEvent" href="#">
+        <i class="uiIconCalCreateEvent"></i>
+        <%=_ctx.appRes("ContextMenu.label.addEvent")%>
+        </a>
+      </li>
+      <li>
+        <a class="createTask" href="#">
+        <i class="uiIconCalCreateTask"></i>
+        <%=_ctx.appRes("ContextMenu.label.addTask")%>
+        </a>
+      </li>
+    </ul>
   </div>
-  <div class="BottomLeftRightClickPopupMenu">
-    <div class="BottomRightRightClickPopupMenu">
-      <div class="BottomCenterRightClickPopupMenu">
-        <span></span>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-<% /*End Popup Menu*/ %>
+    
+  <% /*End Popup Menu*/ %>

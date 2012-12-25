@@ -213,7 +213,7 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
       if (Browser.isIE6() || Browser.isIE7())
         left -= _module.Utils.getScrollbarWidth() + 3;
     }
-    //this.menuElement.style.padding = "0px";
+    gj(this.menuElement).css('position','absolute');
     this.menuElement.style.zIndex = 2000;
     this.menuElement.style.top = top + "px";
     this.menuElement.style.left = left + "px";

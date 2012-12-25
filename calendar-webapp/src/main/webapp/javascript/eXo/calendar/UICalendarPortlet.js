@@ -1316,53 +1316,52 @@ UICalendarPortlet.prototype.listViewCallack = function(evt){
  * @param {Object} evt Mouse event
  */
 UICalendarPortlet.prototype.dayViewCallback = function(evt){
+
     var _e = window.event || evt;
     var src = _e.srcElement || _e.target;
-   
-     
+
+
     var map = null;
     if (src.nodeName == "TD") {
-        src = gj(src).parents("tr")[0];
-        var startTime = parseInt(Date.parse(src.getAttribute('startFull')));
-    	
-        var startTime = parseInt(src.getAttribute("startTime"));
-        var endTime = startTime + 15*60*1000 ;
-        var items = gj(cs.UIContextMenu.menuElement).find("a");
-        for(var i = 0; i < items.length; i++){
-        	var aTag = items[i];
-        	if(gj(aTag).hasClass("QuickAddEvent")) {
-        		aTag.href="javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");" 
-        	} else if(gj(aTag).hasClass("QuickAddTask")) {
-        		aTag.href="javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
-        	}
-        }
-        /*map = {
-            "startTime\s*=\s*.*(?=&|'|\")": "startTime=" + startTime
-        };*/
+	src = gj(src).parents("tr")[0];
+	var startTime = parseInt(Date.parse(src.getAttribute('startFull')));
+
+	var startTime = parseInt(src.getAttribute("startTime"));
+	var endTime = startTime + 15*60*1000 ;
+	var items = gj(cs.UIContextMenu.menuElement).find("a");
+	for(var i = 0; i < items.length; i++){
+	    var aTag = items[i];
+	    if(gj(aTag).hasClass("createEvent")) {
+		aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");" 
+	    } else if(gj(aTag).hasClass("createTask")) {
+		aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
+	    }
+	}
+
     }
     else {
-        src = (gj(src).hasClass("eventBoxes")) ? src : gj(src).parents(".eventBoxes")[0];
-        var eventId = src.getAttribute("eventid");
-        var calendarId = src.getAttribute("calid");
-        var calType = src.getAttribute("calType");
-        var isOccur = src.getAttribute("isOccur");
-        var recurId = src.getAttribute("recurId");
-        if (recurId == "null") recurId = "";
-        map = {
-            "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
-            "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
-            "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType
-        };
-        if (isOccur) {
-          map = {
-              "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
-              "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
-              "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
-              "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
-              "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
-          };
-        }
-        
+	src = (gj(src).hasClass("eventBoxes")) ? src : gj(src).parents(".eventBoxes")[0];
+	var eventId = src.getAttribute("eventid");
+	var calendarId = src.getAttribute("calid");
+	var calType = src.getAttribute("calType");
+	var isOccur = src.getAttribute("isOccur");
+	var recurId = src.getAttribute("recurId");
+	if (recurId == "null") recurId = "";
+	map = {
+		"objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+		"calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
+		"calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType
+	};
+	if (isOccur) {
+	    map = {
+		    "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+		    "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
+		    "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
+		    "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
+		    "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
+	    };
+	}
+
     }
     cs.UIContextMenu.changeAction(cs.UIContextMenu.menuElement, map);
 };
@@ -1378,92 +1377,80 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
     var obj = cs.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
     var items = gj(UIContextMenu.menuElement).find("a");
     if (obj) {
-				var eventId = obj.getAttribute("eventid");
-        var calendarId = obj.getAttribute("calid");
-        var calType = obj.getAttribute("calType");
-        var isOccur = obj.getAttribute("isOccur");
-        var recurId = obj.getAttribute("recurId");
-        if (recurId == "null") recurId = "";
-        map = {
-            "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
-            "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId
-        };
-        if (calType) {
-            map = {
-                "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
-                "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
-                "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType
-            };
-            if (isOccur) {
-              map = {
-                  "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
-                  "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
-                  "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
-                  "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
-                  "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
-              };
-            }
-        }
-        
-		if(!gj(obj).hasClass("eventAlldayContainer")){
-			var container = gj(src).parents(".eventWeekContent")[0];
-			var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
-			obj =parseInt(gj(src).parents("td")[0].getAttribute("startTime")) + mouseY;
-		} else obj = null;
-        for (var i = 0; i < items.length; i++) {
-            if (gj(items[i].parentNode).hasClass("EventActionMenu")) {
-                items[i].parentNode.style.display = "block";
-                items[i].href = UIContextMenu.replaceall(String(items[i].href), map);
-            }
-            else {
-                //TODO Menu on allday events
-            	//items[i].href = String(items[i].href).replace(/startTime\s*=\s*.*(?=&|'|\")/, "startTime=" + obj);
-                /*var fTime = parseInt(obj);
-                var tTime = fTime + 15*60*1000 ;*/
-        		if(gj(items[i]).hasClass("QuickAddEvent")){
-        			items[i].style.display="none" ;
-        			/*items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this, 1,"+fTime+","+tTime+");"
-        			 if(isNaN(fTime)) {
-        				 items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHidden(this, 1);" ;
-        		     } */
-            		 
-            	} else if (gj(items[i]).hasClass("QuickAddTask")) {
-            		items[i].style.display="none" ;
-            		/*items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this, 2, "+fTime+","+tTime+");"
-            		 if(isNaN(fTime)) {
-        				 items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHidden(this, 2);" ;
-        		     } */
-            	}
-            }
-        }
+	var eventId = obj.getAttribute("eventid");
+	var calendarId = obj.getAttribute("calid");
+	var calType = obj.getAttribute("calType");
+	var isOccur = obj.getAttribute("isOccur");
+	var recurId = obj.getAttribute("recurId");
+	if (recurId == "null") recurId = "";
+	map = {
+		"objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+		"calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId
+	};
+	if (calType) {
+	    map = {
+		    "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+		    "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
+		    "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType
+	    };
+	    if (isOccur) {
+		map = {
+			"objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+			"calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
+			"calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
+			"isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
+			"recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
+		};
+	    }
+	}
+
+	if(!gj(obj).hasClass("eventAlldayContainer")){
+	    var container = gj(src).parents(".eventWeekContent")[0];
+	    var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
+	    obj =parseInt(gj(src).parents("td")[0].getAttribute("startTime")) + mouseY;
+	} else obj = null;
+	for (var i = 0; i < items.length; i++) {
+	    if (gj(items[i]).hasClass("eventAction")) {
+		items[i].parentNode.style.display = "block";
+		items[i].href = UIContextMenu.replaceall(String(items[i].href), map);
+	    }
+	    else {
+		if(gj(items[i]).hasClass("createEvent")){
+		    items[i].style.display="none" ;
+
+		} else if (gj(items[i]).hasClass("createTask")) {
+		    items[i].style.display="none" ;
+		}
+	    }
+	}
     } else {
-		var container = gj(src).parents(".eventWeekContent")[0];
-		var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
-        obj = cs.EventManager.getEventTargetByTagName(evt,"td");
-				map = Date.parse(obj.getAttribute("startFull"));
-        for (var i = 0; i < items.length; i++) {
-            if (items[i].style.display == "block") {
-                items[i].style.display = "none";
-            }
-            else {
-            	items[i].href = String(items[i].href).replace(/startTime\s*=\s*.*(?=&|'|\")/, "startTime=" + map);
-                var fTime = parseInt(map);
-                var tTime = fTime + 15*60*1000 ;
-                
-            	if(gj(items[i]).hasClass("QuickAddEvent")){
-            		items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this, 1,"+fTime+","+tTime+");"
-            		 if(isNaN(fTime)) {
-        				 items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHidden(this, 1);" ;
-        		     } 
-            	} else if (gj(items[i]).hasClass("QuickAddTask")) {
-            		items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this, 2, "+fTime+","+tTime+");"
-            		 if(isNaN(fTime)) {
-        				 items[i].href = "javascript:_module.UICalendarPortlet.addQuickShowHidden(this, 2);" ;
-        		     } 
-            	}
-            }
-            
-        }
+	var container = gj(src).parents(".eventWeekContent")[0];
+	var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
+	obj = cs.EventManager.getEventTargetByTagName(evt,"td");
+	map = Date.parse(obj.getAttribute("startFull"));
+	for (var i = 0; i < items.length; i++) {
+	    if (items[i].style.display == "block") {
+		items[i].style.display = "none";
+	    }
+	    else {
+		items[i].href = String(items[i].href).replace(/startTime\s*=\s*.*(?=&|'|\")/, "startTime=" + map);
+		var fTime = parseInt(map);
+		var tTime = fTime + 15*60*1000 ;
+
+		if(gj(items[i]).hasClass("createEvent")){
+		    items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this, 1,"+fTime+","+tTime+");"
+		    if(isNaN(fTime)) {
+			items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 1);" ;
+		    } 
+		} else if (gj(items[i]).hasClass("createTask")) {
+		    items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this, 2, "+fTime+","+tTime+");"
+		    if(isNaN(fTime)) {
+			items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 2);" ;
+		    } 
+		}
+	    }
+
+	}
     }
 };
 
