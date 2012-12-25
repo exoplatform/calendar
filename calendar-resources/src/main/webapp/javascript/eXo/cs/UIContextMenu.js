@@ -1,3 +1,6 @@
+(function(DOMUtil, base, gj, uiRightClickPopupMenu){
+var _module = {};
+
 function UIContextMenu(){
 	this.menus = new Array,
 	this.attachedElement = null ;
@@ -187,7 +190,7 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
   var uiApplication = document.getElementById("UIPortalApplication");
   if (this.menuElement) {
     document.body.insertBefore(this.menuElement, uiApplication);
-    wx.UIRightClickPopupMenu.disableContextMenu('tmpMenuElement');
+    uiRightClickPopupMenu.disableContextMenu('tmpMenuElement');
     this.menuElement.onmousedown = function(e) {
       var rightclick = false;
       if (!e)
@@ -253,3 +256,5 @@ UIContextMenu.prototype.show = function(evt) {
 
 //eXo.webui.UIContextMenu = new UIContextMenu() ;
 _module.UIContextMenu = new UIContextMenu() ;
+return _module.UIContextMenu;
+})(DOMUtil, base, gj, uiRightClickPopupMenu);

@@ -1,4 +1,4 @@
-(function(cs, gj, UICalendarMan){
+(function(base, cs, gj, UICalendarMan){
 function UIWeekView() {
 	
 }
@@ -882,4 +882,4 @@ _module.UIWeekView = new UIWeekView() ;
 eXo.calendar.UIWeekView = _module.UIWeekView;
 
 return _module;
-})(cs, gj, UICalendarMan);
+})(base, cs, gj, UICalendarMan);

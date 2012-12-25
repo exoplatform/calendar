@@ -1,4 +1,4 @@
-(function(cs){
+(function(base, cs){
 var _module = {};
 eXo.calendar = eXo.calendar || {};
 // Create new method for special context
@@ -301,5 +301,5 @@ _module.UICalendarDragDrop = new UICalendarDragDrop();
 
 eXo.calendar.UICalendarDragDrop = _module.UICalendarDragDrop;
 
-return _module;
-})(cs);
+return _module.UICalendarDragDrop;
+})(base, cs);

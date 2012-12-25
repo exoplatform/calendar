@@ -91,6 +91,9 @@
       <module>csResources</module>
       <as>cs</as>
     </depends>
+    <depends>
+      <module>base</module>
+    </depends>
   </module>
   <module>
     <name>CalendarLayout</name>
@@ -153,6 +156,9 @@
       <module>csResources</module>
       <as>cs</as>
     </depends>
+    <depends>
+      <module>base</module>
+    </depends>
   </module>
   <module>
     <name>UIWeekView</name>
@@ -170,6 +176,9 @@
     <depends>
       <module>UICalendarMan</module>
     </depends> 
+    <depends>
+      <module>base</module>
+    </depends>
   </module>
   <module>
     <name>UICalendarMan</name>

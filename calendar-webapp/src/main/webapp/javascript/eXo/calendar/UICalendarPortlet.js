@@ -1,4 +1,4 @@
-(function(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow) {
+(function(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx) {
 
 eXo.calendar = eXo.calendar || {};
 
@@ -3199,4 +3199,4 @@ _module.UICalendarMan = UICalendarMan;
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
 return _module;
-})(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow);
+})(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx);

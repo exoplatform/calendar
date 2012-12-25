@@ -1,4 +1,4 @@
-(function(cs, gj){
+(function(base, cs, gj){
 
 function Highlighter() {
 
@@ -421,4 +421,4 @@ _module.UIHSelection = new UIHSelection() ;
 eXo.calendar.UIHSelection = _module.UIHSelection;
 return _module;
 
-})(cs, gj);
+})(base, cs, gj);

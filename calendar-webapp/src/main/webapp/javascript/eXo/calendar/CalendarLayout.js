@@ -1,4 +1,4 @@
-(function(cs, gj){
+(function(base, cs, gj){
 var _module = {};
 eXo.calendar = eXo.calendar || {};
 
@@ -175,4 +175,4 @@ _module.CalendarLayout = eXo.calendar.CalendarLayout;
 _module.LayoutManager = eXo.calendar.LayoutManager;
 
 return _module;
-})(cs, gj);
+})(base, cs, gj);

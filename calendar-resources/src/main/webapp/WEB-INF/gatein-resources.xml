@@ -75,6 +75,10 @@
     <script>
       <path>/javascript/eXo/core/Keyboard.js</path>
     </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
   </module>
   <module>
     <name>CSUtils</name>
@@ -116,6 +120,12 @@
       <module>jquery</module>
       <as>gj</as>
     </depends>
+     <depends>
+      <module>DOMUtil</module>
+    </depends>
+    <depends>
+      <module>uiRightClickPopupMenu</module>
+    </depends>      
   </module>
   <module>
     <name>Resize</name>
@@ -128,18 +138,43 @@
     <script>
       <path>/javascript/eXo/cs/MaskLayerControl.js</path>
     </script>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
   </module>
   <module>
     <name>UIDateTimePicker</name>
     <script>
       <path>/javascript/eXo/cs/UIDateTimePicker.js</path>
     </script>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>webui-ext</module>
+      <as>wx</as>
+    </depends>
+    <depends>
+      <module>uiCalendar</module>
+    </depends>
   </module>
   <module>
     <name>FormHelper</name>
     <script>
       <path>/javascript/eXo/cs/FormHelper.js</path>
     </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
   </module>
   <module>
     <name>WebserviceManager</name>
