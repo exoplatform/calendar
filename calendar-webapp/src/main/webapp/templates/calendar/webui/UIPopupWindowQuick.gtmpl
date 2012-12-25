@@ -18,12 +18,12 @@
   requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close').click(function() {uiPopup.hide('"+popupId+"'); });")
   String show = "none";
   
-  requirejs.require("SHARED/webui","webui");
+  requirejs.require("SHARED/uiPopupWindow","uiPopupWindow");
   if(uicomponent.show) {   
-    requirejs.addScripts("webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
+    requirejs.addScripts("uiPopupWindow.show('$popupId', $uicomponent.showMask);");
   show = "block";
   } else if (rcontext.useAjax()) {  
-    requirejs.addScripts("webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
+    requirejs.addScripts("uiPopupWindow.hide('$popupId', $uicomponent.showMask);");
   }
     
   String title = popupId ;
