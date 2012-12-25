@@ -178,7 +178,7 @@
       <module>Highlighter</module>
     </depends>
     <depends>
-      <module>>UIWeekView</name>
+      <module>UIWeekView</module>
     </depends>  
   </module>
 </gatein-resources>
