@@ -403,7 +403,7 @@ public class UIFormColorPicker extends UIFormInputBase<String>
 
     public static final String H_PLUM_PURPLE = "#CEA6AC";
 
-    public static final String N_PLUM_PURPLE = "#CEA6AC";
+    public static final String N_PLUM_PURPLE = "plum";
 
     public static final Color O_PLUM_PURPLE = new Color(H_PLUM_PURPLE, N_PLUM_PURPLE);
 
