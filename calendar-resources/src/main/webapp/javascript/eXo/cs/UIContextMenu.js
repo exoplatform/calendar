@@ -107,6 +107,7 @@ UIContextMenu.prototype.getSource = function(evt) {
 } ;
 
 UIContextMenu.prototype.autoHide = function(evt) {
+	_module.Utils = window.require("SHARED/CSUtils").Utils;
 	var _e = window.event || evt ;
 	var eventType = _e.type ;
 	if (eventType == 'mouseout' && (this.style.display != "none")) {
@@ -169,7 +170,8 @@ UIContextMenu.prototype.showHide = function() {
 } ;
 
 UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
-  var DOMUtil = DOMUtil.DOMUtil;
+  //var DOMUtil = DOMUtil.DOMUtil;
+  _module.Utils = window.require("SHARED/CSUtils").Utils;
   var Browser = base.Browser;
   var browserHeight = gj(window).height() + document.documentElement.scrollTop || document.body.scrollTop;
   var browserWidth = gj(window).width() + document.documentElement.scrollLeft || document.body.scrollLeft;
