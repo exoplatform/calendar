@@ -26,7 +26,7 @@ CheckBoxManager.prototype.checkAll = function() {
 
 CheckBoxManager.prototype.getItems = function(obj) {
 	var table = gj(obj).parents('table')[0];
-	var checkboxes = gj(table).find('input.checkbox')[0];
+	var checkboxes = gj(table).find('input.checkbox');
 	return checkboxes ;
 } ;
 
