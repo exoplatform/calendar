@@ -93,5 +93,5 @@ DOMUtil.prototype.disableOnClick = function(el) {
 /****************************************************************************/
 //eXo.core.DOMUtil = new DOMUtil() ;
 _module.DOMUtil = new DOMUtil() ;
-return _module.DOMUtil;
+return _module;
 })(gj);

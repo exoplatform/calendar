@@ -1628,7 +1628,7 @@ UICalendarPortlet.prototype.resortEvents = function(){
             _module.UICalendarPortlet.showEvent();
         if (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")) {
             _module.UICalendarMan.initWeek();
-            _module.UIWeekView.UIWeekView.init();
+            _module.UIWeekView.init();
         }
     } 
     catch (e) {
@@ -3192,10 +3192,10 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
 };
 _module.LayoutManager = CalendarLayout.LayoutManager;
 _module.CalendarLayout = CalendarLayout.CalendarLayout;
-_module.UICalendars = UICalendars ;
-_module.UIWeekView = UIWeekView ;
-_module.Reminder = Reminder;
-_module.UICalendarMan = UICalendarMan;
+_module.UICalendars = UICalendars.UICalendars ;
+_module.UIWeekView = UIWeekView.UIWeekView ;
+_module.Reminder = Reminder.Reminder;
+_module.UICalendarMan = UICalendarMan.UICalendarMan;
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
 return _module;

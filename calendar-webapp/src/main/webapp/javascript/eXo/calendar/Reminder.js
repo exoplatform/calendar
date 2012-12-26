@@ -193,5 +193,5 @@ eXo.calendar.Box = new Box() ;
 eXo.calendar.Reminder = new Reminder() ;
 
 _module.Reminder = eXo.calendar.Reminder;
-return _module.Reminder;
+return _module;
 })(cs, gj);
