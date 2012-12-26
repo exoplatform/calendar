@@ -1324,9 +1324,7 @@ UICalendarPortlet.prototype.dayViewCallback = function(evt){
     var map = null;
     if (src.nodeName == "TD") {
 	src = gj(src).parents("tr")[0];
-	var startTime = parseInt(Date.parse(src.getAttribute('startFull')));
-
-	var startTime = parseInt(src.getAttribute("startTime"));
+	var startTime = parseInt(Date.parse(src.getAttribute('startfull')));
 	var endTime = startTime + 15*60*1000 ;
 	var items = gj(cs.UIContextMenu.menuElement).find("a");
 	for(var i = 0; i < items.length; i++){
@@ -1470,16 +1468,12 @@ UICalendarPortlet.prototype.monthViewCallback = function(evt){
         	var startTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')));
         	var endTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')))  + 24*60*60*1000 - 1;
         	for(var i = 0; i < links.length; i++){
-            	if(gj(links[i]).hasClass("QuickAddEvent")) {
-            		links[i].href="javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");" 
-            	} else if(gj(links[i]).hasClass("QuickAddTask")) {
-            		links[i].href="javascript:_module.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
+            	if(gj(links[i]).hasClass("createEvent")) {
+            		links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");" 
+            	} else if(gj(links[i]).hasClass("createTask")) {
+            		links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
             	}
             }
-        	/*var map = {
-                "startTime\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "startTime=" + objectValue
-            };
-            UIContextMenu.changeAction(UIContextMenu.menuElement, map);*/
         }
     }
     else 

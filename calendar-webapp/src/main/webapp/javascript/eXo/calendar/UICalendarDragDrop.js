@@ -206,7 +206,7 @@ UICalendarDragDrop.prototype.dragCallback = function(dndEvent) {
 
 UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
 	eXo.calendar.EventTooltip.enable();
-  var eventObj = gj(dndEvent.dragObject).find('div.EventBoxes');
+  var eventObj = gj(dndEvent.dragObject).find('div.eventBoxes');
   _module.UICalendarDragDrop.highlight(false);
   if ((_module.UICalendarDragDrop.pos.x == dndEvent.dragObject.offsetLeft) && (_module.UICalendarDragDrop.pos.y == dndEvent.dragObject.offsetTop)) {
     _module.UICalendarDragDrop.pos = null ;
@@ -224,7 +224,7 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
   }
   this.foundTargetObjectCatch = dndEvent.foundTargetObject ;
 	if (this.foundTargetObjectCatch && gj(this.foundTargetObjectCatch).hasClass("calendarItem")) {
-		var moveAction = gj(dndEvent.dragObject).find('div.EventBoxes')[0].getAttribute("moveAction"); 
+		var moveAction = gj(dndEvent.dragObject).find('div.eventBoxes')[0].getAttribute("moveAction"); 
 		ajaxAsyncGetRequest(cs.Utils.createUrl(moveAction,null), false) ;
 		return ;
 	}
@@ -252,7 +252,7 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
 
 UICalendarDragDrop.prototype.getCheckedObject = function(clickObj){
   var eventContainer = gj(clickObj).parents('.RowContainerDay')[0];
-  var evenObj = gj(eventContainer).find('div.EventBoxes'); 
+  var evenObj = gj(eventContainer).find('div.eventBoxes'); 
   var checkedObj = [];
   var i = evenObj.length ;
   var tmpNode = null ;

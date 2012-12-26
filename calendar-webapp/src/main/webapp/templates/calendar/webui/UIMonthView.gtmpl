@@ -171,7 +171,7 @@
           %>
           
           
-          <div class="DayContentContainer EventBoxes" tartIndex="$startIndex" calType="$event.calType" eventId="$event.id" calId="$event.calendarId" eventCat="$event.eventCategoryId" 
+          <div class="DayContentContainer eventBoxes" tartIndex="$startIndex" calType="$event.calType" eventId="$event.id" calId="$event.calendarId" eventCat="$event.eventCategoryId" 
           startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
           startTime="$startTime" endTime="$endTime" moveAction="$moveAction" isOccur="$isOccur" recurId="$recurId">
             <div class="EventOnDayBorder $color">
@@ -205,78 +205,62 @@
     </div>
   </div>
 <%uiform.end();%>
-<% /*Begin Popup Menu*/ %>
-        
-          <div class="uiRightClickPopupMenu" id="UIMonthViewRightMenu" eXoCallback="eXo.calendar.UICalendarPortlet.monthViewCallback">
-            <div class="UIContextMenuContainer">
-              <div class="TopLeftRightClickPopupMenu">
-                <div class="TopRightRightClickPopupMenu">
-                  <div class="TopCenterRightClickPopupMenu"><span></span></div>
-                </div>
-              </div>
-              <div class="MiddleLeftRightClickPopupMenu">
-                <div class="MiddleRightRightClickPopupMenu">
-                  <div class="UIRightPopupMenuContainer">
-                    <div class="MenuItem" >
-                     <a class="ItemIcon QuickAddEvent" href="javascript:void(0);">
-                        <%=_ctx.appRes("ContextMenu.label.addEvent")%>
-                      </a>
-                    </div>
-                    <div class="MenuItem">
-                      <a class="ItemIcon QuickAddTask" href="<%=uicomponent.event("QuickAdd","$uicomponent.TYPE_TASK&startTime=beginTime")%>">
-                        <%=_ctx.appRes("ContextMenu.label.addTask")%>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="BottomLeftRightClickPopupMenu">
-                <div class="BottomRightRightClickPopupMenu">
-                  <div class="BottomCenterRightClickPopupMenu"><span></span></div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-      <% /*End Popup Menu*/ %>
-      <% /*Begin Popup Menu*/ %>
-        
-          <div class="uiRightClickPopupMenu" id="UIMonthViewEventRightMenu" eXoCallback="eXo.calendar.UICalendarPortlet.monthViewCallback">
-            <div class="UIContextMenuContainer">
-              <div class="TopLeftRightClickPopupMenu">
-                <div class="TopRightRightClickPopupMenu">
-                  <div class="TopCenterRightClickPopupMenu"><span></span></div>
-                </div>
-              </div>
-              <div class="MiddleLeftRightClickPopupMenu">
-                <div class="MiddleRightRightClickPopupMenu">
-                  <div class="UIRightPopupMenuContainer">
-                    <%
-                      for(String act : uicomponent.getQuickEditMenu()) {
-                      link = uicomponent.event(act,uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ;
-                      icon = act + "EventIcon" ;
-                    %>
-                      <div class="MenuItem">
-                        <a class="ItemIcon $icon" href="$link">
-                          <%=_ctx.appRes("ContextMenu.label."+act)%>
-                        </a>
-                      </div>
-                    <%}%>
-                      <div class="MenuItem">
-                        <a class="ItemIcon ExportCalendarIcon" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
-                          <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
-                        </a>
-                      </div>
-                  </div>
-                </div>
-              </div>
-              <div class="BottomLeftRightClickPopupMenu">
-                <div class="BottomRightRightClickPopupMenu">
-                  <div class="BottomCenterRightClickPopupMenu"><span></span></div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <% /*Begin Popup Menu*/ %>
+  
+    <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="UIMonthViewRightMenu" eXoCallback="eXo.calendar.UICalendarPortlet.monthViewCallback">
+      <ul class="uiDropDownCal" style="display:block;">
+   
+        <li>
+         <a class="createEvent" href="#">
+           <i class="uiIconCalCreateEvent"></i>
+           <%=_ctx.appRes("ContextMenu.label.addEvent")%>
+         </a>
+        </li>
+        <li>
+          <a class="createTask" href="#">
+            <i class="uiIconCalCreateTask"></i>
+            <%=_ctx.appRes("ContextMenu.label.addTask")%>
+          </a>
+        </li>
+    </ul>
+    </div>
 
-      <% /*End Popup Menu*/ %>
+<% /*End Popup Menu*/ %>
+  
+<% /*Begin Popup Menu - Calendar Actions */ %>
+<div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="UIMonthViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback" style="display: none ;" >
+<ul class="uiDropDownCal" style="display:block;">
+  <li>
+      <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+        <i class="uiIconWatch"></i>
+        <%=_ctx.appRes("ContextMenu.label.View")%>
+      </a>
+  </li>
+  <li>
+      <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+        <i class="uiIconEdit"></i>
+        <%=_ctx.appRes("ContextMenu.label.Edit")%>
+      </a>
+  </li>
+  <li>
+      <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+        <i class="uiIconDelete"></i>
+        <%=_ctx.appRes("ContextMenu.label.Delete")%>
+      </a>
+  </li>
+  <li>
+      <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+        <i class="uiIconCalExportCalendar"></i>
+        <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
+      </a>
+    </li>
+
+</ul>
+</div>
+
+<% /*End Popup Menu*/ %>
+
+
+
       
