@@ -587,7 +587,7 @@ GUIMan.prototype.initMonth = function(){
 };
 
 GUIMan.prototype.initWeek = function() {
-  var EventMan = eXo.calendar.UICalendarMan.EventMan;
+  var EventMan = _module.UICalendarMan.EventMan;
   var events = EventMan.events;
   if (events.length > 0) {
     if (events[0]) {
@@ -1118,5 +1118,5 @@ eXo.calendar.UICalendarMan = {
 
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
 
-return _module.UICalendarMan;
+return _module;
 })(cs, gj, Highlighter);

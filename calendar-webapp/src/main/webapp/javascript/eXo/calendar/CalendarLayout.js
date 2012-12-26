@@ -13,7 +13,7 @@ function CalendarLayout() {
 }
 
 CalendarLayout.prototype.init = function() {
-  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
   this.loadDOMElements();
   var uiWorkingWorkspace = document.getElementById(this.UI_WORKING_WORKSPACE);
   var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
@@ -37,20 +37,20 @@ CalendarLayout.prototype.adjustApplicationHeight = function() {
 };
 
 CalendarLayout.prototype.updateUICalendarViewLayout = function(view) {
-	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
     var CalendarLayout = _module.CalendarLayout;
     var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
     var UICalendarViewContainer = gj(UICalendarPortlet).find('div.' + CalendarLayout.UI_CALENDAR_VIEW_CONTAINER)[0];
     var uCVCHeight = UICalendarViewContainer.offsetHeight;
     var uiMainWorkingArea = gj(UICalendarPortlet).find('div.' + CalendarLayout.MAIN_WORKING_PANEL)[0]; 
     if (uCVCHeight != CalendarLayout.uiCalendarWorkingContainerHeight) {
-	if (uiMainWorkingArea) {
-	    if (view != this.UI_LIST_VIEW || uCVCHeight > CalendarLayout.uiCalendarWorkingContainerHeight) {
-		uiMainWorkingArea.style.height = (uiMainWorkingArea.offsetHeight + CalendarLayout.uiCalendarWorkingContainerHeight - uCVCHeight) + "px";
-	    } else {
-		uiMainWorkingArea.style.height = "auto";
-	    }
-	}
+  if (uiMainWorkingArea) {
+      if (view != this.UI_LIST_VIEW || uCVCHeight > CalendarLayout.uiCalendarWorkingContainerHeight) {
+    uiMainWorkingArea.style.height = (uiMainWorkingArea.offsetHeight + CalendarLayout.uiCalendarWorkingContainerHeight - uCVCHeight) + "px";
+      } else {
+    uiMainWorkingArea.style.height = "auto";
+      }
+  }
     }
 };
 
@@ -62,7 +62,7 @@ CalendarLayout.prototype.updateHeightParams = function() {
 };
 
 CalendarLayout.prototype.loadDOMElements = function() {
-	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
   var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
   this.UICalendarContainer = gj(UICalendarPortlet).find("div.UICalendarContainer")[0];
   this.UIMiniCalendar = gj(this.UICalendarContainer).find("div.UIMiniCalendar")[0];

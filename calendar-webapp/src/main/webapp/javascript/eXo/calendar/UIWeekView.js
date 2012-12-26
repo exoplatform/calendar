@@ -13,7 +13,7 @@ UIWeekView.prototype.mousePos = function(evt){
 } ;
 
 UIWeekView.prototype.init = function() {
-    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var UICalendarPortlet = _module.UICalendarPortlet ;
 	var UIWeekView = _module.UIWeekView ;
 	var uiCalendarViewContainer = document.getElementById("UICalendarViewContainer") ;
@@ -77,6 +77,8 @@ UIWeekView.prototype.distributeEvent = function() {
 } ;
 
 UIWeekView.prototype.onResize = function() {
+	    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+
 		_module.UIWeekView.setSize() ;
 		_module.UICalendarPortlet.checkFilter();
 } ;
@@ -149,7 +151,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
 } ;
 
 UIWeekView.prototype.showInCol = function(obj) {
-	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var items = _module.UICalendarPortlet.getElements(obj) ;
 	var len = items.length ;
 	if (len <= 0) return ;
@@ -162,7 +164,7 @@ UIWeekView.prototype.showInCol = function(obj) {
 } ;
 
 UIWeekView.prototype.dragStart = function(evt) {
-	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
 	_e.stopPropagation();
@@ -189,7 +191,7 @@ UIWeekView.prototype.dragStart = function(evt) {
 } ;
 
 UIWeekView.prototype.drag = function(evt) {
-	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
   var UICalendarPortlet = _module.UICalendarPortlet;
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
@@ -214,7 +216,7 @@ UIWeekView.prototype.drag = function(evt) {
 } ;
 
 UIWeekView.prototype.dropCallback = function() {
-	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet");
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var me = _module.UIWeekView ;
 	var UICalendarPortlet = _module.UICalendarPortlet;
 	var dragElement = me.dragElement ;
