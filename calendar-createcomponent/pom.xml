@@ -20,7 +20,6 @@
     <dependency>
       <groupId>org.exoplatform.portal</groupId>
       <artifactId>exo.portal.webui.core</artifactId>
-
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
