@@ -34,7 +34,6 @@
           <name>autoCreatedInNewRepository</name>
           <description>Node types configuration file</description>
           <value>war:/cs-extension/cs/calendar/calendar-nodetypes.xml</value>
-          <value>war:/cs-extension/cs/webservice/webservice-nodetype-config.xml</value>
         </values-param>
       </init-params>
     </component-plugin>
