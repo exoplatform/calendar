@@ -86,14 +86,13 @@
               <tr>
                 <td>
                   <div class="LeftSide">
-                    <a href="<%=uiForm.event("DeleteUser")%>">
-                      <div class="DeleteUserIcon" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
-                        <span></span>
-                      </div>
-                    </a><a href="<%=uiForm.event("AddUser",uicomponent.id)%>">
-                      <div class="AddUserIcon" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
-                        <span></span>
-                      </div>
+                    <a href='<%=uiForm.event("DeleteUser")%>' rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
+                      <i class="uiIconRejectUser" >
+                      </i>
+                    </a>
+                    <a href='<%=uiForm.event("AddUser",uicomponent.id)%>' rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
+                      <i class="uiIconInviteUser" >
+                      </i>
                     </a>
                     <div class="Title">
                       <%=uiForm.getLabel('Participants')%>

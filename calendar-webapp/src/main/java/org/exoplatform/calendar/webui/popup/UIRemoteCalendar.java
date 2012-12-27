@@ -33,6 +33,7 @@ import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarWorkingContainer;
+import org.exoplatform.calendar.webui.UIFormColorPicker;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
@@ -52,7 +53,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
-import org.exoplatform.webui.form.ext.UIFormColorPicker;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 

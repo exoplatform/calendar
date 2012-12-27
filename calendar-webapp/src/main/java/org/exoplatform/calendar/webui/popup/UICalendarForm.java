@@ -162,7 +162,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
     UIFormStringInput timeZone = new UIFormStringInput(TIMEZONE, TIMEZONE, CalendarUtils.generateTimeZoneLabel(setting.getTimeZone()));
     timeZone.setLabel(setting.getTimeZone());
-    timeZone.setEditable(false);
+    timeZone.setDisabled(true);
     calendarDetail.addUIFormInput(timeZone);
 
     UIFormColorPicker colorPicker = new UIFormColorPicker(SELECT_COLOR, SELECT_COLOR);
@@ -193,14 +193,14 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         editPermission.setActionName("SelectUser") ;
         editPermission.setActionParameter(UISelectComponent.TYPE_USER + ":" + group+PERMISSION_SUB) ;
         editPermission.setActionType(ActionData.TYPE_ICON) ;
-        editPermission.setCssIconClass("SelectUserIcon") ;
+        editPermission.setCssIconClass("uiIconUser") ;
         actions.add(editPermission) ;
         ActionData membershipPerm = new ActionData() ;
         membershipPerm.setActionListener(ACT_SELECT_PERM) ;
         membershipPerm.setActionName("SelectMemberShip") ;
         membershipPerm.setActionParameter(UISelectComponent.TYPE_MEMBERSHIP + ":" + group+PERMISSION_SUB) ;
         membershipPerm.setActionType(ActionData.TYPE_ICON) ;
-        membershipPerm.setCssIconClass("SelectMemberIcon") ;
+        membershipPerm.setCssIconClass("uiIconMembership") ;
         actions.add(membershipPerm) ;
         sharing.setActionField(group+PERMISSION_SUB, actions) ;
       }
@@ -333,7 +333,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       sharing.setRendered(false) ;
     }
     //    setLocale(calendar.getLocale()) ;
-    //    setTimeZone(calendar.getTimeZone()) ;
+    setTimeZone(calendar.getTimeZone()) ;
     setSelectedColor(calendar.getCalendarColor()) ;
     if(calendar.getPrivateUrl() == null || calendar.getPrivateUrl().isEmpty()) {
       String privateUrl = "/" + PortalContainer.getCurrentPortalContainerName() +"/"+
@@ -800,7 +800,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     @Override
     public void execute(Event<UICalendarForm> event) throws Exception
     {
-      log.info("receives Delete permission event from " + event.getSource().getClass().getName());
 
       // receives the entry with the permission
       // delete the permission on the ui - delete it in the permission grid
@@ -814,7 +813,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     @Override
     public void execute(Event<UICalendarForm> event) throws Exception
     {
-      log.info("receives Delete permission event from " + event.getSource().getClass().getName());
       UICalendarForm uiCalendarForm = event.getSource();
       uiCalendarForm.setSelectedTab(PERMISSION_TAB);
       UIUserSelector uiUserSelector = uiCalendarForm.createUIComponent(UIUserSelector.class, null, null);

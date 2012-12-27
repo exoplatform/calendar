@@ -24,18 +24,7 @@
   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
   
   <external-component-plugins>
-    <target-component>org.exoplatform.services.jcr.RepositoryService</target-component>  
-    <component-plugin>
-          <name>add.namespaces</name>
-          <set-method>addPlugin</set-method>
-          <type>org.exoplatform.services.jcr.impl.AddNamespacesPlugin</type>
-          <init-params>
-            <properties-param>
-              <name>namespaces</name>
-              <property name="lr" value="http://www.exoplatform.org/liveroom/1.0"/>
-            </properties-param>
-          </init-params>
-      </component-plugin>    
+    <target-component>org.exoplatform.services.jcr.RepositoryService</target-component>   
     <component-plugin> 
       <name>add.cs.nodeType</name>
       <set-method>addPlugin</set-method>

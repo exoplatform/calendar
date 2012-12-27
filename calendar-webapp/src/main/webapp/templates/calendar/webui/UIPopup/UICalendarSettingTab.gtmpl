@@ -8,21 +8,24 @@
         if(actionLabel.equals("action." + action.actionName)) {
           actionLabel = action.actionName ;
         }
-        String actionLink ="#";
+        String actionLink ="";
         if(action.actionParameter != null) {
           actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
         }else {
           actionLink = (uiForm.event(action.actionListener)) ;
         }
-        println "<a rel=\"tooltip\" data-placement=\"bottom\" title=\"" + actionLabel + "\" href=\"" + actionLink +"\">";
+        %>
+        <a rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
+        <%
         if(action.actionType == action.TYPE_ICON) {
-          println "<img src=\"/eXoResources/skin/DefaultSkin/background/Blank.gif\" class=\"" + action.cssIconClass +"\"/>" ;
+        %>
+          <i class="$action.cssIconClass"></i>
+        <%  
           if(action.isShowLabel) { println  actionLabel  ;}
         }else if(action.actionType == action.TYPE_LINK){
          println actionLabel ;
         }
         println  "</a>";
-        println "&nbsp;"; 
         if(action.isBreakLine) { println "<br/>" ;} 
       }
     }

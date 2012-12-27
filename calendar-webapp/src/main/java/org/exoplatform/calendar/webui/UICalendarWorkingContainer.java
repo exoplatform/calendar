@@ -24,6 +24,7 @@ import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
+import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.model.SelectItem;
 import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
 
@@ -52,7 +53,7 @@ public class UICalendarWorkingContainer extends UIContainer  {
   }
 
   public void active() throws Exception {
-    UIPopupWindowQuick uiWindowE = getChildById("UIQuckAddEventPopupWindow") ;
+    UIPopupWindow uiWindowE = getChildById("UIQuckAddEventPopupWindow") ;
     if(uiWindowE == null) uiWindowE = addChild(UIPopupWindowQuick.class, null, "UIQuckAddEventPopupWindow") ;
     UIQuickAddEvent quickAddForm = (UIQuickAddEvent)uiWindowE.getUIComponent();
     if(quickAddForm == null) quickAddForm = createUIComponent(UIQuickAddEvent.class, null, null) ; 
@@ -65,7 +66,7 @@ public class UICalendarWorkingContainer extends UIContainer  {
     uiWindowE.setUIComponent(quickAddForm) ;
     uiWindowE.setWindowSize(540, 0);
 
-    UIPopupWindowQuick uiWindowT =  getChildById("UIQuckAddTaskPopupWindow") ;
+    UIPopupWindow uiWindowT =  getChildById("UIQuckAddTaskPopupWindow") ;
     if(uiWindowT == null) uiWindowT = addChild(UIPopupWindowQuick.class, null, "UIQuckAddTaskPopupWindow") ;
     UIQuickAddEvent quickAddTask = (UIQuickAddEvent)uiWindowT.getUIComponent();
     if(quickAddTask == null) quickAddTask = createUIComponent(UIQuickAddEvent.class, null, null) ; 

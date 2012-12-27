@@ -36,7 +36,7 @@
           else if (action.getActionType() == uiCalendarForm.TYPE_BUTTON)
           {
             %>
-              <button onclick="$actionLink" href="javascript:void(0);" class="btn">$actionLabel</button>
+              <button type="button" onclick="$actionLink" class="btn">$actionLabel</button>
             <%
           }
         }

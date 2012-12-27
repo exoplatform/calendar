@@ -60,14 +60,14 @@ String endMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ endDateOfWe
               <a href="<%=uicomponent.event('GotoDate',startDayViewAction)%>"><%=startDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a> -
               <a href="<%=uicomponent.event('GotoDate',endDayViewAction)%>"><%=endDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a>
               <a href="<%=uicomponent.event('GotoDate',startMonthViewAction)%>"><%=uicomponent.getMonthName(startDateOfWeek.get(Calendar.MONTH))%></a>
-              <a href=""><%=startDateOfWeek.get(Calendar.YEAR)%></a>
+              <%=startDateOfWeek.get(Calendar.YEAR)%>
               <% } else { %>
               <a href="<%=uicomponent.event('GotoDate',startDayViewAction)%>"><%=startDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a>
               <a href="<%=uicomponent.event('GotoDate',startMonthViewAction)%>"><%=uicomponent.getMonthName(startDateOfWeek.get(Calendar.MONTH))%></a>
-              <a href=""><%=startDateOfWeek.get(Calendar.YEAR)%></a> -
+              <%=startDateOfWeek.get(Calendar.YEAR)%> -
               <a href="<%=uicomponent.event('GotoDate',endDayViewAction)%>"><%=endDateOfWeek.get(Calendar.DAY_OF_MONTH)%></a>
               <a href="<%=uicomponent.event('GotoDate',endMonthViewAction)%>"><%=uicomponent.getMonthName(endDateOfWeek.get(Calendar.MONTH))%></a>
-              <a href=""><%=endDateOfWeek.get(Calendar.YEAR)%></a>
+              <%=endDateOfWeek.get(Calendar.YEAR)%>
               <% } %>
             </div>
           </td>
@@ -198,7 +198,7 @@ int currentDay = uicomponent.getCurrentDay() ;
             <td>
               <div class="titleHeader">
                $currentDayName,
-               <%=uicomponent.renderDayViewInTitleBar("<a href=\"" + uicomponent.event("GotoDate",monthViewAction)+ "\">", "</a>", "<a href=\"\">", "</a>"); %>
+               <%=uicomponent.renderDayViewInTitleBar("<a href=\"" + uicomponent.event("GotoDate",monthViewAction)+ "\">", "</a>", "", ""); %>
                
               </div>
             </td>
