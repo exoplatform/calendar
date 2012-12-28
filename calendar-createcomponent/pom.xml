@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.exoplatform.calendar</groupId>
+    <artifactId>calendar</artifactId>
+    <version>4.0.0.Alpha1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>calendar-component-create</artifactId>
+  <packaging>jar</packaging>
+  <name>eXo Calendar Create</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.portal</artifactId>
+
+
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.portal</groupId>
+      <artifactId>exo.portal.webui.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId>
+      <artifactId>commons-webui-ext</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.exoplatform.commons</groupId> 
+      <artifactId>commons-webui-component</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+  <resources>
+    <resource>
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>**/*.gtmpl</include>
+        <include>**/*.xml</include>
+        <include>**/*.properties</include>
+      </includes>
+    </resource>
+  </resources>
+</build>
+</project>

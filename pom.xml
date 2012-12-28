@@ -22,7 +22,9 @@
     <module>calendar-extension</module>
     <module>calendar-injector</module>
     <module>calendar-statistics</module>
+    <module>calendar-createcomponent</module>
   </modules>
+
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
@@ -64,6 +66,11 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-common</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.exoplatform.calendar</groupId>
+         <artifactId>calendar-component-create</artifactId>
+         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
