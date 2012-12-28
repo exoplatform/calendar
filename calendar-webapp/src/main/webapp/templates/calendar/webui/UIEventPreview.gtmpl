@@ -21,57 +21,63 @@ requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 requirejs.require("SHARED/jquery","gj");
 requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() {cs.Utils.showHidePane(this,gj('#UIListUsers').parent(),'$uicomponent.id'); });");
 requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
+requirejs.addScripts("gj('img.thumbnail').click(function() { cal.UIEventPreview.showImagePreview(this); });");
+requirejs.addScripts("gj('img.closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
+requirejs.addScripts("gj('img.imagePreview').click(function() { cal.UIEventPreview.downloadOriginalImage(this); });");
 %>
-<div id="<%uicomponent.getId()%>"class="UIPreview">
-<%if(!uicomponent.isShowPopup()){%>
+<div id="<%uicomponent.getId()%>" class="UIPreview">
+<% if (!uicomponent.isShowPopup()) { %>
 <div class="ViewBar ClearFix">
 <div class="Label">
 <%=uiform.getLabel('eventDetail')%>
 </div>
-      <div id="UIEventPreview_fullSize" class="MaximizeButton" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><span></span></div>
-    </div>
-<%}%>
+    <div id="UIEventPreview_fullSize" class="MaximizeButton" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><span></span></div>
+  </div>
+<% } %>
 <div class="ViewContainer">
 <div class="DecoratorBox SpliterResizableListArea">
 <div class="ViewBoxStyle">
-<table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
+<table class="uiGrid table table-hover table-striped" id="RowContainerDay" cellspacing="0" borderspacing="0">
 <tr>
 <td style="border-right: 1px solid #c7c7c7;width: 185px;">
 <div class="Text">
 <%=uiform.getLabel('From')%><span style="color: #1756d5;"><%=df.format(event.getFromDateTime())%></span>
-           </div>
+        </div>
 <div class="Text">
 <%=uiform.getLabel('To')%><span style="color: #1756d5;"><%=df.format(event.getToDateTime())%></span>
-           </div>
-<%for(attachFile in  event.getAttachment()){%>
-<div class="AttachmentIcon"  style="white-space: nowrap;">
-<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name  </a>
-              (<%=CalendarUtils.convertSize(attachFile.size)%>) 
-             </div>
-<%if(attachFile.getMimeType().startsWith("image"))  {
+        </div>
+<div class="Text">
+<%=uiform.getLabel('AttachedFile')%>
+</div>
+        
+    <img class="imagePreview" src="" style="width: 170px; height: 170px; display: none;" downloadlink=""/>
+<img class="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; display: none;"/>
+
+<% for (attachFile in  event.getAttachment()) {
+
+if (attachFile.getMimeType().startsWith("image")) {
 String src = uicomponent.getImageSource(attachFile) ;
-%>
-<img id="$attachFile.id" src="$src" class="Img" style="display:none;"/>
-<%}%>
-<div class="Actions" style="white-space: nowrap;">
-<%if(attachFile.getMimeType().startsWith("image"))  {
+String downloadlink = uicomponent.getDownloadLink(attachFile) ;
 String rndString = String.valueOf(new Date().getTime());
-//String src = uicomponent.getDownloadLink(attachFile) ;
-%>
-<%
 String View = uiform.getLabel('View') ;
-String Close = uiform.getLabel('Close') ;
-%>
-<a id="UIEventPreview_1" viewLabel="$View" closeLabel="$Close" class="IconHolder ViewAttachmentIcon">
-<%=uiform.getLabel('View')%>
-</a>
-             <%}%>
-             </div>
-<%}%>
+String Close = uiform.getLabel('Close') ; %>
+
+<img id="$attachFile.name" src="<%=uicomponent.getRestThumbnailLink(attachFile) %>" class="thumbnail" originalsrc="$src" downloadlink="$downloadlink"/>
+
+<% } else { %>
+
+<div class="AttachmentIcon"  style="white-space: nowrap;">
+<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name</a>
+            (<%=CalendarUtils.convertSize(attachFile.size)%>) 
+      </div>
+<% } %>
+<% } %>
 </td>
-              <td >
-               <div class="EventDescription $color"><span></span></div>
-               <div style="font-weight: bold;">$event.summary</div>
+            
+            <!-- event/ task description column -->
+<td >
+<div class="EventDescription $color"><span></span></div>
+<div style="font-weight: bold;">$event.summary</div>
 
 <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
 <tr>
@@ -79,19 +85,19 @@ String Close = uiform.getLabel('Close') ;
 prio = event.getPriority() + "PriorityIcon" ;
 %>
 <td style="width: 26px;"><div class="$prio"><span></span></div></td>
-                 <td class="Text" style="width: 100px;">
-                     <%=uiform.getLabel('Place')%>
-                 </td>
+<td class="Text" style="width: 100px;">
+<%=uiform.getLabel('Place')%>
+</td>
 <td class="Text"><%=(CalendarUtils.isEmpty(event.getLocation()))? "" : event.getLocation()%></td>
-                </tr>
+</tr>
 <tr>
 <td ><div class="<%=event.getEventState()%>Icon"><span></span></div></td>
-                 <td class="Text"><%=uiform.getLabel('RepeatEvent')%></td>
+<td class="Text"><%=uiform.getLabel('RepeatEvent')%></td>
 <td class="Text"><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
-                </tr>
+</tr>
 <tr>
 <td ></td>
-                 <td class="Text"><%=uiform.getLabel('Description')%></td>
+<td class="Text"><%=uiform.getLabel('Description')%></td>
 <td class="Text">
 <div class="ViewDescription">
 <%
