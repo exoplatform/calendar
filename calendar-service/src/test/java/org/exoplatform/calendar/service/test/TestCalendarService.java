@@ -23,11 +23,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.Value;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
@@ -845,6 +848,50 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     }
   }
 
+  public void testSaveUserEvent() {
+    try {
+      CalendarCategory calendarCategory = createCalendarCategory("categoryName", "description");
+      Calendar calendar = createCalendar("myCalendar", "Description", calendarCategory.getId());
+
+      EventCategory eventCategory = createEventCategory("eventCategoryName3", "description");
+
+      java.util.Calendar fromCal = java.util.Calendar.getInstance();
+      java.util.Calendar toCal = java.util.Calendar.getInstance();
+      toCal.add(java.util.Calendar.HOUR, 1);
+
+      // Create and save event
+      String eventSummay = "Have a meeting";
+      CalendarEvent calendarEvent = new CalendarEvent();
+      calendarEvent.setEventCategoryId(eventCategory.getId());
+      calendarEvent.setEventCategoryName(eventCategory.getName());
+      calendarEvent.setSummary(eventSummay);
+      calendarEvent.setFromDateTime(fromCal.getTime());
+      calendarEvent.setToDateTime(toCal.getTime());
+      
+      log.info("=====BEFORE SAVING=====");
+      log.info("START TIME: " + fromCal.getTime().toString());
+      log.info("ENDTIME: " + toCal.getTime().toString());
+      
+      calendarService_.saveUserEvent(username, calendar.getId(), calendarEvent, true);
+      
+      CalendarEvent findEvent = calendarService_.getEvent(username, calendarEvent.getId());
+      
+      log.info("=====AFTER SAVING=====");
+      log.info("START TIME: " + findEvent.getFromDateTime().toString());
+      log.info("ENDTIME: " + findEvent.getToDateTime().toString());
+      
+      assertEquals(false, findEvent.getFromDateTime().equals(findEvent.getToDateTime()));
+      // restore data storage
+      calendarService_.removeUserEvent(username, calendar.getId(), calendarEvent.getId());
+      calendarService_.removeEventCategory(username, eventCategory.getId());
+      calendarService_.removeUserCalendar(username, calendar.getId());
+      calendarService_.removeCalendarCategory(username, calendarCategory.getId());
+    } catch (Exception e) {
+      fail();
+    }
+    
+
+  }
   public void testRemoveSharedCalendarFolder() {
     try {
       CalendarCategory calendarCategory = createCalendarCategory("categoryName", "description");
@@ -1079,8 +1126,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     }
   }
 
-  
-
   private CalendarCategory createCalendarCategory(String name, String description) {
     try {
       // Create and save calendar category
@@ -1201,5 +1246,5 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     }
   }
 
-
+ 
 }
