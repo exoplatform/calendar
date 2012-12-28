@@ -30,6 +30,10 @@
       <groupId>org.exoplatform.commons</groupId> 
       <artifactId>commons-webui-component</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.exoplatform.calendar</groupId>
+      <artifactId>calendar-service</artifactId>
+    </dependency>
   </dependencies>
   <build>
   <resources>
