@@ -68,6 +68,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+         <groupId>org.exoplatform.calendar</groupId>
+         <artifactId>calendar-component-create</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-extension-config</artifactId>
         <version>${project.version}</version>
