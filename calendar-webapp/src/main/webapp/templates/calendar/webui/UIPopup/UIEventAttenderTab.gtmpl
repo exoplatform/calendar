@@ -103,7 +103,7 @@
                   j = 0
                   while(j < 96){
                 %>
-                <td class="$styleClassF UICellBlock" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('ScheduleDragDrop')%>">
+                <td class="$styleClassF uiCellBlock" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('ScheduleDragDrop')%>">
                   &nbsp;</td>
                 <%
                   j ++ ;

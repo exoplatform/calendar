@@ -2388,7 +2388,7 @@ UICalendarPortlet.prototype.callbackSelectionX = function(){
     var UIComboboxInputs = gj(uiTabContentContainer).find("input.UIComboboxInput");
     len = UIComboboxInputs.length;
     var name = null;
-    var timeFormat = this.getTimeFormat(this.synTime(UIComboboxInputs[0]));
+    var timeFormat = this.getTimeFormat(null);
     start = this.minToTime(start, timeFormat);
     end = this.minToTime(end, timeFormat);
     if (dateValue) {
@@ -2408,7 +2408,6 @@ UICalendarPortlet.prototype.callbackSelectionX = function(){
 	}
     }
     var cells = gj(Highlighter.firstCell.parentNode).children("td");
-
     Highlighter.setAttr(Highlighter.firstCell.cellIndex, Highlighter.lastCell.cellIndex, cells);
     _module.ScheduleSupport.syncTimeBetweenEventTabs();    
 };
