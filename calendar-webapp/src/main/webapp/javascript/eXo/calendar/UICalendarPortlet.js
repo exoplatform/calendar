@@ -2008,7 +2008,21 @@ UICalendarPortlet.prototype.showHideTime = function(chk){
             fields.push(selectboxes[i]);
         }
     }
+    // show hide field in detail tab
     _module.UICalendarPortlet.showHideField(chk, fields);
+
+    // update schedule tab
+    var dateAll = gj('#dateAll')[0];
+    dateAll.checked = chk.checked;
+    var timeField = gj(dateAll.form).find('div.TimeField')[0];
+    if (dateAll.checked) {
+        timeField.style.display = "none";
+    }
+    else {
+        timeField.style.display = "block";
+    }
+    // apply green period in schedule tab
+    _module.ScheduleSupport.applyPeriod();
 };
 
 /**
