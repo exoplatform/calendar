@@ -53,8 +53,8 @@ public class UICalendarWorkingContainer extends UIContainer  {
   }
 
   public void active() throws Exception {
-    UIPopupWindow uiWindowE = getChildById("UIQuckAddEventPopupWindow") ;
-    if(uiWindowE == null) uiWindowE = addChild(UIPopupWindowQuick.class, null, "UIQuckAddEventPopupWindow") ;
+    UIPopupWindow uiWindowE = getChildById("UIQuickAddEventPopupWindow") ;
+    if(uiWindowE == null) uiWindowE = addChild(UIPopupWindow.class, null, "UIQuickAddEventPopupWindow") ;
     UIQuickAddEvent quickAddForm = (UIQuickAddEvent)uiWindowE.getUIComponent();
     if(quickAddForm == null) quickAddForm = createUIComponent(UIQuickAddEvent.class, null, null) ; 
     List<SelectItem> calendarOption = CalendarUtils.getCalendarOption();
@@ -66,8 +66,8 @@ public class UICalendarWorkingContainer extends UIContainer  {
     uiWindowE.setUIComponent(quickAddForm) ;
     uiWindowE.setWindowSize(540, 0);
 
-    UIPopupWindow uiWindowT =  getChildById("UIQuckAddTaskPopupWindow") ;
-    if(uiWindowT == null) uiWindowT = addChild(UIPopupWindowQuick.class, null, "UIQuckAddTaskPopupWindow") ;
+    UIPopupWindow uiWindowT =  getChildById("UIQuickAddTaskPopupWindow") ;
+    if(uiWindowT == null) uiWindowT = addChild(UIPopupWindow.class, null, "UIQuickAddTaskPopupWindow") ;
     UIQuickAddEvent quickAddTask = (UIQuickAddEvent)uiWindowT.getUIComponent();
     if(quickAddTask == null) quickAddTask = createUIComponent(UIQuickAddEvent.class, null, null) ; 
     quickAddTask.setEvent(false) ;

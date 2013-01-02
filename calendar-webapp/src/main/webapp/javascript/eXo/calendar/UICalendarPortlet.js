@@ -203,8 +203,8 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithId = function(obj, type, id){
 UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fromMilli, toMilli, id){
 	var CalendarWorkingWorkspace =  _module.UICalendarPortlet.getElementById("UICalendarWorkingContainer");
     var id = (id)?id:this.getCheckedCalendar(this.filterForm);
-    var UIQuckAddEventPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuckAddEventPopupWindow")[0];
-    var UIQuckAddTaskPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuckAddTaskPopupWindow")[0];
+    var UIQuickAddEventPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddEventPopupWindow")[0];
+    var UIQuickAddTaskPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddTaskPopupWindow")[0];
     var selectedCategory = (_module.UICalendarPortlet.filterSelect) ? _module.UICalendarPortlet.filterSelect : null;
 	// There is at least 1 event category to show event form
 	if((selectedCategory != null) && (selectedCategory.options.length < 1)) {
@@ -227,17 +227,17 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     		category:(selectedCategory)? selectedCategory.value : null 
     };
     if(type == 1) {
-    	var uiform = gj(UIQuckAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
+    	var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
     	uiform.reset() ;
     	this.fillData(uiform, data) ;
-    	webui.UIPopupWindow.show("UIQuckAddEventPopupWindow");
-    	base.UIPopup.hide("UIQuckAddTaskPopupWindow") ;
+    	webui.UIPopupWindow.show("UIQuickAddEventPopupWindow");
+    	base.UIPopup.hide("UIQuickAddTaskPopupWindow") ;
     } else if(type == 2) {
-    	var uiform = gj(UIQuckAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
+    	var uiform = gj(UIQuickAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
     	uiform.reset() ;
     	this.fillData(uiform, data) ;
-    	webui.UIPopupWindow.show("UIQuckAddTaskPopupWindow");
-    	base.UIPopup.hide("UIQuckAddEventPopupWindow");
+    	webui.UIPopupWindow.show("UIQuickAddTaskPopupWindow");
+    	base.UIPopup.hide("UIQuickAddEventPopupWindow");
     }
 } ;
 /**
