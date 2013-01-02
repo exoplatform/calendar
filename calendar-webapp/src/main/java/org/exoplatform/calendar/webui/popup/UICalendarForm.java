@@ -32,6 +32,9 @@ import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarWorkingContainer;
+import org.exoplatform.calendar.webui.UIFormColorPicker;
+import org.exoplatform.calendar.webui.popup.UICalendarPermissionTab.Permission;
+import org.exoplatform.calendar.webui.popup.UICalendarPermissionTab.PermissionOwner;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -58,12 +61,6 @@ import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
-import org.exoplatform.calendar.webui.UIFormColorPicker;
-
-import org.exoplatform.calendar.webui.popup.UICalendarPermissionTab.Permission;
-import org.exoplatform.calendar.webui.popup.UICalendarPermissionTab.PermissionOwner;
-import org.exoplatform.calendar.webui.popup.UICalendarPermissionTab.PermissionType;
-import org.exoplatform.calendar.webui.popup.UIUserSelector;
 import org.exoplatform.webui.organization.UIGroupMembershipSelector;
 import org.exoplatform.webui.organization.account.UIGroupSelector;
 
@@ -81,7 +78,7 @@ import org.exoplatform.webui.organization.account.UIGroupSelector;
         //@EventConfig(listeners = UICalendarForm.SelectPermissionActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.ResetActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.CancelActionListener.class, phase=Phase.DECODE),
-        @EventConfig(listeners = UICalendarForm.SelectTabActionListener.class, phase=Phase.DECODE),
+        @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.OpenActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.ShowPublicURLActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.ActiveActionListener.class, phase=Phase.DECODE),
@@ -712,13 +709,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       UICalendarForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       calendarPortlet.cancelAction() ;
-    }
-  }
-
-  static public class SelectTabActionListener extends EventListener<UICalendarForm> {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception {
-      event.getRequestContext().addUIComponentToUpdateByAjax(event.getSource()) ;
     }
   }
 
