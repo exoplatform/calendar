@@ -2239,17 +2239,7 @@ UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone)
     _module.UICalendarPortlet.checkAllInBusy(dateAll);
     gj(dateAll).on('click', function(){
 	_module.UICalendarPortlet.checkAllInBusy(this);
-	var cells = _module.UICalendarPortlet.busyCell;
-	if(gj(this).is(':checked')) {
-	    for(var i = 0; i < cells.length; i++) {
-		gj(cells[i]).addClass('UserSelection');
-	    }
-	} else {
-	    for(var i = 0; i < cells.length; i++) {
-
-		gj(cells[i]).removeClass('UserSelection');
-	    }
-	}
+	_module.ScheduleSupport.applyPeriod();
     });
     var UIComboboxInputs = gj(container).find("input.UIComboboxInput");
     for(var i = 0; i < UIComboboxInputs.length; i++) {
