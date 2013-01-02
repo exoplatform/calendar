@@ -138,7 +138,7 @@ public class UIFormColorPicker extends UIFormInputBase<String>
  } */
 
   @SuppressWarnings("unused")
-  public void decode(Object input, WebuiRequestContext context) throws Exception
+  public void decode(Object input, WebuiRequestContext context)
   {
     value_ = (String)input;
     if (value_ != null && value_.trim().length() == 0)
@@ -204,18 +204,57 @@ public class UIFormColorPicker extends UIFormInputBase<String>
   public void processRender(WebuiRequestContext context) throws Exception
   {
     JavascriptManager jsManager = context.getJavascriptManager();
-    jsManager.require("SHARED/webui-ext");
+    jsManager.require("SHARED/jquery","gj");
     String value = getValue();
     if (value != null)
     {
       value = HTMLEntityEncoder.getInstance().encode(value);
     }
     Writer w = context.getWriter();
+
+
+
+
     w.write("<div class='UIFormColorPicker'>");
-    w.write("<div class=\"UIColorPickerInput\" onclick=\"eXo.webui.UIColorPicker.show(this)\">");
+    w.write("<div class=\"UIColorPickerInput\" onclick=\"eXo.calendar.UIColorPicker.show(this)\">");
     w.write("<span class=\" DisplayValue " + value + "\"></span>");
     w.write("</div>");
-    w.write("<div class=\"CalendarTableColor\" selectedColor=\"" + value + " \">");
+    w.write("<div class='calendarTableColor' selectedColor=\"" + value + " \">");
+
+    int i = 0 ;
+    int items = 5 ;
+    int size = getColors().length ;
+    int rows = size/items ;
+    int count = 0 ;
+    while(i <= rows)  {
+      w.write("<div>") ;  
+      int j = 0 ;
+      while(j <= items && count < size){
+        Color color = getColors()[count] ;
+        String actionLink = "javascript:eXo.calendar.UIColorPicker.setColor('" + color.getName() + "')";
+        w.write("<a href=\"");
+        w.write(actionLink);
+        w.write("\" class=\"");
+        w.write(color.getName());
+        w.write(" colorCell \" onmousedown=\"event.cancelBubble=true\"><i class=\"");
+        if(color.getName().equals(value)){w.write("iconCheckBox");}
+        w.write("\"></i></a>");
+        count++;
+        j++;
+      }
+      w.write("</div>");  
+      i++ ;
+    }
+    w.write("</div>");
+    w.write("<input class='UIColorPickerValue' name='" + getId() + "' type='hidden'" + " id='" + getId() + "' "
+        + renderJsActions());
+    if (value != null && value.trim().length() > 0)
+    {
+      w.write(" value='" + value + "'");
+    }
+    w.write(" />");
+    w.write("</div>");
+    /* 
     int i = 0;
     int count = 0;
     while (i <= size() / items())
@@ -225,7 +264,7 @@ public class UIFormColorPicker extends UIFormInputBase<String>
       while (j < items() && count < size())
       {
         Color color = getColors()[count];
-        String actionLink = "javascript:eXo.webui.UIColorPicker.setColor('" + color.getName() + "')";
+        String actionLink = "javascript:eXo.calendar.UIColorPicker.setColor('" + color.getName() + "')";
         w.write("<a href=\""
                 + actionLink
                 + "\" class=\""
@@ -246,6 +285,7 @@ public class UIFormColorPicker extends UIFormInputBase<String>
     }
     w.write(" />");
     w.write("</div>");
+     */
   }
 
   @Override
@@ -408,22 +448,22 @@ public class UIFormColorPicker extends UIFormInputBase<String>
     public static final Color O_PLUM_PURPLE = new Color(H_PLUM_PURPLE, N_PLUM_PURPLE);
 
     public static final Color[] COLORS =
-        {O_ASPARAGUS, O_MUNSELL_BLUE, O_NAVY_BLUE, O_PURPLE, O_RED, O_BROWN,
-            O_LAUREL_GREEN, O_SKY_BLUE, O_BLUE_GRAY, O_LIGHT_PURPLE, O_HOT_PINK, O_LIGHT_BROWN,
-            O_MOSS_GREEN, O_POWDER_BLUE, O_LIGHT_BLUE, O_PINK, O_ORANGE, O_GRAY,
-            O_GREEN, O_BABY_BLUE, O_LIGHT_GRAY, O_BEIGE, O_YELLOW, O_PLUM_PURPLE};
+      {O_ASPARAGUS, O_MUNSELL_BLUE, O_NAVY_BLUE, O_PURPLE, O_RED, O_BROWN,
+      O_LAUREL_GREEN, O_SKY_BLUE, O_BLUE_GRAY, O_LIGHT_PURPLE, O_HOT_PINK, O_LIGHT_BROWN,
+      O_MOSS_GREEN, O_POWDER_BLUE, O_LIGHT_BLUE, O_PINK, O_ORANGE, O_GRAY,
+      O_GREEN, O_BABY_BLUE, O_LIGHT_GRAY, O_BEIGE, O_YELLOW, O_PLUM_PURPLE};
 
     public static final String[] COLORNAMES =
-        {N_ASPARAGUS, N_MUNSELL_BLUE, N_NAVY_BLUE, N_PURPLE, N_RED, N_BROWN,
-            N_LAUREL_GREEN, N_SKY_BLUE, N_BLUE_GRAY, N_LIGHT_PURPLE, N_HOT_PINK, N_LIGHT_BROWN,
-            N_MOSS_GREEN, N_POWDER_BLUE, N_LIGHT_BLUE, N_PINK, N_ORANGE, N_GRAY,
-            N_GREEN, N_BABY_BLUE, N_LIGHT_GRAY, N_BEIGE, N_YELLOW, N_PLUM_PURPLE};
+      {N_ASPARAGUS, N_MUNSELL_BLUE, N_NAVY_BLUE, N_PURPLE, N_RED, N_BROWN,
+      N_LAUREL_GREEN, N_SKY_BLUE, N_BLUE_GRAY, N_LIGHT_PURPLE, N_HOT_PINK, N_LIGHT_BROWN,
+      N_MOSS_GREEN, N_POWDER_BLUE, N_LIGHT_BLUE, N_PINK, N_ORANGE, N_GRAY,
+      N_GREEN, N_BABY_BLUE, N_LIGHT_GRAY, N_BEIGE, N_YELLOW, N_PLUM_PURPLE};
 
     public static final String[] CODES =
-        {H_ASPARAGUS, H_MUNSELL_BLUE, H_NAVY_BLUE, H_PURPLE, H_RED, H_BROWN,
-            H_LAUREL_GREEN, H_SKY_BLUE, H_BLUE_GRAY, H_LIGHT_PURPLE, H_HOT_PINK, H_LIGHT_BROWN,
-            H_MOSS_GREEN, H_POWDER_BLUE, H_LIGHT_BLUE, H_PINK, H_ORANGE, H_GRAY,
-            H_GREEN, H_BABY_BLUE, H_LIGHT_GRAY, H_BEIGE, H_YELLOW, H_PLUM_PURPLE};
+      {H_ASPARAGUS, H_MUNSELL_BLUE, H_NAVY_BLUE, H_PURPLE, H_RED, H_BROWN,
+      H_LAUREL_GREEN, H_SKY_BLUE, H_BLUE_GRAY, H_LIGHT_PURPLE, H_HOT_PINK, H_LIGHT_BROWN,
+      H_MOSS_GREEN, H_POWDER_BLUE, H_LIGHT_BLUE, H_PINK, H_ORANGE, H_GRAY,
+      H_GREEN, H_BABY_BLUE, H_LIGHT_GRAY, H_BEIGE, H_YELLOW, H_PLUM_PURPLE};
 
     static public class Color
     {

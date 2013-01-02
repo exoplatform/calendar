@@ -36,7 +36,7 @@ line-height: 18px;
 
 
 
-.UIFormColorPicker	.DisplayValue {
+.UIFormColorPicker  .DisplayValue {
 
 display:block;
 
@@ -54,7 +54,7 @@ border: solid 1px #cccccc;
 
 
 
-.UIFormColorPicker	.UIColorLine {
+.UIFormColorPicker  .UIColorLine {
 
 margin: 5px 0px;
 
@@ -88,7 +88,7 @@ margin-left: 16px;
 
 }
 
-.UIFormColorPicker .CalendarTableColor {
+.UIFormColorPicker .calendarTableColor {
 
 display: none;
 
@@ -106,7 +106,7 @@ border: solid 1px #cccccc;
 
 
 
-.CalendarTableColor .ColorCell {
+.calendarTableColor .colorCell {
 
 width: 12px; height: 12px;
 
@@ -116,29 +116,7 @@ border: 1px solid #ffffff;
 
 }
 
-
-
-.CalendarTableColor .ColorCell img {
-
-width: 12px; height: 12px;
-
-}
-
-
-
-.UIFormColorPicker .SelectedColorCell {
-
-background: url('/eXoResources/skin/DefaultSkin/webui/component/UIColorPicker/../skinIcons/icons/CalendarIcons.gif') no-repeat left -342px;
-
-width: 12px; height: 12px;
-
-border: 1px solid red;
-
-}
-
-
-
-.CalendarTableColor a:hover {
+.calendarTableColor a:hover {
 
 border: 2px solid red;
 
@@ -148,167 +126,28 @@ margin: 1px;
 
 
 
-
-
-.Olive {background-color: #808000;}
-
-.OliveDrab {background-color: #6B8E23;}
-
-.Orange {background-color: #FFA500;}
-
-.OrangeRed {background-color: #FF4500;}
-
-.Orchid {background-color: #DA70D6;}
-
-.PaleGoldenRod {background-color: #EEE8AA;}
-
-.PaleGreen {background-color: #98FB98;}
-
-.PaleTurquoise {background-color: #AFEEEE;}
-
-.PaleVioletRed {background-color: #D87093;}
-
-.PapayaWhip	{background-color: #FFEFD5;}
-
-.PeachPuff {background-color: #FFDAB9;}
-
-.Peru {background-color: #CD853F;}
-
-.Pink {background-color: #FFC0CB;}
-
-.Plum {background-color: #DDA0DD;}
-
-.PowderBlue {background-color: #B0E0E6;}
-
-.Purple {background-color: #800080;}
-
-.Red {background-color: #FF0000;}
-
-.RosyBrown {background-color: #BC8F8F;}
-
-.RoyalBlue {background-color: #4169E1;}
-
-.SaddleBrown {background-color: #8B4513;}
-
-.Salmon {background-color: #FA8072;}
-
-.SandyBrown {background-color: #F4A460;}
-
-.SeaGreen {background-color: #2E8B57;}
-
-.SeaShell {background-color: #FFF5EE;}
-
-.Sienna {background-color: #A0522D;}
-
-.Silver {background-color: #C0C0C0;}
-
-.SkyBlue {background-color: #87CEEB;}
-
-.Thistle {background-color: #D8BFD8;}
-
-.Tomato {background-color: #FF6347;}
-
-.Turquoise {background-color: #40E0D0;}
-
-.Violet {background-color: #EE82EE;}
-
-.Wheat {background-color: #F5DEB3;}
-
-.Yellow {background-color: #FFFF00;}
-
-
-
-
-
-.CalendarTableColor .Olive {background-color: #808000; }
-
-.CalendarTableColor .OliveDrab {background-color: #6B8E23;}
-
-.CalendarTableColor .Orange {background-color: #FFA500;}
-
-.CalendarTableColor .OrangeRed {background-color: #FF4500;}
-
-.CalendarTableColor .Orchid {background-color: #DA70D6;}
-
-.CalendarTableColor .PaleGoldenRod {background-color: #EEE8AA;}
-
-.CalendarTableColor .PaleGreen {background-color: #98FB98;}
-
-.CalendarTableColor .PaleTurquoise {background-color: #AFEEEE;}
-
-.CalendarTableColor .PaleVioletRed {background-color: #D87093;}
-
-.CalendarTableColor .PapayaWhip	{background-color: #FFEFD5;}
-
-.CalendarTableColor .PeachPuff {background-color: #FFDAB9;}
-
-.CalendarTableColor .Peru {background-color: #CD853F;}
-
-.CalendarTableColor .Pink {background-color: #FFC0CB;}
-
-.CalendarTableColor .Plum {background-color: #DDA0DD;}
-
-.CalendarTableColor .PowderBlue {background-color: #B0E0E6;}
-
-.CalendarTableColor .Purple {background-color: #800080;}
-
-.CalendarTableColor .Red {background-color: #FF0000;}
-
-.CalendarTableColor .RosyBrown {background-color: #BC8F8F;}
-
-.CalendarTableColor .RoyalBlue {background-color: #4169E1;}
-
-.CalendarTableColor .SaddleBrown {background-color: #8B4513;}
-
-.CalendarTableColor .Salmon {background-color: #FA8072;}
-
-.CalendarTableColor .SandyBrown {background-color: #F4A460;}
-
-.CalendarTableColor .SeaGreen {background-color: #2E8B57;}
-
-.CalendarTableColor .SeaShell {background-color: #FFF5EE;}
-
-.CalendarTableColor .Sienna {background-color: #A0522D;}
-
-.CalendarTableColor .Silver {background-color: #C0C0C0;}
-
-.CalendarTableColor .SkyBlue {background-color: #87CEEB;}
-
-.CalendarTableColor .Thistle {background-color: #D8BFD8;}
-
-.CalendarTableColor .Tomato {background-color: #FF6347;}
-
-.CalendarTableColor .Turquoise {background-color: #40E0D0;}
-
-.CalendarTableColor .Violet {background-color: #EE82EE;}
-
-.CalendarTableColor .Wheat {background-color: #F5DEB3;}
-
-.CalendarTableColor .Yellow {background-color: #FFFF00;}
-
-
-.CalendarTableColor .asparagus       { background-color: #909958; }
-.CalendarTableColor .munsell_blue    { background-color: #319AB3; }
-.CalendarTableColor .navy_blue       { background-color: #4273C8; }
-.CalendarTableColor .purple          { background-color: #774EA9; }
-.CalendarTableColor .red             { background-color: #FF5933; }
-.CalendarTableColor .brown           { background-color: #BB8E62; }
-.CalendarTableColor .laurel_green    { background-color: #BED67E; }
-.CalendarTableColor .sky_blue        { background-color: #4DBED9; }
-.CalendarTableColor .blue_gray       { background-color: #8EB0EA; }
-.CalendarTableColor .light_purple    { background-color: #BC99E7; }
-.CalendarTableColor .hot_pink        { background-color: #F97575; }
-.CalendarTableColor .light_brown     { background-color: #C5B294; }
-.CalendarTableColor .moss_green      { background-color: #98CC81; }
-.CalendarTableColor .powder_blue     { background-color: #9EE4F5; }
-.CalendarTableColor .light_blue      { background-color: #B3CFFF; }
-.CalendarTableColor .pink            { background-color: #FFC8F0; }
-.CalendarTableColor .orange          { background-color: #FDB519; }
-.CalendarTableColor .gray            { background-color: #A39594; }
-.CalendarTableColor .green           { background-color: #89D4B3; }
-.CalendarTableColor .baby_blue       { background-color: #B2E2FF; }
-.CalendarTableColor .light_gray      { background-color: #CDCDCD; }
-.CalendarTableColor .beige           { background-color: #FFE1BE; }
-.CalendarTableColor .yellow          { background-color: #FFE347; }
-.CalendarTableColor .plum            { background-color: #DDA0DD;}
-.CalendarTableColor .plum_purple     { background-color: #CEA6AC; }
+.calendarTableColor .asparagus       { background-color: #909958; }
+.calendarTableColor .munsell_blue    { background-color: #319AB3; }
+.calendarTableColor .navy_blue       { background-color: #4273C8; }
+.calendarTableColor .purple          { background-color: #774EA9; }
+.calendarTableColor .red             { background-color: #FF5933; }
+.calendarTableColor .brown           { background-color: #BB8E62; }
+.calendarTableColor .laurel_green    { background-color: #BED67E; }
+.calendarTableColor .sky_blue        { background-color: #4DBED9; }
+.calendarTableColor .blue_gray       { background-color: #8EB0EA; }
+.calendarTableColor .light_purple    { background-color: #BC99E7; }
+.calendarTableColor .hot_pink        { background-color: #F97575; }
+.calendarTableColor .light_brown     { background-color: #C5B294; }
+.calendarTableColor .moss_green      { background-color: #98CC81; }
+.calendarTableColor .powder_blue     { background-color: #9EE4F5; }
+.calendarTableColor .light_blue      { background-color: #B3CFFF; }
+.calendarTableColor .pink            { background-color: #FFC8F0; }
+.calendarTableColor .orange          { background-color: #FDB519; }
+.calendarTableColor .gray            { background-color: #A39594; }
+.calendarTableColor .green           { background-color: #89D4B3; }
+.calendarTableColor .baby_blue       { background-color: #B2E2FF; }
+.calendarTableColor .light_gray      { background-color: #CDCDCD; }
+.calendarTableColor .beige           { background-color: #FFE1BE; }
+.calendarTableColor .yellow          { background-color: #FFE347; }
+.calendarTableColor .plum            { background-color: #DDA0DD;}
+.calendarTableColor .plum_purple     { background-color: #CEA6AC; }

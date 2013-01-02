@@ -63,6 +63,10 @@
                 <name>eXo.calendar.UIEventPreview</name>
                 <path>/javascript/eXo/calendar/UIEventPreview.js</path>
             </script>
+            <script>
+                <name>eXo.calendar.UIColorPicker</name>
+                <path>/javascript/eXo/calendar/UIColorPicker.js</path>
+            </script>
             <depends>
                 <module>common</module>
             </depends>
