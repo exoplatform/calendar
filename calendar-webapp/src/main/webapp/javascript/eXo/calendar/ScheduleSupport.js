@@ -20,50 +20,52 @@ eXo.calendar.ScheduleSupport = {
 	applyPeriod : function(){
 	    var Highlighter = eXo.calendar.UIHSelection;
 	    var scheduleTab = gj('#eventAttender-tab')[0];
-
-	    // row for drag
-	    var dragRow = gj(scheduleTab).find('tr').get(1);
-	    var cells = gj(dragRow).find('td');
-	    // check box for all day
-	    var dateAll = gj('#dateAll')[0];
-	    if(dateAll.checked) {
-		for(var i = 1; i < cells.length; i++) {
-		    gj(cells.get(i)).removeClass("UserSelection"); // reset the color of cells
-		    gj(cells.get(i)).addClass("UserSelection");
-
-		}
-	    } else {
-		var UIComboboxInputs = gj(scheduleTab).find("input.UIComboboxInput");
-
-		len = UIComboboxInputs.length;
-
-
-		var name = gj(UIComboboxInputs[0]).prevAll('input')[0].name.toLowerCase();
-		if (name.indexOf("from") >= 0) {
-		    start = UIComboboxInputs[0].value;
-		    end = UIComboboxInputs[1].value;
-
-		}
-		else {
-		    start = UIComboboxInputs[1].value;
-		    end = UIComboboxInputs[0].value;
-		}
-
-		var startIndex = _module.ScheduleSupport.indexFromTime(start);
-		var endIndex = _module.ScheduleSupport.indexFromTime(end);
-
+	    if(scheduleTab) {
 		// row for drag
 		var dragRow = gj(scheduleTab).find('tr').get(1);
 		var cells = gj(dragRow).find('td');
-		// add UserSelection class to have green color
-		for(var i = 1; i < cells.length; i++) {
-		    gj(cells.get(i)).removeClass("UserSelection"); // reset the color of cells
-		    if(i < endIndex && i >= startIndex) {
+		// check box for all day
+		var dateAll = gj('#dateAll')[0];
+		if(dateAll.checked) {
+		    for(var i = 1; i < cells.length; i++) {
+			gj(cells.get(i)).removeClass("UserSelection"); // reset the color of cells
 			gj(cells.get(i)).addClass("UserSelection");
+
 		    }
-		}	
+		} else {
+		    var UIComboboxInputs = gj(scheduleTab).find("input.UIComboboxInput");
+
+		    len = UIComboboxInputs.length;
+
+
+		    var name = gj(UIComboboxInputs[0]).prevAll('input')[0].name.toLowerCase();
+		    if (name.indexOf("from") >= 0) {
+			start = UIComboboxInputs[0].value;
+			end = UIComboboxInputs[1].value;
+
+		    }
+		    else {
+			start = UIComboboxInputs[1].value;
+			end = UIComboboxInputs[0].value;
+		    }
+
+		    var startIndex = _module.ScheduleSupport.indexFromTime(start);
+		    var endIndex = _module.ScheduleSupport.indexFromTime(end);
+
+		    // row for drag
+		    var dragRow = gj(scheduleTab).find('tr').get(1);
+		    var cells = gj(dragRow).find('td');
+		    // add UserSelection class to have green color
+		    for(var i = 1; i < cells.length; i++) {
+			gj(cells.get(i)).removeClass("UserSelection"); // reset the color of cells
+			if(i < endIndex && i >= startIndex) {
+			    gj(cells.get(i)).addClass("UserSelection");
+			}
+		    }	
+		}
+
 	    }
-   
+	       
 	},
 	//synchronize time of UIComboBox in Schedule Tab and Detail Tab
 	syncTimeBetweenEventTabs : function() {
