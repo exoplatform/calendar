@@ -3085,9 +3085,19 @@ wx.UICombobox.getValue = function(obj){
 
    _module.ScheduleSupport.applyPeriod();
    UICombobox.list.style.display = "none";
-}
+};
 
-// ==========================================================
+UICalendarPortlet.prototype.loadTile = function(id){
+	try{
+		gj(document).ready(
+			function(){
+				gj("#"+id).find("*[rel=tooltip]").tooltip();
+			}
+		);
+	} catch (e) {
+		// TODO: handle exception
+	}
+};
 
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;

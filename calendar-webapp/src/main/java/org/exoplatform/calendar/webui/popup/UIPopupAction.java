@@ -16,7 +16,9 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.web.application.RequestContext;
+import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIComponent;
@@ -40,6 +42,9 @@ public class UIPopupAction extends UIContainer {
     context.getWriter().append("<span class=\"").append(getId()).append("\" id=\"").append(getId()).append("\">");
     renderChildren(context) ;
     context.getWriter().append("</span>");
+    RequireJS requireJS = Util.getPortalRequestContext().getJavascriptManager().getRequireJS();
+    requireJS.require("PORTLET/calendar/CalendarPortlet","cal");  
+    requireJS.addScripts("cal.UICalendarPortlet.loadTile('"+getId()+"');") ;
   }
 
   public <T extends UIComponent> T activate(Class<T> type, int width) throws Exception {
