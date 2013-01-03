@@ -164,15 +164,15 @@ int currentDay = uicomponent.getCurrentDay() ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
 %>
-	<div class="pull-left">
-		<a id="UIHeaderBar_3"  rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
-			<i  class="uiIconDelete"></i>
-		</a>
-		<span id="UIHeaderBar_1" class="dropdown">
+	
+		<a class="pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
+			<i class="uiIconDelete"></i>
+		</a> 
+		<div id="UIHeaderBar_1" class="dropdown pull-left">
 		  <% /*Begin ViewTypeSelect Popup Menu*/ %>
-			<span data-toggle="dropdown" class="uiActionWithLabel">
-			  <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%>
-			</span>
+			<div data-toggle="dropdown" class="uiActionWithLabel">
+			  <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%><i class="uiIconMiniArrowDown"></i>
+			</div>
 			<ul class="dropdown-menu">
 			   <%for(type in uicomponent.getViews()){
 				   if(!type.equals(uicomponent.getViewType())){
@@ -185,8 +185,7 @@ int currentDay = uicomponent.getCurrentDay() ;
 			   %>
 			</ul>
 		<% /*End Popup Menu*/ %>
-		</span>
-	</div>
+		</div>
       <table>
         <body>
           <tr>

@@ -48,7 +48,6 @@ rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.up
 //INLINE Scripts
 requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this)});")
-requireJS.addScripts("gj('div#uiListView').attr('exocallback','cal.UICalendarPortlet.listViewCallack');")
 
 uicomponent.refreshBrowser();
 uicomponent.setCalClicked(false);
@@ -75,7 +74,7 @@ uicomponent.setCalClicked(false);
               else classCss = "uiIconMiniArrowDown";
             }
           %>
-	<th class="center" style="width: 65px"><a href="$sortLink"><%=uiform.getLabel('Priority')%><i class="$classCss pull-right"></i></a></th>
+	<th class="center" style="width: 70px"><a href="$sortLink"><%=uiform.getLabel('Priority')%><i class="$classCss pull-right"></i></a></th>
 <%
 sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
 classCss = "";
@@ -84,7 +83,7 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
 	else classCss = "uiIconMiniArrowDown";
 }
 %>
-	<th><a href="$sortLink"><%=uiform.getLabel('Event')%><i class="$classCss pull-right"></i></a></th>
+	<th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
         <% } else {
          /* Search result displaying enabled, replace Event by Title */
             sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
@@ -194,19 +193,19 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
   <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallback" style="display: none ;" >
     <ul class="uiDropDownCal" style="display:block;">
       <li>
-          <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+          <a href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
             <i class="uiIconWatch"></i>
             <%=_ctx.appRes("ContextMenu.label.View")%>
           </a>
       </li>
       <li>
-          <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+          <a href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
             <i class="uiIconEdit"></i>
             <%=_ctx.appRes("ContextMenu.label.Edit")%>
           </a>
       </li>
       <li>
-          <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+          <a href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
             <i class="uiIconDelete"></i>
             <%=_ctx.appRes("ContextMenu.label.Delete")%>
           </a>
