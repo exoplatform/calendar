@@ -24,7 +24,7 @@
             <module>DragDrop</module>
         </depends>
         <depends>
-            <module>UIContextMenu</module>
+            <module>CalContextMenu</module>
         </depends>
         <depends>
             <module>Resize</module>
@@ -121,7 +121,7 @@
         </depends>
     </module>
     <module>
-        <name>UIContextMenu</name>
+        <name>CalContextMenu</name>
         <script>
             <path>/javascript/eXo/cs/UIContextMenu.js</path>
         </script>
