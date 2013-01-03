@@ -2323,7 +2323,7 @@ UICalendarPortlet.prototype.setBusyTime = function(from, to, tr){
     var end = this.ceil(to, 15) / 15;
     for (var i = start; i < end; i++) {
         cell[i].className = "BusyDotTime";
-        this.busyCell[i].className = "BusyTime";
+        gj(this.busyCell[i]).addClass("BusyTime");
     }
 };
 

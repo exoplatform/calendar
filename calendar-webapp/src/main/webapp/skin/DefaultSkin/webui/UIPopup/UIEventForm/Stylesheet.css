@@ -217,12 +217,12 @@
 }
 
 .UICalendarPortlet .UIAddNewEvent .NewEventAttendee .BusyTime {
-  background-color: #c41616;
+  background-color: #FF7F7E;
   width: 11px;
 }
 
 .UICalendarPortlet .UIAddNewEvent .NewEventAttendee .BusyDotTime {
-  background-image: url('background/RedDot2x2.gif') ;
+  background-color: #FE0000;
   width: 11px;
 }
 
@@ -437,7 +437,7 @@
   width: 120px;
 }
 .UICalendarPortlet .UIAddNewEvent .NewEventAttendee .UserSelection {
-  background: #006600 ;
+  background: #A7B838 ;
   filter:alpha(opacity=75);
   opacity: 0.75
 }
@@ -493,4 +493,8 @@
 
 .UICalendarPortlet .UIInvitationForm .InvitationGroup {
   margin-top:20px;
+}
+
+.UICalendarPortlet .UIAddNewEvent .NewEventAttendee .BusySelected{
+  background-color: #D35B1C;
 }

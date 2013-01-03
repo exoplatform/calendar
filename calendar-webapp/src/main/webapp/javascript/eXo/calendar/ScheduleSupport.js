@@ -29,20 +29,19 @@ eXo.calendar.ScheduleSupport = {
 		if(dateAll.checked) {
 		    for(var i = 1; i < cells.length; i++) {
 			gj(cells.get(i)).removeClass("UserSelection"); // reset the color of cells
-			gj(cells.get(i)).addClass("UserSelection");
-
+			gj(cells.get(i)).removeClass("BusySelected");
+			if(gj(cells.get(i)).hasClass("BusyTime")) 
+			    gj(cells.get(i)).addClass("BusySelected");
+			else
+			    gj(cells.get(i)).addClass("UserSelection");
 		    }
 		} else {
 		    var UIComboboxInputs = gj(scheduleTab).find("input.UIComboboxInput");
-
 		    len = UIComboboxInputs.length;
-
-
 		    var name = gj(UIComboboxInputs[0]).prevAll('input')[0].name.toLowerCase();
 		    if (name.indexOf("from") >= 0) {
 			start = UIComboboxInputs[0].value;
 			end = UIComboboxInputs[1].value;
-
 		    }
 		    else {
 			start = UIComboboxInputs[1].value;
@@ -52,14 +51,15 @@ eXo.calendar.ScheduleSupport = {
 		    var startIndex = _module.ScheduleSupport.indexFromTime(start);
 		    var endIndex = _module.ScheduleSupport.indexFromTime(end);
 
-		    // row for drag
-		    var dragRow = gj(scheduleTab).find('tr').get(1);
-		    var cells = gj(dragRow).find('td');
 		    // add UserSelection class to have green color
 		    for(var i = 1; i < cells.length; i++) {
-			gj(cells.get(i)).removeClass("UserSelection"); // reset the color of cells
+			gj(cells.get(i)).removeClass("UserSelection");
+			gj(cells.get(i)).removeClass("BusySelected");// reset the color of cells
 			if(i < endIndex && i >= startIndex) {
-			    gj(cells.get(i)).addClass("UserSelection");
+			    if(gj(cells.get(i)).hasClass("BusyTime")) 
+				gj(cells.get(i)).addClass("BusySelected");
+			    else
+				gj(cells.get(i)).addClass("UserSelection");
 			}
 		    }	
 		}
@@ -69,7 +69,7 @@ eXo.calendar.ScheduleSupport = {
 	},
 	//synchronize time of UIComboBox in Schedule Tab and Detail Tab
 	syncTimeBetweenEventTabs : function() {
-	   var scheduleTab = gj('#eventAttender-tab')[0];;
+	   var scheduleTab = gj('#eventAttender-tab')[0];
 	   var detailsTab = gj('#eventDetail-tab')[0];
 	   var detailsCombos = gj(detailsTab).find('input.UIComboboxInput');
 	   var scheduleCombos = gj(scheduleTab).find('input.UIComboboxInput');

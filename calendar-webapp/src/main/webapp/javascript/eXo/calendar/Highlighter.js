@@ -321,9 +321,12 @@ UIHSelection.prototype.getCurrentIndex = function(evt){
  * @param {Object} cells A cell in time table
  */
 UIHSelection.prototype.setAttr = function(sIndex, eIndex, cells){
-	for(var i = sIndex; i <= eIndex ; i++) {
-		gj(cells[i]).addClass("UserSelection") ;
-	}
+    for(var i = sIndex; i <= eIndex ; i++) {
+	if(gj(cells[i]).hasClass("BusyTime"))
+	    gj(cells[i]).addClass("BusySelected");
+	else 
+	    gj(cells[i]).addClass("UserSelection") ;
+    }
 } ;
 
 /**
@@ -333,24 +336,24 @@ UIHSelection.prototype.setAttr = function(sIndex, eIndex, cells){
  * @param {Object} cells A cell in time table
  */
 UIHSelection.prototype.removeAttr = function(sIndex, eIndex, cells){
-	var len = cells.length ;
-	for(var i = 0; i < len ; i++) {
-		if((i>=sIndex) && (i<=eIndex)) continue ;
-		if(gj(cells[i]).hasClass("UserSelection")) 
-			gj(cells[i]).removeClass("UserSelection") ;
-	}
+    var len = cells.length ;
+    for(var i = 0; i < len ; i++) {
+	if((i>=sIndex) && (i<=eIndex)) continue ;
+	gj(cells[i]).removeClass("UserSelection") ;
+	gj(cells[i]).removeClass("BusySelected") ;
+    }
 } ;
 
 /**
  * Sets all attribute for cells
  */
 UIHSelection.prototype.removeAllAttr = function(){
-	var cells = this.cells ;
-	var len = cells.length ;
-	for(var i = 0; i < len ; i++) {
-		if(gj(cells[i]).hasClass("UserSelection")) 
-			gj(cells[i]).removeClass("UserSelection") ;
-	}
+    var cells = this.cells ;
+    var len = cells.length ;
+    for(var i = 0; i < len ; i++) {
+	gj(cells[i]).removeClass("UserSelection") ;
+	gj(cells[i]).removeClass("BusySelected") ;
+    }
 } ;
 
 /**
