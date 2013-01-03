@@ -23,7 +23,8 @@ requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() {cs.Uti
 requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
 requirejs.addScripts("gj('img.thumbnail').click(function() { cal.UIEventPreview.showImagePreview(this); });");
 requirejs.addScripts("gj('img.closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
-requirejs.addScripts("gj('img.imagePreview').click(function() { cal.UIEventPreview.downloadOriginalImage(this); });");
+requirejs.addScripts("gj('div.viewIcon').click(function() { cal.UIEventPreview.clickOnViewIcon(this); });");
+requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPreview.hoverInThumbnail(this); }, function() { cal.UIEventPreview.hoverOutThumbnail(this); });");
 %>
 <div id="<%uicomponent.getId()%>" class="UIPreview">
 <% if (!uicomponent.isShowPopup()) { %>
@@ -37,7 +38,7 @@ requirejs.addScripts("gj('img.imagePreview').click(function() { cal.UIEventPrevi
 <div class="ViewContainer">
 <div class="DecoratorBox SpliterResizableListArea">
 <div class="ViewBoxStyle">
-<table class="uiGrid table table-hover table-striped" id="RowContainerDay" cellspacing="0" borderspacing="0">
+<table class="uiGrid table table-striped" id="RowContainerDay" cellspacing="0" borderspacing="0">
 <tr>
 <td style="border-right: 1px solid #c7c7c7;width: 185px;">
 <div class="Text">
@@ -46,12 +47,17 @@ requirejs.addScripts("gj('img.imagePreview').click(function() { cal.UIEventPrevi
 <div class="Text">
 <%=uiform.getLabel('To')%><span style="color: #1756d5;"><%=df.format(event.getToDateTime())%></span>
         </div>
+
+<% if (event.getAttachment().size() != 0) { %>
 <div class="Text">
 <%=uiform.getLabel('AttachedFile')%>
 </div>
-        
-    <img class="imagePreview" src="" style="width: 170px; height: 170px; display: none;" downloadlink=""/>
-<img class="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; display: none;"/>
+<% } %>
+    
+  <a id="downloadImage" href="#">      
+    <img class="imagePreview" src="" style="width: 170px; height: 170px; margin: 5px; display: none;" downloadlink="" />
+</a>
+  <img class="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 155px; margin-top:5px; display: none;" title="Close" data-placement="top" rel="tooltip" />
 
 <% for (attachFile in  event.getAttachment()) {
 
@@ -60,21 +66,27 @@ String src = uicomponent.getImageSource(attachFile) ;
 String downloadlink = uicomponent.getDownloadLink(attachFile) ;
 String rndString = String.valueOf(new Date().getTime());
 String View = uiform.getLabel('View') ;
-String Close = uiform.getLabel('Close') ; %>
+String Close = uiform.getLabel('Close') ;
+String viewIcon = uiform.getLabel('ViewIcon');
+%>
 
-<img id="$attachFile.name" src="<%=uicomponent.getRestThumbnailLink(attachFile) %>" class="thumbnail" originalsrc="$src" downloadlink="$downloadlink"/>
-
+<div class="imageThumbnail" style="width: 65px; height: 65px; display: inline-block;">
+<img id="$attachFile.name" src="$src" class="thumbnail" originalsrc="$src" downloadlink="$downloadlink" style="display: inline-block; width: 50px; height: 50px; margin: 2px;" />
+<div class="viewIcon" style="background: url('/platformNavigation/skin/platformNavigation/UISearchPlatformToolbarPortlet/background/Search.png') no-repeat scroll center 0;">
+<span style="padding-top:10px; display: inline-block; color: white;">$viewIcon</span>
+  </div>
+</div>
 <% } else { %>
 
 <div class="AttachmentIcon"  style="white-space: nowrap;">
 <a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name</a>
-            (<%=CalendarUtils.convertSize(attachFile.size)%>) 
-      </div>
+(<%=CalendarUtils.convertSize(attachFile.size)%>)
+</div>
 <% } %>
 <% } %>
 </td>
-            
-            <!-- event/ task description column -->
+
+<!-- event/ task description column -->
 <td >
 <div class="EventDescription $color"><span></span></div>
 <div style="font-weight: bold;">$event.summary</div>
