@@ -867,8 +867,13 @@ UICalendarPortlet.prototype.showEvent = function(){
         marker = gj(el[i]).children("div.resizeEventContainer")[0];
         gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
     }
+    
     this.items = el;
     this.adjustWidth(this.items);
+    // display events after positioning
+    for(var i = 0; i < el.length; i++) {
+	gj(el[i]).css('display','block');
+    }
     this.items = null;
     this.viewer = null;
 };
@@ -2013,13 +2018,15 @@ UICalendarPortlet.prototype.showHideTime = function(chk){
 
     // update schedule tab
     var dateAll = gj('#dateAll')[0];
-    dateAll.checked = chk.checked;
-    var timeField = gj(dateAll.form).find('div.TimeField')[0];
-    if (dateAll.checked) {
-        timeField.style.display = "none";
-    }
-    else {
-        timeField.style.display = "block";
+    if(dateAll) {
+	dateAll.checked = chk.checked;
+	var timeField = gj(dateAll.form).find('div.TimeField')[0];
+	if (dateAll.checked) {
+	    timeField.style.display = "none";
+	}
+	else {
+	    timeField.style.display = "block";
+	}
     }
     // apply green period in schedule tab
     _module.ScheduleSupport.applyPeriod();
@@ -3087,6 +3094,12 @@ UICalendarPortlet.prototype.loadTile = function(id){
 		// TODO: handle exception
 	}
 };
+
+//close pop up window -> dont refresh portlet
+UICalendarPortlet.prototype.overidePopUpClose = function(){
+    gj('.uiIconClose').attr('onclick','');
+    gj('.uiIconClose').click(function(){gj(this).parents()[1].style.display = 'none';});
+}
 
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;

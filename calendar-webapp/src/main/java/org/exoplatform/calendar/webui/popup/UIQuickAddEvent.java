@@ -40,7 +40,9 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.JavascriptManager;
 import org.exoplatform.web.application.RequestContext;
+import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -269,6 +271,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   static  public class SaveActionListener extends EventListener<UIQuickAddEvent> {
     @Override
     public void execute(Event<UIQuickAddEvent> event) throws Exception {
+      
       UIQuickAddEvent uiForm = event.getSource() ;
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       
@@ -431,12 +434,13 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         //CS-3155
         //event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer.getParent()) ;
         
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;
         UIPopupWindow popupWindow = uiForm.getAncestorOfType(UIPopupWindow.class);
         if (popupWindow != null) {
           popupWindow.setShow(false);
           event.getRequestContext().addUIComponentToUpdateByAjax(popupWindow) ;
         }
+        
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;
       } catch (Exception e) {
         if (log.isDebugEnabled()) {
           log.debug("Fail to quick add event to the calendar", e);

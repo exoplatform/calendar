@@ -112,7 +112,7 @@ def eventList = [];
     Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
     String recurId = event.getRecurrenceId();
     %>
-    <div class="eventContainer eventAlldayContainer weekViewEventBoxes clearfix" eventcat="$event.eventCategoryId" style="position:absolute;" caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate"
+    <div class="eventContainer eventAlldayContainer weekViewEventBoxes clearfix" eventcat="$event.eventCategoryId" style="position:absolute;display:none;" caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate"
     startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
     actionlink="$actionLink">
     <%
@@ -189,7 +189,7 @@ def eventList = [];
           String recurId = event.getRecurrenceId();
       %>
       <div class="eventContainerBorder weekViewEventBoxes $color" eventindex="$dayOfWeek"
-        style="position: absolute;" eventcat="$event.eventCategoryId" caltype="$event.calType"
+        style="position: absolute;display:none" eventcat="$event.eventCategoryId" caltype="$event.calType"
         eventid="$event.id" calid="$event.calendarId" actionlink="$actionLink" unselectable="on"
         startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId">
         <%
