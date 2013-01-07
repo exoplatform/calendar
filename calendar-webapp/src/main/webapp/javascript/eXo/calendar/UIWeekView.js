@@ -239,7 +239,7 @@ UIWeekView.prototype.drop = function(evt) {
 //	document.onmouseup = null;
 	var _e = window.event || evt ;
 	var UIWeekView = _module.UIWeekView ;
-	var isEventbox = cs.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
+	var isEventbox = UIWeekView.dragElement;
 	if (!UIWeekView.isCol(_e) || !isEventbox) return ;
 	var currentCol = UIWeekView.currentCol ;
 	var sourceCol = UIWeekView.dragElement.parentNode ;

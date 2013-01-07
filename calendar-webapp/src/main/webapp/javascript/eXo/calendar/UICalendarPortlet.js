@@ -1178,19 +1178,23 @@ UICalendarPortlet.prototype.dragStart = function(evt){
  * @param {Object} posY Position of the event
  */
 UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
-  var min = this.pixelsToMins(posY);
+    var min = this.pixelsToMins(posY);
     var timeFormat = events.getAttribute("timeFormat");
     var title = gj(events).find("div.eventTitle")[0];
-		var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
+    var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
     timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
-        am: "AM",
-        pm: "PM"
+	am: "AM",
+	pm: "PM"
     };
-		if (type == 1) {
-			title.innerHTML = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
-			return ;
-		}	
-    title.innerHTML = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
+    if (type == 1) {
+	title.innerHTML = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
+	return ;
+    }
+    if(delta > 30) {
+	title.innerHTML = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
+    } else {
+	title.innerHTML = this.minToTime(min, timeFormat);
+    }
 }
 
 /**
