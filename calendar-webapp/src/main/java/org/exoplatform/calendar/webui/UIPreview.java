@@ -16,7 +16,10 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
@@ -34,6 +37,8 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
+
+import javax.imageio.ImageIO;
 
 /**
  * Created by The eXo Platform SARL
@@ -55,19 +60,84 @@ public class UIPreview extends UICalendarView implements UIPopupComponent {
   private boolean isShowPopup_ = false ;
   private static final Log LOG = ExoLogger.getExoLogger(UIPreview.class);
 
-  public UIPreview() throws Exception {}
+  public static final int DEFAULT_THUMBNAIL_DIMENSION = 50;
+  public static final int DEFAULT_PREVIEW_DIMENSION   = 170;
+
+  private Map<String, String> iconMap;
+
+  public UIPreview() throws Exception {
+    initIconMap();
+  }
+
+  private void initIconMap() {
+    iconMap = new HashMap<String, String>();
+    iconMap.put("pdf", "uiFileTypeIconPdf uiFileTypeIcon");
+    iconMap.put("doc", "uiFileTypeIconDoc uiFileTypeIcon");
+    iconMap.put("all", "uiFileTypeIconAll uiFileTypeIcon");
+    iconMap.put("ppt", "uiFileTypeIconPpt uiFileTypeIcon");
+    iconMap.put("ttf", "uiFileTypeIconTtf uiFileTypeIcon");
+    iconMap.put("txt", "uiFileTypeIconTxt uiFileTypeIcon");
+    iconMap.put("xls", "uiFileTypeIconXls uiFileTypeIcon");
+    iconMap.put("xml", "uiFileTypeIconXml uiFileTypeIcon");
+  }
+
+  private String getFileExtension(String fileName)
+  {
+    return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
+  }
+
+  private String getIconStyleForAttachment(Attachment attachment)
+  {
+    if (iconMap.keySet().contains(getFileExtension(attachment.getName())))
+      return iconMap.get(getFileExtension(attachment.getName()));
+    return iconMap.get("all");
+  }
 
   /**
-   * return a thumbnail for image using the thumbnail REST web service
-   * thumbnail size is set to 64 x 64
+   * return a thumbnail link for image attachment using the thumbnail REST web service from ECMS
    *
-   * @param attachment
+   * @param attachment attachment object that contains the image
+   * @param oneFixedDimension resize the image after this dimension, keeping the image ratio
    * @return
    * @throws Exception
    */
-  public String getRestThumbnailLink(Attachment attachment) throws Exception
+  public String getRestThumbnailLinkFor(Attachment attachment, int oneFixedDimension) throws Exception
   {
-    return "/"+PortalContainer.getInstance().getRestContextName()+ "/thumbnailImage/medium/repository/collaboration/" + attachment.getDataPath();
+    int[] imageDimension = getScaledImageDimensionFor(attachment, oneFixedDimension);
+
+    return "/"+PortalContainer.getInstance().getRestContextName()+ "/thumbnailImage/custom/" + imageDimension[0] + "x" + imageDimension[1]
+        + "/repository/collaboration/" + attachment.getDataPath();
+  }
+
+  private int getImageAttachmentWidth(Attachment attachment) throws Exception
+  {
+    return ImageIO.read(attachment.getInputStream()).getWidth();
+  }
+
+  private int getImageAttachmentHeight(Attachment attachment) throws Exception
+  {
+    return ImageIO.read(attachment.getInputStream()).getHeight();
+  }
+
+  /**
+   * scale the image and return dimensions of image given one fixed dimension
+   *
+   * @param imageAttachment
+   * @param fixedDimension
+   * @return an array of new dimensions {width, height}
+   * @throws Exception
+   */
+  private int[] getScaledImageDimensionFor(Attachment imageAttachment, int fixedDimension) throws Exception
+  {
+    int width = getImageAttachmentWidth(imageAttachment);
+    int height = getImageAttachmentHeight(imageAttachment);
+    int biggerDimension = width > height ? width : height;
+    int smallerDimension = biggerDimension == width ? height : width;
+    double scalingRatio = (double) biggerDimension / fixedDimension;
+    int newScaledDimension =  (int) Math.round(smallerDimension / scalingRatio);
+    if (width > height) return new int[] { fixedDimension, newScaledDimension };
+    else if (width == height) return new int[] { fixedDimension, fixedDimension};
+    else return new int[] { newScaledDimension, fixedDimension};
   }
 
   @Override

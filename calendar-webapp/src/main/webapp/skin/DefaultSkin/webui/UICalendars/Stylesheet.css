@@ -948,14 +948,49 @@
 .viewIcon{
   display: none;
   position: absolute;
-  top: 23px;
-  left: 20px;
+  top: 30%;
+  left: 30%;
 }
 
 .imageThumbnail:hover .viewIcon{
   display: inline-block;
 }
 
+.uiFileTypeIcon {
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 25px;
+  width: 25px;
+  margin: 5px;
+  position: relative;
+  top: 10px;
+}
+
+.uiFileTypeIconPdf {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/pdf.png");
+}
+
+.uiFileTypeIconDoc {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/doc.png");
+}
+.uiFileTypeIconAll {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/file.png");
+}
+.uiFileTypeIconPpt {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/ppt.png");
+}
+.uiFileTypeIconTtf {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/ttf.png");
+}
+.uiFileTypeIconTxt {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/txt.png");
+}
+.uiFileTypeIconXls {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/xls.png");
+}
+.uiFileTypeIconXml {
+  background-image: url("/calendar/skin/DefaultSkin/webui/skinIcons/icons/xml.png");
+}
 
 /*====================View Event Month =====================*/
 
@@ -1278,7 +1313,7 @@
 .UITaskView .TaskListContainer .AddCategoryIcon {
   background: url('../skinIcons/icons/CalendarIcons.gif') no-repeat left -27px;
   float: right;
-  width: 16px; height: 16px;
+  width: 25px; height: 16px;
   margin: 5px 6px 0px 3px;
 }
 

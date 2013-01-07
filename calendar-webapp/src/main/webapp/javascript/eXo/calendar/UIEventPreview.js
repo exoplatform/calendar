@@ -15,8 +15,11 @@ UIEventPreview.prototype.showImagePreview = function(thumbnail) {
   gj(thumbnail).parent('div.imageThumbnail').hide();
   this.hiddenThumbnail = thumbnail;
   gj('img.imagePreview').attr('src', gj(thumbnail).attr('originalsrc'));
+  // center the image 
+  var marginLeft = Math.round( (gj('#downloadImage').parent('div').parent('td').attr('width') - gj(thumbnail).attr('previewWidth')) / 2);
+  gj('#downloadImage').parent('div').css('margin-left', marginLeft + "px");
   // set download link for image preview
-  gj('a#downloadImage').attr('href', gj(thumbnail).attr('downloadlink')); 
+  gj('a#downloadImage').attr('href', gj(thumbnail).attr('downloadlink'));
   gj('img.imagePreview').show();
   gj('img.closeButton').css('display', 'inline');	
 };

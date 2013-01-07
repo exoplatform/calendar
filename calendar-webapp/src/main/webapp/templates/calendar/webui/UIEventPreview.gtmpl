@@ -40,7 +40,7 @@ requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPre
 <div class="ViewBoxStyle">
 <table class="uiGrid table table-striped" id="RowContainerDay" cellspacing="0" borderspacing="0">
 <tr>
-<td style="border-right: 1px solid #c7c7c7;width: 185px;">
+<td class="leftPane" width="185" style="border-right: 1px solid #c7c7c7; vertical-align: top;">
 <div class="Text">
 <%=uiform.getLabel('From')%><span style="color: #1756d5;"><%=df.format(event.getFromDateTime())%></span>
         </div>
@@ -53,43 +53,54 @@ requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPre
 <%=uiform.getLabel('AttachedFile')%>
 </div>
 <% } %>
-    
-  <a id="downloadImage" href="#">      
-    <img class="imagePreview" src="" style="width: 170px; height: 170px; margin: 5px; display: none;" downloadlink="" />
+    <div style="position: relative; display: inline-block;">
+      <a id="downloadImage" href="#">
+        <img class="imagePreview" src="" style="margin-top: 5px; margin-bottom: 5px; display: none;" downloadlink="" />
 </a>
-  <img class="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 155px; margin-top:5px; display: none;" title="Close" data-placement="top" rel="tooltip" />
+      <img class="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 90%; top: 2%; display: none;" title="Close" data-placement="top" rel="tooltip" />
+</div><br/>
 
-<% for (attachFile in  event.getAttachment()) {
+<%
+List nonImageAttachments = new ArrayList();
+for (attachFile in  event.getAttachment()) {
+	if (attachFile.getMimeType().startsWith("image")) {
+		String thumbnailLink = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_THUMBNAIL_DIMENSION);
+		String previewLink   = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION);
+		String downloadlink  = uicomponent.getDownloadLink(attachFile) ;
+		String rndString     = String.valueOf(new Date().getTime());
+		String View          = uiform.getLabel('View') ;
+		String Close         = uiform.getLabel('Close') ;
+		String viewIcon      = uiform.getLabel('ViewIcon');
+		int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
+		%>
 
-if (attachFile.getMimeType().startsWith("image")) {
-String src = uicomponent.getImageSource(attachFile) ;
-String downloadlink = uicomponent.getDownloadLink(attachFile) ;
-String rndString = String.valueOf(new Date().getTime());
-String View = uiform.getLabel('View') ;
-String Close = uiform.getLabel('Close') ;
-String viewIcon = uiform.getLabel('ViewIcon');
-%>
+		<div class="imageThumbnail" style="display: inline-block;">
+		<img id="$attachFile.name" src="$thumbnailLink" class="thumbnail" originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block; margin: 5px;" previewWidth="$previewWidth" />
+		<div class="viewIcon" style="background: url('/platformNavigation/skin/platformNavigation/UISearchPlatformToolbarPortlet/background/Search.png') no-repeat scroll center 0;">
+		<span style="padding-top:10px; display: inline-block; color: white;">$viewIcon</span>
+        </div>
+		</div>
+    <% } else { 
+      nonImageAttachments.add(attachFile);  
+       } 
+    } 
+      
+    for (attachFile in nonImageAttachments) { %>
 
-<div class="imageThumbnail" style="width: 65px; height: 65px; display: inline-block;">
-<img id="$attachFile.name" src="$src" class="thumbnail" originalsrc="$src" downloadlink="$downloadlink" style="display: inline-block; width: 50px; height: 50px; margin: 2px;" />
-<div class="viewIcon" style="background: url('/platformNavigation/skin/platformNavigation/UISearchPlatformToolbarPortlet/background/Search.png') no-repeat scroll center 0;">
-<span style="padding-top:10px; display: inline-block; color: white;">$viewIcon</span>
-  </div>
-</div>
-<% } else { %>
-
-<div class="AttachmentIcon"  style="white-space: nowrap;">
-<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">$attachFile.name</a>
-(<%=CalendarUtils.convertSize(attachFile.size)%>)
-</div>
-<% } %>
-<% } %>
-</td>
+      <div class="attachmentIcon" style="white-space: nowrap; width: 185px; overflow: hidden;">
+        <a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
+           <i class="<%=uicomponent.getIconStyleForAttachment(attachFile) %>"></i>$attachFile.name
+		</a>
+        (<%=CalendarUtils.convertSize(attachFile.size)%>)
+      </div>
+		<% } %>
+	  <br/>
+	</td>
 
 <!-- event/ task description column -->
-<td >
-<div class="EventDescription $color"><span></span></div>
-<div style="font-weight: bold;">$event.summary</div>
+	<td style="vertical-align: top;">
+	<div class="EventDescription $color"><span></span></div>
+	<div style="font-weight: bold;">$event.summary</div>
 
 <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
 <tr>
@@ -97,19 +108,19 @@ String viewIcon = uiform.getLabel('ViewIcon');
 prio = event.getPriority() + "PriorityIcon" ;
 %>
 <td style="width: 26px;"><div class="$prio"><span></span></div></td>
-<td class="Text" style="width: 100px;">
-<%=uiform.getLabel('Place')%>
-</td>
+	<td class="Text" style="width: 100px;">
+	<%=uiform.getLabel('Place')%>
+	</td>
 <td class="Text"><%=(CalendarUtils.isEmpty(event.getLocation()))? "" : event.getLocation()%></td>
-</tr>
+	</tr>
 <tr>
 <td ><div class="<%=event.getEventState()%>Icon"><span></span></div></td>
-<td class="Text"><%=uiform.getLabel('RepeatEvent')%></td>
+	<td class="Text"><%=uiform.getLabel('RepeatEvent')%></td>
 <td class="Text"><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
-</tr>
+	</tr>
 <tr>
 <td ></td>
-<td class="Text"><%=uiform.getLabel('Description')%></td>
+	<td class="Text"><%=uiform.getLabel('Description')%></td>
 <td class="Text">
 <div class="ViewDescription">
 <%
