@@ -40,7 +40,7 @@ requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPre
 <div class="ViewBoxStyle">
 <table class="uiGrid table table-striped" id="RowContainerDay" cellspacing="0" borderspacing="0">
 <tr>
-<td class="leftPane" width="185" style="border-right: 1px solid #c7c7c7; vertical-align: top;">
+<td class="leftPane" width="195" style="border-right: 1px solid #c7c7c7; vertical-align: top; padding-left: 5px;">
 <div class="Text">
 <%=uiform.getLabel('From')%><span style="color: #1756d5;"><%=df.format(event.getFromDateTime())%></span>
         </div>
@@ -56,9 +56,9 @@ requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPre
     <div style="position: relative; display: inline-block;">
       <a id="downloadImage" href="#">
         <img class="imagePreview" src="" style="margin-top: 5px; margin-bottom: 5px; display: none;" downloadlink="" />
-</a>
+      </a>
       <img class="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 90%; top: 2%; display: none;" title="Close" data-placement="top" rel="tooltip" />
-</div><br/>
+    </div><br/>
 
 <%
 List nonImageAttachments = new ArrayList();
@@ -74,8 +74,8 @@ for (attachFile in  event.getAttachment()) {
 		int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
 		%>
 
-		<div class="imageThumbnail" style="display: inline-block;">
-		<img id="$attachFile.name" src="$thumbnailLink" class="thumbnail" originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block; margin: 5px;" previewWidth="$previewWidth" />
+		<div class="imageThumbnail" style="display: inline-block; vertical-align: top;">
+		<img id="$attachFile.name" src="$thumbnailLink" class="thumbnail" originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block;" previewWidth="$previewWidth" />
 		<div class="viewIcon" style="background: url('/platformNavigation/skin/platformNavigation/UISearchPlatformToolbarPortlet/background/Search.png') no-repeat scroll center 0;">
 		<span style="padding-top:10px; display: inline-block; color: white;">$viewIcon</span>
         </div>
