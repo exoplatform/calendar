@@ -104,7 +104,7 @@ int currentDay = uicomponent.getCurrentDay() ;
           <td>
             <div class="titleHeader">
               $currentDayName,
-            <%=uicomponent.renderDayViewInTitleBar("<a href=\"" + uicomponent.event("GotoDate",monthViewAction)+ "\">", "</a>", "<a href=\"\">", "</a>"); %>
+            <%=uicomponent.renderDayViewInTitleBar("<a href=\"" + uicomponent.event("GotoDate",monthViewAction)+ "\">", "</a>", "", ""); %>
             </div>
           </td>
           <td>
