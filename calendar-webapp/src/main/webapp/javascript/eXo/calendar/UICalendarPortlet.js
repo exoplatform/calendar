@@ -1181,6 +1181,11 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
     var min = this.pixelsToMins(posY);
     var timeFormat = events.getAttribute("timeFormat");
     var title = gj(events).find("div.eventTitle")[0];
+    // keeps string for icons for event type and event priority
+    var html = gj(title).html();
+    var arr = html.split("</i>");
+    var str = arr[0] + "</i>" + arr[1] + "</i>";
+    
     var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
     timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
 	am: "AM",
@@ -1190,10 +1195,16 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
 	title.innerHTML = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
 	return ;
     }
-    if(delta > 30) {
-	title.innerHTML = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
-    } else {
-	title.innerHTML = this.minToTime(min, timeFormat);
+    
+    //update string for start - end time
+    if(delta > 30)	{
+	str += this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
+	title.innerHTML = str;  
+    }
+
+    else {
+	str += this.minToTime(min,timeFormat);
+	title.innerHTML = str;
     }
 }
 
