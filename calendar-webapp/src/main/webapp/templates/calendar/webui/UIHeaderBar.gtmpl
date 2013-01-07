@@ -37,7 +37,8 @@ if(uicomponent instanceof UIWeekView) {
 String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.WEEK_OF_YEAR)) ;
 String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.WEEK_OF_YEAR)) ;
 Calendar startDateOfWeek = uicomponent.getBeginDateOfWeek();
-      Calendar endDateOfWeek = uicomponent.getEndDateOfWeek();
+Calendar endDateOfWeek = uicomponent.getEndDateOfWeek();
+endDateOfWeek.add(Calendar.DATE, -1);
 String startDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ startDateOfWeek.getTimeInMillis();
 String startMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ startDateOfWeek.getTimeInMillis();
 String endDayViewAction = uicomponent.TYPE_DAY +"&currentTime="+ endDateOfWeek.getTimeInMillis();
