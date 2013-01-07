@@ -33,7 +33,7 @@
             <module>MaskLayerControl</module>
         </depends>
         <depends>
-            <module>UIDateTimePicker</module>
+            <module>CalDateTimePicker</module>
         </depends>
         <depends>
             <module>FormHelper</module>
@@ -159,7 +159,7 @@
         </depends>
     </module>
     <module>
-        <name>UIDateTimePicker</name>
+        <name>CalDateTimePicker</name>
         <script>
             <path>/javascript/eXo/cs/UIDateTimePicker.js</path>
         </script>
