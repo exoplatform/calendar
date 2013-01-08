@@ -411,7 +411,7 @@ EventMan.prototype.initMonth = function(rootNode){
   this.rootNode = rootNode;
   this.events = new Array();
   this.weeks = new Array();
-  var DOMUtil = eXo.core.DOMUtil;
+  var DOMUtil = cs.DOMUtil;
   // Parse all event node to event object
   var allEvents = gj(rootNode).find('div.DayContentContainer'); 
   // Create and init all event
@@ -525,7 +525,7 @@ EventMan.prototype.groupByWeek = function(){
     currentWeek.weekIndex = i;
     for (var j = 0; j < this.events.length; j++) {
       var eventObj = this.events[j];
-      startCell = gj(weekNodes[i]).find('td.UICellBlock')[0]; 
+      startCell = gj(weekNodes[i]).find('td.uiCellBlock')[0]; 
 //      startWeek = parseInt(startCell.getAttribute("startTime"));
       startWeek = Date.parse(startCell.getAttribute('starttimefull'));
       endWeek = (startWeek + len * 24 * 60 * 60 * 1000) - 1;
@@ -869,7 +869,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
         eventObj.updateIndicator(eventObj.cloneNodes[eventObj.cloneNodes.length - 1], hasBefore, hasAfter);
       } else {
         eventNode = eventNode.cloneNode(true);
-        eXo.core.DOMUtil.removeElement(eventObj.rootNode);
+        gj(eventObj.rootNode).remove();
         eventNode.setAttribute('moremaster', 'true');
         eventObj.rootNode = eventNode;
         checkboxState = "";
@@ -914,7 +914,7 @@ GUIMan.prototype.setWidthForMoreEvent = function(moreEventList,len,dayNode){
 };
 
 GUIMan.prototype.hideMore = function(evt){
-	var DOMUtil = eXo.core.DOMUtil;
+	var DOMUtil = cs.DOMUtil;
 	var items = DOMUtil.hideElementList;
 	var ln = items.length ;
 	if (ln > 0) {
@@ -948,19 +948,19 @@ GUIMan.prototype.showMore = function(evt) {
 		if(currentTop > currentHeight){
 			moreContainerNode.style.top = - moreContainerNode.offsetHeight + "px";
 		}
-		eXo.core.DOMUtil.listHideElements(moreContainerNode);
+		cs.DOMUtil.listHideElements(moreContainerNode);
 //		moreContainerNode.onclick = eXo.cs.EventManager.cancelBubble ;
 		gj(moreContainerNode).on({'click':cs.EventManager.cancelBubble,
 			'mousedown':function(evt){
 				cs.EventManager.cancelEvent(evt);
 				if(cs.EventManager.getMouseButton(evt) == 2) 
-					eXo.core.DOMUtil.hideElementList.remove(this);
+					cs.DOMUtil.hideElementList.remove(this);
 			},
 			'contextmenu':function(evt){
 				cs.EventManager.cancelEvent(evt);
-				eXo.core.DOMUtil.hideElementList.remove(this);
+				cs.DOMUtil.hideElementList.remove(this);
 				cs.UIContextMenu.show(evt) ;
-				eXo.core.DOMUtil.hideElementList.push(this);
+				cs.DOMUtil.hideElementList.push(this);
 				return false;
 		}});
 //		moreContainerNode.onmousedown = function(evt){
@@ -1015,6 +1015,7 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
   }
   if(delta <= 0) delta = 1;
   var eventLen = Math.round(delta) * (dayInfo.width) + (delta - 1);
+  eventNode.style.position = 'absolute';
 	eventNode.style.top = topPos + 'px';
   eventNode.style.left = leftPos + 'px';
   eventNode.style.width = eventLen + 'px';
