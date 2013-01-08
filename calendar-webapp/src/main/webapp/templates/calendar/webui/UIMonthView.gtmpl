@@ -53,100 +53,100 @@
   tempFormat.setCalendar(uicomponent.getInstanceTempCalendar()) ;
   DateFormat wf = new  SimpleDateFormat("EEE", locale) ;
   numberOfDays = 7 ;
-  styleWidth = "width:13.8%;*width:14%;" ;
+  styleWidth = "width:14.2%;*width:14%;" ;
   %>
-  <div class="UIMonthView">
-    <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%>
-    <div class="DayTitleBar">
-    <table class="UIGrid"  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
-          <tr>
-            <%
-              cl = uicomponent.getBeginDateOfWeek() ;
-              t = 0 ; 
-              while(t++ <numberOfDays) {
-              wf.setCalendar(cl) ;
-            %>
-            <td class="uiCellBlock" style="$styleWidth">
-                <%=wf.format(cl.getTime()).toUpperCase()%>
-            </td>
-            <%
-              cl.add(Calendar.DATE,1) ;
-             }
-            %>
-          </tr>
-      </table>    
+  <div class="uiMonthView uiBox">
+    <div class="title"><% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%></div>
+    <div class="dayTitleBar">
+		<table class="uiGrid table" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
+		  <tr>
+			<%
+			  cl = uicomponent.getBeginDateOfWeek() ;
+			  t = 0 ; 
+			  while(t++ <numberOfDays) {
+			  wf.setCalendar(cl) ;
+			%>
+			<td class="uiCellBlock" style="$styleWidth">
+				<%=wf.format(cl.getTime()).toUpperCase()%>
+			</td>
+			<%
+			  cl.add(Calendar.DATE,1) ;
+			 }
+			%>
+		  </tr>
+		</table>    
     </div>  
     
-    <div class="EventMonthContainer">
-      <div class="EventMonthContent">
-        <div class="RowContainerDay MainWorkingPanel" style="position:relative ;" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
-      <table class="UIGrid"  style="table-layout: fixed;" id="UIMonthViewGrid" cellspacing="0" borderspacing="0" eXoCallback="eXo.calendar.UICalendarMan.GUIMan.callbackHighlighter() ;">
-        <col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%">      
-        <tbody>
-        
-          <%
-            temcalendar = uicomponent.getInstanceTempCalendar() ;//uicomponent.getBeginDateOfMonthView() ;
-            temcalendar.setTime(uicomponent.getBeginDateOfMonthView().getTime()) ;
-            week = 0 ; 
-            table = "" ;
-            clazz ="" ;
-            dayOfMonth = 1 ;
-            validDay = 1 ;
-            cssClass = "CalendarContentNomal" ;
-            daysInMonth = uicomponent.getDaysInMonth() ;
-            currentDate = Integer.parseInt(sdf.format(temcalendar.getTime()));
-            while (week++ < uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1)  ||  (dayOfMonth <= daysInMonth)) {
-              println "<tr>";
-              dayOfWeek = 0 ;
-              while (dayOfWeek++ < 7) {
-                if ((week == 1 && currentDate > 8) || (week >= (uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1)-1) && currentDate < 8)) {
-                  validDay = 0;
-                } else {
-                  validDay = 1 ;
-                }
-                display = "" ;
-                 dateTime = temcalendar.getTimeInMillis() ;  
-                actionUpdate = uicomponent.event('UpdateEvent', dateTime + '&' + uicomponent.EVENTID + '=event&' + uicomponent.CALENDARID + '=cal&' + uicomponent.CALTYPE + '=caltype') ;
-                dayActionLink = uicomponent.TYPE_DAY +"&currentTime="+  dateTime ;
-                if (validDay) { 
-                  if (uicomponent.isCurrentDay(dayOfMonth, currentMonth, currentYear )) {
-                    clazz = 'Today';
-                  } else if (dayOfWeek == 1 || dayOfWeek == 7) {
-                    clazz = 'DayBox';
-                  } else {
-                    clazz = 'DayBox';
-                  }
-                  month = currentMonth + 1 ;
-                  %>
-                  <td startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>"  actionLink="$actionUpdate" class='CalendarContentNomal uiCellBlock' startTime='<%=temcalendar.getTimeInMillis()%>' > 
-                    <div class='DayBox $clazz' >
-                    <a href="<%=uicomponent.event("GotoDate",dayActionLink)%>" onmousedown="event.cancelBubble = true ;">
-                     <%=sdf.format(temcalendar.getTime())%> 
-                    </a>
-                   </div><div class='DayContent'><span></span></div>
-                  </td> 
-                <%   
-                  dayOfMonth++ ;
-                } else {
-                  %>
-                  <td  startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>" actionLink="$actionUpdate" startTime='$dateTime' class='CalendarContentDisable  uiCellBlock'> <div class='DisableDay'><span></span></div>
-                    <div class='DayContent'> 
-                     <a href="<%=uicomponent.event("GotoDate",dayActionLink)%>" onmousedown="event.cancelBubble = true ;">
-                      <%=sdtf.format(temcalendar.getTime())%>
-                    </a>
-                     </div>
-                   </td>
-               <%
-                }
-              temcalendar.add(Calendar.DATE, 1) ;
-              currentDate = Integer.parseInt(sdf.format(temcalendar.getTime()));
-              }
-              println "</tr>" ;
-            }  
-            
-          %>
-        </tbody>
-      </table>
+    <div class="eventMonthContainer">
+      <div class="eventMonthContent">
+        <div class="rowContainerDay" style="position:relative ;" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
+			<table class="uiGrid table" id="UIMonthViewGrid" cellspacing="0" borderspacing="0" eXoCallback="eXo.calendar.UICalendarMan.GUIMan.callbackHighlighter() ;">
+				<col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%">      
+				<tbody>
+
+				  <%
+					temcalendar = uicomponent.getInstanceTempCalendar() ;//uicomponent.getBeginDateOfMonthView() ;
+					temcalendar.setTime(uicomponent.getBeginDateOfMonthView().getTime()) ;
+					week = 0 ; 
+					table = "" ;
+					clazz ="" ;
+					dayOfMonth = 1 ;
+					validDay = 1 ;
+					cssClass = "calendarContentNomal" ;
+					daysInMonth = uicomponent.getDaysInMonth() ;
+					currentDate = Integer.parseInt(sdf.format(temcalendar.getTime()));
+					while (week++ < uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1)  ||  (dayOfMonth <= daysInMonth)) {
+					  println "<tr>";
+					  dayOfWeek = 0 ;
+					  while (dayOfWeek++ < 7) {
+						if ((week == 1 && currentDate > 8) || (week >= (uicomponent.getWeeksOfTheMonth(currentYear, currentMonth, 1)-1) && currentDate < 8)) {
+						  validDay = 0;
+						} else {
+						  validDay = 1 ;
+						}
+						display = "" ;
+						 dateTime = temcalendar.getTimeInMillis() ;  
+						actionUpdate = uicomponent.event('UpdateEvent', dateTime + '&' + uicomponent.EVENTID + '=event&' + uicomponent.CALENDARID + '=cal&' + uicomponent.CALTYPE + '=caltype') ;
+						dayActionLink = uicomponent.TYPE_DAY +"&currentTime="+  dateTime ;
+						if (validDay) { 
+						  if (uicomponent.isCurrentDay(dayOfMonth, currentMonth, currentYear )) {
+							clazz = 'today';
+						  } else if (dayOfWeek == 1 || dayOfWeek == 7) {
+							clazz = 'dayBox';
+						  } else {
+							clazz = 'dayBox';
+						  }
+						  month = currentMonth + 1 ;
+						  %>
+						  <td startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>"  actionLink="$actionUpdate" class="calendarContentNomal uiCellBlock" startTime='<%=temcalendar.getTimeInMillis()%>' > 
+							<div class="dayBox $clazz">
+							<a href="<%=uicomponent.event("GotoDate",dayActionLink)%>" onmousedown="event.cancelBubble = true ;">
+							 <%=sdf.format(temcalendar.getTime())%> 
+							</a>
+						   </div><div class="dayContent"></div>
+						  </td> 
+						<%   
+						  dayOfMonth++ ;
+						} else {
+						  %>
+						  <td  startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>" actionLink="$actionUpdate" startTime='$dateTime' class="uiCellBlock calendarContentDisable"><div class="disableDay"></div>
+							<div class="dayContent"> 
+							 <a href="<%=uicomponent.event("GotoDate",dayActionLink)%>" onmousedown="event.cancelBubble = true ;">
+							  <%=sdtf.format(temcalendar.getTime())%>
+							</a>
+							 </div>
+						   </td>
+					   <%
+						}
+					  temcalendar.add(Calendar.DATE, 1) ;
+					  currentDate = Integer.parseInt(sdf.format(temcalendar.getTime()));
+					  }
+					  println "</tr>" ;
+					}  
+					
+				  %>
+				</tbody>
+			</table>
       <%
           
           startMonh =  uicomponent.getBeginDateOfMonth() ;
