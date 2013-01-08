@@ -825,7 +825,6 @@
       <UIWeekView>Theo tuần</UIWeekView>
       <UIMonthView>Theo tháng</UIMonthView>
       <UIListContainer>Danh sách</UIListContainer>
-      <UIScheduleView>Xắp xếp</UIScheduleView>
       <UIWorkingView>Ngày làm việc</UIWorkingView>
       <DefaultLayout>Sự bố trí mặc định</DefaultLayout>
     </label>

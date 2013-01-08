@@ -289,7 +289,6 @@
       <option.1>Week view</option.1>
       <option.2>Month view</option.2>
       <option.4>List view</option.4>
-      <option.5>Schedule view</option.5>
       <option.6>Work week</option.6>
       <option.12-Hours>AM/PM</option.12-Hours>
       <option.24-Hours>24 Hours</option.24-Hours>
@@ -795,7 +794,6 @@
       <UIWeekView>أسبوع</UIWeekView>
       <UIMonthView>شهر</UIMonthView>
       <UIListContainer>قائمة</UIListContainer>
-      <UIScheduleView>جدول أعمال</UIScheduleView>
       <UIWorkingView>أسبوع العمل</UIWorkingView>
       <DefaultLayout>Default layout</DefaultLayout>
     </label>

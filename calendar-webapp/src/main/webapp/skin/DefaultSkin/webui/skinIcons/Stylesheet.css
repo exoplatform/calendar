@@ -383,11 +383,6 @@
   background: url('icons/CalendarIcons.gif') no-repeat left -1430px; /* orientation=rt */
 }
 
-.UICalendarPortlet .UIScheduleViewIcon {
-  background: url('icons/CalendarIcons.gif') no-repeat left -1477px; /* orientation=lt */
-  background: url('icons/CalendarIcons.gif') no-repeat right -1477px; /* orientation=rt */
-}
-
 .UICalendarPortlet .UIWeekViewIcon {
   background: url('icons/CalendarIcons.gif') no-repeat left -1503px; /* orientation=lt */
   background: url('icons/CalendarIcons.gif') no-repeat right -1503px; /* orientation=rt */
@@ -401,11 +396,6 @@
 .UICalendarPortlet .UIMonthViewIcon {
   background: url('icons/CalendarIcons.gif') no-repeat left -1581px; /* orientation=lt */
   background: url('icons/CalendarIcons.gif') no-repeat right -1581px; /* orientation=rt */
-}
-
-.UICalendarPortlet .UIYearViewIcon {
-  background: url('icons/CalendarIcons.gif') no-repeat left -1607px; /* orientation=lt */
-  background: url('icons/CalendarIcons.gif') no-repeat right -1607px; /* orientation=rt */
 }
 
 .UICalendarPortlet .UIListContainerIcon {
