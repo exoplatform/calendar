@@ -123,13 +123,14 @@
 							<a href="<%=uicomponent.event("GotoDate",dayActionLink)%>" onmousedown="event.cancelBubble = true ;">
 							 <%=sdf.format(temcalendar.getTime())%> 
 							</a>
-						   </div><div class="dayContent"></div>
+						   </div>
+						   <div class="dayContent"></div>
 						  </td> 
 						<%   
 						  dayOfMonth++ ;
 						} else {
 						  %>
-						  <td  startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>" actionLink="$actionUpdate" startTime='$dateTime' class="uiCellBlock calendarContentDisable"><div class="disableDay"></div>
+						  <td startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>" actionLink="$actionUpdate" startTime='$dateTime' class="uiCellBlock calendarContentDisable"><div class="disableDay"></div>
 							<div class="dayContent"> 
 							 <a href="<%=uicomponent.event("GotoDate",dayActionLink)%>" onmousedown="event.cancelBubble = true ;">
 							  <%=sdtf.format(temcalendar.getTime())%>
@@ -170,28 +171,32 @@
           
           %>
           
-          
-          <div class="DayContentContainer eventBoxes" tartIndex="$startIndex" calType="$event.calType" eventId="$event.id" calId="$event.calendarId" eventCat="$event.eventCategoryId" 
+          <div class="dayContentContainer eventBoxes" tartIndex="$startIndex" calType="$event.calType" eventId="$event.id" calId="$event.calendarId" eventCat="$event.eventCategoryId" 
           startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
           startTime="$startTime" endTime="$endTime" moveAction="$moveAction" isOccur="$isOccur" recurId="$recurId">
-            <div class="EventOnDayBorder $color">
+            <div class="eventOnDayBorder $color">
               <div class="ClearFix">
-              <div class="NextLeft"></div>
-              <div class="NextRight"></div>
-              <div class="EventOnDayContent">
-                
-                  <div class="EventCheckbox">
-                    <%uicomponent.renderField(uicomponent.getChildById(uicomponent.getCheckboxId(event)))%>
-                  </div>
-                  <div class="EventSummary">
-                    <div class="<%=event.eventState%>Icon">
-                      <div class="<%=event.getPriority()%>PriorityIcon  <%= (event.getPriority() != null)? " PriorityIcon":"" %>">
-                        <div class="EventLabel EventPriority">$event.summary</div>
-                      </div>
-                    </div>
-                  </div>
-                
-              </div>
+				  <div class="NextLeft"></div>
+				  <div class="NextRight"></div>
+				  <div class="eventOnDayContent">
+					  <div class="pull-left eventCheckbox $color">
+						<%uicomponent.renderField(uicomponent.getChildById(uicomponent.getCheckboxId(event)))%>
+					  </div>
+					  
+					  <div class="eventSummary">
+					  <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
+							<i class="uiIconCalTaskMini"></i>
+							<%} else {%>
+							<i class="uiIconCalClockMini"></i>
+							<%}%>
+							<i class="uiIconCal<%=event.getPriority()%>Priority"></i>
+							
+							<span>
+							  $event.summary
+							</span>
+						</div>
+					 
+				  </div>
               
               </div>
             </div>

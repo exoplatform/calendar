@@ -1276,7 +1276,7 @@ UICalendarPortlet.prototype.showContextMenu = function(compid){
     };
     UIContextMenu.init(config);
     UIContextMenu.attach("calendarContentNomal", "UIMonthViewRightMenu");
-    UIContextMenu.attach("EventOnDayContent", "UIMonthViewEventRightMenu");
+    UIContextMenu.attach("eventOnDayContent", "UIMonthViewEventRightMenu");
     UIContextMenu.attach("TimeRule", "UIDayViewRightMenu");
     UIContextMenu.attach("eventBoxes", "UIDayViewEventRightMenu");
     UIContextMenu.attach(["Weekday","Weekend","today", "eventAlldayContainer"], "UIWeekViewRightMenu");
@@ -1497,7 +1497,7 @@ UICalendarPortlet.prototype.monthViewCallback = function(evt){
         }
     }
     else 
-        if (objvalue = gj(src).parents(".DayContentContainer")[0]) {
+        if (objvalue = gj(src).parents(".dayContentContainer")[0]) {
             var eventId = objvalue.getAttribute("eventId");
             var calendarId = objvalue.getAttribute("calId");
             var calType = objvalue.getAttribute("calType");

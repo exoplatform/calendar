@@ -413,7 +413,7 @@ EventMan.prototype.initMonth = function(rootNode){
   this.weeks = new Array();
   var DOMUtil = cs.DOMUtil;
   // Parse all event node to event object
-  var allEvents = gj(rootNode).find('div.DayContentContainer'); 
+  var allEvents = gj(rootNode).find('div.dayContentContainer'); 
   // Create and init all event
   for (var i = 0; i < allEvents.length; i++) {
     if (allEvents[i].style.display == 'none') {
@@ -471,7 +471,7 @@ EventMan.prototype.cleanUp = function() {
   var rowContainerDay = gj(this.rootNode).find('div.rowContainerDay'); 
 
   for (var i=0; i<moreNodes.length; i++) {
-    var eventNodes = gj(moreNodes[i]).find('div.DayContentContainer');
+    var eventNodes = gj(moreNodes[i]).find('div.dayContentContainer');
     try {
       gj(moreNodes[i]).remove();
     } catch (e) {}
@@ -779,7 +779,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
   var dayInfo = {
     width : dayNode.offsetWidth - 1,
     left : dayNode.offsetLeft,
-    top : dayNode.offsetTop + 17,
+    top : dayNode.offsetTop + 20,
 		beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
 		endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
   }
@@ -1031,7 +1031,7 @@ GUIMan.prototype.setOverMonth = function(eventObj,beginMonth,endMonth){
 		var realStart = Date.parse(eventNode.getAttribute("startTimeFull"));
 		var realEnd = Date.parse(eventNode.getAttribute("endTimeFull"));
 		if(realStart < parseInt(beginMonth)){
-			var EventOnDayContent = gj(eventObj.rootNode).find('div.EventOnDayContent')[0];
+			var EventOnDayContent = gj(eventObj.rootNode).find('div.eventOnDayContent')[0];
 			gj(EventOnDayContent).css('margin-right','10px');
 			var leftNode = gj(eventObj.rootNode).find('div.NextLeft')[0];
 			gj(leftNode).addClass("NextLeftEvent");
@@ -1070,7 +1070,7 @@ GUIMan.prototype.addContinueClass = function(){
 			}else{
 				eventNode = events[i].rootNode;
 			}
-			var EventOnDayContent = gj(eventNode).find('div.EventOnDayContent')[0];
+			var EventOnDayContent = gj(eventNode).find('div.eventOnDayContent')[0];
 			gj(EventOnDayContent).css('margin-left','10px');
 			var rightNode = gj(eventNode).find('div.NextRight')[0];
 			gj(rightNode).addClass("NextRightEvent");			

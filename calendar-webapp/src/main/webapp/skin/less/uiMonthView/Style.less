@@ -2,6 +2,7 @@
 /*============== uiMonthView ================*/
 
 .uiMonthView{
+	
 	.dayTitleBar{
 		background: @tableBackgroundAccent;
 		.uiGrid.table tr td{
@@ -10,6 +11,7 @@
 			color: @textColor;
 		}
 	}
+	
 	.eventMonthContent{
 		.dayContent{
    			text-align: right;
@@ -37,7 +39,7 @@
 				}
 				text-align: right;
 				padding-right: 10px;
-				padding-top: 10px;
+				padding-top: 4px;
 			}
 			
 		}
@@ -50,6 +52,43 @@
 			}
 		}
 		
+		.eventOnDayBorder{
+			border-top: solid 1px @white;
+			height: 16px;
+			
+			.eventCheckbox{
+				height: 16px;
+			} 
+		}
+		
+		.eventSummary{
+		color: @white;
+		line-height: 18px;
+		}
+		
+	}
+	
+	.eventOnDayContent{
+		.uiCheckbox{
+			width: 5px;
+		}
+		.uiCheckbox input[type="checkbox"] + span:before{
+			opacity: 0.5;
+			top: 3px;
+    		width: 9px;
+    		height: 10px;
+    		.border-radius(2px);
+    		background: #ddd;
+		}
+		
+		.uiCheckbox input[type="checkbox"]:checked + span:after{
+		    border-bottom: 2px solid #fff;
+		    border-left: 2px solid #fff;
+		    height: 3px;
+		    left: 2px;
+		    top: 3px;
+		    width: 5px;
+		}
 	}
 	
 }
