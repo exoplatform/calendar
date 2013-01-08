@@ -21,10 +21,8 @@ requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 requirejs.require("SHARED/jquery","gj");
 requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() {cs.Utils.showHidePane(this,gj('#UIListUsers').parent(),'$uicomponent.id'); });");
 requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
-requirejs.addScripts("gj('img.thumbnail').click(function() { cal.UIEventPreview.showImagePreview(this); });");
-requirejs.addScripts("gj('img.closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
-requirejs.addScripts("gj('div.viewIcon').click(function() { cal.UIEventPreview.clickOnViewIcon(this); });");
-requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPreview.hoverInThumbnail(this); }, function() { cal.UIEventPreview.hoverOutThumbnail(this); });");
+requirejs.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
+requirejs.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");
 %>
 <div id="<%uicomponent.getId()%>" class="UIPreview">
 <% if (!uicomponent.isShowPopup()) { %>
@@ -40,7 +38,7 @@ requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPre
 <div class="ViewBoxStyle">
 <table class="uiGrid table table-striped" id="RowContainerDay" cellspacing="0" borderspacing="0">
 <tr>
-<td class="leftPane" width="195" style="border-right: 1px solid #c7c7c7; vertical-align: top; padding-left: 5px;">
+<td width="200" style="border-right: 1px solid #C7C7C7; padding-left: 5px; padding-right: 5px; padding-top: 10px; vertical-align: top;">
 <div class="Text">
 <%=uiform.getLabel('From')%><span style="color: #1756d5;"><%=df.format(event.getFromDateTime())%></span>
         </div>
@@ -53,12 +51,12 @@ requirejs.addScripts("gj('div.imageThumbnail').hover(function() { cal.UIEventPre
 <%=uiform.getLabel('AttachedFile')%>
 </div>
 <% } %>
-    <div style="position: relative; display: inline-block;">
+    <div id="imagePreviewContainer">
       <a id="downloadImage" href="#">
-        <img class="imagePreview" src="" style="margin-top: 5px; margin-bottom: 5px; display: none;" downloadlink="" />
-      </a>
-      <img class="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 90%; top: 2%; display: none;" title="Close" data-placement="top" rel="tooltip" />
-    </div><br/>
+        <img id="imagePreview" src="" style="margin-top: 5px; margin-bottom: 5px; display: none;" downloadlink="" />
+</a>
+      <img id="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 90%; top: 2%; display: none;" title="Close" data-placement="top" rel="tooltip" />
+</div><br/>
 
 <%
 List nonImageAttachments = new ArrayList();
@@ -70,35 +68,37 @@ for (attachFile in  event.getAttachment()) {
 		String rndString     = String.valueOf(new Date().getTime());
 		String View          = uiform.getLabel('View') ;
 		String Close         = uiform.getLabel('Close') ;
-		String viewIcon      = uiform.getLabel('ViewIcon');
+		String viewText      = uiform.getLabel('ViewIcon');
 		int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
 		%>
 
-		<div class="imageThumbnail" style="display: inline-block; vertical-align: top;">
-		<img id="$attachFile.name" src="$thumbnailLink" class="thumbnail" originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block;" previewWidth="$previewWidth" />
-		<div class="viewIcon" style="background: url('/platformNavigation/skin/platformNavigation/UISearchPlatformToolbarPortlet/background/Search.png') no-repeat scroll center 0;">
-		<span style="padding-top:10px; display: inline-block; color: white;">$viewIcon</span>
-        </div>
+		<div class="thumbnailContainer">
+		<img class="thumbnail" src="$thumbnailLink"  originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block;" previewWidth="$previewWidth" />
+		<div class="viewIconContainer">
+		<span class="viewIcon"></span>
+		    <span class="viewText">$viewText</span>
 		</div>
-    <% } else { 
-      nonImageAttachments.add(attachFile);  
-       } 
-    } 
-      
-    for (attachFile in nonImageAttachments) { %>
+		</div>
 
-      <div class="attachmentIcon" style="white-space: nowrap; width: 185px; overflow: hidden;">
-        <a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
-           <i class="<%=uicomponent.getIconStyleForAttachment(attachFile) %>"></i>$attachFile.name
+		<% } else {
+		nonImageAttachments.add(attachFile);
+	}
+}
+
+for (attachFile in nonImageAttachments) { %>
+
+	<div class="attachmentIcon" style="white-space: nowrap; width: 185px; overflow: hidden;">
+	<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
+	<i class="<%=uicomponent.getIconStyleForAttachment(attachFile) %>"></i>$attachFile.name
 		</a>
-        (<%=CalendarUtils.convertSize(attachFile.size)%>)
-      </div>
+	(<%=CalendarUtils.convertSize(attachFile.size)%>)
+	</div>
 		<% } %>
 	  <br/>
 	</td>
 
 <!-- event/ task description column -->
-	<td style="vertical-align: top;">
+	<td style="vertical-align: top; padding-top: 10px;">
 	<div class="EventDescription $color"><span></span></div>
 	<div style="font-weight: bold;">$event.summary</div>
 
@@ -192,14 +192,14 @@ println des ;
                 </a>
 <a class="btn ControlButton" href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
 <i class="uiIconDelete"></i><%=uiform.getLabel('DeleteEvent')%>
-                </a>
-</div>
-               <%}%>
-          </td>
+    </a>
+</div><br/>
+<%}%>
+</td>
 </tr>
-        </table>
+</table>
 </div>
-   </div>
+</div>
 </div>
 </div>
 <%uiform.end();%>

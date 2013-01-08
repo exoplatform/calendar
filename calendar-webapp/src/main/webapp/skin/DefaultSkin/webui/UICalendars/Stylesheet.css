@@ -695,19 +695,54 @@
   width: 50px;
 }
 
-.imageThumbnail{
-  position: relative;
+#imagePreviewContainer {
+  display: inline-block;
+  position: relative; 
 }
 
-.viewIcon{
-  display: none;
+.thumbnailContainer {
+  -webkit-border-radius: 4px;
+  display: inline-block;
+  border-radius: 4px;
+  margin: 2px;
+  position: relative;
+  vertical-align: top;
+}
+
+.viewIcon {
+  background: url(/platformNavigation/skin/platformNavigation/UISearchPlatformToolbarPortlet/background/Search.png) no-repeat scroll center 0;
+  display: inline-block;
+  height: 14px;
+  left: 35%;
   position: absolute;
   top: 30%;
-  left: 30%;
+  width: 17px;
 }
 
-.imageThumbnail:hover .viewIcon{
+.viewText {
+  color: white;
   display: inline-block;
+  left: 30%;
+  padding-top: 5px;
+  position: absolute;
+  top: 40%;  
+}
+
+.viewIconContainer{
+  display: none;
+  overflow: hidden;
+}
+
+.thumbnailContainer:hover .viewIconContainer{
+  -webkit-border-radius: 4px;
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  display: inline-block;
+  left: 0;
+  height: 100%;  
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .uiFileTypeIcon {

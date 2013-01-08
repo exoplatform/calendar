@@ -1,27 +1,28 @@
 function UIEventPreview() {
   this.hiddenThumbnail = null;
-}
+};
 
 /**
- * captures onclick on the thumbnail div, 
+ * captures onclick on the thumbnail image, 
  * display the thumbnail in the image preview 
  * display the hidden thumbnail
- * hides the thumbnail
+ * hides the clicked thumbnail
  **/
 UIEventPreview.prototype.showImagePreview = function(thumbnail) { 
   // show the hidden thumbnail 
-  if (this.hiddenThumbnail !== null) {  gj(this.hiddenThumbnail).parent('div.imageThumbnail').show(); }
+  if (this.hiddenThumbnail !== null) {  gj(this.hiddenThumbnail).parent('.thumbnailContainer').show(); }
   // hide the clicked thumbnail
-  gj(thumbnail).parent('div.imageThumbnail').hide();
+  gj(thumbnail).parent('.thumbnailContainer').hide();
   this.hiddenThumbnail = thumbnail;
-  gj('img.imagePreview').attr('src', gj(thumbnail).attr('originalsrc'));
+  gj('#imagePreview').attr('src', gj(thumbnail).attr('originalsrc'));
   // center the image 
-  var marginLeft = Math.round( (gj('#downloadImage').parent('div').parent('td').attr('width') - gj(thumbnail).attr('previewWidth')) / 2);
-  gj('#downloadImage').parent('div').css('margin-left', marginLeft + "px");
+  var marginLeft = Math.round( (gj('#downloadImage').parent('#imagePreviewContainer').parent('td').attr('width') - gj(thumbnail).attr('previewWidth')) / 2);
+  gj('#downloadImage').parent('#imagePreviewContainer').css('margin-left', marginLeft + "px");
   // set download link for image preview
-  gj('a#downloadImage').attr('href', gj(thumbnail).attr('downloadlink'));
-  gj('img.imagePreview').show();
-  gj('img.closeButton').css('display', 'inline');	
+  gj('#downloadImage').attr('href', gj(thumbnail).attr('downloadlink'));
+  gj('#imagePreviewContainer').show();
+  gj('#imagePreview').show();
+  gj('#closeButton').css('display', 'inline');	
 };
 
 /**
@@ -29,27 +30,19 @@ UIEventPreview.prototype.showImagePreview = function(thumbnail) {
  * hide the preview, hide the button and display the hidden thumbnail 
  **/
 UIEventPreview.prototype.closeImagePreview = function(closeButton) {
-  gj('img.imagePreview').hide();
+  gj('#imagePreviewContainer').hide();
+  gj('#imagePreview').hide();
   gj(closeButton).hide();
-  gj(this.hiddenThumbnail).parent('div.imageThumbnail').show();	
+  gj(this.hiddenThumbnail).parent('.thumbnailContainer').show();	
 };
 
 /**
- * captures click action on view icon and passes it to the near thumbnail
+ * captures onclick on view icon container and passes it to the sibling thumbnail
  **/
-UIEventPreview.prototype.clickOnViewIcon = function(viewIcon) {
-  // find the nearby thumbnail
-  var thumbnail = gj(viewIcon).parent('div.imageThumbnail').children('img.thumbnail');
+UIEventPreview.prototype.clickOnViewIconContainer = function(viewIconContainer) {
+  var thumbnail = gj(viewIconContainer).parent('.thumbnailContainer').children('.thumbnail');
   this.showImagePreview(thumbnail);
-}
-
-UIEventPreview.prototype.hoverInThumbnail = function(thumbnailParent) {
-  gj(thumbnailParent).css('background', 'rgba(0,0,0,0.2)');
-}
-
-UIEventPreview.prototype.hoverOutThumbnail = function(thumbnailParent) {
-  gj(thumbnailParent).css('background', 'none');
-}
+};
 
 _module.UIEventPreview = new UIEventPreview();
 eXo.calendar.UIEventPreview = _module.UIEventPreview;
