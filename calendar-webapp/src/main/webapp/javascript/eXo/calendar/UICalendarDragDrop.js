@@ -55,7 +55,7 @@ function UICalendarDragDrop() {
 UICalendarDragDrop.prototype.init = function(tableData, events) {
   this.tableData = tableData;
   this.events = events;
-  this.RowContainerDay = gj((this.tableData[0])[0]).parents('.RowContainerDay')[0]; 
+  this.RowContainerDay = gj((this.tableData[0])[0]).parents('.rowContainerDay')[0]; 
   this.getAllDropableSets() ;
   this.regDnDItem() ;
 } ;
@@ -114,7 +114,7 @@ UICalendarDragDrop.prototype.initDnD = function(dropableObjs, clickObj, dragObj,
 
   gj(tmpNode).css({opacity:0.5});
   var UIMonthViewNode = document.createElement('div');
-  UIMonthViewNode.className = 'UICalendarPortlet UIMonthView';
+  UIMonthViewNode.className = 'UICalendarPortlet uiMonthView';
   var EventMonthContentNode = document.createElement('div');
   EventMonthContentNode.className = 'EventMonthContent';
   
@@ -251,7 +251,7 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
 } ;
 
 UICalendarDragDrop.prototype.getCheckedObject = function(clickObj){
-  var eventContainer = gj(clickObj).parents('.RowContainerDay')[0];
+  var eventContainer = gj(clickObj).parents('.rowContainerDay')[0];
   var evenObj = gj(eventContainer).find('div.eventBoxes'); 
   var checkedObj = [];
   var i = evenObj.length ;

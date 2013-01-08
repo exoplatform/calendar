@@ -437,7 +437,7 @@ EventMan.prototype.cleanUp = function() {
       !this.rootNode.nextSibling) {
     return;
   }
-  var rowContainerDay = gj(this.rootNode).find('div.RowContainerDay')[0]; 
+  var rowContainerDay = gj(this.rootNode).find('div.rowContainerDay')[0]; 
   
   for (var i=0; i<this.events.length; i++) {
     var eventObj = this.events[i];
@@ -468,7 +468,7 @@ EventMan.prototype.cleanUp = function() {
     this.events[i] = null;
   }
   var moreNodes = gj(this.rootNode).find('div.MoreEvent'); 
-  var rowContainerDay = gj(this.rootNode).find('div.RowContainerDay'); 
+  var rowContainerDay = gj(this.rootNode).find('div.rowContainerDay'); 
 
   for (var i=0; i<moreNodes.length; i++) {
     var eventNodes = gj(moreNodes[i]).find('div.DayContentContainer');
@@ -574,7 +574,7 @@ GUIMan.prototype.initMonth = function(){
     var eventLabelNode = gj(eventObj.rootNode).find('div.EventLabel')[0];
     eventObj.rootNode.setAttribute('title', eventObj.name);
   }
-  this.rowContainerDay = gj(eXo.calendar.UICalendarMan.EventMan.rootNode).find('div.RowContainerDay')[0];
+  this.rowContainerDay = gj(eXo.calendar.UICalendarMan.EventMan.rootNode).find('div.rowContainerDay')[0];
   var rows = eXo.calendar.UICalendarMan.EventMan.UIMonthViewGrid.getElementsByTagName('tr');
   this.tableData = new Array();
   for (var i = 0; i < rows.length; i++) {

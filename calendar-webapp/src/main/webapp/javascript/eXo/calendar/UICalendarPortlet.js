@@ -1275,7 +1275,7 @@ UICalendarPortlet.prototype.showContextMenu = function(compid){
         'preventForms': false
     };
     UIContextMenu.init(config);
-    UIContextMenu.attach("CalendarContentNomal", "UIMonthViewRightMenu");
+    UIContextMenu.attach("calendarContentNomal", "UIMonthViewRightMenu");
     UIContextMenu.attach("EventOnDayContent", "UIMonthViewEventRightMenu");
     UIContextMenu.attach("TimeRule", "UIDayViewRightMenu");
     UIContextMenu.attach("eventBoxes", "UIDayViewEventRightMenu");

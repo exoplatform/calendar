@@ -149,7 +149,7 @@ Highlighter.prototype.start = function(evt) {
 	Highlighter.container = Highlighter.startBlock.offsetParent ;
 	var fixleftIE = (document.all && document.getElementById("UIWeekView"))? 6 : 0 ; //TODO : No hard code 
 	var x = base.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) -  fixleftIE ;
-	var y = base.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) + gj('.UIMonthView .MainWorkingPanel').scrollTop();
+	var y = base.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) + gj('.uiMonthView').scrollTop();
 	Highlighter.reserveDirection(Highlighter.startCell, Highlighter.container,Highlighter.startBlock) ;
 	Highlighter.startBlock.style.top = y + "px" ;
 	Highlighter.startBlock.style.width = Highlighter.dimension.x + "px" ;
@@ -224,7 +224,7 @@ Highlighter.prototype.execute = function(evt) {
 				Highlighter.reserveDirection(Highlighter.currentCell, Highlighter.container,startBlock) ;
 			}
 			startBlock.style.display = "block" ;
-			startBlock.style.top = startY  + gj('.UIMonthView .MainWorkingPanel').scrollTop() + "px" ;
+			startBlock.style.top = startY  + gj('.uiMonthView').scrollTop() + "px" ;
 			startBlock.style.width = startWidth + "px" ;
 			startBlock.style.height = Highlighter.dimension.y + "px" ;
 			if(Math.abs(len) >= 1) {
