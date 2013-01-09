@@ -226,28 +226,23 @@ DayMan.prototype.isInvisibleEventExist = function(eventObj) {
 };
 
 DayMan.prototype.synchronizeGroups = function(){
-  if (this.events.length <= 0) {
-    return;
-  }
-  if (this.MAX_EVENT_VISIBLE < 0 ||
-      this.events.length <= this.MAX_EVENT_VISIBLE) {
-    this.totalEventVisible = this.MAX_EVENT_VISIBLE;
-  } else {
-    this.totalEventVisible = this.MAX_EVENT_VISIBLE - 1;
-  }
-  for (var i=0; i<this.events.length; i++) {
-    if (this.MAX_EVENT_VISIBLE < 0) {
-      this.visibleGroup.push(this.events[i]);
-    } else if (this.previousDay && 
-        this.previousDay.isInvisibleEventExist(this.events[i]) >= 0) {
-      this.invisibleGroup.push(this.events[i]);
-    } else if(this.visibleGroup.length < this.totalEventVisible) {
-      this.visibleGroup.push(this.events[i]);
-    } else {
-      this.invisibleGroup.push(this.events[i]);
+    if (this.events.length <= 0) {
+	return;
     }
-  }
-  this.reIndex();
+    this.totalEventVisible = this.MAX_EVENT_VISIBLE;
+    for (var i=0; i<this.events.length; i++) {
+	if (this.MAX_EVENT_VISIBLE < 0) {
+	    this.visibleGroup.push(this.events[i]);
+	} else if (this.previousDay && 
+		this.previousDay.isInvisibleEventExist(this.events[i]) >= 0) {
+	    this.invisibleGroup.push(this.events[i]);
+	} else if(this.visibleGroup.length < this.totalEventVisible) {
+	    this.visibleGroup.push(this.events[i]);
+	} else {
+	    this.invisibleGroup.push(this.events[i]);
+	}
+    }
+    this.reIndex();
 };
 
 DayMan.prototype.reIndex = function() {
@@ -293,7 +288,7 @@ function WeekMan(){
   this.events = new Array();
   this.days = new Array();
   this.isEventsSorted = false;
-  this.MAX_EVENT_VISIBLE = 4;
+  this.MAX_EVENT_VISIBLE = 3;
 }
 
 WeekMan.prototype.resetEventWeekIndex = function() {
