@@ -226,23 +226,25 @@ DayMan.prototype.isInvisibleEventExist = function(eventObj) {
 };
 
 DayMan.prototype.synchronizeGroups = function(){
-    if (this.events.length <= 0) {
-	return;
+  if (this.events.length <= 0) {
+    return;
+  }
+
+  this.totalEventVisible = this.MAX_EVENT_VISIBLE;
+  
+  for (var i=0; i<this.events.length; i++) {
+    if (this.MAX_EVENT_VISIBLE < 0) {
+      this.visibleGroup.push(this.events[i]);
+    } else if (this.previousDay && 
+        this.previousDay.isInvisibleEventExist(this.events[i]) >= 0) {
+      this.invisibleGroup.push(this.events[i]);
+    } else if(this.visibleGroup.length < this.totalEventVisible) {
+      this.visibleGroup.push(this.events[i]);
+    } else {
+      this.invisibleGroup.push(this.events[i]);
     }
-    this.totalEventVisible = this.MAX_EVENT_VISIBLE;
-    for (var i=0; i<this.events.length; i++) {
-	if (this.MAX_EVENT_VISIBLE < 0) {
-	    this.visibleGroup.push(this.events[i]);
-	} else if (this.previousDay && 
-		this.previousDay.isInvisibleEventExist(this.events[i]) >= 0) {
-	    this.invisibleGroup.push(this.events[i]);
-	} else if(this.visibleGroup.length < this.totalEventVisible) {
-	    this.visibleGroup.push(this.events[i]);
-	} else {
-	    this.invisibleGroup.push(this.events[i]);
-	}
-    }
-    this.reIndex();
+  }
+  this.reIndex();
 };
 
 DayMan.prototype.reIndex = function() {
@@ -686,7 +688,7 @@ GUIMan.prototype.initSelectionDayEvent = function() {
   var container = document.getElementById("UIWeekViewGrid") ;
   UISelection.step = UICalendarPortlet.CELL_HEIGHT; 
   UISelection.block = document.createElement("div") ;
-  UISelection.block.className = "UserSelectionBlock" ;
+  UISelection.block.className = "userSelectionBlock" ;
   UISelection.container = container ;
   gj(container).prevAll('div')[0].appendChild(UISelection.block) ;
   gj(UISelection.container).on('mousedown',UISelection.start);
@@ -722,6 +724,7 @@ GUIMan.prototype.initDND = function() {
   var events = eXo.calendar.UICalendarMan.EventMan.events;
   for(var i=0 ; i<events.length ; i++) {
     var eventNode = events[i].rootNode;
+    //eventNode.style.position = 'static';
     var checkbox = gj(eventNode).find('input.checkbox')[0]; 
     if (checkbox) {
 //      checkbox.onmousedown = this.cancelEvent;
@@ -760,6 +763,8 @@ GUIMan.prototype.paintMonth = function(){
       }
     }
   }
+  //_module.UICalendarMan.showMonthEvents();
+
 };
 
 /**
@@ -810,23 +815,23 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
   // Draw invisible events (put all into more)
   if (dayObj.invisibleGroup.length > 0) {
     var moreNode = document.createElement('div');
-    moreNode.className = 'MoreEvent';
+    moreNode.className = 'moreEvent';
     this.rowContainerDay.appendChild(moreNode);
-	
+    moreNode.style.position = 'absolute';
     moreNode.style.width = dayInfo.width + 'px';
-    moreNode.style.left = dayInfo.left + 'px' ;
-    moreNode.style.top = dayInfo.top + ((dayObj.MAX_EVENT_VISIBLE - 1) * this.EVENT_BAR_HEIGH) + 5 + 'px';
+    moreNode.style.left = dayInfo.left + 'px';
+    moreNode.style.top = dayInfo.top + ((dayObj.MAX_EVENT_VISIBLE) * this.EVENT_BAR_HEIGH) + 5  + 'px';
 
     var moreContainerNode = document.createElement('div');
 		var moreEventBar = moreContainerNode.cloneNode(true);
 		var moreEventList = moreContainerNode.cloneNode(true);
 		var moreEventTitleBar = moreContainerNode.cloneNode(true);
-		moreEventBar.className = "MoreEventBar" ;
+		moreEventBar.className = "moreEventBar" ;
 		moreEventBar.innerHTML = "<span></span>" ;
 		gj(moreEventBar).on('click',this.hideMore);
 //		moreEventBar.onclick = this.hideMore ;
 		moreEventTitleBar.innerHTML = "&nbsp;";
-		moreEventTitleBar.className = "MoreEventTitleBar";
+		moreEventTitleBar.className = "moreEventTitleBar";
 		gj(moreEventTitleBar).on('click',cs.EventManager.cancelBubble);
 //		moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
 		gj(moreEventTitleBar).on('mousedown',function(evt){
@@ -838,7 +843,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 //			eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
 //		} ;
 		moreEventBar.appendChild(moreEventTitleBar);
-    moreContainerNode.className = 'MoreEventContainer' ;
+    moreContainerNode.className = 'moreEventContainer' ;
     // Create invisible event
     var cnt = 0
     for (var i=0; i<dayObj.invisibleGroup.length; i++) {
@@ -881,7 +886,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
     }
     this.setWidthForMoreEvent(moreEventList,i,dayNode);
     var moreLabel = document.createElement('div');
-		moreLabel.className = "MoreEventLabel";
+		moreLabel.className = "moreEventLabel";
     moreLabel.innerHTML = 'more ' + cnt + '+';
     gj(moreLabel).on('click',this.showMore);
 //		moreLabel.onclick = this.showMore;
@@ -894,7 +899,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 };
 
 GUIMan.prototype.setWidthForMoreEvent = function(moreEventList,len,dayNode){
-	var eventNodes = gj(moreEventList).children('div')[0]; 
+	var eventNodes = gj(moreEventList).children('div'); 
 	var i = eventNodes.length ;
 	if(len > 9){
 		moreEventList.style.height = "200px";
@@ -914,14 +919,14 @@ GUIMan.prototype.hideMore = function(evt){
 	var ln = items.length ;
 	if (ln > 0) {
 		for (var i = 0; i < ln; i++) {
-			if(gj(items[i]).hasClass("MoreEvent")) 
+			if(gj(items[i]).hasClass("moreEvent")) 
 				items[i].style.zIndex = 1 ;
 			items[i].style.display = "none" ;
 		}
 		DOMUtil.hideElementList.clear() ;
 	}
 	var src = cs.EventManager.getEventTarget(evt);
-	var	moreContainerNode = gj(src).parents('.MoreEventContainer')[0]; 
+	var	moreContainerNode = gj(src).parents('.moreEventContainer')[0]; 
 	if(!moreContainerNode) 
 		moreContainerNode = gj(src).nextAll("div")[0];
 	moreContainerNode.style.top = '0px';
@@ -984,64 +989,69 @@ GUIMan.prototype.showMore = function(evt) {
  * @param {Object} dayInfo
  */
 GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo){
-  var eventNode = eventObj.rootNode;
-  if (eventNode.getAttribute('used') == 'true') {
-		eventNode = eventNode.cloneNode(true);
-    eventNode.setAttribute('eventclone', 'true');
-		eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
-    // Remove checkbox on clone event
-    try {
-      var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
-      checkBoxTmp.style.display = 'none';
-    } catch(e) {}
-    this.rowContainerDay.appendChild(eventNode);
-    eventObj.cloneNodes.push(eventNode);
-  }
-  var topPos = dayInfo.eventTop ;
-  var leftPos = dayInfo.left ;
-  /*
+    var eventNode = eventObj.rootNode;
+    if (eventNode.getAttribute('used') == 'true') {
+	eventNode = eventNode.cloneNode(true);
+	eventNode.setAttribute('eventclone', 'true');
+	eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
+	// Remove checkbox on clone event
+	try {
+	    var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
+	    checkBoxTmp.style.display = 'none';
+	} catch(e) {}
+	this.rowContainerDay.appendChild(eventNode);
+	eventObj.cloneNodes.push(eventNode);
+    }
+    var topPos = dayInfo.eventTop ;
+    var leftPos = dayInfo.left ;
+    /*
 	endTime = new Date(parseInt(endTime));
   startTime = new Date(parseInt(startTime));
   var delta = endTime.getDay() - startTime.getDay(); 
-  */
-	var delta = eXo.calendar.UICalendarPortlet.dateDiff(startTime,endTime);
-  if (delta != 0) {
-    delta ++ ;
-  }
-  if(delta <= 0) delta = 1;
-  var eventLen = Math.round(delta) * (dayInfo.width) + (delta - 1);
-  eventNode.style.position = 'absolute';
-	eventNode.style.top = topPos + 'px';
-  eventNode.style.left = leftPos + 'px';
-  eventNode.style.width = eventLen + 'px';
-  if(eXo.core.I18n.isRT()){
-  	eventNode.style.left = (leftPos - eventLen + (dayInfo.width)) + 'px';
-  }
-  eventNode.setAttribute('used', 'true');
-	this.setOverMonth(eventObj,dayInfo.beginMonth,dayInfo.endMonth);
+     */
+    //alert(startTime + '-' + endTime);
+    var delta = eXo.calendar.UICalendarPortlet.dateDiff(startTime,endTime);
+    if (delta != 0) {
+	delta ++ ;
+    }
+    if(delta <= 0) delta = 1;
+    var eventLen = Math.round(delta) * (dayInfo.width) + (delta - 1);
+    //eventNode.style.position = 'absolute';
+    eventNode.style.top = topPos + 'px';
+    eventNode.style.left = leftPos + 'px';
+    eventNode.style.width = eventLen + 'px';
+    if(eXo.core.I18n.isRT()){
+	eventNode.style.left = (leftPos - eventLen + (dayInfo.width)) + 'px';
+    }
+    eventNode.setAttribute('used', 'true');
+    eventNode.setAttribute('startTime',startTime);
+    eventNode.setAttribute('endTime',endTime);
+    eventObj.init(eventNode);
+    this.setOverMonth(eventObj,dayInfo.beginMonth,dayInfo.endMonth);
 };
 
 GUIMan.prototype.setOverMonth = function(eventObj,beginMonth,endMonth){
-		var eventNode = eventObj.rootNode ;
-		var realStart = Date.parse(eventNode.getAttribute("startTimeFull"));
-		var realEnd = Date.parse(eventNode.getAttribute("endTimeFull"));
-		if(realStart < parseInt(beginMonth)){
-			var EventOnDayContent = gj(eventObj.rootNode).find('div.eventOnDayContent')[0];
-			gj(EventOnDayContent).css('margin-right','10px');
-			var leftNode = gj(eventObj.rootNode).find('div.NextLeft')[0];
-			gj(leftNode).addClass("NextLeftEvent");
-			this.removeContinueClass(eventObj.cloneNodes);
-		}
+    var eventNode = eventObj.rootNode ;
+    var realStart = Date.parse(eventNode.getAttribute("startTimeFull"));
+    var color = eventNode.getAttribute('color');
+    if(realStart < parseInt(beginMonth)){
+	var EventOnDayContent = gj(eventObj.rootNode).find('div.eventOnDayContent')[0];
+	var leftNode = gj('<div></div').addClass('leftContinueEvent  pull-left');
+	var icon = gj('<i></i>').addClass('uiIconMiniArrowLeft uiIconWhite');
+	leftNode.append(icon);
+	gj(EventOnDayContent).prepend(leftNode);  
+	this.removeContinueClass(eventObj.cloneNodes); 
+    }
 };
 
 GUIMan.prototype.removeContinueClass = function(eventClones){
-	if(!eventClones || (eventClones.length == 0)) return ;
-	var i = eventClones.length;
-	var EventOnDayContent = null ;
-	while(i--){
-		EventOnDayContent = gj(eventClones[i]).find('div.NextLeft')[0]; 
-		gj(EventOnDayContent).toggleClass("NextLeftEvent");
-	}
+    if(!eventClones || (eventClones.length == 0)) return ;
+    var i = eventClones.length;
+    var leftNode = null ;
+    while(i--){
+	leftNode = gj(eventClones[i]).find('div.leftContinueEvent')[0]; 
+	gj(leftNode).remove();
+    }
 }	;
 
 GUIMan.prototype.isMultiWeek = function(eventObj){
@@ -1053,24 +1063,30 @@ GUIMan.prototype.isMultiWeek = function(eventObj){
 }	;
 
 GUIMan.prototype.addContinueClass = function(){
-	var endMonth = Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length - 1]).getAttribute("startTimeFull")) + 24 * 60 * 60 * 1000;
-	var events = eXo.calendar.UICalendarMan.EventMan.events;
-	var len = events.length ;
-	var eventNode = null ;
-	for(var i = 0 ; i<len;i++){
-		var realEnd = Date.parse(events[i].rootNode.getAttribute("endTimeFull"));
-		if (realEnd > endMonth) {
-			if(this.isMultiWeek(events[i])){
-				eventNode = events[i].cloneNodes[events[i].cloneNodes.length - 1];
-			}else{
-				eventNode = events[i].rootNode;
-			}
-			var EventOnDayContent = gj(eventNode).find('div.eventOnDayContent')[0];
-			gj(EventOnDayContent).css('margin-left','10px');
-			var rightNode = gj(eventNode).find('div.NextRight')[0];
-			gj(rightNode).addClass("NextRightEvent");			
-		}
+    var endMonth = Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length - 1]).getAttribute("startTimeFull")) + 24 * 60 * 60 * 1000;
+    var events = eXo.calendar.UICalendarMan.EventMan.events;
+    var len = events.length ;
+    var eventNode = null ;
+    for(var i = 0 ; i<len;i++){
+	var color = events[i].rootNode.getAttribute('color');
+	var realEnd = Date.parse(events[i].rootNode.getAttribute("endTimeFull"));
+	if (realEnd > endMonth) {
+	    if(this.isMultiWeek(events[i])){
+		eventNode = events[i].cloneNodes[events[i].cloneNodes.length - 1];
+	    }else{
+		eventNode = events[i].rootNode;
+	    }
+
+	    var EventOnDayContent = gj(eventNode).find('div.eventOnDayContent')[0];
+
+	    var rightNode = gj('<div></div').addClass('rightContinueEvent  pull-right');
+	    var icon = gj('<i></i>').addClass('uiIconMiniArrowRight uiIconWhite');
+	    rightNode.append(icon);
+	    gj(EventOnDayContent).prepend(rightNode);
+	    gj('div.leftContinueEvent',EventOnDayContent).remove();
+
 	}
+    }
 }	;
 
 // Initialize  highlighter
@@ -1096,6 +1112,28 @@ GUIMan.prototype.callbackHighlighter = function() {
 } ;
 
 eXo.calendar.UICalendarMan = {
+  addBorderControl : function(){
+    var leftNode = gj('div.leftContinueEvent')[0];
+    if(leftNode) {
+      gj(leftNode).parents('.eventOnDayBorder').addClass('leftBorderControl');
+    }
+
+    var rightNode = gj('div.rightContinueEvent')[0];
+    if(rightNode) {
+      gj(rightNode).parents('.eventOnDayBorder').addClass('rightBorderControl');
+    }
+
+  },
+  showMonthEvents : function() {
+    var events = gj('div.dayContentContainer');
+    for(var i = 0; i < events.length; i++) {
+      gj(events[i]).attr('style','display:block;');
+    }
+    var moreNodes = gj('div.MoreEvent');
+    for(var i = 0; i < moreNodes.length; i++) {
+      moreNodes[i].style.display = 'block';
+    }
+  },
   initMonth : function(rootNode) {
     rootNode = document.getElementById('UIMonthView');
     if (!rootNode) return;
@@ -1104,6 +1142,7 @@ eXo.calendar.UICalendarMan = {
     _module.UICalendarMan.GUIMan.initMonth();
     _module.UICalendarMan.GUIMan.initHighlighter();
 		this.GUIMan.addContinueClass();
+    _module.UICalendarMan.addBorderControl();
   },
   initWeek : function(rootNode) {
     rootNode = document.getElementById('UIWeekViewGridAllDay');
