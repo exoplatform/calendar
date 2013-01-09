@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -293,12 +294,15 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    CalendarEvent oldEvent = null;
+    if(!isNew) oldEvent = getGroupEvent(event.getId());
     storage_.savePublicEvent(calendarId, event, isNew);
     for (CalendarEventListener cel : eventListeners_) {
-      if (isNew)
+      if (isNew) {
         cel.savePublicEvent(event, calendarId);
-      else
-        cel.updatePublicEvent(event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
+      }
+      else if(oldEvent != null) cel.updatePublicEvent(oldEvent, event, calendarId);
     }
   }
 
@@ -306,7 +310,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public CalendarEvent removePublicEvent(String calendarId, String eventId) throws Exception {
-    return storage_.removePublicEvent(calendarId, eventId);
+    CalendarEvent event = storage_.removePublicEvent(calendarId, eventId);
+    for (CalendarEventListener cel : eventListeners_) {
+      cel.deletePublicEvent(event, calendarId);
+    }
+    return event ;
   }
 
   /**
@@ -413,7 +421,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void removeSharedCalendar(String username, String calendarId) throws Exception {
     storage_.removeSharedCalendar(username, calendarId);
   }
-  
+
   public void removeSharedCalendarFolder(String username) throws Exception {
     storage_.removeSharedCalendarFolder(username);
   }
@@ -450,12 +458,18 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void moveEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception {
+    Map<String,  CalendarEvent> oldEventList = new HashMap<String, CalendarEvent>();
+    if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
+      for (CalendarEvent event : calEvents) {
+        oldEventList.put(event.getId(), getGroupEvent(event.getId()));
+      }
+    }
     storage_.moveEvent(fromCalendar, toCalendar, fromType, toType, calEvents, username);
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEventListener cel : eventListeners_) {
-        for (CalendarEvent event : calEvents)
-          cel.updatePublicEvent(event, toCalendar);
-
+        for (CalendarEvent event : calEvents) 
+          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null)
+            cel.updatePublicEvent(oldEventList.get(event.getId()), event, toCalendar);
       }
     }
   }
@@ -648,7 +662,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public Calendar importRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception {
     return remoteCalendarService.importRemoteCalendar(remoteCalendar);
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -700,8 +714,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       jobData.put(repositoryService.getCurrentRepository()
                   .getConfiguration()
                   .getName(), repositoryService.getCurrentRepository()
-                                                                                 .getConfiguration()
-                                                                                 .getName());
+                  .getConfiguration()
+                  .getName());
       PeriodInfo periodInfo = new PeriodInfo(null, null, 0, 5 * 60 * 1000);
       schedulerService.addPeriodJob(info, periodInfo, jobData);
     }

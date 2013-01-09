@@ -97,6 +97,7 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.commons.utils.ActivityTypeUtils;
 
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
@@ -1295,6 +1296,10 @@ public class JCRDataStorage implements DataStorage {
         event.setRepeatByMonthDay(byMonthDays);
       }
     }
+    String activitiId = ActivityTypeUtils.getActivityId(eventNode) ;
+    if(activitiId != null) {
+      event.setActivityId(ActivityTypeUtils.getActivityId(eventNode));
+    }
     return event;
   }
 
@@ -1452,7 +1457,9 @@ public class JCRDataStorage implements DataStorage {
         }
       }
     }
-
+    if(event.getActivityId() != null) {
+      ActivityTypeUtils.attachActivityId(eventNode, event.getActivityId());
+    }
     calendarNode.getSession().save();
     addEvent(event);
   }

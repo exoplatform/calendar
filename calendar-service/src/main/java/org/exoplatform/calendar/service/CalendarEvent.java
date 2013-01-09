@@ -194,6 +194,7 @@ public class CalendarEvent {
 
   private List<Attachment>     attachment;
 
+  private String activityId ;
   public CalendarEvent() {
     id = "Event" + IdGenerator.generate();
   }
@@ -676,6 +677,14 @@ public class CalendarEvent {
    */
   public String[] getRepeatByDay() {
     return repeatByDay;
+  }
+
+  public String getActivityId() {
+    return activityId;
+  }
+
+  public void setActivityId(String activityId) {
+    this.activityId = activityId;
   }
 
 }
