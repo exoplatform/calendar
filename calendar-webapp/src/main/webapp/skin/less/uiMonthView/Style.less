@@ -1,32 +1,61 @@
 
-/*============== uiMonthView ================*/
 
-.uiMonthView{
-	
+/*============== uiMonthView ================*/
+.uiMonthView{	
 	.dayTitleBar{
 		background: @tableBackgroundAccent;
 		.uiGrid.table tr td{
 			line-height: 32px;
-			text-align: center;
+			text-align: center;		
 			color: @textColor;
 		}
 	}
-	
+	.uiGrid.table tr td {					
+		font-size: 12px;
+	}
 	.eventMonthContent{
 		.dayContent{
    			text-align: right;
+			margin-top: -8px;
    			a{
    				color: #999;
    				padding-right: 10px;
    			}
 		}
-		
 		.disableDay{
 		   	color: #909090;
     		text-align: right;
     		padding-top: 10px;
 		}
-	
+		
+		.eventBoxes {
+			position: absolute;
+			padding: 1px 0;
+			background: transparent;
+		}
+		
+		.moreEvent {
+			z-index: 1;
+			position: absolute;
+		}
+		
+		.moreEvent .moreEventContainer{
+			display: none;
+			width: 100%;
+			padding-bottom: 4px;
+			.box-shadow(0px 2px 4px -1px rgba(35,44,48,0.18));
+			position: absolute;
+			 background-color: @white;
+			border: 1px solid @tableBorder;
+			.eventBoxes { 
+				padding: 1px 0px 0px 0px;
+			}
+		}
+		.moreEvent .eventBoxes {
+			position: static;
+			left: 0;
+			width: 100%;
+		}
 		.rowContainerDay{
 			.calendarContentDisable{
 			    background: none repeat scroll 0 0 #F5F5F5;
@@ -48,12 +77,11 @@
 			border-top: 1px solid #E6E6E6;
 			td{
 				vertical-align: top;
-				height: 96px;
+				height: 96px;		
 			}
 		}
 		
 		.eventOnDayBorder{
-			border-top: solid 1px @white;
 			height: 16px;
 			
 			.eventCheckbox{
@@ -63,7 +91,8 @@
 		
 		.eventSummary{
 		color: @white;
-		line-height: 18px;
+		line-height: 16px;
+		font-size: 11px;
 		}
 		
 	}

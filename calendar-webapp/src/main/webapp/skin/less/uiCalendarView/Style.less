@@ -11,13 +11,30 @@
 	 }
 }
 
+.moreEventLabel {
+	text-align: right;
+	padding-right: 5px;
+	color: @linkColor;
+	cursor: pointer;
+}
+.leftContinueEvent,.rightContinueEvent{
+	height: 16px;
+	line-height: 16px;
+}
+
+.leftBorderControl,.leftContinueEvent {
+	.border-radius(@borderRadiusSmall 0 0 @borderRadiusSmall);
+}
+
+.rightBorderControl ,.rightContinueEvent{
+	.border-radius(0 @borderRadiusSmall @borderRadiusSmall 0);
+}
+
 .leftContinueEvent{
-	.border-radius(2px 0 0 2px);
 	border-right: solid 1px @white;
 }
 
 .rightContinueEvent{
-	.border-radius(0 2px 2px 0);
 	border-left: solid 1px @white;
 }
 
@@ -102,4 +119,11 @@
 	vertical-align: middle;
 	display: inline-block;
 	}
+}
+
+
+.UserSelectionBlock ,.userSelectionBlock{
+    -moz-user-select: none;
+    .opacity(0.5);
+    position: absolute;
 }
