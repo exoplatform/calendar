@@ -121,10 +121,10 @@ UIWeekView.prototype.adjustWidth = function(el) {
 			}
 			el[j].style.width = width + "px" ;
 			if (el[j-1]&&(len > 1)) {
-				setLeft(el[j],offsetLeft + parseFloat(el[j-1].style.width)*n);
+				setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n + 1);
 			}
 			else {		
-				setLeft(el[j],offsetLeft);
+				setLeft(el[j],offsetLeft + 1);
 			}
 			n++ ;
 		}
