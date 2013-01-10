@@ -2107,7 +2107,7 @@ UICalendarPortlet.prototype.initSelection = function(){
     UISelection.step = UICalendarPortlet.CELL_HEIGHT;
     UISelection.container = container;
     UISelection.block = document.createElement("div");
-    UISelection.block.className = "UserSelectionBlock";
+    UISelection.block.className = "userSelectionBlock";
     UISelection.container.appendChild(UISelection.block);
     gj(UISelection.container).on('mousedown',UISelection.start);
     UISelection.relativeObject = gj(UISelection.container).parents(".eventDayContainer")[0];

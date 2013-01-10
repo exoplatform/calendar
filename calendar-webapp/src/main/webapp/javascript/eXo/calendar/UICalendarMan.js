@@ -773,129 +773,129 @@ GUIMan.prototype.paintMonth = function(){
  * @param {Integer} dayIndex
  */
 GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
-  var dayObj = weekObj.days[dayIndex];
-  // Pre-calculate event position
-  var dayNode = (this.tableData[weekObj.weekIndex])[dayIndex];
-  var dayInfo = {
-    width : dayNode.offsetWidth - 1,
-    left : dayNode.offsetLeft,
-    top : dayNode.offsetTop + 20,
-		beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
-		endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
-  }
-  // Draw visible events
-  for (var i=0; i<dayObj.visibleGroup.length; i++) {
-    var eventObj = dayObj.visibleGroup[i];
-    if (!eventObj || 
-        (dayObj.previousDay && 
-        dayObj.previousDay.isVisibleEventExist(eventObj) >= 0)) {
-      continue;
+    var dayObj = weekObj.days[dayIndex];
+    // Pre-calculate event position
+    var dayNode = (this.tableData[weekObj.weekIndex])[dayIndex];
+    var dayInfo = {
+	    width : dayNode.offsetWidth - 1,
+	    left : dayNode.offsetLeft,
+	    top : dayNode.offsetTop + 20,
+	    beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
+	    endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
     }
-    var startTime = eventObj.weekStartTimeIndex[weekObj.weekIndex];
-    var endTime = eventObj.endTime > weekObj.endWeek ? weekObj.endWeek : eventObj.endTime;
-    var delta = (new Date(endTime)) - (new Date(startTime));
-    delta /= (1000 * 60 * 60 *24);
-    if (delta > 1 && 
-        dayObj.nextDay && 
-        i == (dayObj.MAX_EVENT_VISIBLE - 1)) {
-      var tmp = dayObj.nextDay;
-      var cnt = 1;
-      while (tmp.nextDay && cnt<=delta) {
-        if (tmp.isInvisibleEventExist(eventObj) >= 0) {
-          break;
-        }
-        cnt++;
-        tmp = tmp.nextDay;
-      }
-      endTime = startTime + ((1000 * 60 * 60 * 24) * cnt) - 1;
+    // Draw visible events
+    for (var i=0; i<dayObj.visibleGroup.length; i++) {
+	var eventObj = dayObj.visibleGroup[i];
+	if (!eventObj || 
+		(dayObj.previousDay && 
+			dayObj.previousDay.isVisibleEventExist(eventObj) >= 0)) {
+	    continue;
+	}
+	var startTime = eventObj.weekStartTimeIndex[weekObj.weekIndex];
+	var endTime = eventObj.endTime > weekObj.endWeek ? weekObj.endWeek : eventObj.endTime;
+	var delta = (new Date(endTime)) - (new Date(startTime));
+	delta /= (1000 * 60 * 60 *24);
+	if (delta > 1 && 
+		dayObj.nextDay && 
+		i == (dayObj.MAX_EVENT_VISIBLE - 1)) {
+	    var tmp = dayObj.nextDay;
+	    var cnt = 1;
+	    while (tmp.nextDay && cnt<=delta) {
+		if (tmp.isInvisibleEventExist(eventObj) >= 0) {
+		    break;
+		}
+		cnt++;
+		tmp = tmp.nextDay;
+	    }
+	    endTime = startTime + ((1000 * 60 * 60 * 24) * cnt) - 1;
+	}
+	dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * i);
+	this.drawEventByDay(eventObj, startTime, endTime, dayInfo);
     }
-    dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * i);
-    this.drawEventByDay(eventObj, startTime, endTime, dayInfo);
-  }
-  // Draw invisible events (put all into more)
-  if (dayObj.invisibleGroup.length > 0) {
-    var moreNode = document.createElement('div');
-    moreNode.className = 'moreEvent';
-    this.rowContainerDay.appendChild(moreNode);
-    moreNode.style.position = 'absolute';
-    moreNode.style.width = dayInfo.width + 'px';
-    moreNode.style.left = dayInfo.left + 'px';
-    moreNode.style.top = dayInfo.top + ((dayObj.MAX_EVENT_VISIBLE) * this.EVENT_BAR_HEIGH) + 5  + 'px';
+    // Draw invisible events (put all into more)
+    if (dayObj.invisibleGroup.length > 0) {
+	var moreNode = document.createElement('div');
+	moreNode.className = 'moreEvent';
+	this.rowContainerDay.appendChild(moreNode);
+	moreNode.style.position = 'absolute';
+	moreNode.style.width = dayInfo.width + 'px';
+	moreNode.style.left = dayInfo.left + 'px';
+	moreNode.style.top = dayInfo.top + ((dayObj.MAX_EVENT_VISIBLE) * this.EVENT_BAR_HEIGH) + 5  + 'px';
 
-    var moreContainerNode = document.createElement('div');
-		var moreEventBar = moreContainerNode.cloneNode(true);
-		var moreEventList = moreContainerNode.cloneNode(true);
-		var moreEventTitleBar = moreContainerNode.cloneNode(true);
-		moreEventBar.className = "moreEventBar" ;
-		moreEventBar.innerHTML = "<span></span>" ;
-		gj(moreEventBar).on('click',this.hideMore);
-//		moreEventBar.onclick = this.hideMore ;
-		moreEventTitleBar.innerHTML = "&nbsp;";
-		moreEventTitleBar.className = "moreEventTitleBar";
-		gj(moreEventTitleBar).on('click',cs.EventManager.cancelBubble);
-//		moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
-		gj(moreEventTitleBar).on('mousedown',function(evt){
-			cs.EventManager.cancelBubble(evt);
-			cs.DragDrop.init(null,this,moreContainerNode,evt);
-		});
-//		moreEventTitleBar.onmousedown = function(evt){
-//			eXo.cs.EventManager.cancelBubble(evt);
-//			eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
-//		} ;
-		moreEventBar.appendChild(moreEventTitleBar);
-    moreContainerNode.className = 'moreEventContainer' ;
-    // Create invisible event
-    var cnt = 0
-    for (var i=0; i<dayObj.invisibleGroup.length; i++) {
-      var eventObj = dayObj.invisibleGroup[i];
-      if (!eventObj) {
-        continue;
-      }
-      cnt ++;
-      var eventNode = eventObj.rootNode;
-      var checkboxState = 'none';
-      if (eventNode.getAttribute('used') == 'true') {
-        eventNode = eventNode.cloneNode(true);
-        eventNode.setAttribute('eventclone', 'true');
-        eventObj.cloneNodes.push(eventNode);
-        var hasBefore = true;
-        var hasAfter = true;
-        if (i >= (dayObj.invisibleGroup.length - 1)) {
-          hasAfter = false;
-        }
-        if (cnt == 0) {
-          hasBefore = false;
-        }
-        eventObj.updateIndicator(eventObj.cloneNodes[eventObj.cloneNodes.length - 1], hasBefore, hasAfter);
-      } else {
-        eventNode = eventNode.cloneNode(true);
-        gj(eventObj.rootNode).remove();
-        eventNode.setAttribute('moremaster', 'true');
-        eventObj.rootNode = eventNode;
-        checkboxState = "";
-      }
-      // Remove checkbox on clone event
+	var moreContainerNode = document.createElement('div');
+	var moreEventBar = moreContainerNode.cloneNode(true);
+	var moreEventList = moreContainerNode.cloneNode(true);
+	var moreEventTitleBar = moreContainerNode.cloneNode(true);
+	moreEventBar.className = "moreEventBar" ;
+	moreEventBar.innerHTML = "<span></span><a href=javascript:void(0)><i class='uiIconClose pull-right'></i></a>" ;
+	gj(moreEventBar).on('click',this.hideMore);
+//	moreEventBar.onclick = this.hideMore ;
+	moreEventTitleBar.innerHTML = "&nbsp;";
+	moreEventTitleBar.className = "moreEventTitleBar";
+	gj(moreEventTitleBar).on('click',cs.EventManager.cancelBubble);
+//	moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
+	gj(moreEventTitleBar).on('mousedown',function(evt){
+	    cs.EventManager.cancelBubble(evt);
+	    cs.DragDrop.init(null,this,moreContainerNode,evt);
+	});
+//	moreEventTitleBar.onmousedown = function(evt){
+//	eXo.cs.EventManager.cancelBubble(evt);
+//	eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
+//	} ;
+	moreEventBar.appendChild(moreEventTitleBar);
+	moreContainerNode.className = 'moreEventContainer' ;
+	// Create invisible event
+	var cnt = 0
+	for (var i=0; i<dayObj.invisibleGroup.length; i++) {
+	    var eventObj = dayObj.invisibleGroup[i];
+	    if (!eventObj) {
+		continue;
+	    }
+	    cnt ++;
+	    var eventNode = eventObj.rootNode;
+	    var checkboxState = 'none';
+	    if (eventNode.getAttribute('used') == 'true') {
+		eventNode = eventNode.cloneNode(true);
+		eventNode.setAttribute('eventclone', 'true');
+		eventObj.cloneNodes.push(eventNode);
+		var hasBefore = true;
+		var hasAfter = true;
+		if (i >= (dayObj.invisibleGroup.length - 1)) {
+		    hasAfter = false;
+		}
+		if (cnt == 0) {
+		    hasBefore = false;
+		}
+		eventObj.updateIndicator(eventObj.cloneNodes[eventObj.cloneNodes.length - 1], hasBefore, hasAfter);
+	    } else {
+		eventNode = eventNode.cloneNode(true);
+		gj(eventObj.rootNode).remove();
+		eventNode.setAttribute('moremaster', 'true');
+		eventObj.rootNode = eventNode;
+		checkboxState = "";
+	    }
+	    // Remove checkbox on clone event
 
-      var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
-      checkBoxTmp.style.display = checkboxState;
-			eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
-      moreEventList.appendChild(eventNode);
-      var topPos = this.EVENT_BAR_HEIGH * i;
-      eventNode.style.top = topPos + 16 + 'px';
-      eventNode.setAttribute('used', 'true');
+	    var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
+	    checkBoxTmp.style.display = checkboxState;
+	    eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
+	    moreEventList.appendChild(eventNode);
+	    var topPos = this.EVENT_BAR_HEIGH * i;
+	    eventNode.style.top = topPos + 16 + 'px';
+	    eventNode.setAttribute('used', 'true');
+	}
+	this.setWidthForMoreEvent(moreEventList,i,dayNode);
+	var moreLabel = document.createElement('div');
+	moreLabel.className = "moreEventLabel";
+	moreLabel.innerHTML = 'more ' + cnt + '+';
+	gj(moreLabel).on('click',this.showMore);
+//	moreLabel.onclick = this.showMore;
+	moreNode.appendChild(moreLabel);
+	moreContainerNode.appendChild(moreEventBar);
+	moreContainerNode.appendChild(moreEventList)
+	moreNode.appendChild(moreContainerNode);
+	dayObj.moreNode = moreNode;
     }
-    this.setWidthForMoreEvent(moreEventList,i,dayNode);
-    var moreLabel = document.createElement('div');
-		moreLabel.className = "moreEventLabel";
-    moreLabel.innerHTML = 'more ' + cnt + '+';
-    gj(moreLabel).on('click',this.showMore);
-//		moreLabel.onclick = this.showMore;
-    moreNode.appendChild(moreLabel);
-		moreContainerNode.appendChild(moreEventBar);
-		moreContainerNode.appendChild(moreEventList)
-    moreNode.appendChild(moreContainerNode);
-    dayObj.moreNode = moreNode;
-  }
 };
 
 GUIMan.prototype.setWidthForMoreEvent = function(moreEventList,len,dayNode){

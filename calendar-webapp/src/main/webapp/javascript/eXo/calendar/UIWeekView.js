@@ -823,7 +823,7 @@ UIWeekView.prototype.initSelection = function() {
 	var container = document.getElementById("UIWeekViewGrid") ;
 	UISelection.step = UICalendarPortlet.CELL_HEIGHT;	
 	UISelection.block = document.createElement("div");
-	UISelection.block.className = "UserSelectionBlock" ;
+	UISelection.block.className = "userSelectionBlock" ;
 	UISelection.container = container ;
 	gj(container).prevAll('div')[0].appendChild(UISelection.block) ;
 	gj(UISelection.container).on('mousedown',UISelection.start);

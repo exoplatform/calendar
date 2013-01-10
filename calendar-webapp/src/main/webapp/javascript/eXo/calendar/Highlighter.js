@@ -106,7 +106,7 @@ Highlighter.prototype.createBlock = function(cell) {
 		if(gj("#UserSelectionBlock"+i)) 
 			gj("#UserSelectionBlock"+i).remove() ; 
 		div.setAttribute("id", "UserSelectionBlock"+i) ;
-		div.className = "UserSelectionBlock" ;
+		div.className = "userSelectionBlock" ;
 		table.parentNode.appendChild(div) ;
 		block.push(div) ;
 	}
