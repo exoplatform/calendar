@@ -2,7 +2,7 @@ function CalendarLayout() {
     this.UI_WORKING_WORKSPACE = 'UIWorkingWorkspace';
     this.MAIN_WORKING_PANEL = 'MainWorkingPanel';
     this.UI_CALENDAR_CONTAINER = 'UICalendarContainer';
-    this.UI_CALENDAR_VIEW_CONTAINER = 'UICalendarViewContainer';
+    this.UI_CALENDAR_VIEW_CONTAINER = 'uiCalendarViewContainer';
     this.TOGGLE_BUTTON_HEIGHT = 14;
     this.UI_CALENDARS_MIN_HEIGHT = 40;
     this.UI_LIST_VIEW = "uiListView";
@@ -80,9 +80,9 @@ CalendarLayout.prototype.expandCalendarContainer = function() {
   this.UICalendarContainer.style.display = "block";
   var UICalendarViewContainer = gj(this.UICalendarContainer).nextAll("div")[0];
   if (base.I18n.isRT()) {
-    UICalendarViewContainer.style.marginRight = "236px" ;
+    UICalendarViewContainer.style.marginRight = "245px" ;
   }else{
-    UICalendarViewContainer.style.marginLeft = "236px" ;
+    UICalendarViewContainer.style.marginLeft = "245px" ;
   }
 };
 

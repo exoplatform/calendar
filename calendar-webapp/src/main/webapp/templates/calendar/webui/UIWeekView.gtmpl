@@ -67,7 +67,7 @@ def eventList = [];
 <div class="UIWeekView uiBox uiWeekView">
 <div class="title"><%_ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%></div>
   <div class="eventWeekBar">
-    <table class="uiGrid table rounded-corners"  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
+    <table class="uiGrid table "  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
         <tr>
           <td style="width: 55px;" class="UIEmtyBlock"><div style="width: 55px;"><span></span></div></td>
           <%
@@ -274,7 +274,7 @@ def eventList = [];
         }
       %>
     </div>
-    <table class="uiGrid table rounded-corners" id="UIWeekViewGrid" lastupdatedid="<%=uicomponent.getLastUpdatedEventId()%>" cellspacing="0" cellpadding="0">
+    <table class="uiGrid table " id="UIWeekViewGrid" lastupdatedid="<%=uicomponent.getLastUpdatedEventId()%>" cellspacing="0" cellpadding="0">
       <tbody>
         <%
         boolean flag = false ;

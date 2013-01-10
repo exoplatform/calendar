@@ -90,7 +90,7 @@
       requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
       requireJS.addScripts('cal.CalendarLayout.init();');
     %>
-      <div class="CalendarWorkingWorkspace">
+      <div class="calendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>
         <%uicomponent.renderChild(UICalendarWorkingContainer.class)%>
       </div>

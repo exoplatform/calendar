@@ -60,7 +60,7 @@
 <div class="uiBox uiDayView">
 	<div class="title"><%_ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%></div>
 	<div class="eventAllDay">
-		<table class="uiGrid table rounded-corners">
+		<table class="uiGrid table ">
 			<tbody>
 				<tr>
 					<td class="center" style="width: 55px;"></td>

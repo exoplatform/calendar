@@ -1016,7 +1016,8 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
     }
     if(delta <= 0) delta = 1;
     var eventLen = Math.round(delta) * (dayInfo.width) + (delta - 1);
-    //eventNode.style.position = 'absolute';
+    // relooking: fix width of events  > 4 days in month view
+  	if(delta >= 5) eventLen += delta - 4;
     eventNode.style.top = topPos + 'px';
     eventNode.style.left = leftPos + 'px';
     eventNode.style.width = eventLen + 'px';

@@ -13,12 +13,15 @@
 .calendarTableColor{
 	padding: 7px 13px;
 	.colorCell{
+		border: 1px solid transparent;
 		text-align: center;
 		width: 16px;
 		height: 16px;
-		display: inline-block;
-		&+.colorCell{
-			margin: 5px 0 0 5px;
+		display: block;
+		float: left;
+		margin: 2px;		
+		&:hover {
+			border: 1px solid @grayDark;
 		}
 	}
 
