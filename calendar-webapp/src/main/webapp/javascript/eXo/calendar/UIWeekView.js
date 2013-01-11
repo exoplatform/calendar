@@ -114,11 +114,11 @@ UIWeekView.prototype.adjustWidth = function(el) {
 		}
 		var n = 0 ;
 		for(var j = inter[i]; j < inter[i+1] ; j++) {
-			if(mark != null) {				
-				width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width))/len) ;
-			} else {
-				width = parseFloat(totalWidth/len) ;
-			}
+		    if(mark != null) {				
+			width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width))/len - 1) ;
+		    } else {
+			width = parseFloat(totalWidth/len - 1) ;
+		    }
 			el[j].style.width = width + "px" ;
 			if (el[j-1]&&(len > 1)) {
 				setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n + 1);
