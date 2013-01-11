@@ -109,7 +109,6 @@
 
 .eventWeekBar{
 	background: #f8f8f8;
-	padding: 0 17px 0 0;	
 	tr td{
 		border-bottom: solid 1px #e6e6e6;
 		&.today{
@@ -140,7 +139,6 @@
 		position: absolute;
 		top: 50%;
 		right: -3px;
-		z-index: 9;
 		cursor: pointer;
 	}
 }
@@ -154,4 +152,14 @@
 
 .moreEventTitleBar {
 	cursor: pointer;
+}
+
+
+/*===============uiWeekView====================*/
+/*move to new forder later*/
+
+.uiWeekView {
+	.uiGrid.table tr ,.uiGrid.table tr td ,.td  div{
+		height: 19px;		/*fix bug for javasript weekview */
+	}
 }
