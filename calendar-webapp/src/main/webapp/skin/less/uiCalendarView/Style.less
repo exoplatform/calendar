@@ -46,9 +46,6 @@
 }
 
 .mainWorkingPanel{
-    height: 400px;
-    overflow-x: hidden;
-    overflow-y: auto;
 }
 
 .eventContainer{
@@ -130,19 +127,24 @@
 
 .UICalendarViewContainer, .uiCalendarViewContainer{
 	.eventDescription{
-	width: 12px;
-	height: 12px;
-	.border-radius(2px);
-	vertical-align: middle;
-	display: inline-block;
+		width: 12px;
+		height: 12px;
+		.border-radius(2px);
+		vertical-align: middle;
+		display: inline-block;
 	}
-}
-
-.UICalendarViewContainer {
 	.uiGrid.table tr td {					
 		font-size: 12px;
 	}
+	.resizeButton  [class^="uiIcon"]{
+		position: absolute;
+		top: 50%;
+		right: -3px;
+		z-index: 9;
+		cursor: pointer;
+	}
 }
+
 .UserSelectionBlock ,.userSelectionBlock{
     -moz-user-select: none;
     .opacity(50);

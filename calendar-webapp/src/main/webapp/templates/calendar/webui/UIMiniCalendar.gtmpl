@@ -50,7 +50,7 @@
         </a>
 		<span>
 			<%  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis(); %>
-			<a href="<%=uicomponent.event("GotoDate", monthViewAction)%>"> $monthName </a>,  
+			<a href="<%=uicomponent.event("GotoDate", monthViewAction)%>"> $monthName</a>,  
 			<span> $currentYear </span>
 		</span>
 		
