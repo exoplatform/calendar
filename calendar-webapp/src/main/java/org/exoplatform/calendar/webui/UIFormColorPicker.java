@@ -46,11 +46,6 @@ public class UIFormColorPicker extends UIFormInputBase<String>
   private int items_ = 10;
 
   /**
-   * The list of options
-   */
-  //private List<SelectItemOption<String>> options_ ;
-
-  /**
    * The javascript expression executed when an onChange event fires
    */
   private String onchange_;
@@ -129,13 +124,6 @@ public class UIFormColorPicker extends UIFormInputBase<String>
   {
     this(name, null, value);
   }
-
-  /*final public UIFormColorPicker setColors(List<SelectItemOption<String>> options) {
-   options_ = options ;
-   if(options_ == null || options_.size() < 1) return this;
-   value_ = options_.get(0).getValue();
-   return this ;
- } */
 
   @SuppressWarnings("unused")
   public void decode(Object input, WebuiRequestContext context)
@@ -254,38 +242,6 @@ public class UIFormColorPicker extends UIFormInputBase<String>
     }
     w.write(" />");
     w.write("</div>");
-    /* 
-    int i = 0;
-    int count = 0;
-    while (i <= size() / items())
-    {
-      w.write("<div class='UIColorLine'>");
-      int j = 0;
-      while (j < items() && count < size())
-      {
-        Color color = getColors()[count];
-        String actionLink = "javascript:eXo.calendar.UIColorPicker.setColor('" + color.getName() + "')";
-        w.write("<a href=\""
-                + actionLink
-                + "\" class=\""
-                + color.getName()
-                + " ColorCell \" onmousedown=\"event.cancelBubble=true\"><img src=\"/eXoResources/skin/sharedImages/Blank.gif\" /></a>");
-        count++;
-        j++;
-      }
-      w.write("</div>");
-      i++;
-    }
-    w.write("</div>");
-    w.write("<input class='UIColorPickerValue' name='" + getId() + "' type='hidden'" + " id='" + getId() + "' "
-        + renderJsActions());
-    if (value != null && value.trim().length() > 0)
-    {
-      w.write(" value='" + value + "'");
-    }
-    w.write(" />");
-    w.write("</div>");
-     */
   }
 
   @Override
@@ -514,9 +470,6 @@ public class UIFormColorPicker extends UIFormInputBase<String>
       public void setCode(String code)
       {
         code_ = code;
-        /*R =  Integer.parseInt(code.substring(1,2), 16) ;
-          G =  Integer.parseInt(code.substring(3,2), 16) ;
-          B =  Integer.parseInt(code.substring(5,2), 16) ;*/
       }
     }
 
