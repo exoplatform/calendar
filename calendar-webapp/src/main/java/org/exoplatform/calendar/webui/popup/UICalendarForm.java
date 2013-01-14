@@ -16,25 +16,16 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.FeedData;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarWorkingContainer;
 import org.exoplatform.calendar.webui.UIFormColorPicker;
-import org.exoplatform.calendar.webui.popup.UICalendarPermissionTab.Permission;
-import org.exoplatform.calendar.webui.popup.UICalendarPermissionTab.PermissionOwner;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -61,8 +52,6 @@ import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
-import org.exoplatform.webui.organization.UIGroupMembershipSelector;
-import org.exoplatform.webui.organization.account.UIGroupSelector;
 
 /**
  * Created by The eXo Platform SARL
@@ -75,7 +64,7 @@ import org.exoplatform.webui.organization.account.UIGroupSelector;
     template = "system:/groovy/webui/form/UIFormTabPane.gtmpl",
     events = {
         @EventConfig(listeners = UICalendarForm.SaveActionListener.class),
-        //@EventConfig(listeners = UICalendarForm.SelectPermissionActionListener.class, phase=Phase.DECODE),
+        @EventConfig(listeners = UICalendarForm.SelectPermissionActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.ResetActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.CancelActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase=Phase.DECODE),
@@ -84,22 +73,34 @@ import org.exoplatform.webui.organization.account.UIGroupSelector;
         @EventConfig(listeners = UICalendarForm.ActiveActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.DeactiveActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.DeletePermissionActionListener.class),
-        @EventConfig(listeners = UICalendarForm.OpenSelectUserFormActionListener.class),
         @EventConfig(listeners = UICalendarForm.OpenSelectGroupFormActionListener.class),
-        @EventConfig(listeners = UICalendarForm.OpenSelectMembershipFormActionListener.class),
-        @EventConfig(listeners = UICalendarForm.AddPermissionActionListener.class)
+        @EventConfig(listeners = UICalendarForm.AddGroupActionListener.class)
     }
 )
 public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, UISelector{
-  private static final Log log = ExoLogger.getExoLogger(UICalendarForm.class);
+  private static final Log LOG = ExoLogger.getExoLogger(UICalendarForm.class);
 
   final public static String DISPLAY_NAME = "displayName" ;
   final public static String DESCRIPTION = "description" ;
   final public static String CATEGORY = "category" ;
   final public static String SHARED_GROUPS = "sharedGroups" ;
-  final public static String EDIT_PERMISSION = "editPermission" ;
   final public static String SELECT_COLOR = "selectColor" ;
+
+  /* group tab */
   final public static String SELECT_GROUPS = "selectGroups" ;
+
+  final public static String EDIT_PERMISSION = "editPermission" ;
+
+  public static final String ACTIONS = "permissionActions";
+
+  public static final String ADD_GROUP_INPUT = "AddGroupInput";
+
+  public static final String ADD_GROUP_INPUT_LABEL = "Select Group";
+
+  public static final String OPEN_SELECT_GROUP_FORM = "OpenSelectGroupForm";
+
+  public static final String ADD_GROUP = "AddGroup";
+
   final public static String INPUT_CALENDAR = "calendarDetail".intern() ;
   final public static String INPUT_SHARE = "public".intern() ;
   final public static String TIMEZONE = "timeZone" ;
@@ -109,7 +110,10 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   final public static String PRIVATE_URL = "private-url".intern();
   final public static String PUBLIC_URL_MSG = "public-url-msg-active".intern();
   final public static String PUBLIC_URL_MSG_D = "public-url-msg-deactive".intern();
-  final public static String ACT_SELECT_PERM = "SelectPermission".intern();
+  final public static String ACTION_SELECT_PERMISSION = "SelectPermission".intern();
+
+  public static final String ACTION_DELETE_PERMISSION = "DeletePermission";
+
   final public static String ACT_ADD_CATEGORY = "AddCategory".intern();
 
   final public static String ACT_OPEN = "Open".intern();
@@ -117,32 +121,10 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   final public static String ACT_ACTIVE = "Active".intern();
   final public static String ACT_DEACTIVE = "Deactive".intern();
 
-  /* UICalendarPermissionTab */
-  public static final String DELETE_ENTRY = "DeletePermission";
-
-  public final static String OPEN_SELECT_USER_FORM = "OpenSelectUserForm";
-
-  public final static String OPEN_SELECT_GROUP_FORM= "OpenSelectGroupForm";
-
-  public final static String OPEN_SELECT_MEMBERSHIP_FORM= "OpenSelectMembershipForm";
-
-  public final static String GROUP_ICON = "IconGroup";
-
-  public final static String USER_ICON = "IconUser";
-
-  public final static String MEMBERSHIP_ICON = "IconMembership";
-
-  public final static String ADD_ICON = "ActionIcon Add";
-
-  public static final String ADD_ENTRY   = "AddPermission";
-
-  public final static String PERMISSION_OWNER = "PermissionOwner";
-
   public final static int TYPE_BUTTON = 5;
 
   public Map<String, String> permission_ = new HashMap<String, String>() ;
   public Map<String, Map<String, String>> perms_ = new HashMap<String, Map<String, String>>() ;
-  //public String calendarId_ = null ;
   public Calendar calendar_ = null ;
   public String calType_ =  CalendarUtils.PRIVATE_TYPE ;
   private boolean isAddNew_ = true ;
@@ -150,8 +132,16 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   public static final String PERMISSION_TAB = "UICalendarPermissionTab";
 
-  public UICalendarForm() throws Exception{
+  /* contains group id of user groups */
+  private static Set<String> userGroups;
+
+  public UICalendarForm() throws Exception
+  {
     super("UICalendarForm");
+
+    /* init user groups */
+    userGroups = getCurrentUserGroups();
+
     UICalendarDetailTab calendarDetail = new UICalendarDetailTab(INPUT_CALENDAR) ;
     calendarDetail.addUIFormInput(new UIFormStringInput(DISPLAY_NAME, DISPLAY_NAME, null).addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class)) ;
     calendarDetail.addUIFormInput(new UIFormTextAreaInput(DESCRIPTION, DESCRIPTION, null)) ;
@@ -175,64 +165,66 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     calendarDetail.setActionField(CATEGORY, actions) ;
     setSelectedTab(calendarDetail.getId()) ;
     addChild(calendarDetail) ;
-    UIGroupCalendarTab sharing = new UIGroupCalendarTab(INPUT_SHARE) ;
-    sharing.addUIFormInput(new UIFormInputInfo(SELECT_GROUPS, SELECT_GROUPS, null)) ;
-    sharing.addUIFormInput(new UIFormStringInput(EDIT_PERMISSION, null, null)) ;
-    for(Object groupObj : getPublicGroups()) {
-      String group = ((Group)groupObj).getId() ;
-      if(sharing.getUICheckBoxInput(group) != null)sharing.getUICheckBoxInput(group).setChecked(false) ;
-      else sharing.addUIFormInput(new UICheckBoxInput(group, group, false)) ;
-      if(sharing.getUIFormInputInfo(group+PERMISSION_SUB) == null) {
-        sharing.addUIFormInput(new UIFormStringInput(group+PERMISSION_SUB ,group+PERMISSION_SUB, null)) ;
-        actions = new ArrayList<ActionData> () ;
-        ActionData editPermission = new ActionData() ;
-        editPermission.setActionListener(ACT_SELECT_PERM) ;
-        editPermission.setActionName("SelectUser") ;
-        editPermission.setActionParameter(UISelectComponent.TYPE_USER + ":" + group+PERMISSION_SUB) ;
-        editPermission.setActionType(ActionData.TYPE_ICON) ;
-        editPermission.setCssIconClass("uiIconUser") ;
-        actions.add(editPermission) ;
-        ActionData membershipPerm = new ActionData() ;
-        membershipPerm.setActionListener(ACT_SELECT_PERM) ;
-        membershipPerm.setActionName("SelectMemberShip") ;
-        membershipPerm.setActionParameter(UISelectComponent.TYPE_MEMBERSHIP + ":" + group+PERMISSION_SUB) ;
-        membershipPerm.setActionType(ActionData.TYPE_ICON) ;
-        membershipPerm.setCssIconClass("uiIconMembership") ;
-        actions.add(membershipPerm) ;
-        sharing.setActionField(group+PERMISSION_SUB, actions) ;
-      }
-    }
-    addChild(sharing) ;
 
-    //initPermissionTab();
+    initGroupTab();
   }
 
-  private void initPermissionTab() throws Exception
+  /**
+   * get all user groups
+   *
+   * @return
+   * @throws Exception
+   */
+  private Set<String> getCurrentUserGroups() throws Exception
   {
-    UICalendarPermissionTab permissionTab = new UICalendarPermissionTab(PERMISSION_TAB);
-    permissionTab.setParent(this);
-    addChild(permissionTab);
-
-    String [] actionNames = new String[]{OPEN_SELECT_USER_FORM, OPEN_SELECT_MEMBERSHIP_FORM,
-        OPEN_SELECT_GROUP_FORM, ADD_ENTRY};
-    String [] actionIcons = new String[]{USER_ICON, MEMBERSHIP_ICON, GROUP_ICON, ADD_ICON};
-    List<ActionData> actions = new ArrayList<ActionData>();
-    ActionData action;
-    for (int i = 0; i < actionNames.length; ++i) {
-      action = new ActionData();
-      action.setActionListener(actionNames[i]);
-      if (i < actionNames.length - 1) {
-        action.setActionType(ActionData.TYPE_ICON);
-      } else {
-        action.setActionType(TYPE_BUTTON);
-      }
-      action.setActionName(actionNames[i]);
-      action.setCssIconClass(actionIcons[i]);
-      actions.add(action);
+    Object[] groups = getPublicGroups();
+    Set<String> userGroups = new HashSet<String>();
+    for (Object aGroup : groups)
+    {
+      userGroups.add(((Group) aGroup).getId());
     }
+    return userGroups;
+  }
 
-    permissionTab.addUIFormInput(new UIFormStringInput(PERMISSION_OWNER, PERMISSION_OWNER, "Select Owner"));
-    permissionTab.setActionField(PERMISSION_OWNER, actions);
+  public static boolean isGroupBelongingToUserGroups(String groupId)
+  {
+    return userGroups.contains(groupId);
+  }
+
+  /**
+   * init calendar group tab
+   **/
+  private void initGroupTab() throws Exception
+  {
+    UIGroupCalendarTab groupTab = new UIGroupCalendarTab(INPUT_SHARE) ;
+    groupTab.addUIFormInput(new UIFormInputInfo(SELECT_GROUPS, SELECT_GROUPS, null)) ;
+    groupTab.addUIFormInput(new UIFormStringInput(EDIT_PERMISSION, null, null)) ;
+
+    /* add input field for adding group */
+    groupTab.addUIFormInput(new UIFormStringInput(ADD_GROUP_INPUT, null, ADD_GROUP_INPUT_LABEL));
+
+    /* add icon to open popup to select group */
+    List<ActionData> actions = new ArrayList<ActionData>() ;
+    ActionData openGroupPopupAction = new ActionData() ;
+    openGroupPopupAction.setActionListener(OPEN_SELECT_GROUP_FORM) ;
+    openGroupPopupAction.setActionName(OPEN_SELECT_GROUP_FORM) ;
+    openGroupPopupAction.setActionType(ActionData.TYPE_ICON) ;
+    openGroupPopupAction.setCssIconClass("uiIconGroup") ;
+    actions.add(openGroupPopupAction);
+
+    groupTab.setActionField(OPEN_SELECT_GROUP_FORM, actions);
+
+    /* add button to add group */
+    actions = new ArrayList<ActionData>() ;
+    ActionData addGroupAction = new ActionData() ;
+    addGroupAction.setActionListener(ADD_GROUP) ;
+    addGroupAction.setActionName(ADD_GROUP) ;
+    addGroupAction.setActionType(TYPE_BUTTON) ;
+    addGroupAction.setCssIconClass("btn");
+
+    actions.add(addGroupAction);
+    groupTab.setActionField(ADD_GROUP, actions);
+    addChild(groupTab);
   }
 
   public String getCalType() { return calType_ ; }
@@ -245,17 +237,19 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   public void activate() throws Exception {}
   @Override
   public void deActivate() throws Exception {}
-  public void resetField() throws Exception {
+
+  /**
+   * clear all fields and set to initial values
+   *
+   * @throws Exception
+   */
+  public void resetField() throws Exception
+  {
     permission_.clear() ;
     perms_.clear() ;
-    UIGroupCalendarTab sharing = getChildById(INPUT_SHARE) ;
-    for(Object obj : getPublicGroups()) {
-      String groupId = ((Group)obj).getId() ;
-      UICheckBoxInput checkbox = sharing.getUICheckBoxInput(((Group) obj).getId()) ;
-      if(checkbox != null) checkbox.setChecked(false) ;
-      UIFormStringInput uiInputIfo = sharing.getUIStringInput(groupId + PERMISSION_SUB);
-      if(uiInputIfo != null) uiInputIfo.setValue(null) ;
-    }
+    UIGroupCalendarTab groupTab = getChildById(INPUT_SHARE) ;
+    groupTab.resetTab();
+
     if(isAddNew_) {
       calendar_ = null ;
       calType_ = CalendarUtils.PRIVATE_TYPE ;
@@ -266,69 +260,68 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     } else {
       init(calendar_, null) ;
     }
-
   }
+
   public boolean isAddNew() { return isAddNew_ ; }
+
   public void init(Calendar calendar, CalendarSetting setting) throws Exception {
     isAddNew_ = false ;
     calendar_ = calendar ;
+
     UIFormInputWithActions calendarDetail = getChildById(INPUT_CALENDAR);
-    //    CalendarSetting setting = getAncestorOfType(UICalendarPortlet.class).getCalendarSetting();
     if (setting != null) {
       UIFormStringInput info = calendarDetail.getUIStringInput(TIMEZONE);
       info.setValue(CalendarUtils.generateTimeZoneLabel(setting.getTimeZone()));
       info.setLabel(setting.getTimeZone());
     }
 
-
     setDisplayName(calendar.getName()) ;
     setDescription(calendar.getDescription()) ;
-    UIFormInputWithActions sharing = getChildById(INPUT_SHARE) ;
-    sharing.setRendered(true) ;
-    if(CalendarUtils.PUBLIC_TYPE.equals(calType_)) {
+    UIGroupCalendarTab groupTab = getChildById(INPUT_SHARE) ;
+
+    /* group calendar */
+    if(CalendarUtils.PUBLIC_TYPE.equals(calType_))
+    {
+      groupTab.setRendered(true) ;
+      /* for each group of calendar, add an entry for group permission */
+      for (String groupId : calendar.getGroups())
+      {
+        groupTab.addGroupPermissionEntry(groupId);
+      }
+
       calendarDetail.removeChildById(CATEGORY) ;
       calendarDetail.setActionField(CATEGORY, null) ;
       for(String groupId : calendar.getGroups()) {
-        UICheckBoxInput checkbox = sharing.getUICheckBoxInput(groupId) ;
-        UIFormStringInput uiInput = sharing.getUIStringInput(groupId + PERMISSION_SUB) ;
-        if(checkbox != null) {
-          checkbox.setChecked(true) ;
+        UIFormStringInput selectPermissionInput = groupTab.getChildById(groupId + PERMISSION_SUB) ;
+
+        if (selectPermissionInput!= null) {
           StringBuffer sb = new StringBuffer() ;
           List<String> checkList = new ArrayList<String>() ;
           if(calendar.getEditPermission() != null) {
-
-            log.info("edit permission: " + Arrays.toString(calendar.getEditPermission()));
-
-
-            if (calendar.getViewPermission() !=null)
-              log.info("view permission: " + Arrays.toString(calendar.getViewPermission()));
-
             for(String s : calendar.getEditPermission()) {
-              Permission permission = new Permission(new PermissionOwner(s));
-              log.info("first permission - type: " + permission.getOwner ().getOwnerType()
-                  + " - groupId: " + permission.getOwner().getGroupId() + " - userId: " + permission.getOwner().getUserId());
-
-              if(s.lastIndexOf(CalendarUtils.SLASH_COLON) > -1) {
+              if(s.lastIndexOf(CalendarUtils.SLASH_COLON) > -1) {     ///developers/:demo
                 String id = s.split(CalendarUtils.SLASH_COLON)[0].trim() ;
                 String perm = s.split(CalendarUtils.SLASH_COLON)[1].trim() ;
-                if(groupId.equals(id)) {
+                if (groupId.equals(id)) {
                   if(!checkList.contains(s.split(CalendarUtils.SLASH_COLON)[1])) {
                     checkList.add(perm) ;
-                    if(sb.length() > 0) sb.append(CalendarUtils.COMMA) ;
+                    if(sb.length() > 0) sb.append(CalendarUtils.COMMA + " ") ;
                     sb.append(perm) ;
                   }
                 }
               }
             }
           }
-          uiInput.setValue(sb.toString()) ;
+          selectPermissionInput.setValue(sb.toString()) ;
         }
       }
     }
-    if(CalendarUtils.PRIVATE_TYPE.equals(calType_))
+    /* private calendar */
+    else if(CalendarUtils.PRIVATE_TYPE.equals(calType_))
     {
-      sharing.setRendered(false) ;
+      groupTab.setRendered(false) ;
     }
+
     //    setLocale(calendar.getLocale()) ;
     setTimeZone(calendar.getTimeZone()) ;
     setSelectedColor(calendar.getCalendarColor()) ;
@@ -348,15 +341,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     privateAction.setCssIconClass("ICalIcon");
     calendarDetail.addUIFormInput(privateUrl);
     calendarDetail.setActionField(PRIVATE_URL, Arrays.asList(privateAction));
-
-    /* init permission tab */
-    /*
-    UICalendarPermissionTab permissionTab = getChildById(PERMISSION_TAB);
-    permissionTab.setCalendarPermissions( Permission.valueOf(calendar_.getEditPermission()) );
-    Permission.addRightToGroupOfPermissions( permissionTab.getCalendarPermissions(), PermissionType.VIEW_CALENDAR );
-    Permission.addRightToGroupOfPermissions( permissionTab.getCalendarPermissions(), PermissionType.EDIT_CALENDAR );
-    permissionTab.init();
-    */
   }
 
   protected String getDisplayName() {
@@ -409,10 +393,17 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     timeZone.setValue(CalendarUtils.generateTimeZoneLabel(value));
     timeZone.setLabel(value) ;
   }
+
   @Override
   @SuppressWarnings("unchecked")
   public void updateSelect(String selectField, String value) throws Exception {
     UIGroupCalendarTab shareTab = getChildById(INPUT_SHARE) ;
+
+    if (selectField.equals(ADD_GROUP_INPUT)) {
+      updateSelectGroup(selectField, value);
+      return;
+    }
+
     UIFormStringInput fieldInput = shareTab.getUIStringInput(selectField) ;
     StringBuilder sb = new StringBuilder() ;
     Map<String, String> temp = new HashMap<String, String>() ;
@@ -433,25 +424,57 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       }
     }
     for(String s : tempMap.values()) {
-      if(sb != null && sb.length() > 0) sb.append(CalendarUtils.COMMA) ;
+      if(sb != null && sb.length() > 0) sb.append(CalendarUtils.COMMA + " ") ;
       sb.append(s) ;
     }
     fieldInput.setValue(sb.toString()) ;
     setSelectedTab(shareTab.getId()) ;
   }
-  protected boolean isPublic() throws Exception{
-    UIGroupCalendarTab sharing = getChildById(INPUT_SHARE) ;
-    for(Object groupObj : getPublicGroups()) {
-      String group = ((Group)groupObj).getId() ;
-      UICheckBoxInput checkBox = sharing.getUICheckBoxInput(group) ;
-      if( checkBox != null) {
-        if(checkBox.isChecked()) {
-          return true ;
-        }
-      }
+
+
+  /**
+   * update "add group input" field once finishing selecting group from popup
+   *
+   * @param selectField
+   * @param groupId
+   */
+  private void updateSelectGroup(String selectField, String groupId)
+  {
+    UIFormStringInput addGroupInput = getChild(UIGroupCalendarTab.class).getChildById(ADD_GROUP_INPUT);
+
+    if (addGroupInput.getValue() == null) addGroupInput.setValue("");
+    if (addGroupInput.getValue().contains(groupId)) return ;
+    /* empty the input at the first moment inserting a groupId */
+    if (addGroupInput.getValue().equals(ADD_GROUP_INPUT_LABEL)) {
+      addGroupInput.setValue(groupId);
+      return;
+    }
+
+    addGroupInput.setValue(
+        addGroupInput.getValue() + CalendarUtils.COMMA + " " + groupId
+    );
+  }
+
+  /**
+   * check if the calendar is a public or private calendar
+   *
+   * @return
+   * @throws Exception
+   */
+  protected boolean isPublic() throws Exception
+  {
+    UIGroupCalendarTab groupTab = getChildById(INPUT_SHARE) ;
+    for (Object groupObj : getPublicGroups()) {
+      String groupId = ((Group)groupObj).getId() ;
+      UIFormStringInput groupPermissionInput = groupTab.getChildById(groupId + PERMISSION_SUB) ;
+      if (groupPermissionInput != null) return true ;
     }
     return false ;
   }
+
+  /**
+   * find public groups of user
+   **/
   private Object[] getPublicGroups() throws Exception {
     OrganizationService organization = getApplicationComponent(OrganizationService.class) ;
     String currentUser = CalendarUtils.getCurrentUser() ;
@@ -460,10 +483,10 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   @SuppressWarnings("unchecked")
   private List getSelectedGroups(String groupId) throws Exception {
-    UIGroupCalendarTab sharing = getChildById(INPUT_SHARE) ;
+    UIGroupCalendarTab groupTab = getChildById(INPUT_SHARE) ;
     List groups = new ArrayList() ;
     Group g = getApplicationComponent(OrganizationService.class).getGroupHandler().findGroupById(groupId) ;
-    UICheckBoxInput input =  sharing.getUICheckBoxInput(groupId) ;
+    UICheckBoxInput input =  groupTab.getUICheckBoxInput(groupId) ;
     if(input != null && input.isChecked()) {
       groups.add(g) ;
     }
@@ -479,6 +502,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     try {
       return super.getLabel(id) ;
     } catch (Exception e) {
+      LOG.info("can not find label for " + getId() + ".label." + id);
       return id ;
     }
   }
@@ -488,67 +512,154 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   }
 
   /**
-  static  public class SelectPermissionActionListener extends EventListener<UICalendarForm> {
+   * open popup in order to select user or group membership
+   */
+  public static class SelectPermissionActionListener extends EventListener<UICalendarForm>
+  {
     @Override
-    public void execute(Event<UICalendarForm> event) throws Exception {
+    public void execute(Event<UICalendarForm> event) throws Exception
+    {
       UICalendarForm uiForm = event.getSource() ;
       uiForm.setSelectedTab(INPUT_SHARE) ;
+
       String value = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String permType = value.split(CalendarUtils.COLON)[0] ;
-      String fieldId = value.split(CalendarUtils.COLON)[1] ;
-      String checkBoxId = fieldId.split(PERMISSION_SUB)[0] ;
+      String stringInputId = value.split(CalendarUtils.COLON)[1] ;
       UIGroupCalendarTab shareTab = uiForm.getChildById(INPUT_SHARE) ;
-      UICheckBoxInput checkBox = shareTab.getUICheckBoxInput(checkBoxId) ;
-      if(!checkBox.isChecked()) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.checkbox-notchecked",
-            new String[] { checkBoxId },
-            AbstractApplicationMessage.WARNING));
-        return ;
-      }
-      if(!uiForm.isPublic()) {
-        event.getRequestContext()
-            .getUIApplication()
-            .addMessage(new ApplicationMessage("UICalendarForm.msg.checkbox-public-notchecked", null));
-        return ;
-      }
-      String currentUsers = shareTab.getUIStringInput(fieldId).getValue() ;
-      if(uiForm.perms_.get(fieldId) != null) uiForm.perms_.get(fieldId).clear() ;
+      String currentUsers = shareTab.getUIStringInput(stringInputId).getValue() ;
+      if(uiForm.perms_.get(stringInputId) != null) uiForm.perms_.get(stringInputId).clear() ;
       if(!CalendarUtils.isEmpty(currentUsers)) {
-        for(String user : currentUsers.split(CalendarUtils.COMMA)) {
+        for (String user : currentUsers.split(CalendarUtils.COMMA)) {
           user = user.trim() ;
-          String fullKey = permType + CalendarUtils.COLON_SLASH + fieldId +  CalendarUtils.COLON_SLASH + user ;
-          uiForm.updateSelect(fieldId, fullKey) ;
+          String fullKey = permType + CalendarUtils.COLON_SLASH + stringInputId +  CalendarUtils.COLON_SLASH + user ;
+          uiForm.updateSelect(stringInputId, fullKey) ;
         }
       }
+
       UIGroupSelector uiGroupSelector = uiForm.createUIComponent(UIGroupSelector.class, null, null);
       uiGroupSelector.setType(permType) ;
+
       String groupId = value.split(CalendarUtils.COLON)[1].split(PERMISSION_SUB)[0] ;
       uiGroupSelector.setSelectedGroups(uiForm.getSelectedGroups(groupId)) ;
       uiGroupSelector.changeGroup(groupId) ;
       uiGroupSelector.setComponent(uiForm, new String[] {value.split(CalendarUtils.COLON)[1]});
-      UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
-      UIPopupAction uiChildPopup = uiPopupContainer.getChild(UIPopupAction.class) ;
-      uiChildPopup.activate(uiGroupSelector, 500, 0, true) ;
-      uiGroupSelector.setFilter(false) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getParent()) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiChildPopup) ;
-    }
-  }
-  **/
 
-  static  public class ResetActionListener extends EventListener<UICalendarForm> {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception {
-      UICalendarForm uiForm = event.getSource() ;
-      uiForm.resetField() ;
-      if(uiForm.isAddNew_) {
-        UICalendarPortlet uiCalendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
-        uiForm.setTimeZone(uiCalendarPortlet.getCalendarSetting().getTimeZone()) ;
-      }
+      UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
+      UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class) ;
+      uiPopupAction.activate(uiGroupSelector, 500, 0, true) ;
+      uiGroupSelector.setFilter(false) ;
+
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getParent()) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }
   }
-  static  public class SaveActionListener extends EventListener<UICalendarForm> {
+
+  /**
+   * open popup to select group, only groups that user belong to is displayed
+   */
+  public static class OpenSelectGroupFormActionListener extends EventListener<UICalendarForm>
+  {
+    @Override
+    public void execute(Event<UICalendarForm> event) throws Exception
+    {
+      UICalendarForm uiCalendarForm = event.getSource();
+      uiCalendarForm.setSelectedTab(INPUT_SHARE);
+      UIGroupCalendarTab groupTab = uiCalendarForm.getChild(UIGroupCalendarTab.class);
+      UIGroupSelector uiGroupSelector = uiCalendarForm.createUIComponent(UIGroupSelector.class, null, null);
+      uiGroupSelector.setType("2");
+
+      /* get all groups of user */
+      List groups = new ArrayList(Arrays.asList( uiCalendarForm.getPublicGroups() ));
+      /* remove the group from user group list if it's already displayed in the permission tab */
+      Iterator it = groups.iterator();
+      while (it.hasNext())
+      {
+        String groupId = ((Group) it.next()).getId();
+        if (groupTab.containsGroup(groupId)) it.remove();
+      }
+
+      uiGroupSelector.setSelectedGroups(groups);
+      // set component to passes chosen group to
+      uiGroupSelector.setComponent(uiCalendarForm, new String[] { uiCalendarForm.ADD_GROUP_INPUT });
+
+      UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class);
+      uiPopupAction.activate(uiGroupSelector, 500, 0, true);
+      uiGroupSelector.setFilter(false);
+
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarForm.getParent()) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+    }
+  }
+
+
+  /**
+   * add a new entry for a group in the permission list
+   */
+  public static class AddGroupActionListener extends EventListener<UICalendarForm>
+  {
+    @Override
+    public void execute(Event<UICalendarForm> event) throws Exception
+    {
+      UICalendarForm uiCalendarForm = event.getSource();
+      uiCalendarForm.setSelectedTab(INPUT_SHARE);
+      UIGroupCalendarTab groupTab = uiCalendarForm.getChild(UIGroupCalendarTab.class);
+      UIFormStringInput addGroupInput = groupTab.getChildById(ADD_GROUP_INPUT);
+      String[] groups = addGroupInput.getValue().split(CalendarUtils.COMMA);
+
+      for (String groupId : groups)
+      {
+        groupTab.addGroupPermissionEntry(groupId.trim());
+      }
+      addGroupInput.setValue(ADD_GROUP_INPUT_LABEL);
+      UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarForm.getParent());
+    }
+  }
+
+  public static class DeletePermissionActionListener extends EventListener<UICalendarForm>
+  {
+    @Override
+    public void execute(Event<UICalendarForm> event) throws Exception
+    {
+      UICalendarForm uiCalendarForm = event.getSource();
+      uiCalendarForm.setSelectedTab(INPUT_SHARE);
+      UIGroupCalendarTab groupTab = uiCalendarForm.getChild(UIGroupCalendarTab.class);
+
+      String value = event.getRequestContext().getRequestParameter(OBJECTID) ;
+      String groupId = value.split(CalendarUtils.COLON)[1].split(PERMISSION_SUB)[0];
+      groupTab.removeGroupPermissionEntry(groupId);
+
+      // update the ui
+      UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarForm.getParent());
+    }
+  }
+
+  /**
+   * reset the form to initial state
+   */
+  public static class ResetActionListener extends EventListener<UICalendarForm>
+  {
+    @Override
+    public void execute(Event<UICalendarForm> event) throws Exception
+    {
+      UICalendarForm uiCalendarForm = event.getSource() ;
+      uiCalendarForm.resetField() ;
+      if (uiCalendarForm.isAddNew_) {
+        UICalendarPortlet uiCalendarPortlet = uiCalendarForm.getAncestorOfType(UICalendarPortlet.class) ;
+        uiCalendarForm.setTimeZone(uiCalendarPortlet.getCalendarSetting().getTimeZone()) ;
+      }
+
+      UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarForm.getParent()) ;
+    }
+  }
+
+  public static class SaveActionListener extends EventListener<UICalendarForm>
+  {
     @Override
     @SuppressWarnings({ "unchecked", "deprecation" })
     public void execute(Event<UICalendarForm> event) throws Exception {
@@ -560,10 +671,9 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         displayName = displayName.trim() ;
         CalendarService calendarService = CalendarUtils.getCalendarService() ;
         String username = CalendarUtils.getCurrentUser() ;
-        boolean isPublic = uiForm.isPublic() ;
-        if(isPublic) uiForm.calType_ = CalendarUtils.PUBLIC_TYPE ;
+        if(uiForm.isPublic()) uiForm.calType_ = CalendarUtils.PUBLIC_TYPE ;
         Calendar calendar = new Calendar() ;
-        if(!uiForm.isAddNew_) calendar = uiForm.calendar_ ;
+        if (!uiForm.isAddNew_) calendar = uiForm.calendar_ ;
         calendar.setName(displayName) ;
         calendar.setDescription(uiForm.getDescription()) ;
         calendar.setCalendarColor(uiForm.getSelectedColor()) ;
@@ -572,7 +682,9 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
             PortalContainer.getCurrentRestContextName() + CalendarWebservice.BASE_URL_PRIVATE + CalendarUtils.getCurrentUser()+"/"+
             calendar.getId() +"/"+ uiForm.calType_ ;
         calendar.setPrivateUrl(url);
-        if(CalendarUtils.PRIVATE_TYPE.equals(uiForm.calType_)) {
+
+        if(CalendarUtils.PRIVATE_TYPE.equals(uiForm.calType_))
+        {
           List<Calendar> pCals = calendarService.getUserCalendars(username, true) ;
           for(Calendar cal : pCals) {
             if(uiForm.isAddNew_) {
@@ -588,44 +700,23 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
             }
           }
           calendarService.saveUserCalendar(username, calendar, uiForm.isAddNew_) ;
-        } else if(CalendarUtils.SHARED_TYPE.equals(uiForm.calType_)) {
+        } else if(CalendarUtils.SHARED_TYPE.equals(uiForm.calType_))
+        {
           calendarService.saveSharedCalendar(username, calendar) ;
-        }else if (CalendarUtils.PUBLIC_TYPE.equals(uiForm.calType_)) {
-          Object[] groupList = uiForm.getPublicGroups() ;
-          List<String> selected = new ArrayList<String>() ;
-          for(Object groupObj : groupList) {
-            String groupId = ((Group)groupObj).getId() ;
-            if(uiForm.getUICheckBoxInput(groupId)!= null && uiForm.getUICheckBoxInput(groupId).isChecked()) {
-              selected.add(groupId) ;
-            }
-          }
-          if(selected.size() < 1){
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.group-empty", null, AbstractApplicationMessage.WARNING) ) ;
-            return ;
-          }
+        }
+        /* saving group calendar */
+        else if (CalendarUtils.PUBLIC_TYPE.equals(uiForm.calType_))
+        {
+          UIGroupCalendarTab groupTab = uiForm.getChildById(INPUT_SHARE);
 
-          List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(selected.toArray(new String[] {}), false, username) ;
-          for (GroupCalendarData groupCalendarData : groupCalendars) {
-            for (Calendar calendar2 : groupCalendarData.getCalendars()) {
-              if (uiForm.isAddNew_) {
-                if(calendar2.getName().equalsIgnoreCase(displayName.trim())) {
-                  event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{displayName}, AbstractApplicationMessage.WARNING)) ;
-                  return ;
-                }
-              } else {
-                if(calendar2.getName().trim().equalsIgnoreCase(displayName.trim()) && !calendar2.getId().equals(calendar.getId())) {
-                  event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{displayName}, AbstractApplicationMessage.WARNING)) ;
-                  return ;
-                }
-              }
-            }
-          }
-
-          calendar.setPublic(isPublic) ;
-          calendar.setGroups(selected.toArray((new String[]{})));
+          String[] groupsSelected = groupTab.getGroupsAddedToTheCalendar();
+          calendar.setPublic(uiForm.isPublic()) ;
+          calendar.setGroups(groupsSelected);
           List<String> listPermission = new ArrayList<String>() ;
           OrganizationService orgService = CalendarUtils.getOrganizationService() ;
-          for(String groupIdSelected : selected) {
+
+          for (String groupIdSelected : groupsSelected)
+          {
             String groupKey = groupIdSelected + CalendarUtils.SLASH_COLON ;
             UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
             String typedPerms = sharedTab.getUIStringInput(groupIdSelected + PERMISSION_SUB).getValue();
@@ -638,17 +729,19 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
               listPermission.add(groupKey + CalendarUtils.getCurrentUser()) ;
             }
           }
+
           calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
           calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
         }
+
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
         CalendarUtils.removeCurrentCalendarSetting();
         calendarPortlet.cancelAction() ;
         UICalendarWorkingContainer uiWorkingContainer = calendarPortlet.getChild(UICalendarWorkingContainer.class) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ; ;
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;
       }catch (Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug("Fail to save the calendar", e);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Fail to save the calendar", e);
         }
       }
     }
@@ -782,80 +875,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       UICalendarForm uiForm = event.getSource();
       uiForm.calendar_.setPublicUrl(null);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
-    }
-  }
-
-  public static class DeletePermissionActionListener extends EventListener<UICalendarForm>
-  {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception
-    {
-
-      // receives the entry with the permission
-      // delete the permission on the ui - delete it in the permission grid
-      // delete the permission on the calendar
-      // update the ui
-    }
-  }
-
-  public static class OpenSelectUserFormActionListener extends EventListener<UICalendarForm>
-  {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception
-    {
-      UICalendarForm uiCalendarForm = event.getSource();
-      uiCalendarForm.setSelectedTab(PERMISSION_TAB);
-      UIUserSelector uiUserSelector = uiCalendarForm.createUIComponent(UIUserSelector.class, null, null);
-      uiUserSelector.setShowSearch(true);
-      uiUserSelector.setShowSearchUser(true);
-      uiUserSelector.setShowSearchGroup(false);
-
-      UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class);
-      uiPopupAction.activate(uiUserSelector, 500, 0, true);
-
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
-    }
-  }
-
-  public static class OpenSelectGroupFormActionListener extends EventListener<UICalendarForm>
-  {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception
-    {
-      UICalendarForm uiCalendarForm = event.getSource();
-      uiCalendarForm.setSelectedTab(PERMISSION_TAB);
-      UIGroupSelector uiGroupSelector = uiCalendarForm.createUIComponent(UIGroupSelector.class, null, null);
-
-      UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class);
-      uiPopupAction.activate(uiGroupSelector, 500, 0, true);
-
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
-    }
-  }
-
-  public static class OpenSelectMembershipFormActionListener extends EventListener<UICalendarForm>
-  {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception
-    {
-      UICalendarForm uiCalendarForm = event.getSource();
-      UIGroupMembershipSelector uiGroupMembershipSelector = uiCalendarForm.createUIComponent(UIGroupMembershipSelector.class, null, null);
-
-      UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class);
-      uiPopupAction.activate(uiGroupMembershipSelector, 500, 0, true);
-
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
-    }
-  }
-
-  public static class AddPermissionActionListener extends EventListener<UICalendarForm>
-  {
-    @Override
-    public void execute(Event<UICalendarForm> event) throws Exception
-    {
-      log.info("receives Delete permission event from " + event.getSource().getClass().getName());
-      log.info("OBJECTID: " + event.getRequestContext().getRequestParameter(OBJECTID));
-      log.info("UIComponent: " + event.getRequestContext().getRequestParameter(UICOMPONENT));
     }
   }
 

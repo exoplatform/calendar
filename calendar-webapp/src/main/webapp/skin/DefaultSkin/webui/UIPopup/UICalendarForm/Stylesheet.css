@@ -43,3 +43,7 @@ input#PermissionOwner {
   display: inline-block;
 }
 
+.disableIcon {
+  opacity: 0.5;
+}
+

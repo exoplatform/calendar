@@ -1,20 +1,6 @@
-<% 
-  import  org.exoplatform.webui.core.UIBreadcumbs; 
-  import  org.exoplatform.webui.core.UITree;
-  def st; 
-%>
 <div class="UIGroupMembershipSelector" id="$uicomponent.id">
   <div class="Container">
-  <%if(uicomponent.isSelectGroup()){%>
-    <div class="SelectedGroupPath"><% uicomponent.renderChild(UIBreadcumbs.class); %></div>
-    <div class="GroupSelector">
-      <div class="ContentContainer">
-        <%uicomponent.renderChild(UITree.class);%>
-        <div class="MembershipTitle"><%=_ctx.appRes(uicomponent.id+".label.selectGroup")%></div>
-      </div>
-    </div>
-    <%}else {st ="style='margin-left:0px;'"}%>
-    <div class="MembershipSelector" $st>
+    <div class="MembershipSelector" style="margin-left:0px;">
       <div class="ContentContainer">
         <div class="MembershipTitle">
           <%if(uicomponent.isSelectUser()){%>
@@ -49,7 +35,22 @@
                   <a class="ItemIcon" href="<%=uicomponent.event('SelectMembership',key)%>">$user</a>  
               </div>
           <%}
-          }%>
+          }
+
+          if (uicomponent.isSelectGroup()) {
+            for (group in uicomponent.getSelectedGroup()) {
+              String rowCssClass   = "OddRow" ;
+              if(even) rowCssClass = "EvenRow" ;
+              even                 = !even ;
+              String groupId       = group.getId();
+              String groupName     = group.getGroupName();
+              String selectGroupLink = uicomponent.event('SelectMembership', groupId);
+          %>
+              <div class="$rowCssClass">
+                  <a rel="tooltip" data-placement="bottom" data-original-title="$groupId" class="ItemIcon" href="$selectGroupLink">$groupName</a>
+              </div>
+          <%}
+          } %>
         </div>
       </div>
     </div>

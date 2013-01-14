@@ -16,10 +16,7 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.commons.utils.PageList;
@@ -64,14 +61,14 @@ import org.exoplatform.webui.organization.UIGroupMembershipSelector;
 })
 
 public class UIGroupSelector extends UIGroupMembershipSelector implements UIPopupComponent, UISelectComponent {
-
   private UIComponent uiComponent ;
   private String type_ = null ;
   private List selectedGroup_ ;
   private String returnFieldName = null ;
   private boolean isFilter_ = true ;
 
-  public UIGroupSelector() throws Exception {}
+  public UIGroupSelector() throws Exception {
+  }
 
   public UIComponent getReturnComponent() { return uiComponent ; }
   public String getReturnField() { return returnFieldName ; }
@@ -132,12 +129,23 @@ public class UIGroupSelector extends UIGroupMembershipSelector implements UIPopu
     Collections.sort(children) ;
     return children ;
   }
+
+  /**
+   *
+   * @param groups groups parameters MUST be passed as List<Group> but casted into List<Object>
+   */
   public void setSelectedGroups(List groups){
     if(groups != null) {
       selectedGroup_ = groups ;
       getChild(UITree.class).setSibbling(selectedGroup_) ;
     }
   }
+
+  public List getSelectedGroup()
+  {
+    return selectedGroup_;
+  }
+
   @Override
   public void changeGroup(String groupId) throws Exception {    
     super.changeGroup(groupId) ;  
@@ -204,5 +212,4 @@ public class UIGroupSelector extends UIGroupMembershipSelector implements UIPopu
       event.getRequestContext().addUIComponentToUpdateByAjax(uiGroupSelector) ;
     }
   }
-
 }

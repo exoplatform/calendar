@@ -1,77 +1,122 @@
 <%
- import org.exoplatform.services.organization.Group;
-  uiForm = uicomponent.getParentFrom() ;
+  import org.exoplatform.services.organization.Group;
+  import org.exoplatform.calendar.webui.popup.UICalendarForm;
+
+  def uiCalendarForm = (UICalendarForm) uicomponent.getParentFrom() ;
+  def rcontext       = _ctx.getRequestContext() ;
+  def addGroupInput  = uicomponent.getChildById(uiCalendarForm.ADD_GROUP_INPUT);
+  def calendarGroups = uicomponent.groupsList.toArray();
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("SHARED/jquery","gj");
+  requirejs.addScripts("gj('#AddGroupInput').click(function() { if (gj('#AddGroupInput').attr('value') === 'Select Group') { gj('#AddGroupInput').attr('value', ''); } });");
+  requirejs.addScripts("gj('#AddGroupInput').blur(function() { var value = gj('#AddGroupInput').attr('value'); if ((value == null) || (value === '')) { gj('#AddGroupInput').attr('value', 'Select Group'); } });");
+
   private void renderActions(String fieldKey) {
+	  def uiCalendarForm = uicomponent.getParentFrom() ;
+    def calendarGroups = uicomponent.groupsList.toArray();
     def actions = uicomponent.getActionField(fieldKey) ;
-    if(actions != null) {
-      for(action in actions) {
-        String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
-        if(actionLabel.equals("action." + action.actionName)) {
-          actionLabel = action.actionName ;
-        }
-        String actionLink ="";
-        if(action.actionParameter != null) {
-          actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
-        }else {
-          actionLink = (uiForm.event(action.actionListener)) ;
-        }
-        %>
-        <a rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
-        <%
-        if(action.actionType == action.TYPE_ICON) {
-        %>
-          <i class="$action.cssIconClass"></i>
-        <%  
-          if(action.isShowLabel) { println  actionLabel  ;}
-        }else if(action.actionType == action.TYPE_LINK){
-         println actionLabel ;
-        }
-        println  "</a>";
-        if(action.isBreakLine) { println "<br/>" ;} 
+    def disableIconClass = "disableIcon";
+
+    if (actions == null) return;
+
+    for (action in actions) {
+      String actionLabel = _ctx.appRes(uiCalendarForm.getId()  + ".label.action." + action.actionName);
+      if(actionLabel.equals("action." + action.actionName)) {
+        actionLabel = action.actionName ;
       }
+
+	    String actionLink ="";
+      if (action.actionParameter != null) {
+        actionLink = (uiCalendarForm.event(action.actionListener, action.actionParameter)) ;
+      } else {
+        actionLink = (uiCalendarForm.event(action.actionListener)) ;
+      }
+
+	    /* disable delete icon when there is only one group permission */
+      if ((!uiCalendarForm.isAddNew_) && (calendarGroups.length == 1) && (action.actionName == UICalendarForm.ACTION_DELETE_PERMISSION))
+      {
+        actionLink  = "javascript:void(0);";
+        actionLabel = _ctx.appRes(uiCalendarForm.getId() + ".msg." + "can-not-delete-permission");
+        action.cssIconClass = action.cssIconClass + " " + disableIconClass;
+      }
+      else if (action.actionName == UICalendarForm.ACTION_DELETE_PERMISSION) action.cssIconClass = "uiIconDelete";
+
+	    /* disable group popup when all groups are added */
+      if ((calendarGroups.length == UICalendarForm.userGroups.size()) && (action.actionName == UICalendarForm.OPEN_SELECT_GROUP_FORM))
+      {
+        actionLink  = "javascript:void(0);";
+        actionLabel = _ctx.appRes(uiCalendarForm.getId() + ".msg." + "can-not-add-group");
+        action.cssIconClass = action.cssIconClass + " " + disableIconClass;
+      }
+      else if (action.actionName == UICalendarForm.OPEN_SELECT_GROUP_FORM) action.cssIconClass = "uiIconGroup";
+
+	    /* disable add group button when all groups are added */
+      if ((calendarGroups.length == UICalendarForm.userGroups.size())
+              && (action.actionName == UICalendarForm.ADD_GROUP))
+      {
+        actionLink  = "javascript:void(0);";
+        action.cssIconClass = action.cssIconClass + " " + disableIconClass;
+      }
+      else if (action.actionName == UICalendarForm.ADD_GROUP) action.cssIconClass = "btn";
+
+	  if (action.actionType == action.TYPE_ICON) {
+	  %>
+		<span style="margin: 5px; position: relative; top: -3px;">
+		  <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
+		    <i class="$action.cssIconClass"></i>
+		  </a>
+        </span>
+      <% }
+      else if (action.actionType == action.TYPE_LINK) {
+      %>
+        <span style="margin: 2px;">
+          <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">$actionLabel</a>
+        </span>
+      <% }
+      else if (action.actionType == uiCalendarForm.TYPE_BUTTON) {
+      %>
+        <button type="button" onclick="$actionLink" class="$action.cssIconClass">$actionLabel</button>
+      <%
+      }
+
+	  if(action.isBreakLine) { println "<br/>"; }
     }
   }
-  def rcontext = _ctx.getRequestContext() ;  
+
 %>
 <div id="$uicomponent.id" class="$uicomponent.id">
-   <table class="UIFormGrid">
-     <tr>
-       <td class="FieldLabel" width="40%">
-         <%=uiForm.getLabel(uiForm.SELECT_GROUPS)%>
-       </td>
-       <td class="" width="5%">
-         &nbsp;
-       </td>
-       <td class="FieldComponent">
-         <%=uiForm.getLabel(uiForm.EDIT_PERMISSION)%>
-       </td>
-       <td class="" width="15%">
-         &nbsp;
-       </td>
-     </tr>
-     <%
-     for(Object obj : uicomponent.getPublicGroups()) {
-       String group = ((Group) obj).getId() ;
-     %>
-       <tr>
-         <td class="FieldLabel"><%=group%></td>
-         <td class="FieldComponent">
-           <%uiForm.renderField(group)%>
-         </td>
-         <td class="FieldComponent">
-           <%
-           if(uicomponent.getChildById(group+uiForm.PERMISSION_SUB) != null) {
-             uiForm.renderField(group+uiForm.PERMISSION_SUB) ;
-            } else {%>
-             &nbsp;
-           <%}%>
-         </td>
-          <td >
-           <%renderActions(group+uiForm.PERMISSION_SUB)%>
-         </td>
-       </tr>
-     <%
-     }
-     %>
-   </table>
+	<table class="uiGrid table table-hover table-striped">
+	  <thead>
+	    <tr>
+	      <th><%=uiCalendarForm.getLabel(uiCalendarForm.SELECT_GROUPS) %></th>
+          <th><%=uiCalendarForm.getLabel(uiCalendarForm.EDIT_PERMISSION) %></th>
+          <th><%=uiCalendarForm.getLabel(uiCalendarForm.ACTIONS) %></th>
+	    </tr>
+      </thead>
+	  <tbody>
+
+      <% for (String groupId : calendarGroups) { %>
+        <tr>
+          <td style="padding-left:5px;"><%=uicomponent.truncateGroupId(groupId) %></td>
+	      <td style="padding-left: 10px; padding-top: 10px;">
+	      <% if(uicomponent.getChildById(groupId+uiCalendarForm.PERMISSION_SUB) != null) {
+             uiCalendarForm.renderField(groupId+uiCalendarForm.PERMISSION_SUB) ;
+          } else { %>
+            &nbsp;
+          <% } %>
+          </td>
+          <td class="center">
+            <% renderActions(groupId+uiCalendarForm.PERMISSION_SUB); %>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+	<div style="display: inline-block; margin-top: 15px;">
+    <% uiCalendarForm.renderField(addGroupInput); %>
+	  <% renderActions(uiCalendarForm.OPEN_SELECT_GROUP_FORM); %>
+	  <span style="margin-left: 5px; position: relative; top: -5px;">
+      <% renderActions(uiCalendarForm.ADD_GROUP); %>
+    </span>
+	</div>
 </div>

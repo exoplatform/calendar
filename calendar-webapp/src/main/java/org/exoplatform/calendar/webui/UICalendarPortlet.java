@@ -97,6 +97,12 @@ public class UICalendarPortlet extends UIPortletApplication {
   public String getSettingTimeZone() throws Exception {
     return String.valueOf(TimeZone.getTimeZone(getCalendarSetting().getTimeZone()).getRawOffset()/1000/60) ;
   }
+
+  /**
+   * close all popups
+   *
+   * @throws Exception
+   */
   public void cancelAction() throws Exception {
     WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     UIPopupAction popupAction = getChild(UIPopupAction.class) ;
