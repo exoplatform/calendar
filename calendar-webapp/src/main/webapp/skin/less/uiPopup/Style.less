@@ -1,5 +1,12 @@
 /*=================UIEventAttenderTab========================*/
 
+.uiPopup {
+	.uiGrid.table {
+		tr td, tr th {
+			padding: 8px 18px;
+		}
+	}
+}
 .timeField input[type=text] {
 	width: 50px;
 }
@@ -93,4 +100,25 @@
 			}
 		}
 	}
+}
+
+/*=================Participants==================*/
+
+.eventShare {
+	.uiFormGrid {
+		margin: 10px 0 0 0;
+		tbody > tr  > td{
+			padding: 6px 0;
+		}
+		tbody > tr  > td + td {
+			padding-left: 20px;
+		}
+		.uiRadio {
+			min-width: 70px;
+		}
+		.right {
+			text-align: right;
+		}
+	}
+	
 }

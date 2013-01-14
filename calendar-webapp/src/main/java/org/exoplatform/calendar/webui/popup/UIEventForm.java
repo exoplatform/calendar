@@ -222,7 +222,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     addUser.setActionName("AddUser") ;
     addUser.setActionParameter(TAB_EVENTSHARE);
     addUser.setActionType(ActionData.TYPE_ICON) ;
-    addUser.setCssIconClass("uiIconCalPlus") ;
+    addUser.setCssIconClass("uiIconPlus") ;
     actions.add(addUser) ;
     eventShareTab.setActionField(UIEventShareTab.FIELD_INFO, actions) ;
     
