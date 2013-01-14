@@ -827,22 +827,8 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	var moreEventList = moreContainerNode.cloneNode(true);
 	var moreEventTitleBar = moreContainerNode.cloneNode(true);
 	moreEventBar.className = "moreEventBar" ;
-	moreEventBar.innerHTML = "<span></span><a href=javascript:void(0)><i class='uiIconClose pull-right'></i></a>" ;
-	gj(moreEventBar).on('click',this.hideMore);
-//	moreEventBar.onclick = this.hideMore ;
-	moreEventTitleBar.innerHTML = "&nbsp;";
-	moreEventTitleBar.className = "moreEventTitleBar";
-	gj(moreEventTitleBar).on('click',cs.EventManager.cancelBubble);
-//	moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
-	gj(moreEventTitleBar).on('mousedown',function(evt){
-	    cs.EventManager.cancelBubble(evt);
-	    cs.DragDrop.init(null,this,moreContainerNode,evt);
-	});
-//	moreEventTitleBar.onmousedown = function(evt){
-//	eXo.cs.EventManager.cancelBubble(evt);
-//	eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
-//	} ;
-	moreEventBar.appendChild(moreEventTitleBar);
+	moreEventBar.innerHTML = "<center><a href=javascript:void(0)><i class='uiIconMiniArrowUp'></i></a></center>" ;
+	gj(moreEventBar).find('a').on('click',this.hideMore);
 	moreContainerNode.className = 'moreEventContainer' ;
 	// Create invisible event
 	var cnt = 0
@@ -889,13 +875,12 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	moreLabel.className = "moreEventLabel";
 	moreLabel.innerHTML = 'more ' + cnt + '+';
 	gj(moreLabel).on('click',this.showMore);
-//	moreLabel.onclick = this.showMore;
 	moreNode.appendChild(moreLabel);
-	moreContainerNode.appendChild(moreEventBar);
-	moreContainerNode.appendChild(moreEventList)
+	moreEventList.appendChild(moreEventBar);
+	moreContainerNode.appendChild(moreEventList);
 	moreNode.appendChild(moreContainerNode);
 	dayObj.moreNode = moreNode;
-    }
+    }    
 };
 
 GUIMan.prototype.setWidthForMoreEvent = function(moreEventList,len,dayNode){
@@ -934,50 +919,38 @@ GUIMan.prototype.hideMore = function(evt){
 };
 
 GUIMan.prototype.showMore = function(evt) {
-  var moreNode = this;
-	var GUIMan = eXo.calendar.UICalendarMan.GUIMan;
-  var moreContainerNode = gj(moreNode).nextAll('div')[0];
-	if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
-	moreContainerNode.parentNode.style.zIndex = 2;
-	cs.EventManager.cancelBubble(evt);
-	GUIMan.hideMore(evt);
-  if (!moreContainerNode.style.display || moreContainerNode.style.display == 'none') {
-    moreContainerNode.style.display = 'block';
-		var currentHeight = moreContainerNode.offsetParent.offsetParent.offsetHeight + moreContainerNode.offsetParent.offsetParent.scrollTop ;
-		var currentTop = moreContainerNode.parentNode.offsetTop + moreContainerNode.offsetHeight;
-		if(currentTop > currentHeight){
-			moreContainerNode.style.top = - moreContainerNode.offsetHeight + "px";
-		}
-		cs.DOMUtil.listHideElements(moreContainerNode);
-//		moreContainerNode.onclick = eXo.cs.EventManager.cancelBubble ;
-		gj(moreContainerNode).on({'click':cs.EventManager.cancelBubble,
-			'mousedown':function(evt){
-				cs.EventManager.cancelEvent(evt);
-				if(cs.EventManager.getMouseButton(evt) == 2) 
-					cs.DOMUtil.hideElementList.remove(this);
-			},
-			'contextmenu':function(evt){
-				cs.EventManager.cancelEvent(evt);
-				cs.DOMUtil.hideElementList.remove(this);
-				cs.UIContextMenu.show(evt) ;
-				cs.DOMUtil.hideElementList.push(this);
-				return false;
-		}});
-//		moreContainerNode.onmousedown = function(evt){
-//			eXo.cs.EventManager.cancelEvent(evt);
-//			if(eXo.cs.EventManager.getMouseButton(evt) == 2) 
-//				eXo.core.DOMUtil.hideElementList.remove(this);
-//		}
-//		moreContainerNode.oncontextmenu = function(evt){
-//				eXo.cs.EventManager.cancelEvent(evt);
-//				eXo.core.DOMUtil.hideElementList.remove(this);
-//				eXo.webui.UIContextMenu.show(evt) ;
-//				eXo.core.DOMUtil.hideElementList.push(this);
-//				return false;
-//		}
-  }
-	GUIMan.moreNode = moreContainerNode ;
-	GUIMan.lastMore = moreContainerNode.parentNode;
+    var moreNode = this;
+    var GUIMan = eXo.calendar.UICalendarMan.GUIMan;
+
+    var moreEventContainer = gj(moreNode).nextAll('div')[0];
+    if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
+    cs.EventManager.cancelBubble(evt);
+    GUIMan.hideMore(evt);
+    if (!moreEventContainer.style.display || moreEventContainer.style.display == 'none') {
+
+	moreEventContainer.style.display = 'block';
+
+	gj(moreEventContainer).css('position','absolute');
+	gj(moreEventContainer).css('top',gj(moreNode).position().top - 6);
+	gj(moreEventContainer).css('left',gj(moreNode).position().left);
+	cs.DOMUtil.listHideElements(moreEventContainer);
+	gj(moreEventContainer).on({'click':cs.EventManager.cancelBubble,
+	    'mousedown':function(evt){
+		cs.EventManager.cancelEvent(evt);
+		if(cs.EventManager.getMouseButton(evt) == 2) 
+		    cs.DOMUtil.hideElementList.remove(this);
+	    },
+	    'contextmenu':function(evt){
+		cs.EventManager.cancelEvent(evt);
+		cs.DOMUtil.hideElementList.remove(this);
+		cs.UIContextMenu.show(evt) ;
+		cs.DOMUtil.hideElementList.push(this);
+		return false;
+	    }});
+
+    }
+    GUIMan.moreNode = moreEventContainer ;
+    GUIMan.lastMore = moreEventContainer.parentNode;
 };
 
 /**

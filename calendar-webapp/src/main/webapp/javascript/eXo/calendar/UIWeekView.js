@@ -119,9 +119,10 @@ UIWeekView.prototype.adjustWidth = function(el) {
 		    } else {
 			width = parseFloat(totalWidth/len - 1) ;
 		    }
+		    gj(el[j]).css('overflow','hidden');
 			el[j].style.width = width + "px" ;
 			if (el[j-1]&&(len > 1)) {
-				setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n + 1);
+				setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n);
 			}
 			else {		
 				setLeft(el[j],offsetLeft + 1);
@@ -260,6 +261,9 @@ UIWeekView.prototype.cleanUp = function(){
 	UIWeekView.containerOffset = null ;
 	UIWeekView.title = null ;
 	UIWeekView.dragElement = null ;	
+	// fix bug: hide tootip after dragndrop
+	gj('div.tooltip-inner').remove();
+	gj('div.tooltip-arrow').remove();
 };
 
 UIWeekView.prototype.getOffset = function(object, evt) {	
