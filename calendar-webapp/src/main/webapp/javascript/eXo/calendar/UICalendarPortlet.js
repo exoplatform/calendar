@@ -2066,34 +2066,34 @@ UICalendarPortlet.prototype.showHideField = function(chk, fields){
 
 UICalendarPortlet.prototype.showHideRepeat = function(chk){
     var checkbox = gj(chk).find('input.checkbox')[0];
-    var fieldCom =gj(chk).parents(".FieldComponent")[0];
-    var repeatField = gj(fieldCom).find('div.RepeatInterval')[0];
+    var fieldCom =gj(chk).parents(".fieldComponent")[0];
+    var repeatField = gj(fieldCom).find('div.repeatInterval')[0];
 		if (checkbox.checked) {
-	    repeatField.style.visibility = "visible";
+	    repeatField.style.display = "block";
 		} else {
-	    repeatField.style.visibility = "hidden";
+	    repeatField.style.display = "none";
 		}
 };
 
 UICalendarPortlet.prototype.autoShowRepeatEvent = function(){
 	var divEmailObject = document.getElementById("IsEmailRepeatEventReminderTab");
     var checkboxEmail = gj(divEmailObject).find('input.checkbox')[0]; 
-    var fieldComEmail = gj(divEmailObject).parents(".FieldComponent")[0];
-    var repeatFieldEmail = gj(fieldComEmail).find('div.RepeatInterval')[0]; 
+    var fieldComEmail = gj(divEmailObject).parents(".fieldComponent")[0];
+    var repeatFieldEmail = gj(fieldComEmail).find('div.repeatInterval')[0]; 
 		if (checkboxEmail.checked) {
-	    repeatFieldEmail.style.visibility = "visible";
+	    repeatFieldEmail.style.display = "block";
 		} else {
-	    repeatFieldEmail.style.visibility = "hidden";
+	    repeatFieldEmail.style.display = "none";
 		}
     
     var divObjectPopup = document.getElementById("IsPopupRepeatEventReminderTab");
     var checkboxPopup = gj(divObjectPopup).find('input.checkbox')[0];
-    var fieldComPopup = gj(divObjectPopup).parents(".FieldComponent")[0];
-    var repeatFieldPopup = gj(fieldComPopup).find('div.RepeatInterval')[0];
+    var fieldComPopup = gj(divObjectPopup).parents(".fieldComponent")[0];
+    var repeatFieldPopup = gj(fieldComPopup).find('div.repeatInterval')[0];
 		if (checkboxPopup.checked) {
-	    repeatFieldPopup.style.visibility = "visible";
+	    repeatFieldPopup.style.display = "block";
 		} else {
-	    repeatFieldPopup.style.visibility = "hidden";
+	    repeatFieldPopup.style.display = "none";
 		}  
 };
 
@@ -2493,7 +2493,7 @@ UICalendarPortlet.prototype.showImagePreview = function(obj){
 
 UICalendarPortlet.prototype.showHideSetting = function(obj){
 	var checkbox = gj(obj).find('input.checkbox')[0]; 
-	var uiFormGrid = gj(obj.parentNode.parentNode).find('table.UIFormGrid')[0];
+	var uiFormGrid = gj(obj.parentNode.parentNode).find('table.uiFormGrid')[0];
 	if(checkbox.checked) {
 		checkbox.checked = true;
 		uiFormGrid.style.display = "";
@@ -2507,16 +2507,16 @@ UICalendarPortlet.prototype.showHideSetting = function(obj){
 UICalendarPortlet.prototype.autoShowHideSetting = function(){
 	var eventReminder = document.getElementById("eventReminder");
 	var checkboxEmail = gj(eventReminder).find('input.checkbox')[0];
-	var uiFormGrid = gj(eventReminder).find('table.UIFormGrid') [0];
+	var uiFormGrid = gj(eventReminder).find('table.uiFormGrid') [0];
 	if(checkboxEmail.checked) {
 		uiFormGrid.style.display = "";
 	}
 	else{
 		uiFormGrid.style.display = "none";
 	}
-	var popupReminder = gj(eventReminder).find('div.ReminderByPopup') [0];
+	var popupReminder = gj(eventReminder).find('div.reminderByPopup') [0];
 	var checkboxPopup = gj(popupReminder).find('input.checkbox')[0];
-	var uiFormGridPopup = gj(popupReminder).find('table.UIFormGrid')[0];
+	var uiFormGridPopup = gj(popupReminder).find('table.uiFormGrid')[0];
 	if(checkboxPopup.checked) {
 		uiFormGridPopup.style.display = "";
 	}

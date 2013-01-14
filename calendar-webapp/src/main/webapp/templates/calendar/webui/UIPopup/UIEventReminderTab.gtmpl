@@ -14,84 +14,81 @@
   requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_EMAIL+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
   requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_POPUP+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
 %>
-<div id="$uicomponent.id" class="UIAddNewEvent">
-	<div class="ReminderByEmail">
-		<div>
-			<div id="<%=uicomponent.REMIND_BY_EMAIL%>">
-				<%uiForm.renderField(uicomponent.REMIND_BY_EMAIL); %>
-				<span class="FieldLabel"> <%=uiForm.getLabel(uicomponent.REMIND_BY_EMAIL)%>
-				</span>
-			</div>
+<div id="$uicomponent.id" class="uiEventReminder">
+	<div class="reminderByEmail">
+		<div id="<%=uicomponent.REMIND_BY_EMAIL%>" class="<%=uicomponent.REMIND_BY_EMAIL%>">
+			<%uiForm.renderField(uicomponent.REMIND_BY_EMAIL); %>
+			<span class="fieldLabel"> <%=uiForm.getLabel(uicomponent.REMIND_BY_EMAIL)%>
+			</span>
 		</div>
-		<table class="UIFormGrid" $isEmailReminder>
-			<tbody>
-				<tr>
-					<td class="FieldComponent"><%=uiForm.getLabel(uicomponent.EMAIL_REMIND_BEFORE); %>
-						<% uiForm.renderField(uicomponent.EMAIL_REMIND_BEFORE)  ; %></td>
-				</tr>
-				<tr>
-					<td class="FieldLabel">
-						<table>
-							<tbody>
-								<tr>
-									<td class="FieldComponent">
-										<div id="IsEmailRepeatEventReminderTab" class="CheckBoxRepeat">
-											<%uiForm.renderField(uicomponent.EMAIL_IS_REPEAT)%>
-										</div>
-										<div class="RepeatLabel"><%=uiForm.getLabel(uicomponent.REPEAT)%>
-										</div>
-										<div class="RepeatInterval" style="visibility: hidden">
-											<%=uiForm.getLabel(uicomponent.EMAIL_REPEAT_INTERVAL)%>
-											<% uiForm.renderField(uicomponent.EMAIL_REPEAT_INTERVAL)%>
-										</div>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td><%=uiForm.getLabel(uicomponent.FIELD_EMAIL_ADDRESS)%> :</td>
-				</tr>
-				<tr>
-					<td class="FieldComponent">
-						<% 
-              uiForm.renderField(uicomponent.FIELD_EMAIL_ADDRESS)
-            %> <a rel="tooltip" data-placement="bottom"
-						title="<%=uiForm.getLabel("SelectEmail")%>"
-						href="<%=uicomponent.event("AddEmailAddress")%>"> <i
-							class="uiIconCalPlus"></i> <%=uiForm.getLabel("SelectEmail")%>
-					</a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div>
+			<table class="uiFormGrid reminderTable" $isEmailReminder>
+				<tbody>
+					<tr>
+						<td class="fieldComponent">
+						<%=uiForm.getLabel(uicomponent.EMAIL_REMIND_BEFORE); %><% uiForm.renderField(uicomponent.EMAIL_REMIND_BEFORE)  ; %></td>
+					</tr>
+					<tr>
+						<td class="fieldLabel">
+							<table>
+								<tbody>
+									<tr>
+										<td class="fieldComponent">
+											<div id="IsEmailRepeatEventReminderTab" class="checkBoxRepeat">
+												<%uiForm.renderField(uicomponent.EMAIL_IS_REPEAT)%><%=uiForm.getLabel(uicomponent.REPEAT)%>
+											</div>
+											<div class="repeatInterval" style="display: none">
+												<%=uiForm.getLabel(uicomponent.EMAIL_REPEAT_INTERVAL)%>
+												<% uiForm.renderField(uicomponent.EMAIL_REPEAT_INTERVAL)%>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td><%=uiForm.getLabel(uicomponent.FIELD_EMAIL_ADDRESS)%> :</td>
+					</tr>
+					<tr>
+						<td class="fieldComponent">
+							<% 
+				  uiForm.renderField(uicomponent.FIELD_EMAIL_ADDRESS)
+				%> <a rel="tooltip" data-placement="bottom"
+							title="<%=uiForm.getLabel("SelectEmail")%>"
+							href="<%=uicomponent.event("AddEmailAddress")%>">
+							<i class="uiIconPlus"></i> <%=uiForm.getLabel("SelectEmail")%>
+						</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>	
 	</div>
-	<div class="ReminderByPopup">
-		<div>
-			<div id="<%=uicomponent.REMIND_BY_POPUP%>">
-				<% uiForm.renderField(uicomponent.REMIND_BY_POPUP) %>
-				<span class="FieldLabel"><%=uiForm.getLabel(uicomponent.REMIND_BY_POPUP)%></span>
-			</div>
+	<div class="reminderByPopup">
+		<div id="<%=uicomponent.REMIND_BY_POPUP%>" class="<%=uicomponent.REMIND_BY_POPUP%>">
+			<% uiForm.renderField(uicomponent.REMIND_BY_POPUP) %>
+			<span class="fieldLabel"><%=uiForm.getLabel(uicomponent.REMIND_BY_POPUP)%></span>
 		</div>
-		<table class="UIFormGrid" $isPopupReminder>
+		<div>
+			
+		<table class="uiFormGrid" $isPopupReminder>
 			<tbody>
 				<tr>
-					<td class="FieldComponent"><%=uiForm.getLabel(uicomponent.POPUP_REMIND_BEFORE)%>
+					<td class="fieldComponent"><%=uiForm.getLabel(uicomponent.POPUP_REMIND_BEFORE)%>
 						<% uiForm.renderField(uicomponent.POPUP_REMIND_BEFORE)  ;%></td>
 				</tr>
 				<tr>
-					<td class="FieldLabel">
+					<td class="fieldLabel">
 						<table>
 							<tbody>
 								<tr>
-									<td class="FieldComponent" valign="top" colspan="2">
-										<div id="IsPopupRepeatEventReminderTab" class="CheckBoxRepeat">
+									<td class="fieldComponent" valign="top" colspan="2">
+										<div id="IsPopupRepeatEventReminderTab" class="checkBoxRepeat">
 											<% uiForm.renderField(uicomponent.POPUP_IS_REPEAT)  ;%>
+											<%=uiForm.getLabel(uicomponent.REPEAT)%>
 										</div>
-										<div class="RepeatLabel"><%=uiForm.getLabel(uicomponent.REPEAT)%>
-										</div>
-										<div class="RepeatInterval" style="visibility: hidden">
+										<div class="repeatInterval" style="display: none">
 											<%=uiForm.getLabel(uicomponent.POPUP_REPEAT_INTERVAL)%>
 											<% uiForm.renderField(uicomponent.POPUP_REPEAT_INTERVAL)  ;%>
 										</div>
@@ -104,5 +101,6 @@
 
 			</tbody>
 		</table>
+		</div>
 	</div>
 </div>
