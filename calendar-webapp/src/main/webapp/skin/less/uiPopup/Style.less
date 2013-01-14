@@ -1,0 +1,96 @@
+/*=================UIEventAttenderTab========================*/
+
+.timeField input[type=text] {
+	width: 50px;
+}
+
+.newEventAttendee {
+	.uiGrid {
+		table-layout: fixed;
+		tr td {
+			border: 1px solid @tableBorder;
+			height: 26px;
+			padding: 2px 0;			
+			-moz-user-select: none;		
+		}
+		tr.titleBar td ,tr td.freeTime{
+			background: @grayWhiteSmoke;		
+		}
+		tr.titleBar td {
+			padding: 2px;
+			&.timeNumber {
+				font-size: 12px;
+			}
+		}
+		tr td.busyDotTime{
+			background: #ff0000;
+		
+		}
+		tr td.busyTime{
+			background: #ff7f7f;	
+		}
+		
+		tr td.userSelection {
+			background: #a7b838
+		}
+		tr td.busySelected{
+			background: #d35c1c;
+		
+		}
+		
+	}
+	
+	.dateTimeContainer  {
+		padding: 5px 0 0 0;
+		.applySelectedDate {
+			margin: 2px 0 0 0;
+		}
+		.fromTo {
+			.title {
+				margin: 2px 4px 0 0;
+			}
+			input[type=text] {
+				.border-radius(@borderRadiusSmall);
+				box-shadow: 0 0 0 transparent;
+				height: 24px;
+				color: @textColor;
+			}
+			.allDay {
+				margin: 2px 0 15px 0;
+				.uiCheckbox {
+					margin-right: -5px;
+				}
+			}
+			> .timeField {
+				margin: 0 15px 0 0;
+				> .pull-left + .pull-left {
+					margin: 0 0 0 15px;
+				}
+			}
+		}
+	}
+	
+	.thiefBox {
+		margin: 10px 0 0 0;
+		text-align: right;
+		span span {
+			.square(12px);
+			.border-radius(@borderRadiusSmall);
+			display: inline-block;
+			margin: 0 5px 0 0;
+			.box-shadow(~"-1px 1px 2px rgba(0,0,0,0.17)inset");
+		}
+		.freeTime {
+			
+			span {
+				background: @grayWhiteSmoke;				
+			}
+		}
+		.busyTime {
+			margin: 0 0 0 15px;
+			span {
+				background: #ff0000;
+			}
+		}
+	}
+}

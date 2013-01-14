@@ -28,12 +28,12 @@ eXo.calendar.ScheduleSupport = {
 		var dateAll = gj('#dateAll')[0];
 		if(dateAll.checked) {
 		    for(var i = 1; i < cells.length; i++) {
-			gj(cells.get(i)).removeClass("UserSelection"); // reset the color of cells
-			gj(cells.get(i)).removeClass("BusySelected");
-			if(gj(cells.get(i)).hasClass("BusyTime")) 
-			    gj(cells.get(i)).addClass("BusySelected");
+			gj(cells.get(i)).removeClass("userSelection"); // reset the color of cells
+			gj(cells.get(i)).removeClass("busySelected");
+			if(gj(cells.get(i)).hasClass("busyTime")) 
+			    gj(cells.get(i)).addClass("busySelected");
 			else
-			    gj(cells.get(i)).addClass("UserSelection");
+			    gj(cells.get(i)).addClass("userSelection");
 		    }
 		} else {
 		    var UIComboboxInputs = gj(scheduleTab).find("input.UIComboboxInput");
@@ -53,13 +53,13 @@ eXo.calendar.ScheduleSupport = {
 
 		    // add UserSelection class to have green color
 		    for(var i = 1; i < cells.length; i++) {
-			gj(cells.get(i)).removeClass("UserSelection");
-			gj(cells.get(i)).removeClass("BusySelected");// reset the color of cells
+			gj(cells.get(i)).removeClass("userSelection");
+			gj(cells.get(i)).removeClass("busySelected");// reset the color of cells
 			if(i < endIndex && i >= startIndex) {
-			    if(gj(cells.get(i)).hasClass("BusyTime")) 
-				gj(cells.get(i)).addClass("BusySelected");
+			    if(gj(cells.get(i)).hasClass("busyTime")) 
+				gj(cells.get(i)).addClass("busySelected");
 			    else
-				gj(cells.get(i)).addClass("UserSelection");
+				gj(cells.get(i)).addClass("userSelection");
 			}
 		    }	
 		}
