@@ -3116,5 +3116,19 @@ UICalendarPortlet.prototype.overidePopUpClose = function(){
     gj('.uiIconClose').click(function(){gj(this).parents()[1].style.display = 'none';});
 }
 
+// Check whether the value of the name field in UIEventCategoryForm is empty or not
+// If yes, the Add/Update button is disabled
+// If no, the Add/Update button is enabled
+UICalendarPortlet.prototype.checkEventCategoryName = function(textFieldId){
+    var txtField = gj("input#"+textFieldId);
+    var val = txtField.attr("value");
+    var btn = gj("button#btnEventCategoryFormContainer");
+    if (val == null || val == "") {
+        btn.attr("disabled", "disabled");
+    } else {
+        btn.removeAttr("disabled");
+    }
+}
+
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
