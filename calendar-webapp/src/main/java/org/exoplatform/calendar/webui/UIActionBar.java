@@ -52,8 +52,6 @@ import org.exoplatform.webui.event.EventListener;
 )
 public class UIActionBar extends UIContainer  {
 
-//  final static String CURRENTTIME = "ct".intern() ;
-//  final static String TIMEZONE = "tz".intern() ;
   final static String CATEGORYID = "categoryId".intern() ;
   private boolean isShowPane_ = true ;
   private String currentView_ = null ;
@@ -155,25 +153,6 @@ public class UIActionBar extends UIContainer  {
       CalendarService cservice = CalendarUtils.getCalendarService() ;
       CalendarSetting calendarSetting = calendarPortlet.getCalendarSetting() ;
       uiCalendarSettingForm.init(calendarSetting, cservice) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
-    }
-  }
-
-  static public class RSSActionListener extends EventListener<UIActionBar> {
-    @Override
-    @SuppressWarnings("unchecked")
-    public void execute(Event<UIActionBar> event) throws Exception {
-      UIActionBar uiActionBar = event.getSource() ;
-      UICalendarPortlet calendarPortlet = uiActionBar.getAncestorOfType(UICalendarPortlet.class) ;
-      UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
-      popupAction.deActivate() ;
-      UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 600) ;
-      uiPopupContainer.setId(UIPopupContainer.UICALENDAR_SETTING_POPUP);
-      UICalendarSettingForm uiCalendarSettingForm = uiPopupContainer.addChild(UICalendarSettingForm.class, null, null) ;
-      CalendarService cservice = CalendarUtils.getCalendarService() ;
-      CalendarSetting calendarSetting = calendarPortlet.getCalendarSetting() ;
-      uiCalendarSettingForm.init(calendarSetting, cservice) ;
-      uiCalendarSettingForm.setSelectedTab(uiCalendarSettingForm.getChild(UICalendarSettingFeedTab.class).getId());
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
   }
