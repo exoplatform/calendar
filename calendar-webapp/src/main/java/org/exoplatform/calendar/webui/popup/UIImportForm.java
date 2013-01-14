@@ -185,11 +185,13 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       getUIStringInput(DISPLAY_NAME).setRendered(false);
       getUIFormTextAreaInput(DESCRIPTION).setRendered(false);
       getChild(UIFormColorPicker.class).setRendered(false);
+      getUIStringInput(TIMEZONE).setRendered(false);
     } else if(flag == ADD_NEW) {
       getUIFormSelectBoxGroup(FIELD_TO_CALENDAR).setRendered(false);
       getUIStringInput(DISPLAY_NAME).setRendered(true);
       getUIFormTextAreaInput(DESCRIPTION).setRendered(true);
       getChild(UIFormColorPicker.class).setRendered(true);
+      getUIStringInput(TIMEZONE).setRendered(true);
     } else {
       log.warn("Wrong flag(" +flag+ ") only UPDATE_EXIST(1) or ADD_NEW(0) accept ");
     }
