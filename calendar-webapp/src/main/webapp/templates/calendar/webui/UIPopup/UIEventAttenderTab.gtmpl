@@ -92,14 +92,14 @@
 					<span class="title">
                       &nbsp;<%=uiForm.getLabel('Participants')%>&nbsp;&nbsp;
                     </span>					
-                    <a href='<%=uiForm.event("AddUser",uicomponent.id)%>' rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
+                    <a href="<%=uiForm.event('AddUser',uicomponent.id)%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
                       <i class="uiIconCalInviteUser" >
                       </i>
                     </a> &nbsp;
-                    <a href='<%=uiForm.event("DeleteUser")%>' rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
+                    <a href="<%=uiForm.event('DeleteUser')%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
                       <i class="uiIconCalRejectUser" >
                       </i>
-                    </a>                  
+                    </a>                 
                 </td>
                 <%
                   styleClassF = "participantsFreeTime" ;
