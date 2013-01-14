@@ -322,15 +322,15 @@ UIHSelection.prototype.getCurrentIndex = function(evt){
  */
 UIHSelection.prototype.setAttr = function(sIndex, eIndex, cells){
     for(var i = sIndex; i <= eIndex ; i++) {
-	if(gj(cells[i]).hasClass("BusyTime"))
-	    gj(cells[i]).addClass("BusySelected");
+	if(gj(cells[i]).hasClass("busyTime"))
+	    gj(cells[i]).addClass("busySelected");
 	else 
-	    gj(cells[i]).addClass("UserSelection") ;
+	    gj(cells[i]).addClass("userSelection") ;
     }
 } ;
 
 /**
- * Removes attribute for cells
+ * Removes attribute for cellsD:\java\eXoProjects\git-project\calendar\calendar-webapp\src\main\webapp\javascript\eXo\calendar
  * @param {Object} sIndex Start cellIndex
  * @param {Object} eIndex End cellIndex
  * @param {Object} cells A cell in time table
@@ -339,8 +339,8 @@ UIHSelection.prototype.removeAttr = function(sIndex, eIndex, cells){
     var len = cells.length ;
     for(var i = 0; i < len ; i++) {
 	if((i>=sIndex) && (i<=eIndex)) continue ;
-	gj(cells[i]).removeClass("UserSelection") ;
-	gj(cells[i]).removeClass("BusySelected") ;
+	gj(cells[i]).removeClass("userSelection") ;
+	gj(cells[i]).removeClass("busySelected") ;
     }
 } ;
 
@@ -351,8 +351,8 @@ UIHSelection.prototype.removeAllAttr = function(){
     var cells = this.cells ;
     var len = cells.length ;
     for(var i = 0; i < len ; i++) {
-	gj(cells[i]).removeClass("UserSelection") ;
-	gj(cells[i]).removeClass("BusySelected") ;
+	gj(cells[i]).removeClass("userSelection") ;
+	gj(cells[i]).removeClass("busySelected") ;
     }
 } ;
 
@@ -370,7 +370,7 @@ UIHSelection.prototype.start = function(){
 	UIHSelection.cells = gj(this.parentNode).children("td") ;
 	UIHSelection.container = this.parentNode ;
 	UIHSelection.removeAllAttr() ;
-	gj(this).addClass("UserSelection") ;
+	gj(this).addClass("userSelection") ;
 	gj(document).on({'mousemove':UIHSelection.execute,'mouseup':UIHSelection.end});
 	UIHSelection.firstCell = UIHSelection.cells[UIHSelection.startIndex] ;
 	UIHSelection.lastCell = UIHSelection.cells[UIHSelection.startIndex] ;

@@ -2035,7 +2035,7 @@ UICalendarPortlet.prototype.showHideTime = function(chk){
     var dateAll = gj('#dateAll')[0];
     if(dateAll) {
 	dateAll.checked = chk.checked;
-	var timeField = gj(dateAll.form).find('div.TimeField')[0];
+	var timeField = gj(dateAll.form).find('div.timeField')[0];
 	if (dateAll.checked) {
 	    timeField.style.display = "none";
 	}
@@ -2227,7 +2227,7 @@ UISelection.prototype.clear = function(){
 UICalendarPortlet.prototype.checkAllInBusy = function(chk){
     var UICalendarPortlet = _module.UICalendarPortlet;
     var isChecked = chk.checked;
-    var timeField = gj(chk.form).find('div.TimeField')[0];
+    var timeField = gj(chk.form).find('div.timeField')[0];
     if (isChecked) {
         timeField.style.display = "none";
     }
@@ -2248,7 +2248,7 @@ UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone)
     if (typeof(container) == "string") 
 	container = document.getElementById(container);
     var dateAll = gj(container).find("input.checkbox")[1];
-    var table = gj(container).find('table.UIGrid')[0];
+    var table = gj(container).find('table.uiGrid')[0];
     var tr = gj(table).find("tr");
     var firstTr = tr[1];
     this.busyCell = gj(firstTr).find("td").slice(1);
@@ -2344,8 +2344,8 @@ UICalendarPortlet.prototype.setBusyTime = function(from, to, tr){
     var start = this.ceil(from, 15) / 15;
     var end = this.ceil(to, 15) / 15;
     for (var i = start; i < end; i++) {
-        cell[i].className = "BusyDotTime";
-        gj(this.busyCell[i]).addClass("BusyTime");
+        cell[i].className = "busyDotTime";
+        gj(this.busyCell[i]).addClass("busyTime");
     }
 };
 

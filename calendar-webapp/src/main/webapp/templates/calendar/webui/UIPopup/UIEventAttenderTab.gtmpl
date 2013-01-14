@@ -14,58 +14,61 @@
 
   
   %>
-<div class="UIAddNewEvent $uicomponent.id" id="$uicomponent.id">
-  <div class="NewEventAttendee">
-    <div class="UIFormInputSet">
-      <div class="UIFormInputSetWithAction">
-        <div class="FormContainer">
-          <div class="DateTimeContainer ClearFix">
-            <div class="ApplySelectedDate ClearFix">
-              <div class="Field">
+<div class="uiAddNewEvent $uicomponent.id" id="$uicomponent.id">
+  <div class="newEventAttendee">
+    <div class="uiFormInputSet">
+      <div class="uiFormInputSetWithAction">
+        <div class="formContainer">
+          <div class="dateTimeContainer clearfix">
+            <div class="applySelectedDate pull-left">
+              <div class="pull-right">
                 <%uiForm.renderField(uicomponent.FIELD_CHECK_TIME)%>
               </div>
-              <div class="Label">
+              <span>
                 <%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_CHECK_TIME)%>
                 :
-              </div>
+              </span>
             </div>
-            <div class="ClearFix">
-              <div class="Field">
-                <%uiForm.renderField(uicomponent.FIELD_DATEALL)%>
-              </div>
-              <div class="Label">
-                <%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_DATEALL)%>
-                :
-              </div>
-              <div class="TimeField">
-                <div class="Field">
-                 <%uiForm.renderField(uicomponent.FIELD_TO_TIME)%>
-                </div>
-                <div class="Label">
-                  <%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_FROM_TIME)%>
-                  :
-                </div>
-                <div class="Field">
-                 <%uiForm.renderField(uicomponent.FIELD_FROM_TIME)%>
-                </div>
-                <div class="Label">
-                  <%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_TO_TIME)%>
-                  :
-                </div>
+            <div class="pull-right fromTo">
+			<div class="pull-left timeField">				
+				<div class="pull-left timeField">
+					<div class="pull-left title">
+						<%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_TO_TIME)%>:</div>
+					<div class="pull-left">
+						<%uiForm.renderField(uicomponent.FIELD_FROM_TIME)%>
+					</div>
+				</div>
+				<div class=" pull-left">
+					<div class="pull-left title">
+						<%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_FROM_TIME)%>:
+					</div>
+					<div class="pull-left">
+						<%uiForm.renderField(uicomponent.FIELD_TO_TIME)%>
+					</div>
+				</div> 
+			</div>	   
+              <div class="pull-left allDay">
+                <div class="pull-left "><%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_DATEALL)%>:</div>
+				<div class="pull-left">
+					<%uiForm.renderField(uicomponent.FIELD_DATEALL)%>
+				</div>
               </div>
             </div>
           </div>
-          <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0" dateValue="<%=uicomponent.getDateValue()%>" exocallback="eXo.calendar.UICalendarPortlet.callbackSelectionX() ;">
+          <table class="uiGrid" id="RowContainerDay" cellspacing="0" borderspacing="0" dateValue="<%=uicomponent.getDateValue()%>" exocallback="eXo.calendar.UICalendarPortlet.callbackSelectionX() ;">
             <tbody>
-              <tr class="TitleBar">
+              <tr class="titleBar">
                 <td style="width:28%;">
-                  <div class="LeftSide">
-                    <a href="<%=uiForm.event("MovePrevious")%>">
-                      <img src="/eXoResources/skin/sharedImages/Blank.gif" class="BackIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>"></a>
-                    <span class="Title">
+                  <div class="leftSide">
+                    <a href="<%=uiForm.event("MovePrevious")%>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>">
+                      <i class="uiIconMiniArrowLeft"></i>
+					</a>
+                    <span class="title">
                       <%=uicomponent.getDateValue()%>
-                    </span><a href="<%=uiForm.event("MoveNext")%>">
-                      <img src="/eXoResources/skin/sharedImages/Blank.gif" class="NextIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>"></a>
+                    </span>
+					<a href="<%=uiForm.event("MoveNext")%>"   rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>">
+                      <i class="uiIconMiniArrowRight"></i>
+					</a>  
                   </div>
                 </td>
                 <%
@@ -77,7 +80,7 @@
                       mylabel = i ;
                     }
                 %>
-                <td colspan="4"; class="TimeNumber">$mylabel</td>
+                <td colspan="4"; class="timeNumber">$mylabel</td>
                 <%  
                     i++ ;
                   }
@@ -85,21 +88,21 @@
               </tr>
               <tr>
                 <td>
-                  <div class="LeftSide">
-                    <a href='<%=uiForm.event("DeleteUser")%>' rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
-                      <i class="uiIconRejectUser" >
-                      </i>
-                    </a>
+                  <div class="leftSide">
+					<span class="title">
+                      &nbsp;<%=uiForm.getLabel('Participants')%>&nbsp;&nbsp;
+                    </span>					
                     <a href='<%=uiForm.event("AddUser",uicomponent.id)%>' rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
-                      <i class="uiIconInviteUser" >
+                      <i class="uiIconCalInviteUser" >
                       </i>
-                    </a>
-                    <div class="Title">
-                      <%=uiForm.getLabel('Participants')%>
-                    </div>
+                    </a> &nbsp;
+                    <a href='<%=uiForm.event("DeleteUser")%>' rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
+                      <i class="uiIconCalRejectUser" >
+                      </i>
+                    </a>                  
                 </td>
                 <%
-                  styleClassF = "ParticipantsFreeTime" ;
+                  styleClassF = "participantsFreeTime" ;
                   j = 0
                   while(j < 96){
                 %>
@@ -117,16 +120,15 @@
                %>
               <tr busytime="<%=parMap.get(p);%>">
                 <td>
-                  <div class="LeftSide">
-                    <div class="Input">
-                      <%uiForm.renderField(p)%>
+                  <div class="leftSide">
+                    <div class="input">
+                      <%uiForm.renderField(p)%><span class="title">$fullname</span>
                     </div>
-                    <div class="Title">$fullname</div>
                   </div>
                 </td>
                 <%
                     j = 0 ;
-                    styleClassF = "FreeTime" ;                    
+                    styleClassF = "freeTime" ;                    
                     while(j < 96){                    
                 %>
                 <td class="$styleClassF">
@@ -138,19 +140,13 @@
               <%}%>
             </tbody>
           </table>
-          <div class="ThiefBox ClearFix">
-				<div class="Label">
-				  <%=uiForm.getLabel('BusyTimes')%>
-				</div>
-				<div class="BusyTime">
-				  <span></span>
-				</div>
-				<div class="Label">
-				  <%=uiForm.getLabel('FreeTimes')%>
-				</div>
-				<div class="FreeTime">
-				  <span></span>
-				</div>
+          <div class="thiefBox">			
+			<span class="freeTime ">
+			  <span></span><%=uiForm.getLabel('FreeTimes')%>
+			</span>	
+			<span class="busyTime ">
+			  <span></span><%=uiForm.getLabel('BusyTimes')%>
+			</span>	
           </div>
         </div>
       </div>
