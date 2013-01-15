@@ -43,7 +43,7 @@
   requireJS.require("SHARED/jquery","gj");
   requireJS.addScripts('cal.UICalendarPortlet.isAllday("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
   requireJS.addScripts("cal.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
-  requireJS.addScripts("gj('td#"+uicomponent.FIELD_CHECKALL+"').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
+  requireJS.addScripts("gj('#UIEventDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
 
 %>
 <div id="$uicomponent.id" class="uiAddNewEvent eventDetail">
@@ -96,7 +96,7 @@
 	</div>
 	<div class="control-group checkBoxArea">
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_CHECKALL)%>:</div>
-		<div class="controls " id="<%=uicomponent.FIELD_CHECKALL%>"  ><!-- check all -->
+		<div class="controls " id="UIEventDetailTab_FIELD_CHECKALL"  ><!-- check all -->
 			<%uiForm.renderField(uicomponent.FIELD_CHECKALL)%>
 		</div>
 	</div>
