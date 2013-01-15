@@ -49,7 +49,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
     <tbody>
       <tr>
         <td class="fieldLabel right" width="112">
-          <%=uiForm.getLabel(uicomponent.FIELD_SHARE)%>
+          <%=uiForm.getLabel(uicomponent.FIELD_SHARE)%>:
         </td>
         <td class="fieldComponent">
           <%uiForm.renderField(uicomponent.FIELD_SHARE)%>
@@ -57,7 +57,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
       </tr>
       <tr>
         <td class="fieldLabel right">
-          <%=uiForm.getLabel(uicomponent.FIELD_STATUS)%>
+          <%=uiForm.getLabel(uicomponent.FIELD_STATUS)%>:
         </td>
         <td class="fieldComponent avaibles">
           <%uiForm.renderField(uicomponent.FIELD_STATUS)%>
@@ -82,7 +82,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
       </tr>
        <tr>
         <td class="fieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_SEND)%>
+          <%=uiForm.getLabel(uicomponent.FIELD_SEND)%>:
         </td>
         <td class="fieldComponent">
           <%uiForm.renderField(uicomponent.FIELD_SEND)%>
