@@ -85,7 +85,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UIFormSelectBox(FIELD_CATEGORY, FIELD_CATEGORY, CalendarUtils.getCategory())) ;
     ActionData addCategoryAction = new ActionData() ;
     addCategoryAction.setActionType(ActionData.TYPE_ICON) ;
-    addCategoryAction.setCssIconClass("uiIconCalPlus");
+    addCategoryAction.setCssIconClass("uiIconPlus");
     addCategoryAction.setActionName(UIEventForm.ACT_ADDCATEGORY) ;
     addCategoryAction.setActionListener(UIEventForm.ACT_ADDCATEGORY) ;
     List<ActionData> addCategoryActions = new ArrayList<ActionData>() ;
