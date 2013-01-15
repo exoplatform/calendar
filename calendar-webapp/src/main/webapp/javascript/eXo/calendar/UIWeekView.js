@@ -115,7 +115,8 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	var n = 0 ;
 	for(var j = inter[i]; j < inter[i+1] ; j++) { // loop on each event element
 	    
-	    gj(el[j]).removeClass("shortened"); // reset shortened status
+	    gj(el[j]).removeClass("shortTitle"); // reset shortened status
+	    gj(el[j]).removeClass("shortDesc"); // reset shortened status
 	    var evtCont = gj(el[j]).find('div.eventContainer'); // get the content part of the event area
 	    var evtBar = gj(el[j]).find('div.eventContainerBar'); // get the title part of the event area
 	    // if the original title and description are not yet saved, we store them in a DOM attribute of the main element
@@ -123,44 +124,43 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	    if (gj(el[j]).attr("descHTML") == "" || gj(el[j]).attr("descHTML") == null) gj(el[j]).attr("descHTML", evtCont[0].innerHTML);
 
 	    if(mark != null) {				
-		width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width))/len - 1) ;
+			width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width))/len - 1) ;
 	    } else {
-		width = parseFloat(totalWidth/len - 1) ;
+			width = parseFloat(totalWidth/len - 1) ;
 	    }
+	    width = Math.round(width);
 	    gj(el[j]).css('overflow','hidden');
 	    el[j].style.width = width + "px" ;
 
 	    // whether the event has a priority (high, normal, low)
 	    var hasFlag = gj(gj(evtBar).find('i')[1]).hasClass("uiIconCalhighPriority") || gj(gj(evtBar).find('i')[1]).hasClass("uiIconCalnormalPriority") || gj(gj(evtBar).find('i')[1]).hasClass("uiIconCallowPriority");
 	    if (hasFlag && width <= 60) {
-		// if the event has a priority and its width <= 60: hide the title (start end times)
-		evtBar[0].lastChild.data = "";
-		gj(el[j]).addClass("shortened");	
+			// if the event has a priority and its width <= 60: hide the title (start end times)
+			evtBar[0].lastChild.data = "";
+			gj(el[j]).addClass("shortTitle");	
 	    } 
 	    else if ((hasFlag && width <= 76) || (!hasFlag && width <= 60)) {
-		// if the event has a priority and its width <= 76
-		// or the event has no priority and its width <= 60 : display start time only
-		evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML").split("-")[0];
-		gj(el[j]).addClass("shortened");	
+			// if the event has a priority and its width <= 76
+			// or the event has no priority and its width <= 60 : display start time only
+			evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML").split("-")[0];
+			gj(el[j]).addClass("shortTitle");	
 	    }
 	    if (width <= 20) {
-		// replace the description by ...
-		evtCont[0].innerHTML = "...";
-		gj(el[j]).addClass("shortened");	
+			// replace the description by ...
+			evtCont[0].innerHTML = "...";
+			gj(el[j]).addClass("shortDesc");	
 	    }
-	    if (!gj(el[j]).hasClass("shortened")) {
-		// if the content was NOT shortened
+	    // if the content was NOT shortened
 		// keep the original title and description
-		evtCont[0].innerHTML = gj(el[j]).attr("descHTML");
-		evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML");
-	    }
+	    if (!gj(el[j]).hasClass("shortDesc")) evtCont[0].innerHTML = gj(el[j]).attr("descHTML");
+		if (!gj(el[j]).hasClass("shortTitle")) evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML");
 
 
 	    if (el[j-1]&&(len > 1)) {
-		setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n);
+			setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n);
 	    }
 	    else {		
-		setLeft(el[j],offsetLeft);
+			setLeft(el[j],offsetLeft);
 	    }
 	    n++ ;
 	}
