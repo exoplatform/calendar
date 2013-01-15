@@ -37,74 +37,57 @@
  // rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
 %>
 <div id="$uicomponent.id" class="$uicomponent.id">
-  <table class="UIFormGrid">
-    <tbody>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.VIEW_TYPE)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.VIEW_TYPE)%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.DATE_FORMAT)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.DATE_FORMAT)%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.TIME_FORMAT)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.TIME_FORMAT)%>
-        </td>
-      </tr>
-      
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.TIMEZONE)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.TIMEZONE);%>
-          <%renderActions(uicomponent.TIMEZONE);%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.WEEK_START_ON)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.WEEK_START_ON)%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.ISSHOWWORKINGTIME)%>
-        </td>
-        <td class="FieldComponent">
-          <div class="WorkingTimeCheck">
-            <%uiForm.renderField(uicomponent.ISSHOWWORKINGTIME)%>
-          </div>
-          <div class="WorkingTime">
-            <%=uiForm.getLabel(uicomponent.WORKINGTIME_BEGIN)%>
-            <%uiForm.renderField(uicomponent.WORKINGTIME_BEGIN)%>
-            <%=uiForm.getLabel(uicomponent.WORKINGTIME_END)%>
-            <%uiForm.renderField(uicomponent.WORKINGTIME_END)%>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_SEND)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.FIELD_SEND)%>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+	<div class="form-horizontal">
+		<div class="control-group">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.VIEW_TYPE)%>:</div>
+			<div class="controls">
+				<%uiForm.renderField(uicomponent.VIEW_TYPE)%>
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.DATE_FORMAT)%>:</div>
+			<div class="controls">
+				<%uiForm.renderField(uicomponent.DATE_FORMAT)%>
+			</div>
+		</div>
+		<div class="control-group">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.TIME_FORMAT)%>:</div>
+			<div class="controls">
+				<%uiForm.renderField(uicomponent.TIME_FORMAT)%>
+			</div>
+		</div>  
+		<div class="control-group">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.TIMEZONE)%>:</div>
+			<div class="controls">
+				<%uiForm.renderField(uicomponent.TIMEZONE);%>
+			  <%renderActions(uicomponent.TIMEZONE);%>
+			</div>
+		</div>  
+		<div class="control-group">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.WEEK_START_ON)%>:</div>
+			<div class="controls">
+				<%uiForm.renderField(uicomponent.WEEK_START_ON)%>
+			</div>
+		</div>    
+		 <div class="control-group checkBoxArea">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.ISSHOWWORKINGTIME)%>:</div>
+			<div class="controls">
+				<div class="workingTimeCheck  pull-left">
+				<%uiForm.renderField(uicomponent.ISSHOWWORKINGTIME)%>
+			  </div>
+			  <div class="workingTime uiSelectboxSmall pull-left">
+				<%=uiForm.getLabel(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;&nbsp;
+				<%uiForm.renderField(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;
+				<%=uiForm.getLabel(uicomponent.WORKINGTIME_END)%>&nbsp;&nbsp;
+				<%uiForm.renderField(uicomponent.WORKINGTIME_END)%>
+			  </div>
+			</div>
+		</div>  
+		 <div class="control-group radioBoxArea">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_SEND)%>:</div>
+			<div class="controls">
+				<%uiForm.renderField(uicomponent.FIELD_SEND)%>
+			</div>
+		</div>      
+    </div>      
 </div>
