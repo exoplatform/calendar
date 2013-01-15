@@ -84,7 +84,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
     var UICalendarPortlet = _module.UICalendarPortlet ;
     var inter = UICalendarPortlet.getInterval(el) ;
     if (el.length <= 0) return ;
-    // set position of events in vertical axis.
+//  set position of events in vertical axis.
     for (var i = 0; i < el.length; i++) {
 	UICalendarPortlet.setSize(el[i]) ;
     }
@@ -113,7 +113,15 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	    }
 	}
 	var n = 0 ;
-	for(var j = inter[i]; j < inter[i+1] ; j++) {
+	for(var j = inter[i]; j < inter[i+1] ; j++) { // loop on each event element
+	    
+	    gj(el[j]).removeClass("shortened"); // reset shortened status
+	    var evtCont = gj(el[j]).find('div.eventContainer'); // get the content part of the event area
+	    var evtBar = gj(el[j]).find('div.eventContainerBar'); // get the title part of the event area
+	    // if the original title and description are not yet saved, we store them in a DOM attribute of the main element
+	    if (gj(el[j]).attr("titleHTML") == "" || gj(el[j]).attr("titleHTML") == null) gj(el[j]).attr("titleHTML", gj(evtBar).text());
+	    if (gj(el[j]).attr("descHTML") == "" || gj(el[j]).attr("descHTML") == null) gj(el[j]).attr("descHTML", evtCont[0].innerHTML);
+
 	    if(mark != null) {				
 		width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width))/len - 1) ;
 	    } else {
@@ -121,6 +129,33 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	    }
 	    gj(el[j]).css('overflow','hidden');
 	    el[j].style.width = width + "px" ;
+
+	    // whether the event has a priority (high, normal, low)
+	    var hasFlag = gj(gj(evtBar).find('i')[1]).hasClass("uiIconCalhighPriority") || gj(gj(evtBar).find('i')[1]).hasClass("uiIconCalnormalPriority") || gj(gj(evtBar).find('i')[1]).hasClass("uiIconCallowPriority");
+	    if (hasFlag && width <= 60) {
+		// if the event has a priority and its width <= 60: hide the title (start end times)
+		evtBar[0].lastChild.data = "";
+		gj(el[j]).addClass("shortened");	
+	    } 
+	    else if ((hasFlag && width <= 76) || (!hasFlag && width <= 60)) {
+		// if the event has a priority and its width <= 76
+		// or the event has no priority and its width <= 60 : display start time only
+		evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML").split("-")[0];
+		gj(el[j]).addClass("shortened");	
+	    }
+	    if (width <= 20) {
+		// replace the description by ...
+		evtCont[0].innerHTML = "...";
+		gj(el[j]).addClass("shortened");	
+	    }
+	    if (!gj(el[j]).hasClass("shortened")) {
+		// if the content was NOT shortened
+		// keep the original title and description
+		evtCont[0].innerHTML = gj(el[j]).attr("descHTML");
+		evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML");
+	    }
+
+
 	    if (el[j-1]&&(len > 1)) {
 		setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n);
 	    }
@@ -130,6 +165,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	    n++ ;
 	}
     }
+
     function setLeft(obj,left){
 	obj.style.left = left + "px";
 	if(base.I18n.isRT()){

@@ -793,47 +793,51 @@ UICalendarPortlet.prototype.adjustWidth = function(el, totalWidth){
     var UICalendarPortlet = _module.UICalendarPortlet;
     var inter = UICalendarPortlet.getInterval(el);
     if (el.length <= 0) 
-        return;
+	return;
     var width = "";
     for (var i = 0; i < inter.length; i++) {
-        var totalWidth = (arguments.length > 1) ? arguments[1] : parseFloat(100);
-        totalWidth -= 2 ;
-        var offsetLeft = parseFloat(0);
-        var left = parseFloat(0);
-        if (arguments.length > 2) {
-            offsetLeft = parseFloat(arguments[2]);
-            left = arguments[2];
-        }
-        var len = (inter[i + 1] - inter[i]);
-        if (isNaN(len)) 
-            continue;
-        var mark = null;
-        if (i > 0) {
-            for (var l = 0; l < inter[i]; l++) {
-                if ((el[inter[i]].offsetTop > el[l].offsetTop) && (el[inter[i]].offsetTop < (el[l].offsetTop + el[l].offsetHeight))) {
-                    mark = l;
-                }
-            }
-            if (mark != null) {
-                offsetLeft = parseFloat(el[mark].style.left) + parseFloat(el[mark].style.width);
-            }
-        }
-        var n = 0;
-        for (var j = inter[i]; j < inter[i + 1]; j++) {
-            if (mark != null) {
-                width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width)) / len);
-            }
-            else {
-                width = parseFloat(totalWidth / len);
-            }
-            UICalendarPortlet.setWidth(el[j], width);
-            if (el[j - 1] && (len > 1)) 
-                  setLeft(el[j],offsetLeft + parseFloat(el[j - 1].style.width) * n);
-            else {
-                  setLeft(el[j],offsetLeft);
-            }
-            n++;
-        }
+	var totalWidth = (arguments.length > 1) ? arguments[1] : parseFloat(100);
+	totalWidth -= 2 ;
+	var offsetLeft = parseFloat(0);
+	var left = parseFloat(0);
+	if (arguments.length > 2) {
+	    offsetLeft = parseFloat(arguments[2]);
+	    left = arguments[2];
+	}
+	var len = (inter[i + 1] - inter[i]);
+	if (isNaN(len)) 
+	    continue;
+	var mark = null;
+	if (i > 0) {
+	    for (var l = 0; l < inter[i]; l++) {
+		if ((el[inter[i]].offsetTop > el[l].offsetTop) && (el[inter[i]].offsetTop < (el[l].offsetTop + el[l].offsetHeight))) {
+		    mark = l;
+		}
+	    }
+	    if (mark != null) {
+		offsetLeft = parseFloat(el[mark].style.left) + parseFloat(el[mark].style.width);
+	    }
+	}
+	var n = 0;
+	for (var j = inter[i]; j < inter[i + 1]; j++) {
+
+	    if (mark != null) {
+		width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width)) / len - 1);
+	    }
+	    else {
+		width = parseFloat(totalWidth / len - 1);
+	    }
+	    gj(el[j]).css('overflow','hidden');
+
+	    UICalendarPortlet.setWidth(el[j], width);
+
+	    if (el[j - 1] && (len > 1)) 
+		setLeft(el[j],offsetLeft + (parseFloat(el[j - 1].style.width) + 1) * n);
+	    else {
+		setLeft(el[j],offsetLeft);
+	    }
+	    n++;
+	}
     }
     function setLeft(obj,left){
 		obj.style.left = left + "%";
