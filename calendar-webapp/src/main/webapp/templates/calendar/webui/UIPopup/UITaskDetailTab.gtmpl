@@ -42,123 +42,99 @@
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.require("SHARED/jquery","gj");
   requireJS.addScripts('cal.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
-  requireJS.addScripts("gj('td#UITaskDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
+  requireJS.addScripts("gj('#UITaskDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
 //  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
   %>
-<div id="$uicomponent.id" class="UIAddNewEvent">
-  <table class="UIFormGrid">
-    <tbody>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_EVENT)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.FIELD_EVENT)%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_DESCRIPTION)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.FIELD_DESCRIPTION)%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_DELEGATION)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.FIELD_DELEGATION)
+<div id="$uicomponent.id" class="uiAddNewEvent taskDetailTab">
+  <div class="form-horizontal">
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_EVENT)%>:</div>
+		<div class="controls">
+			<%uiForm.renderField(uicomponent.FIELD_EVENT)%>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_DESCRIPTION)%>:</div>
+		<div class="controls descriptionArea">
+			<%uiForm.renderField(uicomponent.FIELD_DESCRIPTION)%>
+		</div>
+	</div>
+    <div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_DELEGATION)%>:</div>
+		<div class="controls">
+			<%uiForm.renderField(uicomponent.FIELD_DELEGATION)
              renderActions(uicomponent.FIELD_DELEGATION) ;
           %>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_FROM)%>
-        </td>
-        <td class="FieldComponent">
-          <div class="Date">
-            <%uiForm.renderField(uicomponent.FIELD_FROM)%>
-          </div>
-          <div class="Time">
-            <%uiForm.renderField(uicomponent.FIELD_FROM_TIME)%>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_TO)%>
-        </td>
-        <td class="FieldComponent">
-          <div class="Date">
-            <%uiForm.renderField(uicomponent.FIELD_TO)%>
-          </div>
-          <div class="Time">
-            <%uiForm.renderField(uicomponent.FIELD_TO_TIME)%>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_CHECKALL)%>
-        </td>
-        <td id="UITaskDetailTab_FIELD_CHECKALL" class="FieldComponent" >
-          <%uiForm.renderField(uicomponent.FIELD_CHECKALL)%>
-        </td>
-      </tr>
-       <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_PRIORITY)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.FIELD_PRIORITY)%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_CALENDAR)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiForm.renderField(uicomponent.FIELD_CALENDAR)%>
-        </td>
-      </tr>
-      <%if(uicomponent.getChildById(uicomponent.FIELD_CATEGORY) != null && uicomponent.getChildById(uicomponent.FIELD_CATEGORY).isRendered()){%>
-        <tr>
-          <td class="FieldLabel">
-            <%=uiForm.getLabel(uicomponent.FIELD_CATEGORY)%>
-          </td>
-          <td class="FieldComponent">
-            <%
-              uiForm.renderField(uicomponent.FIELD_CATEGORY) ;
-              renderActions(uicomponent.FIELD_CATEGORY) ;
-            %>
-          </td>
-        </tr>
-      <%}%>
-       <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_STATUS)%>
-        </td>
-        <td class="FieldComponent">
-          <%
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_FROM)%>:</div>
+		<div class="controls">
+			<div class="date inputSmall pull-left">
+				 <%uiForm.renderField(uicomponent.FIELD_FROM)%>
+			</div>
+			<div class="time inputMini pull-left"><!-- start time -->
+				<%uiForm.renderField(uicomponent.FIELD_FROM_TIME)%>
+			</div>
+		</div>
+	</div>     
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_TO)%>:</div>
+		<div class="controls">
+			<div class="date inputSmall pull-left">
+				<%uiForm.renderField(uicomponent.FIELD_TO)%>
+			</div>
+			<div class="time inputMini pull-left"><!-- start time -->
+				<%uiForm.renderField(uicomponent.FIELD_TO_TIME)%>
+			</div>
+		</div>
+	</div>  
+    <div class="control-group checkBoxArea">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_CHECKALL)%>:</div>
+		<div class="controls " id="UITaskDetailTab_FIELD_CHECKALL"  ><!-- check all -->
+			<%uiForm.renderField(uicomponent.FIELD_CHECKALL)%>
+		</div>
+	</div> 
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_PRIORITY)%>:</div>
+		<div class="controls">
+			<%uiForm.renderField(uicomponent.FIELD_PRIORITY)%>
+		</div>
+	</div>     
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_CALENDAR)%>:</div>
+		<div class="controls">
+			<%uiForm.renderField(uicomponent.FIELD_CALENDAR)%>
+		</div>
+	</div> 	
+	  <%if(uicomponent.getChildById(uicomponent.FIELD_CATEGORY) != null && uicomponent.getChildById(uicomponent.FIELD_CATEGORY).isRendered()){%>
+		<div class="control-group">
+			<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_CATEGORY)%>:</div>
+			<div class="controls">
+				<%
+			  uiForm.renderField(uicomponent.FIELD_CATEGORY) ;
+			  renderActions(uicomponent.FIELD_CATEGORY) ;
+			%>
+			</div>
+		</div> 	
+	  <%}%>
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_STATUS)%>:</div>
+		<div class="controls">
+			<%
             uiForm.renderField(uicomponent.FIELD_STATUS) ;
           %>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>
-        </td>
-        <td class="FieldComponent">
-          <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>:</div>
+		<div class="controls">
+			<%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
             <button onclick="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>" type="button" class="btn">
               <i class="uiIconAttach"></i>
               <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%>
             </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+		</div>
+	</div>  	
+  </div>
 </div>

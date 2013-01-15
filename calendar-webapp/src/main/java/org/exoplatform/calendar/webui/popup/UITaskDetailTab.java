@@ -79,7 +79,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
 
     ActionData addCategoryAction = new ActionData() ;
     addCategoryAction.setActionType(ActionData.TYPE_ICON) ;
-    addCategoryAction.setCssIconClass("uiIconCalPlus");
+    addCategoryAction.setCssIconClass("uiIconPlus");
     addCategoryAction.setActionName(UIEventForm.ACT_ADDCATEGORY) ;
     addCategoryAction.setActionListener(UIEventForm.ACT_ADDCATEGORY) ;
     List<ActionData> addCategoryActions = new ArrayList<ActionData>() ;
@@ -139,7 +139,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
       fileUpload.setActionListener(UIEventForm.ACT_DOWNLOAD) ;
       fileUpload.setActionParameter(attachdata.getId()) ;
       fileUpload.setActionType(ActionData.TYPE_LINK) ;
-      fileUpload.setCssIconClass("uiIconCalPlus") ;
+      fileUpload.setCssIconClass("uiIconPlus") ;
       fileUpload.setActionName(attachdata.getName() + "-(" + CalendarUtils.convertSize(attachdata.getSize()) + ")" ) ;
       fileUpload.setShowLabel(true) ;
       uploadedFiles.add(fileUpload) ;

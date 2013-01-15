@@ -18,7 +18,12 @@
 	margin-top: 0;
 	background-image: url("/calendar/skin/DefaultSkin/images/Icons/uiIconsCalLightGray.png");
 }
-
+.UICalendarPortlet [class^="uiIcon"],.uICalendarPortlet [class^="uiIcon"] {
+	background-image: url("/eXoResources/skin/images/Icons/uiIconsLightGray.png");
+	&:hover {
+		background-image:url("/eXoResources/skin/images/Icons/uiIconsBlue.png");
+	}
+}
 /* Blue icons with optional class, or on hover/active states of certain elements */
 
 
@@ -29,7 +34,8 @@
 .dropdown-menu > .active > a > [class^="uiIconCal"],
 .uiDropdownWithIcon .dropdown-submenu:hover > a > [class^="uiIconCal"],
 .btn:hover [class^="uiIconCal"],
-[class^="uiIconCal"]:hover
+[class^="uiIconCal"]:hover,.UICalendarPortlet [class^="uiIconCal"]:hover,.uICalendarPortlet [class^="uiIconCal"]:hover,
+.UICalendarPortlet .actionIcon:hover [class^="uiIconCal"] ,.uiCalendarPortlet .actionIcon:hover [class^="uiIconCal"]
 {
 	background-image: url("/calendar/skin/DefaultSkin/images/Icons/uiIconsCalBlue.png");
 
@@ -42,7 +48,7 @@
 .dropdown-menu .active a > [class^="uiIconCal"],
 .uiDropdownWithIcon .dropdown-submenu a [class^="uiIconCal"],
 .uiDropDownCal li a [class^="uiIconCal"],
-.uiDropDownCal .active a [class^="uiIconCal"]
+.uiDropDownCal .active a [class^="uiIconCal"],.UICalendarPortlet [class^="uiIconCal"],.uICalendarPortlet [class^="uiIconCal"]
 {
 	background-image: url("/calendar/skin/DefaultSkin/images/Icons/uiIconsCalLightGray.png");
 
@@ -67,7 +73,7 @@
 
 }
 
-.uiIconCalnullPriority{
+.uiIconCalnullPriority,.uiIconCalnonePriority{
 	display: none;
 }
 
