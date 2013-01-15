@@ -81,62 +81,62 @@ UIWeekView.prototype.setSize = function() {
 } ;
 
 UIWeekView.prototype.adjustWidth = function(el) {
-	var UICalendarPortlet = _module.UICalendarPortlet ;
-	var inter = UICalendarPortlet.getInterval(el) ;
-	if (el.length <= 0) return ;
-  // set position of events in vertical axis.
-  for (var i = 0; i < el.length; i++) {
-    UICalendarPortlet.setSize(el[i]) ;
-  }
+    var UICalendarPortlet = _module.UICalendarPortlet ;
+    var inter = UICalendarPortlet.getInterval(el) ;
+    if (el.length <= 0) return ;
+    // set position of events in vertical axis.
+    for (var i = 0; i < el.length; i++) {
+	UICalendarPortlet.setSize(el[i]) ;
+    }
 
-	var width = "" ;
-	for(var i = 0 ; i < inter.length ; i ++) {
-		var totalWidth = (arguments.length > 1) ? arguments[1] : parseFloat(100) ;
-    totalWidth -= 10 ;
-		var offsetLeft = parseFloat(0) ;
-		var left = parseFloat(0) ;
-		if(arguments.length > 2) {
-			offsetLeft = parseFloat(arguments[2]) ;
-			left = arguments[2] ;
-		} 
-		var len = (inter[i+1] - inter[i]) ;
-		if(isNaN(len)) continue ;
-		var mark = null ;
-		if (i > 0){
-			for(var l = 0 ; l < inter[i] ; l ++) {
-				if((el[inter[i]].offsetTop > el[l].offsetTop) && (el[inter[i]].offsetTop < (el[l].offsetTop + el[l].offsetHeight))) {
-					mark = l ;					
-				}
-			}			
-			if (mark != null) {
-				offsetLeft = parseFloat(el[mark].style.left) + parseFloat(el[mark].style.width) ;
-			}
+    var width = "" ;
+    for(var i = 0 ; i < inter.length ; i ++) {
+	var totalWidth = (arguments.length > 1) ? arguments[1] : parseFloat(100) ;
+	totalWidth -= 10 ;
+	var offsetLeft = parseFloat(0) ;
+	var left = parseFloat(0) ;
+	if(arguments.length > 2) {
+	    offsetLeft = parseFloat(arguments[2]) ;
+	    left = arguments[2] ;
+	} 
+	var len = (inter[i+1] - inter[i]) ;
+	if(isNaN(len)) continue ;
+	var mark = null ;
+	if (i > 0){
+	    for(var l = 0 ; l < inter[i] ; l ++) {
+		if((el[inter[i]].offsetTop > el[l].offsetTop) && (el[inter[i]].offsetTop < (el[l].offsetTop + el[l].offsetHeight))) {
+		    mark = l ;					
 		}
-		var n = 0 ;
-		for(var j = inter[i]; j < inter[i+1] ; j++) {
-		    if(mark != null) {				
-			width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width))/len - 1) ;
-		    } else {
-			width = parseFloat(totalWidth/len - 1) ;
-		    }
-		    gj(el[j]).css('overflow','hidden');
-			el[j].style.width = width + "px" ;
-			if (el[j-1]&&(len > 1)) {
-				setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n);
-			}
-			else {		
-				setLeft(el[j],offsetLeft + 1);
-			}
-			n++ ;
-		}
+	    }			
+	    if (mark != null) {
+		offsetLeft = parseFloat(el[mark].style.left) + parseFloat(el[mark].style.width) ;
+	    }
 	}
-	function setLeft(obj,left){
-		obj.style.left = left + "px";
-		if(base.I18n.isRT()){
-		if(base.Browser.isIE6()) left -= cs.Utils.getScrollbarWidth();
-			obj.style.right = left + "px";	
-		}
+	var n = 0 ;
+	for(var j = inter[i]; j < inter[i+1] ; j++) {
+	    if(mark != null) {				
+		width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width))/len - 1) ;
+	    } else {
+		width = parseFloat(totalWidth/len - 1) ;
+	    }
+	    gj(el[j]).css('overflow','hidden');
+	    el[j].style.width = width + "px" ;
+	    if (el[j-1]&&(len > 1)) {
+		setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n);
+	    }
+	    else {		
+		setLeft(el[j],offsetLeft);
+	    }
+	    n++ ;
 	}
+    }
+    function setLeft(obj,left){
+	obj.style.left = left + "px";
+	if(base.I18n.isRT()){
+	    if(base.Browser.isIE6()) left -= cs.Utils.getScrollbarWidth();
+	    obj.style.right = left + "px";	
+	}
+    }
 } ;
 
 UIWeekView.prototype.showInCol = function(obj) {
