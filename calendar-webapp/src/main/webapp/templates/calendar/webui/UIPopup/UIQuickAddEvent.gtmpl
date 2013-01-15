@@ -4,89 +4,67 @@ def requireJS = rcontext.getJavascriptManager().getRequireJS();
 requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
 requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts("cal.UICalendarPortlet.isAllday('QuickAddEventContainer','');");
-requireJS.addScripts("gj('td#"+uicomponent.FIELD_ALLDAY+"').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
+requireJS.addScripts("gj('#"+uicomponent.FIELD_ALLDAY+"').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
 //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;  
 %>
-<div class="UIQuickAddEvent" id="QuickAddEventContainer">
-  <div class="QuickAddEventContainer">
+<div class="uiQuickAddEvent" id="QuickAddEventContainer">
+    <div class="form-horizontal quickAddEventContainer">	
     <%uiform.begin()%>
-    <div class="HorizontalLayout">
-      <div class="FormContainer">
-        <table class="UIFormGrid">
-          <tbody>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.FIELD_EVENT)%>
-              </td>
-              <td class="FieldComponent">
-                <%uicomponent.renderField(uicomponent.FIELD_EVENT)%>
-              </td>
-            </tr>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.FIELD_DESCRIPTION)%>
-              </td>
-              <td class="FieldComponent">
-                <%uicomponent.renderField(uicomponent.FIELD_DESCRIPTION)%>
-              </td>
-            </tr>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.FIELD_FROM)%>
-              </td>
-              <td class="FieldComponent">
-                <div class="Date">
-                  <%uicomponent.renderField(uicomponent.FIELD_FROM)%>
-                </div>
-                <div class="Time">
-                  <%uicomponent.renderField(uicomponent.FIELD_FROM_TIME)%>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.FIELD_TO)%>
-              </td>
-              <td class="FieldComponent">
-                <div class="Date">
-                  <%uicomponent.renderField(uicomponent.FIELD_TO)%>
-                </div>
-                <div class="Time">
-                  <%uicomponent.renderField(uicomponent.FIELD_TO_TIME)%>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.FIELD_ALLDAY)%>
-              </td>
-              <td id="<%=uicomponent.FIELD_ALLDAY%>" class="FieldComponent">
-                <%uicomponent.renderField(uicomponent.FIELD_ALLDAY)%>
-              </td>
-            </tr>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.FIELD_CALENDAR)%>
-              </td>
-              <td class="FieldComponent">
-                <%uicomponent.renderField(uicomponent.FIELD_CALENDAR)%>
-              </td>
-            </tr>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.FIELD_CATEGORY)%>
-              </td>
-              <td class="FieldComponent">
-                <%uicomponent.renderField(uicomponent.FIELD_CATEGORY)%>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+	<div class="control-group">
+		<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_EVENT)%>:</div>
+		<div class="controls">
+			<%uicomponent.renderField(uicomponent.FIELD_EVENT)%>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_DESCRIPTION)%>:</div>
+		<div class="controls descriptionArea">
+			<%uicomponent.renderField(uicomponent.FIELD_DESCRIPTION)%>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_FROM)%>:</div>
+		<div class="controls">
+			<div class="date inputSmall pull-left">
+				<%uicomponent.renderField(uicomponent.FIELD_FROM)%>
+			</div>
+			<div class="time inputMini pull-left"><!-- start time -->
+				<%uicomponent.renderField(uicomponent.FIELD_FROM_TIME)%>
+			</div>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_TO)%>:</div>
+		<div class="controls">
+			<div class="date inputSmall pull-left">
+				<%uicomponent.renderField(uicomponent.FIELD_TO)%>
+			</div>
+			<div class="time inputMini pull-left"><!-- start time -->
+				<%uicomponent.renderField(uicomponent.FIELD_TO_TIME)%>
+			</div>
+		</div>
+	</div>
+	<div class="control-group checkBoxArea">
+		<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_ALLDAY)%>:</div>
+		<div class="controls " id="<%=uicomponent.FIELD_ALLDAY%>"   ><!-- check all -->
+			<%uicomponent.renderField(uicomponent.FIELD_ALLDAY)%>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_CALENDAR)%>:</div>
+		<div class="controls">
+			<%uicomponent.renderField(uicomponent.FIELD_CALENDAR)%>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" > <%=uicomponent.getLabel(uicomponent.FIELD_CATEGORY)%>:</div>
+		<div class="controls">
+			<%uicomponent.renderField(uicomponent.FIELD_CATEGORY)%>
+		</div>
+	</div>
     <%uiform.end();%>
   </div>
-	<div class="uiAction">
+	<div class="uiAction uiActionBorder">
   <% for(action in uicomponent.getActions()) { 
            String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
            String link = uicomponent.event(action) ;
