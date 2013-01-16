@@ -24,6 +24,7 @@ rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.up
 //INLINE Scripts
 requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this);});");
+requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 %>
 
 

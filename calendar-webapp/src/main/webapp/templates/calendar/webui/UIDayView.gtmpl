@@ -43,7 +43,7 @@
   
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
- 
+  requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
   requirejs.addScripts('cal.UICalendarPortlet.showEvent() ;') ;
   requirejs.addScripts('cal.UICalendarPortlet.initSelection() ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;  
@@ -156,7 +156,7 @@
 							<!---- DISPLAYING EVENT DURATION ---->
 							<!-- if event duration lasts less than 30 mins then display event description right to event duration -->
 							<div class="clearfix">
-							<div unselectable="on" class="eventContainerBar eventTitle pull-left" style="display:inline-block" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>">
+							<div unselectable="on" class="eventContainerBar eventTitle pull-left" style="display:inline-block">
 								<%if(CalendarEvent.TYPE_TASK.equals(ce.getEventType())){%>
 								<i class="uiIconCalTaskMini"></i>
 								<%} else {%>
@@ -182,7 +182,7 @@
 							</div>	
 							<% } else { %>
 							<!---- DISPLAYING EVENT DURATION ---->
-							<div unselectable="on" class="eventContainerBar eventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>">
+							<div unselectable="on" class="eventContainerBar eventTitle">
 								<%if(CalendarEvent.TYPE_TASK.equals(ce.getEventType())){%>
 									<i class="uiIconCalTaskMini"></i>
 									<%} else {%>

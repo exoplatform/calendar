@@ -43,8 +43,8 @@ public class UIPopupAction extends UIContainer {
     renderChildren(context) ;
     context.getWriter().append("</span>");
     RequireJS requireJS = Util.getPortalRequestContext().getJavascriptManager().getRequireJS();
-    requireJS.require("PORTLET/calendar/CalendarPortlet","cal");  
-    requireJS.addScripts("cal.UICalendarPortlet.loadTile('"+getId()+"');") ;
+    requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+    requireJS.addScripts("cal.UICalendarPortlet.loadTitle('"+getId()+"');") ;
   }
 
   public <T extends UIComponent> T activate(Class<T> type, int width) throws Exception {

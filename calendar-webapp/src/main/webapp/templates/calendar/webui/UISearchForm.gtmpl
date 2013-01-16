@@ -5,6 +5,8 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/csResources","cs");
   requirejs.addScripts('cs.Utils.captureInput("value") ;') ;
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 %>
 <div class="uiSearchForm uiSearchInput pull-right"  onclick="$action">
     <div rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>

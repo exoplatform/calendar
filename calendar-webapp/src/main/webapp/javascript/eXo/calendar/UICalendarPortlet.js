@@ -3102,16 +3102,22 @@ wx.UICombobox.getValue = function(obj){
    UICombobox.list.style.display = "none";
 };
 
-UICalendarPortlet.prototype.loadTile = function(id){
-	try{
-		gj(document).ready(
-			function(){
-				gj("#"+id).find("*[rel=tooltip]").tooltip();
-			}
-		);
-	} catch (e) {
-		// TODO: handle exception
-	}
+// assigns tooltip handler for all elements having property rel = tooltip
+UICalendarPortlet.prototype.loadTitle = function(id){
+    try{
+	gj(document).ready(
+		function(){
+		    if(id) {
+			gj("#"+id).find("*[rel=tooltip]").tooltip();    
+		    }
+		    else {
+			gj("*[rel=tooltip]").tooltip();
+		    }
+		}
+	);
+    } catch (e) {
+	// TODO: handle exception
+    }
 };
 
 //close pop up window -> dont refresh portlet

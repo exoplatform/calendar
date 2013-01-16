@@ -1,6 +1,10 @@
 <%
 def totalPage = uicomponent.getAvailablePage();
 def currentPage = uicomponent.getCurrentPage();
+def rcontext = _ctx.getRequestContext();
+def requirejs = rcontext.getJavascriptManager().getRequireJS();
+requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 %>
 
 <div class="pagination uiPageIterator clearfix">

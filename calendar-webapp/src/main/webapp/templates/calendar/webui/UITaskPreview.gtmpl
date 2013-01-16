@@ -21,6 +21,8 @@ def rcontext = _ctx.getRequestContext();
 def requireJS = rcontext.getJavascriptManager().getRequireJS();
 requireJS.require("SHARED/jquery","gj").require("SHARED/csResource","cs");
 requireJS.addScripts("gj('div.MaximizeButton').click(function() {cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'uicomponent.id');});");
+requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
+
 %>
 <!--div class="MaximizeButton" title="View full - size task" onclick = "eXo.cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>')"><span></span></div-->
 <div class="MaximizeButton" rel="tooltip" data-placement="bottom" title="View full - size task" ><span></span></div>

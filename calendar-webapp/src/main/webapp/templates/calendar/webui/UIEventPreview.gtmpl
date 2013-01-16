@@ -23,6 +23,8 @@ requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() {cs.Uti
 requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
 requirejs.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
 requirejs.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");
+requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
+
 %>
 <div id="<%uicomponent.getId()%>" class="UIPreview">
 <% if (!uicomponent.isShowPopup()) { %>

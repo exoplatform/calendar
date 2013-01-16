@@ -40,6 +40,8 @@ rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet
 rcontext.getJavascriptManager().addOnResizeJavascript('cal.UIWeekView.onResize') ;
 requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
 rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIWeekView\');');
+requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
+
 WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
 Locale locale = context.getParentAppRequestContext().getLocale() ;
 String currentMonthName = uicomponent.getMonthName(currentMonth) ;
@@ -212,7 +214,7 @@ def eventList = [];
         <!---- DISPLAYING EVENT DURATION ---->
         <!-- if event duration smaller than 30 mins then render event in the same line -->
         <div class="clearfix">
-    <div unselectable="on" class="eventContainerBar eventTitle pull-left" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>" style=" display: inline-block; ">
+    <div unselectable="on" class="eventContainerBar eventTitle pull-left" style=" display: inline-block; ">
       
           <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
               <i class="uiIconCalTaskMini"></i>
@@ -240,7 +242,7 @@ def eventList = [];
         <% } else { %>
         <!---- DISPLAYING EVENT DURATION ---->
        
-        <div unselectable="on" class="eventContainerBar eventTitle" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('moveEvent')%>">
+        <div unselectable="on" class="eventContainerBar eventTitle">
           <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
               <i class="uiIconCalTaskMini"></i>
               <%} else {%>

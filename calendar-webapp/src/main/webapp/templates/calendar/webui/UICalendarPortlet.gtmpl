@@ -89,6 +89,8 @@
       requireJS.addScripts('cal.LayoutManager.layoutId = "calendarlayout-' + uicomponent.getRemoteUser() + '";');
       requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
       requireJS.addScripts('cal.CalendarLayout.init();');
+      requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
+      
     %>
       <div class="calendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>

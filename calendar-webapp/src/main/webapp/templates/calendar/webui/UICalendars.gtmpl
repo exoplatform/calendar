@@ -8,6 +8,7 @@
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
   requirejs.require("SHARED/jquery","gj");
   requirejs.addScripts('cal.UICalendars.init("' + uiform.id + '") ;') ;
   requirejs.addScripts("gj('div#UICalendars_calendarActions').click(function(event) {cal.UICalendars.showMenu(this, event, 'CalendarMainPopupMenu'); });");
