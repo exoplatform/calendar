@@ -225,7 +225,7 @@
 				</li>
 				<li>
 				  <a href="<%=uicomponent.event("ShareCalendar","id")%>">
-            <i class=""></i>
+            <i class="uiIconCalShare"></i>
             <%=uiform.getLabel("ShareCalendar")%>
           </a>
         </li>
@@ -249,7 +249,7 @@
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("RefreshRemoteCalendar","id")%>">
-					  <i class="uiIconCalRefresh"></i>
+					  <i class="uiIconRefresh"></i>
 					  <%=uiform.getLabel("RefreshRemoteCalendar")%>
 					</a> 
 				</li>

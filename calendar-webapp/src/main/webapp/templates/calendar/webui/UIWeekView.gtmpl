@@ -365,7 +365,7 @@ def eventList = [];
     <ul class="uiDropDownCal" style="display:block;">
       <li style="display: none;">
           <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
-            <i class="uiIconWatch"></i>
+            <i class="uiIconPreview"></i>
             <%=_ctx.appRes("ContextMenu.label.View")%>
           </a>
       </li>

@@ -127,7 +127,7 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
 		<ul class="uiDropDownCal" style="display:block;">
 		  <li>
 			  <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
-				<i class="uiIconWatch"></i>
+				<i class="uiIconPreview"></i>
 				<%=_ctx.appRes("ContextMenu.label.View")%>
 			  </a>
 		  </li>
