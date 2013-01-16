@@ -639,6 +639,7 @@ UICalendarPortlet.prototype.switchLayout = function(layout){
 		return ;
 	}
 	layoutMan.switchLayout(layout);
+	_module.UICalendarPortlet.resortEvents();
 };
 /* for event */
 /**

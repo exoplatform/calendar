@@ -560,6 +560,7 @@ function GUIMan(){
  * @param {EventMan} eventMan
  */
 GUIMan.prototype.initMonth = function(){
+  gj('div.moreEvent').css('display','none');//reset more event label to avoid overlap after resizing
   var events = eXo.calendar.UICalendarMan.EventMan.events;
   if (events.length > 0) {
     if (events[0]) {
