@@ -15,15 +15,15 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/base","base");  
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close').click(function() {base.UIPopup.hide('"+popupId+"'); });")
+  requirejs.addScripts("gj('a#UIPopupWindowQuick_UIPopupWindow_Close').click(function() {uiPopup.hide('"+popupId+"'); });")
   String show = "none";
   
-  requirejs.require("SHARED/webui","webui");
-  if(uicomponent.show) {	 
-    requirejs.addScripts("webui.UIPopupWindow.show('$popupId', $uicomponent.showMask);");
-	show = "block";
+  requirejs.require("SHARED/uiPopupWindow","uiPopupWindow");
+  if(uicomponent.show) {   
+    requirejs.addScripts("uiPopupWindow.show('$popupId', $uicomponent.showMask);");
+  show = "block";
   } else if (rcontext.useAjax()) {  
-    requirejs.addScripts("webui.UIPopupWindow.hide('$popupId', $uicomponent.showMask);");
+    requirejs.addScripts("uiPopupWindow.hide('$popupId', $uicomponent.showMask);");
   }
     
   String title = popupId ;
@@ -37,21 +37,21 @@
   if(height > 0) heightStyle = "height:" + height + "px;" ;
   
   
-  			
+        
 %>
 
 <div class="UIPopupWindow UIDragObject NormalStyle" exo:minWidth="200" exo:minHeight="200" id="$popupId" style="$widthStyle display: $show;">
-		<div class="OverflowContainer ClearFix">
-			<%if( true) {%>
-				<!-- <div class="CloseButton" title="Close Window" onclick="<%=uicomponent.event("ClosePopup")%>"><span></span></div> -->				
-				<a id="UIPopupWindowQuick_UIPopupWindow_Close" class="CloseButton" title="<%=_ctx.appRes("UIPopupWindow.Close")%>" ></a>
-			<% } else { %>
-				<div class="PopupTitleIconRight"><span></span></div>
-			<% } %>
-			<span class="PopupTitle"><%=_ctx.appRes(popupId + ".title."+ title)%></span>
-		</div>
-		<div class="UIWindowContent">
-			<div class="PopupContent" style="$heightStyle"><% uicomponent.renderChildren(); %></div>
-		</div>
-		<span class="ResizeButton"></span>
+    <div class="OverflowContainer ClearFix">
+      <%if( true) {%>
+        <!-- <div class="CloseButton" title="Close Window" onclick="<%=uicomponent.event("ClosePopup")%>"><span></span></div> -->       
+        <a id="UIPopupWindowQuick_UIPopupWindow_Close" class="CloseButton" title="<%=_ctx.appRes("UIPopupWindow.Close")%>" ></a>
+      <% } else { %>
+        <div class="PopupTitleIconRight"><span></span></div>
+      <% } %>
+      <span class="PopupTitle"><%=_ctx.appRes(popupId + ".title."+ title)%></span>
+    </div>
+    <div class="UIWindowContent">
+      <div class="PopupContent" style="$heightStyle"><% uicomponent.renderChildren(); %></div>
+    </div>
+    <span class="ResizeButton"></span>
 </div>

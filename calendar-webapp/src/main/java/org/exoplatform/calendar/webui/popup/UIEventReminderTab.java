@@ -124,7 +124,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
     return options ;
   }
 
-  public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
+  public void setActionField(String fieldName, List<ActionData> actions){
     actionField_.put(fieldName, actions) ;
   }
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}

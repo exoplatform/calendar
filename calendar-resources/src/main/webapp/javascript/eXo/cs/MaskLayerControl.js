@@ -1,7 +1,6 @@
-/**
- * @author uocnb
- */
-//TODO : fix bug masklayer don't scroll with browser scrollbar(when show picture in cs and ks), remove this method when portal team fix it./
+(function(base, gj){
+var _module = {};
+
 function MaskLayerControl() {
 }
 
@@ -83,3 +82,5 @@ if (!eXo.cs) eXo.cs = {} ;
 
 //eXo.cs.MaskLayerControl = new MaskLayerControl() ;
 _module.MaskLayerControl = new MaskLayerControl() ;
+return _module.MaskLayerControl;
+})(base, gj);

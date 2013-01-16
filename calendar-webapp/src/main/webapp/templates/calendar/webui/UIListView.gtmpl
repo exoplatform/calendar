@@ -36,7 +36,7 @@
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");  
   requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
   requireJS.require("SHARED/csResources","cs");
-  requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
+  requireJS.addScripts('cs.CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
   
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListView\');');
   //INLINE Scripts
@@ -112,17 +112,17 @@
               attachIcon = "" ;
               if(!event.getAttachment().isEmpty()) {attachIcon = "AttachmentIcon" ;}
               String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
-			  def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+        def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
           %>
               <!--tr actionLink="$actionLink" onclick="eXo.calendar.UICalendarPortlet.listViewClickCallback(this);" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>-->
-			  <tr actionLink="$actionLink" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
+        <tr actionLink="$actionLink" class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
               <%if(!searchDisplay) {%>
                 <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
               <%}%>
                 <td style="padding: 0px 0px 0px 7px;"><div class="$attachIcon" >&nbsp;</div></td>
                 <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>      
                 <td class="text">
-				  <div class="EventDescription $color"><span></span></div>
+          <div class="EventDescription $color"><span></span></div>
                   <span class="ControlButton" title="<%=event.summary%>">
                     <%=event.getSummary()%>
                   </span>  
