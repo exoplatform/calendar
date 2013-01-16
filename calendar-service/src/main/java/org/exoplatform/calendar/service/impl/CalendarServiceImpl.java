@@ -51,6 +51,7 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.services.scheduler.JobInfo;
@@ -563,10 +564,18 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       saveEventCategory(userName, eventCategory, true);
     }
 
+    // get the user's full name
+    OrganizationService organizationService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
+    User u = organizationService.getUserHandler().findUserByName(userName);
+    String fullName = u.getFirstName();
+    if (u.getLastName() != null && fullName != null) {
+      fullName = fullName + " " + u.getLastName();
+    }
+    if (fullName == null) fullName = u.getUserName();
     // save default calendar
     Calendar cal = new Calendar();
     cal.setId(Utils.getDefaultCalendarId(userName));
-    cal.setName(userName);
+    cal.setName(fullName); // name the default calendar after the user's full name, cf CAL-86
     cal.setDataInit(true);
     cal.setCalendarOwner(userName);
     if (defaultCalendarSetting_ != null) {
@@ -578,7 +587,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     if (defaultCalendarSetting_ != null) {
       saveCalendarSetting(userName, defaultCalendarSetting_);
     }
-    OrganizationService organizationService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
+    
     Object[] groupsOfUser = organizationService.getGroupHandler().findGroupsOfUser(userName).toArray();
     List<String> groups = new ArrayList<String>();
     for (Object object : groupsOfUser) {
