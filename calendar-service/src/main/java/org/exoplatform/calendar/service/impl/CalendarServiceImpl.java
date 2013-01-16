@@ -761,7 +761,20 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   @Override
   public void updateOccurrenceEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception {
+    Map<String,  CalendarEvent> oldEventList = new HashMap<String, CalendarEvent>();
+    if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
+      for (CalendarEvent event : calEvents) {
+        oldEventList.put(event.getId(), getGroupEvent(event.getId()));
+      }
+    }
     storage_.updateOccurrenceEvent(fromCalendar, toCalendar, fromType, toType, calEvents, username);
+    if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
+      for (CalendarEventListener cel : eventListeners_) {
+        for (CalendarEvent event : calEvents) 
+          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null)
+            cel.updatePublicEvent(oldEventList.get(event.getId()), event, toCalendar);
+      }
+    }
   }
 
   @Override
@@ -793,7 +806,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   @Override
   public void updateRecurrenceSeries(String fromCalendar, String toCalendar, String fromType, String toType, CalendarEvent occurrence, String username) throws Exception {
+    CalendarEvent oldEvent = getGroupEvent(occurrence.getId());
     storage_.updateRecurrenceSeries(fromCalendar, toCalendar, fromType, toType, occurrence, username);
+    for (CalendarEventListener cel : eventListeners_) {
+      if(oldEvent != null) cel.updatePublicEvent(oldEvent, occurrence, fromCalendar);
+    }
   }
 
   /*

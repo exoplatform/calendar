@@ -170,7 +170,7 @@ public class CalendarEvent {
   /**
    * Values: LOW, NORMAL, HIGHT
    */
-  private String               priority;
+  private String               priority = PRIORITY_NONE;
 
   private boolean              isPrivate       = true;
 
