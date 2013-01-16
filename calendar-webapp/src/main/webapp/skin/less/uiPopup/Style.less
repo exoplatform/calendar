@@ -10,7 +10,11 @@
 .timeField input[type=text] {
 	width: 50px;
 }
-
+.radioBoxArea ,.checkBoxArea {
+	.controls {
+		padding: 6px 0 0 0;
+	}
+}
 .newEventAttendee {
 	.uiGrid {
 		table-layout: fixed;
@@ -26,7 +30,7 @@
 		tr.titleBar td {
 			padding: 2px;
 			&.timeNumber {
-				font-size: 12px;
+				font-size: @baseFontSize - 1;
 			}
 		}
 		tr td.busyDotTime{
@@ -128,8 +132,7 @@
 
 /*===================UIEventRemindersTab===========================*/
 
-.reminderByPopup ,.reminderByEmail{
-	
+.reminderByPopup ,.reminderByEmail{	
 	.mailReminder + div ,.popupReminder + div {
 		margin: 0 0 0 30px;
 	}
@@ -149,7 +152,7 @@
 			margin-left: 0;
 		}
 	}
-	.repeatInterval,.UIEmailInput s{
+	.repeatInterval,.UIEmailInput{
 		padding: 5px 0;
 	}
 	.UIEmailInput {
@@ -194,9 +197,30 @@
 	.checkBoxArea {
 		margin: -3px 0 10px 0;		
 	}
-	.radioBoxArea ,.checkBoxArea {
-		.controls {
-			padding: 6px 0 0 0;
+	
+}
+
+/*======================uiRepeatEventForm=======================*/
+
+.uiRepeatEventForm {
+	.radioBoxArea {
+		margin: 5px 0;
+	}
+	.inputMini {
+		input[type="text"] {
+			width: 30px;
 		}
+	}
+	.selectboxMini {
+		.uiSelectbox {
+			width: 50px;
+			.selectbox {
+				width:75px;
+			}
+		}
+	}
+	.weeklyByDay .controls {
+		font-size: @baseFontSize - 1;
+		width: 230px;
 	}
 }

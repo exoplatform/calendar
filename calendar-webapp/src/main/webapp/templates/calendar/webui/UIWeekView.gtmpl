@@ -132,7 +132,7 @@ def eventList = [];
     
     <% if(event.fromDateTime.before(uicomponent.getBeginDateOfWeek().getTime())){ %>
       <div class="leftContinueEvent  pull-left  $color">
-        <i class="uiIconMiniArrowLeft"></i>
+        <i class="uiIconMiniArrowLeft uiIconWhite"></i>
       </div>
      
       
@@ -144,7 +144,7 @@ def eventList = [];
   
       if(event.toDateTime.after(uicomponent.getEndDateOfWeek().getTime())){ %>
        <div class="rightContinueEvent  pull-right  $color">
-        <i class="uiIconMiniArrowRight"></i>
+        <i class="uiIconMiniArrowRight uiIconWhite"></i>
       </div>
     <% } else { %>
       <div class="rightResizeEvent RightResizeEvent resizeEventContainer pull-right  $color">

@@ -81,10 +81,10 @@
 						  <input type="hidden" name="${ce.id}recurId" value="$recurId" />
 						  <input type="hidden" name="${ce.id}currentDate" value="" />
 						  <%if(!uicomponent.isSameDate(ce.getFromDateTime(), uicomponent.calendar_.getTime())){%>
-							<div class="leftContinueEvent pull-left $color"><i class="uiIconMiniArrowLeft"></i></div>
+							<div class="leftContinueEvent pull-left $color"><i class="uiIconWhite uiIconMiniArrowLeft"></i></div>
 						  <%}%>
 						  <%if(!uicomponent.isSameDate(ce.getToDateTime(), uicomponent.calendar_.getTime())){%>
-							<div class="rightContinueEvent pull-right $color"><i class="uiIconMiniArrowRight"></i></div>
+							<div class="rightContinueEvent pull-right $color"><i class="uiIconMiniArrowRight uiIconWhite"></i></div>
 						  <%}%>
 						  <div class="eventContainer $color" rel="tooltip" data-placement="bottom" title="<%=dtf.format(ce.getFromDateTime())%>:-><%=dtf.format(ce.getToDateTime())%>">
 							<%=ce.getSummary()%>
