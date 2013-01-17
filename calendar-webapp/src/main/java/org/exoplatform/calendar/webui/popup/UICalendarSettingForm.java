@@ -28,13 +28,10 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.webui.UIActionBar;
-import org.exoplatform.calendar.webui.UICalendarContainer;
-import org.exoplatform.calendar.webui.UICalendarPortlet;
-import org.exoplatform.calendar.webui.UICalendarView;
-import org.exoplatform.calendar.webui.UICalendarViewContainer;
-import org.exoplatform.calendar.webui.UICalendars;
+import org.exoplatform.calendar.webui.*;
 import org.exoplatform.portal.webui.util.Util;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -65,16 +62,16 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
       @EventConfig(listeners = UIFormTabPane.SelectTabActionListener.class, phase = Phase.DECODE)
     }
 )
-public class UICalendarSettingForm extends UIFormTabPane implements UIPopupComponent{
+public class UICalendarSettingForm extends UIFormTabPane implements UIPopupComponent
+{
   final private static String SETTING_CALENDAR_TAB = "setting".intern() ;
   final private static String DEFAULT_CALENDAR_TAB = "defaultCalendarTab".intern() ;
-  final private static String DEFAULT_CALENDARS = "defaultCalendars".intern() ;
   final private static String FEED_TAB = "feedTab".intern();
-  final private static String DEFAULT_CALENDARS_NOTE = "note".intern() ;
+
   private Map<String, String> names_ = new HashMap<String, String>() ;
   public String[] sharedCalendarColors_  = null ;
   private CalendarSetting calendarSetting_ = null;
-  
+
   public UICalendarSettingForm() throws Exception{
     super("UICalendarSettingForm") ;
     UICalendarSettingTab setting = new UICalendarSettingTab(SETTING_CALENDAR_TAB) ;//.setRendered(true) ;
@@ -90,10 +87,9 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
   public void activate() throws Exception {}
   @Override
   public void deActivate() throws Exception {}
-  public Map<String, String> getChildIds() {return names_ ;}
+
   public void init(CalendarSetting calendarSetting, CalendarService cservice) throws Exception{
     names_.clear() ;
-    String username = CalendarUtils.getCurrentUser() ;
     if(calendarSetting != null) {
       calendarSetting_ = calendarSetting;
       sharedCalendarColors_ = calendarSetting.getSharedCalendarsColors() ;
@@ -113,7 +109,14 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       settingTab.setSendOption(calendarSetting.getSendOption()) ;
       if(calendarSetting.getBaseURL() == null) calendarSetting.setBaseURL(CalendarUtils.getServerBaseUrl() + "calendar/iCalRss") ;
     }
-    UICalendarSettingDisplayTab defaultCalendarsTab = getChildById(DEFAULT_CALENDAR_TAB) ;    
+
+    initDisplayedCalendarTab(calendarSetting, cservice);
+  }
+
+  private void initDisplayedCalendarTab(CalendarSetting calendarSetting, CalendarService cservice) throws Exception
+  {
+    String username = CalendarUtils.getCurrentUser() ;
+    UICalendarSettingDisplayTab defaultCalendarsTab = getChildById(DEFAULT_CALENDAR_TAB) ;
     List<String> filteredCalendars = new ArrayList<String>() ;
     if(calendarSetting != null && calendarSetting.getFilterPrivateCalendars() != null) {
       filteredCalendars.addAll(Arrays.asList(calendarSetting.getFilterPrivateCalendars())) ;
@@ -124,11 +127,10 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     if(calendarSetting != null && calendarSetting.getFilterSharedCalendars() != null) {
       filteredCalendars.addAll(Arrays.asList(calendarSetting.getFilterSharedCalendars())) ;
     }
-    List<Calendar> privateCals = getPrivateCalendars(cservice, username) ;
-    defaultCalendarsTab.addChild(new UIFormInputInfo(DEFAULT_CALENDARS, DEFAULT_CALENDARS, getLabel(DEFAULT_CALENDARS_NOTE))) ;
-    if(privateCals != null && !privateCals.isEmpty()) {
-      defaultCalendarsTab.addChild(new UIFormInputInfo(CalendarUtils.PRIVATE_CALENDARS, CalendarUtils.PRIVATE_CALENDARS, null)) ;    
-      for(Calendar calendar : privateCals) {
+
+    List<Calendar> privateCals = defaultCalendarsTab.getAllPrivateCalendars();
+    if (privateCals != null && !privateCals.isEmpty()) {
+      for (Calendar calendar : privateCals) {
         names_.put(calendar.getId(), calendar.getName()) ;
         UICheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
         if(checkBox == null) {
@@ -138,9 +140,10 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
         checkBox.setChecked(true) ;
       }
     }
-    List<Calendar> sharedCals =  getSharedCalendars(cservice, username) ;
+
+
+    List<Calendar> sharedCals = defaultCalendarsTab.getSharedCalendars().getCalendars();
     if(sharedCals != null && !sharedCals.isEmpty()) {
-      defaultCalendarsTab.addChild(new UIFormInputInfo(CalendarUtils.SHARED_CALENDARS, CalendarUtils.SHARED_CALENDARS, null)) ; 
       for(Calendar calendar : sharedCals) {
         names_.put(calendar.getId(), calendar.getName()) ;
         UICheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
@@ -151,14 +154,17 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
         checkBox.setChecked(true) ;
       }
     }
-    List<Calendar> publicCals = getPublicCalendars(cservice, username) ;
-    if(publicCals != null && !publicCals.isEmpty()) {
-      defaultCalendarsTab.addChild(new UIFormInputInfo(CalendarUtils.PUBLIC_CALENDARS, CalendarUtils.PUBLIC_CALENDARS, null)) ; 
+
+    List<Calendar> publicCals = defaultCalendarsTab.getAllPublicCalendars();
+    if (publicCals != null && !publicCals.isEmpty()) {
       for(Calendar calendar : publicCals) {
+
         String groupName = cservice.getGroupCalendars(calendar.getGroups(), false, username).get(0).getName();
         names_.put(calendar.getId(), CalendarUtils.getGroupCalendarName(
-          groupName.substring(groupName.lastIndexOf("/") + 1), calendar.getName())) ;
+        groupName.substring(groupName.lastIndexOf("/") + 1), calendar.getName())) ;
+
         UICheckBoxInput checkBox = defaultCalendarsTab.getChildById(calendar.getId()) ;
+
         if(checkBox == null) {
           checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), true) ;
           defaultCalendarsTab.addUIFormInput(checkBox) ;
@@ -166,43 +172,15 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
         checkBox.setChecked(true) ;
       }
     }
-    for(String calId : filteredCalendars) {
+
+    for (String calId : filteredCalendars) {
       UICheckBoxInput input = defaultCalendarsTab.getChildById(calId) ;
-      if(input != null) input.setChecked(false) ;
+      if (input != null) input.setChecked(false) ;
     }
-    
-    
-  }
- 
-  protected List<Calendar> getPrivateCalendars(CalendarService calendarService, String username) throws Exception{
-    return calendarService.getUserCalendars(username, true);
+
   }
 
-  protected List<Calendar> getPublicCalendars(CalendarService calendarService, String username) throws Exception{
-    String[] groups = CalendarUtils.getUserGroups(username) ;
-    List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups, true, CalendarUtils.getCurrentUser()) ;
-    List<Calendar> calendars = new ArrayList<Calendar>() ;
-    Map<String,Calendar> mapCal = new HashMap<String,Calendar>();
-    for(GroupCalendarData group : groupCalendars) {
-      for(Calendar cal:group.getCalendars()){
-        mapCal.put(cal.getId(), cal);
-      }
-    }
-    calendars.addAll(mapCal.values());
-    
-    return calendars ;
-  }
 
-  protected List<Calendar> getSharedCalendars(CalendarService calendarService, String username) throws Exception{
-    GroupCalendarData groupCalendars = calendarService.getSharedCalendars(username, true) ;
-    List<Calendar> calendars = new ArrayList<Calendar>(); 
-    if(groupCalendars != null) {    
-      for (Calendar calendar : groupCalendars.getCalendars()) {
-        calendars.add(calendar);
-      }
-    }    
-    return calendars ;
-  }
   @Override
   public String getLabel(ResourceBundle res, String id) {
     if(names_.get(id) != null) return names_.get(id) ;
@@ -220,18 +198,29 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
     }
     return label;
   }
+
+  /**
+   * return list of unchecked calendars id
+   *
+   * @param calendars
+   * @return
+   */
   protected List<String> getUnCheckedList(List<Calendar> calendars) {
     List<String> list = new ArrayList<String>() ;
-    for(Calendar cal : calendars) {
+    for (Calendar cal : calendars) {
       UICheckBoxInput input = ((UIFormInputWithActions)getChildById(DEFAULT_CALENDAR_TAB)).getChildById(cal.getId()) ;
       if(input != null && !input.isChecked()) list.add(input.getId()) ;
     }
-    return list ;
+    return list;
   }
+
+
   @Override
   public String[] getActions(){
     return new String[]{"Save", "Cancel"} ;
   }
+
+
   static  public class SaveActionListener extends EventListener<UICalendarSettingForm> {
     @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {
@@ -259,32 +248,40 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
         calendarSetting.setWorkingTimeBegin(settingTab.getWorkingBegin()) ;
         calendarSetting.setWorkingTimeEnd(settingTab.getWorkingEnd()) ;
       }
+
       CalendarService calendarService = CalendarUtils.getCalendarService() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       UICalendars uiCalendars = calendarPortlet.findFirstComponentOfType(UICalendars.class) ;
       String username = CalendarUtils.getCurrentUser() ;
       List<String> defaultFilterCalendars = new ArrayList<String>() ;
       List<String> unCheckList = new ArrayList<String>() ;
-      defaultFilterCalendars = uiForm.getUnCheckedList(uiForm.getPrivateCalendars(calendarService, username)) ;
+
+      /* set calendar setting filter for private calendar */
+      UICalendarSettingDisplayTab displayTab = uiForm.getChild(UICalendarSettingDisplayTab.class);
+      defaultFilterCalendars = uiForm.getUnCheckedList( displayTab.getAllPrivateCalendars() ) ;
       calendarSetting.setFilterPrivateCalendars(defaultFilterCalendars.toArray(new String[] {})) ;
       if(!defaultFilterCalendars.isEmpty()){
         unCheckList.addAll(defaultFilterCalendars) ;
         defaultFilterCalendars.clear() ;
       }
-      defaultFilterCalendars = uiForm.getUnCheckedList(uiForm.getPublicCalendars(calendarService, username)) ;
+
+      /* set calendar setting filter for shared calendar */
+      defaultFilterCalendars = uiForm.getUnCheckedList(displayTab.getAllPublicCalendars()) ;
       calendarSetting.setFilterPublicCalendars(defaultFilterCalendars.toArray(new String[] {})) ;
       if(!defaultFilterCalendars.isEmpty()){
         unCheckList.addAll(defaultFilterCalendars) ;
         defaultFilterCalendars.clear() ;
       }
-      defaultFilterCalendars = uiForm.getUnCheckedList(uiForm.getSharedCalendars(calendarService, username)) ;
+
+      /* set calendar setting filter for public calendar */
+      defaultFilterCalendars = uiForm.getUnCheckedList(displayTab.getSharedCalendars().getCalendars());
       calendarSetting.setFilterSharedCalendars(defaultFilterCalendars.toArray(new String[] {})) ;
       if(!defaultFilterCalendars.isEmpty()){
         unCheckList.addAll(defaultFilterCalendars) ;
         defaultFilterCalendars.clear() ;
       }
       uiCalendars.checkAll() ;
-      
+
       calendarService.saveCalendarSetting(CalendarUtils.getCurrentUser(), calendarSetting) ;
       
       calendarPortlet.setCalendarSetting(calendarSetting) ;

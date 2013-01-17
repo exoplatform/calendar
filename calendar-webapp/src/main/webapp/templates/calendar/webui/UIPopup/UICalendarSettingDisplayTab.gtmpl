@@ -2,103 +2,199 @@
   import org.exoplatform.webui.core.UIComponent;
   import org.exoplatform.calendar.CalendarUtils;
   import org.exoplatform.calendar.service.Calendar;
+  import org.exoplatform.webui.form.input.UICheckBoxInput;
+  import org.exoplatform.calendar.service.GroupCalendarData;
+  import org.exoplatform.calendar.webui.UICalendars;
+
+  def rcontext = _ctx.getRequestContext() ;
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.require("SHARED/jquery","gj");
+  requirejs.addScripts("gj('div.calendarCheckboxBlock').click(function() { cal.UICalendarSettingForm.clickOnCalendarCheckbox(this); });");
+  requirejs.addScripts("gj('#settingNotice').click(function() { gj(this).hide('slow'); });")
+
   uiForm = uicomponent.getParentFrom() ;
+
+  private boolean hasNoCalendar()
+  {
+	  int privateCalendars = uicomponent.getAllPrivateCalendars().size();
+	  int sharedCalendars  = uicomponent.getSharedCalendars().getCalendars().size();
+	  int publicCalendars  = uicomponent.getAllPublicCalendars().size();
+	  if ( (privateCalendars == 0) && (sharedCalendars == 0) && (publicCalendars == 0) )
+		  return true;
+	  return false;
+  }
+
+  private void renderNoCalendarNote()
+  {
+	  UICalendars uiCalendars = uicomponent.getUICalendars();
+	  def addNewLink    = uiCalendars.event('AddCalendar','id') ;
+	  def addNewMessage = _ctx.appRes("UICalendarSettingForm.msg.no-calendar") ;
+	  def addNewLabel   = _ctx.appRes("UICalendarSettingForm.label.AddCalendar") ;
+	  %>
+	  <div class="alert">
+	    <i class="uiIconWarning"></i> $addNewMessage
+        <a href="$addNewLink" style="float: none; color: #2f5e92;">$addNewLabel</a>
+	  </div>
+    <%
+  }
+
+  private void renderNotice()
+  {
+    %>
+    <div id="settingNotice" class="alert alert-success">
+      <i class="uiIconSuccess"></i><%=_ctx.appRes("UICalendarSettingForm.label.note") %>
+	  </div>
+    <%
+  }
+
+  private void renderPrivateCalendarGroup()
+  {
+	  def uiForm = uicomponent.getParentFrom() ;
+	  List calendars = uicomponent.getAllPrivateCalendars();
+	  if (calendars.size() == 0) return ;
+	  def privateCalendarTitle = _ctx.appRes("UICalendarSettingForm.label.privateCalendar");
+	  %>
+	  <div class="myCalendar">
+	    <h6 class="calendarTitle">$privateCalendarTitle</h6>
+	      <div class="myCalendarContainer">
+	        <ul class="uiVTabContent" >
+	        <%
+	          for (calendar in calendars)
+	          {
+		          if (uicomponent.getChildById(calendar.getId()) == null) continue;
+		          def calendarId   = calendar.id ;
+	          	def calendarName = uicomponent.truncateLongName(calendar.name) ;
+	          	def color        = calendar.calendarColor ;
+          		def icon         = "CalendarIcon" ;
+          		def css          = "iconUnCheckBox checkbox" ;
+          		UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
+
+	          	if (calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) icon = "SharedCalendarIcon";
+	          	if (chk.isChecked()) css = "iconCheckBox checkbox";
+	      	%>
+	         	<li class="calendarItem  CalendarItemPrivate ClearFix" calColor="$color" canEdit="true" id="$calendarId" calType="0">
+	          	<div class="calendarCheckboxBlock" calId="$calendarId">
+	            	<a href="javascript:void(0);" class="$color">
+	              	<span class="colorOpacity">
+	                	<span class="$css"></span>
+	                </span>
+	            	</a>
+              	<a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendar.name" style="width: auto;">$calendarName</a>
+	              <span style="display:none"><% uiForm.renderField(calendarId) %></span>
+	            </div>
+		        </li>
+	        <% } %>
+          </ul>
+		    </div>
+      </div>
+		<%
+	}
+
+
+	private void renderSharedCalendarGroup()
+	{
+		def uiForm = uicomponent.getParentFrom() ;
+		GroupCalendarData sharedCalendars = uicomponent.getSharedCalendars() ;
+		List calendarList = sharedCalendars.getCalendars() ;
+		def sharedCalendarTitle = _ctx.appRes("UICalendarSettingForm.label.sharedCalendar");
+		if (calendarList.size() == 0) return;
+    %>
+		<div class="myCalendar">
+		  <h6 class="calendarTitle">$sharedCalendarTitle</h6>
+      <div class="myCalendarContainer">
+        <ul class="uiVTabContent">
+        <%
+          for (calendar in calendarList)
+          {
+	          if (uicomponent.getChildById(calendar.getId()) == null) continue;
+	          def calendarId   = calendar.id ;
+	          def calendarName = uicomponent.truncateLongName(calendar.name) ;
+	          def color        = uicomponent.getColorMap().get("1" + ":" + calendarId) ;
+	          def css          = "iconUnCheckBox checkbox";
+
+	          UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId);
+	          if (chk.isChecked()) css = "iconCheckBox checkbox";
+	      %>
+	        <li class="calendarItem CalendarItemShared ClearFix" calColor="$color" id="$calendarId" calType="1">
+	          <div class="calendarCheckboxBlock" calId="$calendarId">
+	            <a href="javascript:void(0);" class="$color">
+	              <span class="colorOpacity">
+	                <span class="$css"></span>
+		            </span>
+	            </a>
+		          <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendar.name" style="width: auto;">$calendarName</a>
+	            <span style="display:none;"><% uiForm.renderField(calendarId) %></span>
+        		</div>
+        	</li>
+		    <% } %>
+      	</ul>
+    	</div>
+  	</div>
+	  <%
+  }
+
+
+  private void renderPublicCalendarGroup()
+  {
+	  def uiForm = uicomponent.getParentFrom() ;
+	  List calendarList = uicomponent.getAllPublicCalendars() ;
+	  if (calendarList.size() == 0) return;
+	  def publicCalendarTitle = _ctx.appRes("UICalendarSettingForm.label.publicCalendar");
+
+	  %>
+	  <div class="myCalendar">
+	    <h6 class="calendarTitle" rel="tooltip" data-placement="bottom" title="Collapser my calendar">$publicCalendarTitle</h6>
+	      <div class="myCalendarContainer">
+	        <ul class="uiVTabContent">
+	        <%
+	          for (calendar in calendarList)
+          	{
+		          if (uicomponent.getChildById(calendar.getId()) == null) continue;
+
+		          def calendarId   = calendar.id ;
+	          	def calendarName = uicomponent.truncateLongName(calendar.name) ;
+	          	def css          = "iconUnCheckBox checkbox" ;
+		          def color        = calendar.calendarColor ;
+		          UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
+
+		          StringBuffer groupList = new StringBuffer();
+		          for (String groupId: calendar.getGroups())
+		          {
+	          		groupList.append(groupId + ", ");
+	           	}
+          		groupList.deleteCharAt(groupList.lastIndexOf(","));
+
+	          	if (chk.isChecked()) css = "iconCheckBox checkbox";
+		      %>
+		        <li class="calendarItem calendarItemPublic ClearFix" calColor="$color" id="$calendarId" calType="2" >
+          		<div class="calendarCheckboxBlock" calId="$calendarId">
+	            	<a href="javascript:void(0);" class="$color">
+	              	<span class="colorOpacity">
+                		<span class="$css"></span>
+                	</span>
+	            	</a>
+	              <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$groupList" style="width: auto;">$calendarName</a>
+		            <span style="display:none"><% uiForm.renderField(calendarId)%> </span>
+	            </div>
+		        </li>
+	        <% } %>
+          </ul>
+		    </div>
+      </div>
+		<%
+	}
+
 %>
-<div id="$uicomponent.id" class="$uicomponent.id">
-  <table class="UIFormGrid">
-    <tbody>
-      <tr>
-        <td class="FieldLabel" style="font-weight:bold;">
-          <%=uiForm.getLabel(uiForm.DEFAULT_CALENDARS)%>
-        </td>
-        <td class="FieldLabel">
-          <%uiForm.renderField(uiForm.DEFAULT_CALENDARS)%>
-        </td>
-      </tr>
-      <%if(!uicomponent.getUIFormPrivateCheckboxs().isEmpty()){%>
-        <tr>
-          <td class="FieldLabel" style="font-weight:bold;">
-            <%=uiForm.getLabel(CalendarUtils.PRIVATE_CALENDARS)%>
-          </td>
-          <td class="FieldComponent">
-           <%uiForm.renderField(CalendarUtils.PRIVATE_CALENDARS)%>
-          </td>
-        </tr>
-        <%for(UIComponent comp : uicomponent.getUIFormPrivateCheckboxs()) {%>
-          <tr>
-            <td class="FieldComponent ">
-              <%uiForm.renderField(comp.getId())%>
-            </td>
-            <td class="FieldLabel">
-            <%
-              fullLabel = uiForm.getLabel(comp.getId()) ;
-              label = fullLabel ;
-              if(fullLabel.length() > 35) {
-                label = fullLabel.substring(0,35) + "..." ;
-              }
-              println "<div rel=\"tooltip\" data-placement=\"bottom\" title='$fullLabel'>$label</div>" ;
-            %>
-            </td>
-          </tr>
-        <%}%>
-      <%}%>
-      <%if(!uicomponent.getUIFormShareCheckboxs().isEmpty()){%>
-        <tr>
-          <td class="FieldLabel" style="font-weight:bold;">
-            <%=uiForm.getLabel(CalendarUtils.SHARED_CALENDARS)%>
-          </td>
-          <td class="FieldComponent">
-            <%uiForm.renderField(CalendarUtils.SHARED_CALENDARS)%>
-          </td>
-        </tr>
-        <%for(Calendar cal : uicomponent.getShareCalendars()) {%>
-          <tr>
-            <td class="FieldComponent">
-              <%uiForm.renderField(cal.getId())%>
-            </td>
-            <td class="FieldLabel">
-            <%
-              String owner = "" ;
-              if(cal.getCalendarOwner() != null) { owner = cal.getCalendarOwner() + "- "} ;
-              fullLabel =  owner + cal.getName() ; 
-              label = fullLabel ;
-              if(fullLabel.length() > 35) {
-                label = fullLabel.substring(0,35) + "..." ;
-              }
-              println "<div rel=\"tooltip\" data-placement=\"bottom\" title='$fullLabel'>$label</div>" ;
-            %>
-            </td>
-          </tr>
-        <%}%>
-      <%}%>
-      <%if(!uicomponent.getUIFormPublicCheckboxs().isEmpty()){%>
-        <tr>
-          <td class="FieldLabel" style="font-weight:bold;">
-            <%=uiForm.getLabel(CalendarUtils.PUBLIC_CALENDARS)%>
-          </td>
-          <td class="FieldComponent">
-            <%uiForm.renderField(CalendarUtils.PUBLIC_CALENDARS)%>
-          </td>
-        </tr>
-        <%for(UIComponent comp : uicomponent.getUIFormPublicCheckboxs()) {%>
-          <tr>
-            <td class="FieldComponent">
-              <%uiForm.renderField(comp.getId())%>
-            </td>
-            <td class="FieldLabel">
-              <%
-              fullLabel = uiForm.getLabel(comp.getId()) ;
-              labelTmp = fullLabel.substring(0, fullLabel.indexOf('(')) ;
-              label = labelTmp;
-              if(labelTmp.length() > 35) {
-                label = labelTmp.substring(0,35) + "..." ;
-              }
-              println "<div rel=\"tooltip\" data-placement=\"bottom\" title='$labelTmp'>$label</div>" ;
-              %>
-            </td>
-          </tr>
-        <%}%>
-      <%}%>
-    </tbody>
-  </table>
+<div id="$uicomponent.id" class="uiBox uiCalendars">
+  <div class="contentContainer">
+	  <% if (hasNoCalendar()) renderNoCalendarNote(); else renderNotice(); %>
+
+	  <% renderPrivateCalendarGroup(); %>
+
+	  <% renderSharedCalendarGroup(); %>
+
+	  <% renderPublicCalendarGroup(); %>
+
+	</div>
 </div>
