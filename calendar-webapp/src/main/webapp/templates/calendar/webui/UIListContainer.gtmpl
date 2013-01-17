@@ -2,7 +2,7 @@
   import org.exoplatform.calendar.webui.UIListView ;
   import org.exoplatform.calendar.webui.UIPreview ;
 %>
-<div class="UIListContainer SpliterContainer" id="$uicomponent.id">
+<div class="uiListContainer uiBox" id="$uicomponent.id">
   <%uicomponent.renderChild(UIListView.class)%>
   <%
   	def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
@@ -11,6 +11,5 @@
 	requirejs.addScripts("gj('div.ResizeReadingPane').mousedown(function(event) {cs.Spliter.doResize(event, this); });")
 	
   %>
-  <div class="ResizeReadingPane"><span></span></div>
   <%uicomponent.renderChild(UIPreview.class)%>
 </div>
