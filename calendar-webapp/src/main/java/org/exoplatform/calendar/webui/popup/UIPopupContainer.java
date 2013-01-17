@@ -34,7 +34,7 @@ public class UIPopupContainer extends UIContainer implements UIPopupComponent {
 
   public static String UITASKPOPUP = "UIPopupAddTaskContainer".intern() ;
   public static String UIEVENTPOPUP = "UIPopupAddEventContainer".intern();
-  public static String UICALENDARPOPUP = "UIPopupAddCalendarContainer".intern();
+  public static String UICALENDARPOPUP = "uiPopupAddCalendarContainer".intern();
   public static String UICALENDAR_SETTING_POPUP = "UIPopupCalendarSettingContainer".intern();
   public UIPopupContainer() throws Exception {
     UIPopupAction uiPopupAction = addChild(UIPopupAction.class, null, "UICalendarChildPopup");
