@@ -44,12 +44,18 @@ UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
 };
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
-  var obj = cs.EventManager.getEventTargetByClass(evt,"calendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
-  var calType = obj.getAttribute("calType");
-  var calName = obj.getAttribute("calName");
+  var obj      = cs.EventManager.getEventTargetByClass(evt,"calendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var calType  = obj.getAttribute("calType"); 
+  var calName  = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");
-  var canEdit = String(obj.getAttribute("canedit")).toLowerCase();
+  var canEdit  = obj.getAttribute("canEdit");
   var UICalendars = _module.UICalendars;
+  
+  /* constant for calendar type */
+  var PRIVATE_CALENDAR = "0";
+  var SHARED_CALENDAR  = "1";
+  var PUBLIC_CALENDAR  = "2";
+
   var menu = UICalendars.currentMenuElm;
   var contentContainerElm = gj(anchorElm).parents(".ContentContainer")[0];
   if (contentContainerElm) {
@@ -98,26 +104,66 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       items[0].href = String(items[0].href).replace("')", "&categoryId=" + selectedCategory + "')");
       items[1].href = String(items[1].href).replace("')", "&categoryId=" + selectedCategory + "')");      
   }
-  if (calType && (calType != "0")) {
-  
+
+  /*
+   * disable action for shared and public calendar
+   */
+  if (calType && (calType != PRIVATE_CALENDAR)) {
       var actions = gj(menu).find("a");
       for (var j = 0; j < actions.length; j++) {
-          if ((actions[j].href.indexOf("EditCalendar") >= 0) ||
-          (actions[j].href.indexOf("RemoveCalendar") >= 0) ||
-          (actions[j].href.indexOf("ShareCalendar") >= 0) ||
-          (actions[j].href.indexOf("ChangeColorCalendar") >= 0)) {
+          if ((actions[j].id.indexOf("AddEvent") >= 0) ||
+            (actions[j].id.indexOf("AddTask") >= 0) ||
+            (actions[j].href.indexOf("EditCalendar") >= 0) ||
+            (actions[j].href.indexOf("RemoveCalendar") >= 0) ||
+            (actions[j].href.indexOf("ShareCalendar") >= 0) ||
+            (actions[j].href.indexOf("ChangeColorCalendar") >= 0)) 
+          {
               actions[j].style.display = "none";
           }
       }
   }
+
+  /*
+   * remove 'RemoveSharedCalendar' on menu of public and private calendar
+   * display only on shared calendar 
+   */ 
+  if (calType && (calType != SHARED_CALENDAR)) {
+      var actions = gj(menu).find("a");
+      for (var j = 0; j < actions.length; j++) {
+          if ((actions[j].href.indexOf("RemoveSharedCalendar") >= 0)) 
+          {
+              actions[j].style.display = "none";
+          }
+      }
+  }
+
   if (canEdit && (canEdit == "true")) {
       var actions = gj(menu).find("a");
       for (var j = 0; j < actions.length; j++) {
-          if (actions[j].href.indexOf("EditCalendar") >= 0 || actions[j].href.indexOf("RemoveCalendar") >= 0) {
+          if ((actions[j].id.indexOf("AddEvent") >= 0) ||
+            (actions[j].id.indexOf("AddTask") >= 0) ||
+            (actions[j].href.indexOf("EditCalendar") >= 0) || 
+            (actions[j].href.indexOf("RemoveCalendar") >= 0))
+          {
               actions[j].style.display = "block";
           }
       }
   }
+
+  /*
+   * disable remove and edit action on shared calendar menu
+   */
+  if (calType && (calType == SHARED_CALENDAR)) {
+      var actions = gj(menu).find("a");
+      for (var j = 0; j < actions.length; j++) {
+          if ((actions[j].href.indexOf("RemoveCalendar") >= 0) ||
+            (actions[j].href.indexOf("EditCalendar") >= 0)) 
+          {
+              actions[j].style.display = "none";
+          }
+      }
+  }
+
   UICalendars.resetSettingButton(UICalendars.currentAnchorElm);
   UICalendars.currentAnchorElm = anchorElm;
   if (gj(UICalendars.currentAnchorElm).hasClass("IconHoverSetting")) {

@@ -26,182 +26,175 @@ requirejs.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPre
 requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 
 %>
-<div id="<%uicomponent.getId()%>" class="UIPreview">
+<div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox">
 <% if (!uicomponent.isShowPopup()) { %>
-<div class="ViewBar ClearFix">
-<div class="Label">
-<%=uiform.getLabel('eventDetail')%>
+<div class="title">
+ <a href="#" id="UIEventPreview_fullSize" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp" ></i></a>
+ <strong><%=uiform.getLabel('eventDetail')%></strong>
 </div>
-    <div id="UIEventPreview_fullSize" class="MaximizeButton" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><span></span></div>
-  </div>
 <% } %>
-<div class="ViewContainer">
-<div class="DecoratorBox SpliterResizableListArea">
-<div class="ViewBoxStyle">
-<table class="uiGrid table table-striped" id="RowContainerDay" cellspacing="0" borderspacing="0">
+<div class="viewContainer">
+<table border="0" cellpadding="0" cellspacing="0" >
 <tr>
-<td width="200" style="border-right: 1px solid #C7C7C7; padding-left: 5px; padding-right: 5px; padding-top: 10px; vertical-align: top;">
-<div class="Text">
-<%=uiform.getLabel('From')%><span style="color: #1756d5;"><%=df.format(event.getFromDateTime())%></span>
-        </div>
-<div class="Text">
-<%=uiform.getLabel('To')%><span style="color: #1756d5;"><%=df.format(event.getToDateTime())%></span>
-        </div>
-
-<% if (event.getAttachment().size() != 0) { %>
-<div class="Text">
-<%=uiform.getLabel('AttachedFile')%>
-</div>
-<% } %>
-    <div id="imagePreviewContainer">
-      <a id="downloadImage" href="#">
-        <img id="imagePreview" src="" style="margin-top: 5px; margin-bottom: 5px; display: none;" downloadlink="" />
-</a>
-      <img id="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 90%; top: 2%; display: none;" title="Close" data-placement="top" rel="tooltip" />
-</div><br/>
-
-<%
-List nonImageAttachments = new ArrayList();
-for (attachFile in  event.getAttachment()) {
-	if (attachFile.getMimeType().startsWith("image")) {
-		String thumbnailLink = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_THUMBNAIL_DIMENSION);
-		String previewLink   = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION);
-		String downloadlink  = uicomponent.getDownloadLink(attachFile) ;
-		String rndString     = String.valueOf(new Date().getTime());
-		String View          = uiform.getLabel('View') ;
-		String Close         = uiform.getLabel('Close') ;
-		String viewText      = uiform.getLabel('ViewIcon');
-		int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
-		%>
-
-		<div class="thumbnailContainer">
-		<img class="thumbnail" src="$thumbnailLink"  originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block;" previewWidth="$previewWidth" />
-		<div class="viewIconContainer">
-		<span class="viewIcon"></span>
-		    <span class="viewText">$viewText</span>
-		</div>
-		</div>
-
-		<% } else {
-		nonImageAttachments.add(attachFile);
-	}
-}
-
-for (attachFile in nonImageAttachments) { %>
-
-	<div class="attachmentIcon" style="white-space: nowrap; width: 185px; overflow: hidden;">
-	<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
-	<i class="<%=uicomponent.getIconStyleForAttachment(attachFile) %>"></i>$attachFile.name
-		</a>
-	(<%=CalendarUtils.convertSize(attachFile.size)%>)
+<td valign="top" class="columnLeft">
+	<div >
+	<div class="text">
+		<%=uiform.getLabel('From')%><span><%=df.format(event.getFromDateTime())%></span>
 	</div>
-		<% } %>
-	  <br/>
-	</td>
+	<div class="text ">
+		<%=uiform.getLabel('To')%><span><%=df.format(event.getToDateTime())%></span>
+	 </div>
 
+	<% if (event.getAttachment().size() != 0) { %>
+	<div class="text last">
+	<%=uiform.getLabel('AttachedFile')%>
+	</div>
+	<% } %>
+		<div id="imagePreviewContainer" class="imagePreviewContainer" style="display: none">
+		  <a id="downloadImage" class="downloadImage" href="#">
+			<img id="imagePreview" class="imagePreview" src="" style="display: none;" downloadlink="" />
+		</a>
+		<a id="closeButton" class="closeButton" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
+			<i class="uiIconClose uiIconWhite"></i>
+		</a>
+	</div>
+<div class="clearfix listImage">
+	<%
+	List nonImageAttachments = new ArrayList();
+	for (attachFile in  event.getAttachment()) {
+		if (attachFile.getMimeType().startsWith("image")) {
+			String thumbnailLink = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_THUMBNAIL_DIMENSION);
+			String previewLink   = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION);
+			String downloadlink  = uicomponent.getDownloadLink(attachFile) ;
+			String rndString     = String.valueOf(new Date().getTime());
+			String View          = uiform.getLabel('View') ;
+			String Close         = uiform.getLabel('Close') ;
+			String viewText      = uiform.getLabel('ViewIcon');
+			int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
+			%>
+
+			<div class="thumbnailContainer" >
+				<img class="thumbnail" src="$thumbnailLink"  originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block;" previewWidth="$previewWidth" />
+				<div class="viewIconContainer">
+					<div>
+						<span class="uiIconSearch uiIconWhite"></span>
+						<span class="view">$viewText</span>
+					</div>
+				</div>
+			</div>
+
+			<% } else {
+			nonImageAttachments.add(attachFile);
+		}
+	} %>
+	</div>
+	<%
+
+	for (attachFile in nonImageAttachments) {  
+			def icon = uicomponent.getFileExtension(attachFile.name);
+			def fist = icon.substring(0,1);
+			def last = icon.substring(1);
+			def full = "uiIcon"+fist.toUpperCase() + last.toLowerCase() ;
+			
+	%>	 
+		<div class="attachmentIcon" >
+		<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
+			<i class="uiIconFile $full"></i>&nbsp;$attachFile.name
+		</a>
+		(<%=CalendarUtils.convertSize(attachFile.size)%>)
+		</div>
+			<% } %>
+		</div><!--end columnLeft-->	
+	</td>
+<td valign="top" class="columnRight">
 <!-- event/ task description column -->
-	<td style="vertical-align: top; padding-top: 10px;">
-	<div class="EventDescription $color"><span></span></div>
-	<div style="font-weight: bold;">$event.summary</div>
-
-<table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
-<tr>
-<%
-prio = event.getPriority() + "PriorityIcon" ;
-%>
-<td style="width: 26px;"><div class="$prio"><span></span></div></td>
-	<td class="Text" style="width: 100px;">
-	<%=uiform.getLabel('Place')%>
-	</td>
-<td class="Text"><%=(CalendarUtils.isEmpty(event.getLocation()))? "" : event.getLocation()%></td>
-	</tr>
-<tr>
-<td ><div class="<%=event.getEventState()%>Icon"><span></span></div></td>
-	<td class="Text"><%=uiform.getLabel('RepeatEvent')%></td>
-<td class="Text"><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
-	</tr>
-<tr>
-<td ></td>
-	<td class="Text"><%=uiform.getLabel('Description')%></td>
-<td class="Text">
-<div class="ViewDescription">
-<%
-String des = "" ;
-if(!CalendarUtils.isEmpty(event.getDescription())) {
-	des = event.getDescription().replaceAll("\n","<br/>") ; ;
-}
-println des ;
-%>
-</div>
-                 </td>
-</tr>
-                <tr>
-                 <td ></td>
-<td class="Text"><%=uiform.getLabel('EventReminder')%></td>
-                 <td class="Text">
+	<div >
+		<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong>$event.summary</strong></div>
+		<table class="tableListEvent" id="RowContainerDay" cellspacing="0" borderspacing="0">
+			<tr>				
+				<td class="right">
+					<%
+					prio =  "uiIconCal" + event.getPriority() + "Priority";
+					%>
+					<i class="$prio"></i>&nbsp;<%=uiform.getLabel('Place')%>
+				</td>
+				<td>
+					<%=(CalendarUtils.isEmpty(event.getLocation()))? "" : event.getLocation()%>
+				</td>
+			</tr>
+			<tr>
+				<td class="right"><i class="<%=event.getEventState()%>Icon"></i>&nbsp;<%=uiform.getLabel('RepeatEvent')%></td>
+				<td><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
+			</tr>
+			<tr>	
+				<td class="right"><%=uiform.getLabel('Description')%></td>
+				<td >
+					<div class="viewDescription">
+					<%
+					String des = "" ;
+					if(!CalendarUtils.isEmpty(event.getDescription())) {
+						des = event.getDescription().replaceAll("\n","<br/>") ; ;
+					}
+					println des ;
+					%>
+					</div>
+				</td>
+			</tr>
+            <tr>
+			<td class="right"><%=uiform.getLabel('EventReminder')%></td>
+            <td>
                  <%                    
                        for(reminder in event.getReminders()) {
                           String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
                         %>
-                          <div style="float:left;margin-right: 10px;">
-                            <a class="ControlButton" style="color:gray;"><%=reminder.getReminderType()%></a>
-</div>
+                        <a class="controlButton" style="color:#333;"><%=reminder.getReminderType()%></a>&nbsp;
                         <%          
                        }                    
                  %>
-                 </td>
-</tr>
-                <tr>
-                 <td ></td>
-<td class="Text">
-<%=uiform.getLabel('EventSharing')%>
-</td>
-                 <td class="Text"><%=(CalendarUtils.isEmpty(String.valueOf(event.isPrivate())))? "" : uicomponent.getLabel(String.valueOf(!event.isPrivate()))%></td>
-</tr>
-                <tr>
-                 <td ></td>
-<td class="Text"><%=uiform.getLabel('ShowAs')%></td>
-                 <td class="Text"><%=(CalendarUtils.isEmpty(event.getEventState()))? "" : uicomponent.getLabel(event.getEventState())%></td>
-</tr>
-                <tr>
-                 <td ></td>
-<td class="Text">
-<%=uiform.getLabel('Invitation')%>
-</td>
-                 <td class="Text">
-                   <%for(invit in event.getInvitation()) {%>
-                     <div>$invit</div>
-<%}%>
-</td>
-                </tr>
-<tr>
-<td ></td>
-                 <td class="Text">
-                   <%=uiform.getLabel('Participant')%>
-                 </td>
-<td class="Text">
-<%  for(par in event.getParticipant()) {%>
-<div>$par</div>
-                   <%}%>
-                 </td>
-</tr>
-               </table>
-<%if(!uicomponent.isShowPopup()){%>
-<div class="ActionsContainer ClearFix">
-<a class="btn ControlButton BntEvenPreview" href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
-<i class="uiIconEdit"></i>
-                    <%=uiform.getLabel('EditEvent')%>
-                </a>
-<a class="btn ControlButton" href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
-<i class="uiIconDelete"></i><%=uiform.getLabel('DeleteEvent')%>
-    </a>
-</div><br/>
-<%}%>
+            </td>
+		</tr>
+		<tr>
+			<td class="right">
+			<%=uiform.getLabel('EventSharing')%>
+			</td>
+			<td ><%=(CalendarUtils.isEmpty(String.valueOf(event.isPrivate())))? "" : uicomponent.getLabel(String.valueOf(!event.isPrivate()))%></td>
+		</tr>
+		<tr>
+			<td class="right"><%=uiform.getLabel('ShowAs')%></td>
+			<td ><%=(CalendarUtils.isEmpty(event.getEventState()))? "" : uicomponent.getLabel(event.getEventState())%></td>
+		</tr>
+        <tr>
+			<td class="right">
+			<%=uiform.getLabel('Invitation')%>
+			</td>
+			<td>
+				<%for(invit in event.getInvitation()) {%>
+					<div>$invit</div>
+				<%}%>
+			</td>
+        </tr>
+		<tr>
+            <td class="right">
+                <%=uiform.getLabel('Participant')%>
+            </td>
+			<td >
+			<%  for(par in event.getParticipant()) {%>
+			<div>$par</div>
+			<%}%>
+			</td>
+		</tr>
+    </table>
+	<%if(!uicomponent.isShowPopup()){%>
+	<div class="uiActionContainer">
+		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
+		<i class="uiIconEdit"></i> <%=uiform.getLabel('EditEvent')%></a>
+		<a class="btn " href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
+		<i class="uiIconDelete"></i> <%=uiform.getLabel('DeleteEvent')%> </a>
+	</div>
+	<%}%>
+	</div><!--end columnRight-->
 </td>
 </tr>
-</table>
-</div>
-</div>
-</div>
-</div>
+</table></div>
 <%uiform.end();%>
+</div>

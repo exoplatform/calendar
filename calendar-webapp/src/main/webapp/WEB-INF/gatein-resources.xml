@@ -64,6 +64,10 @@
                 <path>/javascript/eXo/calendar/UIEventPreview.js</path>
             </script>
             <script>
+                <name>eXo.calendar.UICalendarSettingForm</name>
+                <path>/javascript/eXo/calendar/UICalendarSettingForm.js</path>
+            </script>
+            <script>
                 <name>eXo.calendar.UIColorPicker</name>
                 <path>/javascript/eXo/calendar/UIColorPicker.js</path>
             </script>

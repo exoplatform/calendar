@@ -267,4 +267,23 @@ public class Calendar {
     }
     return url;
   }
+
+  /**
+   * used to compare 2 calendars or between a calendar and an object
+   *
+   * @param o a particular object
+   * @return true false
+   */
+  @Override
+  public boolean equals(Object o)
+  {
+    if (!(o instanceof Calendar)) return false;
+    return id.equals(((Calendar) o).getId());
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return id.hashCode();
+  }
 }

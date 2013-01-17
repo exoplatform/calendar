@@ -16,11 +16,7 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.jcr.PathNotFoundException;
 
@@ -83,14 +79,23 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
     )
 
 public class UICalendars extends UIForm  {
-  private static final Log log = ExoLogger.getLogger(UICalendars.class);
+  private static final Log LOG = ExoLogger.getLogger(UICalendars.class);
   public static String CALENDARID = "calendarid".intern() ;
   public static String CALTYPE = "calType".intern() ;
   public static String CALNAME = "calName".intern() ;
   public static String CALCOLOR = "calColor".intern() ;
 
   private boolean isShowTaskList_ = false ;
+
+  /**
+   * contains non duplicated public calendars id
+   */
   private String[] publicCalendarIds = {} ;
+
+  /**
+   * contains key as <type_calendar>:<calendar_id> and value as color of calendar
+   * example: key 2:calendar1401dda8c0a801303011177469ff542e, value: color code
+   */
   private LinkedHashMap<String, String> colorMap_ = new LinkedHashMap<String, String>() ;
 
   public UICalendars() throws Exception {
@@ -144,8 +149,8 @@ public class UICalendars extends UIForm  {
       try {
         calendarService = CalendarUtils.getCalendarService() ;
       } catch (Exception e) {
-        if(log.isDebugEnabled()){
-          log.debug("Can not get calendar service", e);
+        if(LOG.isDebugEnabled()){
+          LOG.debug("Can not get calendar service", e);
         }
       }
       // As just one calendar is set to checked, this function is broken if the portlet is in Social Space.
@@ -156,8 +161,8 @@ public class UICalendars extends UIForm  {
           try {
             groupIds = calendarService.getGroupCalendar(component.getId()).getGroups();
           } catch (Exception e) {
-            if(log.isDebugEnabled()){
-              log.debug("Can not get group calendar id", e);
+            if(LOG.isDebugEnabled()){
+              LOG.debug("Can not get group calendar id", e);
             }
           }
         }
@@ -222,14 +227,24 @@ public class UICalendars extends UIForm  {
     return eventQuery;
   }
 
-
-  public List<Calendar> getAllPrivateCalendars() throws Exception{
+  /**
+   * get all private calendars for current user
+   * if no calendar is found, return a zero length list of calendar
+   *
+   * @see <code>UICalendars.gtmpl</code> - used in template
+   * @return
+   * @throws Exception
+   */
+  public List<Calendar> getAllPrivateCalendars() throws Exception
+  {
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
-    boolean dontShowAll = false;
-    List<Calendar> calendars = calendarService.getUserCalendars(username, dontShowAll) ;
+    boolean filterFromSetting = false;
+    List<Calendar> calendars = calendarService.getUserCalendars(username, filterFromSetting) ;
+    if (calendars.size() == 0) return new ArrayList<Calendar>(0);
+
     if(calendars != null) {
-      for(Calendar calendar : calendars) {
+      for (Calendar calendar : calendars) {
         colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
         UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
         if (checkbox == null) {
@@ -240,7 +255,7 @@ public class UICalendars extends UIForm  {
           setCheckedCheckbox(checkbox, calendar);
         }
       }
-    } else return new ArrayList<Calendar>();
+    }
     return calendars;
   }
 
@@ -279,6 +294,12 @@ public class UICalendars extends UIForm  {
     return false;
   }
 
+  /**
+   * @deprecated - get group calendar for user
+   *
+   * @return
+   * @throws Exception
+   */
   @Deprecated
   public List<GroupCalendarData> getPublicCalendars() throws Exception{
     String username = CalendarUtils.getCurrentUser() ;
@@ -305,19 +326,63 @@ public class UICalendars extends UIForm  {
     return groupCalendars ;
   }
 
+  /**
+   * used to open setting popup
+   *
+   * @see <code>UICalendars.gtmpl</code> - used in template
+   * @return
+   */
+  private UIActionBar getUIActionBar()
+  {
+    return getAncestorOfType(UICalendarPortlet.class).getChild(UIActionBar.class);
+  }
 
-  public List<Calendar> getAllPublicCalendars() throws Exception{
+  /**
+   *
+   * @see <code>UICalendars.gtmpl</code> - used in template
+   * @return
+   * @throws Exception
+   */
+  private boolean hasFilteredCalendar() throws Exception
+  {
+    UICalendarPortlet portlet = getAncestorOfType(UICalendarPortlet.class) ;
+    CalendarSetting calendarSetting = portlet.getCalendarSetting() ;
+    if ((calendarSetting.getFilterPrivateCalendars().length == 0) &&
+      (calendarSetting.getFilterSharedCalendars().length == 0) &&
+      (calendarSetting.getFilterPublicCalendars().length == 0)) return false;
+    return true;
+  }
+
+  /**
+   * get group calendar for user, without duplicated items
+   * if no calendar found, return zero length list of calendars
+   *
+   * @see <code>UICalendars.gtmpl</code> - used in template
+   * @return
+   * @throws Exception
+   */
+  public List<Calendar> getAllPublicCalendars() throws Exception
+  {
     String username = CalendarUtils.getCurrentUser() ;
     String[] groups = CalendarUtils.getUserGroups(username) ;
+
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups, false, username) ;
+    /* return all calendars for a list of group, filter by calendar setting */
+    boolean filterFromSetting = false;
+    List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups, filterFromSetting, username) ;
+    if (groupCalendars.size() == 0) return new ArrayList<Calendar>(0);
+
     Map<String, String> map = new HashMap<String, String> () ;
-    List<Calendar> calendars = new ArrayList<Calendar>();
-    for(GroupCalendarData group : groupCalendars) {
+    List<Calendar> calendars = new ArrayList<Calendar>();  /* contains all calendar */
+
+    for (GroupCalendarData group : groupCalendars) {
+
       calendars.addAll(group.getCalendars()) ;
       for(Calendar calendar : calendars) {
         map.put(calendar.getId(), calendar.getId()) ;
         colorMap_.put(Calendar.TYPE_PUBLIC + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
+
+        /* add a checkbox for each calendar */
         UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
         if (checkbox == null) {
           checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
@@ -328,36 +393,86 @@ public class UICalendars extends UIForm  {
         }
       }
     }
+
     publicCalendarIds = map.values().toArray(new String[]{}) ;
-    return calendars ;
+    return new ArrayList<Calendar>(new HashSet<Calendar>(calendars));
   }
 
-  public GroupCalendarData getSharedCalendars() throws Exception{
+  /**
+   * return a group of shared calendars for current users
+   * if no calendar found, return a group calendar with zero length list of calendars
+   *
+   * @see <code>UICalendars.gtmpl</code> - used in template
+   * @return
+   * @throws Exception
+   */
+  public GroupCalendarData getSharedCalendars() throws Exception
+  {
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    GroupCalendarData groupCalendars = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(), false) ;
+    /* get shared calendar but filter from setting */
+    boolean filterFromSetting = false;
+    GroupCalendarData groupCalendars = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(), filterFromSetting) ;
+    if (groupCalendars == null) return new GroupCalendarData("", "", new ArrayList<Calendar>(0));
+
     CalendarSetting setting = calendarService.getCalendarSetting(CalendarUtils.getCurrentUser()) ;
     Map<String, String> map = new HashMap<String, String>() ;
     for(String key : setting.getSharedCalendarsColors()) {
       map.put(key.split(CalendarUtils.COLON)[0], key.split(CalendarUtils.COLON)[1]) ;
     }
-    if(groupCalendars != null) {
-      List<Calendar> calendars = groupCalendars.getCalendars() ;
-      for(Calendar calendar : calendars) {
-        String color = map.get(calendar.getId()) ;
-        if(color == null) color = calendar.getCalendarColor() ;
-        colorMap_.put(Calendar.TYPE_SHARED + CalendarUtils.COLON + calendar.getId(), color) ;
-        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
-        if (checkbox == null) {
-          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-          checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
-          addUIFormInput(checkbox);
-        } else {
-          setCheckedCheckbox(checkbox, calendar);
-        }
+
+    List<Calendar> calendars = groupCalendars.getCalendars() ;
+    for(Calendar calendar : calendars) {
+      String color = map.get(calendar.getId()) ;
+      if(color == null) color = calendar.getCalendarColor() ;
+      colorMap_.put(Calendar.TYPE_SHARED + CalendarUtils.COLON + calendar.getId(), color) ;
+      UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
+      if (checkbox == null) {
+        checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
+        checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
+        addUIFormInput(checkbox);
+      } else {
+        setCheckedCheckbox(checkbox, calendar);
       }
     }
+
     return groupCalendars ;
   }
+
+
+  /**
+   * truncate a long name into a name with .. if length of name is larger than 20 characters
+   * or return a name from the starting position to the second white space position
+   *
+   * @param longName
+   * @return
+   */
+  private String truncateLongName(String longName)
+  {
+    int secondWhiteSpacePos = getPositionOfSecondWhiteSpaceFrom(longName);
+    if ( ( -1 < secondWhiteSpacePos) && (secondWhiteSpacePos < 20 ) )
+      return longName.substring(0,secondWhiteSpacePos);
+
+    if (longName.length() > 20) return longName.substring(0, 17) + "..";
+    return longName;
+  }
+
+  /**
+   * get index of second white space if the string has one
+   * return -1 if not
+   *
+   * @param name
+   * @return position
+   */
+  private int getPositionOfSecondWhiteSpaceFrom(String name)
+  {
+    int firstWhiteSpacePos = name.indexOf(" ");
+    if (firstWhiteSpacePos == -1)  return -1;
+
+    int secondWhiteSpacePos = name.indexOf(" ", firstWhiteSpacePos + 1);
+    if (secondWhiteSpacePos == -1) return -1;
+    return secondWhiteSpacePos;
+  }
+
 
   public LinkedHashMap<String, String> getColorMap() {
     return colorMap_;
@@ -370,7 +485,6 @@ public class UICalendars extends UIForm  {
     CalendarService calService = CalendarUtils.getCalendarService() ;
     Calendar calendar = null;
     String currentUser = CalendarUtils.getCurrentUser() ;
-
 
     if(calType.equals(CalendarUtils.SHARED_TYPE)) {
       calendar = calService.getSharedCalendars(currentUser, true).getCalendarById(calendarId) ;
@@ -764,7 +878,7 @@ public class UICalendars extends UIForm  {
         try {
           calendar = calService.getGroupCalendar(selectedCalendarId) ;
         } catch (PathNotFoundException e) {
-          log.debug("\n\n calendar has been removed !");
+          LOG.debug("\n\n calendar has been removed !");
         }
       }  
       if(calendar == null) {
@@ -872,8 +986,8 @@ public class UICalendars extends UIForm  {
           }
         }
       } catch (Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug("Can not change the color for the calendar", e);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Can not change the color for the calendar", e);
         }
       }
       UICalendarPortlet uiPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
@@ -948,8 +1062,8 @@ public class UICalendars extends UIForm  {
         event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;      
       }
       catch (Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug("Fail to refresh remote calendar", e);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Fail to refresh remote calendar", e);
         }
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-refresh-remote-calendar", new String[] {calendar.getName()}, AbstractApplicationMessage.WARNING)) ;
       }

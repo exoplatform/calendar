@@ -622,7 +622,15 @@ public class CalendarUtils {
       return name1.compareToIgnoreCase(name2) ;
     }
   }
-  public static List<SelectItem> getCalendarOption() throws Exception {
+
+  /**
+   * get all users calendars (private, public, shared)
+   *
+   * @return
+   * @throws Exception
+   */
+  public static List<SelectItem> getCalendarOption() throws Exception
+  {
     List<SelectItem> options = new ArrayList<SelectItem>() ;
     CalendarService calendarService = getCalendarService() ;
     String username = getCurrentUser();
@@ -673,8 +681,7 @@ public class CalendarUtils {
           if(hasEditPermission(c.getEditPermission(), checkPerms)){
             if (!hash.containsKey(c.getId())) {
               hash.put(c.getId(), "");
-              pubGrp.addOption(new SelectOption(getGroupCalendarName(groupName.substring(groupName.lastIndexOf("/") + 1),
-                                                                     c.getName()), CalendarUtils.PUBLIC_TYPE + CalendarUtils.COLON + c.getId())) ;
+              pubGrp.addOption(new SelectOption(c.getName(), CalendarUtils.PUBLIC_TYPE + CalendarUtils.COLON + c.getId())) ;
             }
           }
         }
