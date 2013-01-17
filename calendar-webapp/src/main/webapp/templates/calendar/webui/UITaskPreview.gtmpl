@@ -33,9 +33,7 @@ uiform.begin() ;
         <div class="ViewBoxStyle">
       <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
         <tr>
-        <td style="border-right: 1px solid #c7c7c7;width: 185px;">
-
-
+          <td width="200" style="border-right: 1px solid #C7C7C7; padding-left: 5px; padding-right: 5px; padding-top: 10px; vertical-align: top;">
 <% if (task.getAttachment().size() != 0) { %>
 <div class="Text">
 <%=uiform.getLabel('AttachedFile')%>
