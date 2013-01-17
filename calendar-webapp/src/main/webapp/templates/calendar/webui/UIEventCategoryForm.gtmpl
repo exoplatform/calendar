@@ -22,28 +22,20 @@
 	  saveLabel = addLabel;
   }
 %>
-<div class="UIEventCategoryForm" id="EventCategoryFormContainer">
+<div class="uiEventCategoryForm" id="EventCategoryFormContainer">
   <%uiform.begin();%>
-    <div class="EventCategoryFormContainer">
-      <div class="FormContainer">
-        <table class="UIFormGrid">
-          <tbody>
-            <tr>
-              <td class="FieldLabel">
-                <%=uicomponent.getLabel(uicomponent.EVENT_CATEGORY_NAME)%>
-              </td>
-              <td class="FieldComponent">
-                <%uicomponent.renderField(uicomponent.EVENT_CATEGORY_NAME)%>
-              </td>
-              <td>
-                <button id="btnEventCategoryFormContainer" type="button" onclick="$saveLink" class="btn btn-primary">
-                  $saveLabel
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="form-horizontal">
+		<div class="control-group">
+			<label class="control-label controlLabelSmall" ><%=uicomponent.getLabel(uicomponent.EVENT_CATEGORY_NAME)%></label>
+			<div class="controls">
+				<span class="inputLarge">
+					<%uicomponent.renderField(uicomponent.EVENT_CATEGORY_NAME)%>
+				</span>
+				&nbsp;<button id="btnEventCategoryFormContainer" type="button" onclick="$saveLink" class="btn btn-primary">
+					  $saveLabel
+				</button>
+			</div>
+		</div>
     </div>
     <div class="uiAction uiActionBorder">
       <button type="button" onclick="$closeLink" class="btn">$closeLabel</button>
