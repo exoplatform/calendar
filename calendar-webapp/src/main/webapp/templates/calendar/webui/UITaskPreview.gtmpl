@@ -7,6 +7,7 @@ dateTimeFormat = uicomponent.getDateTimeFormat() ;
 DateFormat df = new SimpleDateFormat(dateTimeFormat) ;
 df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
 CalendarEvent task = uicomponent.getEvent() ;
+color = uicomponent.getColors().get(task.getCalType() + CalendarUtils.COLON + task.getCalendarId()) ;
 def rcontext = _ctx.getRequestContext();
 def requireJS = rcontext.getJavascriptManager().getRequireJS();
 requireJS.require("SHARED/jquery","gj").require("SHARED/csResource","cs");
@@ -17,168 +18,174 @@ requireJS.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.c
 requireJS.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");
 uiform.begin() ;
 %>
-<div class="UIPreview">
+<div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox">
 <%if(!uicomponent.isShowPopup()){%>
-<div class="ViewBar ClearFix">
-<div class="Label">
-<%=uiform.getLabel('taskDetail')%>
+<div class="title">
+<a href="#" id="maximizeDetails" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp" ></i></a>
+<strong><%=uiform.getLabel('taskDetail')%></strong>
 </div>
-   
-<!--div class="MaximizeButton" title="View full - size task" onclick = "eXo.cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'<%=uicomponent.getId()%>')"><span></span></div-->
-<div class="MaximizeButton" rel="tooltip" data-placement="bottom" title="View full - size task" ><span></span></div>
-</div>
-  <%}%>    
-    <div class="ViewContainer SpliterResizableListArea">
-      <div class="DecoratorBox">
-        <div class="ViewBoxStyle">
-      <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
-        <tr>
-          <td width="200" style="border-right: 1px solid #C7C7C7; padding-left: 5px; padding-right: 5px; padding-top: 10px; vertical-align: top;">
-<% if (task.getAttachment().size() != 0) { %>
-<div class="Text">
-<%=uiform.getLabel('AttachedFile')%>
-</div>
-<% } %>
-    <div id="imagePreviewContainer">
-      <a id="downloadImage" href="#">
-        <img id="imagePreview" src="" style="margin-top: 5px; margin-bottom: 5px; display: none;" downloadlink="" />
-</a>
-      <img id="closeButton" src="/calendar/skin/DefaultSkin/webui/background/close.gif" style="position: absolute; z-index: 200; left: 90%; top: 2%; display: none;" title="Close" data-placement="top" rel="tooltip" />
-</div><br/>
 
-<%
-List nonImageAttachments = new ArrayList();
-for (attachFile in  task.getAttachment()) {
-  if (attachFile.getMimeType().startsWith("image")) {
-    String thumbnailLink = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_THUMBNAIL_DIMENSION);
-    String previewLink   = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION);
-    String downloadlink  = uicomponent.getDownloadLink(attachFile) ;
-    String rndString     = String.valueOf(new Date().getTime());
-    String View          = uiform.getLabel('View') ;
-    String Close         = uiform.getLabel('Close') ;
-    String viewText      = uiform.getLabel('ViewIcon');
-    int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
-    %>
+<%}%>    
+    <div class="viewContainer">
+      <table border="0" cellpadding="0" cellspacing="0" >
+		<tr>
+		<% if (task.getAttachment().size() != 0) { %>
+			<td valign="top" class="columnLeft">
+			<div >
+			
+			<div class="text">
+			<%=uiform.getLabel('AttachedFile')%>
+			</div>
+			
+			<div id="imagePreviewContainer" class="imagePreviewContainer" style="display: none">
+				<a id="downloadImage" class="downloadImage" href="#">
+					<img id="imagePreview" class="imagePreview" src="" style="display: none;" downloadlink="" />
+				</a>
+				<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
+					<i class="uiIconClose"></i>
+				</a>
+			</div>
+			<div class="clearfix listImage">
+			<%
+			List nonImageAttachments = new ArrayList();
+			for (attachFile in  task.getAttachment()) {
+			  if (attachFile.getMimeType().startsWith("image")) {
+				String thumbnailLink = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_THUMBNAIL_DIMENSION);
+				String previewLink   = uicomponent.getRestThumbnailLinkFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION);
+				String downloadlink  = uicomponent.getDownloadLink(attachFile) ;
+				String rndString     = String.valueOf(new Date().getTime());
+				String View          = uiform.getLabel('View') ;
+				String Close         = uiform.getLabel('Close') ;
+				String viewText      = uiform.getLabel('ViewIcon');
+				int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
+				%>
 
-    <div class="thumbnailContainer">
-    <img class="thumbnail" src="$thumbnailLink"  originalsrc="$previewLink" downloadlink="$downloadlink" style="display: inline-block;" previewWidth="$previewWidth" />
-    <div class="viewIconContainer">
-    <span class="viewIcon"></span>
-        <span class="viewText">$viewText</span>
-    </div>
-    </div>
+				<div class="thumbnailContainer">
+				<img class="thumbnail" src="$thumbnailLink"  originalsrc="$previewLink" downloadlink="$downloadlink"  previewWidth="$previewWidth" />
+					<div class="viewIconContainer">
+						<div>
+							<span class="uiIconSearch uiIconWhite"></span>
+							<span class="view">$viewText</span>
+						</div>
+					</div>
+				</div>
+				<% } else {
+				nonImageAttachments.add(attachFile);
+			  }
+			}
+			%>
+			</div>
+			<%
+			for (attachFile in nonImageAttachments) {  
+					def icon = uicomponent.getFileExtension(attachFile.name);
+					def fist = icon.substring(0,1);
+					def last = icon.substring(1);
+					def full = "uiIcon"+fist.toUpperCase() + last.toLowerCase() ;
+					
+			%>	 
 
-    <% } else {
-    nonImageAttachments.add(attachFile);
-  }
-}
-
-for (attachFile in nonImageAttachments) { %>
-
-  <div class="attachmentIcon" style="white-space: nowrap; width: 185px; overflow: hidden;">
-  <a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
-  <i class="<%=uicomponent.getIconStyleForAttachment(attachFile) %>"></i>$attachFile.name
-    </a>
-  (<%=CalendarUtils.convertSize(attachFile.size)%>)
-  </div>
-    <% } %>
-    <br/>
-</td>
-<td >
-<div class="TaskDescription" style="font-weight: bold;"><%=task.getSummary()%></div>
-          <table class="UIGrid" id="RowContainerDay" cellspacing="0" borderspacing="0">
-          <tr>
-            <td class="Text" style="width: 100px;">
-            <%=uiform.getLabel('Status')%>
+			  <div class="attachmentIcon" >
+				<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
+					<i class="uiIconFile $full"></i>&nbsp;$attachFile.name
+				</a>
+			  (<%=CalendarUtils.convertSize(attachFile.size)%>)
+			  </div>
+			<% } %>
+			</div><!--end columnLeft-->	
+			</td>
+			<% } %>
+			<td valign="top" class="columnRight">
+			<div>
+			<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=task.getSummary()%></strong></div>
+			<table class="tableListEvent" id="RowContainerDay" cellspacing="0" borderspacing="0">
+			  <tr>
+				<td class="right" >
+					<%=uiform.getLabel('Status')%>
+				</td>
+				<td><%=(CalendarUtils.isEmpty(task.getEventState()))?"" : uicomponent.getLabel(task.getEventState())%></td>
+			  </tr>
+			<tr>
+				<td class="right">
+					<%=uiform.getLabel('Priority')%>
+				</td>
+				<td><%=uicomponent.getLabel(task.getPriority())%></td>
+			</tr>
+			<tr>
+				<td class="right">
+					<%=uiform.getLabel('StartDate')%>
+				</td>
+				<td ><%=df.format(task.getFromDateTime())%></td>
+			</tr>
+			<tr>
+				<td class="right">
+					<%=uiform.getLabel('DueDate')%>
+				</td>
+				<td><%=df.format(task.getToDateTime())%></td>
+			</tr>
+			<tr>
+            <td class="right">
+				<%=uiform.getLabel('TaskDelegation')%>
             </td>
-<td class="Text"><%=(CalendarUtils.isEmpty(task.getEventState()))?"" : uicomponent.getLabel(task.getEventState())%></td>
+			<%
+			delegators = task.getTaskDelegator();
+			String subDelegators ;
+			if (CalendarUtils.isEmpty(delegators)) subDelegators = "" ;
+			else {
+			  delegators = delegators.replaceAll(",", ", ") ;
+			  if (delegators.length() > 50) subDelegators = delegators.substring(0, 50) + "..." ;
+			  else subDelegators = delegators ;
+			}
+			%>
+			<td><div  rel="tooltip" data-placement="bottom" title="$delegators"><%=subDelegators%></div></td>
           </tr>
-<tr>
-<td class="Text">
-<%=uiform.getLabel('Priority')%>
-</td>
-            <td class="Text"><%=uicomponent.getLabel(task.getPriority())%></td>
-</tr>
+			<tr>
+				<td class="right">
+					<%=uiform.getLabel('Reminder')%>
+				</td>
+				<td>
+					<%                    
+					   for(reminder in task.getReminders()) {
+						String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
+					  %>
+						<div>
+							<a href="$reminderLink" class="controlButton"><%=reminder.getReminderType()%></a>
+						</div>
+					  <%          
+					   }                    
+				   %>
+				</td>
+			</tr>
           <tr>
-            <td class="Text">
-            <%=uiform.getLabel('StartDate')%>
+            <td class="right">
+				<%=uiform.getLabel('Note')%>
             </td>
-<td class="Text"><%=df.format(task.getFromDateTime())%></td>
-          </tr>
-<tr>
-<td class="Text">
-<%=uiform.getLabel('DueDate')%>
+			<td >
+				<div class="viewDescription">
+				<%
+				String des = "" ;
+				if(!CalendarUtils.isEmpty(task.getDescription())) {
+				  des = task.getDescription().replaceAll("\n","<br/>") ; ;
+				}
+				println des ;
+				%>
+				</div>
+            </td>
+		</tr>
+    </table>
+	<%if(!uicomponent.isShowPopup()){%>
+	<div class="uiActionContainer">
+		<a class="btn" href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
+			<i class="uiIconEdit"></i>&nbsp;<%=uiform.getLabel('EditTask')%>
+		</a>
+		<a class="btn" href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>">
+			<i class="uiIconDelete"></i>&nbsp;<%=uiform.getLabel('DeleteTask')%>
+		</a>
+	</div>
+	<%}%>
+	</div><!--end columnRight-->
 </td>
-            <td class="Text"><%=df.format(task.getToDateTime())%></td>
 </tr>
-          <tr>
-            <td class="Text">
-            <%=uiform.getLabel('TaskDelegation')%>
-            </td>
-
-<%
-delegators = task.getTaskDelegator();
-String subDelegators ;
-if (CalendarUtils.isEmpty(delegators)) subDelegators = "" ;
-else {
-  delegators = delegators.replaceAll(",", ", ") ;
-  if (delegators.length() > 50) subDelegators = delegators.substring(0, 50) + "..." ;
-  else subDelegators = delegators ;
-}
-%>
-<td class="Text" rel="tooltip" data-placement="bottom" title="$delegators"><%=subDelegators%></td>
-          </tr>
-<tr>
-<td class="Text">
-<%=uiform.getLabel('Reminder')%>
-</td>
-             <td class="Text">
-            <%                    
-               for(reminder in task.getReminders()) {
-                String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
-              %>
-                <div style="float:left;margin-right: 10px;">
-                <a href="$reminderLink" class="ControlButton"><%=reminder.getReminderType()%></a>
-</div>
-              <%          
-               }                    
-           %>
-             </td>
-</tr>
-          <tr>
-            <td class="Text">
-            <%=uiform.getLabel('Note')%>
-            </td>
-<td class="Text">
-<div class="ViewDescription">
-<%
-String des = "" ;
-if(!CalendarUtils.isEmpty(task.getDescription())) {
-  des = task.getDescription().replaceAll("\n","<br/>") ; ;
-}
-println des ;
-%>
-</div>
-            </td>
-</tr>
-          </table>
-<%if(!uicomponent.isShowPopup()){%>
-<div class="ActionsContainer ClearFix">
-<a class="btn" href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
-<i class="uiIconEdit"></i><%=uiform.getLabel('EditTask')%>
-          </a>
-<a class="btn" href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>">
-<i class="uiIconDelete"></i>
-            <%=uiform.getLabel('DeleteTask')%>
-            </a>
-</a>
-          </div>
-<%}%>
-</td>
-        </tr>
 </table>
-        </div>
 </div>
-    </div>
 </div>
 <%uiform.end();%>

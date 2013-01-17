@@ -54,11 +54,11 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 		  <a id="downloadImage" class="downloadImage" href="#">
 			<img id="imagePreview" class="imagePreview" src="" style="display: none;" downloadlink="" />
 		</a>
-		<a id="closeButton" class="closeButton" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
-			<i class="uiIconClose uiIconWhite"></i>
+		<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
+			<i class="uiIconClose"></i>
 		</a>
 	</div>
-<div class="clearfix listImage">
+	<div class="clearfix listImage">
 	<%
 	List nonImageAttachments = new ArrayList();
 	for (attachFile in  event.getAttachment()) {
@@ -147,7 +147,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
                        for(reminder in event.getReminders()) {
                           String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
                         %>
-                        <a class="controlButton" style="color:#333;"><%=reminder.getReminderType()%></a>&nbsp;
+                        <a class="controlButton" ><%=reminder.getReminderType()%></a>&nbsp;
                         <%          
                        }                    
                  %>
@@ -187,9 +187,9 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 	<%if(!uicomponent.isShowPopup()){%>
 	<div class="uiActionContainer">
 		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
-		<i class="uiIconEdit"></i> <%=uiform.getLabel('EditEvent')%></a>
+		<i class="uiIconEdit"></i>&nbsp;<%=uiform.getLabel('EditEvent')%></a>
 		<a class="btn " href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
-		<i class="uiIconDelete"></i> <%=uiform.getLabel('DeleteEvent')%> </a>
+		<i class="uiIconDelete"></i>&nbsp;<%=uiform.getLabel('DeleteEvent')%></a>
 	</div>
 	<%}%>
 	</div><!--end columnRight-->

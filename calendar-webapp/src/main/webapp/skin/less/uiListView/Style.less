@@ -27,8 +27,8 @@
 		margin: 0 10px 10px 0;
 		position: relative;
 		vertical-align: top;
-		width: 48px;
-		
+		.square(48px);
+		img {.square(48px);}
 		.viewIconContainer {
 			display: none;
 			overflow: hidden;
@@ -45,13 +45,17 @@
 			text-align: center;
 			> div {
 				left: 50%;
-				margin-left: -8px;
+				margin-left: -10px;
 				position: absolute;
 				cursor: pointer;
-				top: 10%;
+				top: 30%;
 				span {
 					display: block;
-					color: @white;					
+					color: @white;	
+					font-size: @baseFontSize - 1;
+					&.uiIconSearch {
+						margin-left: 2px;
+					}					
 				}
 			}
 			
@@ -64,12 +68,15 @@
 		.closeButton {
 			position: absolute; 
 			z-index: 200; 
-			left: 90%;
-			top: 2%;
+			cursor:pointer;
+			right: 4px;
+			top: 4px;			
+			padding:0;
+			line-height: 10px;			
 		}
 		
 	}
-	.uiPreview  {
+	.uiPreview ,.closeButton {
 		.box-shadow(0 0 0 transparent);
 	}
 	.uiPreview,.viewContainer {
