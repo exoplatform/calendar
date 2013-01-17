@@ -73,7 +73,7 @@ import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
         @EventConfig(listeners = UICalendarForm.ActiveActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.DeactiveActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.DeletePermissionActionListener.class),
-        @EventConfig(listeners = UICalendarForm.OpenSelectGroupFormActionListener.class),
+        @EventConfig(listeners = UICalendarForm.OpenSelectGroupFormActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.AddGroupActionListener.class)
     }
 )
