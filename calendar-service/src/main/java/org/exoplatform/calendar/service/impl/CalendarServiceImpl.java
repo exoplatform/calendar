@@ -732,10 +732,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public JobDetail findSynchronizeRemoteCalendarJob(JobSchedulerService schedulerService, String username) throws Exception {
     // find synchronize job
-    List<Object> list = schedulerService.getAllJobs();
-    for (Object obj : list) {
-      JobDetail jobDetail = (JobDetail) obj;
-      if (jobDetail.getName().equals(SynchronizeRemoteCalendarJob.getRemoteCalendarName(username))) {
+    List<JobDetail> list = schedulerService.getAllJobs();
+    for (JobDetail jobDetail : list) {
+      if (jobDetail.getKey().getName().equals(SynchronizeRemoteCalendarJob.getRemoteCalendarName(username))) {
         return jobDetail;
       }
     }
