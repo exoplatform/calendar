@@ -22,20 +22,30 @@
 						<tr>
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.Start_EVENT )%>
 							</td>
-							<div class="Date">
-								<td class="FieldComponent" colspan="2">
+								<td class="FieldComponent" >
+							   <div class="Date">
 									<% uicomponent.renderField(uicomponent.Start_EVENT) %>
+							   </div>
 								</td>
-							</div>
+							<td class="FieldComponent">
+							 <div class="Time">
+                  <% uicomponent.renderField(uicomponent.START_TIME) %>
+               </div>
+              </td>
 						</tr>
 						<tr>
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.END_EVENT )%>
 							</td>
-							<div class="Date">
-								<td class="FieldComponent" colspan="2">
+							<td class="FieldComponent">
+							   <div class="Date">
 									<% uicomponent.renderField(uicomponent.END_EVENT) %>
-								</td>
-							</div>
+							   </div>
+							</td>
+							<td class="FieldComponent">
+               <div class="Time">
+                  <% uicomponent.renderField(uicomponent.END_TIME) %>
+               </div>
+              </td>
 						</tr>
 						<tr>
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.CALENDAR )%>
