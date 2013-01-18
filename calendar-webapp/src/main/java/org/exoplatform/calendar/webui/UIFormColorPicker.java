@@ -21,6 +21,7 @@ package org.exoplatform.calendar.webui;
 
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.web.application.JavascriptManager;
+import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInput;
@@ -192,32 +193,30 @@ public class UIFormColorPicker extends UIFormInputBase<String>
   public void processRender(WebuiRequestContext context) throws Exception
   {
     JavascriptManager jsManager = context.getJavascriptManager();
-    jsManager.require("SHARED/jquery","gj");
+    RequireJS requireJS = jsManager.getRequireJS();
+    requireJS.require("SHARED/jquery","gj");
+    requireJS.require("SHARED/bts_dropdown","btsdropdown");
     String value = getValue();
     if (value != null)
     {
       value = HTMLEntityEncoder.getInstance().encode(value);
     }
     Writer w = context.getWriter();
-
-
-
-
-    w.write("<div class='UIFormColorPicker'>");
-    w.write("<div class=\"UIColorPickerInput\" onclick=\"eXo.calendar.UIColorPicker.show(this)\">");
-    w.write("<span class=\" DisplayValue " + value + "\"></span>");
+    w.write("<div class='uiFormColorPicker dropdown'>");
+    w.write("<div class=\"uiColorPickerInput dropdown-toggle\" data-toggle=\"dropdown\" onclick=\"eXo.calendar.UIColorPicker.adaptPopup(this)\">");
+    w.write("<span class=\" displayValue " + value + "\"><span><b class=\"caret\"></b></span></span>");
     w.write("</div>");
-    w.write("<div class='calendarTableColor' selectedColor=\"" + value + " \">");
+    w.write("<ul class='calendarTableColor dropdown-menu' role=\"menu\" selectedColor=\"" + value + " \">");
 
     int i = 0 ;
-    int items = 5 ;
+    int items = 6 ;
     int size = getColors().length ;
     int rows = size/items ;
     int count = 0 ;
-    while(i <= rows)  {
-      w.write("<div>") ;  
+    while(i < rows)  {
+      w.write("<li class=\"clearfix\">") ;  
       int j = 0 ;
-      while(j <= items && count < size){
+      while(j < items && count < size){
         Color color = getColors()[count] ;
         String actionLink = "javascript:eXo.calendar.UIColorPicker.setColor('" + color.getName() + "')";
         w.write("<a href=\"");
@@ -230,11 +229,11 @@ public class UIFormColorPicker extends UIFormInputBase<String>
         count++;
         j++;
       }
-      w.write("</div>");  
+      w.write("</li>");  
       i++ ;
     }
-    w.write("</div>");
-    w.write("<input class='UIColorPickerValue' name='" + getId() + "' type='hidden'" + " id='" + getId() + "' "
+    w.write("</ul>");
+    w.write("<input class='uiColorPickerValue' name='" + getId() + "' type='hidden'" + " id='" + getId() + "' "
         + renderJsActions());
     if (value != null && value.trim().length() > 0)
     {
