@@ -3001,8 +3001,8 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
   var RP_END_BYDATE = "endByDate";
   
   var repeatingEventForm = _module.UICalendarPortlet.getElementById(id);
-  var weeklyByDay = gj(repeatingEventForm).find('tr.' + weeklyByDayClass)[0];
-  var monthlyType = gj(repeatingEventForm).find('tr.' + monthlyTypeClass)[0];
+  var weeklyByDay = gj(repeatingEventForm).find('div.' + weeklyByDayClass)[0];
+  var monthlyType = gj(repeatingEventForm).find('div.' + monthlyTypeClass)[0];
   var repeatTypeSelectBox = gj(repeatingEventForm).find('select.selectbox')[0];
   var repeatType = repeatTypeSelectBox.options[repeatTypeSelectBox.selectedIndex].value;
   var endNever = gj(repeatingEventForm).find('#endNever')[0]; 
