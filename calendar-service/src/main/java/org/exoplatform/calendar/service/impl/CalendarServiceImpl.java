@@ -302,7 +302,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         cel.savePublicEvent(event, calendarId);
         storage_.savePublicEvent(calendarId, event, false);
       }
-      else if(oldEvent != null) cel.updatePublicEvent(oldEvent, event, calendarId);
+      else if(oldEvent != null) {
+        cel.updatePublicEvent(oldEvent, event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
+      }
     }
   }
 
@@ -468,8 +471,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEventListener cel : eventListeners_) {
         for (CalendarEvent event : calEvents) 
-          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null)
+          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null) {
             cel.updatePublicEvent(oldEventList.get(event.getId()), event, toCalendar);
+            storage_.savePublicEvent(toCalendar, event, false) ;
+          }
       }
     }
   }
@@ -770,8 +775,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEventListener cel : eventListeners_) {
         for (CalendarEvent event : calEvents) 
-          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null)
+          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null) {
             cel.updatePublicEvent(oldEventList.get(event.getId()), event, toCalendar);
+            storage_.savePublicEvent(toCalendar, event, false) ;
+          }
       }
     }
   }
@@ -808,7 +815,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     CalendarEvent oldEvent = getGroupEvent(occurrence.getId());
     storage_.updateRecurrenceSeries(fromCalendar, toCalendar, fromType, toType, occurrence, username);
     for (CalendarEventListener cel : eventListeners_) {
-      if(oldEvent != null) cel.updatePublicEvent(oldEvent, occurrence, fromCalendar);
+      if(oldEvent != null) {
+        cel.updatePublicEvent(oldEvent, occurrence, fromCalendar);
+        storage_.savePublicEvent(toCalendar, occurrence, false) ;
+      }
     }
   }
 
