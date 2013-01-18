@@ -4,9 +4,9 @@
  def rcontext = _ctx.getRequestContext() ;
  def requireJS = rcontext.getJavascriptManager().getRequireJS();
  requireJS.require("SHARED/csResoures","cs");
- requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
+ requireJS.addScripts('cs.CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
  requireJS.addScripts('cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+uicomponent.event('Search')+'") ;') ;
-// rcontext.getJavascriptManager().addJavascript('eXo.cs.CheckBox.init("'+uiform.id+'") ;') ;
+// rcontext.getJavascriptManager().addJavascript('eXo.cs.CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
 // rcontext.getJavascriptManager().addJavascript('eXo.cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+uicomponent.event('Search')+'") ;') ;
 %> 
 <div class="UISelectUserForm">

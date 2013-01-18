@@ -46,3 +46,4 @@ UIEventPreview.prototype.clickOnViewIconContainer = function(viewIconContainer) 
 
 _module.UIEventPreview = new UIEventPreview();
 eXo.calendar.UIEventPreview = _module.UIEventPreview;
+return _module.UIEventPreview;

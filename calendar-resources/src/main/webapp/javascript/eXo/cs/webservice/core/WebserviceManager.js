@@ -1,7 +1,7 @@
-/**
- * @author Uoc Nguyen
- */
-// For debug only. -> will remove
+(function(){
+var _module = {} ;
+eXo.cs = eXo.cs || {};
+
 if (!window.console) {
   window.console = {
     info:function(){},
@@ -187,3 +187,5 @@ WebserviceManager.prototype.initRequest = function(ajaxRequest, handler) {
 
 //eXo.cs.webservice.core.WebserviceManager = new WebserviceManager();
 _module.WebserviceManager = new WebserviceManager();
+return _module.WebserviceManager;
+})();

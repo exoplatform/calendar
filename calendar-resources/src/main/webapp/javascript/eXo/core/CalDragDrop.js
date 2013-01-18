@@ -1,3 +1,9 @@
+(function(DOMUtil, CSUtils, base){
+var _module = {};
+
+_module.DOMUtil = DOMUtil;
+_module.Browser = CSUtils.Browser;
+
 function DragDropEvent(clickObject, dragObject) {
   this.clickObject = clickObject ;
   if (dragObject && dragObject != null) {
@@ -174,3 +180,5 @@ DragDrop.prototype.isJunkMove = function(src, target) {
 //eXo.cs.DragDrop = new DragDrop() ;
 
 _module.DragDrop = new DragDrop() ;
+return _module.DragDrop;
+})(DOMUtil, CSUtils, base); 

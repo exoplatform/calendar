@@ -615,7 +615,6 @@ public class CalendarWebservice implements ResourceContainer{
       //data.setCalendars(calList);
       return Response.ok(data, MediaType.APPLICATION_JSON).cacheControl(cc).build();
     }catch(Exception e){
-      e.printStackTrace();
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
     }
   }

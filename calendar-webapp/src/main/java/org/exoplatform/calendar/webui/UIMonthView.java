@@ -129,11 +129,12 @@ public class UIMonthView extends UICalendarView {
       }
     }
     
-    Iterator childIter = getChildren().iterator() ;
+    Iterator<UIComponent> childIter = getChildren().iterator() ;
+    
     while(childIter.hasNext()) {
-      UIComponent comp = (UIComponent)childIter.next() ;
-      if (comp instanceof UICheckBoxInput ) {
-        childIter.remove() ;
+      UIComponent comp = childIter.next() ;
+      if (comp instanceof UICheckBoxInput) {
+        removeChildById(comp.getId()) ;
       }
     }
     dataMap_.clear() ;

@@ -74,6 +74,7 @@
 	
 
       requireJS.require("PORTLET/calendar/CalendarPortlet","cal");	
+      requireJS.addScripts('cal.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
 	
       //def params = "{restContext: $restContext,settingTimezone: $settingTimeZone}";
       //requireJS.addScripts('cal.UICalendarPortlet.onLoad($params);');	 
@@ -83,7 +84,7 @@
       requireJS.addScripts('cal.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'") ;') ;
       requireJS.addScripts('cal.UICalendarPortlet.showContextMenu("'+ uicomponent.id +'") ;') ;            
       requireJS.addScripts('cal.Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;
-      requireJS.addScripts('cal.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
+      
       requireJS.addScripts('cal.UICalendarPortlet.settingTimezone = "'+ settingTimeZone +'" ;') ;
       requireJS.addScripts('cal.UICalendarPortlet.isSpace = "'+ uicomponent.getSpaceId() +'" ;') ;
       requireJS.addScripts('cal.LayoutManager.layoutId = "calendarlayout-' + uicomponent.getRemoteUser() + '";');

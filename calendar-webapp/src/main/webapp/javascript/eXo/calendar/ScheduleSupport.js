@@ -132,3 +132,4 @@ eXo.calendar.ScheduleSupport = {
 	
 }
 _module.ScheduleSupport = eXo.calendar.ScheduleSupport;
+return _module.ScheduleSupport;

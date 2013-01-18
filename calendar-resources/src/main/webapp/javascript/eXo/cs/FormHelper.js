@@ -1,6 +1,6 @@
-/**
- * @author uocnb
- */
+(function(gj){
+var _module = {};
+
 function FormHelper() {
 }
 
@@ -48,3 +48,5 @@ if (!eXo.cs) {
 
 //eXo.cs.FormHelper = new FormHelper() ;
 _module.FormHelper = new FormHelper() ;
+return _module.FormHelper;
+})(gj);
