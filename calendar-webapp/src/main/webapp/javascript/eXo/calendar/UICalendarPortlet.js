@@ -2822,10 +2822,10 @@ eXo.calendar.EventTooltip = {
 		if(!color) {
             color = gj(self.currentEvent).find('.eventOnDayBorder').attr('class').split(' ')[1];
         }
-		var html = '<div class="title"><span class="colorBox ' + color + '"></span>&nbsp;&nbsp;'  + data.title + '</div>';
-		html += '<div class="time"><i class="uiIconCalClockMini"></i>&nbsp;' + data.time + '</div>';
-		if(data.location)    html += '<div class="location"><i class="uiIconCalCheckinMini"></i>&nbsp;' + data.location + '</div>';
-		if(data.description) html += '<div class="description">' + data.description + '</div>';
+		var html = '<div class="title clearfix"><div class="pull-left"><span class="colorBox ' + color + '"></span></div><div class="text">'  + data.title + '</div></div>';
+		html += '<div class="time clearfix"><div class="pull-left"><i class="uiIconCalClockMini"></i></div><div class="text">' + data.time + '</div></div>';
+		if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + data.location + '</div></div>';
+		if(data.description) html += '<div class="description ">' + data.description + '</div>';
 		self._container.style.display = "block";
 		//self._container.innerHTML = '<div class="popover top"><span class="arrow"></span><div class="popover-content">' + html + '</div></div>';
         var popoverContent = gj(self._container).find('.popover-content');
