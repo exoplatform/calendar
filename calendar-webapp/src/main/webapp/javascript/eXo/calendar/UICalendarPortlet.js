@@ -2818,10 +2818,14 @@ eXo.calendar.EventTooltip = {
 		var self = eXo.calendar.EventTooltip;
 		var data = self.parseData(req);
 		if(!data) return ;
-		var html = '<div class="Title">' + data.title + '</div>';
-		html += '<div class="Time">' + data.time + '</div>';
-		if(data.location)    html += '<div class="Location">' + data.location + '</div>';
-		if(data.description) html += '<div class="Description">' + data.description + '</div>';
+		var color = gj(self.currentEvent).attr('class').split(' ')[2];
+		if(!color) {
+            color = gj(self.currentEvent).find('.eventOnDayBorder').attr('class').split(' ')[1];
+        }
+		var html = '<div class="title"><span class="colorBox ' + color + '"></span>&nbsp;&nbsp;'  + data.title + '</div>';
+		html += '<div class="time"><i class="uiIconCalClockMini"></i>&nbsp;' + data.time + '</div>';
+		if(data.location)    html += '<div class="location"><i class="uiIconCalCheckinMini"></i>&nbsp;' + data.location + '</div>';
+		if(data.description) html += '<div class="description">' + data.description + '</div>';
 		self._container.style.display = "block";
 		//self._container.innerHTML = '<div class="popover top"><span class="arrow"></span><div class="popover-content">' + html + '</div></div>';
         var popoverContent = gj(self._container).find('.popover-content');

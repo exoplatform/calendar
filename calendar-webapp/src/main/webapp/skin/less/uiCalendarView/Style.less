@@ -1,3 +1,23 @@
+.colorBox{
+	.square(12px);
+	.border-radius(2px);
+	display: inline-block;
+}
+
+.uiCalPopover {
+	.popover-content {
+		& > div {
+			margin: 0 0 5px 0;
+		}
+		.description {
+			padding: 0 0 0 18px;
+			color: @grayLight;
+		}
+		.title {
+			font-weight: bold;
+		}
+	}
+}
 
 /*============== uiCalendarView ================*/
 .uiCalendarViewContainer {
@@ -126,11 +146,11 @@
     background: rgba(0, 0, 0, 0.2);
 }
 
+
+
 .UICalendarViewContainer, .uiCalendarViewContainer{
 	.eventDescription{
-		.square(12px);
-		.border-radius(2px);
-		display: inline-block;
+		.colorBox;
 	}
 	.uiGrid.table tr td {					
 		font-size: 12px;
