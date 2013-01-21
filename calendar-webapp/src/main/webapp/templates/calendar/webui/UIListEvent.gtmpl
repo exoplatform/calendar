@@ -1,60 +1,4 @@
 <%
-<<<<<<< HEAD
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.Calendar;
-import org.exoplatform.webui.application.WebuiRequestContext;
-import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.CalendarEvent;
-uiform.begin() ;
-
-int currentDay = uicomponent.getCurrentDay() ;
-int currentMonth = uicomponent.getCurrentMonth() ;
-String currentMonthName = uicomponent.getMonthName(currentMonth) ;
-int currentYear = uicomponent.getCurrentYear() ;
-String currentDayName = uicomponent.getDayName(uicomponent.getDayOfWeek(currentYear, currentMonth, currentDay)) ;
-String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
-String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
-monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
-Locale locale = context.getParentAppRequestContext().getLocale() ;
-dateTimeFormat = uicomponent.getDateTimeFormat() ;
-DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
-boolean searchDisplay = uicomponent.isDisplaySearchResult();
-if(searchDisplay) { %>
-	<div class="Result ListBar">
-	<%=uiform.getLabel('searchResult')%>
-		<div class="uiAction pull-right" style=" display: inline; ">
-			<button type="button" onclick="<%= uicomponent.event('AdvancedSearch')%>" class="btn"><%=uiform.getLabel('AdvancedSearch')%></button>
-		</div>
-	</div>
-  <%
-  }else { %>
-  <div class="uiBox">
-   <div class="title">
-   <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl"); %>
-   </div>
-<% } 
-selectedEvent = uicomponent.getSelectedEvent() ;
-def rcontext = _ctx.getRequestContext() ;
-def requireJS = rcontext.getJavascriptManager().getRequireJS();
-requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
-requireJS.require("SHARED/csResources","cs");
-requireJS.addScripts('cs.CheckBox.init("'+uiform.id+'") ;') ;
-requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
-
-rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
-
-//INLINE Scripts
-requireJS.require("SHARED/jquery","gj");
-requireJS.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this)});")
-requireJS.addScripts("gj('div#uiListView').attr('exocallback','cal.UICalendarPortlet.listViewCallack');")
-
-uicomponent.refreshBrowser();
-uicomponent.setCalClicked(false);
-=======
   import java.text.DateFormat;
   import java.text.SimpleDateFormat;
   import java.util.Locale;
@@ -86,7 +30,6 @@ uicomponent.setCalClicked(false);
   requirejs.addScripts('cs.CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListEvent\');');
   requirejs.addScripts("gj('tr#UIListEvent_1').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
->>>>>>> origin/master
 %>
 
 <div class="spliterResizableListArea mainWorkingPanel uiListView">
@@ -173,7 +116,7 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
               String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
         def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
           %>
-<<<<<<< HEAD
+
 			  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
               <%if(!searchDisplay) {%>
                 <td class="center"><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
@@ -201,23 +144,7 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
 	<td ><%=df.format(event.getToDateTime())%></td>
 	<td ><%=(event.getDescription() == null)? "": event.getDescription()%></td>
 </tr>
-=======
-              <tr id="UIListEvent_1" actionLink="$actionLink"  class="UIListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
-                <td><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
-                <td style="padding: 0px 0px 0px 7px;"><div class="$attachIcon" >&nbsp;</div></td>
-                <td class="text"><div class="<%=event.getPriority()%>PriorityIcon">&nbsp;</div></td>      
-                <td class="text">
-          <div class="EventDescription $color"><span></span></div>
-                  <span class="ControlButton" title="<%=event.summary%>">
-                    <%=event.getSummary()%>
-                  </span>  
-                </td>          
-                <td class="text"><%=df.format(event.getFromDateTime())%></td>
-                <td class="text"><%=df.format(event.getToDateTime())%></td>
-                <td class="text"><%=(event.getDescription() == null)? "": event.getDescription()%></td>
-               </tr>
->>>>>>> origin/master
-            <%
+          <%
             }
           %>
         </tbody>
