@@ -1,7 +1,7 @@
-/**
- * @author Uoc Nguyen
- */
-
+(function(cs, gj, Highlighter){
+var _module = {};
+eXo.calendar = eXo.calendar || {};
+eXo.calendar.UIHSelection = Highlighter ;
 function QuickSortObject(){
   this.processArray = false;
   this.desc = false;
@@ -587,7 +587,7 @@ GUIMan.prototype.initMonth = function(){
 };
 
 GUIMan.prototype.initWeek = function() {
-  var EventMan = eXo.calendar.UICalendarMan.EventMan;
+  var EventMan = _module.UICalendarMan.EventMan;
   var events = EventMan.events;
   if (events.length > 0) {
     if (events[0]) {
@@ -730,8 +730,8 @@ GUIMan.prototype.initDND = function() {
     var checkbox = gj(eventNode).find('input.checkbox')[0]; 
     if (checkbox) {
 //      checkbox.onmousedown = this.cancelEvent;
-//			checkbox.onclick = eXo.cs.EventManager.cancelBubble;
-    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':cs.EventManager.cancelBubble});
+//			checkbox.onclick = eXo.cs.CSUtils.EventManager.cancelBubble;
+    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':cs.CSUtils.EventManager.cancelBubble});
     }
     eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
   }
@@ -746,7 +746,7 @@ GUIMan.prototype.cancelEvent = function(event) {
   event = window.event || event ;
   event.cancelBubble = true ;
   //Fix bug for click checkbox event
-  cs.EventManager.cancelBubble(event)
+  cs.CSUtils.EventManager.cancelBubble(event)
   if (event.preventDefault) {
     event.preventDefault();
   }
@@ -832,14 +832,14 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 //		moreEventBar.onclick = this.hideMore ;
 		moreEventTitleBar.innerHTML = "&nbsp;";
 		moreEventTitleBar.className = "MoreEventTitleBar";
-		gj(moreEventTitleBar).on('click',cs.EventManager.cancelBubble);
-//		moreEventTitleBar.onclick = eXo.cs.EventManager.cancelBubble ;
+		gj(moreEventTitleBar).on('click',cs.CSUtils.EventManager.cancelBubble);
+//		moreEventTitleBar.onclick = eXo.cs.CSUtils.EventManager.cancelBubble ;
 		gj(moreEventTitleBar).on('mousedown',function(evt){
-			cs.EventManager.cancelBubble(evt);
+			cs.CSUtils.EventManager.cancelBubble(evt);
 			cs.DragDrop.init(null,this,moreContainerNode,evt);
 		});
 //		moreEventTitleBar.onmousedown = function(evt){
-//			eXo.cs.EventManager.cancelBubble(evt);
+//			eXo.cs.CSUtils.EventManager.cancelBubble(evt);
 //			eXo.cs.DragDrop.init(null,this,moreContainerNode,evt);
 //		} ;
 		moreEventBar.appendChild(moreEventTitleBar);
@@ -925,7 +925,7 @@ GUIMan.prototype.hideMore = function(evt){
 		}
 		DOMUtil.hideElementList.clear() ;
 	}
-	var src = cs.EventManager.getEventTarget(evt);
+	var src = cs.CSUtils.EventManager.getEventTarget(evt);
 	var	moreContainerNode = gj(src).parents('.MoreEventContainer')[0]; 
 	if(!moreContainerNode) 
 		moreContainerNode = gj(src).nextAll("div")[0];
@@ -939,7 +939,7 @@ GUIMan.prototype.showMore = function(evt) {
   var moreContainerNode = gj(moreNode).nextAll('div')[0];
 	if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
 	moreContainerNode.parentNode.style.zIndex = 2;
-	cs.EventManager.cancelBubble(evt);
+	cs.CSUtils.EventManager.cancelBubble(evt);
 	GUIMan.hideMore(evt);
   if (!moreContainerNode.style.display || moreContainerNode.style.display == 'none') {
     moreContainerNode.style.display = 'block';
@@ -949,27 +949,27 @@ GUIMan.prototype.showMore = function(evt) {
 			moreContainerNode.style.top = - moreContainerNode.offsetHeight + "px";
 		}
 		eXo.core.DOMUtil.listHideElements(moreContainerNode);
-//		moreContainerNode.onclick = eXo.cs.EventManager.cancelBubble ;
-		gj(moreContainerNode).on({'click':cs.EventManager.cancelBubble,
+//		moreContainerNode.onclick = eXo.cs.CSUtils.EventManager.cancelBubble ;
+		gj(moreContainerNode).on({'click':cs.CSUtils.EventManager.cancelBubble,
 			'mousedown':function(evt){
-				cs.EventManager.cancelEvent(evt);
-				if(cs.EventManager.getMouseButton(evt) == 2) 
+				cs.CSUtils.EventManager.cancelEvent(evt);
+				if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) 
 					eXo.core.DOMUtil.hideElementList.remove(this);
 			},
 			'contextmenu':function(evt){
-				cs.EventManager.cancelEvent(evt);
+				cs.CSUtils.EventManager.cancelEvent(evt);
 				eXo.core.DOMUtil.hideElementList.remove(this);
 				cs.UIContextMenu.show(evt) ;
 				eXo.core.DOMUtil.hideElementList.push(this);
 				return false;
 		}});
 //		moreContainerNode.onmousedown = function(evt){
-//			eXo.cs.EventManager.cancelEvent(evt);
-//			if(eXo.cs.EventManager.getMouseButton(evt) == 2) 
+//			eXo.cs.CSUtils.EventManager.cancelEvent(evt);
+//			if(eXo.cs.CSUtils.EventManager.getMouseButton(evt) == 2) 
 //				eXo.core.DOMUtil.hideElementList.remove(this);
 //		}
 //		moreContainerNode.oncontextmenu = function(evt){
-//				eXo.cs.EventManager.cancelEvent(evt);
+//				eXo.cs.CSUtils.EventManager.cancelEvent(evt);
 //				eXo.core.DOMUtil.hideElementList.remove(this);
 //				eXo.webui.UIContextMenu.show(evt) ;
 //				eXo.core.DOMUtil.hideElementList.push(this);
@@ -1117,3 +1117,6 @@ eXo.calendar.UICalendarMan = {
 }
 
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
+
+return _module;
+})(cs, gj, Highlighter);
