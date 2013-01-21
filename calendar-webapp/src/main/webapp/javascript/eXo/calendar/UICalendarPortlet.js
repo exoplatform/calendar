@@ -573,13 +573,14 @@ UICalendarPortlet.prototype.showHide = function(obj){
     if (obj.style.display != "block") {
 	cs.DOMUtil.cleanUpHiddenElements();
 	obj.style.display = "block";
-	this.arrow.style.display = "inline-block";
-	cs.DOMUtil.listHideElements(obj);
-	cs.DOMUtil.listHideElements(this.arrow);
+    cs.DOMUtil.listHideElements(obj);
+
+	// this.arrow.style.display = "inline-block";
+	// cs.DOMUtil.listHideElements(this.arrow);
 
     }
     else {
-	this.arrow.style.display = "none";
+	// this.arrow.style.display = "none";
     }
 };
 
@@ -1943,7 +1944,7 @@ UICalendarPortlet.prototype.swapIeMenu = function(menu, clickobj){
  * @param {Object} clickobj clickobj Click DOM element
  */
 UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
-    var uiDesktop = document.getElementById("UIPageDesktop");
+    // var uiDesktop = document.getElementById("UIPageDesktop");
     if (document.getElementById("tmpMenuElement")) 
 	gj("#tmpMenuElement").remove();  
     var tmpMenuElement = gj(oldmenu).clone(true,true);
@@ -1956,31 +1957,23 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
 
     this.menuElement = gj("#tmpMenuElement")[0];
 
-    if (uiDesktop) {
-	this.swapIeMenu(this.menuElement, clickobj);
-	return;
-    }
+   //  if (uiDesktop) {
+	  // this.swapIeMenu(this.menuElement, clickobj);
+	  // return;
+   //  }
 
     gj(this.menuElement).addClass("UICalendarPortlet UIEmpty");
-
-    this.arrow = gj('.uiArrowCalDropdown')[0];
 
     var menuTop = gj(clickobj).offset().top - 40;
 
     var d = menuTop + gj(this.menuElement).height() - gj(document).scrollTop() - gj(window).height();
     if(d > 0) {
-	menuTop -= d;
+	  menuTop -= d;
     }
-    var arrowLeft = gj(clickobj).position().left + gj(clickobj).width() - 2;
 
-    gj(this.arrow).css('left', arrowLeft + 'px');
-    gj(this.arrow).css('top', gj(clickobj).position().top + 'px');
-    gj(this.arrow).css('display','inline-block');
-    var menuLeft = gj(this.arrow).position().left + gj(this.arrow).width() + gj(this.menuElement).width() + 2;
-
+    var menuLeft = gj(clickobj).offset().left + gj(clickobj).width();
     gj(this.menuElement).css('left', menuLeft + 'px');
     gj(this.menuElement).css('top', menuTop + 'px');
-
 
     this.showHide(this.menuElement);
 
@@ -2675,7 +2668,7 @@ eXo.calendar.EventTooltip = {
 		if(!self._container){
 			var eventNode = cs.EventManager.getEventTarget(evt);
 			eventNode = gj(eventNode).parents('.UICalendarPortlet')[0]; 
-			self._container = gj(eventNode).find('div.UICalendarEventTooltip')[0];
+			self._container = gj(eventNode).find('div.uiCalPopover')[0];
 			gj(self._container).on({'mouseover':function(evt){
 				self.cleanupTimer(evt);
 				},
@@ -2732,7 +2725,7 @@ eXo.calendar.EventTooltip = {
 		var request = new eXo.portal.AjaxRequest(method, url, queryString) ;
 	  request.onSuccess = this.render ;
 	  request.onLoading = function(){
-			eXo.calendar.EventTooltip._container.innerHTML = "Loading...";
+			gj(eXo.calendar.EventTooltip._container).find('.popover-content').text("Loading...");
 		} ;
 	  eXo.portal.CurrentRequest = request ;
 	  request.process() ;				
@@ -2830,8 +2823,11 @@ eXo.calendar.EventTooltip = {
 		if(data.location)    html += '<div class="Location">' + data.location + '</div>';
 		if(data.description) html += '<div class="Description">' + data.description + '</div>';
 		self._container.style.display = "block";
-		self._container.innerHTML = '<div class="BgTLEvent"><div class="BgTREvent"><div class="BgTCEvent"><span></span></div></div></div><div class="BgMLEvent"><div class="BgMREvent"><div class="BgMCEvent">' + html + '</div></div></div><div class="BgBLEvent"><div class="BgBREvent"><div class="BgBCEvent"><span></span></div></div></div><div class="Clear"><span></span></div>';	
-		self._container.style.zIndex = 1000;
+		//self._container.innerHTML = '<div class="popover top"><span class="arrow"></span><div class="popover-content">' + html + '</div></div>';
+        var popoverContent = gj(self._container).find('.popover-content');
+        popoverContent.text('');
+		popoverContent.append(html);
+        self._container.style.zIndex = 1000;
 		self.positioning();
 	},
 	positioning: function(){
@@ -2994,6 +2990,7 @@ UICalendarPortlet.prototype.editRepeat = function(id) {
 }
 
 UICalendarPortlet.prototype.changeRepeatType = function(id) {
+    console.log(id);
   var weeklyByDayClass = "weeklyByDay";
   var monthlyTypeClass = "monthlyType";
   var RP_END_AFTER = "endAfter";
@@ -3001,8 +2998,12 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
   var RP_END_BYDATE = "endByDate";
   
   var repeatingEventForm = _module.UICalendarPortlet.getElementById(id);
-  var weeklyByDay = gj(repeatingEventForm).find('tr.' + weeklyByDayClass)[0];
-  var monthlyType = gj(repeatingEventForm).find('tr.' + monthlyTypeClass)[0];
+  console.log(repeatingEventForm);
+  var weeklyByDay = gj(repeatingEventForm).find('div.' + weeklyByDayClass)[0];
+    console.log(weeklyByDay);
+
+  var monthlyType = gj(repeatingEventForm).find('div.' + monthlyTypeClass)[0];
+
   var repeatTypeSelectBox = gj(repeatingEventForm).find('select.selectbox')[0];
   var repeatType = repeatTypeSelectBox.options[repeatTypeSelectBox.selectedIndex].value;
   var endNever = gj(repeatingEventForm).find('#endNever')[0]; 
@@ -3027,6 +3028,7 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
   
   gj(repeatTypeSelectBox).on('change', function() {
     var type = repeatTypeSelectBox.options[repeatTypeSelectBox.selectedIndex].value;
+    console.log(type);
     if (type == "weekly") {
       monthlyType.style.display = 'none';
       weeklyByDay.style.display = '';
