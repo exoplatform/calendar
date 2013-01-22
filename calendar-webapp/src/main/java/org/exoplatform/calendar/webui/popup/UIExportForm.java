@@ -85,13 +85,12 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   {
     calType = type ;
     names_.clear() ;
-    longNames_.clear();
-    Iterator iter = getChildren().iterator() ;
-    while(iter.hasNext()) {
-      if(iter instanceof UICheckBoxInput) {
-        iter.remove() ;
+    Iterator<UIComponent> childIter = getChildren().iterator() ;
+    while(childIter.hasNext()) {
+      UIComponent comp = childIter.next() ;
+      if (comp instanceof UICheckBoxInput ) {
+        removeChildById(comp.getId()) ;
       }
-      iter.next() ;
     }
     initCheckBox(calendars, selectedCalendarId) ;
   }

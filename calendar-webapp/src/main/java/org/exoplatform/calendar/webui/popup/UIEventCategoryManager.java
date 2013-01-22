@@ -93,7 +93,7 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
   @Override
   public void processRender(WebuiRequestContext context) throws Exception {
     Writer w =  context.getWriter() ;
-    w.write("<div id=\"UIEventCategoryManager\" class=\"UIEventCategoryManager\">");
+    w.write("<div id=\"UIEventCategoryManager\" class=\"uiEventCategoryManager\">");
     renderChildren();
     w.write("</div>");
   }

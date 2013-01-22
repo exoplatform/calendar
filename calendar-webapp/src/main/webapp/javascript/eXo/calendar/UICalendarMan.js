@@ -1,7 +1,7 @@
-/**
- * @author Uoc Nguyen
- */
-
+(function(cs, gj, Highlighter){
+var _module = {};
+eXo.calendar = eXo.calendar || {};
+eXo.calendar.UIHSelection = Highlighter ;
 function QuickSortObject(){
   this.processArray = false;
   this.desc = false;
@@ -417,8 +417,7 @@ EventMan.prototype.initMonth = function(rootNode){
       continue;
     }
     var eventObj = new EventObject();
-//    allEvents[i].onmouseover = eXo.calendar.EventTooltip.show;
-//    allEvents[i].onmouseout = eXo.calendar.EventTooltip.hide;
+
     gj(allEvents[i]).on({'mouseover':eXo.calendar.EventTooltip.show, 'mouseout':eXo.calendar.EventTooltip.hide});
     eventObj.init(allEvents[i]);
     this.events.push(eventObj);
@@ -500,7 +499,6 @@ EventMan.prototype.initWeek = function(rootNode) {
   this.dayNodes = gj(table).find('td.uiCellBlock');
   this.week = new WeekMan();
   this.week.weekIndex = 0;
-//  this.week.startWeek = parseInt(this.dayNodes[0].getAttribute('startTime'));
   this.week.startWeek = Date.parse(this.dayNodes[0].getAttribute('starttimefull'));
   var len = (eXo.calendar.UICalendarPortlet.weekdays && document.getElementById("UIWeekView"))?eXo.calendar.UICalendarPortlet.weekdays: 7 ;
   this.week.endWeek = this.week.startWeek + (1000 * 60 * 60 * 24 * len) -1;
@@ -585,7 +583,7 @@ GUIMan.prototype.initMonth = function(){
 };
 
 GUIMan.prototype.initWeek = function() {
-  var EventMan = eXo.calendar.UICalendarMan.EventMan;
+  var EventMan = _module.UICalendarMan.EventMan;
   var events = EventMan.events;
   if (events.length > 0) {
     if (events[0]) {
@@ -725,12 +723,9 @@ GUIMan.prototype.initDND = function() {
   var events = eXo.calendar.UICalendarMan.EventMan.events;
   for(var i=0 ; i<events.length ; i++) {
     var eventNode = events[i].rootNode;
-    //eventNode.style.position = 'static';
     var checkbox = gj(eventNode).find('input.checkbox')[0]; 
     if (checkbox) {
-//      checkbox.onmousedown = this.cancelEvent;
-//			checkbox.onclick = eXo.cs.EventManager.cancelBubble;
-    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':cs.EventManager.cancelBubble});
+    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':cs.CSUtils.EventManager.cancelBubble});
     }
     eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
   }
@@ -745,7 +740,7 @@ GUIMan.prototype.cancelEvent = function(event) {
   event = window.event || event ;
   event.cancelBubble = true ;
   //Fix bug for click checkbox event
-  cs.EventManager.cancelBubble(event)
+  cs.CSUtils.EventManager.cancelBubble(event)
   if (event.preventDefault) {
     event.preventDefault();
   }
@@ -764,7 +759,6 @@ GUIMan.prototype.paintMonth = function(){
       }
     }
   }
-  //_module.UICalendarMan.showMonthEvents();
 
 };
 
@@ -822,7 +816,6 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	moreNode.style.width = dayInfo.width + 'px';
 	moreNode.style.left = dayInfo.left + 'px';
 	moreNode.style.top = dayInfo.top + ((dayObj.MAX_EVENT_VISIBLE) * this.EVENT_BAR_HEIGH) + 5  + 'px';
-
 	var moreContainerNode = document.createElement('div');
 	var moreEventBar = moreContainerNode.cloneNode(true);
 	var moreEventList = moreContainerNode.cloneNode(true);
@@ -911,7 +904,7 @@ GUIMan.prototype.hideMore = function(evt){
 		}
 		DOMUtil.hideElementList.clear() ;
 	}
-	var src = cs.EventManager.getEventTarget(evt);
+	var src = cs.CSUtils.EventManager.getEventTarget(evt);
 	var	moreContainerNode = gj(src).parents('.moreEventContainer')[0]; 
 	if(!moreContainerNode) 
 		moreContainerNode = gj(src).nextAll("div")[0];
@@ -942,7 +935,7 @@ GUIMan.prototype.showMore = function(evt) {
 		    cs.DOMUtil.hideElementList.remove(this);
 	    },
 	    'contextmenu':function(evt){
-		cs.EventManager.cancelEvent(evt);
+		cs.CSUtils.EventManager.cancelEvent(evt);
 		cs.DOMUtil.hideElementList.remove(this);
 		cs.UIContextMenu.show(evt) ;
 		cs.DOMUtil.hideElementList.push(this);
@@ -952,6 +945,7 @@ GUIMan.prototype.showMore = function(evt) {
     }
     GUIMan.moreNode = moreEventContainer ;
     GUIMan.lastMore = moreEventContainer.parentNode;
+
 };
 
 /**
@@ -1131,3 +1125,6 @@ eXo.calendar.UICalendarMan = {
 }
 
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
+
+return _module;
+})(cs, gj, Highlighter);

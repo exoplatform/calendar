@@ -1,3 +1,23 @@
+.colorBox{
+	.square(12px);
+	.border-radius(2px);
+	display: inline-block;
+}
+
+.uiCalPopover {
+	.popover-content {
+		.description {
+			padding: 0 0 0 20px;
+			color: @grayLight;
+		}
+		.title {
+			font-weight: bold;
+		}
+		.text {
+			margin: 0 0 5px 20px;
+		}
+	}
+}
 
 /*============== uiCalendarView ================*/
 .uiCalendarViewContainer {
@@ -9,7 +29,7 @@
 		}
 	}
 
-.eventAllDay, eventAlldayContainer {
+.eventAllDay, .eventAlldayContainer {
 	.eventContainerBorder{
 		 border-top: solid 2px @white;
 		&:last-child{
@@ -126,11 +146,11 @@
     background: rgba(0, 0, 0, 0.2);
 }
 
+
+
 .UICalendarViewContainer, .uiCalendarViewContainer{
 	.eventDescription{
-		.square(12px);
-		.border-radius(2px);
-		display: inline-block;
+		.colorBox;
 	}
 	.uiGrid.table tr td {					
 		font-size: 12px;

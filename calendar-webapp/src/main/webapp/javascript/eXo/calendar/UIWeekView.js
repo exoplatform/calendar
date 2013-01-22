@@ -1,15 +1,19 @@
+(function(base, cs, gj, UICalendarMan){
 function UIWeekView() {
 	
 }
+var _module = {};
+eXo.calendar = eXo.calendar || {} ;
 
 UIWeekView.prototype.mousePos = function(evt){
 	return {
-		"x" : cs.Browser.findMouseXInPage(evt) ,
-		"y" : cs.Browser.findMouseYInPage(evt)
+		"x" : cs.Browser.Browser.findMouseXInPage(evt) ,
+		"y" : cs.Browser.Browser.findMouseYInPage(evt)
 	} ;
 } ;
 
 UIWeekView.prototype.init = function() {
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var UICalendarPortlet = _module.UICalendarPortlet ;
 	var UIWeekView = _module.UIWeekView ;
 	var uiCalendarViewContainer = document.getElementById("UICalendarViewContainer") ;
@@ -67,6 +71,8 @@ UIWeekView.prototype.distributeEvent = function() {
 } ;
 
 UIWeekView.prototype.onResize = function() {
+	    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+
 		_module.UIWeekView.setSize() ;
 		_module.UICalendarPortlet.checkFilter();
 } ;
@@ -176,6 +182,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
 } ;
 
 UIWeekView.prototype.showInCol = function(obj) {
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var items = _module.UICalendarPortlet.getElements(obj) ;
 	var len = items.length ;
 	if (len <= 0) return ;
@@ -188,6 +195,7 @@ UIWeekView.prototype.showInCol = function(obj) {
 } ;
 
 UIWeekView.prototype.dragStart = function(evt) {
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
 	_e.stopPropagation();
@@ -203,7 +211,7 @@ UIWeekView.prototype.dragStart = function(evt) {
 	UIWeekView.eventY = UIWeekView.dragElement.offsetTop ;
 	UIWeekView.containerOffset = {
 		"x" : base.Browser.findPosX(UIWeekView.container.parentNode),
-		"y" : cs.Browser.findPosY(UIWeekView.container.parentNode)
+		"y" : cs.Browser.Browser.findPosY(UIWeekView.container.parentNode)
 	}
 	UIWeekView.title = gj(UIWeekView.dragElement).find('div.eventTitle')[0].innerHTML;
 	gj(document).on({'mousemove':UIWeekView.drag,'mouseup':UIWeekView.drop});
@@ -214,6 +222,7 @@ UIWeekView.prototype.dragStart = function(evt) {
 } ;
 
 UIWeekView.prototype.drag = function(evt) {
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
   var UICalendarPortlet = _module.UICalendarPortlet;
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
@@ -238,6 +247,7 @@ UIWeekView.prototype.drag = function(evt) {
 } ;
 
 UIWeekView.prototype.dropCallback = function() {
+	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var me = _module.UIWeekView ;
 	var UICalendarPortlet = _module.UICalendarPortlet;
 	var dragElement = me.dragElement ;
@@ -305,7 +315,7 @@ UIWeekView.prototype.cleanUp = function(){
 UIWeekView.prototype.getOffset = function(object, evt) {	
 	return {
 		"x": (_module.UIWeekView.mousePos(evt).x - base.Browser.findPosX(object)) ,
-		"y": (_module.UIWeekView.mousePos(evt).y - cs.Browser.findPosY(object))
+		"y": (_module.UIWeekView.mousePos(evt).y - cs.Browser.Browser.findPosY(object))
 	} ;
 } ;
 
@@ -315,7 +325,7 @@ UIWeekView.prototype.isCol = function(evt) {
 	var Browser = base.Browser ;
 	var isIE = (gj.browser.msie != undefined);
 	var isDesktop = (document.getElementById("UIPageDesktop"))?true:false ;
-	var mouseX = cs.Browser.findMouseXInPage(evt);
+	var mouseX = cs.Browser.Browser.findMouseXInPage(evt);
 	if(base.I18n.isRT() && (Browser.isIE7() || Browser.isIE6())) mouseX = mouseX - 32; // 32 =  double of scrollbar width
 	var len = UIWeekView.cols.length ;
 	var colX = 0 ;
@@ -356,10 +366,10 @@ UIWeekView.prototype.showTooltip = function(outer,delta,evt,dir){
 	var unit = 15*60*1000;
 	delta = parseInt(delta/unit)*unit;
 	var tooltip = _module.UIWeekView.tooltip;
-	var extraLeft = gj(window).width() - cs.Browser.findMouseXInPage(evt);
+	var extraLeft = gj(window).width() - cs.Browser.Browser.findMouseXInPage(evt);
 	extraLeft = (extraLeft < tooltip.offsetWidth)? (tooltip.offsetWidth - extraLeft):0;
-	tooltip.style.left = cs.Browser.findMouseXInPage(evt) - extraLeft + "px";
-	tooltip.style.top = cs.Browser.findMouseYInPage(evt) + 20 + "px";
+	tooltip.style.left = cs.Browser.Browser.findMouseXInPage(evt) - extraLeft + "px";
+	tooltip.style.top = cs.Browser.Browser.findMouseYInPage(evt) + 20 + "px";
 	tooltip.innerHTML = cs.DateTimeFormater.format((new Date(delta)),"ddd, dd/mmm hh:MM TT");
 };
 
@@ -904,3 +914,6 @@ UIWeekView.prototype.callbackSelectionX = function() {
 eXo.calendar.UIHorizontalResize = new UIHorizontalResize() ;
 _module.UIWeekView = new UIWeekView() ;
 eXo.calendar.UIWeekView = _module.UIWeekView;
+
+return _module;
+})(base, cs, gj, UICalendarMan);

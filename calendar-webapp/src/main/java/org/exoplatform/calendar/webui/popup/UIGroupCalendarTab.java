@@ -209,7 +209,7 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
   }
 
   @Override
-  public void setActionField(String fieldName, List<ActionData> actions) throws Exception
+  public void setActionField(String fieldName, List<ActionData> actions)
   {
     actionField_.put(fieldName, actions) ;
   }
