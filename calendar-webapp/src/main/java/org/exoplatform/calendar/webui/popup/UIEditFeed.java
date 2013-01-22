@@ -128,7 +128,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     ActionData addCalendar = new ActionData() ;
     addCalendar.setActionListener("AddCalendar") ;
     addCalendar.setActionType(ActionData.TYPE_ICON) ;
-    addCalendar.setCssIconClass("uiIconCalPlus");
+    addCalendar.setCssIconClass("uiIconPlus");
     addCalendar.setActionName("AddCalendar") ;
     actions2.add(addCalendar) ;
     setActionField(ADDMORE, actions2) ;
