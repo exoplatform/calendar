@@ -14,7 +14,7 @@
 
   
   %>
-<div class="uiAddNewEvent $uicomponent.id" id="$uicomponent.id">
+<div class="uiAddNewEvent $uicomponent.id resizable" id="$uicomponent.id">
   <div class="newEventAttendee">
     <div class="uiFormInputSet">
       <div class="uiFormInputSetWithAction">
