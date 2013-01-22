@@ -225,14 +225,14 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     	var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
     	uiform.reset() ;
     	this.fillData(uiform, data) ;
-    	uiPopupWindow.show("UIQuckAddEventPopupWindow");
-    	uiPopup.hide("UIQuckAddTaskPopupWindow") ;
+    	uiPopupWindow.show("UIQuickAddEventPopupWindow");
+    	uiPopup.hide("UIQuickAddTaskPopupWindow") ;
     } else if(type == 2) {
     	var uiform = gj(UIQuickAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
     	uiform.reset() ;
     	this.fillData(uiform, data) ;
-    	uiPopupWindow.show("UIQuckAddTaskPopupWindow");
-    	uiPopup.hide("UIQuckAddEventPopupWindow");
+    	uiPopupWindow.show("UIQuickAddTaskPopupWindow");
+    	uiPopup.hide("UIQuickAddEventPopupWindow");
     }
 } ;
 /**
