@@ -1,6 +1,10 @@
-<div class="UIQuickAddEvent" id="QuickAddEventContainer">
+ <%
+ 	_ctx.getRequestContext().getJavascriptManager().require("SHARED/uiForm");
+ %>
+<% uiform.begin()%>
+<div class="UIQuickAddEvent" id="$uicomponent.id">
 	<div class="QuickAddEventContainer">
-		<% uiform.begin()%>
+
 		<div class="HorizontalLayout">
 			<div class="FormContainer">
 				<table class="UIFormGrid">
@@ -83,6 +87,7 @@
 			</div>
 		</div>
 		<% }%>
-		<%uiform.end()%>
+
 	</div>
 </div>
+<%uiform.end()%>
