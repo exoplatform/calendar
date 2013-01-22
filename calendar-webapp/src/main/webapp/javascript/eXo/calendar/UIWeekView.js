@@ -166,7 +166,7 @@ UIWeekView.prototype.showInCol = function(obj) {
 UIWeekView.prototype.dragStart = function(evt) {
 	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	eXo.calendar.EventTooltip.disable(evt);
-	var _e = window.event || evt ;
+	var _e = evt ;
 	_e.stopPropagation();
 	//_e.cancelBubble = true ;
 	if (_e.button == 2) return ;
@@ -220,11 +220,11 @@ UIWeekView.prototype.dropCallback = function() {
 	var me = _module.UIWeekView ;
 	var UICalendarPortlet = _module.UICalendarPortlet;
 	var dragElement = me.dragElement ;
-	var start = parseInt(dragElement.getAttribute("startTime")) ;
-	var end = parseInt(dragElement.getAttribute("endTime")) ;
-	var calType = parseInt(dragElement.getAttribute("calType")) ;
-	var calId = dragElement.getAttribute("calid");
-	var eventId = dragElement.getAttribute("eventid");
+	var start = parseInt(gj(dragElement).attr("startTime")) ;
+	var end = parseInt(gj(dragElement).attr("endTime")) ;
+	var calType = parseInt(gj(dragElement).attr("calType")) ;
+	var calId = gj(dragElement).attr("calid");
+	var eventId = gj(dragElement).attr("eventid");
 	var workingStart = 0 ;
 	if (end == 0) end = 1440 ;
 	var delta = end - start  ;
@@ -348,7 +348,7 @@ UIWeekView.prototype.removeTooltip = function(){
 
 UIWeekView.prototype.initResize = function(evt) {
 	eXo.calendar.EventTooltip.disable(evt);
-	var _e = window.event || evt ;
+	var _e = evt ;
 	_e.stopPropagation();
 	//_e.cancelBubble = true ;
 	if(_e.button == 2) return ;

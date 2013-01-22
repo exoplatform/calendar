@@ -180,5 +180,8 @@ DragDrop.prototype.isJunkMove = function(src, target) {
 //eXo.cs.DragDrop = new DragDrop() ;
 
 _module.DragDrop = new DragDrop() ;
+_module.Mouse = CSUtils.Mouse;
+_module.Browser = CSUtils.Browser;
+_module.DOMUtil = CSUtils.DOMUtil;
 return _module.DragDrop;
 })(DOMUtil, CSUtils, base); 

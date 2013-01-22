@@ -640,8 +640,7 @@ GUIMan.prototype.paintWeek = function() {
       maxEventRow = dayObj.visibleGroup.length;
     }
   }
-  this.eventAlldayNode.style.height = (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'28px';
-	if(gj.browser.msie != undefined) this.eventAlldayNode.firstChild.style.height = (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'28px';
+  gj(this.eventAlldayNode).css('height',(maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'28px');
 };
 
 /**
@@ -1117,6 +1116,8 @@ eXo.calendar.UICalendarMan = {
 }
 
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
+eXo.calendar.Highlighter = Highlighter.Highlighter;
+_module.Highlighter = Highlighter.Highlighter;
 
 return _module;
 })(cs, gj, Highlighter);
