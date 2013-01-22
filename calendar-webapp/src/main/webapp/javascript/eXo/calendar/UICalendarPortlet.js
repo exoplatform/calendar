@@ -3143,5 +3143,6 @@ _module.UICalendarMan = UICalendarMan.UICalendarMan;
 _module.UIEventPreview = UIEventPreview;
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
+var uiPopup = uiPopupWindow ;
 return _module;
 })(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview);
