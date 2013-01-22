@@ -66,7 +66,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 				for (String cal : uicomponent.getFeedCalendars().keySet()) {
 			  %>
 			  <tr>
-				<td><%= uicomponent.getFeedCalendars().get(cal) %></td>
+				<td width="72%"><%= uicomponent.getFeedCalendars().get(cal) %></td>
 				<td>
 				  <a class="actionIcon" href ="<%= uiform.event("DeleteCalendar", cal) %>" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("delete")%>" >
 					<i class="uiIconDelete"></i>
