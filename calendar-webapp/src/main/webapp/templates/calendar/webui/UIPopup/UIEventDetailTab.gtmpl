@@ -46,7 +46,7 @@
   requireJS.addScripts("gj('#UIEventDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
 
 %>
-<div id="$uicomponent.id" class="uiAddNewEvent eventDetail">
+<div id="$uicomponent.id" class="uiAddNewEvent eventDetail resizable">
   <div class="form-horizontal">
 	<div class="control-group">
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_EVENT)%>:</div>

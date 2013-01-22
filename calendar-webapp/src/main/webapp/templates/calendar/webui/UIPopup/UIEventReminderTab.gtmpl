@@ -14,7 +14,7 @@
   requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_EMAIL+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
   requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_POPUP+"').click(function() {cal.UICalendarPortlet.autoShowHideSetting(this);});");
 %>
-<div id="$uicomponent.id" class="uiEventReminder">
+<div id="$uicomponent.id" class="uiEventReminder resizable">
 	<div class="reminderByEmail">
 		<div id="<%=uicomponent.REMIND_BY_EMAIL%>" class="<%=uicomponent.REMIND_BY_EMAIL%>">
 			<%uiForm.renderField(uicomponent.REMIND_BY_EMAIL); %>
