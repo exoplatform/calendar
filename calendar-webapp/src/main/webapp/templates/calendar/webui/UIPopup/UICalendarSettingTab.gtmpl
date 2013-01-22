@@ -36,7 +36,7 @@
   requireJS.addScripts('cal.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
  // rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
 %>
-<div id="$uicomponent.id" class="$uicomponent.id">
+<div id="$uicomponent.id" class="$uicomponent.id resizable">
 	<div class="form-horizontal">
 		<div class="control-group">
 			<div class="control-label" ><%=uiForm.getLabel(uicomponent.VIEW_TYPE)%>:</div>
