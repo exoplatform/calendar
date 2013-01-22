@@ -3,7 +3,7 @@
 <% String fieldName ; %>
 <div class="uiImportForm">
 	<%uiform.begin()%>
-			<div class="form-horizontal">
+			<div class="form-horizontal resizable">
 				<% 
           for(field in uiform.getChildren()) { 
             if(field.isRendered()) {
