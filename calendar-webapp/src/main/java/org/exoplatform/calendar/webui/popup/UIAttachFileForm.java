@@ -31,10 +31,10 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
-import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormUploadInput;
+import org.exoplatform.webui.form.input.UIUploadInput;
 
 /**
  * Created by The eXo Platform SARL
@@ -47,23 +47,23 @@ import org.exoplatform.webui.form.UIFormUploadInput;
                  template =  "system:/groovy/webui/form/UIForm.gtmpl",
                  events = {
                    @EventConfig(listeners = UIAttachFileForm.SaveActionListener.class),
-                   @EventConfig(listeners = UIAttachFileForm.AddOneMoreFileActionListener.class),
                    @EventConfig(listeners = UIAttachFileForm.CancelActionListener.class, phase = Phase.DECODE)
                  }
-)
+    )
 
 public class UIAttachFileForm extends UIForm implements UIPopupComponent {
   private static final Log log = ExoLogger.getExoLogger(UIAttachFileForm.class);
 
   final static public String FIELD_UPLOAD = "upload" ;  
-  private int maxField = 5 ;
+  private int maxField = 10 ;
   private int currentNumberOfUploadInput = 1;
   private long attSize = 0;
 
   public UIAttachFileForm() throws Exception {
     setMultiPart(true) ;
     /* on startup, we create one upload input field */
-    createUploadInputNumber(1);
+    addUIFormInput(new UIUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, maxField, CalendarUtils.getLimitUploadSize()));
+    //createUploadInputNumber(1);
   }
 
   /**
@@ -77,15 +77,14 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     int sizeLimit = CalendarUtils.getLimitUploadSize();
     if (sizeLimit == CalendarUtils.DEFAULT_VALUE_UPLOAD_PORTAL)
     {
-      addUIFormInput(new UIFormUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
-          FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), true));
+      addUIFormInput(new UIUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
+                                       FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), maxField, numberOfUploadInputField));
     }
     else
     {
-      addUIFormInput(new UIFormUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
-          FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), sizeLimit, true));
+      addUIFormInput(new UIUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
+                                       FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), maxField, numberOfUploadInputField));
     }
-    currentNumberOfUploadInput = numberOfUploadInputField;
   }
 
   public long getAttSize() {return attSize ;}
@@ -110,28 +109,27 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     public void execute(Event<UIAttachFileForm> event) throws Exception {
       UIAttachFileForm uiForm = event.getSource();
       List<Attachment> files = new ArrayList<Attachment>() ;
-      int i = 0 ;
       long size = uiForm.attSize ;
-      while(i++ < uiForm.currentNumberOfUploadInput) {
-        UIFormUploadInput input = (UIFormUploadInput)uiForm.getUIInput(FIELD_UPLOAD + String.valueOf(i));
-        UploadResource uploadResource = input.getUploadResource() ;
-        if(uploadResource != null) {
-          long fileSize = ((long)uploadResource.getUploadedSize()) ;
+      UIUploadInput input = (UIUploadInput)uiForm.getUIInput(FIELD_UPLOAD);
+      UploadResource[] uploadResource = input.getUploadResources() ;
+      for(UploadResource upl : uploadResource) {
+        if(upl != null) {
+          long fileSize = ((long)upl.getUploadedSize()) ;
           size = size + fileSize ;
           if(size >= 10*1024*1024) {
             event.getRequestContext()
-                 .getUIApplication()
-                 .addMessage(new ApplicationMessage("UIAttachFileForm.msg.total-attachts-size-over10M",
-                                                    null,
-                                                    AbstractApplicationMessage.WARNING));
+            .getUIApplication()
+            .addMessage(new ApplicationMessage("UIAttachFileForm.msg.total-attachts-size-over10M",
+                                               null,
+                                               AbstractApplicationMessage.WARNING));
             return ;
           }
           Attachment attachfile = new Attachment() ;
-          attachfile.setName(uploadResource.getFileName()) ;
-          attachfile.setInputStream(input.getUploadDataAsStream()) ;
-          attachfile.setMimeType(uploadResource.getMimeType()) ;
+          attachfile.setName(upl.getFileName()) ;
+          attachfile.setInputStream(input.getUploadDataAsStream(upl.getUploadId())) ;
+          attachfile.setMimeType(upl.getMimeType()) ;
           attachfile.setSize(fileSize);
-          attachfile.setResourceId(uploadResource.getUploadId());
+          attachfile.setResourceId(upl.getUploadId());
           files.add(attachfile) ;
         }
       }
@@ -172,37 +170,15 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     @Override
     public void execute(Event<UIAttachFileForm> event) throws Exception {
       UIAttachFileForm uiFileForm = event.getSource() ;
-      int i = 0 ;
-      while(i++ < uiFileForm.currentNumberOfUploadInput) {
-        UIFormUploadInput input = (UIFormUploadInput)uiFileForm.getUIInput(FIELD_UPLOAD + String.valueOf(i));
-        UploadResource uploadResource = input.getUploadResource() ;
-        if(uploadResource != null)
-        UIAttachFileForm.removeUploadTemp(uiFileForm.getApplicationComponent(UploadService.class), uploadResource.getUploadId()) ;
+      UIUploadInput input = (UIUploadInput)uiFileForm.getUIInput(FIELD_UPLOAD);
+      UploadResource[] uploadResource = input.getUploadResources() ;
+      for( UploadResource upl : uploadResource) {
+        if(upl != null)
+          UIAttachFileForm.removeUploadTemp(uiFileForm.getApplicationComponent(UploadService.class), upl.getUploadId()) ;
       }
       UIPopupAction uiPopupAction = uiFileForm.getAncestorOfType(UIPopupAction.class) ;
       uiPopupAction.deActivate() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
-    }
-  }
-
-  public static class AddOneMoreFileActionListener extends EventListener<UIAttachFileForm>
-  {
-    @Override
-    public void execute(Event<UIAttachFileForm> event) throws Exception
-    {
-      UIAttachFileForm uiFileForm = event.getSource() ;
-      if (uiFileForm.currentNumberOfUploadInput >= uiFileForm.maxField)
-      {
-        event.getRequestContext()
-            .getUIApplication()
-            .addMessage(new ApplicationMessage("UIAttachFileForm.msg.over-max-number-of-upload-field",
-                null,
-                AbstractApplicationMessage.WARNING));
-        return ;
-      }
-
-      uiFileForm.createUploadInputNumber(uiFileForm.currentNumberOfUploadInput + 1);
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiFileForm);
     }
   }
 }
