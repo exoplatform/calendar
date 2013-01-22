@@ -1,4 +1,4 @@
-<div id="$uicomponent.id" class="$uicomponent.id">
+<div id="$uicomponent.id" class="$uicomponent.id resizable">
   <%uicomponent.renderChildren();%>
   <div class="uiAction">
     <a href="<%=uicomponent.getParentFrom().event("Add")%>" class="btn"><%= _ctx.appRes(uicomponent.getName() + ".action.add") %></a>
