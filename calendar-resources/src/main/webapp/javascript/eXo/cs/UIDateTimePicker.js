@@ -1,3 +1,6 @@
+(function(wx, base, gj, uiCalendar){
+var _module = {};
+
 function UIDateTimePicker() {
   this.dateField = null ;
   this.currentDate = null ; 	// Datetime value base of selectedDate for displaying calendar below
@@ -10,7 +13,7 @@ function UIDateTimePicker() {
 } ;
 
 //UIDateTimePicker.prototype = eXo.webui.UICalendar ;
-UIDateTimePicker.prototype = wx.UICalendar ; //UICalendar of webui-ext module
+UIDateTimePicker.prototype = uiCalendar ; //UICalendar of webui-ext module
 
 UIDateTimePicker.prototype.getLang = function() {
 	try {
@@ -22,7 +25,9 @@ UIDateTimePicker.prototype.getLang = function() {
 		if (!languages || (typeof(languages) != "object")) 
 			return;
 	
+
 	this.months = languages[0];
+
 	this.weekdays = languages[1];
 	this.tooltip = languages[2];
 	} 
@@ -248,3 +253,5 @@ UIDateTimePicker.prototype.hide = function() {
 window.eXo.cs = window.eXo.cs || {};  
 window.eXo.cs.UIDateTimePicker = new UIDateTimePicker();
 _module.UIDateTimePicker = window.eXo.cs.UIDateTimePicker;
+return _module.UIDateTimePicker;
+})(wx, base, gj, uiCalendar);

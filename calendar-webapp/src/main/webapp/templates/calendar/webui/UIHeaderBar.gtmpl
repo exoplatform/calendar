@@ -19,8 +19,8 @@ requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 requirejs.require("SHARED/jquery","gj");
 requirejs.require("SHARED/webui","webui");
 requirejs.addScripts("gj('div#UIHeaderBar_1').click(function(event) {cal.UICalendarPortlet.switchListView(this, event);});")
-requirejs.addScripts("gj('div#UIHeaderBar_2').click(function() {cs.Utils.confirmAction(this,'"+msg+"','"+parent+"');});")
-requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirmAction(this,'"+msg+"','"+parent+"');});")
+requirejs.addScripts("gj('div#UIHeaderBar_2').click(function() {cs.CSUtils.Utils.confirmAction(this,'"+msg+"','"+parent+"');});");
+requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.CSUtils.Utils.confirmAction(this,'"+msg+"','"+parent+"');});");
 requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 
 %>

@@ -88,7 +88,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
 
     List<SelectItemOption<String>> emailRemindRepeatOptions = getReminderTimes(5,60) ;
     List<SelectItemOption<String>> emailRemindBeforeOptions = getReminderTimes(5,60) ;
-    addUIFormInput(new UICheckBoxInput(REMIND_BY_EMAIL, REMIND_BY_EMAIL, true)) ;
+    addUIFormInput(new UICheckBoxInput(REMIND_BY_EMAIL, REMIND_BY_EMAIL, false)) ;
     addUIFormInput(new UIFormSelectBox(EMAIL_REMIND_BEFORE, EMAIL_REMIND_BEFORE, emailRemindBeforeOptions));
     addUIFormInput(new UIEmailInput(FIELD_EMAIL_ADDRESS, FIELD_EMAIL_ADDRESS, null)) ;
     addUIFormInput(new UICheckBoxInput(EMAIL_IS_REPEAT, EMAIL_IS_REPEAT, false));
@@ -122,8 +122,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
     return options ;
   }
 
-  @Override
-  public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
+  public void setActionField(String fieldName, List<ActionData> actions){
     actionField_.put(fieldName, actions) ;
   }
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}
