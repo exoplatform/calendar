@@ -1,47 +1,45 @@
 
 <% import org.exoplatform.calendar.webui.popup.UISelectComponent;%>
 <% String fieldName ; %>
-<div class="UIForm $uicomponent.id">
+<div class="uiImportForm">
 	<%uiform.begin()%>
-	<div class="HorizontalLayout">
-		<div class="FormContainer">
-			<table class="UIFormGrid">
+			<div class="form-horizontal resizable">
 				<% 
           for(field in uiform.getChildren()) { 
             if(field.isRendered()) {
         %>
-				<tr>
+				<div class="control-group">
 					<%
 				      fieldName = uicomponent.getLabel(field.getName());
               if(fieldName != null && fieldName.length() > 0 && !fieldName.equals(uicomponent.getId())) {
            %>
-					<td class="FieldLabel"><%=fieldName%></td>
-					<td class="FieldComponent">
+					<label class="control-label"><%=fieldName%>:</label>
+					<div class="controls">
 						<% uiform.renderField(field) %> <% if(uicomponent.FIELD_TO_CALENDAR.equals(field.getName())) { %>
 						<a href="<%= uicomponent.event("Add") %>" rel="tooltip"
 						data-placement="bottom"
 						title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
-							<i class="uiIconCalPlus"></i>
+							<i class="uiIconPlus"></i>
 					</a> <% } %> <% if(uicomponent.DISPLAY_NAME.equals(field.getName())) { %> <a
 						href="<%= uicomponent.event("Import") %>" rel="tooltip"
 						data-placement="bottom"
 						title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
-							<i class="uiIconCalMinus"></i>
+							<i class="uiIconPLFCalendar"></i>
 					</a> <% } %>
-					</td>
+					</div>
 					<%} else {%>
-					<td class="FieldComponent" colspan="2">
+					<div class="fieldComponent" >
 						<% uiform.renderField(field) %>
-					</td>
+					</div>
 					<%}%>
-				</tr>
+				</div>
 				<%
             }
           }
         %>
-			</table>
+			</div>
 
-			<div class="uiAction">
+			<div class="uiAction uiActionBorder">
 				<% for(action in uicomponent.getActions()) { 
                String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
                String link = uicomponent.event(action) ;
@@ -49,7 +47,5 @@
 				<button onclick="$link" type="button" class="btn">$actionLabel</button>
 				<%}%>
 			</div>
-		</div>
-	</div>
 	<%uiform.end()%>
 </div>

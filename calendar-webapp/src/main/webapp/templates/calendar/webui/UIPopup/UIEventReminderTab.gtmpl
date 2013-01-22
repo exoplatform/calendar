@@ -12,7 +12,7 @@
   requireJS.addScripts("gj('div#IsEmailRepeatEventReminderTab').click(function() {cal.UICalendarPortlet.showHideRepeat(this);});");
   requireJS.addScripts("gj('div#IsPopupRepeatEventReminderTab').click(function() {cal.UICalendarPortlet.showHideRepeat(this);});");
   requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_EMAIL+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
-  requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_POPUP+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
+  requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_POPUP+"').click(function() {cal.UICalendarPortlet.autoShowHideSetting(this);});");
 %>
 <div id="$uicomponent.id" class="uiEventReminder">
 	<div class="reminderByEmail">

@@ -23,18 +23,20 @@ eXo.calendar.UIColorPicker = {
     document.onmousedown = _module.UIColorPicker.hide;
     var jObj = gj(obj);
     this.tableColor = jObj.next("div")[0];
-    this.title = jObj.find(".DisplayValue").first()[0];
-    this.input = jObj.parent().find(".UIColorPickerValue").first()[0];
+    this.title = jObj.find(".displayValue").first()[0];
+    this.input = jObj.parent().find(".uiColorPickerValue").first()[0];
     this.showHide();
     this.getSelectedValue();
   },
   
   setColor : function(color) {
+    this.title = gj('span.displayValue')[0];
+    this.input = gj('input.uiColorPickerValue')[0];
     if (gj(this.title).hasClass(color)) {
       this.hide();
       return;
     }
-    var className = "DisplayValue " + color;
+    var className = "displayValue " + color;
     this.title.className = className;
     this.input.value = color;
     this.hide();
@@ -83,6 +85,14 @@ eXo.calendar.UIColorPicker = {
     } else {
       obj.style.display = "none";
     }
+  },
+  //change css properties of the parent popup so that the Color picker popup overlaps the parent popup
+  // see design BD-1105
+  adaptPopup : function(obj) {
+    var popupContent = gj(obj).parents('.popupContent');
+    var tabContent = gj(obj).parents('.tab-content');
+    popupContent.css('overflow','visible');
+    tabContent.css('overflow','visible');
   }
 };
 
