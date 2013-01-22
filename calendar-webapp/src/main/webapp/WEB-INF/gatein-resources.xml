@@ -77,20 +77,34 @@
     <depends>
       <module>UICalendars</module>
     </depends>
-    
+    <depends>
+      <module>ScheduleSupport</module>
+    </depends>
+    <depends>
+      <module>UIEventPreview</module>
+    </depends>
     </module>
   </portlet>
+  
   <module>
     <name>ScheduleSupport</name>
     <script>
       <path>/javascript/eXo/calendar/ScheduleSupport.js</path>
     </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
   </module>
   <module>
     <name>UIEventPreview</name>
     <script>
       <path>/javascript/eXo/calendar/UIEventPreview.js</path>
     </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
   </module>
   <module>
     <name>Highlighter</name>
@@ -169,6 +183,10 @@
     <depends>
       <module>csResources</module>
       <as>cs</as>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
     </depends>
     <depends>
       <module>base</module>

@@ -1,3 +1,7 @@
+(function(gj) {
+	
+var _module = {};
+eXo.calendar = eXo.calendar || {};
 function UIEventPreview() {
   this.hiddenThumbnail = null;
 };
@@ -47,3 +51,4 @@ UIEventPreview.prototype.clickOnViewIconContainer = function(viewIconContainer) 
 _module.UIEventPreview = new UIEventPreview();
 eXo.calendar.UIEventPreview = _module.UIEventPreview;
 return _module.UIEventPreview;
+})(gj);

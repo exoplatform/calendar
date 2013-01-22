@@ -1,7 +1,6 @@
 (function(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview) {
-
+var _module = {};
 eXo.calendar = eXo.calendar || {};
-
 function UICalendarPortlet(){
 	this.clickone = 0 ;
 	this.portletId = "calendars";

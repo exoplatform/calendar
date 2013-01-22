@@ -1,7 +1,11 @@
+(function(gj) {
 /**
+
 relooking support for schedule tab
 */
-eXo.calendar.ScheduleSupport = {
+
+var _module = {};
+ScheduleSupport = {
 	//returns index of the cell in the first row with the time given in format : HH:MM (AM/PM)
 	indexFromTime : function(time) {
 	   
@@ -18,7 +22,7 @@ eXo.calendar.ScheduleSupport = {
 
 	//apply green period in schedule tab 
 	applyPeriod : function(){
-	    var Highlighter = eXo.calendar.UIHSelection;
+	    //var Highlighter = eXo.calendar.UIHSelection;
 	    var scheduleTab = gj('#eventAttender-tab')[0];
 	    if(scheduleTab) {
 		// row for drag
@@ -131,5 +135,6 @@ eXo.calendar.ScheduleSupport = {
 	}
 	
 }
-_module.ScheduleSupport = eXo.calendar.ScheduleSupport;
+_module.ScheduleSupport = ScheduleSupport;
 return _module.ScheduleSupport;
+})(gj);
