@@ -52,7 +52,7 @@ _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").U
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-  var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"CalendarItem") || cs.CSUtils.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"calendarItem") || cs.CSUtils.EventManager.getEventTargetByClass(evt,"GroupItem");
   var calType = obj.getAttribute("calType");
   var calName = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");

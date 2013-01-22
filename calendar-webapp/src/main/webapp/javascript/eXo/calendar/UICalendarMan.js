@@ -918,7 +918,7 @@ GUIMan.prototype.showMore = function(evt) {
 
     var moreEventContainer = gj(moreNode).nextAll('div')[0];
     if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
-    cs.EventManager.cancelBubble(evt);
+    cs.CSUtils.EventManager.cancelBubble(evt);
     GUIMan.hideMore(evt);
     if (!moreEventContainer.style.display || moreEventContainer.style.display == 'none') {
 
@@ -928,10 +928,10 @@ GUIMan.prototype.showMore = function(evt) {
 	gj(moreEventContainer).css('top',gj(moreNode).position().top - 6);
 	gj(moreEventContainer).css('left',gj(moreNode).position().left);
 	cs.DOMUtil.listHideElements(moreEventContainer);
-	gj(moreEventContainer).on({'click':cs.EventManager.cancelBubble,
+	gj(moreEventContainer).on({'click':cs.CSUtils.EventManager.cancelBubble,
 	    'mousedown':function(evt){
-		cs.EventManager.cancelEvent(evt);
-		if(cs.EventManager.getMouseButton(evt) == 2) 
+		cs.CSUtils.EventManager.cancelEvent(evt);
+		if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) 
 		    cs.DOMUtil.hideElementList.remove(this);
 	    },
 	    'contextmenu':function(evt){
@@ -1123,8 +1123,9 @@ eXo.calendar.UICalendarMan = {
   EventMan: new EventMan(),
   GUIMan: new GUIMan()
 }
-
+eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
-
+eXo.calendar.Highlighter = Highlighter.Highlighter;
+_module.Highlighter = Highlighter.Highlighter;
 return _module;
 })(cs, gj, Highlighter);

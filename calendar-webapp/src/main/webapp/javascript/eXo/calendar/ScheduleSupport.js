@@ -29,7 +29,7 @@ ScheduleSupport = {
 		var dragRow = gj(scheduleTab).find('tr').get(1);
 		var cells = gj(dragRow).find('td');
 		// check box for all day
-		var dateAll = gj('#dateAll')[0];
+		var dateAll = gj(scheduleTab).find('[name="dateAll"]')[0];
 		if(dateAll.checked) {
 		    for(var i = 1; i < cells.length; i++) {
 			gj(cells.get(i)).removeClass("userSelection"); // reset the color of cells

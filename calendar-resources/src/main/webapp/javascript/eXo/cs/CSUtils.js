@@ -827,6 +827,8 @@ DateTimeFormater.prototype.format = function (date, mask, utc) {
 _module.DateTimeFormater = new DateTimeFormater();
 
 document.onclick = _module.DOMUtil.cleanUpHiddenElements;
+_module.Mouse = Browser.Mouse;
+_module.Browser = Browser.Browser;
 
 return _module;
 })(DOMUtil, base, Browser, gj);

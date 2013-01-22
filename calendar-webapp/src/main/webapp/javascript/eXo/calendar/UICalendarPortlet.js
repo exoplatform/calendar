@@ -3135,6 +3135,11 @@ UICalendarPortlet.prototype.checkEventCategoryName = function(textFieldId){
         btn.removeAttr("disabled");
     }
 }
+
+Highlighter = window.require("SHARED/Highlighter");
+_module.Highlighter = Highlighter.Highlighter;
+eXo.calendar.UIHSelection = Highlighter.UIHSelection;
+
 _module.ScheduleSupport = ScheduleSupport;
 _module.LayoutManager = CalendarLayout.LayoutManager;
 _module.CalendarLayout = CalendarLayout.CalendarLayout;
