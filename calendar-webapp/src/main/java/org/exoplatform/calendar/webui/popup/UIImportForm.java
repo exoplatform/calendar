@@ -28,6 +28,7 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UICalendars;
+import org.exoplatform.calendar.webui.UIFormColorPicker;
 import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
@@ -50,8 +51,7 @@ import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
-import org.exoplatform.webui.form.UIFormUploadInput;
-import org.exoplatform.calendar.webui.UIFormColorPicker;
+import org.exoplatform.webui.form.input.UIUploadInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
 
@@ -97,14 +97,14 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       options.add(new SelectItemOption<String>(type, type));
     }
     addUIFormInput(new UIFormSelectBox(TYPE, TYPE, options));
-    addUIFormInput(new UIFormUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, true));
+    addUIFormInput(new UIUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, 1, CalendarUtils.getLimitUploadSize()));
     UIFormSelectBoxWithGroups privateCal = new UIFormSelectBoxWithGroups(FIELD_TO_CALENDAR, FIELD_TO_CALENDAR, CalendarUtils.getCalendarOption());
     addUIFormInput(privateCal);
     addUIFormInput(new UIFormStringInput(DISPLAY_NAME, DISPLAY_NAME, null).addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class));
     addUIFormInput(new UIFormTextAreaInput(DESCRIPTION, DESCRIPTION, null));
     CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
     UIFormStringInput timeZones = new UIFormStringInput(TIMEZONE, TIMEZONE, CalendarUtils.generateTimeZoneLabel(setting.getTimeZone()));
-    timeZones.setEditable(false);
+    timeZones.setReadOnly(true);
     timeZones.setLabel(setting.getTimeZone());
     addUIFormInput(timeZones);
 
@@ -245,21 +245,21 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       String username = CalendarUtils.getCurrentUser();
       CalendarService calendarService = CalendarUtils.getCalendarService();
       UIImportForm uiForm = event.getSource();
-      UIFormUploadInput input = uiForm.getUIInput(FIELD_UPLOAD);
+      UIUploadInput input = uiForm.getUIInput(FIELD_UPLOAD);
       String importFormat = uiForm.getUIFormSelectBox(UIImportForm.TYPE).getValue();
       String calendarName = uiForm.getUIStringInput(UIImportForm.DISPLAY_NAME).getValue();
       UploadService uploadService = (UploadService)PortalContainer.getComponent(UploadService.class);
 
-      UploadResource resource = uploadService.getUploadResource(input.getUploadId());
+      UploadResource[] resource = input.getUploadResources();
       if(resource == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIImportForm.msg.file-name-error", null));
         return;
       }
       try {
-        if(calendarService.getCalendarImportExports(importFormat).isValidate(input.getUploadDataAsStream())) {
+        if(calendarService.getCalendarImportExports(importFormat).isValidate(input.getUploadDataAsStream(resource[0].getUploadId()))) {
           if(uiForm.isNew()) {
             if(CalendarUtils.isEmpty(calendarName)) {
-              calendarName = resource.getFileName();
+              calendarName = resource[0].getFileName();
             } 
             List<Calendar> pCals = calendarService.getUserCalendars(username, true);
             for(Calendar cal : pCals) {
@@ -276,7 +276,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
             calendar.setCalendarOwner(username);
             calendar.setPublic(false);
             calendarService.saveUserCalendar(username, calendar, true);
-            calendarService.getCalendarImportExports(importFormat).importCalendar(username, input.getUploadDataAsStream(), calendar.getId(), null, null, null, false);
+            calendarService.getCalendarImportExports(importFormat).importCalendar(username, input.getUploadDataAsStream(resource[0].getUploadId()), calendar.getId(), null, null, null, false);
 
           } else {
             String calendarId = uiForm.getCalendarId();
@@ -285,7 +285,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
               return;
             }
 
-            calendarService.getCalendarImportExports(importFormat).importCalendar(username, input.getUploadDataAsStream(), calendarId, null, null, null, false);
+            calendarService.getCalendarImportExports(importFormat).importCalendar(username, input.getUploadDataAsStream(resource[0].getUploadId()), calendarId, null, null, null, false);
           }
           UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
           UICalendars uiCalendars = calendarPortlet.findFirstComponentOfType(UICalendars.class);
@@ -294,7 +294,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
           
           CalendarUtils.removeCurrentCalendarSetting();
 
-          uploadService.removeUpload(input.getUploadId());
+          uploadService.removeUpload(resource[0].getUploadId());
           event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet.findFirstComponentOfType(UIMiniCalendar.class));
           event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendars);
           calendarPortlet.cancelAction();
@@ -336,8 +336,9 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       UIImportForm uiForm = event.getSource();
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
       UploadService uploadService = (UploadService)PortalContainer.getComponent(UploadService.class);
-      UIFormUploadInput input = uiForm.getUIInput(FIELD_UPLOAD);
-      uploadService.removeUpload(input.getUploadId());
+      UIUploadInput input = uiForm.getUIInput(FIELD_UPLOAD);
+      UploadResource[] resource = input.getUploadResources() ;
+      uploadService.removeUploadResource(resource[0].getUploadId());
       calendarPortlet.cancelAction();
     }
   }
