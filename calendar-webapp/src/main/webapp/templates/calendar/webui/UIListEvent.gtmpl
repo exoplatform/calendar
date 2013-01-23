@@ -44,22 +44,22 @@
 		<span></span></span>
 	</th>
 
-	<th style="width: 40px;" class="center"><i class="uiIconAttach"></i></th>
+	<th style="width: 40px;" class="center"><i class="uiIconAttach uiIconLightGray"></i></th>
           <%
             String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
             String classCss = "";
             if (uicomponent.getSortedField().equals(uicomponent.EVENT_PRIORITY)) {
-              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-              else classCss = "uiIconMiniArrowDown";
+              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+              else classCss = "uiIconMiniArrowDown uiIconLightGray";
             }
           %>
-	<th class="center" style="width: 70px"><a href="$sortLink"><%=uiform.getLabel('Priority')%><i class="$classCss pull-right"></i></a></th>
+	<th class="center" style="width: 70px"><a href="$sortLink"><%=uiform.getLabel('Priority')%><i class="$classCss pull-right "></i></a></th>
 <%
 sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
 classCss = "";
 if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
-	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-	else classCss = "uiIconMiniArrowDown";
+	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+	else classCss = "uiIconMiniArrowDown uiIconLightGray";
 }
 %>
 	<th><a href="$sortLink"><%=uiform.getLabel('Event')%><i class="$classCss pull-right"></i></a></th>
@@ -68,8 +68,8 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
             sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
             classCss = "";
             if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
-              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-              else classCss = "uiIconMiniArrowDown";
+              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+              else classCss = "uiIconMiniArrowDown uiIconLightGray";
             }
           %>
 	<th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
@@ -79,8 +79,8 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
 sortLink = uicomponent.event("Sort", uicomponent.EVENT_START.toString()) ;
 classCss = "";
 if (uicomponent.getSortedField().equals(uicomponent.EVENT_START)) {
-	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-	else classCss = "uiIconMiniArrowDown";
+	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+	else classCss = "uiIconMiniArrowDown uiIconLightGray";
 }
 %>
 	<th><a href="$sortLink"><%=uiform.getLabel('Start')%><i class="$classCss pull-right"></i></a></th>
@@ -88,8 +88,8 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_START)) {
             sortLink = uicomponent.event("Sort", uicomponent.EVENT_END.toString()) ;
             classCss = "";
             if (uicomponent.getSortedField().equals(uicomponent.EVENT_END)) {
-              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-              else classCss = "uiIconMiniArrowDown";
+              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+              else classCss = "uiIconMiniArrowDown uiIconLightGray";
             }
           %>
 	<th><a href="$sortLink"><%=uiform.getLabel('End')%><i class="$classCss pull-right"></i></a></th>
@@ -98,8 +98,8 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_START)) {
 sortLink = uicomponent.event("Sort", uicomponent.EVENT_DESCRIPTION.toString()) ;
 classCss = "";
 if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
-	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-	else classCss = "uiIconMiniArrowDown";
+	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+	else classCss = "uiIconMiniArrowDown uiIconLightGray";
 }
 %>
 	<th><a href="$sortLink"><%=uiform.getLabel('EventDescription')%><i class="$classCss pull-right"></i></a></th>
@@ -127,14 +127,14 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
 	<td class="center">
 		<%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%>
 	</td>
-<td class="center"><div class="uiIconCal<%=event.getPriority()%>Priority"></div></td>
+<td class="center"><div class="uiIconCal<%=event.getPriority()%>Priority uiIconLightGray"></div></td>
 <% } %>
 	<td>
 		<span class="eventDescription $color"></span>
 		<%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
-			<i class="uiIconCalTaskMini"></i>
+			<i class="uiIconCalTaskMini uiIconLightGray"></i>
 			<%} else {%>
-			<i class="uiIconCalClockMini"></i>
+			<i class="uiIconCalClockMini uiIconLightGray"></i>
 			<%}%>
 		<span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
 			<%=event.getSummary()%>
@@ -174,19 +174,19 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
     <ul class="uiDropDownCal" style="display:block;">
       <li>
           <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
-            <i class="uiIconPreview"></i>
+            <i class="uiIconPreview uiIconLightGray"></i>
             <%=_ctx.appRes("ContextMenu.label.View")%>
           </a>
       </li>
       <li>
           <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
-            <i class="uiIconEdit"></i>
+            <i class="uiIconEdit uiIconLightGray"></i>
             <%=_ctx.appRes("ContextMenu.label.Edit")%>
           </a>
       </li>
       <li>
           <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
-            <i class="uiIconDelete"></i>
+            <i class="uiIconDelete uiIconLightGray"></i>
             <%=_ctx.appRes("ContextMenu.label.Delete")%>
           </a>
       </li>

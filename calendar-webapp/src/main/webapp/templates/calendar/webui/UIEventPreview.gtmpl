@@ -29,7 +29,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 <div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox">
 <% if (!uicomponent.isShowPopup()) { %>
 <div class="title">
- <a href="#" id="UIEventPreview_fullSize" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp" ></i></a>
+ <a href="#" id="UIEventPreview_fullSize" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
  <strong><%=uiform.getLabel('eventDetail')%></strong>
 </div>
 <% } %>
@@ -55,7 +55,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 			<img id="imagePreview" class="imagePreview" src="" style="display: none;" downloadlink="" />
 		</a>
 		<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
-			<i class="uiIconClose"></i>
+			<i class="uiIconClose uiIconLightGray"></i>
 		</a>
 	</div>
 	<div class="clearfix listImage">
@@ -99,7 +99,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 	%>	 
 		<div class="attachmentIcon" >
 		<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
-			<i class="uiIconFile $full"></i>&nbsp;$attachFile.name
+			<i class="uiIconFile $full uiIconLightGray"></i>&nbsp;$attachFile.name
 		</a>
 		(<%=CalendarUtils.convertSize(attachFile.size)%>)
 		</div>
@@ -114,7 +114,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 			<tr>				
 				<td class="right">
 					<%
-					prio =  "uiIconCal" + event.getPriority() + "Priority";
+					prio =  "uiIconCal" + event.getPriority() + "Priority uiIconLightGray";
 					%>
 					<i class="$prio"></i>&nbsp;<%=uiform.getLabel('Place')%>
 				</td>
@@ -187,9 +187,9 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 	<%if(!uicomponent.isShowPopup()){%>
 	<div class="uiActionContainer">
 		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
-		<i class="uiIconEdit"></i>&nbsp;<%=uiform.getLabel('EditEvent')%></a>
+		<i class="uiIconEdit uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('EditEvent')%></a>
 		<a class="btn " href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
-		<i class="uiIconDelete"></i>&nbsp;<%=uiform.getLabel('DeleteEvent')%></a>
+		<i class="uiIconDelete uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('DeleteEvent')%></a>
 	</div>
 	<%}%>
 	</div><!--end columnRight-->

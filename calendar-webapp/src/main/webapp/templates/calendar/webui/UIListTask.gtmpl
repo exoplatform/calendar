@@ -46,8 +46,8 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
               String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
               String classCss = "";
               if (uicomponent.getSortedField().equals(uicomponent.EVENT_PRIORITY)) {
-                if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-                else classCss = "uiIconMiniArrowDown";
+                if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+                else classCss = "uiIconMiniArrowDown uiIconLightGray";
               }
              %>
             <th style="width: 70px;"><a href="$sortLink" ><%=uiform.getLabel('Priority')%><i class="$classCss pull-right"></i></a></th>
@@ -55,8 +55,8 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
 classCss = "";
 if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
-	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp";
-	else classCss = "uiIconMiniArrowDown";
+	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+	else classCss = "uiIconMiniArrowDown uiIconLightGray";
 }
 %>
 		<th ><a href="$sortLink"><%=uiform.getLabel('Task')%><i class="$classCss pull-right"></i></a></th>
@@ -79,13 +79,13 @@ for(event in uicomponent.getEvents()){
 	<td class="center">
 		<%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%>
 	</td>
-	<td class="center"><div class="uiIconCal<%=event.getPriority()%>Priority"></div></td>
+	<td class="center"><div class="uiIconCal<%=event.getPriority()%>Priority uiIconLightGray"></div></td>
 	<td>
 	  <span class="eventDescription $color"></span>
 		<%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
-			<i class="uiIconCalTaskMini"></i>
+			<i class="uiIconCalTaskMini uiIconLightGray"></i>
 			<%} else {%>
-			<i class="uiIconCalClockMini"></i>
+			<i class="uiIconCalClockMini uiIconLightGray"></i>
 			<%}%>
 		<span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
 			<%=event.getSummary()%>
@@ -127,25 +127,25 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
 		<ul class="uiDropDownCal" style="display:block;">
 		  <li>
 			  <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
-				<i class="uiIconPreview"></i>
+				<i class="uiIconPreview uiIconLightGray"></i>
 				<%=_ctx.appRes("ContextMenu.label.View")%>
 			  </a>
 		  </li>
 		  <li>
 			  <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
-				<i class="uiIconEdit"></i>
+				<i class="uiIconEdit uiIconLightGray"></i>
 				<%=_ctx.appRes("ContextMenu.label.Edit")%>
 			  </a>
 		  </li>
 		  <li>
 			  <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
-				<i class="uiIconDelete"></i>
+				<i class="uiIconDelete uiIconLightGray"></i>
 				<%=_ctx.appRes("ContextMenu.label.Delete")%>
 			  </a>
 		  </li>
 		  <li>
 			  <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
-				<i class="uiIconCalExportCalendar"></i>
+				<i class="uiIconCalExportCalendar uiIconLightGray"></i>
 				<%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
 			  </a>
 			</li>
