@@ -22,15 +22,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
-import javax.jcr.Value;
+import javax.jcr.query.Query;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
@@ -46,8 +45,11 @@ import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.service.impl.UnifiedQuery;
+import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.jcr.RepositoryService;
@@ -72,6 +74,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   private RepositoryService repositoryService_ ;
   private JCRDataStorage  storage_;
   public CalendarService calendarService_;
+  private CalendarSearchServiceConnector unifiedSearchService_ ;
   private static String   username = "root";
 
   public void setUp() throws Exception {
@@ -81,6 +84,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     storage_ = new JCRDataStorage(nodeHierarchyCreator,repositoryService_);
     organizationService_ = (OrganizationService) getService(OrganizationService.class);
     calendarService_ = getService(CalendarService.class);
+    unifiedSearchService_ = getService(CalendarSearchServiceConnector.class);
   }
 
   public void testInitServices() throws Exception{
@@ -101,9 +105,77 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(storage_.getPublicCalendarServiceHome());
     
     assertNotNull(calendarService_) ;
+    
+    assertNotNull(unifiedSearchService_);
 
   }
  
+  public void testUnifiedSeach() throws Exception{
+    EventQuery query = new UnifiedQuery() ;
+    EventQuery equery = new EventQuery() ;
+    query.setQueryType(Query.SQL);
+    assertNotNull(query.getQueryStatement());
+    Collection<String> params = new ArrayList<String>();
+    Collection<SearchResult> result = unifiedSearchService_.search(query.getQueryStatement(), params, 0, 10, "" , query.getOrderType());
+    assertNotNull(result) ;
+    assertEquals(0, result.size());
+    String keyword = "hello \" i am  a \" new guy" ;
+    List<String> formated = UnifiedQuery.parse(keyword) ;
+    assertEquals(4, formated.size());
+    keyword = keyword + " \" why don't \"we talk \" ";
+    formated = UnifiedQuery.parse(keyword) ;
+    assertEquals(7, formated.size());
+    
+    keyword = " key \"word to\" search";
+    //log.info("keyword:  " + keyword + "\n")  ;
+    query.setText(keyword) ;
+    //log.info("======== " + query.getQueryStatement()) ;
+    //equery.setText(keyword);
+    //equery.setQueryType(Query.SQL) ;
+    //log.info("======== " + equery.getQueryStatement()) ;
+    
+    //create/get calendar in private folder
+    Calendar cal = new Calendar();
+    cal.setName("myCalendar");
+    cal.setDescription("Desscription");
+    //cal.setCategoryId();
+    cal.setPublic(true);
+    calendarService_.saveUserCalendar(username, cal, true);
+    
+    EventCategory eventCategory = new EventCategory();
+    String name = "eventCategoryName";
+    eventCategory.setName(name);
+    eventCategory.setDescription("description");
+    calendarService_.saveEventCategory(username, eventCategory, true);
+    
+    CalendarEvent calEvent = new CalendarEvent();
+    calEvent.setEventCategoryId(eventCategory.getId());
+    calEvent.setSummary("Have a meeting");
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.HOUR, 1);
+    calEvent.setFromDateTime(fromCal.getTime());
+    calEvent.setToDateTime(toCal.getTime());
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent, true);
+    List<String> ids = new ArrayList<String>();
+    ids.add(cal.getId());
+    List<CalendarEvent> data = calendarService_.getUserEventByCalendar(username, ids) ;
+    //Success to add event 
+    assertEquals(1,data.size()) ;
+    
+    keyword = "Have" ;
+    query.setText(keyword);
+    result = unifiedSearchService_.search(query.getQueryStatement(), params, 0, 10, "" , query.getOrderType());
+    //Success to search 
+    //assertEquals(1, result.size()) ;
+    
+    
+    calendarService_.removeUserEvent(username, ids.get(0), calEvent.getId());
+    calendarService_.removeEventCategory(username, eventCategory.getId());
+    assertNotNull(calendarService_.removeUserCalendar(username, ids.get(0)));
+    
+  }
+  
   public void testDefaultData() throws Exception {
     String defaultEventCategoriesConfig = "Birthday,Memo,Wedding,DayOff";
     String defaultCalendarId = "NewCalendarId";
