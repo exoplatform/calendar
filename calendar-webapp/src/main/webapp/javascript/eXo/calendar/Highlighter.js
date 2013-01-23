@@ -378,6 +378,7 @@ UIHSelection.prototype.start = function(){
  */
 UIHSelection.prototype.execute = function(evt){
 	var _e = window.event || evt ;
+	_e.preventDefault();
 	var UIHSelection = eXo.calendar.UIHSelection ;
 	var sIndex = UIHSelection.startIndex ;
 	var eIndex = UIHSelection.getCurrentIndex(_e) ;

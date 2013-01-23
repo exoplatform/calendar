@@ -115,6 +115,16 @@
       <as>gj</as>
     </depends>
   </module>
+    <module>
+    <name>UICalendarSettingForm</name>
+    <script>
+      <path>/javascript/eXo/calendar/UICalendarSettingForm.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
   <module>
     <name>Highlighter</name>
     <script>

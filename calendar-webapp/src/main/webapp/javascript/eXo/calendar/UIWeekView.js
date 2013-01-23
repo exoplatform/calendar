@@ -198,6 +198,7 @@ UIWeekView.prototype.dragStart = function(evt) {
 	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
+	_e.preventDefault();
 	_e.stopPropagation();
 	//_e.cancelBubble = true ;
 	if (_e.button == 2) return ;
@@ -215,8 +216,7 @@ UIWeekView.prototype.dragStart = function(evt) {
 	}
 	UIWeekView.title = gj(UIWeekView.dragElement).find('div.eventTitle')[0].innerHTML;
 	gj(document).on({'mousemove':UIWeekView.drag,'mouseup':UIWeekView.drop});
-//	document.onmousemove = UIWeekView.drag ;
-//	document.onmouseup = UIWeekView.drop ;
+
 	_module.UICalendarPortlet.dropCallback = UIWeekView.dropCallback ;
 	_module.UICalendarPortlet.setPosition(UIWeekView.dragElement);
 } ;
@@ -282,8 +282,6 @@ UIWeekView.prototype.dropCallback = function() {
 
 UIWeekView.prototype.drop = function(evt) {
 	gj(document).off("mousemove mouseup");
-//	document.onmousemove = null ;
-//	document.onmouseup = null;
 	var _e = window.event || evt ;
 	var UIWeekView = _module.UIWeekView ;
 	var isEventbox = UIWeekView.dragElement;
@@ -383,6 +381,7 @@ UIWeekView.prototype.removeTooltip = function(){
 UIWeekView.prototype.initResize = function(evt) {
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
+	_e.preventDefault();
 	_e.stopPropagation();
 	//_e.cancelBubble = true ;
 	if(_e.button == 2) return ;

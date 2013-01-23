@@ -568,14 +568,7 @@ UICalendarPortlet.prototype.showHide = function(obj){
     if (obj.style.display != "block") {
 	cs.DOMUtil.cleanUpHiddenElements();
 	obj.style.display = "block";
-    cs.DOMUtil.listHideElements(obj);
-
-	// this.arrow.style.display = "inline-block";
-	// cs.DOMUtil.listHideElements(this.arrow);
-
-    }
-    else {
-	// this.arrow.style.display = "none";
+        cs.DOMUtil.listHideElements(obj);
     }
 };
 
@@ -1150,7 +1143,8 @@ UICalendarPortlet.prototype.initDND = function(evt){
  * @param {Object} evt Mouse event
  */
 UICalendarPortlet.prototype.dragStart = function(evt){
-    var _e = window.event || evt;
+    var _e = evt;
+    _e.preventDefault();
     var UICalendarPortlet = _module.UICalendarPortlet;
     var delta = null;
     var mouseY = base.Browser.findMouseRelativeY(UICalendarPortlet.dragContainer, _e) + UICalendarPortlet.dragContainer.scrollTop;
@@ -1393,7 +1387,7 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
     var src = cs.CSUtils.EventManager.getEventTarget(evt);
     var UIContextMenu = cs.UIContextMenu;
     var map = null;
-    var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"WeekViewEventBoxes");
+    var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
     var items = gj(UIContextMenu.menuElement).find("a");
     if (obj) {
 	var eventId = obj.getAttribute("eventid");
@@ -2121,6 +2115,7 @@ function UISelection(){
  */
 UISelection.prototype.start = function(evt){
     try {
+	evt.preventDefault();
         var UISelection = eXo.calendar.UISelection;
 		if(base.Browser.webkit != 0) UISelection.step = 21;
         var src = cs.CSUtils.EventManager.getEventTarget(evt);

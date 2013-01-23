@@ -8,9 +8,9 @@
 
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
-  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.require("SHARED/UICalendarSettingForm","uiCalendarSettingForm");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('div.calendarCheckboxBlock').click(function() { cal.UICalendarSettingForm.clickOnCalendarCheckbox(this); });");
+  requirejs.addScripts("gj('div.calendarCheckboxBlock').click(function() { uiCalendarSettingForm.clickOnCalendarCheckbox(this); });");
   requirejs.addScripts("gj('#settingNotice').click(function() { gj(this).hide('slow'); });")
 
   uiForm = uicomponent.getParentFrom() ;

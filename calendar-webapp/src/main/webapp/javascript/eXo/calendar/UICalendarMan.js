@@ -381,7 +381,7 @@ WeekMan.prototype.sortEvents = function(checkDepend){
  *                   < 0 if event1 < event2
  */
 WeekMan.prototype.compareEventByWeek = function(event1, event2, weekIndex){
-  var weekObj = eXo.calendar.UICalendarMan.EventMan.weeks[weekIndex];
+  var weekObj = _module.UICalendarMan.EventMan.weeks[weekIndex];
   var e1StartWeekTime = event1.weekStartTimeIndex[weekIndex];
   var e2StartWeekTime = event2.weekStartTimeIndex[weekIndex];
   var e1EndWeekTime = event1.endTime > weekObj.endWeek ? weekObj.endWeek : event1.endTime;
@@ -559,7 +559,7 @@ function GUIMan(){
  */
 GUIMan.prototype.initMonth = function(){
   gj('div.moreEvent').css('display','none');//reset more event label to avoid overlap after resizing
-  var events = eXo.calendar.UICalendarMan.EventMan.events;
+  var events = _module.UICalendarMan.EventMan.events;
   if (events.length > 0) {
     if (events[0]) {
       this.EVENT_BAR_HEIGH = events[0].rootNode.offsetHeight - 1;
@@ -570,8 +570,8 @@ GUIMan.prototype.initMonth = function(){
     var eventLabelNode = gj(eventObj.rootNode).find('div.EventLabel')[0];
     eventObj.rootNode.setAttribute('title', eventObj.name);
   }
-  this.rowContainerDay = gj(eXo.calendar.UICalendarMan.EventMan.rootNode).find('div.rowContainerDay')[0];
-  var rows = eXo.calendar.UICalendarMan.EventMan.UIMonthViewGrid.getElementsByTagName('tr');
+  this.rowContainerDay = gj(_module.UICalendarMan.EventMan.rootNode).find('div.rowContainerDay')[0];
+  var rows = _module.UICalendarMan.EventMan.UIMonthViewGrid.getElementsByTagName('tr');
   this.tableData = new Array();
   for (var i = 0; i < rows.length; i++) {
     var rowData = gj(rows[i]).find('td.uiCellBlock'); 
@@ -603,7 +603,7 @@ GUIMan.prototype.initWeek = function() {
 };
 
 GUIMan.prototype.paintWeek = function() {
-  var weekObj = eXo.calendar.UICalendarMan.EventMan.week;
+  var weekObj = _module.UICalendarMan.EventMan.week;
   var maxEventRow = 0;
   for (var i=0; i<weekObj.days.length; i++) {
     var dayObj = weekObj.days[i];
@@ -709,7 +709,7 @@ GUIMan.prototype.initSelectionDaysEvent = function() {
  
 GUIMan.prototype.scrollTo = function() {
   var lastUpdatedId = this.rowContainerDay.getAttribute("lastUpdatedId") ;
-  var events = eXo.calendar.UICalendarMan.EventMan.events; 
+  var events = _module.UICalendarMan.EventMan.events; 
   for(var i=0 ; i<events.length ; i++) {
     if(events[i].eventId == lastUpdatedId) {
       this.rowContainerDay.scrollTop = events[i].rootNode.offsetTop - 17;
@@ -720,7 +720,7 @@ GUIMan.prototype.scrollTo = function() {
 
 GUIMan.prototype.initDND = function() {
   eXo.calendar.UICalendarPortlet.viewType = "UIMonthView" ;
-  var events = eXo.calendar.UICalendarMan.EventMan.events;
+  var events = _module.UICalendarMan.EventMan.events;
   for(var i=0 ; i<events.length ; i++) {
     var eventNode = events[i].rootNode;
     var checkbox = gj(eventNode).find('input.checkbox')[0]; 
@@ -729,7 +729,8 @@ GUIMan.prototype.initDND = function() {
     }
     eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
   }
-  eXo.calendar.UICalendarDragDrop.init(this.tableData, eXo.calendar.UICalendarMan.EventMan.events);
+  eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
+  eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
 };
 
 /**
@@ -747,7 +748,7 @@ GUIMan.prototype.cancelEvent = function(event) {
 };
 
 GUIMan.prototype.paintMonth = function(){
-  var weeks = eXo.calendar.UICalendarMan.EventMan.weeks;
+  var weeks = _module.UICalendarMan.EventMan.weeks;
   // Remove old more node if exist
   for (var i=0; i<weeks.length; i++) {
     var curentWeek = weeks[i];
@@ -914,7 +915,7 @@ GUIMan.prototype.hideMore = function(evt){
 
 GUIMan.prototype.showMore = function(evt) {
     var moreNode = this;
-    var GUIMan = eXo.calendar.UICalendarMan.GUIMan;
+    var GUIMan = _module.UICalendarMan.GUIMan;
 
     var moreEventContainer = gj(moreNode).nextAll('div')[0];
     if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
@@ -1033,7 +1034,7 @@ GUIMan.prototype.isMultiWeek = function(eventObj){
 
 GUIMan.prototype.addContinueClass = function(){
     var endMonth = Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length - 1]).getAttribute("startTimeFull")) + 24 * 60 * 60 * 1000;
-    var events = eXo.calendar.UICalendarMan.EventMan.events;
+    var events = _module.UICalendarMan.EventMan.events;
     var len = events.length ;
     var eventNode = null ;
     for(var i = 0 ; i<len;i++){
@@ -1123,7 +1124,6 @@ eXo.calendar.UICalendarMan = {
   EventMan: new EventMan(),
   GUIMan: new GUIMan()
 }
-eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
 eXo.calendar.Highlighter = Highlighter.Highlighter;
 _module.Highlighter = Highlighter.Highlighter;
