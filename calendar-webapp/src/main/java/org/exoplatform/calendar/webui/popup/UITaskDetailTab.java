@@ -79,7 +79,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
 
     ActionData addCategoryAction = new ActionData() ;
     addCategoryAction.setActionType(ActionData.TYPE_ICON) ;
-    addCategoryAction.setCssIconClass("uiIconPlus");
+    addCategoryAction.setCssIconClass("uiIconPlus uiIconLightGray");
     addCategoryAction.setActionName(UIEventForm.ACT_ADDCATEGORY) ;
     addCategoryAction.setActionListener(UIEventForm.ACT_ADDCATEGORY) ;
     List<ActionData> addCategoryActions = new ArrayList<ActionData>() ;
@@ -101,7 +101,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
 
     ActionData addEmailAddress = new ActionData() ;
     addEmailAddress.setActionType(ActionData.TYPE_ICON) ;
-    addEmailAddress.setCssIconClass("uiIconEmail");
+    addEmailAddress.setCssIconClass("uiIconEmail uiIconLightGray");
     addEmailAddress.setActionName(UITaskForm.ACT_ADDEMAIL) ;
     addEmailAddress.setActionListener(UITaskForm.ACT_ADDEMAIL) ;
 
@@ -111,7 +111,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
 
     ActionData selectUser = new ActionData() ;
     selectUser.setActionType(ActionData.TYPE_ICON) ;
-    selectUser.setCssIconClass("uiIconUser");
+    selectUser.setCssIconClass("uiIconUser uiIconLightGray");
     selectUser.setActionName(UITaskForm.ACT_SELECTUSER) ;
     selectUser.setActionListener(UITaskForm.ACT_SELECTUSER) ;
 
@@ -139,7 +139,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
       fileUpload.setActionListener(UIEventForm.ACT_DOWNLOAD) ;
       fileUpload.setActionParameter(attachdata.getId()) ;
       fileUpload.setActionType(ActionData.TYPE_LINK) ;
-      fileUpload.setCssIconClass("uiIconPlus") ;
+      fileUpload.setCssIconClass("uiIconPlus uiIconLightGray") ;
       fileUpload.setActionName(attachdata.getName() + "-(" + CalendarUtils.convertSize(attachdata.getSize()) + ")" ) ;
       fileUpload.setShowLabel(true) ;
       uploadedFiles.add(fileUpload) ;
@@ -148,7 +148,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
       removeAction.setActionName(UIEventForm.ACT_REMOVE);
       removeAction.setActionParameter(attachdata.getId());
       removeAction.setActionType(ActionData.TYPE_ICON) ;
-      removeAction.setCssIconClass("uiIconDelete");
+      removeAction.setCssIconClass("uiIconDelete uiIconLightGray");
       removeAction.setBreakLine(true) ;
       uploadedFiles.add(removeAction) ;
     }
