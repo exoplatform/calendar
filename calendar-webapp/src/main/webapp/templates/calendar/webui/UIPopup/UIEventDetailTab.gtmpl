@@ -55,12 +55,6 @@
 		</div>
 	</div>
     <div class="control-group">
-		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_EVENT)%>:</div>
-		<div class="controls">
-			<%uiForm.renderField(uicomponent.FIELD_EVENT)%>
-		</div>
-	</div>
-    <div class="control-group">
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_DESCRIPTION)%>:</div>
 		<div class="controls descriptionArea">
 			<%uiForm.renderField(uicomponent.FIELD_DESCRIPTION)%>

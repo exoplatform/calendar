@@ -53,7 +53,7 @@
 	  }
 	  %>
 	  <div class="alert">
-	    <i class="uiIconWarning"></i> $addNewMessage
+	    <i class="uiIconWarning "></i> $addNewMessage
       <a href="$addNewLink" style="float: none; color: #2f5e92; display: block; margin-left: 20%;">$addNewLabel</a>
 	  </div>
     <%
@@ -86,7 +86,7 @@
 		        if(chk.isChecked()) css = "iconCheckBox checkbox";
 		    %>
 		        <li class="calendarItem  CalendarItemPrivate ClearFix" calColor="$color" canEdit="true" id="$calendarId" calType="0" isRemote="$isRemote">
-		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini pull-right"></div>
+		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
               <div class="calendarCheckboxBlock" calId="$calendarId">
                 <a href="javascript:void(0);" class="$color">
                   <span class="colorOpacity">
@@ -132,7 +132,7 @@
 		        if (chk.isChecked()) css = "iconCheckBox checkbox";
 		      %>
 		      <li class="calendarItem CalendarItemShared ClearFix" calColor="$color" id="$calendarId" calType="1" canEdit="$isEditable">
-		        <div id="UICalendars_CalendarPopupMenu2" class="uiIconCalSettingMini pull-right" ></div>
+		        <div id="UICalendars_CalendarPopupMenu2" class="uiIconCalSettingMini uiIconLightGray pull-right" ></div>
               <div class="calendarCheckboxBlock" calId="$calendarId">
                 <a href="javascript:void(0);" class="$color">
                   <span class="colorOpacity">
@@ -185,7 +185,7 @@
 		        if (chk.isChecked()) css = "iconCheckBox checkbox";
 		      %>
 		      <li class="calendarItem calendarItemPublic ClearFix"  calColor="$color" canEdit="$isEditable" id="$calendarId" calType="2" >
-		        <div id="UICalendars_CalendarPopupMenu3" class="uiIconCalSettingMini pull-right" ></div>
+		        <div id="UICalendars_CalendarPopupMenu3" class="uiIconCalSettingMini uiIconLightGray pull-right" ></div>
             <div class="calendarCheckboxBlock" calId="$calendarId">
               <a href="javascript:void(0);" class="$color">
                 <span class="colorOpacity">
@@ -209,7 +209,7 @@
   <h5 class="title">
     <div id="UICalendars_calendarActions" class="pull-right">
       <div class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("calendarActions")%>">
-        <i class="uiIconCalSimplePlus"></i>
+        <i class="uiIconCalSimplePlus uiIconLightGray"></i>
 		  </div>
     </div>
 	  <%=uiform.getLabel("calendars")%>
@@ -231,31 +231,31 @@
 	  <ul class="uiDropDownCal" style="display:block;">
 	    <li>
 	      <a href="<%=uicomponent.event('AddCalendar','id')%>">
-	        <i class="uiIconCalAddCalendar"></i>
+	        <i class="uiIconCalAddCalendar uiIconLightGray"></i>
           <%=uiform.getLabel("AddCalendar")%>
         </a>
 	    </li>
       <li>
         <a href="<%=uicomponent.event("RemoteCalendar")%>">
-          <i class="uiIconCalRemoteCalendar"></i>
+          <i class="uiIconCalRemoteCalendar uiIconLightGray"></i>
 	        <%=uiform.getLabel("RemoteCalendar")%>
 	      </a>
       </li>
 	    <li>
 	      <a href="<%=uicomponent.event("AddEventCategory")%>">
-	        <i class="uiIconCalCreateEvent"></i>
+	        <i class="uiIconCalCreateEvent uiIconLightGray"></i>
           <%=uiform.getLabel("AddEventCategory")%>
         </a>
 	    </li>
       <li>
         <a href="<%=uicomponent.event("ImportCalendar")%>">
-          <i class="uiIconCalImportCalendar"></i>
+          <i class="uiIconCalImportCalendar uiIconLightGray"></i>
 	        <%=uiform.getLabel("ImportCalendar")%>
 	      </a>
       </li>
 	    <li>
 	      <a href="<%=uicomponent.event("CalendarSetting")%>">
-	        <i class="uiIconSetting"></i>
+	        <i class="uiIconSetting uiIconLightGray"></i>
           <%=uiform.getLabel("CalendarSetting")%>
         </a>
 	    </li>
@@ -270,55 +270,55 @@
 			<ul class="uiDropDownCal" style="display:block;">
 				<li>
 					<a id="AddEvent" href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithId(this, 1, 'objectId=id');">
-					  <i class="uiIconCalCreateEvent"></i>
+					  <i class="uiIconCalCreateEvent uiIconLightGray"></i>
 					  <%=uiform.getLabel("AddEvent")%>
 					</a>
 				</li>
 				<li>
 					<a id="AddTask" href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithId(this, 2, 'objectId=id');">
-					  <i class="uiIconCalCreateTask"></i>
+					  <i class="uiIconCalCreateTask uiIconLightGray"></i>
 					  <%=uiform.getLabel("AddTask")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("EditCalendar","id")%>">
-					  <i class="uiIconEdit"></i>
+					  <i class="uiIconEdit uiIconLightGray"></i>
 					  <%=uiform.getLabel("EditCalendar")%>
 					</a>
 				</li>
 				<li>
 				  <a href="<%=uicomponent.event("ShareCalendar","id")%>">
-            <i class="uiIconCalShare"></i>
+            <i class="uiIconCalShare uiIconLightGray"></i>
             <%=uiform.getLabel("ShareCalendar")%>
           </a>
         </li>
          <li>
 					<a href="<%=uicomponent.event("RemoveSharedCalendar",uicomponent.id,"id")%>">
-					  <i class="uiIconDelete"></i>
+					  <i class="uiIconDelete uiIconLightGray"></i>
 					  <%=uiform.getLabel("RemoveSharedCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("RemoveCalendar",uicomponent.id,"id")%>">
-					  <i class="uiIconDelete"></i>
+					  <i class="uiIconDelete uiIconLightGray"></i>
 					  <%=uiform.getLabel("RemoveCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event('ImportCalendar','id')%>">
-					  <i class="uiIconCalImportCalendar"></i>
+					  <i class="uiIconCalImportCalendar uiIconLightGray"></i>
 					  <%=uiform.getLabel("ImportCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("ExportCalendar","id")%>">
-					  <i class="uiIconCalExportCalendar"></i>
+					  <i class="uiIconCalExportCalendar uiIconLightGray"></i>
 					  <%=uiform.getLabel("ExportCalendar")%>
 					</a>
 				</li>
 				<li>
 					<a href="<%=uicomponent.event("RefreshRemoteCalendar","id")%>">
-					  <i class="uiIconRefresh"></i>
+					  <i class="uiIconRefresh uiIconLightGray"></i>
 					  <%=uiform.getLabel("RefreshRemoteCalendar")%>
 					</a>
 				</li>
