@@ -932,12 +932,15 @@ GUIMan.prototype.showMore = function(evt) {
 	gj(moreEventContainer).on({'click':cs.CSUtils.EventManager.cancelBubble,
 	    'mousedown':function(evt){
 		cs.CSUtils.EventManager.cancelEvent(evt);
-		if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) 
-		    cs.DOMUtil.hideElementList.remove(this);
+		if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) {
+		    var index = cs.DOMUtil.hideElementList.indexOf(this);
+		    cs.DOMUtil.hideElementList.splice(index,1);
+		}
 	    },
 	    'contextmenu':function(evt){
 		cs.CSUtils.EventManager.cancelEvent(evt);
-		cs.DOMUtil.hideElementList.remove(this);
+		var index = cs.DOMUtil.hideElementList.indexOf(this);
+		cs.DOMUtil.hideElementList.splice(index,1);
 		cs.UIContextMenu.show(evt) ;
 		cs.DOMUtil.hideElementList.push(this);
 		return false;
