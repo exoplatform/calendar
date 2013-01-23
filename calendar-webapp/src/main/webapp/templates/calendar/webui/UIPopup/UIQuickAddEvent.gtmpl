@@ -28,7 +28,7 @@ requireJS.addScripts("gj('#"+uicomponent.FIELD_ALLDAY+"').click(function() {cal.
 			<div class="date inputSmall pull-left">
 				<%uicomponent.renderField(uicomponent.FIELD_FROM)%>
 			</div>
-			<div class="time inputMini pull-left"><!-- start time -->
+			<div class="time inputSmall  pull-left"><!-- start time -->
 				<%uicomponent.renderField(uicomponent.FIELD_FROM_TIME)%>
 			</div>
 		</div>
@@ -39,7 +39,7 @@ requireJS.addScripts("gj('#"+uicomponent.FIELD_ALLDAY+"').click(function() {cal.
 			<div class="date inputSmall pull-left">
 				<%uicomponent.renderField(uicomponent.FIELD_TO)%>
 			</div>
-			<div class="time inputMini pull-left"><!-- start time -->
+			<div class="time inputSmall  pull-left"><!-- start time -->
 				<%uicomponent.renderField(uicomponent.FIELD_TO_TIME)%>
 			</div>
 		</div>

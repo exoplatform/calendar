@@ -57,7 +57,7 @@
 				%> <a rel="tooltip" data-placement="bottom"
 							title="<%=uiForm.getLabel("SelectEmail")%>"
 							href="<%=uicomponent.event("AddEmailAddress")%>">
-							<i class="uiIconPlus"></i> <%=uiForm.getLabel("SelectEmail")%>
+							<i class="uiIconPlus uiIconLightGray"></i> <%=uiForm.getLabel("SelectEmail")%>
 						</a>
 						</td>
 					</tr>
