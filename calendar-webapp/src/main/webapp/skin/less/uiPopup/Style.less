@@ -1,14 +1,11 @@
 /*=================UIEventAttenderTab========================*/
-
+.pdT5 {padding-top: 5px;}
 .uiPopup {
 	.uiGrid.table {
 		tr td, tr th {
 			padding: 8px 18px;
 		}
 	}
-}
-.timeField input[type=text] {
-	width: 50px;
 }
 .radioBoxArea ,.checkBoxArea {
 	.controls {
@@ -169,18 +166,7 @@
 /*====================UIEventDetailTab======================*/
 
 .eventDetail,.taskDetailTab,.uiQuickAddEvent{
-	.descriptionArea {
-		textarea {
-			height: 78px;
-		}
-	}
-	.checkBoxArea {
-		margin: -10px 0 8px;
-		.controls {
-			padding: 6px 0 0 0;
-		}
-		
-	}
+	
 	.controls .uiIconPlus {
 		margin-top: -8px;
 	}
@@ -231,6 +217,61 @@
 	.uiEventCategoryForm {
 		.controlLabelSmall {
 			width: 115px;
+			&+ .controls {
+				margin-left: 125px;
+			}
 		}
 	}
+}
+/*=============================UIImportForm===========================*/
+.uiImportForm {
+	textarea{
+		height: 78px;
+	}	
+}
+
+/*=============================UIExportForm===========================*/
+
+.uiExportForm  {
+	.uiCheckbox ,.uiInputInfo{
+		margin-top: 6px;
+	}
+	
+}
+
+
+/*=============================UIGroupCalendarTab===========================*/
+
+.addGroup  {
+	input[type=text] {
+		margin-top: 6px;
+	}	
+}
+
+/*=============================UIFeed===========================*/
+
+.feedTab {
+	.table {
+		margin-bottom: 0;
+	}
+}
+.inputLarge  {
+	.uiSelectbox  { 
+		width: 210px; 
+		select.selectbox {
+			width: 234px;
+		}
+	}
+}
+
+/*=============================UIAttachFileForm===========================*/
+
+.UICalendarPortlet  ,.uiCalendarPortlet  {
+	.UIAttachFileForm {
+		background: @white;
+		.uploadButton {
+			text-align: center;
+		}
+	}
+
 }

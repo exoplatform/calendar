@@ -17,10 +17,10 @@ def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
 requirejs.require("SHARED/csResources","cs");
 requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 requirejs.require("SHARED/jquery","gj");
-requirejs.require("SHARED/webui","webui");
+//requirejs.require("SHARED/webui","webui");
 requirejs.addScripts("gj('div#UIHeaderBar_1').click(function(event) {cal.UICalendarPortlet.switchListView(this, event);});")
-requirejs.addScripts("gj('div#UIHeaderBar_2').click(function() {cs.Utils.confirmAction(this,'"+msg+"','"+parent+"');});")
-requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.Utils.confirmAction(this,'"+msg+"','"+parent+"');});")
+requirejs.addScripts("gj('div#UIHeaderBar_2').click(function() {cs.CSUtils.Utils.confirmAction(this,'"+msg+"','"+parent+"');});");
+requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.CSUtils.Utils.confirmAction(this,'"+msg+"','"+parent+"');});");
 requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 
 %>
@@ -52,7 +52,7 @@ String endMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ endDateOfWe
         <tr>
           <td>
               <a onclick="$linkDayPrevious" class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('previousWeek')%>">
-				<i class="uiIconMiniArrowLeft"></i>
+				<i class="uiIconMiniArrowLeft uiIconLightGray"></i>
               </a>
           </td>
           <td>
@@ -76,7 +76,7 @@ String endMonthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ endDateOfWe
           </td>
           <td>
 <a onclick="$linkDayNext" class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('nextWeek')%>">
-<i class="uiIconMiniArrowRight"></i>
+<i class="uiIconMiniArrowRight uiIconLightGray"></i>
 </a>
           </td>
         </tr>
@@ -101,7 +101,7 @@ int currentDay = uicomponent.getCurrentDay() ;
         <tr>
           <td>
             <a onclick="$linkDayPrevious" rel="tooltip" class="actionIcon" data-placement="bottom" title="<%=uiform.getLabel('previousDay')%>">
-              <i class="uiIconMiniArrowLeft"></i>
+              <i class="uiIconMiniArrowLeft uiIconLightGray"></i>
             </a>
           </td>
           <td>
@@ -112,7 +112,7 @@ int currentDay = uicomponent.getCurrentDay() ;
           </td>
           <td>
             <a onclick="$linkDayNext" rel="tooltip" class="actionIcon" data-placement="bottom" title="<%=uiform.getLabel('nextDay')%>">
-              <i class="uiIconMiniArrowRight"></i>
+              <i class="uiIconMiniArrowRight uiIconLightGray"></i>
             </a>
           </td>
         </tr>
@@ -132,7 +132,7 @@ int currentDay = uicomponent.getCurrentDay() ;
 
 %>
       <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="pull-left controlButton">
-        <i class="uiIconDelete"></i>
+        <i class="uiIconDelete uiIconLightGray"></i>
       </div>
 
       <table>
@@ -140,7 +140,7 @@ int currentDay = uicomponent.getCurrentDay() ;
           <tr>
             <td>
               <a onclick="$linkDayPrevious" class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('previousMonth')%>">
-                <i class="uiIconMiniArrowLeft"></i>
+                <i class="uiIconMiniArrowLeft uiIconLightGray"></i>
               </a>
             </td>
             <td>
@@ -149,7 +149,7 @@ int currentDay = uicomponent.getCurrentDay() ;
             </td>
             <td>
               <a onclick="$linkDayNext" class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('nextMonth')%>">
-                <i class="uiIconMiniArrowRight"></i>
+                <i class="uiIconMiniArrowRight uiIconLightGray"></i>
               </a>
             </td>
           </tr>
@@ -169,12 +169,12 @@ int currentDay = uicomponent.getCurrentDay() ;
 %>
 	
 		<a class="pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
-			<i class="uiIconDelete"></i>
+			<i class="uiIconDelete uiIconLightGray"></i>
 		</a> 
 		<div id="UIHeaderBar_1" class="dropdown pull-left">
 		  <% /*Begin ViewTypeSelect Popup Menu*/ %>
 			<div data-toggle="dropdown" class="uiActionWithLabel">
-			  <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%><i class="uiIconMiniArrowDown"></i>
+			  <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%><i class="uiIconMiniArrowDown uiIconLightGray"></i>
 			</div>
 			<ul class="dropdown-menu">
 			   <%for(type in uicomponent.getViews()){
@@ -194,7 +194,7 @@ int currentDay = uicomponent.getCurrentDay() ;
           <tr>
             <td>
               <a href="$linkDayPrevious" class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>">
-                <i class="uiIconMiniArrowLeft"></i>
+                <i class="uiIconMiniArrowLeft uiIconLightGray"></i>
               </a>
             </td>
             <td>
@@ -206,7 +206,7 @@ int currentDay = uicomponent.getCurrentDay() ;
             </td>
             <td>
               <a href="$linkDayNext" class="actionIcon" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>">
-                <i class="uiIconMiniArrowRight"></i>
+                <i class="uiIconMiniArrowRight uiIconLightGray"></i>
               </a>
             </td>
           </tr>

@@ -1,7 +1,11 @@
+(function(gj) {
 /**
+
 relooking support for schedule tab
 */
-eXo.calendar.ScheduleSupport = {
+
+var _module = {};
+ScheduleSupport = {
 	//returns index of the cell in the first row with the time given in format : HH:MM (AM/PM)
 	indexFromTime : function(time) {
 	   
@@ -18,14 +22,14 @@ eXo.calendar.ScheduleSupport = {
 
 	//apply green period in schedule tab 
 	applyPeriod : function(){
-	    var Highlighter = eXo.calendar.UIHSelection;
+	    //var Highlighter = eXo.calendar.UIHSelection;
 	    var scheduleTab = gj('#eventAttender-tab')[0];
 	    if(scheduleTab) {
 		// row for drag
 		var dragRow = gj(scheduleTab).find('tr').get(1);
 		var cells = gj(dragRow).find('td');
 		// check box for all day
-		var dateAll = gj('#dateAll')[0];
+		var dateAll = gj(scheduleTab).find('[name="dateAll"]')[0];
 		if(dateAll.checked) {
 		    for(var i = 1; i < cells.length; i++) {
 			gj(cells.get(i)).removeClass("userSelection"); // reset the color of cells
@@ -131,4 +135,6 @@ eXo.calendar.ScheduleSupport = {
 	}
 	
 }
-_module.ScheduleSupport = eXo.calendar.ScheduleSupport;
+_module.ScheduleSupport = ScheduleSupport;
+return _module.ScheduleSupport;
+})(gj);

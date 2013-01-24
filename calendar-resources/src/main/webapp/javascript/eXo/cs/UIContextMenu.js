@@ -1,3 +1,6 @@
+(function(DOMUtil, base, gj, uiRightClickPopupMenu){
+var _module = {};
+
 function UIContextMenu(){
 	this.menus = new Array,
 	this.attachedElement = null ;
@@ -89,7 +92,7 @@ UIContextMenu.prototype.getReturnValue = function() {
 
 UIContextMenu.prototype.hasChild = function(root, obj) {
 	if(typeof(obj) == "string") obj = document.getElementById(obj) ;
-	var children = gj(root).children("div.uiRightClickPopupMenu") ;
+	var children = gj(root).children("div.UIRightClickPopupMenu") ;
 	var len = children.length ;
   for(var i = 0 ; i < len ; i ++) {
   	if (children[i].id == obj.id) return children[i] ;    
@@ -104,6 +107,7 @@ UIContextMenu.prototype.getSource = function(evt) {
 } ;
 
 UIContextMenu.prototype.autoHide = function(evt) {
+	_module.Utils = window.require("SHARED/CSUtils").Utils;
 	var _e = window.event || evt ;
 	var eventType = _e.type ;
 	if (eventType == 'mouseout' && (this.style.display != "none")) {
@@ -157,16 +161,17 @@ UIContextMenu.prototype.changeAction = function(obj, id) {
 UIContextMenu.prototype.showHide = function() {
 	if(!this.menuElement) return ;
 	if (this.menuElement.style.display != "block") {
-		_module.DOMUtil.cleanUpHiddenElements() ;
+		DOMUtil.DOMUtil.cleanUpHiddenElements() ;
 		this.menuElement.style.display = "block" ;
-		_module.DOMUtil.listHideElements(this.menuElement) ;
+		DOMUtil.DOMUtil.listHideElements(this.menuElement) ;
 	} else {
 		this.menuElement.style.display = "none" ;
 	}
 } ;
 
 UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
-  var DOMUtil = _module.DOMUtil;
+  //var DOMUtil = DOMUtil.DOMUtil;
+  _module.Utils = window.require("SHARED/CSUtils").Utils;
   var Browser = base.Browser;
   var browserHeight = gj(window).height() + document.documentElement.scrollTop || document.body.scrollTop;
   var browserWidth = gj(window).width() + document.documentElement.scrollLeft || document.body.scrollLeft;
@@ -187,7 +192,7 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
   var uiApplication = document.getElementById("UIPortalApplication");
   if (this.menuElement) {
     document.body.insertBefore(this.menuElement, uiApplication);
-    wx.UIRightClickPopupMenu.disableContextMenu('tmpMenuElement');
+    uiRightClickPopupMenu.disableContextMenu('tmpMenuElement');
     this.menuElement.onmousedown = function(e) {
       var rightclick = false;
       if (!e)
@@ -213,7 +218,7 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
       if (Browser.isIE6() || Browser.isIE7())
         left -= _module.Utils.getScrollbarWidth() + 3;
     }
-    gj(this.menuElement).css('position','absolute');
+    //this.menuElement.style.padding = "0px";
     this.menuElement.style.zIndex = 2000;
     this.menuElement.style.top = top + "px";
     this.menuElement.style.left = left + "px";
@@ -228,6 +233,7 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
 } ;
 
 UIContextMenu.prototype.show = function(evt) {
+	_module.Browser = window.require("SHARED/Browser").Browser;
 	var _e = window.event || evt
 	var UIContextMenu = _module.UIContextMenu ;
 	UIContextMenu.attachedElement = UIContextMenu.getSource(_e) ;
@@ -239,8 +245,8 @@ UIContextMenu.prototype.show = function(evt) {
 	var currentPortlet = gj(UIContextMenu.attachedElement).parents('.' + UIContextMenu.portletCssClass)[0];
 	if (menuElementId) {
 		UIContextMenu.menuElement = gj(currentPortlet).find('#' + menuElementId)[0] ; //document.getElementById(menuElementId) ;
-		_module.DOMUtil.listHideElements(UIContextMenu.menuElement) ;
-		_module.DOMUtil.cleanUpHiddenElements();
+		DOMUtil.DOMUtil.listHideElements(UIContextMenu.menuElement) ;
+		DOMUtil.DOMUtil.cleanUpHiddenElements();
 		UIContextMenu.swapMenu(document.getElementById(menuElementId), menuPos,_e) ;
 		if(!UIContextMenu.menuElement) 
 			return false;
@@ -253,3 +259,5 @@ UIContextMenu.prototype.show = function(evt) {
 
 //eXo.webui.UIContextMenu = new UIContextMenu() ;
 _module.UIContextMenu = new UIContextMenu() ;
+return _module;
+})(DOMUtil, base, gj, uiRightClickPopupMenu);

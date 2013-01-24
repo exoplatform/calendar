@@ -1,7 +1,10 @@
-var eXo = eXo || {}
-if(!eXo.cs){
-	eXo.cs = {} ;
-}
+(function(DOMUtil, base, Browser, gj){
+var _module = {};
+_module.DOMUtil = DOMUtil ;
+_module.Browser = Browser;
+eXo = eXo || {}
+eXo.cs = eXo.cs || {} ;
+
 /********************* Checkbox Manager ******************/
 function CheckBoxManager() {
 } ;
@@ -23,8 +26,8 @@ CheckBoxManager.prototype.checkAll = function() {
 } ;
 
 CheckBoxManager.prototype.getItems = function(obj) {
-	var table = gj(obj).parents('table')[0];
-	var checkboxes = gj(table).find('input.checkbox')[0];
+  var table = gj(obj).parents('table')[0];
+	var checkboxes = gj(table).find('input.checkbox');
 	return checkboxes ;
 } ;
 
@@ -42,20 +45,23 @@ CheckBoxManager.prototype.checkAllItem = function(obj){
 	}	
 } ;
 
-CheckBoxManager.prototype.checkItem = function(obj){
+CheckBoxManager.prototype.checkItem = function(obj){  
+
 	var checkboxes = _module.CheckBox.getItems(obj);
-	var len = checkboxes.length;
-	var state = true;
+	var len = checkboxes.length; 
+
+  var state = true;
 	if (!obj.checked) {
-		checkboxes[0].checked = false;
+	  checkboxes[0].checked = false;
 	}
 	else {
-		for (var i = 1; i < len; i++) {
-			state = state && checkboxes[i].checked;
+	  for (var i = 1; i < len; i++) {
+		  state = state && checkboxes[i].checked;
 		}
-		checkboxes[0].checked = state;
+	  checkboxes[0].checked = state;
 	}
-	this.highlight(obj,obj.checked);
+
+  this.highlight(obj,obj.checked);
 } ;
 
 CheckBoxManager.prototype.highlight = function(obj,isChecked){
@@ -83,7 +89,7 @@ function LayoutSpliter() {
  */
 LayoutSpliter.prototype.doResize = function(e , markerobj) {
   _e = (window.event) ? window.event : e ;
-  this.posY = _module.Browser.findMouseYInPage(_e) ;
+  this.posY = _module.Browser.Browser.findMouseYInPage(_e) ;// browser undefined
   var marker = (typeof(markerobj) == "string")? document.getElementById(markerobj):markerobj ;
   var container = marker.parentNode ;
   var areas = gj(container).find('div.spliterResizableListArea'); 
@@ -101,13 +107,15 @@ LayoutSpliter.prototype.doResize = function(e , markerobj) {
 LayoutSpliter.prototype.adjustHeight = function(evt) {
   evt = (window.event) ? window.event : evt ;
   var Spliter = _module.Spliter ;
-  var delta = _module.Browser.findMouseYInPage(evt) - Spliter.posY ;
+  var delta = _module.Browser.Browser.findMouseYInPage(evt) - Spliter.posY ;
   var afterHeight = Spliter.afterY - delta ;
   var beforeHeight = Spliter.beforeY + delta ;
   if (beforeHeight <= 0  || afterHeight <= 0) return ;
   Spliter.beforeArea.style.height =  beforeHeight + "px" ;
   if(Spliter.afterY > 0) Spliter.afterArea.style.height =  afterHeight + "px" ;
 } ;
+
+
 
 LayoutSpliter.prototype.clear = function() {
   try {
@@ -600,7 +608,6 @@ EventManager.prototype.cancelEvent = function(evt) {
     evt.preventDefault() ;
 };
 
-//eXo.cs.EventManager = new EventManager() ;
 _module.EventManager = new EventManager() ;
 
 /********************* Scroll Manager ******************/
@@ -819,4 +826,9 @@ DateTimeFormater.prototype.format = function (date, mask, utc) {
 
 _module.DateTimeFormater = new DateTimeFormater();
 
-document.onclick = _module.DOMUtil.cleanUpHiddenElements;
+document.onclick = DOMUtil.DOMUtil.cleanUpHiddenElements;
+_module.Mouse = Browser.Mouse;
+_module.Browser = Browser.Browser;
+
+return _module;
+})(DOMUtil, base, Browser, gj);

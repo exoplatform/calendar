@@ -21,7 +21,7 @@ uiform.begin() ;
 <div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox">
 <%if(!uicomponent.isShowPopup()){%>
 <div class="title">
-<a href="#" id="maximizeDetails" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp" ></i></a>
+<a href="#" id="maximizeDetails" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
 <strong><%=uiform.getLabel('taskDetail')%></strong>
 </div>
 
@@ -42,7 +42,7 @@ uiform.begin() ;
 					<img id="imagePreview" class="imagePreview" src="" style="display: none;" downloadlink="" />
 				</a>
 				<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
-					<i class="uiIconClose"></i>
+					<i class="uiIconClose uiIconLightGray"></i>
 				</a>
 			</div>
 			<div class="clearfix listImage">
@@ -86,7 +86,7 @@ uiform.begin() ;
 
 			  <div class="attachmentIcon" >
 				<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
-					<i class="uiIconFile $full"></i>&nbsp;$attachFile.name
+					<i class="uiIconFile $full uiIconLightGray"></i>&nbsp;$attachFile.name
 				</a>
 			  (<%=CalendarUtils.convertSize(attachFile.size)%>)
 			  </div>
@@ -181,10 +181,10 @@ uiform.begin() ;
 	  
 	  <div class="uiActionContainer">
 		<a class="btn" href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
-			<i class="uiIconEdit"></i>&nbsp;<%=uiform.getLabel('EditTask')%>
+			<i class="uiIconEdit uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('EditTask')%>
 		</a>
 		<a class="btn" href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>">
-			<i class="uiIconDelete"></i>&nbsp;<%=uiform.getLabel('DeleteTask')%>
+			<i class="uiIconDelete uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('DeleteTask')%>
 		</a>
 	</div>
 	<%}%>

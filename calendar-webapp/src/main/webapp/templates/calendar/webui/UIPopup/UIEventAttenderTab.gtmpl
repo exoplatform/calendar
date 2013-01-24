@@ -14,7 +14,7 @@
 
   
   %>
-<div class="uiAddNewEvent $uicomponent.id" id="$uicomponent.id">
+<div class="uiAddNewEvent $uicomponent.id resizable" id="$uicomponent.id">
   <div class="newEventAttendee">
     <div class="uiFormInputSet">
       <div class="uiFormInputSetWithAction">
@@ -31,10 +31,10 @@
             </div>
             <div class="pull-right fromTo">
 			<div class="pull-left timeField">				
-				<div class="pull-left timeField">
+				<div class="pull-left">
 					<div class="pull-left title">
 						<%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_TO_TIME)%>:</div>
-					<div class="pull-left">
+					<div class="pull-left inputSmall ">
 						<%uiForm.renderField(uicomponent.FIELD_FROM_TIME)%>
 					</div>
 				</div>
@@ -42,7 +42,7 @@
 					<div class="pull-left title">
 						<%=_ctx.appRes(uiForm.id + ".label." + uicomponent.FIELD_FROM_TIME)%>:
 					</div>
-					<div class="pull-left">
+					<div class="pull-left inputSmall ">
 						<%uiForm.renderField(uicomponent.FIELD_TO_TIME)%>
 					</div>
 				</div> 
@@ -61,13 +61,13 @@
                 <td style="width:28%;">
                   <div class="leftSide">
                     <a href="<%=uiForm.event("MovePrevious")%>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.previousDay')%>">
-                      <i class="uiIconMiniArrowLeft"></i>
+                      <i class="uiIconMiniArrowLeft uiIconLightGray"></i>
 					</a>
                     <span class="title">
                       <%=uicomponent.getDateValue()%>
                     </span>
 					<a href="<%=uiForm.event("MoveNext")%>"   rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIDayView.label.nextDay')%>">
-                      <i class="uiIconMiniArrowRight"></i>
+                      <i class="uiIconMiniArrowRight uiIconLightGray"></i>
 					</a>  
                   </div>
                 </td>
@@ -93,11 +93,11 @@
                       &nbsp;<%=uiForm.getLabel('Participants')%>&nbsp;&nbsp;
                     </span>					
                     <a href="<%=uiForm.event('AddUser',uicomponent.id)%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
-                      <i class="uiIconCalInviteUser" >
+                      <i class="uiIconCalInviteUser uiIconLightGray" >
                       </i>
                     </a> &nbsp;
                     <a href="<%=uiForm.event('DeleteUser')%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
-                      <i class="uiIconCalRejectUser" >
+                      <i class="uiIconCalRejectUser uiIconLightGray" >
                       </i>
                     </a>                 
                 </td>

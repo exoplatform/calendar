@@ -4,28 +4,32 @@
  uiForm = uicomponent.getParentFrom() ;
 %>
 <%uiForm.begin();%>
-<div class="$uicomponent.id">
-	<div class="Label">
-		<%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
-		<a href="<%=uiForm.event("AddUserParticipant")%>"> <i
-			rel="tooltip" data-placement="bottom"
-			title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>"
-			class="uiIconUser"></i>
-		</a>
-	</div>
-	<div class="Participant Field">
-		<% uiFormTextAreaInput = uiForm.getChildById(uicomponent.FIELD_PARTICIPANT);
-          uiFormTextAreaInput.setRows(6);
-      %>
-		<%uiForm.renderField(uicomponent.FIELD_PARTICIPANT)%>
-	</div>
-	<div class="InvitationGroup">
-		<div class="Label">
-			<%=uiForm.getLabel(uicomponent.FIELD_INVITATION_MSG)%>
+<div id="$uicomponent.id" class="uiInvitationForm resizable">
+	<div class="form-horizontal">
+		<div class="control-group">
+			<div class="control-label" >
+				<%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
+				<a href="<%=uiForm.event("AddUserParticipant")%>"> <i
+					rel="tooltip" data-placement="bottom"
+					title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>" class="uiIconUser uiIconLightGray"></i>
+				</a>
+			</div>
+			<div class="controls participant descriptionArea">
+				<% uiFormTextAreaInput = uiForm.getChildById(uicomponent.FIELD_PARTICIPANT);
+			  uiFormTextAreaInput.setRows(6);
+		  %>
+			<%uiForm.renderField(uicomponent.FIELD_PARTICIPANT)%>
+			</div>
 		</div>
-		<div class="Invitation Field">
-			<%uiForm.renderField(uicomponent.FIELD_INVITATION_MSG)%>
+		<div class="control-group invitationGroup">
+			<div class="control-label" >
+				<%=uiForm.getLabel(uicomponent.FIELD_INVITATION_MSG)%>
+			</div>
+			<div class="controls invitation descriptionArea">
+				<%uiForm.renderField(uicomponent.FIELD_INVITATION_MSG)%>
+			</div>
 		</div>
+		
 	</div>
 </div>
 <div class="uiAction">

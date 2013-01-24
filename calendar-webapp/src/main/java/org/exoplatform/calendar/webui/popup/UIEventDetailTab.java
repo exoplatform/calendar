@@ -85,7 +85,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UIFormSelectBox(FIELD_CATEGORY, FIELD_CATEGORY, CalendarUtils.getCategory())) ;
     ActionData addCategoryAction = new ActionData() ;
     addCategoryAction.setActionType(ActionData.TYPE_ICON) ;
-    addCategoryAction.setCssIconClass("uiIconPlus");
+    addCategoryAction.setCssIconClass("uiIconPlus uiIconLightGray");
     addCategoryAction.setActionName(UIEventForm.ACT_ADDCATEGORY) ;
     addCategoryAction.setActionListener(UIEventForm.ACT_ADDCATEGORY) ;
     List<ActionData> addCategoryActions = new ArrayList<ActionData>() ;
@@ -105,7 +105,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UICheckBoxInput(FIELD_ISREPEAT, FIELD_ISREPEAT, false));
     ActionData editRepeatAction = new ActionData() ;
     editRepeatAction.setActionType(ActionData.TYPE_ICON) ;
-    editRepeatAction.setCssIconClass("uiIconEdit");
+    editRepeatAction.setCssIconClass("uiIconEdit uiIconLightGray");
     editRepeatAction.setActionName(UIEventForm.ACT_EDITREPEAT) ;
     editRepeatAction.setActionListener(UIEventForm.ACT_EDITREPEAT) ;
     List<ActionData> editRepeatActions = new ArrayList<ActionData>() ;
@@ -142,7 +142,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
       removeAction.setActionName(UIEventForm.ACT_REMOVE);
       removeAction.setActionParameter(attachdata.getId());
       removeAction.setActionType(ActionData.TYPE_ICON) ;
-      removeAction.setCssIconClass("uiIconDelete");
+      removeAction.setCssIconClass("uiIconDelete uiIconLightGray");
       removeAction.setBreakLine(true) ;
       uploadedFiles.add(removeAction) ;
     }
@@ -182,8 +182,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     }
     return options ;
   }*/
-  @Override
-  public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
+  public void setActionField(String fieldName, List<ActionData> actions){
     actionField_.put(fieldName, actions) ;
   }
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}

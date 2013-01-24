@@ -336,7 +336,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     privateAction.setActionParameter(calendar_.getPrivateUrl());
     privateAction.setActionName(ACT_OPEN);
     privateAction.setActionType(ActionData.TYPE_ICON);
-    privateAction.setCssIconClass("ICalIcon");
+    privateAction.setCssIconClass("uiIconCalICal");
     calendarDetail.addUIFormInput(privateUrl);
     calendarDetail.setActionField(PRIVATE_URL, Arrays.asList(privateAction));
   }

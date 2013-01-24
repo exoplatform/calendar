@@ -48,7 +48,7 @@
 
     <h5 class="title clearfix">
         <a class="actionIcon pull-left" onclick="$linkDayPrevious" rel="tooltip" data-placement="right" title="<%=_ctx.appRes('UIMonthView.label.previousMonth')%>">
-          <i class="uiIconMiniArrowLeft"></i>
+          <i class="uiIconMiniArrowLeft uiIconLightGray"></i>
         </a>
 		<span>
 			<%  monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis(); %>
@@ -57,7 +57,7 @@
 		</span>
 		
         <a class="actionIcon pull-right" onclick="$linkDayNext" rel="tooltip" data-placement="right" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>">
-          <i class="uiIconMiniArrowRight"></i>
+          <i class="uiIconMiniArrowRight uiIconLightGray"></i>
         </a>
    
     </h5> 

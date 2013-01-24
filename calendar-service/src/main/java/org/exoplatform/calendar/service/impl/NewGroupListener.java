@@ -84,7 +84,9 @@ public class NewGroupListener extends GroupEventListener {
       }
     boolean isPublic = true;
     Calendar calendar = new Calendar();
-    calendar.setName("Default");
+    String calName = group.getLabel();
+    if (calName == null || "".equals(calName)) calName = group.getGroupName();
+    calendar.setName(calName);
     if (defaultCalendarDescription != null)
       calendar.setDescription(defaultCalendarDescription);
     calendar.setGroups(new String[] { groupId });

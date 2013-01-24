@@ -61,17 +61,13 @@
 
 	  if (action.actionType == action.TYPE_ICON) {
 	  %>
-		<span style="margin: 5px; position: relative; top: -3px;">
-		  <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
+		<a rel="tooltip" class="actionIcon" data-placement="bottom" title="$actionLabel" href="$actionLink">
 		    <i class="$action.cssIconClass"></i>
-		  </a>
-        </span>
+		</a>
       <% }
       else if (action.actionType == action.TYPE_LINK) {
       %>
-        <span style="margin: 2px;">
-          <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">$actionLabel</a>
-        </span>
+        <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">$actionLabel</a>
       <% }
       else if (action.actionType == uiCalendarForm.TYPE_BUTTON) {
       %>
@@ -84,38 +80,38 @@
   }
 
 %>
-<div id="$uicomponent.id" class="$uicomponent.id">
+<div id="$uicomponent.id" class="$uicomponent.id resizable">
 	<table class="uiGrid table table-hover table-striped">
 	  <thead>
 	    <tr>
 	      <th><%=uiCalendarForm.getLabel(uiCalendarForm.SELECT_GROUPS) %></th>
           <th><%=uiCalendarForm.getLabel(uiCalendarForm.EDIT_PERMISSION) %></th>
-          <th><%=uiCalendarForm.getLabel(uiCalendarForm.ACTIONS) %></th>
+          <th class="center"><%=uiCalendarForm.getLabel(uiCalendarForm.ACTIONS) %></th>
 	    </tr>
       </thead>
 	  <tbody>
 
       <% for (String groupId : calendarGroups) { %>
         <tr>
-          <td style="padding-left:5px;"><%=uicomponent.truncateGroupId(groupId) %></td>
-	      <td style="padding-left: 10px; padding-top: 10px;">
+          <td><%=uicomponent.truncateGroupId(groupId) %></td>
+	      <td class="inputLarge">
 	      <% if(uicomponent.getChildById(groupId+uiCalendarForm.PERMISSION_SUB) != null) {
              uiCalendarForm.renderField(groupId+uiCalendarForm.PERMISSION_SUB) ;
           } else { %>
             &nbsp;
           <% } %>
           </td>
-          <td class="center">
+          <td class="center actionContainer">
             <% renderActions(groupId+uiCalendarForm.PERMISSION_SUB); %>
           </td>
         </tr>
       <% } %>
     </tbody>
   </table>
-	<div style="display: inline-block; margin-top: 15px;">
-    <% uiCalendarForm.renderField(addGroupInput); %>
+	<div class="addGroup">
+		<span class="inputMedium"><% uiCalendarForm.renderField(addGroupInput); %></span>
 	  <% renderActions(uiCalendarForm.OPEN_SELECT_GROUP_FORM); %>
-	  <span style="margin-left: 5px; position: relative; top: -5px;">
+	  <span class="btnContainer">
       <% renderActions(uiCalendarForm.ADD_GROUP); %>
     </span>
 	</div>

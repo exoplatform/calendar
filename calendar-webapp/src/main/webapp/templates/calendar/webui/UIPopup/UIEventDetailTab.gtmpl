@@ -46,15 +46,9 @@
   requireJS.addScripts("gj('#UIEventDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
 
 %>
-<div id="$uicomponent.id" class="uiAddNewEvent eventDetail">
+<div id="$uicomponent.id" class="uiAddNewEvent eventDetail resizable">
   <div class="form-horizontal">
 	<div class="control-group">
-		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_EVENT)%>:</div>
-		<div class="controls">
-			<%uiForm.renderField(uicomponent.FIELD_EVENT)%>
-		</div>
-	</div>
-    <div class="control-group">
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_EVENT)%>:</div>
 		<div class="controls">
 			<%uiForm.renderField(uicomponent.FIELD_EVENT)%>
@@ -78,7 +72,7 @@
 			<div class="date inputSmall pull-left">
 				<%uiForm.renderField(uicomponent.FIELD_FROM)%>
 			</div>
-			<div class="time inputMini pull-left"><!-- start time -->
+			<div class="time inputSmall  pull-left"><!-- start time -->
 				<%uiForm.renderField(uicomponent.FIELD_FROM_TIME)%>
 			</div>
 		</div>
@@ -89,7 +83,7 @@
 			<div class="date inputSmall pull-left">
 				<%uiForm.renderField(uicomponent.FIELD_TO)%>
 			</div>
-			<div class="time inputMini pull-left"><!--  end time -->
+			<div class="time inputSmall  pull-left"><!--  end time -->
 				 <%uiForm.renderField(uicomponent.FIELD_TO_TIME)%>
 			</div>
 		</div>
@@ -139,7 +133,7 @@
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>:</div>
 		<div class="controls">
 			 <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
-          <button rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>" onclick="<%= uicomponent.getParent().event("AddAttachment") %>" type="button" class="btn"><i class="uiIconAttach"></i> <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%></button>
+          <button rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>" onclick="<%= uicomponent.getParent().event("AddAttachment") %>" type="button" class="btn"><i class="uiIconAttach uiIconLightGray"></i> <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%></button>
 		</div>
 	</div>        
   </div><!--form-horizontal-->

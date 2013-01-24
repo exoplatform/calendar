@@ -1,15 +1,21 @@
+(function(cs, gj, base){
 function UICalendars() {
   this.POPUP_CONTAINER_ID = "tmpMenuElement";
   this.calsFormElem = null;
   this.currentMenuElm = null;
   this.currentAnchorElm = null;
+  
 }
 
+var _module = {} ;
+eXo.calendar = eXo.calendar || {}
+
 UICalendars.prototype.init = function(calendarsForm) {
+_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
   if (typeof(calendarsForm) == "string") 
     calendarsForm = _module.UICalendarPortlet.getElementById(calendarsForm);
   var UICalendarPortlet = _module.UICalendarPortlet;
-  UICalendarPortlet.filterForm = calendarsForm;
+  _module.UICalendarPortlet.filterForm = calendarsForm;
   this.calsFormElem = calendarsForm;
   var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
   var CalendarItem = gj(calendarsForm).find('li.calendarItem'); 
@@ -26,15 +32,16 @@ UICalendars.prototype.init = function(calendarsForm) {
 
 UICalendars.prototype.resetSettingButton = function(settingButton) {
   if (settingButton) 
-	  gj(settingButton).removeClass("IconSetting");
+    gj(settingButton).removeClass("IconSetting");
 };
 
 UICalendars.prototype.showSettingButtonStably = function(settingButton) {
   if (settingButton) 
-	  gj(settingButton).addClass("IconSetting");
+    gj(settingButton).addClass("IconSetting");
 };
 
 UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
+_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
   var UICalendarPortlet = _module.UICalendarPortlet;
   UICalendarPortlet.swapMenu(menuElm, anchorElm);
   this.currentMenuElm = UICalendarPortlet.menuElement;
@@ -44,9 +51,10 @@ UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
 };
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
-  var obj      = cs.EventManager.getEventTargetByClass(evt,"calendarItem") || cs.EventManager.getEventTargetByClass(evt,"GroupItem");
-  var calType  = obj.getAttribute("calType"); 
-  var calName  = obj.getAttribute("calName");
+  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+  var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"calendarItem") || cs.CSUtils.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var calType = obj.getAttribute("calType");
+  var calName = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");
   var canEdit  = obj.getAttribute("canEdit");
   var UICalendars = _module.UICalendars;
@@ -61,7 +69,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   try {
     var selectedCategory = (_module.UICalendarPortlet.filterSelect) ? _module.UICalendarPortlet.filterSelect : null;
     if (selectedCategory) {
-    	selectedCategory = selectedCategory.options[selectedCategory.selectedIndex].value;
+      selectedCategory = selectedCategory.options[selectedCategory.selectedIndex].value;
     } 
   } catch (e) { //Fix for IE
     var selectedCategory = null;
@@ -167,7 +175,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   var contentContainerElm = gj(anchorElm).parents(".contentContainer")[0];
   if (contentContainerElm) {
     /* position the menu at one third of its height */
-    menu.style.top = (cs.Browser.findPosY(anchorElm) - Math.round(menu.offsetHeight/3)) + 'px';
+    menu.style.top = (cs.CSUtils.Browser.findPosY(anchorElm) - Math.round(menu.offsetHeight/3)) + 'px';
   }
 
   UICalendars.resetSettingButton(UICalendars.currentAnchorElm);
@@ -191,7 +199,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
 UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCallback) {
   var _e = window.event || evt;
   _e.cancelBubble = true;
-  cs.EventManager.cancelBubble(evt);
+  cs.CSUtils.EventManager.cancelBubble(evt);
   var menuTemplateElm = gj(this.calsFormElem).find('div.' + menuClassName)[0]; 
   this.renderMenu(menuTemplateElm, anchorElm);
   // invoke callback
@@ -200,3 +208,7 @@ UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCal
 
 _module.UICalendars = new UICalendars();
 eXo.calendar.UICalendars = _module.UICalendars;
+
+return _module;
+
+})(cs, gj, base);

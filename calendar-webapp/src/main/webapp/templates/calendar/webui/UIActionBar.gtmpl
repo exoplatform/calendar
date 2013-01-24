@@ -17,7 +17,7 @@
 		<%uicomponent.renderChild(UISearchForm.class)%>
 		<span class="separatorLine"></span>
 		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar">
-			<i class="uiIconSetting"></i>
+			<i class="uiIconSetting uiIconLightGray"></i>
 		</a>
 		
 	</div>
@@ -27,11 +27,11 @@
 		</div>
 		
 		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>">
-			<i class="uiIconCalCreateEvent"></i> <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
+			<i class="uiIconCalCreateEvent uiIconWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
 		</button>
 		 
 		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>">
-			<i class="uiIconCalCreateTask"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
+			<i class="uiIconCalCreateTask uiIconWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
 		</button>
 
 		

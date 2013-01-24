@@ -12,9 +12,9 @@
   requireJS.addScripts("gj('div#IsEmailRepeatEventReminderTab').click(function() {cal.UICalendarPortlet.showHideRepeat(this);});");
   requireJS.addScripts("gj('div#IsPopupRepeatEventReminderTab').click(function() {cal.UICalendarPortlet.showHideRepeat(this);});");
   requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_EMAIL+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
-  requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_POPUP+"').click(function() {cal.UICalendarPortlet.showHideSetting(this);});");
+  requireJS.addScripts("gj('div#"+uicomponent.REMIND_BY_POPUP+"').click(function() {cal.UICalendarPortlet.autoShowHideSetting(this);});");
 %>
-<div id="$uicomponent.id" class="uiEventReminder">
+<div id="$uicomponent.id" class="uiEventReminder resizable">
 	<div class="reminderByEmail">
 		<div id="<%=uicomponent.REMIND_BY_EMAIL%>" class="<%=uicomponent.REMIND_BY_EMAIL%>">
 			<%uiForm.renderField(uicomponent.REMIND_BY_EMAIL); %>
@@ -57,7 +57,7 @@
 				%> <a rel="tooltip" data-placement="bottom"
 							title="<%=uiForm.getLabel("SelectEmail")%>"
 							href="<%=uicomponent.event("AddEmailAddress")%>">
-							<i class="uiIconPlus"></i> <%=uiForm.getLabel("SelectEmail")%>
+							<i class="uiIconPlus uiIconLightGray"></i> <%=uiForm.getLabel("SelectEmail")%>
 						</a>
 						</td>
 					</tr>

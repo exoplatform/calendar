@@ -44,61 +44,49 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
   def rcontext = _ctx.getRequestContext() ;  
 %>
 <div id="$uicomponent.id" class="$uicomponent.id">
-  <table class="UIFormGrid">
-    <tbody>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiform.getLabel(uicomponent.NAME)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiform.renderField(uicomponent.NAME)%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <%=uiform.getLabel(uicomponent.URL)%>
-        </td>
-        <td class="FieldComponent">
-          <%uiform.renderField(uicomponent.URL)%>
-          <%renderActions(uicomponent.URL) ;%>
-        </td>
-      </tr>
-      <tr>
-        <td class="FieldLabel">
-          <span>
-          <%=uiform.getLabel(uicomponent.CALENDAR)%>
-          </span>
-        </td>
-        <td class="FieldComponent">
-          <table>
-          <%
-            for (String cal : uicomponent.getFeedCalendars().keySet()) {
-          %>
-          <tr>
-            <td><%= uicomponent.getFeedCalendars().get(cal) %></td>
-            <td>
-              <a href ="<%= uiform.event("DeleteCalendar", cal) %>" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("delete")%>" >
-                <i class="uiIconDelete"></i>
-              </a>
-            </td>
-          </tr>
-          <% } %>
-          </table>        
-        </td>  
-      </tr>
-      <tr>
-      <td class="FieldLabel">
-        <%=uiform.getLabel(uicomponent.ADDMORE)%>
-      </td>
-      <td class="FieldComponent">
-        <%uiform.renderField(uicomponent.ADDMORE)%>
-        <%renderActions(uicomponent.ADDMORE) ;%>
-      </td>
-    </tr>          
-    </tbody>
-  </table>
+  <div class="form-horizontal resizable">
+    <div class="control-group">
+		<div class="control-label" ><%=uiform.getLabel(uicomponent.NAME)%>:</div>
+		<div class="controls inputLarge">
+			<%uiform.renderField(uicomponent.NAME)%>
+		</div>
+	</div>
+    <div class="control-group">
+		<div class="control-label" ><%=uiform.getLabel(uicomponent.URL)%>:</div>
+		<div class="controls inputLarge">
+			 <%uiform.renderField(uicomponent.URL)%>
+            <%renderActions(uicomponent.URL) ;%>
+		</div>
+	</div>
+	<div class="control-group">
+		<div class="control-label" ><%=uiform.getLabel(uicomponent.CALENDAR)%>:</div>
+		<div class="controls">
+			 <table>
+			  <%
+				for (String cal : uicomponent.getFeedCalendars().keySet()) {
+			  %>
+			  <tr>
+				<td width="72%"><%= uicomponent.getFeedCalendars().get(cal) %></td>
+				<td>
+				  <a class="actionIcon" href ="<%= uiform.event("DeleteCalendar", cal) %>" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("delete")%>" >
+					<i class="uiIconDelete"></i>
+				  </a>
+				</td>
+			  </tr>
+			  <% } %>
+			</table>     
+		</div>
+	</div>
+    <div class="control-group">
+		<div class="control-label" ><%=uiform.getLabel(uicomponent.ADDMORE)%>:</div>
+		<div class="controls inputLarge">
+			<%uiform.renderField(uicomponent.ADDMORE)%>
+			<%renderActions(uicomponent.ADDMORE) ;%>
+		</div>
+	</div>     
+  </div>
   
-  <div class="uiAction"> 
+  <div class="uiAction uiActionBorder"> 
     <%for(String action : uicomponent.getActions()){
       String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
     %>

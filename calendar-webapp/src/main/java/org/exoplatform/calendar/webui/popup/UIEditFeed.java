@@ -128,7 +128,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     ActionData addCalendar = new ActionData() ;
     addCalendar.setActionListener("AddCalendar") ;
     addCalendar.setActionType(ActionData.TYPE_ICON) ;
-    addCalendar.setCssIconClass("uiIconCalPlus");
+    addCalendar.setCssIconClass("uiIconPlus");
     addCalendar.setActionName("AddCalendar") ;
     actions2.add(addCalendar) ;
     setActionField(ADDMORE, actions2) ;
@@ -185,7 +185,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     return new String[]{"Save", "Close"} ;
   }
   
-  public void setActionField(String fieldName, List<ActionData> actions) throws Exception {
+  public void setActionField(String fieldName, List<ActionData> actions){
     actionField_.put(fieldName, actions) ;
   }
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}
