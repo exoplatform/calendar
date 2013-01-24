@@ -327,6 +327,21 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return groupCalendars;
   }
 
+  /**
+   * return edit permission of user to event
+   *
+   * @see <code>UIWeekview.gtmpl, UIDayview.gtmpl, UIDayview.gtmpl</code> - used in template
+   * @param event
+   * @return
+   * @throws Exception
+   */
+  protected boolean isEventEditable(CalendarEvent event) throws Exception
+  {
+    String username = CalendarUtils.getCurrentUser() ;
+    org.exoplatform.calendar.service.Calendar calendar = CalendarUtils.getCalendar(event.getCalType(), event.getCalendarId());
+    return CalendarUtils.canEdit(getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username);
+  }
+
   public LinkedHashMap<String, String> getColors() {
     try {
       return getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class).getColorMap();

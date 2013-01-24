@@ -184,7 +184,12 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 			</td>
 		</tr>
     </table>
-	<%if(!uicomponent.isShowPopup()){%>
+	<% 
+	  def isEditable;
+	  if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
+      else isEditable = "true";
+	  if ((!uicomponent.isShowPopup()) && isEditable) {   	
+    %>
 	<div class="uiActionContainer">
 		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
 		<i class="uiIconEdit"></i>&nbsp;<%=uiform.getLabel('EditEvent')%></a>

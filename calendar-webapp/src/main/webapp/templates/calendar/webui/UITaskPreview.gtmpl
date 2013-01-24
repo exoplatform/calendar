@@ -102,7 +102,7 @@ uiform.begin() ;
 				<td class="right" >
 					<%=uiform.getLabel('Status')%>
 				</td>
-				<td><%=(CalendarUtils.isEmpty(task.getEventState()))?"" : uicomponent.getLabel(task.getEventState())%></td>
+				<td><%=(CalendarUtils.isEmpty(task.getEventState())) ? "" : uicomponent.getLabel(task.getEventState())%></td>
 			  </tr>
 			<tr>
 				<td class="right">
@@ -172,8 +172,14 @@ uiform.begin() ;
             </td>
 		</tr>
     </table>
-	<%if(!uicomponent.isShowPopup()){%>
-	<div class="uiActionContainer">
+	<% 
+	  def isEditable;
+	  if (task.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(task);
+      else isEditable = "true";
+	  if ((!uicomponent.isShowPopup()) && isEditable) {   	
+    %>
+	  
+	  <div class="uiActionContainer">
 		<a class="btn" href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
 			<i class="uiIconEdit"></i>&nbsp;<%=uiform.getLabel('EditTask')%>
 		</a>

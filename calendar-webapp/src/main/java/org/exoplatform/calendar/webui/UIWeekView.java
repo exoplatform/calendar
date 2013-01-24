@@ -154,6 +154,8 @@ public class UIWeekView extends UICalendarView {
       allDayEvent.add(ce);
     } 
   }
+
+
   public java.util.Calendar getBeginDateOfWeek() throws Exception{
     java.util.Calendar temCal = getInstanceTempCalendar() ;
     temCal.setTime(calendar_.getTime()) ;

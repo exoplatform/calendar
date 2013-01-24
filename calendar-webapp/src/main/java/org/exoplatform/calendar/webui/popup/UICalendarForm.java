@@ -30,7 +30,6 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.AbstractApplicationMessage;
@@ -129,8 +128,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   public String calType_ =  CalendarUtils.PRIVATE_TYPE ;
   private boolean isAddNew_ = true ;
   public String groupCalId_ = null ;
-
-  public static final String PERMISSION_TAB = "UICalendarPermissionTab";
 
   /* contains group id of user groups */
   private static Set<String> userGroups;
@@ -288,6 +285,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       {
         groupTab.addGroupPermissionEntry(groupId);
       }
+      groupTab.setGroupsListInitial();
 
       calendarDetail.removeChildById(CATEGORY) ;
       calendarDetail.setActionField(CATEGORY, null) ;
@@ -709,27 +707,65 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         {
           UIGroupCalendarTab groupTab = uiForm.getChildById(INPUT_SHARE);
 
-          String[] groupsSelected = groupTab.getGroupsAddedToTheCalendar();
           calendar.setPublic(uiForm.isPublic()) ;
-          calendar.setGroups(groupsSelected);
           List<String> listPermission = new ArrayList<String>() ;
+          Set<String> groupsCalendarSet;
           OrganizationService orgService = CalendarUtils.getOrganizationService() ;
 
-          for (String groupIdSelected : groupsSelected)
+          /* if not add new one, update calendar */
+          if (!uiForm.isAddNew())
           {
-            String groupKey = groupIdSelected + CalendarUtils.SLASH_COLON ;
-            UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
-            String typedPerms = sharedTab.getUIStringInput(groupIdSelected + PERMISSION_SUB).getValue();
-            listPermission = getPermissions(listPermission, typedPerms, orgService, groupIdSelected, groupKey, event);
-            if (listPermission == null) return;
-            Collection<Membership> mbsh = CalendarUtils.getOrganizationService().getMembershipHandler().findMembershipsByUser(username) ;
-            if(!listPermission.contains(groupKey + CalendarUtils.getCurrentUser())
-                && !CalendarUtils.isMemberShipType(mbsh, typedPerms))
+            /* build a set of groups selected */
+
+            Set<String> groupsSelectedSet = new HashSet<String>(Arrays.asList(groupTab.getGroupsAddedToTheCalendar()));
+            groupsCalendarSet = new HashSet<String>(Arrays.asList(calendar.getGroups()));
+
+            /* combine 2 set to get all groups of calendar */
+            groupsCalendarSet.addAll(groupsSelectedSet);
+            List<String> deleteGroups = new ArrayList<String>(Arrays.asList(groupTab.getDeletedGroup()));
+            /* filter deleted group */
+            Iterator<String> it = groupsCalendarSet.iterator();
+            while (it.hasNext())
             {
-              listPermission.add(groupKey + CalendarUtils.getCurrentUser()) ;
+              String groupId = it.next();
+              if (deleteGroups.contains(groupId)) it.remove();
+            }
+
+            /* looping through all calendar groups */
+            for (String groupId : groupsCalendarSet.toArray(new String[]{}))
+            {
+              /* if the group is displayed in group tab then take group permission from ui */
+              if (groupsSelectedSet.contains(groupId))
+              {
+                String groupKey = groupId + CalendarUtils.SLASH_COLON ;
+                UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
+                String typedPerms = sharedTab.getUIStringInput(groupId + PERMISSION_SUB).getValue();
+                listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event);
+              }
+              /* else take the permission from current edit permission of calendar */
+              else
+              {
+                /* loop through all calendar group permissions if one matches then add it into new list of edit permission */
+                for (String editPermission : calendar.getEditPermission())
+                {
+                  if (editPermission.startsWith(groupId)) listPermission.add(editPermission);
+                }
+              }
+            }
+          }
+          else {
+            groupsCalendarSet = new HashSet<String>(Arrays.asList(groupTab.getGroupsAddedToTheCalendar()));
+
+            for (String groupId : groupsCalendarSet.toArray(new String[]{}))
+            {
+              String groupKey = groupId + CalendarUtils.SLASH_COLON ;
+              UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
+              String typedPerms = sharedTab.getUIStringInput(groupId + PERMISSION_SUB).getValue();
+              listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event);
             }
           }
 
+          calendar.setGroups(groupsCalendarSet.toArray(new String[]{}));
           calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
           calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
         }
@@ -739,7 +775,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         calendarPortlet.cancelAction() ;
         UICalendarWorkingContainer uiWorkingContainer = calendarPortlet.getChild(UICalendarWorkingContainer.class) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;
-      }catch (Exception e) {
+      } catch (Exception e) {
         if (LOG.isDebugEnabled()) {
           LOG.debug("Fail to save the calendar", e);
         }
@@ -748,51 +784,60 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   }
 
   public static List<String> getPermissions(List<String> listPermission,
-                                            String typedPerms,
+                                            String groupPermissions,
                                             OrganizationService orgService,
                                             String groupIdSelected,
                                             String groupKey,
-                                            Event<?> event) throws Exception {
-    if(!CalendarUtils.isEmpty(typedPerms)) {
-      for(String s : typedPerms.split(CalendarUtils.COMMA)){
-        s = s.trim() ;
-        if(!CalendarUtils.isEmpty(s)) {
-          List<User> users = orgService.getUserHandler().findUsersByGroup(groupIdSelected).getAll() ;
-          boolean isExisted = false ;
-          for(User u : users) {
-            if(u.getUserName().equals(s)) {
-              isExisted = true ;
-              break ;
-            }
-          }
-          if(isExisted) {
-            listPermission.add(groupKey + s) ;
-          } else {
-            if(s.equals(CalendarUtils.ANY)) listPermission.add(groupKey + s) ;
-            else if(s.indexOf(CalendarUtils.ANY_OF) > -1) {
-              String typeName = s.substring(s.lastIndexOf(CalendarUtils.DOT)+ 1, s.length()) ;
-              if(orgService.getMembershipTypeHandler().findMembershipType(typeName) != null) {
-                listPermission.add(groupKey + s) ;
-              } else {
-                event.getRequestContext()
-                    .getUIApplication()
-                    .addMessage(new ApplicationMessage("UICalendarForm.msg.name-not-on-group",
-                        new Object[]{s, groupKey},
-                        AbstractApplicationMessage.WARNING));
-                return null;
-              }
-            } else {
-              event.getRequestContext()
-                  .getUIApplication()
-                  .addMessage(new ApplicationMessage("UICalendarForm.msg.name-not-on-group",
-                      new Object[]{s, groupKey},
-                      AbstractApplicationMessage.WARNING));
-              return null;
-            }
-          }
+                                            Event<?> event) throws Exception
+  {
+    if (CalendarUtils.isEmpty(groupPermissions)) return new ArrayList<String>(0);
+
+    for (String s : groupPermissions.split(CalendarUtils.COMMA))
+    {
+      s = s.trim() ;
+      if (CalendarUtils.isEmpty(s)) continue;
+      /* find all users from group */
+      List<User> users = orgService.getUserHandler().findUsersByGroup(groupIdSelected).getAll() ;
+      boolean isExisted = false ;
+
+      /* check if user exists in the group */
+      for (User u : users)
+      {
+        if (u.getUserName().equals(s)) {
+          isExisted = true ;
+          break ;
         }
       }
+
+
+      if (isExisted) {
+        /* user exists, add key to edit permission */
+        listPermission.add(groupKey + s) ;
+        continue;
+      }
+
+      /* users equals to anyone */
+      if (s.equals(CalendarUtils.ANY))
+      {
+        listPermission.add(groupKey + s) ;
+        continue;
+      }
+
+      /* membership type */
+      if (s.indexOf(CalendarUtils.ANY_OF) > -1)
+      {
+        String membership = s.substring(s.lastIndexOf(CalendarUtils.DOT)+ 1, s.length()) ;
+        if (orgService.getMembershipTypeHandler().findMembershipType(membership) != null) {
+          listPermission.add(groupKey + s) ;
+        } else {
+          event.getRequestContext().getUIApplication()
+               .addMessage(new ApplicationMessage("UICalendarForm.msg.name-not-on-group",
+                        new Object[]{s, groupKey}, AbstractApplicationMessage.WARNING));
+        }
+      }
+
     }
+
     return listPermission;
   }
 

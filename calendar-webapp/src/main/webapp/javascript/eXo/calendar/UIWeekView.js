@@ -29,12 +29,27 @@ UIWeekView.prototype.init = function() {
 	var marker = null ;
 	for(var i = 0 ; i < len ; i ++){		
 		var height = parseInt(this.items[i].getAttribute("endTime")) - parseInt(this.items[i].getAttribute("startTime")) ;
+        var isEditable = gj(this.items[i]).attr('isEditable');
+		if (isEditable && (isEditable == "true")) {  
 		gj(this.items[i]).on({'mousedown':UIWeekView.dragStart,
 			'mouseover':eXo.calendar.EventTooltip.show,
 			'mouseout':eXo.calendar.EventTooltip.hide,
 			'dblclick':_module.UICalendarPortlet.ondblclickCallback});
 		marker = gj(this.items[i]).find('div.resizeEventContainer')[0];
 		gj(marker).on('mousedown',UIWeekView.initResize);
+	    }
+
+        if (isEditable && (isEditable == "false")) {
+          gj(this.items[i]).find('.eventContainerBar').css('cursor', 'default');
+          marker = gj(this.items[i]).find('div.resizeEventContainer')[0];
+          gj(this.items[i]).on({'mousedown':false,
+            'mouseover':eXo.calendar.EventTooltip.show,
+			'mouseout':eXo.calendar.EventTooltip.hide,
+          	'dblclick':_module.UICalendarPortlet.ondblclickCallback});
+          //gj(marker).css('cursor', 'default');
+          //gj(marker).removeClass('eventContainerBorder:hover');
+          gj(marker).hide();
+        }	
 	}
 	var tr = gj(this.container).find('tr'); 
 	var firstTr = null ;

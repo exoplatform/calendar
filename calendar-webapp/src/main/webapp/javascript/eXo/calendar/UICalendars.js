@@ -39,7 +39,7 @@ UICalendars.prototype.renderMenu = function(menuElm, anchorElm) {
   UICalendarPortlet.swapMenu(menuElm, anchorElm);
   this.currentMenuElm = UICalendarPortlet.menuElement;
   if (!base.I18n.isRT()) {
-    this.currentMenuElm.style.left = (base.Browser.findPosX(this.currentMenuElm) - this.currentMenuElm.offsetWidth  + anchorElm.offsetWidth) + 'px';
+    this.currentMenuElm.style.left = (base.Browser.findPosX(anchorElm) + anchorElm.offsetWidth + 10) + 'px'; // 10px for the arrow
   }
 };
 
@@ -57,10 +57,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   var PUBLIC_CALENDAR  = "2";
 
   var menu = UICalendars.currentMenuElm;
-  var contentContainerElm = gj(anchorElm).parents(".ContentContainer")[0];
-  if (contentContainerElm) {
-    menu.style.top = (cs.Browser.findPosY(menu) - contentContainerElm.scrollTop) + 'px';
-  }
+
   try {
     var selectedCategory = (_module.UICalendarPortlet.filterSelect) ? _module.UICalendarPortlet.filterSelect : null;
     if (selectedCategory) {
@@ -116,7 +113,8 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
             (actions[j].href.indexOf("EditCalendar") >= 0) ||
             (actions[j].href.indexOf("RemoveCalendar") >= 0) ||
             (actions[j].href.indexOf("ShareCalendar") >= 0) ||
-            (actions[j].href.indexOf("ChangeColorCalendar") >= 0)) 
+            (actions[j].href.indexOf("ImportCalendar") >= 0) ||
+            (actions[j].href.indexOf("ExportCalendar") >= 0))
           {
               actions[j].style.display = "none";
           }
@@ -143,7 +141,9 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
           if ((actions[j].id.indexOf("AddEvent") >= 0) ||
             (actions[j].id.indexOf("AddTask") >= 0) ||
             (actions[j].href.indexOf("EditCalendar") >= 0) || 
-            (actions[j].href.indexOf("RemoveCalendar") >= 0))
+            (actions[j].href.indexOf("RemoveCalendar") >= 0) ||
+            (actions[j].href.indexOf("ImportCalendar") >= 0) ||
+            (actions[j].href.indexOf("ExportCalendar") >= 0))
           {
               actions[j].style.display = "block";
           }
@@ -162,6 +162,12 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
               actions[j].style.display = "none";
           }
       }
+  }
+
+  var contentContainerElm = gj(anchorElm).parents(".contentContainer")[0];
+  if (contentContainerElm) {
+    /* position the menu at one third of its height */
+    menu.style.top = (cs.Browser.findPosY(anchorElm) - Math.round(menu.offsetHeight/3)) + 'px';
   }
 
   UICalendars.resetSettingButton(UICalendars.currentAnchorElm);

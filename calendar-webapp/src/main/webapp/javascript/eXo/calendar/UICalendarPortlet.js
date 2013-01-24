@@ -865,14 +865,28 @@ UICalendarPortlet.prototype.showEvent = function(){
     var marker = null;
     for (var i = 0; i < el.length; i++) {
         this.setSize(el[i]);
+        var isEditable = gj(el[i]).attr('isEditable');
+
+        if (isEditable && (isEditable == "true")) {
         gj(el[i]).on({'mouseover':eXo.calendar.EventTooltip.show,
         	'mouseout':eXo.calendar.EventTooltip.hide,
         	'mousedown':_module.UICalendarPortlet.initDND,
         	'dblclick':_module.UICalendarPortlet.ondblclickCallback});
         marker = gj(el[i]).children("div.resizeEventContainer")[0];
         gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
+        }
+        
+        if (isEditable && (isEditable == "false")) {
+            gj(el[i]).on({'mouseover':eXo.calendar.EventTooltip.show,
+            'mouseout':eXo.calendar.EventTooltip.hide,
+            'mousedown': false,
+            'dblclick':_module.UICalendarPortlet.ondblclickCallback});
+          gj(el[i]).find('.eventContainerBar').css('cursor', 'default');
+          marker = gj(el[i]).find('div.resizeEventContainer')[0];
+          gj(marker).hide();
+        }   
     }
-    
+
     this.items = el;
     this.adjustWidth(this.items);
     // display events after positioning
@@ -1326,6 +1340,8 @@ UICalendarPortlet.prototype.listViewCallback = function(evt){
     var calType = src.getAttribute("calType");
     var isOccur = src.getAttribute("isOccur");
     var recurId = src.getAttribute("recurId");
+    var isEditable = src.getAttribute("isEditable");
+
     map = {
         "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
         "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
@@ -1333,6 +1349,25 @@ UICalendarPortlet.prototype.listViewCallback = function(evt){
         "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
         "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
     };
+
+    /* disable actions on contextual menu based on permission of event */
+    var items = gj(cs.UIContextMenu.menuElement).find("a");
+    for (var i = 0; i < items.length; i++) {
+        if (gj(items[i]).hasClass("eventAction")) {
+            items[i].parentNode.style.display = "block";
+
+            if (isEditable && (isEditable == "false"))
+            {
+              if ((items[i].href.indexOf("Edit") >= 0) ||
+              (items[i].href.indexOf("Delete") >= 0) ||
+              (items[i].href.indexOf("ExportEvent") >= 0))
+              {
+                items[i].parentNode.style.display = "none";
+              }
+            }
+        }
+    }
+
     cs.UIContextMenu.changeAction(cs.UIContextMenu.menuElement, map);
 };
 
@@ -1344,48 +1379,71 @@ UICalendarPortlet.prototype.dayViewCallback = function(evt){
 
     var _e = window.event || evt;
     var src = _e.srcElement || _e.target;
-
-
+    var isEditable;
     var map = null;
+
     if (src.nodeName == "TD") {
-	src = gj(src).parents("tr")[0];
-	var startTime = parseInt(Date.parse(src.getAttribute('startfull')));
-	var endTime = startTime + 15*60*1000 ;
-	var items = gj(cs.UIContextMenu.menuElement).find("a");
-	for(var i = 0; i < items.length; i++){
-	    var aTag = items[i];
-	    if(gj(aTag).hasClass("createEvent")) {
-		aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");" 
-	    } else if(gj(aTag).hasClass("createTask")) {
-		aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
+	    src = gj(src).parents("tr")[0];
+	    var startTime = parseInt(Date.parse(src.getAttribute('startfull')));
+	    var endTime = startTime + 15*60*1000 ;
+	    var items = gj(cs.UIContextMenu.menuElement).find("a");
+
+	    for(var i = 0; i < items.length; i++){
+	      var aTag = items[i];
+	      if(gj(aTag).hasClass("createEvent")) {
+		      aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");"
+	      } else if(gj(aTag).hasClass("createTask")) {
+		      aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
+	      }
 	    }
-	}
 
     }
     else {
-	src = (gj(src).hasClass("eventBoxes")) ? src : gj(src).parents(".eventBoxes")[0];
-	var eventId = src.getAttribute("eventid");
-	var calendarId = src.getAttribute("calid");
-	var calType = src.getAttribute("calType");
-	var isOccur = src.getAttribute("isOccur");
-	var recurId = src.getAttribute("recurId");
-	if (recurId == "null") recurId = "";
-	map = {
-		"objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
-		"calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
-		"calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType
-	};
-	if (isOccur) {
+	    src = (gj(src).hasClass("eventBoxes")) ? src : gj(src).parents(".eventBoxes")[0];
+	    var eventId = src.getAttribute("eventid");
+	    var calendarId = src.getAttribute("calid");
+	    var calType = src.getAttribute("calType");
+	    var isOccur = src.getAttribute("isOccur");
+	    var recurId = src.getAttribute("recurId");
+	    isEditable  = src.getAttribute("isEditable");
+
+	    if (recurId == "null") recurId = "";
+
 	    map = {
 		    "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
 		    "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
-		    "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
-		    "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
-		    "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
+		    "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType
 	    };
-	}
 
+	    if (isOccur) {
+	      map = {
+		      "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+		      "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
+		      "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
+		      "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
+		      "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
+	      };
+	    }
     }
+
+    /* disable actions on contextual menu based on permission of event */
+    var items = gj(cs.UIContextMenu.menuElement).find("a");
+    for (var i = 0; i < items.length; i++) {
+    	if (gj(items[i]).hasClass("eventAction")) {
+    		items[i].parentNode.style.display = "block";
+
+    		if (isEditable && (isEditable == "false"))
+    		{
+    		  if ((items[i].href.indexOf("Edit") >= 0) ||
+    		  (items[i].href.indexOf("Delete") >= 0) ||
+    		  (items[i].href.indexOf("ExportEvent") >= 0))
+    		  {
+    		    items[i].parentNode.style.display = "none";
+    		  }
+    		}
+    	}
+    }
+
     cs.UIContextMenu.changeAction(cs.UIContextMenu.menuElement, map);
 };
 
@@ -1394,17 +1452,19 @@ UICalendarPortlet.prototype.dayViewCallback = function(evt){
  * @param {Object} evt Mouse event
  */
 UICalendarPortlet.prototype.weekViewCallback = function(evt){
-    var src = cs.EventManager.getEventTarget(evt);
-    var UIContextMenu = cs.UIContextMenu;
-    var map = null;
-    var obj = cs.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
-    var items = gj(UIContextMenu.menuElement).find("a");
-    if (obj) {
+  var src = cs.EventManager.getEventTarget(evt);
+  var UIContextMenu = cs.UIContextMenu;
+  var map = null;
+  var obj = cs.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
+  var items = gj(UIContextMenu.menuElement).find("a");
+  if (obj) {
 	var eventId = obj.getAttribute("eventid");
 	var calendarId = obj.getAttribute("calid");
 	var calType = obj.getAttribute("calType");
 	var isOccur = obj.getAttribute("isOccur");
 	var recurId = obj.getAttribute("recurId");
+	var isEditable = obj.getAttribute("isEditable");
+
 	if (recurId == "null") recurId = "";
 	map = {
 		"objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
@@ -1432,21 +1492,33 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
 	    var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
 	    obj =parseInt(gj(src).parents("td")[0].getAttribute("startTime")) + mouseY;
 	} else obj = null;
-	for (var i = 0; i < items.length; i++) {
-	    if (gj(items[i]).hasClass("eventAction")) {
-		items[i].parentNode.style.display = "block";
-		items[i].href = UIContextMenu.replaceall(String(items[i].href), map);
-	    }
-	    else {
-		if(gj(items[i]).hasClass("createEvent")){
-		    items[i].style.display="none" ;
 
+	for (var i = 0; i < items.length; i++) {
+	  if (gj(items[i]).hasClass("eventAction")) {
+		  items[i].parentNode.style.display = "block";
+		  items[i].href = UIContextMenu.replaceall(String(items[i].href), map);
+
+		  if (isEditable && (isEditable == "false"))
+		  {
+		    if ((items[i].href.indexOf("Edit") >= 0) ||
+		    (items[i].href.indexOf("Delete") >= 0) ||
+		    (items[i].href.indexOf("ExportEvent") >= 0))
+		    {
+		      items[i].parentNode.style.display = "none";
+		    }
+		  }
+
+	  }
+	  else {
+		  if(gj(items[i]).hasClass("createEvent")){
+		  items[i].style.display="none" ;
 		} else if (gj(items[i]).hasClass("createTask")) {
 		    items[i].style.display="none" ;
 		}
 	    }
 	}
-    } else {
+
+  } else {
 	var container = gj(src).parents(".eventWeekContent")[0];
 	var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
 	obj = cs.EventManager.getEventTargetByTagName(evt,"td");
@@ -1482,45 +1554,66 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
  * @param {Object} evt Mouse event
  */
 UICalendarPortlet.prototype.monthViewCallback = function(evt){
-    var _e = window.event || evt;
-    var src = _e.srcElement || _e.target;
-    var UIContextMenu = cs.UIContextMenu;
-    var objectValue = "";
-    var links = gj(UIContextMenu.menuElement).find("a");
-    if (!gj(src).parents(".eventBoxes")[0]) {
-        if (objectValue = gj(src).parents("td")[0].getAttribute("startTime")) {
+  var _e = window.event || evt;
+  var src = _e.srcElement || _e.target;
+  var UIContextMenu = cs.UIContextMenu;
+  var objectValue = "";
+  var links = gj(UIContextMenu.menuElement).find("a");
+  var isEditable;
+
+  if (!gj(src).parents(".eventBoxes")[0]) {
+    if (objectValue = gj(src).parents("td")[0].getAttribute("startTime")) {
         	//TODO CS-2800
-        	var startTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')));
-        	var endTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')))  + 24*60*60*1000 - 1;
-        	for(var i = 0; i < links.length; i++){
-            	if(gj(links[i]).hasClass("createEvent")) {
-            		links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");" 
-            	} else if(gj(links[i]).hasClass("createTask")) {
-            		links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
-            	}
-            }
+      var startTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')));
+      var endTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')))  + 24*60*60*1000 - 1;
+      for(var i = 0; i < links.length; i++){
+
+        if (gj(links[i]).hasClass("createEvent")) {
+          links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");"
+        } else if(gj(links[i]).hasClass("createTask")) {
+          links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
         }
+      }
     }
-    else 
-        if (objvalue = gj(src).parents(".dayContentContainer")[0]) {
-            var eventId = objvalue.getAttribute("eventId");
-            var calendarId = objvalue.getAttribute("calId");
-            var calType = objvalue.getAttribute("calType");
-            var isOccur = objvalue.getAttribute("isOccur");
-            var recurId = objvalue.getAttribute("recurId");
-            if (recurId == "null") recurId = "";
-            var map = {
-                "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
-                "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
-                "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
-                "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
-                "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
-            };
-            UIContextMenu.changeAction(UIContextMenu.menuElement, map);
-        }
-        else {
-            return;
-        }
+  }
+  else {
+    if (objvalue = gj(src).parents(".dayContentContainer")[0]) {
+      var eventId = objvalue.getAttribute("eventId");
+      var calendarId = objvalue.getAttribute("calId");
+      var calType = objvalue.getAttribute("calType");
+      var isOccur = objvalue.getAttribute("isOccur");
+      var recurId = objvalue.getAttribute("recurId");
+      isEditable  = src.getAttribute("isEditable");
+      if (recurId == "null") recurId = "";
+      var map = {
+        "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+        "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
+        "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
+        "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
+        "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
+      };
+
+      UIContextMenu.changeAction(UIContextMenu.menuElement, map);
+    }
+  }
+
+  /* disable actions on contextual menu based on permission of event */
+  var items = gj(cs.UIContextMenu.menuElement).find("a");
+  for (var i = 0; i < items.length; i++) {
+    if (gj(items[i]).hasClass("eventAction")) {
+      items[i].parentNode.style.display = "block";
+
+     	if (isEditable && (isEditable == "false"))
+     	{
+     	  if ((items[i].href.indexOf("Edit") >= 0) ||
+     	    (items[i].href.indexOf("Delete") >= 0) ||
+     		  (items[i].href.indexOf("ExportEvent") >= 0))
+     		{
+     		  items[i].parentNode.style.display = "none";
+     		}
+      }
+    }
+  }
 };
 /* BOF filter */
 

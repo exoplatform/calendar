@@ -19,6 +19,8 @@ package org.exoplatform.calendar.webui.popup;
 import java.util.*;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.form.UIForm;
@@ -38,12 +40,20 @@ import org.exoplatform.webui.form.UIFormStringInput;
 
 public class UIGroupCalendarTab extends UIFormInputWithActions
 {
+  private static final Log LOG = ExoLogger.getExoLogger(UIGroupCalendarTab.class);
+
   private Map<String, List<ActionData>> actionField_ ;
 
    /**
     * contains id of groups being displayed
     **/
   private Set<String> groupsList;
+
+  /**
+   * contains id of group being displayed at the very first moment when open popup
+   * used to determine which groups are deleted
+   */
+  private Set<String> groupsListInitial;
 
   protected UIForm getParentFrom() {
     return (UIForm)getParent() ;
@@ -53,7 +63,25 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
   public void processRender(WebuiRequestContext arg0) throws Exception {
     super.processRender(arg0);
   }
-  
+
+  /**
+   * copy the group list at the moment of init of tab
+   */
+  public void setGroupsListInitial()
+  {
+    groupsListInitial = new HashSet<String>(groupsList);
+  }
+
+  public String[] getDeletedGroup()
+  {
+    List<String> deletedGroups = new ArrayList<String>();
+    for (String groupId : groupsListInitial)
+    {
+      if (!groupsList.contains(groupId)) deletedGroups.add(groupId);
+    }
+    return deletedGroups.toArray(new String[]{});
+  }
+
   public UIGroupCalendarTab(String id) throws Exception {
     super(id) ;
     setComponentConfig(getClass(), null) ;
@@ -125,18 +153,13 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
 
     /* add delete permission action */
     ActionData deletePermissionAction = new ActionData() ;
-    // action listener DeletePermissionActionListener class
     deletePermissionAction.setActionListener(UICalendarForm.ACTION_DELETE_PERMISSION) ;
-    // name of action: DeletePermission
     deletePermissionAction.setActionName(UICalendarForm.ACTION_DELETE_PERMISSION) ;
-    // parameter 2:groupId + _permission like 2:/platform/web-contributors_permission
     deletePermissionAction.setActionParameter(UISelectComponent.TYPE_GROUP + ":" + groupId + UICalendarForm.PERMISSION_SUB) ;
-    // uses icon to represent action on UI
     deletePermissionAction.setActionType(ActionData.TYPE_ICON) ;
     deletePermissionAction.setCssIconClass("uiIconDelete") ;
     actions.add(deletePermissionAction) ;
 
-    // for each group, we use groupId_permission as key, that corresponds to a set of actions
     setActionField(groupId + UICalendarForm.PERMISSION_SUB, actions) ;
   }
 
@@ -189,10 +212,8 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
     {
       String groupPermission = ((UIFormStringInput) getChildById(groupId + UICalendarForm.PERMISSION_SUB)).getValue();
       if (groupPermission == null) continue;
-      //LOG.info("groupId: " + groupId + " - group permission: " + groupPermission);
       groupPermission = groupPermission.trim();      /* trim space characters */
       if (groupPermission.isEmpty()) continue;
-      //LOG.info("add group to added groups: " + groupId);
       groupsAdded.add(groupId);
     }
     return groupsAdded.toArray( new String[]{});

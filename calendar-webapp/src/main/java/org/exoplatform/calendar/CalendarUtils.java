@@ -659,11 +659,12 @@ public class CalendarUtils {
       SelectOptionGroup sharedGrp = new SelectOptionGroup(CalendarUtils.SHARED_CALENDARS);
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
         if(CalendarUtils.canEdit(null, Utils.getEditPerUsers(c), username)){
-          String owner = "" ;
-          if(c.getCalendarOwner() != null) owner = c.getCalendarOwner() + " - " ;
+          //String owner = "" ;
+          //if(c.getCalendarOwner() != null) owner = c.getCalendarOwner() + " - " ;
           if (!hash.containsKey(c.getId())) {
             hash.put(c.getId(), "");
-            sharedGrp.addOption(new SelectOption(owner + c.getName(), CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + c.getId())) ;
+            //sharedGrp.addOption(new SelectOption(owner + c.getName(), CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + c.getId())) ;
+            sharedGrp.addOption(new SelectOption(c.getName(), CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + c.getId())) ;
           }
         }
       }

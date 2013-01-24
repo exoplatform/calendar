@@ -136,8 +136,11 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
               if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#F5F5F5;";}
               String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
 			  def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+          def isEditable;
+          if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
+          else isEditable = "true";
           %>
-			  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
+			  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
               <%if(!searchDisplay) {%>
                 <td class="center"><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
 <%}%>
@@ -192,25 +195,25 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
   <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallback" style="display: none ;" >
     <ul class="uiDropDownCal" style="display:block;">
       <li>
-          <a href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+          <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
             <i class="uiIconPreview"></i>
             <%=_ctx.appRes("ContextMenu.label.View")%>
           </a>
       </li>
       <li>
-          <a href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+          <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
             <i class="uiIconEdit"></i>
             <%=_ctx.appRes("ContextMenu.label.Edit")%>
           </a>
       </li>
       <li>
-          <a href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+          <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
             <i class="uiIconDelete"></i>
             <%=_ctx.appRes("ContextMenu.label.Delete")%>
           </a>
       </li>
       <li>
-          <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+          <a class="eventAction" class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
             <i class="uiIconCalExportCalendar"></i>
             <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
           </a>

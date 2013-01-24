@@ -11,6 +11,7 @@
   import org.exoplatform.webui.application.WebuiRequestContext;
   import java.util.SimpleTimeZone;
   import org.exoplatform.calendar.service.CalendarEvent;
+
   uiform.begin() ;
   Date currentDate = uicomponent.getCurrentDate();
   int currentDay = uicomponent.getCurrentDay() ;
@@ -71,8 +72,11 @@
 						color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;
 						Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
 						String recurId = ce.getRecurrenceId();
+					  def isEditable;
+						if (ce.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(ce);
+						else isEditable = "true";
 					%>
-						<div unselectable="on" class="eventContainerBorder eventBoxes ClearFix" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink" isOccur="$isOccur" recurId="$recurId">
+						<div unselectable="on" class="eventContainerBorder eventBoxes ClearFix" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink" isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
 						  <input type="hidden" name="${ce.id}calType" value="$ce.calType" />
 						  <input type="hidden" name="${ce.id}calendarId" value="$ce.calendarId" />          
 						  <input type="hidden" name="${ce.id}startTime" value="" />
@@ -129,20 +133,23 @@
 					</td>
 					<td >
 					  <div class="eventBoard" style="position: relative ;">
-						<div class="eventBoardContainer" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
+						  <div class="eventBoardContainer" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
 						  <%
-						 for(ce in  uicomponent.getEventData()) {
-						   cal = uicomponent.getInstanceTempCalendar() ;
-						   cal.setTime(ce.getFromDateTime()) ;
-						   long   beginTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
-						   cal.setTime(ce.getToDateTime()) ;
-						   long  endTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
-						   color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;                   
-						   actionLink = uicomponent.event("UpdateEvent",ce.id);
-						   Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
-						  String recurId = ce.getRecurrenceId();
+						    for(ce in  uicomponent.getEventData()) {
+						      cal = uicomponent.getInstanceTempCalendar() ;
+						      cal.setTime(ce.getFromDateTime()) ;
+						      long   beginTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
+						      cal.setTime(ce.getToDateTime()) ;
+						      long  endTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
+						      color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;
+						      actionLink = uicomponent.event("UpdateEvent",ce.id);
+						      Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
+						      String recurId = ce.getRecurrenceId();
+							    def isEditable;
+							    if (ce.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(ce);
+							    else isEditable = "true";
 						  %>
-						  <div class="eventContainerBorder eventBoxes $color" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink"  startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId">
+						  <div class="eventContainerBorder eventBoxes $color" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink"  startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
 							<input type="hidden" name="${ce.id}calType" value="$ce.calType" />
 							<input type="hidden" name="${ce.id}calendarId" value="$ce.calendarId" />          
 							<input type="hidden" name="${ce.id}startTime" value="" />

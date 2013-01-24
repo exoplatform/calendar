@@ -101,41 +101,44 @@ def eventList = [];
     </table>
   
   <div id="UIWeekViewGridAllDay" class="eventAllDay" numberOfDays="$numberOfDays">
-      <div class="eventAlldayBoard" style="position:relative">
+    <div class="eventAlldayBoard" style="position:relative">
     <% for (event in uicomponent.allDayEvent) {
-    begindate =  event.getFromDateTime().getTime() ;
-    enddate = event.getToDateTime().getTime() ;
+      begindate =  event.getFromDateTime().getTime() ;
+      enddate = event.getToDateTime().getTime() ;
     
-    long   startTime = event.getFromDateTime().getTime() ;
-    long  finishTime = event.getToDateTime().getTime() ;
-    color = uicomponent.getColors().get(event.calType +CalendarUtils.COLON+ event.getCalendarId()) ;
-    title = tf.format(event.getFromDateTime()) + "->" + tf.format(event.getToDateTime())+ ":&#013; " + event.summary ;
-    actionLink =  uicomponent.event("UpdateAllDayEvent",event.getId());
-    Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
-    String recurId = event.getRecurrenceId();
+      long startTime = event.getFromDateTime().getTime() ;
+      long finishTime = event.getToDateTime().getTime() ;
+      color = uicomponent.getColors().get(event.calType +CalendarUtils.COLON+ event.getCalendarId()) ;
+      title = tf.format(event.getFromDateTime()) + "->" + tf.format(event.getToDateTime())+ ":&#013; " + event.summary ;
+      actionLink =  uicomponent.event("UpdateAllDayEvent",event.getId());
+      Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+      String recurId = event.getRecurrenceId();
+      def isEditable;
+      if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
+      else isEditable = "true";
     %>
-    <div class="eventContainer eventAlldayContainer weekViewEventBoxes clearfix" eventcat="$event.eventCategoryId" style="position:absolute;display:none;" caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate"
-    startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
-    actionlink="$actionLink">
-    <%
-    if (!eventList.contains(event.id)) {
-    eventList.add(event.id);
-    %>
-    <input type="hidden" name="${event.id}calType" value="$event.calType" />
-    <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />
-    <input type="hidden" name="${event.id}startTime" value="" />
-    <input type="hidden" name="${event.id}finishTime" value="" />
-    <input type="hidden" name="${event.id}isOccur" value="$isOccur" />
-    <input type="hidden" name="${event.id}recurId" value="$recurId" />
-    <input type="hidden" name="${event.id}currentDate" value="" />
-    <% }  %>
+      <div class="eventContainer eventAlldayContainer weekViewEventBoxes clearfix" eventcat="$event.eventCategoryId" style="position:absolute;display:none;"
+        caltype="$event.calType" eventid="$event.id" isOccur="$isOccur" recurId="$recurId" calid="$event.calendarId" startTime="$begindate"  endTime="$enddate"
+        startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
+        actionlink="$actionLink" isEditable="$isEditable">
+        <%
+          if (!eventList.contains(event.id)) {
+            eventList.add(event.id);
+        %>
+          <input type="hidden" name="${event.id}calType" value="$event.calType" />
+          <input type="hidden" name="${event.id}calendarId" value="$event.calendarId" />
+          <input type="hidden" name="${event.id}startTime" value="" />
+          <input type="hidden" name="${event.id}finishTime" value="" />
+          <input type="hidden" name="${event.id}isOccur" value="$isOccur" />
+          <input type="hidden" name="${event.id}recurId" value="$recurId" />
+          <input type="hidden" name="${event.id}currentDate" value="" />
+        <% }  %>
     
-    <% if(event.fromDateTime.before(uicomponent.getBeginDateOfWeek().getTime())){ %>
-      <div class="leftContinueEvent  pull-left  $color">
-        <i class="uiIconMiniArrowLeft uiIconWhite"></i>
-      </div>
-     
-      
+        <% if(event.fromDateTime.before(uicomponent.getBeginDateOfWeek().getTime())){ %>
+          <div class="leftContinueEvent  pull-left  $color">
+            <i class="uiIconMiniArrowLeft uiIconWhite"></i>
+          </div>
+
     <% } else { %>
        <div class="leftResizeEvent LeftResizeEvent resizeEventContainer pull-left  $color">
          <span></span>
@@ -189,11 +192,14 @@ def eventList = [];
           actionLink =  uicomponent.event("UpdateEvent",event.id) ;
           Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
           String recurId = event.getRecurrenceId();
+          def isEditable;
+          if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
+          else isEditable = "true";
       %>
       <div class="eventContainerBorder weekViewEventBoxes $color" eventindex="$dayOfWeek"
         style="position: absolute;display:none" eventcat="$event.eventCategoryId" caltype="$event.calType"
         eventid="$event.id" calid="$event.calendarId" actionlink="$actionLink" unselectable="on"
-        startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId">
+        startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
         <%
           if (!eventList.contains(event.id)) {
             eventList.add(event.id);

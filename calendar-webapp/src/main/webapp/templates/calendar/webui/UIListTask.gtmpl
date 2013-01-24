@@ -72,9 +72,12 @@ for(event in uicomponent.getEvents()){
 	if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#f5f5f5;";}
 	String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;
 	def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+	def isEditable;
+    if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
+    else isEditable = "true";
 	%>
 	
-	<tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%>>
+	<tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
 	<td class="center"><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
 	<td class="center">
 		<%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%>
