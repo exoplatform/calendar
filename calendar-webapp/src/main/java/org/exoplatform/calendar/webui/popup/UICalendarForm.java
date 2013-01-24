@@ -206,7 +206,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     openGroupPopupAction.setActionListener(OPEN_SELECT_GROUP_FORM) ;
     openGroupPopupAction.setActionName(OPEN_SELECT_GROUP_FORM) ;
     openGroupPopupAction.setActionType(ActionData.TYPE_ICON) ;
-    openGroupPopupAction.setCssIconClass("uiIconGroup") ;
+    openGroupPopupAction.setCssIconClass("uiIconGroup uiIconLightGray") ;
     actions.add(openGroupPopupAction);
 
     groupTab.setActionField(OPEN_SELECT_GROUP_FORM, actions);
@@ -336,7 +336,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     privateAction.setActionParameter(calendar_.getPrivateUrl());
     privateAction.setActionName(ACT_OPEN);
     privateAction.setActionType(ActionData.TYPE_ICON);
-    privateAction.setCssIconClass("uiIconCalICal");
+    privateAction.setCssIconClass("uiIconCalICal uiIconLightGray");
     calendarDetail.addUIFormInput(privateUrl);
     calendarDetail.setActionField(PRIVATE_URL, Arrays.asList(privateAction));
   }

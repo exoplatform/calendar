@@ -194,7 +194,7 @@ _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
       </li>
       <li>
           <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
-            <i class="uiIconCalExportCalendar"></i>
+            <i class="uiIconCalExportCalendar uiIconLightGray"></i>
             <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
           </a>
         </li>
