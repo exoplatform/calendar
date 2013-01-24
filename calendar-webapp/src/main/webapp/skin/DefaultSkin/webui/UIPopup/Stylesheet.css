@@ -118,11 +118,6 @@
 	background: #EBEBEB;
 }
 
-.UICalendarPortlet .UIPopupCalendarSettingContainer{
-  /* cf http://int.exoplatform.org/portal/intranet/wiki/group/spaces/engineering/Calendar_Sanitization#HSettings */
-  /* 392 + the paddings, margins, borders and headers of the popup template = 450px */
-  max-height: 392px;
-}
 /********************************** UIAddEditPermission *****************************************/
 .UICalendarPortlet .UIAddEditPermission .UIGrid th{
 	border-right: solid 1px #fff;
