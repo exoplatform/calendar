@@ -106,14 +106,14 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     List<ActionData> actions = new ArrayList<ActionData>() ;
     ActionData resetURL = new ActionData() ;
     resetURL.setActionListener("ResetURL") ;
-    resetURL.setCssIconClass("uiIconRefresh");
+    resetURL.setCssIconClass("uiIconRefresh uiIconLightGray");
     resetURL.setActionType(ActionData.TYPE_ICON) ;
     resetURL.setActionName("ResetURL") ;
     actions.add(resetURL) ;
     
     ActionData generateURL = new ActionData() ;
     generateURL.setActionListener("GenerateURL") ;
-    generateURL.setCssIconClass("uiIconSetting");
+    generateURL.setCssIconClass("uiIconSetting uiIconLightGray");
     generateURL.setActionType(ActionData.TYPE_ICON) ;
     generateURL.setActionName("GenerateURL") ;
     actions.add(generateURL) ;
@@ -128,7 +128,7 @@ public class UIEditFeed extends UIForm implements UIPopupComponent{
     ActionData addCalendar = new ActionData() ;
     addCalendar.setActionListener("AddCalendar") ;
     addCalendar.setActionType(ActionData.TYPE_ICON) ;
-    addCalendar.setCssIconClass("uiIconPlus");
+    addCalendar.setCssIconClass("uiIconPlus uiIconLightGray");
     addCalendar.setActionName("AddCalendar") ;
     actions2.add(addCalendar) ;
     setActionField(ADDMORE, actions2) ;

@@ -268,13 +268,13 @@
          
               <li>
                <a class="createEvent" href="<%=uicomponent.event("QuickAdd","$uicomponent.TYPE_EVENT&startTime=beginTime")%>">
-                 <i class="uiIconCalCreateEvent"></i>
+                 <i class="uiIconCalCreateEvent uiIconLightGray"></i>
                  <%=_ctx.appRes("ContextMenu.label.addEvent")%>
                </a>
               </li>
               <li>
                 <a class="createTask" href="<%=uicomponent.event("QuickAdd","$uicomponent.TYPE_TASK&startTime=beginTime")%>">
-                  <i class="uiIconCalCreateTask"></i>
+                  <i class="uiIconCalCreateTask uiIconLightGray"></i>
                   <%=_ctx.appRes("ContextMenu.label.addTask")%>
                 </a>
               </li>
@@ -287,25 +287,25 @@
       <ul class="uiDropDownCal" style="display:block;">
         <li>
             <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
-              <i class="uiIconPreview"></i>
+              <i class="uiIconPreview uiIconLightGray"></i>
               <%=_ctx.appRes("ContextMenu.label.View")%>
             </a>
         </li>
         <li>
             <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
-              <i class="uiIconEdit"></i>
+              <i class="uiIconEdit uiIconLightGray"></i>
               <%=_ctx.appRes("ContextMenu.label.Edit")%>
             </a>
         </li>
         <li>
             <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
-              <i class="uiIconDelete"></i>
+              <i class="uiIconDelete uiIconLightGray"></i>
               <%=_ctx.appRes("ContextMenu.label.Delete")%>
             </a>
         </li>
         <li>
             <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
-              <i class="uiIconCalExportCalendar"></i>
+              <i class="uiIconCalExportCalendar uiIconLightGray"></i>
               <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
             </a>
           </li>

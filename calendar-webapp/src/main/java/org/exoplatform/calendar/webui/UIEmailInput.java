@@ -30,7 +30,7 @@ public class UIEmailInput extends UIFormStringInput {
       for(int i=0; i < list.length ; i++ ){ 
         w.write("  <div class='clearfix'>");
         w.write("    <div class='pull-left'>" + list[i] + "</div>");
-        w.write("    <i class='uiIconDelete pull-right' onclick='eXo.calendar.UICalendarPortlet.removeEmailReminder(this) ;'></i>");
+        w.write("    <i class='uiIconDelete uiIconLightGray pull-right' onclick='eXo.calendar.UICalendarPortlet.removeEmailReminder(this) ;'></i>");
         w.write("  </div>");  
       }
       return ;
@@ -38,7 +38,7 @@ public class UIEmailInput extends UIFormStringInput {
     if (!CalendarUtils.isEmpty(value)){
       w.write("  <div class='clearfix'>");
       w.write("    <div class='pull-left'>" + value +"</div>");
-      w.write("    <i class='uiIconDelete pull-right' onclick='eXo.calendar.UICalendarPortlet.removeEmailReminder(this) ;'></i>");
+      w.write("    <i class='uiIconDelete uiIconLightGray pull-right' onclick='eXo.calendar.UICalendarPortlet.removeEmailReminder(this) ;'></i>");
       w.write("  </div>");  
     }
     w.write("</div>");

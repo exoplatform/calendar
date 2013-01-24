@@ -111,7 +111,7 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
     selectUserAction.setActionName("SelectUser") ;
     selectUserAction.setActionParameter(UISelectComponent.TYPE_USER + ":" + groupId + UICalendarForm.PERMISSION_SUB) ;
     selectUserAction.setActionType(ActionData.TYPE_ICON) ;
-    selectUserAction.setCssIconClass("uiIconUser") ;
+    selectUserAction.setCssIconClass("uiIconUser uiIconLightGray") ;
     actions.add(selectUserAction) ;
 
     /* add select membership action */
@@ -120,7 +120,7 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
     selectMembershipAction.setActionName("SelectMemberShip") ;
     selectMembershipAction.setActionParameter(UISelectComponent.TYPE_MEMBERSHIP + ":" + groupId + UICalendarForm.PERMISSION_SUB) ;
     selectMembershipAction.setActionType(ActionData.TYPE_ICON) ;
-    selectMembershipAction.setCssIconClass("uiIconMembership") ;
+    selectMembershipAction.setCssIconClass("uiIconMembership uiIconLightGray") ;
     actions.add(selectMembershipAction) ;
 
     /* add delete permission action */
@@ -133,7 +133,7 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
     deletePermissionAction.setActionParameter(UISelectComponent.TYPE_GROUP + ":" + groupId + UICalendarForm.PERMISSION_SUB) ;
     // uses icon to represent action on UI
     deletePermissionAction.setActionType(ActionData.TYPE_ICON) ;
-    deletePermissionAction.setCssIconClass("uiIconDelete") ;
+    deletePermissionAction.setCssIconClass("uiIconDelete uiIconLightGray") ;
     actions.add(deletePermissionAction) ;
 
     // for each group, we use groupId_permission as key, that corresponds to a set of actions

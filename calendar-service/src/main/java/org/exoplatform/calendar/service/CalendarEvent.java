@@ -174,7 +174,7 @@ public class CalendarEvent {
 
   private boolean              isPrivate       = true;
 
-  private String               eventState      = "uiIconCalClockMini";
+  private String               eventState      = ST_BUSY;
 
   /**
    *Status:

@@ -822,7 +822,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	var moreEventList = moreContainerNode.cloneNode(true);
 	var moreEventTitleBar = moreContainerNode.cloneNode(true);
 	moreEventBar.className = "moreEventBar" ;
-	moreEventBar.innerHTML = "<center><a href=javascript:void(0)><i class='uiIconArrowUp'></i></a></center>" ;
+	moreEventBar.innerHTML = "<center><a href=javascript:void(0)><i class='uiIconArrowUp uiIconLightGray'></i></a></center>" ;
 	gj(moreEventBar).find('a').on('click',this.hideMore);
 	moreContainerNode.className = 'moreEventContainer' ;
 	// Create invisible event

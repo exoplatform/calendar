@@ -41,7 +41,7 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 		<input type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/>
 	<span></span></span>
 </th>
-            <th style="width: 40px;" class="center"><i class="uiIconAttach"></i></th>
+            <th style="width: 40px;" class="center"><i class="uiIconAttach uiIconLightGray"></i></th>
             <%
               String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
               String classCss = "";
