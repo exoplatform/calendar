@@ -21,7 +21,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.jcr.Node;
@@ -240,6 +242,8 @@ public class Utils {
   public static final String EXO_REPEAT_BYMONTHDAY      = "exo:repeatByMonthDay";
 
   public static final String EXO_REPEAT_FINISH_DATE     = "exo:repeatFinishDate";
+  
+  public static final String EXO_DATE_CREATED           = "exo:dateCreated";
 
   public static final String X_STATUS                   = "X-STATUS".intern();
 
@@ -263,6 +267,8 @@ public class Utils {
 
   public static final String JCR_DATA                   = "jcr:data".intern();
 
+  public static final String JCR_SCORE                  = "jcr:score";
+  
   public static final String MIMETYPE_TEXTPLAIN         = "text/plain".intern();
 
   public static final String MIMETYPE_ICALENDAR         = "TEXT/CALENDAR".intern();
@@ -366,7 +372,24 @@ public class Utils {
   public static final String MIMETYPE_TEXTHTML          = "text/html".intern();
 
   public static String[]     SYNC_PERIOD                = { SYNC_AUTO, SYNC_5MINS, SYNC_10MINS, SYNC_15MINS, SYNC_1HOUR, SYNC_1DAY, SYNC_1WEEK, SYNC_1YEAR };
+  
+  public static final String ORDER_TYPE_ASCENDING                  = "ASC";
 
+  public static final String ORDER_TYPE_DESCENDING                 = "DESC";
+  
+  public static String  ORDERBY_RELEVANCY  = "relevancy" ;
+  public static String  ORDERBY_DATE  = "date" ;
+  public static String  ORDERBY_TITLE  = "title" ;
+  
+  
+  public final static Map<String, String> sortFieldsMap = new LinkedHashMap<String, String>(){{
+    put(ORDERBY_RELEVANCY, JCR_SCORE);
+    put(ORDERBY_DATE, EXO_DATE_CREATED);
+    put(ORDERBY_TITLE, EXO_SUMMARY);
+  }};
+  
+  public final static String[] searchFields =  {Utils.EXO_ID,Utils.EXO_EVENT_TYPE,EXO_SUMMARY,EXO_DESCRIPTION,
+    EXO_FROM_DATE_TIME,EXO_TO_DATE_TIME, EXO_LOCATION, JCR_SCORE, EXO_DATE_CREATED};
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
    * @return GregorianCalendar

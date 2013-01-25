@@ -102,6 +102,16 @@
     <key>org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector</key>
     <type>org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector</type>
   </component>
+  
+  <component>
+    <key>org.exoplatform.calendar.service.impl.EventSearchConnector</key>
+    <type>org.exoplatform.calendar.service.impl.EventSearchConnector</type>
+  </component>
+  
+  <component>
+    <key>org.exoplatform.calendar.service.impl.TaskSearchConnector</key>
+    <type>org.exoplatform.calendar.service.impl.TaskSearchConnector</type>
+  </component>
  
   <component>
     <key>org.exoplatform.services.jdbc.DataSourceProvider</key>

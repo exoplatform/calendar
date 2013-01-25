@@ -38,56 +38,36 @@ public class UnifiedQuery extends EventQuery {
 
   public String getQueryStatement() throws Exception {
     StringBuffer queryString = new StringBuffer("");
+    String[] filters = {Utils.EXO_SUMMARY, Utils.EXO_DESCRIPTION, Utils.EXO_LOCATION} ;
     if (getQueryType().equals(Query.SQL)) {
-      if (!Utils.isEmpty(getCalendarPath()))
-        queryString = new StringBuffer(" select * from " + getNodeType() + " where jcr:path like '" + getCalendarPath() + "/%'");
-      else
-        queryString = new StringBuffer(" select * from " + getNodeType() + " ");
-
       String text = getText() ;
       if (!Utils.isEmpty(text)) {
-        Collection<String> inputs = parse(text) ;
-        queryString.append(" and (");
-        String[] filters = {Utils.EXO_SUMMARY,Utils.EXO_DESCRIPTION, Utils.EXO_LOCATION} ;
-        int filterCount = 0 ;
-        for(String filter : filters) {
-          if(filterCount != 0) queryString.append(" or (");
-          else queryString.append(" (");
-          for (String words : inputs) {
-            words.replaceAll("-", Utils.EMPTY_STR);
-            String[] wordSet = words.split(Utils.SPACE);
-            if(wordSet.length > 1) {
-              queryString.append(" (");
-              int count = 0 ;
-              for(String word : wordSet) {
-                if(word.trim().length() > 0){ 
-                  if(count != 0) queryString.append(" and (");
-                  else queryString.append(" (");
-                  queryString.append(filter + " like '%" + word.trim() + "%'");
-                  queryString.append(")") ;
-                  count ++;
-                }
-              }
-              queryString.append(" ) ");
-            } else {
-              queryString.append(" or (");
-              queryString.append(filter + " like '%" + words + "%'");
-              queryString.append(" ) ");
-            }  
-            // queryString.append(" or " + Utils.EXO_DESCRIPTION + " like '%" + text + "%'");
-            //queryString.append(" or " + Utils.EXO_LOCATION + " like '%" + text + "%'");
-            //queryString.append(" or " + Utils.EXO_PARTICIPANT + " like '%" + text + "%'");
-            //queryString.append(" or " + Utils.EXO_INVITATION + " like '%" + text + "%'");
-            // queryString.append(" and contains (.,'"+ text +"') ") ;
-            //queryString.append(")");
-          }
-
+        queryString = new StringBuffer("SELECT ");
+        queryString.append(repeat("%s", Arrays.asList(Utils.searchFields), ","));
+        queryString.append(" FROM " + getNodeType() + " WHERE ");
+        if (!Utils.isEmpty(getEventType())) {
+          queryString.append(Utils.EXO_EVENT_TYPE).append(" = '").append(getEventType()).append("' AND (");
         }
-        filterCount ++ ;
-        queryString.append(" ) ") ;
-      }
-      if (!Utils.isEmpty(getEventType())) {
-        queryString.append(" and " + Utils.EXO_EVENT_TYPE + " = '" + getEventType() + "'");
+        Collection<String> inputs = parse(text) ;
+        int inputCount = 0 ;
+        for(String keyword : inputs){
+          if(inputCount > 0) queryString.append(" OR ");
+          //keyword.replaceAll("\"", "\\\"").replaceAll("-", Utils.EMPTY_STR);
+          int filterCount = 0 ;
+          for(String filter : filters) {
+            if(filterCount > 0) queryString.append(" OR ");
+            queryString.append("CONTAINS(").append(filter).append(",'").append(keyword).append("')");
+            filterCount ++ ;
+          }
+          inputCount ++ ;
+        }
+        if (!Utils.isEmpty(getEventType())) {
+          queryString.append(") ");
+        }
+        if(getOrderBy() != null && getOrderBy().length > 0) {
+          queryString.append(" ORDER BY ").append(getOrderBy()[0]);
+          if(!Utils.isEmpty(getOrderType())) queryString.append(" ").append(getOrderType().toUpperCase());
+        }
       }
     }
     return queryString.toString();
@@ -103,5 +83,15 @@ public class UnifiedQuery extends EventQuery {
     String remain = matcher.replaceAll("").replaceAll("\"", "").trim(); //remove all remaining double quotes
     if(!remain.isEmpty()) terms.addAll(Arrays.asList(remain.split("\\s+")));
     return terms;
+  }
+  
+  private static String repeat(String format, Collection<String> strArr, String delimiter){
+    StringBuilder sb=new StringBuilder();
+    String delim = "";
+    for(String str:strArr) {
+      sb.append(delim).append(String.format(format, str));
+      delim = delimiter;
+    }
+    return sb.toString();
   }
 }
