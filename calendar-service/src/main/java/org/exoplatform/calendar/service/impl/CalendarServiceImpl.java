@@ -294,18 +294,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
-    CalendarEvent oldEvent = null;
-    if(!isNew) oldEvent = getGroupEvent(event.getId());
-    storage_.savePublicEvent(calendarId, event, isNew);
     for (CalendarEventListener cel : eventListeners_) {
-      if (isNew) {
         cel.savePublicEvent(event, calendarId);
-        storage_.savePublicEvent(calendarId, event, false);
-      }
-      else if(oldEvent != null) {
-        cel.updatePublicEvent(oldEvent, event, calendarId);
-        storage_.savePublicEvent(calendarId, event, false);
-      }
+        storage_.savePublicEvent(calendarId, event, isNew);
     }
   }
 
@@ -468,6 +459,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       }
     }
     storage_.moveEvent(fromCalendar, toCalendar, fromType, toType, calEvents, username);
+
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEventListener cel : eventListeners_) {
         for (CalendarEvent event : calEvents) 
@@ -477,6 +469,16 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           }
       }
     }
+    
+    if (fromType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PRIVATE)) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) ) {
+      for(CalendarEventListener cel : eventListeners_) {
+        for (CalendarEvent event : calEvents) {
+          cel.savePublicEvent(getGroupEvent(event.getId()), toCalendar);
+          storage_.savePublicEvent(toCalendar, event, false) ;
+        }
+      }
+    }
+
   }
 
   /**
