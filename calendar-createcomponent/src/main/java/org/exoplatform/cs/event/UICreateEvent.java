@@ -163,7 +163,33 @@ public class UICreateEvent extends UIForm {
                 calEvent.setFromDateTime(from);
                 calEvent.setToDateTime(to);
                 calEvent.setCalType(uiForm.calType_);
+                String calName="";
+                if(calService.getUserCalendar(username,uiForm.getEventCalendar())!=null){
+                    calName= calService.getUserCalendar(username,uiForm.getEventCalendar()).getName();
 
+                    if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(username)) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(NewUserListener.defaultCalendarName)) {
+                        calName = getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+
+                    }
+                }else {
+                    if(calService.getGroupCalendar(uiForm.getEventCalendar())!=null){
+
+
+                        calName= getGroupCalendarName(calService.getGroupCalendar(uiForm.getEventCalendar()).getGroups()[0].substring(calService.getGroupCalendar(uiForm.getEventCalendar()).getGroups()[0].lastIndexOf("/") + 1),
+                                calService.getGroupCalendar(uiForm.getEventCalendar()).getName()) ;
+
+                    } else{
+
+                        if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner())) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(NewUserListener.defaultCalendarName)) {
+                            calName = getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+
+                        }
+                        String owner = "";
+                        if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner() != null) owner = calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner() + " - ";
+                        calName=owner+calName;
+                    }
+
+                }
                 if (uiForm.calType_.equals(PRIVATE_TYPE)) {
                     calService.saveUserEvent(username, calEvent.getCalendarId(), calEvent, true);
                 } else if (uiForm.calType_.equals(SHARED_TYPE)) {
@@ -171,7 +197,7 @@ public class UICreateEvent extends UIForm {
                 } else if (uiForm.calType_.equals(PUBLIC_TYPE)) {
                     calService.savePublicEvent(calEvent.getCalendarId(), calEvent, true);
                 }
-                String message = "The " + calEvent.getEventType() + " added to the " + calService.getUserCalendar(username, uiForm.getEventCalendar()).getName();
+                String message = "The " + calEvent.getEventType() + " added to the " + calName;
                 Event<UIComponent> cancelEvent = uiForm.<UIComponent>getParent().createEvent("Cancel", Event.Phase.PROCESS, event.getRequestContext());
                 if (cancelEvent != null) {
                     cancelEvent.broadcast();
