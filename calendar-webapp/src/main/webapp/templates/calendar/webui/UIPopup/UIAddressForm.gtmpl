@@ -13,87 +13,66 @@
  //rcontext.getJavascriptManager().addJavascript('cs.Utils.captureInput("'+uiform.FIELD_KEYWORD+'","'+actionLink+'") ;') ;
  //rcontext.getJavascriptManager().addJavascript('cs.CSUtils.CheckBox.init("' + uiform.id + '"); ') ;
 %>
-<div class="UIInsertAddress">
-  <div class="InsertAddressContainer">
-    <div class="UISearch">
-      <div class="UIBarStyle">
-        <div class="NormalBarStyle">
-          <div class="LeftBar">
-            <div class="RightBar">
-              <div class="MiddleBar ClearFix">
-                <div class="UIAddressSearchForm">
-                  <div class="QuickSearch ClearFix">
-                    <div class="SearchTitle"><%=uiform.getLabel(uiform.FIELD_KEYWORD)%></div>
-                    <%uiform.renderField(uiform.FIELD_KEYWORD)%>
-                    <a class="SearchIcon" href="<%=uicomponent.event('Search')%>" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel(uiform.FIELD_KEYWORD)%>"><span></span></a>
-                  </div>  
-                </div>
-                <div class="AddressesGroup ClearFix">
-                  <div class="AddressLabel"><%=uiform.getLabel(uiform.FIELD_GROUP)%></div>
-                   <%uiform.renderField(uiform.FIELD_GROUP)%>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>        
-    </div>
-    
-    <div class="AddressContainer">
-      <div class="ListAddress">
-      
-        <table cellspacing="0" borderspacing="0" class="UIGrid">
+<div class="uiInsertAddress">
+  <div class="insertAddressContainer resizable">
+		<div class="uiBox ">
+			<div class="uiContentBox clearfix">
+				<div class="uiAddressSearchForm pull-left">
+				  <div class="quickSearch">
+					<span class="searchTitle"><%=uiform.getLabel(uiform.FIELD_KEYWORD)%></span>&nbsp;
+					<span class="inputMedium"><%uiform.renderField(uiform.FIELD_KEYWORD)%></span>&nbsp;
+					<a class="uiIconSearch uiIconLightGray" href="<%=uicomponent.event('Search')%>" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel(uiform.FIELD_KEYWORD)%>"><span></span></a>
+				  </div>  
+				</div><!--uiAddressSearchForm-->
+				<div class="addressesGroup pull-right">
+				  <span class="addressLabel"><%=uiform.getLabel(uiform.FIELD_GROUP)%>&nbsp;</span>
+				   <span class="inputLarge"><%uiform.renderField(uiform.FIELD_GROUP)%></span>
+				</div>   
+			</div>			   
+		</div><!--uiBox-->
+		
+    <div class="addressContainer">
+      <div class="listAddress">      
+        <table cellspacing="0" borderspacing="0" class="uiGrid table table-hover table-striped ">
             <thead>
               <tr>
-                <th style="width: 20px;" class="BorderAddress"><input type="checkbox" class="checkbox" value="4" /></th>
-                <th class="BorderAddress">
-                  <div class="BlueDownArrowIcon">
-                    <div class="Label"><%=uiform.getLabel("name")%></div>
-                  </div>
-                </th>
-                <th style="width: 48%;" >
-                  <div class="BlueDownArrowIcon">
-                    <div class="Label"><%=uiform.getLabel("email")%></div>
-                  </div>
-                </th>
+                <th width="20" >
+					<span class="uiCheckbox">
+						<input type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/>
+						<span></span>
+					</span>
+				</th>
+                <th ><%=uiform.getLabel("name")%></th>
+                <th><%=uiform.getLabel("email")%></th>
               </tr>
             </thead>
             <tbody>
               <%
-          def rowClass = "";
-        boolean even = true;
                 for (ContactData contact : uicomponent.getContacts()) {
-                  checkboxField = uicomponent.getChildById(contact.getId());
-           if (even) rowClass = "EvenRow";
-           else rowClass = "OddRow";
-           even = !even;
+                  checkboxField = uicomponent.getChildById(contact.getId());           
               %>
-                <tr class="$rowClass">
-                  <td class="BorderAddress">
+                <tr>
+                  <td >
                     <%
                       if (checkboxField != null) { uicomponent.renderField(checkboxField); }
                     %>
                   </td>
-                  <td class="text BorderAddress"><%=contact.getFullName()%></td>
-                  <td class="text"><%=contact.getEmail() != null ? contact.getEmail() : "" %></td>
+                  <td ><%=contact.getFullName()%></td>
+                  <td ><%=contact.getEmail() != null ? contact.getEmail() : "" %></td>
                 </tr>
               <%}%>
         </tbody>
         </table>      
         <%_ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");%>        
-      </div>
-      
+      </div>      
     </div>
-
-  </div>
-  
-  <div class="UIAction">
+  </div><!--  insertAddressContainer-->
+  <div class="uiAction uiActionBorder">
     <%for(String action : uicomponent.getActions()){
             String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
           %>
-      <a href="<%=uicomponent.event(action)%>" class="ActionButton LightBlueStyle">$actionLabel</a>
+      <a href="<%=uicomponent.event(action)%>" class="btn">$actionLabel</a>
     <%}%>
-  </div>
-  
+  </div>  
 </div>
 <% uiform.end() %>
