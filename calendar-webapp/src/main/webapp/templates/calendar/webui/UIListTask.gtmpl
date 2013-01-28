@@ -37,8 +37,8 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 <thead>
 <tr>
 <th style="width: 25px" class="center">
-	<span class="uiCheckbox">
-		<input type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/>
+	<span class="uiCheckbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>">
+		<input type="checkbox" class="checkbox"  value="4"/>
 	<span></span></span>
 </th>
             <th style="width: 40px;" class="center"><i class="uiIconAttach uiIconLightGray"></i></th>

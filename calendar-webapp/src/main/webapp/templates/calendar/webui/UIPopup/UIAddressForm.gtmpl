@@ -37,8 +37,8 @@
             <thead>
               <tr>
                 <th width="20" >
-					<span class="uiCheckbox">
-						<input type="checkbox" class="checkbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" value="4"/>
+					<span class="uiCheckbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>">
+						<input type="checkbox" class="checkbox"  value="4"/>
 						<span></span>
 					</span>
 				</th>
