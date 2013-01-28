@@ -147,7 +147,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
                        for(reminder in event.getReminders()) {
                           String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
                         %>
-                        <a class="controlButton" ><%=reminder.getReminderType()%></a>&nbsp;
+                        <span class="controlButton" ><%=reminder.getReminderType()%></span>&nbsp;
                         <%          
                        }                    
                  %>
