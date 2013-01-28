@@ -52,6 +52,8 @@ public class Reminder {
   private String               emailAddress;
 
   private Date                 fromDateTime;
+  
+  private Date toDateTime;
 
   private boolean              isRepeat       = false;
 
@@ -60,6 +62,24 @@ public class Reminder {
   private String               summary;
 
   private String               description;
+  
+  private String location;
+
+  public Date getEndDateTime() {
+    return toDateTime;
+  }
+
+  public void setEndDateTime(Date endDateTime) {
+    this.toDateTime = endDateTime;
+  }
+  
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
+  }
 
   public Reminder() {
     id = "Reminder" + IdGenerator.generate();

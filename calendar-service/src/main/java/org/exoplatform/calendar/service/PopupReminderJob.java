@@ -57,6 +57,7 @@ public class PopupReminderJob extends MultiTenancyJob {
       super.run();
       SessionProvider provider = SessionProvider.createSystemProvider();
       try {
+        log_.info("CALENDAR POPUP REMINDER STARTED");
         if (log_.isDebugEnabled())
           log_.debug("Calendar popup reminder service");
         java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
@@ -89,11 +90,27 @@ public class PopupReminderJob extends MultiTenancyJob {
             Calendar tempCal = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate();
             rmdObj.setFromDateTime(tempCal.getTime());
           }
+          
           if (reminder.hasProperty(Utils.EXO_SUMMARY))
             rmdObj.setSummary(reminder.getProperty(Utils.EXO_SUMMARY).getString());
           rmdObj.setAlarmBefore(remindTime);
           if (reminder.hasProperty(Utils.EXO_REMINDER_TYPE))
             rmdObj.setReminderType(reminder.getProperty(Utils.EXO_REMINDER_TYPE).getString());
+          
+          // @since relooking, add infos about location, description and end time to rmdObj
+          if(reminder.hasProperty(Utils.EXO_LOCATION)) {
+            rmdObj.setLocation(reminder.getProperty(Utils.EXO_LOCATION).getString());
+          }
+          
+          if(reminder.hasProperty(Utils.EXO_DESCRIPTION)) {
+            rmdObj.setDescription(reminder.getProperty(Utils.EXO_DESCRIPTION).getString());
+          }
+          
+          if(reminder.hasProperty(Utils.EXO_TO_DATE_TIME)) {
+            Calendar tmpDate = reminder.getProperty(Utils.EXO_TO_DATE_TIME).getDate();
+            rmdObj.setEndDateTime(tmpDate.getTime());
+          }
+          
           if (isRepeat) {
             if (fromCalendar.getTimeInMillis() >= fromTime) {
               reminder.setProperty(Utils.EXO_IS_OVER, true);
@@ -119,6 +136,7 @@ public class PopupReminderJob extends MultiTenancyJob {
               JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
               JsonValue json = generatorImpl.createJsonObject(rmdObj);
               continuation.sendMessage(user, "/eXo/Application/Calendar/messages", json, rmdObj.toString());
+              log_.info(String.format("sent message for event: %s", rmdObj.getSummary()));
             }
           }
         }

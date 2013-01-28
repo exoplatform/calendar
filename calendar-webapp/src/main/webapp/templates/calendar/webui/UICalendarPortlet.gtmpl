@@ -29,12 +29,13 @@
     </div>
       
       <div class="UICalendarEventTooltip" ><span></span></div>
-		<div class="alert uiNotification uiCalNotification" >
+      
+		<div class="alert uiNotification uiCalNotification" style="display:none;" >
 			<a data-dismiss="alert" href="#" class="close " data-placement="bottom" rel="tooltip"  data-original-title="close"><i class="uiIconClose uiIconLightGray"></i></a>
 			<div class="clearfix ">
 				<div class="pull-left"><i class="uiIconBell"></i></div>
 				<div class="text">
-					<p><strong>nofication</strong></p>					
+					<p><strong>Notifications</strong></p>					
 				</div>
 			</div>
 			<div class="notificationBox">
@@ -44,8 +45,8 @@
 				<div class="clearfix">
 					<div class="pull-left"><i class="uiIconClock uiIconLightGray"></i></div>
 					<div class="text">
-						<p class="fromTime">sun january 12 , 2012 10: 00AM</p>
-						<p class="fromTo">Mon january 12 , 2012 10: 00AM</p>
+						<p class="fromTime">Sun january 12 , 2012 10: 00AM</p>
+						<p class="toTime">Mon january 12 , 2012 10: 00AM</p>
 					</div>
 				</div>
 				<div class="clearfix">
