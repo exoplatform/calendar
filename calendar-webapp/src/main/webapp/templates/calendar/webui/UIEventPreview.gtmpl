@@ -123,7 +123,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 				</td>
 			</tr>
 			<tr>
-				<td class="right"><i class="<%=event.getEventState()%>Icon"></i>&nbsp;<%=uiform.getLabel('RepeatEvent')%></td>
+				<td class="right"><%=uiform.getLabel('RepeatEvent')%></td>
 				<td><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
 			</tr>
 			<tr>	
