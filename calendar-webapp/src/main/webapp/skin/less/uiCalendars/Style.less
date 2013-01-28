@@ -83,3 +83,31 @@
 		margin: 0 0 15px 0;
 	}
 }
+
+/**=========================calNotification===========================*/
+
+.uiCalNotification {
+	min-width:250px;
+	position: absolute;
+    right: 30px;
+    top: 124px;
+    z-index: 2;
+	.pull-left + .text ,.title{
+		margin-left: 32px;
+		line-height: 18px;
+	}
+	i {
+		.square(16px);
+	}	
+	.uiIconBell {
+		background-image: url("/calendar/skin/DefaultSkin/images/Icons/icon-bell.png");
+		background-position: 0px 0px;
+		&:hover {
+			background-image: url("/calendar/skin/DefaultSkin/images/Icons/icon-bell.png");
+			background-position: 0px 0px;
+		}
+	}
+	.description {
+		color: #808080;
+	}
+}
