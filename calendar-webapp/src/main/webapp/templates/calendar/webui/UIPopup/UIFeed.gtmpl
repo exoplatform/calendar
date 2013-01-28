@@ -4,8 +4,8 @@
   String serverBaseUrl = CalendarUtils.getServerBaseUrl();
 %>
 <%uiform.begin()%>
-  <div class="UIFeed">
-     <div class="FeedContent">
+  <div class="uiFeed resizable">
+     <div class="feedContent">
        <%
          List feeds = uicomponent.getFeeds() ;
          if(feeds.size() == 0) {
@@ -17,15 +17,15 @@
            for(feed in feeds) {
              String feedUrl = serverBaseUrl + feed.getUrl().substring(1);
              %>
-               <a href="<%=feedUrl%>" class="Icon IconFeed" target="_blank"><%=feed.getTitle()%></a> 
-               <div class="FeedLink">(<%=feedUrl%>)</div>
+               <a href="<%=feedUrl%>" target="_blank"><i class="uiIconRss  uiIconLightGray" ></i>&nbsp;<%=feed.getTitle()%></a> 
+               <div class="feedLink">(<%=feedUrl%>)</div>
              <%
            }
          }
        %>
      </div>
   </div>
-	<div class="uiAction">
+	<div class="uiAction uiActionBorder">
 		<%
 		  String actionLabel = _ctx.appRes(uicomponent.getName() + ".action.Close") ;       
 		 %>
