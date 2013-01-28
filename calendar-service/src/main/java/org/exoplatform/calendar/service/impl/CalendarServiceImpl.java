@@ -294,9 +294,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    storage_.savePublicEvent(calendarId, event, isNew);
     for (CalendarEventListener cel : eventListeners_) {
+      if (isNew) {
         cel.savePublicEvent(event, calendarId);
-        storage_.savePublicEvent(calendarId, event, isNew);
+        storage_.savePublicEvent(calendarId, event, false);
+      }
     }
   }
 
