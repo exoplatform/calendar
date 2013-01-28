@@ -20,8 +20,7 @@ import java.util.Collection;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.services.jcr.RepositoryService;
-import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.container.xml.InitParams;
 
 /**
  * Created by The eXo Platform SAS
@@ -31,9 +30,8 @@ import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
  */
 public class EventSearchConnector extends CalendarSearchServiceConnector {
 
-  public EventSearchConnector(NodeHierarchyCreator nodeHierarchyCreator,
-                              RepositoryService repoService) {
-    super(nodeHierarchyCreator, repoService);
+  public EventSearchConnector(InitParams initParams) {
+    super(initParams);
     // TODO Auto-generated constructor stub
   }
 

@@ -380,16 +380,23 @@ public class Utils {
   public static String  ORDERBY_RELEVANCY  = "relevancy" ;
   public static String  ORDERBY_DATE  = "date" ;
   public static String  ORDERBY_TITLE  = "title" ;
+  public static String DATE_TIME_FORMAT = "EEEEE, MMMMMMMM d, yyyy K:mm a";
   
   
   public final static Map<String, String> sortFieldsMap = new LinkedHashMap<String, String>(){{
     put(ORDERBY_RELEVANCY, JCR_SCORE);
-    put(ORDERBY_DATE, EXO_DATE_CREATED);
+    put(ORDERBY_DATE, EXO_DATE_MODIFIED);
     put(ORDERBY_TITLE, EXO_SUMMARY);
   }};
   
-  public final static String[] searchFields =  {Utils.EXO_ID,Utils.EXO_EVENT_TYPE,EXO_SUMMARY,EXO_DESCRIPTION,
-    EXO_FROM_DATE_TIME,EXO_TO_DATE_TIME, EXO_LOCATION, JCR_SCORE, EXO_DATE_CREATED};
+  public final static String[] selectFields =  {EXO_ID, EXO_EVENT_TYPE,EXO_SUMMARY, EXO_CALENDAR_ID,EXO_DESCRIPTION,
+    EXO_FROM_DATE_TIME,EXO_TO_DATE_TIME, EXO_LOCATION, JCR_SCORE, EXO_DATE_CREATED, EXO_DATE_MODIFIED};
+  
+  public static String[] searchFields = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
+  
+  public static String EVENT_ICON = "uiIconCalClockMini" ;
+  public static String TASK_ICON = "uiIconCalTaskMini" ;
+  
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
    * @return GregorianCalendar

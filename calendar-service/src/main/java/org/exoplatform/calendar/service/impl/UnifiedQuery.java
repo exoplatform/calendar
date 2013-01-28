@@ -38,12 +38,12 @@ public class UnifiedQuery extends EventQuery {
 
   public String getQueryStatement() throws Exception {
     StringBuffer queryString = new StringBuffer("");
-    String[] filters = {Utils.EXO_SUMMARY, Utils.EXO_DESCRIPTION, Utils.EXO_LOCATION} ;
+    
     if (getQueryType().equals(Query.SQL)) {
       String text = getText() ;
       if (!Utils.isEmpty(text)) {
         queryString = new StringBuffer("SELECT ");
-        queryString.append(repeat("%s", Arrays.asList(Utils.searchFields), ","));
+        queryString.append(repeat("%s", Arrays.asList(Utils.selectFields), ","));
         queryString.append(" FROM " + getNodeType() + " WHERE ");
         if (!Utils.isEmpty(getEventType())) {
           queryString.append(Utils.EXO_EVENT_TYPE).append(" = '").append(getEventType()).append("' AND (");
@@ -54,7 +54,7 @@ public class UnifiedQuery extends EventQuery {
           if(inputCount > 0) queryString.append(" OR ");
           //keyword.replaceAll("\"", "\\\"").replaceAll("-", Utils.EMPTY_STR);
           int filterCount = 0 ;
-          for(String filter : filters) {
+          for(String filter : Utils.searchFields) {
             if(filterCount > 0) queryString.append(" OR ");
             queryString.append("CONTAINS(").append(filter).append(",'").append(keyword).append("')");
             filterCount ++ ;

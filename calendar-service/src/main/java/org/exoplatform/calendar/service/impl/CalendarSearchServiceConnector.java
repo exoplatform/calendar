@@ -19,7 +19,9 @@ package org.exoplatform.calendar.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -29,17 +31,23 @@ import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 
+import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.services.jcr.RepositoryService;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 
 /**
@@ -52,11 +60,19 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
 
   private NodeHierarchyCreator nodeHierarchyCreator_;
+  private CalendarService calendarService_;
+  private OrganizationService organizationService_;
 
-  private static final Log     log                 = ExoLogger.getLogger("cs.calendar.service");
+  private static final Log     log                 = ExoLogger.getLogger("cs.calendar.unified.search.service");
+  private Map<String, String> calendarMap = new HashMap<String, String>();
 
-  public CalendarSearchServiceConnector(NodeHierarchyCreator nodeHierarchyCreator, RepositoryService repoService) {
-    nodeHierarchyCreator_ = nodeHierarchyCreator;
+
+
+  public CalendarSearchServiceConnector(InitParams initParams) {
+    super(initParams);
+    nodeHierarchyCreator_  = (NodeHierarchyCreator) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(NodeHierarchyCreator.class);
+    calendarService_  = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarServiceImpl.class);
+    organizationService_ = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
   }
 
 
@@ -82,6 +98,28 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     try {
       String userId = ConversationState.getCurrent().getIdentity().getUserId() ;
       Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(SessionProvider.createSystemProvider(), userId);
+     
+      List<Calendar> calendars = calendarService_.getUserCalendars(userId, true);
+      GroupCalendarData sharedCalendar = calendarService_.getSharedCalendars(userId, true) ;
+      if(sharedCalendar != null) calendars.addAll(sharedCalendar.getCalendars());
+      Collection<Group> group = organizationService_.getGroupHandler().findGroupsOfUser(userId);
+      if(!group.isEmpty()) {
+        String[] groupIds = new String[group.size()];
+      int i = 0 ;
+      for(Group g : group) {
+        groupIds[i] = g.getId() ;
+        i++;
+      }
+      List<GroupCalendarData> groupCalendar = calendarService_.getGroupCalendars(groupIds, true, userId) ;
+      if(groupCalendar != null) 
+        for(GroupCalendarData gCal : groupCalendar){
+          if(gCal.getCalendars() != null) calendars.addAll(gCal.getCalendars());
+        }
+      }
+      for(Calendar cal : calendars){
+        calendarMap.put(cal.getId(), cal.getName()) ;
+      }
+
       EventQuery eventQuery = new UnifiedQuery(); 
       eventQuery.setQueryType(Query.SQL);
       eventQuery.setEventType(dataType);
@@ -102,7 +140,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
        */
       RowIterator rIt = result.getRows();
       while (rIt.hasNext()) {
-        events.add(getResult(rIt.nextRow()));
+        events.add(buildResult(rIt.nextRow()));
       }
     }
     catch (Exception e) {
@@ -112,35 +150,89 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   }
 
-  private SearchResult getResult(Object iter) {
+  private SearchResult buildResult(Object iter) {
     SearchResult result = new SearchResult() ;
     try {
       StringBuffer detail = new StringBuffer();
       result.setTitle(buildValue(Utils.EXO_SUMMARY, iter));
-      detail.append(result.getTitle()) ; 
+      detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
       result.setUrl(buildValue(Utils.EXO_ID, iter));
       result.setExcerpt(buildValue(Utils.EXO_DESCRIPTION, iter));
       detail.append(buildDetail(iter));
       if(detail.length() > 0) result.setDetail(detail.toString());
-      result.setRelevancy(getScore(iter));
+      result.setRelevancy(buildScore(iter));
+      result.setDate(buildDate(iter)) ;
+      result.setImageUrl(buildImageUrl(iter));
     }catch (Exception e) {
       log.info("Error when getting property from node " + e);
     }
     return result;
   }
 
-  private long getScore(Object iter){
-    try {
+  private String buildImageUrl(Object iter) throws RepositoryException{
+    String icon = "";
     if(iter instanceof Row){
       Row row = (Row) iter;
-      return row.getValue(Utils.JCR_SCORE).getLong() ;
-     }
+      if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
+        if(CalendarEvent.TYPE_EVENT.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString()))
+        icon = Utils.EVENT_ICON;
+        else icon = Utils.TASK_ICON;
+    } else {
+      Node eventNode = (Node) iter;
+      if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
+       if(CalendarEvent.TYPE_EVENT.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString()))
+         icon = Utils.EVENT_ICON;
+       else icon = Utils.TASK_ICON;
+      }
+    }
+    return icon;
+  }
+
+
+  private long buildDate(Object iter) {
+    try {
+      if(iter instanceof Row){
+        Row row = (Row) iter;
+        return row.getValue(Utils.EXO_DATE_MODIFIED).getLong() ;
+      } else {
+        Node eventNode = (Node) iter;
+        if(eventNode.hasProperty(Utils.EXO_DATE_MODIFIED)){
+          return eventNode.getProperty(Utils.EXO_DATE_MODIFIED).getDate().getTimeInMillis();
+        }
+      }
+    } catch (Exception e) {
+      log.info("No last modified date return by query " + e);
+    }
+    return 0;
+  }
+
+
+  private Object buildCalName(String property, Object iter) throws RepositoryException{
+    if(iter instanceof Row){
+      Row row = (Row) iter;
+      if(row.getValue(property) != null) return calendarMap.get(row.getValue(property).getString()) ;
+    } else {
+      Node eventNode = (Node) iter;
+      if(eventNode.hasProperty(property)){
+        return calendarMap.get(eventNode.getProperty(property).getString());
+      }
+    }
+    return null;
+  }
+
+
+  private long buildScore(Object iter){
+    try {
+      if(iter instanceof Row){
+        Row row = (Row) iter;
+        return row.getValue(Utils.JCR_SCORE).getLong() ;
+      }
     } catch (Exception e) {
       log.info("No score return by query " + e);
     }
     return 0;
   }
-  
+
   private String buildValue(String property, Object iter) throws RepositoryException{
     if(iter instanceof Row){
       Row row = (Row) iter;
@@ -155,7 +247,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   }
 
   private String buildDetail(Object iter) throws RepositoryException{
-    SimpleDateFormat df = new SimpleDateFormat("EEEEE, MMMMMMMM d, yyyy K:mm a") ;
+    SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT) ;
     StringBuffer detail = new StringBuffer();
     if(iter instanceof Row){
       Row row = (Row) iter;
