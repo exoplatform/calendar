@@ -305,13 +305,14 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   
   private void checkFieldsValueWithType(String calName, CalendarEvent calEvent, SearchResult item){
     assertEquals(calEvent.getSummary(), item.getTitle());
-    if(calEvent.getDescription() != null) assertEquals(calEvent.getDescription(), item.getExcerpt()) ;
     if(CalendarEvent.TYPE_EVENT.equals(calEvent.getEventType())){
       if(calEvent.getLocation() != null) assertEquals(calName + "-" + df.format(calEvent.getFromDateTime())+"-"+calEvent.getLocation(), item.getDetail()) ;
       assertEquals(Utils.EVENT_ICON, item.getImageUrl());
+      assertEquals(calEvent.getFromDateTime().getTime(), item.getDate());
     } else {
-      assertEquals(calName + "- Due for: -" + df.format(calEvent.getToDateTime()), item.getDetail()) ;
+     assertEquals(calName + "- Due for: -" + df.format(calEvent.getToDateTime()), item.getDetail()) ;
      assertEquals(Utils.TASK_ICON, item.getImageUrl());
+     assertEquals(calEvent.getToDateTime().getTime(), item.getDate());
     }
     assertEquals(true, item.getRelevancy() > 0);
   }

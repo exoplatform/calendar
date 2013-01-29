@@ -157,7 +157,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       result.setTitle(buildValue(Utils.EXO_SUMMARY, iter));
       detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
       result.setUrl(buildValue(Utils.EXO_ID, iter));
-      result.setExcerpt(buildValue(Utils.EXO_DESCRIPTION, iter));
+      result.setExcerpt(buildExcerpt(iter));
       detail.append(buildDetail(iter));
       if(detail.length() > 0) result.setDetail(detail.toString());
       result.setRelevancy(buildScore(iter));
@@ -168,6 +168,16 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     }
     return result;
   }
+
+  private String buildExcerpt(Object iter) throws RepositoryException{
+    if(iter instanceof Row){
+      Row row = (Row) iter;
+      if(row.getValue(Utils.JCR_EXCERPT_ROW) != null)
+        return row.getValue(Utils.JCR_EXCERPT_ROW).getString();
+    }
+     return "";
+  }
+
 
   private String buildImageUrl(Object iter) throws RepositoryException{
     String icon = "";
@@ -193,12 +203,22 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     try {
       if(iter instanceof Row){
         Row row = (Row) iter;
-        return row.getValue(Utils.EXO_DATE_MODIFIED).getLong() ;
+        if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
+          if(CalendarEvent.TYPE_EVENT.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString()))
+            return row.getValue(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
+          else return row.getValue(Utils.EXO_TO_DATE_TIME).getDate().getTimeInMillis();
       } else {
         Node eventNode = (Node) iter;
-        if(eventNode.hasProperty(Utils.EXO_DATE_MODIFIED)){
-          return eventNode.getProperty(Utils.EXO_DATE_MODIFIED).getDate().getTimeInMillis();
-        }
+        if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
+          if(CalendarEvent.TYPE_EVENT.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString()))
+          if(eventNode.hasProperty(Utils.EXO_FROM_DATE_TIME)){
+            return eventNode.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
+          }  
+          } else {
+            if(eventNode.hasProperty(Utils.EXO_TO_DATE_TIME)){
+              return eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTimeInMillis();
+            }  
+          }
       }
     } catch (Exception e) {
       log.info("No last modified date return by query " + e);
@@ -243,7 +263,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         return eventNode.getProperty(property).getString();
       }
     } 
-    return null;
+    return "";
   }
 
   private String buildDetail(Object iter) throws RepositoryException{

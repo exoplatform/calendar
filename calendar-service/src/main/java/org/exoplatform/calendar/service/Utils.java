@@ -380,17 +380,18 @@ public class Utils {
   public static String  ORDERBY_RELEVANCY  = "relevancy" ;
   public static String  ORDERBY_DATE  = "date" ;
   public static String  ORDERBY_TITLE  = "title" ;
-  public static String DATE_TIME_FORMAT = "EEEEE, MMMMMMMM d, yyyy K:mm a";
-  
+  public static String  DATE_TIME_FORMAT = "EEEEE, MMMMMMMM d, yyyy K:mm a";
+  public static String  JCR_EXCERPT = "excerpt(.)";
+  public static String  JCR_EXCERPT_ROW = "rep:excerpt(.)";
   
   public final static Map<String, String> sortFieldsMap = new LinkedHashMap<String, String>(){{
     put(ORDERBY_RELEVANCY, JCR_SCORE);
-    put(ORDERBY_DATE, EXO_DATE_MODIFIED);
+    put(ORDERBY_DATE, EXO_FROM_DATE_TIME);
     put(ORDERBY_TITLE, EXO_SUMMARY);
   }};
   
   public final static String[] selectFields =  {EXO_ID, EXO_EVENT_TYPE,EXO_SUMMARY, EXO_CALENDAR_ID,EXO_DESCRIPTION,
-    EXO_FROM_DATE_TIME,EXO_TO_DATE_TIME, EXO_LOCATION, JCR_SCORE, EXO_DATE_CREATED, EXO_DATE_MODIFIED};
+    EXO_FROM_DATE_TIME,EXO_TO_DATE_TIME, EXO_LOCATION, JCR_SCORE, JCR_EXCERPT};
   
   public static String[] searchFields = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
   
