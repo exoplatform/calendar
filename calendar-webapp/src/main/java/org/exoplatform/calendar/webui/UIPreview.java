@@ -21,17 +21,22 @@ import java.util.LinkedHashMap;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupComponent;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by The eXo Platform SARL
@@ -43,14 +48,20 @@ import org.exoplatform.webui.event.EventListener;
     lifecycle = UIFormLifecycle.class,
     template =  "app:/templates/calendar/webui/UIDefaultPreview.gtmpl",
     events = {
-      @EventConfig(listeners = UIPreview.DownloadActionListener.class),  
+      @EventConfig(listeners = UIPreview.DownloadActionListener.class),
       @EventConfig(listeners = UICalendarView.EditActionListener.class),  
-      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete")
+      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+      @EventConfig(listeners = UIPreview.CloseWindowActionListener.class)
     }
 )
-public class UIPreview extends UICalendarView implements UIPopupComponent {
+public class UIPreview extends UICalendarView implements UIPopupComponent
+{
   private CalendarEvent event_ = null ;
   private boolean isShowPopup_ = false ;
+
+  public static boolean isClosed = false;
+
+  private static final String CLOSE_POPUP = "CloseWindow";
 
   public UIPreview() throws Exception {}
 
@@ -136,4 +147,36 @@ public class UIPreview extends UICalendarView implements UIPopupComponent {
   public String getDefaultStartTimeOfEvent() {
     return String.valueOf(calendar_.getTimeInMillis());
   }
+
+  /**
+   * get the url to the calendar portlet, used for template to return to the
+   * calendar portlet or the calendar page in the space
+   *
+   * @return
+   */
+  private String getCalendarPortletUrl()
+  {
+    PortalRequestContext pContext = Util.getPortalRequestContext();
+    String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
+    if (requestedURL.indexOf(CalendarUtils.DETAILS_URL) != -1)
+      return requestedURL.substring(0, requestedURL.indexOf(CalendarUtils.DETAILS_URL));
+    if (requestedURL.indexOf(CalendarUtils.INVITATION_DETAIL_URL) != -1)
+      return requestedURL.substring(0, requestedURL.indexOf(CalendarUtils.INVITATION_DETAIL_URL));
+    return "";
+  }
+
+  public static class CloseWindowActionListener extends EventListener<UIPreview>
+  {
+    public void execute(Event<UIPreview> event) throws Exception
+    {
+      UIPreview uiPreview = event.getSource() ;
+      UIPopupAction uiPopupAction = uiPreview.getAncestorOfType(UIPopupAction.class) ;
+      uiPopupAction.deActivate() ;
+      /* we do not want to allow opening of popup */
+      isClosed = true;
+
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
+    }
+  }
+
 }
