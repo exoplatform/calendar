@@ -165,7 +165,6 @@ public class UICreateEvent extends UIForm {
                 calEvent.setCalType(uiForm.calType_);
                 String calName="";
                 if(calService.getUserCalendar(username,uiForm.getEventCalendar())!=null){
-                    calName= calService.getUserCalendar(username,uiForm.getEventCalendar()).getName();
 
                     if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(username)) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(NewUserListener.defaultCalendarName)) {
                         calName = getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
@@ -179,7 +178,7 @@ public class UICreateEvent extends UIForm {
                                 calService.getGroupCalendar(uiForm.getEventCalendar()).getName()) ;
 
                     } else{
-
+                         if( calService.getSharedCalendars(username,true).getCalendarById(uiForm.getEventCalendar())!=null){
                         if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner())) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(NewUserListener.defaultCalendarName)) {
                             calName = getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
 
@@ -188,7 +187,7 @@ public class UICreateEvent extends UIForm {
                         if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner() != null) owner = calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner() + " - ";
                         calName=owner+calName;
                     }
-
+                    }
                 }
                 if (uiForm.calType_.equals(PRIVATE_TYPE)) {
                     calService.saveUserEvent(username, calEvent.getCalendarId(), calEvent, true);
