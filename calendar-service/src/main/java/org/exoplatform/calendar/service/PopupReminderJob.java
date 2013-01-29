@@ -57,7 +57,6 @@ public class PopupReminderJob extends MultiTenancyJob {
       super.run();
       SessionProvider provider = SessionProvider.createSystemProvider();
       try {
-        log_.info("CALENDAR POPUP REMINDER STARTED");
         if (log_.isDebugEnabled())
           log_.debug("Calendar popup reminder service");
         java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
