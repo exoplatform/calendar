@@ -9,7 +9,7 @@
 %>
 <div class="uiForm uiRepeatEventForm ">
   <%uiform.begin()%>
-  <div class="form-horizontal ">
+  <div class="form-horizontal resizable">
 		<div class="control-group">
 			<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_REPEAT_TYPE)%>:</div>
 			<div class="controls selectboxSmall">

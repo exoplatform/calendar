@@ -30,8 +30,8 @@
 		margin: 0 10px 10px 0;
 		position: relative;
 		vertical-align: top;
-		.square(48px);
-		img {.square(48px);}
+		.square(50px);
+		img {.square(50px);}
 		.viewIconContainer {
 			display: none;
 			overflow: hidden;
@@ -75,11 +75,15 @@
 			right: 4px;
 			top: 4px;			
 			padding:0;
-			line-height: 10px;			
+			line-height: 10px;				
+			.box-shadow(0 0 0 transparent);	
+			&:hover {
+				border: 1px solid #767e81;
+			}		
 		}
 		
 	}
-	.uiPreview ,.closeButton {
+	.uiPreview {
 		.box-shadow(0 0 0 transparent);
 	}
 	.uiPreview,.viewContainer {

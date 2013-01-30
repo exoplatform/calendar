@@ -1,77 +1,44 @@
-<div class="UIQuickAddEvent" id="QuickAddEventContainer">
-	<div class="QuickAddEventContainer">
+<div class="uiQuickAddEvent" id="QuickAddEventContainer">
+	<div class="quickAddEventContainer">
 		<% uiform.begin()%>
-		<div class="HorizontalLayout">
-			<div class="FormContainer">
-				<table class="UIFormGrid">
-					<tbody>
-						<tr>
-							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.CHOIX)%>
-							</td>
-							<td class="FieldComponent" colspan="2">
-								<% uicomponent.renderField(uicomponent.CHOIX) %>
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.TITLE )%>
-							</td>
-							<td class="FieldComponent" colspan="2">
-								<% uicomponent.renderField(uicomponent.TITLE ) %>
-							</td>
-						</tr>
-						<tr>
-							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.Start_EVENT )%>
-							</td>
-							<div class="Date">
-								<td class="FieldComponent" colspan="2">
-									<% uicomponent.renderField(uicomponent.Start_EVENT) %>
-								</td>
-							</div>
-						</tr>
-						<tr>
-							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.END_EVENT )%>
-							</td>
-							<div class="Date">
-								<td class="FieldComponent" colspan="2">
-									<% uicomponent.renderField(uicomponent.END_EVENT) %>
-								</td>
-							</div>
-						</tr>
-						<tr>
-							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.CALENDAR )%>
-							</td>
-							<td class="FieldComponent" colspan="2">
-								<% uicomponent.renderField(uicomponent.CALENDAR ) %>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
- 
+				<div class="form-horizontal">
+					<div class="control-group">
+						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.CHOIX)%>:</label>
+						<div class="controls">
+							<% uicomponent.renderField(uicomponent.CHOIX) %>
+						</div>
+					</div>    
+					<div class="control-group">
+						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.TITLE )%>:</label>
+						<div class="controls">
+							<% uicomponent.renderField(uicomponent.TITLE ) %>
+						</div>
+					</div>    
+					<div class="control-group">
+						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.Start_EVENT )%>:</label>
+						<div class="controls">
+							<% uicomponent.renderField(uicomponent.Start_EVENT) %>
+						</div>
+					</div>    
+					<div class="control-group">
+						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.END_EVENT )%>:</label>
+						<div class="controls">
+							<% uicomponent.renderField(uicomponent.END_EVENT) %>
+						</div>
+					</div>   
+					<div class="control-group">
+						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.CALENDAR )%>:</label>
+						<div class="controls">
+							<% uicomponent.renderField(uicomponent.CALENDAR ) %>
+						</div>
+					</div>   
+				</div>
 		<% if(uicomponent.getActions() != null) { %>
-		<div class="$uicomponent.id">
-			<div class="UIAction">
-				<table class="ActionContainer" align="center">
-					<tr>
-
-						<% for(action in uicomponent.getActions()) { %>
-						<td align="center"><a href="<%=uicomponent.event(action)%>"
-							class="ActionButton LightBlueStyle">
-
-								<div class="ButtonLeft">
-									<div class="ButtonRight">
-										<div class="ButtonMiddle">
-											<%=_ctx.appRes(uicomponent.getId() + ".action." + action)%>
-										</div>
-									</div>
-								</div>
-						</a></td>
-						<% } %>
-					</tr>
-				</table>
+			<div id="$uicomponent.id" class="uiAction uiActionBorder">
+				<% for(action in uicomponent.getActions()) { %>
+				<a href="<%=uicomponent.event(action)%>" class="btn"><%=_ctx.appRes(uicomponent.getId() + ".action." + action)%></a>
+				<% } %>
 			</div>
-		</div>
 		<% }%>
 		<%uiform.end()%>
 	</div>

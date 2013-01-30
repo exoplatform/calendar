@@ -27,7 +27,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 
 %>
 <div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox">
-<% if (!uicomponent.isShowPopup()) { %>
+<% if (!uicomponent.isShowPopup()) { %><!-- TRUE when the preview is part of the calendar List View -->
 <div class="title">
  <a href="#" id="UIEventPreview_fullSize" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
  <strong><%=uiform.getLabel('eventDetail')%></strong>
@@ -123,7 +123,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 				</td>
 			</tr>
 			<tr>
-				<td class="right"><i class="<%=event.getEventState()%>Icon"></i>&nbsp;<%=uiform.getLabel('RepeatEvent')%></td>
+				<td class="right"><%=uiform.getLabel('RepeatEvent')%></td>
 				<td><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
 			</tr>
 			<tr>	
@@ -147,7 +147,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
                        for(reminder in event.getReminders()) {
                           String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
                         %>
-                        <a class="controlButton" ><%=reminder.getReminderType()%></a>&nbsp;
+                        <span class="controlButton" ><%=reminder.getReminderType()%></span>&nbsp;
                         <%          
                        }                    
                  %>
@@ -188,7 +188,8 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 	  def isEditable;
 	  if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
       else isEditable = "true";
-	  if ((!uicomponent.isShowPopup()) && isEditable) {   	
+	  if ((!uicomponent.isShowPopup()) && isEditable) {
+	  	// TRUE when the preview is part of the calendar List View
     %>
 	<div class="uiActionContainer">
 		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
@@ -201,5 +202,15 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 </td>
 </tr>
 </table></div>
+<!-- TRUE when the preview is in a popup -->
+<% if (uicomponent.isShowPopup()) {
+  String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP, uicomponent.id);
+  String actionLabel  = _ctx.appRes(uicomponent.id + ".action." + uicomponent.CLOSE_POPUP);
+  String calendarHome = uicomponent.getCalendarPortletUrl();
+%>
+  <div class="center" style="margin-top: 15px; margin-bottom: 5px;">
+    <button onclick="window.location.replace('$calendarHome'); $actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
+  </div>
+<% } %>
 <%uiform.end();%>
 </div>

@@ -1,4 +1,4 @@
-(function(cs, gj){
+(function(cs, gj, cometd){
 function Reminder() {} ;
 
 _module = {};
@@ -25,13 +25,23 @@ Reminder.prototype.initCometd = function() {
 }
 
 Reminder.prototype.alarm = function(eventObj){
-	var a = gj.parseJSON(eventObj.data);	
-	var message = '<a class="Item" href="#">('+ a.fromDateTime.hours + ':' + a.fromDateTime.minutes + ') ' +a.summary+'</a>' ;
-	var html = this.generateHTML(message) ;
-	var popup = gj(this.createMessage(html, message)).find('div.UIPopupNotification')[0]; 
-	eXo.calendar.Box.config(popup,popup.offsetHeight, 5, this.openCallback, this.closeBox) ;
-	window.focus() ;
-	return ;
+//	var a = gj.parseJSON(eventObj.data);	
+//	var message = '<a class="Item" href="#">('+ a.fromDateTime.hours + ':' + a.fromDateTime.minutes + ') ' +a.summary+'</a>' ;
+//	var html = this.generateHTML(message) ;
+//	var popup = gj(this.createMessage(html, message)).find('div.UIPopupNotification')[0]; 
+//	eXo.calendar.Box.config(popup,popup.offsetHeight, 5, this.openCallback, this.closeBox) ;
+//	window.focus() ;
+//	return ;
+    var event = gj.parseJSON(eventObj.data);
+    var popupReminder = gj('.uiCalNotification');
+    popupReminder.find('.title').text(event.summary);
+    var fromTime = new Date(event.fromDateTime);
+    var toTime = new Date(event.toDateTime);
+    popupReminder.find('p.fromTime').text(fromTime.toDateString());
+    popupReminder.find('p.toTime').text(toTime.toDateString());
+    popupReminder.find('p.location').text(event.location);
+    popupReminder.find('p.description').text(event.description);
+    popupReminder.css('display','block');
 } ;
 
 Reminder.prototype.openCallback = function(obj){
@@ -194,4 +204,4 @@ eXo.calendar.Reminder = new Reminder() ;
 
 _module.Reminder = eXo.calendar.Reminder;
 return _module;
-})(cs, gj);
+})(cs, gj,cometd);

@@ -19,7 +19,7 @@ requireJS.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPre
 uiform.begin() ;
 %>
 <div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox">
-<%if(!uicomponent.isShowPopup()){%>
+<%if(!uicomponent.isShowPopup()){%><!-- TRUE when the preview is part of the calendar List View -->
 <div class="title">
 <a href="#" id="maximizeDetails" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
 <strong><%=uiform.getLabel('taskDetail')%></strong>
@@ -176,7 +176,8 @@ uiform.begin() ;
 	  def isEditable;
 	  if (task.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(task);
       else isEditable = "true";
-	  if ((!uicomponent.isShowPopup()) && isEditable) {   	
+	  if ((!uicomponent.isShowPopup()) && isEditable) {
+	  	// TRUE when the preview is part of the calendar List View
     %>
 	  
 	  <div class="uiActionContainer">
@@ -194,4 +195,14 @@ uiform.begin() ;
 </table>
 </div>
 </div>
+<!-- TRUE when the preview is in a popup -->
+<% if (uicomponent.isShowPopup()) {
+    String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP, uicomponent.id);
+    String actionLabel  = _ctx.appRes(uicomponent.id + ".action." + uicomponent.CLOSE_POPUP);
+    String calendarHome = uicomponent.getCalendarPortletUrl();
+  %>
+    <div class="center" style="margin-top: 15px; margin-bottom: 5px;">
+      <button onclick="window.location.replace('$calendarHome'); $actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
+    </div>
+  <% } %>
 <%uiform.end();%>
