@@ -39,6 +39,7 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIComponent;
+import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
@@ -51,7 +52,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen
  *          hung.nguyen@exoplatform.com
- * Aus 01, 2007 2:48:18 PM 
+ * Aus 01, 2007 2:48:18 PM
+ *
+ * <br/>modified by: <a href="mailto:tuna@exoplatform.com">Anh-Tu NGUYEN<a/>
  */
 
 @ComponentConfig(
@@ -480,6 +483,8 @@ public class UICalendars extends UIForm  {
   public String[] getColors() {
     return UIFormColorPicker.Colors.COLORNAMES ;
   }
+
+
 
   private boolean canAddTaskAndEvent(UICalendars uiComponent, String calendarId, String calType) throws Exception {
     CalendarService calService = CalendarUtils.getCalendarService() ;
@@ -1078,11 +1083,14 @@ public class UICalendars extends UIForm  {
       UICalendars uiComponent = event.getSource() ;
       String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
+
       UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
       popupAction.deActivate() ;
+
       UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 500) ;
       uiPopupContainer.setId("UIPermissionSelectPopup") ;
-      UIAddEditPermission uiAddNewEditPermission = uiPopupContainer.addChild(UIAddEditPermission.class, null, null);
+
+      UISharedForm sharedForm = uiPopupContainer.addChild(UISharedForm.class, null, null);
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String username = CalendarUtils.getCurrentUser() ;
       Calendar cal = calService.getUserCalendar(username, selectedCalendarId) ;
@@ -1093,7 +1101,7 @@ public class UICalendars extends UIForm  {
         cal.setName(newName);
       }
 
-      uiAddNewEditPermission.init(null, cal, true) ;
+      sharedForm.init(null, cal, true);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }

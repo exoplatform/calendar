@@ -6,6 +6,7 @@
   import org.exoplatform.webui.form.input.UICheckBoxInput;
   import org.exoplatform.calendar.webui.UICalendarPortlet;
   import org.exoplatform.calendar.webui.UIActionBar;
+  import org.exoplatform.calendar.webui.popup.UISharedForm;
 
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
@@ -124,7 +125,8 @@
 	          def calendarId   = calendar.id ;
 		        def calendarName = calendar.name ;
 		        def color        = uicomponent.getColorMap().get("1" + ":" + calendarId) ;
-		        def isEditable   = uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms);
+		        //def isEditable   = uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms);
+		        def isEditable   = UISharedForm.canUserEditCalendar(CalendarUtils.getCurrentUser(), calendar);
 		        def css          = "iconCheckBox checkbox";
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId);
 

@@ -1,0 +1,77 @@
+<%
+  import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
+
+  def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+  requirejs.require("SHARED/jquery","gj");
+  requirejs.addScripts("gj('#PermissionOwnerInput').click(function() { if (gj('#PermissionOwnerInput').attr('value') === 'Select Owner') { gj('#PermissionOwnerInput').attr('value', ''); } });");
+  requirejs.addScripts("gj('#PermissionOwnerInput').blur(function() { var value = gj('#PermissionOwnerInput').attr('value'); if ((value == null) || (value === '')) { gj('#PermissionOwnerInput').attr('value', 'Select Owner'); } });");
+
+  uicomponent.renderChild(uicomponent.getChildById(uicomponent.POPUP_USER_SELECTOR));
+%>
+<div class="uiForm $uicomponent.id">
+  <% uiform.begin() %>
+    <div class="horizontalLayout">
+      <div class="formContainer">
+
+      <%
+         def share        = _ctx.appRes(uicomponent.id + ".label.Share");
+         def calendarName = "<strong>" + uicomponent.calendarName + "</strong>";
+         def shareNote    = _ctx.appRes(uicomponent.id + ".msg.share-calendar");
+         def note         = share + " " + calendarName + shareNote;
+      %>
+      <div class="control-label" style="margin: 5px;">$note</div>
+
+      <% uicomponent.renderChild(uicomponent.getChildById(uicomponent.PERMISSION_GRID)) ;
+         uicomponent.renderChild(uicomponent.getChildById(uicomponent.POPUP_GROUP_MEMBERSHIP_SELECTOR));
+      %>
+
+      <div>
+      <% uicomponent.renderChild(uicomponent.getChildById(uicomponent.INPUT_PERMISSION_OWNER)); %>
+
+       <%
+         Iterator<ActionData> it = uicomponent.getActionField(uicomponent.INPUT_PERMISSION_OWNER).iterator();
+         while (it.hasNext())
+         {
+           ActionData action  = it.next();
+           String actionLabel = _ctx.appRes(uicomponent.id + ".action." + action.getActionName());
+           String actionLink  = uicomponent.event(action.getActionListener());
+           String cssClass    = action.getCssIconClass();
+	         String style       = "position: relative; top: -5px; margin: 2px;";
+
+           if (action.getActionType() == action.TYPE_ICON)
+           {
+             %>
+               <a class="actionIcon" title="$actionLabel" data-placement="bottom" rel="tooltip" onclick="$actionLink" style="$style">
+                 <i class="$cssClass"></i>
+               </a>
+             <%
+           }
+           else if (action.getActionType() == uicomponent.TYPE_BUTTON)
+           {
+             %>
+               <button type="button" class="btn" onclick="$actionLink" href="javascript:void(0);" style="$style" title="$actionLabel">$actionLabel</button>
+             <%
+           }
+         }
+      %>
+      </div>
+
+	    <div class="uiAction uiActionBorder">
+      <%
+        for (action in uicomponent.getActions())
+        {
+	        String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action);
+	        String actionLink  = uicomponent.event(action);
+	        String cssClass    = "btn";
+	        if (action == "Save") cssClass = "btn btn-primary";
+	        %>
+	          <button type="button" class="$cssClass" href="javascript:void(0);" onclick="$actionLink">$actionLabel</button>
+	        <%
+        }
+      %>
+      </div>
+
+      </div>
+    </div>
+	<% uiform.end() %>
+</div>

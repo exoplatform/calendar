@@ -56,7 +56,7 @@ import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen
  *          hung.nguyen@exoplatform.com
- * Aus 01, 2007 2:48:18 PM 
+ * Aus 01, 2007 2:48:18 PM
  */
 @ComponentConfig(
     lifecycle = UIFormLifecycle.class,
@@ -71,9 +71,9 @@ import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
         @EventConfig(listeners = UICalendarForm.ShowPublicURLActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.ActiveActionListener.class, phase=Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.DeactiveActionListener.class, phase=Phase.DECODE),
-        @EventConfig(listeners = UICalendarForm.DeletePermissionActionListener.class),
+        @EventConfig(listeners = UICalendarForm.DeletePermissionActionListener.class, phase = Phase.DECODE),
         @EventConfig(listeners = UICalendarForm.OpenSelectGroupFormActionListener.class, phase=Phase.DECODE),
-        @EventConfig(listeners = UICalendarForm.AddGroupActionListener.class)
+        @EventConfig(listeners = UICalendarForm.AddGroupActionListener.class, phase = Phase.DECODE)
     }
 )
 public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, UISelector{
@@ -462,12 +462,19 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   protected boolean isPublic() throws Exception
   {
     UIGroupCalendarTab groupTab = getChildById(INPUT_SHARE) ;
+
+    /**
     for (Object groupObj : getPublicGroups()) {
       String groupId = ((Group)groupObj).getId() ;
       UIFormStringInput groupPermissionInput = groupTab.getChildById(groupId + PERMISSION_SUB) ;
-      if (groupPermissionInput != null) return true ;
+      if (groupPermissionInput == null) continue;
+      groupPermissionInput
     }
-    return false ;
+     **/
+
+    return (groupTab.getDisplayedGroups().length > 0);
+
+    //return false ;
   }
 
   /**
@@ -669,7 +676,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         displayName = displayName.trim() ;
         CalendarService calendarService = CalendarUtils.getCalendarService() ;
         String username = CalendarUtils.getCurrentUser() ;
-        if(uiForm.isPublic()) uiForm.calType_ = CalendarUtils.PUBLIC_TYPE ;
+        if (uiForm.isPublic()) uiForm.calType_ = CalendarUtils.PUBLIC_TYPE ;
         Calendar calendar = new Calendar() ;
         if (!uiForm.isAddNew_) calendar = uiForm.calendar_ ;
         calendar.setName(displayName) ;
@@ -710,7 +717,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
           calendar.setPublic(uiForm.isPublic()) ;
           List<String> listPermission = new ArrayList<String>() ;
           Set<String> groupsCalendarSet;
-          OrganizationService orgService = CalendarUtils.getOrganizationService() ;
+          OrganizationService orgService = CalendarUtils.getOrganizationService();
 
           /* if not add new one, update calendar */
           if (!uiForm.isAddNew())
@@ -743,13 +750,13 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
                 listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event);
               }
               /* else take the permission from current edit permission of calendar */
-              else
+            else
               {
-                /* loop through all calendar group permissions if one matches then add it into new list of edit permission */
+                /* loop through all calendar group permissions if one matches then add it into new listf edit permission */
                 for (String editPermission : calendar.getEditPermission())
                 {
                   if (editPermission.startsWith(groupId)) listPermission.add(editPermission);
-                }
+              }
               }
             }
           }
