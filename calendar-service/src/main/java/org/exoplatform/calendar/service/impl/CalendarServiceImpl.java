@@ -478,7 +478,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       }
     }
     
-    if (fromType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PRIVATE)) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) ) {
+    if (!fromType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) ) {
       for(CalendarEventListener cel : eventListeners_) {
         for (CalendarEvent event : calEvents) {
           cel.savePublicEvent(event, toCalendar);
@@ -774,6 +774,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   @Override
   public void updateOccurrenceEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception {
+    // keep map of old events to compare
     Map<String,  CalendarEvent> oldEventList = new HashMap<String, CalendarEvent>();
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEvent event : calEvents) {
@@ -783,11 +784,17 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     storage_.updateOccurrenceEvent(fromCalendar, toCalendar, fromType, toType, calEvents, username);
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEventListener cel : eventListeners_) {
-        for (CalendarEvent event : calEvents) 
-          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null) {
+        for (CalendarEvent event : calEvents) {
+          // if event existed, update the activity
+          if (oldEventList.get(event.getId()) != null) {
             cel.updatePublicEvent(oldEventList.get(event.getId()), event, toCalendar);
             storage_.savePublicEvent(toCalendar, event, false) ;
+          } else {
+            // publish new activity
+            cel.savePublicEvent(event, toCalendar);
+            storage_.savePublicEvent(toCalendar, event, false);
           }
+        }
       }
     }
   }
@@ -813,6 +820,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   @Override
   public void removeRecurrenceSeries(String username, CalendarEvent originalEvent) throws Exception {
     storage_.removeRecurrenceSeries(username, originalEvent);
+    if(originalEvent.getActivityId() != null) {
+      for (CalendarEventListener cel : eventListeners_) {
+        cel.deletePublicEvent(originalEvent, originalEvent.getCalendarId());
+      }
+    }
   }
 
   /*
@@ -823,12 +835,16 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void updateRecurrenceSeries(String fromCalendar, String toCalendar, String fromType, String toType, CalendarEvent occurrence, String username) throws Exception {
     CalendarEvent oldEvent = getGroupEvent(occurrence.getId());
     storage_.updateRecurrenceSeries(fromCalendar, toCalendar, fromType, toType, occurrence, username);
-    for (CalendarEventListener cel : eventListeners_) {
-      if(oldEvent != null) {
-        cel.updatePublicEvent(oldEvent, occurrence, fromCalendar);
-        storage_.savePublicEvent(toCalendar, occurrence, false) ;
+    if(toType.equalsIgnoreCase(String.valueOf(Utils.PUBLIC_TYPE))) {
+      for (CalendarEventListener cel : eventListeners_) {
+        if(oldEvent != null) {
+          occurrence.setActivityId(oldEvent.getActivityId());
+          cel.updatePublicEvent(oldEvent, occurrence, fromCalendar);
+          storage_.savePublicEvent(toCalendar, occurrence, false) ;
+        }
       }
     }
+    
   }
 
   /*
@@ -847,6 +863,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   @Override
   public void removeOccurrenceInstance(String username, CalendarEvent occurrence) throws Exception {
     storage_.removeOccurrenceInstance(username, occurrence);
+    if(occurrence.getActivityId() != null) {
+      for (CalendarEventListener cel : eventListeners_) {
+        cel.deletePublicEvent(occurrence, occurrence.getCalendarId());
+      }  
+    }
+    
   }
 
   @Override
