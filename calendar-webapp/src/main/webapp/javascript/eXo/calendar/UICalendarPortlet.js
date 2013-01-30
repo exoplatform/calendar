@@ -2226,7 +2226,7 @@ UISelection.prototype.start = function(evt){
         UISelection.block.style.top = UISelection.startY + "px";
         UISelection.block.style.height = UISelection.step + "px";
         UISelection.block.style.zIndex = 1;
-        gj(document).on({'mousemove':UISelection.execute,
+        gj(document).off('mousemove mouseup').on({'mousemove':UISelection.execute,
         	'mouseup':UISelection.clear});
     } 
     catch (e) {
