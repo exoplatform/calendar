@@ -11,8 +11,7 @@
 <div class="uiForm $uicomponent.id">
   <% uiform.begin() %>
     <div class="horizontalLayout">
-      <div class="formContainer">
-
+      <div class="formContainer resizable">
       <%
          def share        = _ctx.appRes(uicomponent.id + ".label.Share");
          def calendarName = "<strong>" + uicomponent.calendarName + "</strong>";
@@ -56,6 +55,7 @@
       %>
       </div>
 
+      </div>
 	    <div class="uiAction uiActionBorder">
       <%
         for (action in uicomponent.getActions())
@@ -71,7 +71,6 @@
       %>
       </div>
 
-      </div>
     </div>
 	<% uiform.end() %>
 </div>
