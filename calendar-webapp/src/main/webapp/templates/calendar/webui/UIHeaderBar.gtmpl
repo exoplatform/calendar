@@ -12,13 +12,11 @@ rcontext.getJavascriptManager().require("PORTLET/calendar/CalendarPortlet","cal"
 uicomponent.update() ;
 uicomponent.setSelectedCategory(uicomponent.getSelectedCategory()) ;
 
-
 def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
 requirejs.require("SHARED/csResources","cs");
 requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 requirejs.require("SHARED/jquery","gj");
-//requirejs.require("SHARED/webui","webui");
-requirejs.addScripts("gj('div#UIHeaderBar_1').click(function(event) {cal.UICalendarPortlet.switchListView(this, event);});")
+requirejs.require("SHARED/bts_dropdown","bts_dropdown");
 requirejs.addScripts("gj('div#UIHeaderBar_2').click(function() {cs.CSUtils.Utils.confirmAction(this,'"+msg+"','"+parent+"');});");
 requirejs.addScripts("gj('div#UIHeaderBar_3').click(function() {cs.CSUtils.Utils.confirmAction(this,'"+msg+"','"+parent+"');});");
 requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
@@ -173,10 +171,10 @@ int currentDay = uicomponent.getCurrentDay() ;
 		</a> 
 		<div id="UIHeaderBar_1" class="dropdown pull-left">
 		  <% /*Begin ViewTypeSelect Popup Menu*/ %>
-			<div data-toggle="dropdown" class="uiActionWithLabel">
+      <a class="dropdown-toggle uiActionWithLabel" data-toggle="dropdown" href="#">
 			  <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%><i class="uiIconMiniArrowDown uiIconLightGray"></i>
-			</div>
-			<ul class="dropdown-menu">
+      </a>
+			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 			   <%for(type in uicomponent.getViews()){
 				   if(!type.equals(uicomponent.getViewType())){
 				%>

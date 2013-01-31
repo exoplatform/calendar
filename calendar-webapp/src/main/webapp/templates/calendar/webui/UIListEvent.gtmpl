@@ -5,6 +5,7 @@
   import java.util.Calendar;
   import org.exoplatform.webui.application.WebuiRequestContext;
   import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.service.CalendarEvent;
   uiform.begin() ;
   
   int currentDay = uicomponent.getCurrentDay() ;
@@ -15,162 +16,181 @@
   String linkDayNext = uicomponent.event(uicomponent.ACT_NEXT, String.valueOf(Calendar.DATE)) ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
-  yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
+  //yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
   WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
    Locale locale = context.getParentAppRequestContext().getLocale() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
   DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
   _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
   selectedEvent = uicomponent.getSelectedEvent() ;
+  boolean displaySearchResult = uicomponent.isDisplaySearchResult();
+
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   requirejs.require("SHARED/csResources","cs");
+  requirejs.require("SHARED/jquery","gj");
   requirejs.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
   requirejs.addScripts('cs.CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListEvent\');');
-  requirejs.addScripts("gj('tr#UIListEvent_1').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
+  requirejs.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
 %>
 
 <div class="spliterResizableListArea mainWorkingPanel uiListView">
 <table id="UIListUsers" class="uiGrid table  table-hover table-striped">
 <thead>
 <tr>
-<% if(!searchDisplay) { %>
+<% if(!displaySearchResult) { %>
 <!-- search results displaying is disabled, show Attachment Icon, Priority and Event -->
 	<th style="width: 25px;" class="center">
 		<span class="uiCheckbox"  rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>">
 			<input type="checkbox" class="checkbox" value="4"/>
-		<span></span></span>
+		  <span></span>
+    </span>
 	</th>
 
-	<th style="width: 40px;" class="center"><i class="uiIconAttach uiIconLightGray"></i></th>
-          <%
-            String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
-            String classCss = "";
-            if (uicomponent.getSortedField().equals(uicomponent.EVENT_PRIORITY)) {
-              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
-              else classCss = "uiIconMiniArrowDown uiIconLightGray";
-            }
-          %>
-	<th class="center" style="width: 70px"><a href="$sortLink"><%=uiform.getLabel('Priority')%><i class="$classCss pull-right "></i></a></th>
-<%
-sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
-classCss = "";
-if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
-	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
-	else classCss = "uiIconMiniArrowDown uiIconLightGray";
-}
+	<th style="width: 40px;" class="center">
+    <i class="uiIconAttach uiIconLightGray"></i>
+  </th>
+  <%
+    String sortLink = uicomponent.event("Sort", uicomponent.EVENT_PRIORITY.toString()) ;   
+    String classCss = "";
+    if (uicomponent.getSortedField().equals(uicomponent.EVENT_PRIORITY)) {
+      if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+      else classCss = "uiIconMiniArrowDown uiIconLightGray";
+    }
+  %>
+
+	<th class="center" style="width: 70px">
+    <a href="$sortLink"><%=uiform.getLabel('Priority')%><i class="$classCss pull-right "></i></a>
+  </th>
+
+  <%
+    sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
+    classCss = "";
+    if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
+	    if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+	    else classCss = "uiIconMiniArrowDown uiIconLightGray";
+    }
+  %>
+	
+  <th><a href="$sortLink"><%=uiform.getLabel('Event')%><i class="$classCss pull-right"></i></a></th>
+<% } else {
+         
+  /* Search result displaying enabled, replace Event by Title */
+  sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
+  classCss = "";
+  if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
+    if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+    else classCss = "uiIconMiniArrowDown uiIconLightGray";
+  }
 %>
-	<th><a href="$sortLink"><%=uiform.getLabel('Event')%><i class="$classCss pull-right"></i></a></th>
-        <% } else {
-         /* Search result displaying enabled, replace Event by Title */
-            sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
-            classCss = "";
-            if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
-              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
-              else classCss = "uiIconMiniArrowDown uiIconLightGray";
-            }
-          %>
-	<th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
+	
+  <th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
 <% } %>
 
 <%
-sortLink = uicomponent.event("Sort", uicomponent.EVENT_START.toString()) ;
-classCss = "";
-if (uicomponent.getSortedField().equals(uicomponent.EVENT_START)) {
-	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
-	else classCss = "uiIconMiniArrowDown uiIconLightGray";
-}
+  sortLink = uicomponent.event("Sort", uicomponent.EVENT_START.toString()) ;
+  classCss = "";
+  if (uicomponent.getSortedField().equals(uicomponent.EVENT_START)) {
+	  if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+	  else classCss = "uiIconMiniArrowDown uiIconLightGray";
+  }
 %>
 	<th><a href="$sortLink"><%=uiform.getLabel('Start')%><i class="$classCss pull-right"></i></a></th>
-          <%
-            sortLink = uicomponent.event("Sort", uicomponent.EVENT_END.toString()) ;
-            classCss = "";
-            if (uicomponent.getSortedField().equals(uicomponent.EVENT_END)) {
-              if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
-              else classCss = "uiIconMiniArrowDown uiIconLightGray";
-            }
-          %>
-	<th><a href="$sortLink"><%=uiform.getLabel('End')%><i class="$classCss pull-right"></i></a></th>
-
-<% if(!searchDisplay) {
-sortLink = uicomponent.event("Sort", uicomponent.EVENT_DESCRIPTION.toString()) ;
-classCss = "";
-if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
-	if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
-	else classCss = "uiIconMiniArrowDown uiIconLightGray";
-}
+          
+<%
+  sortLink = uicomponent.event("Sort", uicomponent.EVENT_END.toString()) ;
+  classCss = "";
+  if (uicomponent.getSortedField().equals(uicomponent.EVENT_END)) {
+    if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+    else classCss = "uiIconMiniArrowDown uiIconLightGray";
+  }
 %>
-	<th><a href="$sortLink"><%=uiform.getLabel('EventDescription')%><i class="$classCss pull-right"></i></a></th>
-          <% } else { %>
-            <th><div><%=uiform.getLabel('EventDescription')%></div></th>
-          <% } %>
-         </tr>
-</thead>
-         <tbody>
-          <%
-            for(event in uicomponent.getEvents()){
-              rowStyle = "" ;
-              if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#F5F5F5;";}
-              String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
-			  def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
-          def isEditable;
-          if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
-          else isEditable = "true";
-          %>
-			  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
-              <%if(!searchDisplay) {%>
-                <td class="center"><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
-<%}%>
+	
+  <th><a href="$sortLink"><%=uiform.getLabel('End')%><i class="$classCss pull-right"></i></a></th>
 
-<!-- do not display attachment icon and priority icon in search results -->
-<% if(!searchDisplay) { %>
-	<td class="center">
-		<%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%>
-	</td>
-<td class="center"><div class="uiIconCal<%=event.getPriority()%>Priority uiIconLightGray"></div></td>
+<% if(!displaySearchResult) {
+  sortLink = uicomponent.event("Sort", uicomponent.EVENT_DESCRIPTION.toString()) ;
+  classCss = "";
+  if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
+	  if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
+	  else classCss = "uiIconMiniArrowDown uiIconLightGray";
+  }
+%>
+	
+  <th><a href="$sortLink"><%=uiform.getLabel('EventDescription')%><i class="$classCss pull-right"></i></a></th>
+<% } else { %>
+  <th><div><%=uiform.getLabel('EventDescription')%></div></th>
 <% } %>
-	<td>
-		<span class="eventDescription $color"></span>
-		<%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
-			<i class="uiIconCalTaskMini uiIconLightGray"></i>
-			<%} else {%>
-			<i class="uiIconCalClockMini uiIconLightGray"></i>
-			<%}%>
-		<span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
-			<%=event.getSummary()%>
-		</span>
-	</td>
-	<td ><%=df.format(event.getFromDateTime())%></td>
-	<td ><%=df.format(event.getToDateTime())%></td>
-	<td ><%=(event.getDescription() == null)? "": event.getDescription()%></td>
+         
 </tr>
-          <%
-            }
-          %>
-        </tbody>
-</table>
-   <%if(uicomponent.getEvents().size() <= 0) { %>
-    <table>
-      <tr>
-        <td class="Null" style="text-align:center">
-          <%=uiform.getLabel('noData')%> 
-        </td>
-</tr>
-    </table>
-<%} else {
-_ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
-}
+</thead>
+<tbody>
+          
+<%
+  for(event in uicomponent.getEvents())
+  {
+    rowStyle = "" ;
+    if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#F5F5F5;";}
+    String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
+		def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+    def isEditable;
+    if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
+    else isEditable = "true";
 %>
-</div>
 
-  <%if(searchDisplay) {%>
-    <div class="uiAction">
-      <button type="button" onclick="<%= uicomponent.event('CloseSearch')%>" class="btn pull-left"><%=uiform.getLabel('CloseSearch')%></button>
-</div>
+  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
+  <%if(!displaySearchResult) {%>
+    <td class="center"><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
+  <%}%>
+
+  <!-- do not display attachment icon and priority icon in search results -->
+  <% if(!displaySearchResult) { %>
+	  <td class="center">
+		  <%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%>
+	  </td>
+    <td class="center"><div class="uiIconCal<%=event.getPriority()%>Priority uiIconLightGray"></div></td>
+  <% } %>
+	  <td>
+		  <span class="eventDescription $color"></span>
+		  <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
+			  <i class="uiIconCalTaskMini uiIconLightGray"></i>
+			<%} else {%>
+			  <i class="uiIconCalClockMini uiIconLightGray"></i>
+			<%}%>
+		  <span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
+			  <%=event.getSummary()%>
+		  </span>
+	  </td>
+	  <td ><%=df.format(event.getFromDateTime())%></td>
+	  <td ><%=df.format(event.getToDateTime())%></td>
+	  <td ><%=(event.getDescription() == null)? "": event.getDescription()%></td>
+  </tr>
+  <% } %>
+  </tbody>
+</table>
+   
+<div class="clearfix actionBottom" >
+  <% if(uicomponent.getEvents().size() <= 0) { %>
+  <div class="control-label center" style="padding: 5px;">
+    <%=uiform.getLabel('noData')%>
+  </div>
+  <%} else { %>
+  <div class="pull-right">
+    <% _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl"); %>
+  </div>
+  <% } %>
+    
+  <% if(displaySearchResult) { %>
+  <div class="uiAction">
+    <button type="button" onclick="<%= uicomponent.event('CloseSearch')%>" class="btn pull-left"><%=uiform.getLabel('CloseSearch')%></button>
+  </div>
   <%}%>
 </div>
+
+</div>
+
 <% /*Begin Popup Menu - Calendar Actions */ %>
   <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallback" style="display: none ;" >
     <ul class="uiDropDownCal" style="display:block;">

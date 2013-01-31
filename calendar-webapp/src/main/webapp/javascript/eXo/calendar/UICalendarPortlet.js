@@ -1960,21 +1960,25 @@ UICalendarPortlet.prototype.checkCategoryFilter = function(){
  * @param {Object} evt Mouse event
  */
 UICalendarPortlet.prototype.switchListView = function(obj, evt){
-    var menu = gj(obj).find('div.UIPopupCategory')[0];
-    if (base.Browser.isIE6()) {
-        var size = {
-            top: obj.offsetHeight,
-            left: "-" + obj.offsetWidth
-        };
-        this.setStyle(menu, size);
-    }
-    else {
-        var size = {
-            marginLeft: "-18px"
-        };
-        this.setStyle(menu, size);
-    }
-    base.UIPopupSelectCategory.show(obj, evt);
+    
+    /** uses bootstrap instead of UIPopupSelectCategory
+     *var menu = gj(obj).find('div.UIPopupCategory')[0];
+     *if (base.Browser.isIE6()) {
+     *   var size = {
+     *       top: obj.offsetHeight,
+     *       left: "-" + obj.offsetWidth
+     *   };
+     *   this.setStyle(menu, size);
+     *}
+     * else {
+     *   var size = {
+     *       marginLeft: "-18px"
+     *   };
+     *   this.setStyle(menu, size);
+     *}
+     *
+     *base.UIPopupSelectCategory.show(obj, evt);
+     **/
 };
 
 /**

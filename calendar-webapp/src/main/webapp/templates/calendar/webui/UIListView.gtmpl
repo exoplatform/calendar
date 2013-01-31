@@ -40,12 +40,11 @@ requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;'
 requireJS.require("SHARED/csResources","cs");
 requireJS.addScripts('cs.CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
 requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
-
 rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
 
 //INLINE Scripts
 requireJS.require("SHARED/jquery","gj");
-requireJS.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this)});")
+requireJS.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
 
 uicomponent.refreshBrowser();
 uicomponent.setCalClicked(false);
@@ -172,27 +171,22 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
 </table>
 
   <div class="clearfix actionBottom" >
-  
-   <%if(uicomponent.getEvents().size() <= 0) { %>
-    <table>
-      <tr>
-        <td class="Null" style="text-align:center">
-          <%=uiform.getLabel('noData')%> 
-        </td>
-</tr>
-    </table>
-<%} else {%>
-	<div class="pull-right">
-	<%
-	 _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl");
-	%>
-	</div>
- <%}%>
-	<%if(searchDisplay) {%>
-      <button type="button" onclick="<%= uicomponent.event('CloseSearch')%>" class="btn pull-left"><%=uiform.getLabel('CloseSearch')%></button>
+    <% if(uicomponent.getEvents().size() <= 0) { %>
+    <div class="control-label center" style="padding: 5px;">
+      <%=uiform.getLabel('noData')%>
+    </div>
+    <%} else { %>
+    <div class="pull-right">
+      <% _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl"); %>
+    </div>
+    <% } %>
+
+	  <%if (searchDisplay) { %>
+    <button type="button" onclick="<%= uicomponent.event('CloseSearch')%>" class="btn pull-left"><%=uiform.getLabel('CloseSearch')%>
+    </button>
 	
-  <%}%>
-</div>
+    <%}%>
+  </div>
 </div>
 
 <% /*Begin Popup Menu - Calendar Actions */ %>

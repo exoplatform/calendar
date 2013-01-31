@@ -1,15 +1,14 @@
 <%
   import org.exoplatform.calendar.webui.UIListView ;
   import org.exoplatform.calendar.webui.UIPreview ;
+
+  def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+  requirejs.require("SHARED/csResources","cs");
+  requirejs.require("SHARED/jquery","gj");
+  requirejs.addScripts("gj('div.ResizeReadingPane').mousedown(function(event) {cs.CSUtils.Spliter.doResize(event, this); });");
 %>
 <div class="uiListContainer uiBox" id="$uicomponent.id">
-  <%uicomponent.renderChild(UIListView.class)%>
-  <%
-  	def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
-	requirejs.require("SHARED/csResources","cs");
-	requirejs.require("SHARED/jquery","gj");
-	requirejs.addScripts("gj('div.ResizeReadingPane').mousedown(function(event) {cs.CSUtils.Spliter.doResize(event, this); });")
-	
-  %>
-  <%uicomponent.renderChild(UIPreview.class)%>
+  <% uicomponent.renderChild(UIListView.class); %>
+  
+  <% uicomponent.renderChild(UIPreview.class); %>
 </div>

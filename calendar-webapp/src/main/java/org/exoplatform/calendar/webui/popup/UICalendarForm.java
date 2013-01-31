@@ -462,19 +462,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   protected boolean isPublic() throws Exception
   {
     UIGroupCalendarTab groupTab = getChildById(INPUT_SHARE) ;
-
-    /**
-    for (Object groupObj : getPublicGroups()) {
-      String groupId = ((Group)groupObj).getId() ;
-      UIFormStringInput groupPermissionInput = groupTab.getChildById(groupId + PERMISSION_SUB) ;
-      if (groupPermissionInput == null) continue;
-      groupPermissionInput
-    }
-     **/
-
     return (groupTab.getDisplayedGroups().length > 0);
-
-    //return false ;
   }
 
   /**
