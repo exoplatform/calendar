@@ -16,35 +16,32 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendars;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
-import org.exoplatform.webui.core.UIBreadcumbs;
+import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.UIPopupWindow;
-import org.exoplatform.webui.core.UITree;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.input.UICheckBoxInput;
-import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
+import org.exoplatform.webui.organization.UIGroupMembershipSelector;
 import org.exoplatform.webui.organization.account.UIGroupSelector;
 import org.exoplatform.webui.organization.account.UIUserSelector;
 
@@ -52,72 +49,240 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen
  *          hung.nguyen@exoplatform.com
- * Aus 01, 2007 2:48:18 PM 
+ * Aus 01, 2007 2:48:18 PM
+ *
+ * <br/>modified by: <a href="mailto:tuna@exoplatform.com">Anh-Tu NGUYEN<a/>
  */
 @ComponentConfigs({
   @ComponentConfig(
-      lifecycle = UIFormLifecycle.class,
-      template = "system:/groovy/webui/form/UIForm.gtmpl",
-      events = {
-        @EventConfig(listeners = UISharedForm.SaveActionListener.class),    
-        @EventConfig(listeners = UISharedForm.SelectPermissionActionListener.class, phase = Phase.DECODE),
-        @EventConfig(listeners = UISharedForm.SelectGroupActionListener.class, phase = Phase.DECODE),
-        @EventConfig(listeners = UISharedForm.CancelActionListener.class)
-      }
-  ),
+    lifecycle = UIFormLifecycle.class,
+    template = "app:/templates/calendar/webui/UIPopup/UISharedForm.gtmpl",
+    events = {
+      @EventConfig(listeners = UISharedForm.SaveActionListener.class),
+      @EventConfig(listeners = UISharedForm.CancelActionListener.class),
+      @EventConfig(listeners = UISharedForm.OpenSelectUserFormActionListener.class),
+      @EventConfig(listeners = UISharedForm.SelectUserActionListener.class, phase = Phase.DECODE),
+      @EventConfig(listeners = UISharedForm.OpenSelectGroupFormActionListener.class),
+      @EventConfig(listeners = UISharedForm.SelectGroupActionListener.class, phase = Phase.DECODE),
+      @EventConfig(listeners = UISharedForm.OpenSelectMembershipFormActionListener.class),
+      @EventConfig(listeners = UISharedForm.SelectMembershipActionListener.class, phase = Phase.DECODE),
+      @EventConfig(listeners = UISharedForm.AddEntryActionListener.class),
+      @EventConfig(listeners = UISharedForm.DeleteEntryActionListener.class)
+    }
+  ),     
+
   @ComponentConfig(
-    id = "UIPopupWindowUserSelect",
-        type = UIPopupWindow.class,
-        template =  "system:/groovy/webui/core/UIPopupWindow.gtmpl",
-        events = {
-          @EventConfig(listeners = UIPopupWindow.CloseActionListener.class, name = "ClosePopup")  ,
-          @EventConfig(listeners = UISharedForm.AddActionListener.class, name = "Add", phase = Phase.DECODE),
-          @EventConfig(listeners = UITaskForm.CloseActionListener.class, name = "Close", phase = Phase.DECODE)
-        }
+    id       = UISharedForm.POPUP_USER_SELECTOR,
+    type     = UIPopupWindow.class,
+    template = "system:/groovy/webui/core/UIPopupWindow.gtmpl",
+    events = {
+      @EventConfig(listeners = UIPopupWindow.CloseActionListener.class, name = "ClosePopup")  ,
+      @EventConfig(listeners = UISharedForm.SelectUserActionListener.class, name = "Add", phase = Phase.DECODE),
+      @EventConfig(listeners = UITaskForm.CloseActionListener.class, name = "Close", phase = Phase.DECODE)
+    }
   )
 })
-public class UISharedForm extends UIForm implements UIPopupComponent, UISelector{
-  final public static String SPECIALCHARACTER[] = {CalendarUtils.SEMICOLON,CalendarUtils.SLASH,CalendarUtils.BACKSLASH,"'","|",">","<","\"", "?", "!", "@", "#", "$", "%","^","&","*"} ;
-  final public static String SHARED_TAB = "UIInputUserSelect".intern() ;
+public class UISharedForm extends UIForm implements UIPopupComponent
+{
+  private static final Log LOG = ExoLogger.getExoLogger(UISharedForm.class);
+
   private String calendarId_ ;
+
   protected boolean isAddNew_ = true ;
-  public UISharedForm() throws Exception{ 
-    UISharedTab inputset = new UISharedTab(SHARED_TAB) ;
-    inputset.addChild(new UIFormInputInfo(UISharedTab.FIELD_NAME, UISharedTab.FIELD_NAME, null)) ; 
-    inputset.addUIFormInput(new UIFormStringInput(UISharedTab.FIELD_USER, UISharedTab.FIELD_USER, null));
-    List<ActionData> actions = new ArrayList<ActionData>() ;
-    ActionData selectUserAction = new ActionData() ;
-    selectUserAction.setActionListener("SelectPermission") ;
-    selectUserAction.setActionName("SelectUser") ;
-    selectUserAction.setCssIconClass("uiIconUser uiIconLightGray") ;
-    selectUserAction.setActionType(ActionData.TYPE_ICON) ;
-    selectUserAction.setActionParameter(UISelectComponent.TYPE_USER) ;
-    actions.add(selectUserAction) ;
-    inputset.setActionField(UISharedTab.FIELD_USER, actions) ;
-    inputset.addUIFormInput(new UIFormStringInput(UISharedTab.FIELD_GROUP, UISharedTab.FIELD_GROUP, null));
-    List<ActionData> actionGroups = new ArrayList<ActionData>() ;
-    ActionData selectGroupAction = new ActionData() ;
-    selectGroupAction.setActionListener("SelectPermission") ;
-    selectGroupAction.setActionName("SelectGroup") ;
-    selectGroupAction.setCssIconClass("uiIconGroup uiIconLightGray") ;
-    selectGroupAction.setActionType(ActionData.TYPE_ICON) ;
-    selectGroupAction.setActionParameter(UISelectComponent.TYPE_GROUP) ;
-    actionGroups.add(selectGroupAction) ;
-    inputset.setActionField(UISharedTab.FIELD_GROUP, actionGroups) ;
-    inputset.addChild(new UICheckBoxInput(UISharedTab.FIELD_EDIT, UISharedTab.FIELD_EDIT, null)) ;
-    addChild(inputset) ;
+
+  public static final String PERMISSION_GRID = "UIPermissionGrid";
+
+  public static final String PERMISSION_ENTRY = "UIPermissionEntry";
+
+  public static final String POPUP_USER_SELECTOR = "UIPopupUserSelector";
+
+  public static final String POPUP_GROUP_MEMBERSHIP_SELECTOR = "UIPopupGroupMembershipSelector";
+
+  /* popup */
+  public static final String OPEN_SELECT_USER_FORM = "OpenSelectUserForm";
+
+  public static final String OPEN_SELECT_MEMBERSHIP_FORM = "OpenSelectMembershipForm";
+
+  public static final String OPEN_SELECT_GROUP_FORM = "OpenSelectGroupForm";
+
+  /* icons */
+  public static final String ADD_ENTRY = "AddEntry";
+
+  public static final String DELETE_ENTRY = "DeleteEntry";
+
+  public static final String USER_ICON = "uiIconUser uiIconLightGray";
+
+  public static final String MEMBERSHIP_ICON = "uiIconMembership uiIconLightGray";
+
+  public static final String GROUP_ICON = "uiIconGroup uiIconLightGray";
+
+  public static final String ADD_ICON = "ActionIcon Add";
+
+  public static final String INPUT_PERMISSION_OWNER = "PermissionOwnerInput";
+
+  public static final String INPUT_PERMISSION_OWNER_LABEL = "Select Owner";
+
+  /* define a button type for action data */
+  public static final int    TYPE_BUTTON = 5;
+
+  public static final String SAVE = "Save";
+
+  public static final String CLOSE = "Cancel";
+
+  private Map<String, Set<ActionData>> actionField;
+
+  private String calendarName;
+
+  /**
+   * set of calendar permission being displayed
+   * if a permission is removed from display, it's removed from the set
+   **/
+  private Set<Permission> calendarPermissions;
+
+  public UISharedForm() throws Exception
+  {
+    calendarPermissions = new HashSet<Permission>();
+    actionField = new HashMap<String, Set<ActionData>>();
+
+    /* add the grid */
+    UIPermissionGrid permissionGrid = new UIPermissionGrid(PERMISSION_GRID);
+    addChild(permissionGrid);
+
+    String [] actionNames = new String[]{
+        OPEN_SELECT_USER_FORM,
+        OPEN_SELECT_MEMBERSHIP_FORM,
+        OPEN_SELECT_GROUP_FORM, ADD_ENTRY};
+    String [] actionIcons = new String[] { USER_ICON, MEMBERSHIP_ICON, GROUP_ICON, ADD_ICON };
+    Set<ActionData> actions = new LinkedHashSet<ActionData>(); // keep the insertion order
+    ActionData action;
+    for (int i = 0; i < actionNames.length; ++i)
+    {
+      action = new ActionData();
+      action.setActionListener(actionNames[i]);
+      if (i < actionNames.length - 1) {
+        action.setActionType(ActionData.TYPE_ICON);
+      } else {
+        action.setActionType(TYPE_BUTTON);
+      }
+      action.setActionName(actionNames[i]);
+      action.setCssIconClass(actionIcons[i]);
+      actions.add(action);
+    }
+
+    /* a form containing button and input for selecting permission */
+    addUIFormInput(new UIFormStringInput(INPUT_PERMISSION_OWNER, null, INPUT_PERMISSION_OWNER_LABEL));
+    setActionField(INPUT_PERMISSION_OWNER, actions);
+
+    addPopupWindow();
+
+    setActions(new String[] { SAVE, CLOSE });
   }
 
-  public void init(String username, Calendar cal, boolean isAddNew) {
-    isAddNew_ = isAddNew ;
-    calendarId_ = cal.getId() ;
-    setCalendarName(cal.getName()) ;
-    boolean canEdit = false ;
-    if(cal.getEditPermission() != null) {
-      canEdit = Arrays.asList(cal.getEditPermission()).contains(username) ;
-    }
-    setCanEdit(canEdit) ;
+  public Set<Permission> getCalendarPermissions()
+  {
+    return calendarPermissions;
   }
+
+  /**
+   * add a permission to be displayed
+   *
+   * @param aPermission
+   * @throws Exception
+   */
+  public void addPermission(Permission aPermission) throws Exception
+  {
+    /* if the permission is already there, do nothing */
+    if (containsPermission(aPermission.getOwner().getId())) return;
+
+    calendarPermissions.add(aPermission);
+    UIPermissionGrid permissionGrid = getChildById(PERMISSION_GRID);
+    permissionGrid.addEntry(aPermission);
+  }
+
+  /**
+   * check whether the permission is included in the Permission Grid
+   *
+   * @param permissionId
+   * @return
+   */
+  public boolean containsPermission(String permissionId)
+  {
+    Iterator<Permission> it = calendarPermissions.iterator();
+    while (it.hasNext())
+    {
+      Permission aPermission = it.next();
+      if (aPermission.getOwner().getId().equals(permissionId)) return true;
+    }
+    return false;
+  }
+
+
+  /**
+   * remove a permission from the grid
+   *
+   */
+  public void removePermission(String permissionId)
+  {
+    Iterator<Permission> it = calendarPermissions.iterator();
+    while (it.hasNext())
+    {
+      Permission aPermission = it.next();
+      if (aPermission.getId().equals(permissionId))
+      {
+        it.remove();
+        break ;
+      }
+    }
+
+    /* un-display the corresponding permission entry */
+    getChild(UIPermissionGrid.class).removeEntry(permissionId);
+  }
+
+
+  public void setActionField(String fieldName, Set<ActionData> actions) throws Exception
+  {
+    actionField.put(fieldName, actions) ;
+  }
+
+  public Set<ActionData> getActionField(String fieldName)
+  {
+    return actionField.get(fieldName);
+  }
+
+  @Override
+  public void activate() throws Exception {}
+
+  @Override
+  public void deActivate() throws Exception {}
+
+  /**
+   * init the shared form
+   *
+   * @param username
+   * @param calendar
+   * @param isAddNew
+   * @throws Exception
+   */
+  public void init(String username, Calendar calendar, boolean isAddNew) throws Exception
+  {
+    isAddNew_ = isAddNew ;
+    calendarId_ = calendar.getId() ;
+    calendarName = calendar.getName();
+
+    if (calendar.getViewPermission() != null)
+    {
+      for (String permission : calendar.getViewPermission())
+      {
+        Permission aPermission = new Permission(PermissionOwner.createPermissionOwnerFrom(permission));
+        /* add edit permission */
+        if (Arrays.asList(calendar.getEditPermission()).contains(permission)) aPermission.allowEditPermission();
+        addPermission(aPermission);
+      }
+    }
+  }
+
+
+
   @Override
   public String getLabel(String id) {
     try {
@@ -126,236 +291,749 @@ public class UISharedForm extends UIForm implements UIPopupComponent, UISelector
       return id ;
     }
   }
-  public void setSelectedCalendarId(String id) { calendarId_ = id ;}
-  public void setCalendarName(String value) {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    inputset.calendarName_ = value ;
-    if(!CalendarUtils.isEmpty(value) && value.trim().length() > 30) value = value.substring(0, 30)+"..." ; 
-    inputset.getUIFormInputInfo(UISharedTab.FIELD_NAME).setValue(value) ;
-  }
-  protected void setCanEdit(boolean canEdit) {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    inputset.getUICheckBoxInput(UISharedTab.FIELD_EDIT).setChecked(canEdit) ;
-  }
-  protected boolean canEdit() {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    return inputset.getUICheckBoxInput(UISharedTab.FIELD_EDIT).isChecked() ;
-  }
-  protected void setSharedUser(String value) {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    inputset.getUIStringInput(UISharedTab.FIELD_USER).setValue(value) ;
-  }
-  protected String getSharedUser() {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    return inputset.getUIStringInput(UISharedTab.FIELD_USER).getValue() ;
-  }
-  protected void setSharedGroup(String value) {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    inputset.getUIStringInput(UISharedTab.FIELD_GROUP).setValue(value) ;
-  }
-  protected String getSharedGroup() {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    return inputset.getUIStringInput(UISharedTab.FIELD_GROUP).getValue() ;
-  }
-  @Override
-  public String[] getActions() {
-    return new String[] {"Save","Cancel"} ;
-  }
-  @Override
-  public void activate() throws Exception {}
-  @Override
-  public void deActivate() throws Exception {}
 
-  @Override
-  public void updateSelect(String selectField, String value) throws Exception {
-    UISharedTab inputset = getChildById(SHARED_TAB) ;
-    UIFormStringInput fieldInput = inputset.getUIStringInput(selectField) ;
-    String currentValues = fieldInput.getValue();
-    if(!CalendarUtils.isEmpty(currentValues) && !currentValues.equals("null")){
-      value += ","+ currentValues; 
+
+  /**
+   * uses 2 popup windows, one for membership, another for group and user
+   *
+   * @throws Exception
+   */
+  private void addPopupWindow() throws Exception {
+    addChild(UIPopupWindow.class, POPUP_USER_SELECTOR, POPUP_USER_SELECTOR);
+    addChild(UIPopupWindow.class, null, POPUP_GROUP_MEMBERSHIP_SELECTOR);
+  }
+
+  private void closeAllPopupAction()
+  {
+    List<UIComponent> children = new ArrayList<UIComponent>(getChildren());
+    for (UIComponent uichild : children) {
+      if (uichild instanceof UIPopupWindow) {
+        closePopupAction((UIPopupWindow) uichild);
+      }
     }
-    fieldInput.setValue(CalendarUtils.cleanValue(value)) ;
-  }  
+  }
 
-  static  public class SaveActionListener extends EventListener<UISharedForm> {
+  private static void closePopupAction(UIPopupWindow uiPopupWindow)
+  {
+    uiPopupWindow.setUIComponent(null);
+    uiPopupWindow.setShow(false);
+  }
+
+  private static void openPopupAction(UIPopupWindow uiPopup, UIComponent component, int width, int height)
+  {
+    uiPopup.setUIComponent(component);
+    uiPopup.setShow(true);
+    uiPopup.setWindowSize(width, height);
+  }
+
+  /**
+   * update the value of the permission input after selecting permission from popup
+   *
+   * @param permissionId
+   * @throws Exception
+   */
+  public void updatePermissionOwnerInputWith(String permissionId) throws Exception
+  {
+    UIFormStringInput permissionOwner = getChildById(INPUT_PERMISSION_OWNER);
+
+    if (permissionOwner.getValue() == null) permissionOwner.setValue("");
+    if (permissionOwner.getValue().contains(permissionId) || permissionId.equals(CalendarUtils.getCurrentUser())) return;
+
+    if (permissionOwner.getValue().equals(INPUT_PERMISSION_OWNER_LABEL) || permissionOwner.getValue().isEmpty())
+      permissionOwner.setValue(permissionId);
+    else
+      permissionOwner.setValue(permissionOwner.getValue() + CalendarUtils.COMMA + " " + permissionId);
+  }
+
+  /**
+   * get list of users by groupId
+   * groupId in the form of /platform/users
+   *
+   * @param groupId
+   * @return
+   * @throws Exception
+   */
+  private static Set<String> getUsersByGroupId(String groupId) throws Exception
+  {
+    OrganizationService organizationService = CalendarUtils.getOrganizationService();
+    List<User> users = organizationService.getUserHandler().findUsersByGroup(groupId).getAll();
+    Set<String> userIds = new HashSet<String>();
+    if (users == null) return userIds;
+
+    for (User user : users.toArray(new User[]{}))
+    {
+      userIds.add(user.getUserName());
+    }
+    return userIds;
+  }
+
+  /**
+   * get list of user by membership id and group id
+   * example of membership id: validator, group id: /platform/users
+   *
+   * @param membershipId
+   * @param groupId
+   * @return
+   * @throws Exception
+   */
+  private static Set<String> getUserByMembershipId(String membershipId, String groupId) throws Exception
+  {
+    OrganizationService organizationService = CalendarUtils.getOrganizationService();
+    List<User> usersInGroup = organizationService.getUserHandler().findUsersByGroup(groupId).getAll();
+    Set<String> userIds = new HashSet<String>();
+    if (usersInGroup == null) return userIds;
+
+    for (User user : usersInGroup.toArray(new User[]{}))
+    {
+      Membership membership = organizationService.getMembershipHandler().findMembershipByUserGroupAndType(user.getUserName(),
+          groupId, membershipId);
+      if (membership != null) {
+        userIds.add(user.getUserName());
+      }
+    }
+
+    return userIds;
+  }
+
+  /**
+   * check edit permission of user on shared calendar
+   *
+   * @param calendar
+   * @return
+   * @throws Exception
+   */
+  public static Set<String> getUsersAbleToEditSharedCalendar(Calendar calendar) throws Exception
+  {
+    Set<String> users = new HashSet<String>();
+
+    for (String permissionId : calendar.getEditPermission())
+    {
+      Permission aPermission = new Permission(PermissionOwner.createPermissionOwnerFrom(permissionId));
+      PermissionOwner owner = aPermission.getOwner();
+      if (owner.getOwnerType().equals(PermissionOwner.USER_OWNER))
+      {
+        users.add(owner.getId());
+        continue;
+      }
+
+      if (owner.getOwnerType().equals(PermissionOwner.GROUP_OWNER))
+      {
+        users.addAll(getUsersByGroupId(owner.getGroupId()));
+        continue;
+      }
+
+      if (owner.getOwnerType().equals(PermissionOwner.MEMBERSHIP_OWNER))
+      {
+        users.addAll(getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
+        continue;
+      }
+    }
+    return users;
+  }
+
+  public static boolean canUserEditCalendar(String userId, Calendar calendar) throws Exception
+  {
+    return UISharedForm.getUsersAbleToEditSharedCalendar(calendar).contains(userId);
+  }
+
+  public static class SaveActionListener extends EventListener<UISharedForm>
+  {
     @Override
-    public void execute(Event<UISharedForm> event) throws Exception { 
-      UISharedForm uiForm = event.getSource() ;
-      String names = uiForm.getUIStringInput(UISharedTab.FIELD_USER).getValue() ;
-      String groups = uiForm.getUIStringInput(UISharedTab.FIELD_GROUP).getValue() ;
-      
-      if(CalendarUtils.isEmpty(names) && CalendarUtils.isEmpty(groups)) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UISharedForm.msg.required", null)) ;
-        return ;
-      }
-      CalendarService calendarService = CalendarUtils.getCalendarService() ;
-      OrganizationService oService = CalendarUtils.getOrganizationService() ;
+    public void execute(Event<UISharedForm> event) throws Exception
+    {
+      UISharedForm sharedForm = event.getSource();
+      Set<Permission> permissions = sharedForm.getCalendarPermissions();
+      UIPermissionGrid permissionGrid = sharedForm.getChild(UIPermissionGrid.class);
+      CalendarService calendarService = CalendarUtils.getCalendarService();
       String username = CalendarUtils.getCurrentUser() ;
-      Calendar cal = calendarService.getUserCalendar(username, uiForm.calendarId_) ;
-      Map<String, String> sharedUsers  = new HashMap<String, String>() ;
-      
-      if (!CalendarUtils.isEmpty(names)) {
-        List<String> newUsers = new ArrayList<String>();
-        List<String> receiverUsers  = new ArrayList<String>() ;
-        StringBuffer sb = new StringBuffer() ;
-        for(String name : Arrays.asList(names.split(CalendarUtils.COMMA))) {
-          name = name.trim();
-          if( oService.getUserHandler().findUserByName(name) != null) { 
-            receiverUsers.add(name) ;
-          }else{
-            sb.append(name) ;
-            sb.append(CalendarUtils.COMMA) ;
-          }
+      Calendar calendar = calendarService.getUserCalendar(username, sharedForm.calendarId_) ;
+
+      List<String> viewPermissions = new ArrayList<String>();
+      List<String> editPermissions = new ArrayList<String>();
+      /* set of users to share to */
+      Set<String> sharedUsers      = new HashSet<String>();
+
+      Iterator<Permission> it = permissions.iterator();
+      while (it.hasNext())
+      {
+        Permission aPermission = it.next();
+        viewPermissions.add(aPermission.getId());
+
+        /* get the 'checked' value of checkbox */
+        boolean hasEditPermission = ((UIPermissionEntry) permissionGrid.getChildById(PERMISSION_ENTRY + CalendarUtils.DOT + aPermission.hashCode()))
+          .isTheCheckBoxChecked();
+        if (hasEditPermission) editPermissions.add(aPermission.getId());
+
+        PermissionOwner owner = aPermission.getOwner();
+        if (owner.getOwnerType().equals(PermissionOwner.USER_OWNER))
+        {
+          sharedUsers.add(owner.getId());
+          continue;
         }
-        if(sb.length() > 0) {
-          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UISharedForm.msg.not-founduser", new Object[]{sb.toString()}, 1)) ;
-          return ;
+
+        if (owner.getOwnerType().equals(PermissionOwner.GROUP_OWNER))
+        {
+          sharedUsers.addAll(UISharedForm.getUsersByGroupId(owner.getGroupId()));
+          continue;
         }
-        if(receiverUsers.contains(username)) {
-          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UISharedForm.msg.found-user", new Object[]{username}, 1)) ;
-          return ;
+
+        if (owner.getOwnerType().equals(PermissionOwner.MEMBERSHIP_OWNER))
+        {
+          sharedUsers.addAll(UISharedForm.getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
+          continue;
         }
-        Map<String, String> perms = new HashMap<String, String>() ;
-        if(cal.getViewPermission() != null) {
-          for(String v : cal.getViewPermission()) {
-            perms.put(v,String.valueOf(cal.getEditPermission()!= null && Arrays.asList(cal.getEditPermission()).contains(v))) ;
-          }
-        }
-        for(String u : receiverUsers) {
-          if(perms.get(u) == null) newUsers.add(u) ; 
-          perms.put(u, String.valueOf(uiForm.canEdit())) ;
-        }
-        for (String newUser : newUsers) {
-          sharedUsers.put(newUser, newUser);
-        }
-        cal.setViewPermission(perms.keySet().toArray(new String[perms.keySet().size()])) ;
-        List<String> tempList = new ArrayList<String>() ;
-        for(String v : perms.keySet()) {
-          if(Boolean.parseBoolean(perms.get(v))) tempList.add(v) ;       
-        }
-        cal.setEditPermission(tempList.toArray(new String[tempList.size()])) ;
       }
-      
-      if (!CalendarUtils.isEmpty(groups)) {
-        StringBuffer sb = new StringBuffer() ;
-        for(String name : Arrays.asList(groups.split(CalendarUtils.COMMA))) {
-          name = name.trim();
-          if( oService.getGroupHandler().findGroupById(name) != null) {
-            for (User user : oService.getUserHandler().findUsersByGroup(name.trim()).getAll()) {
-              String userId = user.getUserName();
-              sharedUsers.put(userId, userId);
-            }
-          } else{
-            sb.append(name) ;
-            sb.append(CalendarUtils.COMMA) ;
-          }
+
+      /* remove current user from the list of shared users */
+      Iterator<String> userIt = sharedUsers.iterator();
+      while (userIt.hasNext())
+      {
+        String userId = userIt.next();
+        if (userId.equals(username)) {
+          userIt.remove();
+          break;
         }
-        if(sb.length() > 0) {
-          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UISharedForm.msg.not-foundgroup", new Object[]{sb.toString()}, 1)) ;
-          return ;
-        }
-        sharedUsers.remove(username);
-        Map<String, String> perms = new HashMap<String, String>() ;
-        if(cal.getViewPermission() != null) {
-          for(String v : cal.getViewPermission()) {
-            perms.put(v,String.valueOf(cal.getEditPermission() != null && Arrays.asList(cal.getEditPermission()).contains(v))) ;
-          }
-        }
-        for(String groupId : groups.split(CalendarUtils.COMMA)) { 
-          perms.put(groupId, String.valueOf(uiForm.canEdit())) ;
-        }
-        cal.setViewPermission(perms.keySet().toArray(new String[perms.keySet().size()])) ;
-        List<String> tempList = new ArrayList<String>() ;
-        for(String v : perms.keySet()) {
-          if(Boolean.parseBoolean(perms.get(v))) tempList.add(v) ;       
-        }
-        cal.setEditPermission(tempList.toArray(new String[tempList.size()])) ;
       }
-      
-      calendarService.saveUserCalendar(username, cal, false) ;
-      calendarService.shareCalendar(username, uiForm.calendarId_, Arrays.asList(sharedUsers.keySet().toArray(new String[sharedUsers.keySet().size()]))) ;      
-      UIAddEditPermission uiAddEdit = uiForm.getParent() ;
-      uiAddEdit.updateGrid(cal, uiAddEdit.getCurrentPage());
-      uiForm.setCanEdit(false) ;
-      uiForm.setSharedUser(null) ;
-      uiForm.setSharedGroup(null) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiAddEdit) ;
-      UICalendars uiCalendars = uiForm.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
+
+      // compare to old list of users to remove shared calendar
+      Set<Permission> oldPermissions = new HashSet<Permission>();
+      if (calendar.getViewPermission() != null)
+      {
+        for (String permission : calendar.getViewPermission())
+        {
+          Permission aPermission = new Permission(PermissionOwner.createPermissionOwnerFrom(permission));
+          /* add edit permission */
+          if (Arrays.asList(calendar.getEditPermission()).contains(permission)) aPermission.allowEditPermission();
+          oldPermissions.add(aPermission);
+        }
+      }
+
+      Set<String> oldSharedUsers = new HashSet<String>();
+      it = oldPermissions.iterator();
+      while (it.hasNext())
+      {
+        Permission aPermission = it.next();
+        PermissionOwner owner = aPermission.getOwner();
+        if (owner.getOwnerType().equals(PermissionOwner.USER_OWNER))
+        {
+          oldSharedUsers.add(owner.getId());
+          continue;
+        }
+
+        if (owner.getOwnerType().equals(PermissionOwner.GROUP_OWNER))
+        {
+          oldSharedUsers.addAll(sharedForm.getUsersByGroupId(owner.getGroupId()));
+          continue;
+        }
+
+        if (owner.getOwnerType().equals(PermissionOwner.MEMBERSHIP_OWNER))
+        {
+          oldSharedUsers.addAll(sharedForm.getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
+          continue;
+        }
+      }
+
+      /* find users who are removed from share list */
+      oldSharedUsers.removeAll(sharedUsers);
+
+      /* remove current user from the list of shared users */
+      userIt = oldSharedUsers.iterator();
+      while (userIt.hasNext())
+      {
+        String userId = userIt.next();
+        if (userId.equals(username)) {
+          userIt.remove();
+          break;
+        }
+      }
+
+      for (String userToUnshare : oldSharedUsers.toArray(new String[]{}))
+      {
+        calendarService.removeSharedCalendar(userToUnshare, sharedForm.calendarId_) ;
+      }
+
+      calendar.setViewPermission(viewPermissions.toArray(new String[]{}));
+      calendar.setEditPermission(editPermissions.toArray(new String[]{}));
+      calendarService.saveUserCalendar(username, calendar, false) ;
+      calendarService.shareCalendar(username, sharedForm.calendarId_, new ArrayList<String>(sharedUsers));
+
+      /* close all child popup and close share popup */
+      sharedForm.closeAllPopupAction();
+
+      UIPopupContainer popupContainer = sharedForm.getAncestorOfType(UIPopupContainer.class);
+      popupContainer.getChild(UIPopupAction.class).setRendered(true);
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm) ;
+      UICalendarPortlet calendarPortlet = sharedForm.getAncestorOfType(UICalendarPortlet.class);
+      UICalendars uiCalendars = calendarPortlet.findFirstComponentOfType(UICalendars.class);
       if (uiCalendars != null)
         event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendars);
-    }
-  }
-   
-  static  public class SelectGroupActionListener extends EventListener<UIGroupSelector> {   
-    @Override
-    public void execute(Event<UIGroupSelector> event) throws Exception {
-      UIGroupSelector uiForm = event.getSource() ;
-      String user = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      uiForm.getAncestorOfType(UISharedForm.class).updateSelect(UISharedTab.FIELD_GROUP, user) ;      
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
-    }
-  }
-  
-  static  public class SelectPermissionActionListener extends EventListener<UISharedForm> {
-    @Override
-    public void execute(Event<UISharedForm> event) throws Exception {
-      UISharedForm uiForm = event.getSource() ;
-      String permType = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      UIPopupContainer uiContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;  
-      uiContainer.removeChild(UIPopupWindow.class) ;
-      uiForm.removeChild(UIPopupWindow.class) ;
-      if (permType.equals(UISelectComponent.TYPE_USER)) {
-        UIPopupWindow uiPopupWindow = uiContainer.getChild(UIPopupWindow.class) ;
-        if(uiPopupWindow == null) {
-          uiPopupWindow = uiContainer.addChild(UIPopupWindow.class, "UIPopupWindowUserSelect", "UIPopupWindowUserSelect") ;
-        }
-        UIUserSelector uiUserSelector = uiContainer.createUIComponent(UIUserSelector.class, null, null) ;
-        uiUserSelector.setShowSearch(true);
-        uiUserSelector.setShowSearchUser(true) ;
-        uiUserSelector.setShowSearchGroup(true);
-        uiPopupWindow.setUIComponent(uiUserSelector);
-        uiPopupWindow.setShow(true);
-        uiPopupWindow.setWindowSize(740, 400) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;
-      } else {
-        UIPopupWindow uiPopupWindow = uiForm.addChild(UIPopupWindow.class, null, "UIPopupGroupSelector");
-        UIGroupSelector uiGroupSelector = uiForm.createUIComponent(UIGroupSelector.class, null,null) ;
-        uiPopupWindow.setUIComponent(uiGroupSelector);
-        uiGroupSelector.setId("UIGroupSelector");
-        uiGroupSelector.getChild(UITree.class).setId("TreeGroupSelector");
-        uiGroupSelector.getChild(UIBreadcumbs.class).setId("BreadcumbsGroupSelector");
-        uiForm.getChild(UIPopupWindow.class).setShow(true);
-        uiPopupWindow.setWindowSize(540, 0) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;
-      }
-    }
-  }
-  static  public class AddActionListener extends EventListener<UIUserSelector> {
-    @Override
-    public void execute(Event<UIUserSelector> event) throws Exception {
-      UIUserSelector uiUserSelector = event.getSource();
-      UIPopupContainer uiContainer = uiUserSelector.getAncestorOfType(UIPopupContainer.class) ;
-      UISharedForm uiShareForm = uiContainer.findFirstComponentOfType(UISharedForm.class);
-      UISharedTab uiSharedTab = uiShareForm.getChild(UISharedTab.class);
-      UIFormStringInput uiInput = uiSharedTab.getUIStringInput(UISharedTab.FIELD_USER);
-      String currentValues = uiInput.getValue();
-      String values = uiUserSelector.getSelectedUsers();
-      if(!CalendarUtils.isEmpty(currentValues) && !currentValues.equals("null")) values += ","+ currentValues; 
-      values = CalendarUtils.cleanValue(values);
-      uiInput.setValue(values);
-      UIPopupWindow popupWindow = uiUserSelector.getAncestorOfType(UIPopupWindow.class); 
-      popupWindow.setShow(false);
-      popupWindow.setUIComponent(null);
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer);
+      calendarPortlet.cancelAction();
     }
   }
 
-  static  public class CancelActionListener extends EventListener<UISharedForm> {
+
+  public static class OpenSelectUserFormActionListener extends EventListener<UISharedForm>
+  {
+    @Override
+    public void execute(Event<UISharedForm> event) throws Exception
+    {
+      UISharedForm sharedForm = event.getSource();
+      sharedForm.closeAllPopupAction();
+
+      UIPopupWindow popupWindow = sharedForm.getChildById(POPUP_USER_SELECTOR);
+      UIUserSelector userSelector = sharedForm.createUIComponent(UIUserSelector.class, null, null);
+      userSelector.setShowSearch(true);
+      userSelector.setShowSearchUser(true);
+      userSelector.setShowSearchGroup(false);
+      openPopupAction(popupWindow, userSelector, 650, 0);
+
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm.getParent());
+    }
+  }
+
+  public static class SelectUserActionListener extends EventListener<UIUserSelector>
+  {
+    @Override
+    public void execute(Event<UIUserSelector> event) throws Exception
+    {
+      UIUserSelector userSelector = event.getSource();
+      UISharedForm sharedForm = userSelector.getParent().getParent();
+      String values = userSelector.getSelectedUsers();
+
+      if (values.contains(CalendarUtils.COMMA))
+      {
+        String[] userIds = values.split(CalendarUtils.COMMA);
+
+        for (String userId : userIds)
+        {
+          userId = userId.trim();
+          sharedForm.updatePermissionOwnerInputWith(userId);
+        }
+      }
+      else sharedForm.updatePermissionOwnerInputWith(values.trim());
+
+      closePopupAction((UIPopupWindow)sharedForm.getChildById(POPUP_USER_SELECTOR));
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
+    }
+  }
+
+  public static class OpenSelectGroupFormActionListener extends EventListener<UISharedForm>
+  {
+    @Override
+    public void execute(Event<UISharedForm> event) throws Exception
+    {
+      UISharedForm sharedForm = event.getSource();
+      sharedForm.closeAllPopupAction();
+
+      UIPopupWindow popupWindow = sharedForm.getChildById(POPUP_GROUP_MEMBERSHIP_SELECTOR);
+      UIGroupSelector groupSelector = popupWindow.createUIComponent(UIGroupSelector.class, null, null);
+      openPopupAction(popupWindow, groupSelector, 550, 0);
+
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
+    }
+  }
+
+  public static class SelectGroupActionListener extends EventListener<UIGroupSelector>
+  {
+    @Override
+    public void execute(Event<UIGroupSelector> event) throws Exception
+    {
+      UIGroupSelector groupSelector = event.getSource();
+      String groupId = event.getRequestContext().getRequestParameter(OBJECTID);
+      UISharedForm sharedForm = groupSelector.getParent().getParent();
+      groupId = groupId + CalendarUtils.SLASH_COLON + CalendarUtils.ANY;
+
+      sharedForm.updatePermissionOwnerInputWith(groupId);
+
+      closePopupAction((UIPopupWindow)sharedForm.getChildById(POPUP_GROUP_MEMBERSHIP_SELECTOR));
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
+    }
+  }
+
+
+  /**
+   * open select membership popup
+   */
+  public static class OpenSelectMembershipFormActionListener extends EventListener<UISharedForm>
+  {
+    @Override
+    public void execute(Event<UISharedForm> event) throws Exception
+    {
+      UISharedForm sharedForm = event.getSource();
+      sharedForm.closeAllPopupAction();
+
+      UIPopupWindow popupWindow = sharedForm.getChildById(POPUP_GROUP_MEMBERSHIP_SELECTOR);
+      UIGroupMembershipSelector groupMembershipSelector = popupWindow.createUIComponent(UIGroupMembershipSelector.class, null, null);
+      openPopupAction(popupWindow, groupMembershipSelector, 550, 0);
+
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
+    }
+  }
+
+  public static class SelectMembershipActionListener extends EventListener<UIGroupMembershipSelector>
+  {
+    @Override
+    public void execute(Event<UIGroupMembershipSelector> event) throws Exception
+    {
+      UIGroupMembershipSelector groupMembershipSelector = event.getSource();
+      UISharedForm sharedForm = groupMembershipSelector.getParent().getParent();
+
+      String currentGroup = groupMembershipSelector.getCurrentGroup().getId();
+      String membershipId = event.getRequestContext().getRequestParameter(OBJECTID);
+      // current group: /developers - membership: member
+      String permissionId = currentGroup + CalendarUtils.SLASH_COLON + CalendarUtils.STAR + CalendarUtils.DOT
+          + membershipId;
+      // permission id: /developers/:*.member
+      sharedForm.updatePermissionOwnerInputWith(permissionId);
+
+      closePopupAction((UIPopupWindow)sharedForm.getChildById(POPUP_GROUP_MEMBERSHIP_SELECTOR));
+      UIPopupContainer popupContainer = sharedForm.getAncestorOfType(UIPopupContainer.class);
+      popupContainer.getChild(UIPopupAction.class).setRendered(true);
+
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm.getParent());
+    }
+  }
+
+
+  public static class CancelActionListener extends EventListener<UISharedForm>
+  {
     @Override
     public void execute(Event<UISharedForm> event) throws Exception {
-      UISharedForm uiForm = event.getSource() ;
-      UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
-      calendarPortlet.cancelAction() ;
+      UISharedForm sharedForm = event.getSource() ;
+      sharedForm.closeAllPopupAction();
+
+      UIPopupContainer popupContainer = sharedForm.getAncestorOfType(UIPopupContainer.class);
+      popupContainer.getChild(UIPopupAction.class).setRendered(true);
+
+      UICalendarPortlet portlet = sharedForm.getAncestorOfType(UICalendarPortlet.class);
+      portlet.cancelAction();
+    }
+  }
+
+
+  public static class AddEntryActionListener extends EventListener<UISharedForm>
+  {
+    @Override
+    public void execute(Event<UISharedForm> event) throws Exception
+    {
+      UISharedForm sharedForm = event.getSource();
+      UIFormStringInput permissionOwner = sharedForm.getChildById(INPUT_PERMISSION_OWNER);
+      String permissionStatement = permissionOwner.getValue();
+
+      if (permissionStatement == null) return;
+      String[] permissions = permissionStatement.split(CalendarUtils.COMMA);
+      List<String> permissionsToAdd = new ArrayList<String>();
+
+      for (String permissionId : permissions)
+      {
+        permissionId = permissionId.trim();
+        if (sharedForm.containsPermission(permissionId)) continue;
+
+        /* check if the permission is really a user, group or membership */
+        OrganizationService organizationService = CalendarUtils.getOrganizationService() ;
+        String groupId = null;
+        int indexOfSlashColon = permissionId.indexOf(CalendarUtils.SLASH_COLON);
+        if (indexOfSlashColon!= -1) groupId = permissionId.substring(0, indexOfSlashColon);
+
+        if (groupId != null)
+        {
+          Group aGroup = organizationService.getGroupHandler().findGroupById(groupId);
+          if (aGroup != null)
+          {
+            permissionsToAdd.add(permissionId);
+            continue;
+          }
+
+          Membership membership = organizationService.getMembershipHandler().findMembership(permissionId);
+          if (membership != null) permissionsToAdd.add(permissionId);
+          continue;
+        }
+
+        /* user permission */
+        if ((organizationService.getUserHandler().findUserByName(permissionId) != null))
+        {
+          permissionsToAdd.add(permissionId);
+          continue;
+        }
+      }
+
+      for (String permission : permissionsToAdd.toArray(new String[]{}))
+      {
+        Permission aPermission = new Permission(PermissionOwner.createPermissionOwnerFrom(permission));
+        sharedForm.addPermission(aPermission);
+      }
+
+      /* reset input to Select Owner*/
+      permissionOwner.setValue(INPUT_PERMISSION_OWNER_LABEL);
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
+    }
+  }
+
+
+  public static class DeleteEntryActionListener extends EventListener<UISharedForm>
+  {
+    @Override
+    public void execute(Event<UISharedForm> event) throws Exception
+    {
+      UISharedForm sharedForm = event.getSource();
+      String permissionEntryId = event.getRequestContext().getRequestParameter(OBJECTID);
+      UIPermissionEntry permissionEntry = ((UIPermissionGrid) sharedForm.getChildById(PERMISSION_GRID)).getChildById(permissionEntryId);
+      Permission aPermission = permissionEntry.getPermission();
+      sharedForm.removePermission(aPermission.getId());
+      event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
+    }
+  }
+
+  /**
+   * represents a permission with its owner and his status of edit permission
+   *
+   */
+  public static class Permission
+  {
+    private PermissionOwner owner;
+
+    private boolean hasEditPermission;
+
+    public Permission(PermissionOwner owner)
+    {
+      this.owner = owner;
+      hasEditPermission = false;
+    }
+
+    public boolean hasEditPermission() { return hasEditPermission; }
+
+    public void allowEditPermission() { hasEditPermission = true; }
+
+    public PermissionOwner getOwner()
+    {
+      return owner;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+      if ( !(o instanceof Permission)) return false;
+      if (! ((Permission) o).getOwner().equals(owner) ) return false;
+      return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+      return owner.hashCode();
+    }
+
+    public String getId()
+    {
+      return owner.getId();
+    }
+
+    /**
+     * convert from an array string of permission statements to
+     * a set of permission
+     *
+     * @param permissions
+     * @return
+     */
+    public static Set<Permission> valueOf(String[] permissions)
+    {
+      Set<Permission> permissionList = new HashSet<Permission>();
+      for (String aPermission : permissions)
+      {
+        permissionList.add(new Permission( new PermissionOwner().createPermissionOwnerFrom(aPermission) ));
+      }
+      return permissionList;
+    }
+
+    /**
+     * add edit permissions to a group of permissions
+     *
+     * @return permissions new set of permissions
+     */
+    public static Set<Permission> allowEditToGroupOfPermissions(Set<Permission> permissions)
+    {
+      Iterator<Permission> it = permissions.iterator();
+      while (it.hasNext())
+      {
+        it.next().allowEditPermission();
+      }
+      return permissions;
+    }
+  }
+
+
+  public static class PermissionOwner
+  {
+    /**
+     * id of Permission Owner is
+     * - userId: like john if owner is an user
+     * - groupId: like /platform/users if owner is a group
+     * - membershipId: like /platform/users:*.manager
+     * used to evaluate equality
+     **/
+    private String id;
+
+    /**
+     * owner = user --> empty string
+     * owner = group --> groupId
+     * owner = membership --> groupId
+     **/
+    private String groupId;
+
+    private String membership;
+
+    private String ownerType;
+
+    public static final String USER_OWNER = "user";
+
+    public static final String GROUP_OWNER = "group";
+
+    public static final String MEMBERSHIP_OWNER = "membership";
+
+    public String getId()
+    {
+      return id;
+    }
+
+    public void setId(String permissionId)
+    {
+      id = permissionId;
+    }
+
+    public String getMembership() {
+      return membership;
+    }
+
+    public void setMembership(String membership) {
+      this.membership = membership;
+    }
+
+    public String getGroupId() {
+      return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+      this.groupId = groupId;
+    }
+
+    public String getOwnerType() {
+      return ownerType;
+    }
+
+    public void setOwnerType(String ownerType) {
+      this.ownerType = ownerType;
+    }
+
+    public PermissionOwner() {}
+
+    /**
+     * example of permission statement
+     * - membership: /platform/users/:*.manager
+     * - user: demo
+     * - group: /organization/management/executive-board/:*.*
+     */
+    private static PermissionOwner createPermissionOwnerFrom(String permissionStatement)
+    {
+      PermissionOwner owner = new PermissionOwner();
+      owner.setId(permissionStatement);
+
+      /* user permission */
+      if (permissionStatement.indexOf(CalendarUtils.SLASH_COLON) == -1)
+      {
+        owner.setGroupId("");
+        owner.setMembership("");
+        owner.setOwnerType(USER_OWNER);
+        return owner;
+      }
+
+      int indexOfSlashColon = permissionStatement.indexOf(CalendarUtils.SLASH_COLON);
+      owner.setGroupId(permissionStatement.substring(0, indexOfSlashColon));
+
+      /* membership permission */
+      if (permissionStatement.indexOf(CalendarUtils.ANY) == -1 )
+      {
+        int indexAnyOf = permissionStatement.indexOf(CalendarUtils.ANY_OF);
+        owner.setMembership(permissionStatement.substring(indexAnyOf + 2, permissionStatement.length()));
+        owner.setOwnerType(MEMBERSHIP_OWNER);
+        return owner;
+      }
+
+      /* group permission */
+      owner.setMembership(CalendarUtils.ANY);
+      owner.setOwnerType(GROUP_OWNER);
+      return owner;
+    }
+
+    /**
+     * takes the string after the last "/" of group id
+     * and replace special character by space
+     *
+     * @return
+     */
+    private String truncateGroupId()
+    {
+      String[] groupIdParts = groupId.split(CalendarUtils.SLASH);
+      char[] newGroupId = groupIdParts[groupIdParts.length - 1].toCharArray();
+      newGroupId[0] = Character.toUpperCase(newGroupId[0]); /* upper case the first character */
+      return new String(newGroupId).replaceAll("[^a-zA-Z0-9]+"," "); /* replace special character by space */
+    }
+
+    /**
+     * translate membership *.* to anybody
+     *
+     * @return
+     */
+    private String getMeaningfulMembership()
+    {
+      if (membership.equals(CalendarUtils.STAR))
+        return "Anybody";
+      return membership;
+    }
+
+    /**
+     * returns a readable permission under form: user or membership in group
+     *
+     * @return
+     */
+    public String getMeaningfulPermissionOwnerStatement()
+    {
+      if (ownerType.equals(USER_OWNER))
+        return id;
+      else if (ownerType.equals(GROUP_OWNER))
+        return "Anybody in " + truncateGroupId();
+      return getMeaningfulMembership() + " in " + truncateGroupId();
+    }
+
+    /**
+     * get the owner statement for the permission
+     *
+     * @return
+     */
+    @Override
+    public String toString()
+    {
+      return id;
+    }
+
+    /**
+     * compare 2 permissions owner
+     * equality happens when 2 permission owner has the same type and id
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o)
+    {
+      if ( !(o instanceof PermissionOwner) ) return false;
+      PermissionOwner owner = ((PermissionOwner) o);
+      return id.equals(owner.getId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+      return Math.abs(id.hashCode());
     }
   }
 

@@ -1,0 +1,22 @@
+<%
+  import org.exoplatform.calendar.webui.popup.UISharedForm;
+  import org.exoplatform.calendar.webui.popup.UISharedForm.Permission
+
+  Permission permission = uicomponent.getPermission();
+  String owner   = permission.getOwner().getMeaningfulPermissionOwnerStatement();
+  String ownerId = permission.getOwner().getId();
+
+  UISharedForm sharedForm = uicomponent.getParent().getParent();
+  def deleteLink          = sharedForm.event(sharedForm.DELETE_ENTRY, uicomponent.id);
+  def deleteTitle         = _ctx.appRes(sharedForm.PERMISSION_ENTRY + ".title." + sharedForm.DELETE_ENTRY);
+  def checkbox = uicomponent.getChildById(uicomponent.CHECKBOX + "." + permission.hashCode());
+%>
+<td>
+  <div rel="tooltip" data-placement="bottom" title="$ownerId">$owner</div>
+</td>
+<td class="center"><label class="UICheckbox"><% uicomponent.renderChild(checkbox); %><span></span></label></td>
+<td class="center">
+  <a rel="tooltip" data-placement="bottom" title="$deleteTitle" href="$deleteLink">
+    <i class="uiIconDelete"></i>
+  </a>
+</td>
