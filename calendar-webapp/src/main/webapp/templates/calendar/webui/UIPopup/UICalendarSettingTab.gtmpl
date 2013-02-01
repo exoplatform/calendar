@@ -76,10 +76,10 @@
 				<%uiForm.renderField(uicomponent.ISSHOWWORKINGTIME)%>
 			  </div>
 			  <div class="workingTime selectboxMini pull-left">
-				<span class=""><%=uiForm.getLabel(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;&nbsp;</span>
-				<%uiForm.renderField(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;
-				<span class=""><%=uiForm.getLabel(uicomponent.WORKINGTIME_END)%>&nbsp;&nbsp;</span>
-				<%uiForm.renderField(uicomponent.WORKINGTIME_END)%>
+				<span class="pull-left pdT5"><%=uiForm.getLabel(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;&nbsp;</span>
+				<div class="pull-left"><%uiForm.renderField(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;</div>
+				<span class="pull-left pdT5"><%=uiForm.getLabel(uicomponent.WORKINGTIME_END)%>&nbsp;&nbsp;</span>
+				<div class="pull-left"><%uiForm.renderField(uicomponent.WORKINGTIME_END)%></div>
 			  </div>
 			</div>
 		</div>  
