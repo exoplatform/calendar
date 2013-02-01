@@ -6,6 +6,8 @@ import java.util.Calendar;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
+
 uiform.begin() ;
 
 int currentDay = uicomponent.getCurrentDay() ;
@@ -51,6 +53,10 @@ uicomponent.setCalClicked(false);
 %>
 
 <div class="spliterResizableListArea mainWorkingPanel uiListView">
+<div id="bts_alert" class="alert fade in" style="display: none;">
+  <button type="button" id="bts_close" class="close" style="padding-right: 15px;">x</button>
+  <strong></strong>
+</div>
 <table id="UIListUsers" class="uiGrid table  table-hover table-striped">
 <thead>
 <tr>
@@ -133,13 +139,20 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
               if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#F5F5F5;";}
               String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;     
 			  def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
-          def isEditable;
+          boolean isEditable;
           if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
-          else isEditable = "true";
-          %>
+          else isEditable = true;
+          UICheckBoxInput checkbox = uicomponent.getChildById(event.getId());
+          if (isEditable == false) checkbox.setDisabled(true);          
+        %>
 			  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
-              <%if(!searchDisplay) {%>
-                <td class="center"><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
+        <%if(!searchDisplay) {%>
+          <td class="center">
+            <span class="uiCheckbox">
+              <% uicomponent.renderField(checkbox) %>
+            <span></span>
+            </span>
+          </td>
 <%}%>
 
 <!-- do not display attachment icon and priority icon in search results -->

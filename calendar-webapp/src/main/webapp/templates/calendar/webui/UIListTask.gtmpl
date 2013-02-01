@@ -1,6 +1,8 @@
 <%
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
+
 uiform.begin();
 
 int currentDay = uicomponent.getCurrentDay() ;
@@ -34,6 +36,10 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
     <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl"); %>
   </div>
   <div class="spliterResizableListArea mainWorkingPanel uiListView">
+    <div id="bts_alert" class="alert fade in" style="display: none;">
+      <button type="button" id="bts_close" class="close" style="padding-right: 15px;">x</button>
+      <strong></strong>
+    </div>
     <table id="UIListUsers" class="uiGrid table  table-hover table-striped">
       <thead>
       <tr>
@@ -77,13 +83,20 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 	    if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#f5f5f5;";}
 	    String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;
 	    def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
-	    def isEditable;
+	    boolean isEditable;
         if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
-        else isEditable = "true";
+        else isEditable = true;
+        UICheckBoxInput checkbox = uicomponent.getChildById(event.getId());
+        if (isEditable == false) checkbox.setDisabled(true);
 	%>
 	
 	  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
-	    <td class="center"><%uicomponent.renderField(uicomponent.getChildById(event.getId()))%></td>
+	    <td class="center">
+	      <span class="uiCheckbox">
+            <% uicomponent.renderField(checkbox) %>
+            <span></span>
+          </span>
+        </td>
 	    <td class="center">
 		  <%if(!event.getAttachment().isEmpty() && event.getAttachment().size()>0) {print event.getAttachment().size();}%>
 	    </td>

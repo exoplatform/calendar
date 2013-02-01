@@ -122,7 +122,8 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
             (actions[j].href.indexOf("RemoveCalendar") >= 0) ||
             (actions[j].href.indexOf("ShareCalendar") >= 0) ||
             (actions[j].href.indexOf("ImportCalendar") >= 0) ||
-            (actions[j].href.indexOf("ExportCalendar") >= 0))
+            (actions[j].href.indexOf("ExportCalendar") >= 0) ||
+            (actions[j].href.indexOf("ChangeColor") >= 0))
           {
               actions[j].style.display = "none";
           }
@@ -151,11 +152,20 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
             (actions[j].href.indexOf("EditCalendar") >= 0) || 
             (actions[j].href.indexOf("RemoveCalendar") >= 0) ||
             (actions[j].href.indexOf("ImportCalendar") >= 0) ||
-            (actions[j].href.indexOf("ExportCalendar") >= 0))
+            (actions[j].href.indexOf("ExportCalendar") >= 0) ||
+            (actions[j].href.indexOf("ChangeColor") >= 0))
           {
               actions[j].style.display = "block";
           }
       }
+  }
+
+  /**
+   * disable line split and table color 
+   */
+  if (canEdit && (canEdit == "false")) {
+    gj(menu).find(".lineSplit").hide();
+    gj(menu).find(".calendarTableColor").hide();
   }
 
   /*

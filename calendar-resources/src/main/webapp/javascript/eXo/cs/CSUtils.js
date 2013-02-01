@@ -39,9 +39,12 @@ CheckBoxManager.prototype.checkAllItem = function(obj){
 	var checked = obj.checked ;
 	var items = _module.CheckBox.getItems(obj) ;
 	var len = items.length ;
-	for(var i = 1 ; i < len ; i ++) {
-		items[i].checked = checked ;
-		this.highlight(items[i],checked);
+	for (var i = 1 ; i < len ; i ++) {
+    if (items[i].disabled === false) /* only check if checkbox enabled */
+    {
+		  items[i].checked = checked ;
+		  this.highlight(items[i],checked);
+    }
 	}	
 } ;
 
@@ -222,23 +225,49 @@ Utils.prototype.cancelSubmit = function() {
 } ;
 
 Utils.prototype.confirmAction = function(obj,msg,parentId){
+  // msg: Please check at least one event or task.
+  // parent: UIListContainer 
+  // obj : UIHeaderBar_3
 	var	cont = gj(obj).parents('#' + parentId)[0]; 
 	var checkboxes = gj(cont).find("input.checkbox");
 	var i = checkboxes.length;
 	var actionLink = obj.getAttribute("actionLink");
+  var isEditable;
 	var check = false ;
 	var n = 1;
 	if(parentId == "UICalendarViewContainer") n = 0;
-	while(i>n){
+	
+  /* loop throuth the checkboxes */
+  while (i>n) {
 		i--;
-		if(checkboxes[i].checked) {
-			check = true;
-			break ;
+		if (checkboxes[i].checked) {
+			var parentTr = gj(checkboxes[i]).parents("tr")[0];
+      isEditable = parentTr.getAttribute("isEditable");
+
+      if (isEditable && (isEditable === "true")) {
+        check = true;
+			  break ;
+      }
 		}
 	}
+
+  if (check) gj.globalEval(actionLink);
+  else { 
+    var alertDialog = gj("#bts_alert");
+    gj("#bts_alert").show();
+    gj("#bts_alert").children("strong").html(msg);
+    gj("#bts_alert").children("#bts_close").click(function() { gj(this).parent().hide(); }  );
+  }  
+
+  /** 
+  alert(isEditable);
+  if (isEditable && (isEditable === true)) {
 	//if(check) eval(actionLink);
-	if(check) gj.globalEval(actionLink);
-	else alert(msg);
+	  if(check) gj.globalEval(actionLink);
+	  else gj(".alert").alert();//alert(msg);
+  }
+  else alert("You do not have delete permission on this event");
+  **/
 };
 
 Utils.prototype.swapClass = function(obj,hoverClass){
