@@ -51,14 +51,14 @@
 <tr>
 <% if(!displaySearchResult) { %>
 <!-- search results displaying is disabled, show Attachment Icon, Priority and Event -->
-	<th style="width: 25px;" class="center">
+	<th width="25" class="center">
 		<span class="uiCheckbox"  rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>">
 			<input type="checkbox" class="checkbox" value="4"/>
 		  <span></span>
     </span>
 	</th>
 
-	<th style="width: 40px;" class="center">
+	<th width="40" class="center">
     <i class="uiIconAttach uiIconLightGray"></i>
   </th>
   <%
@@ -70,7 +70,7 @@
     }
   %>
 
-	<th class="center" style="width: 70px">
+	<th class="center" width="70">
     <a href="$sortLink"><%=uiform.getLabel('Priority')%><i class="$classCss pull-right "></i></a>
   </th>
 
@@ -154,10 +154,7 @@
   <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
   <%if(!displaySearchResult) {%>
     <td class="center">
-      <span class="uiCheckbox">
         <% uicomponent.renderField(checkbox) %>
-        <span></span>
-      </span>
     </td>
   <%}%>
 
