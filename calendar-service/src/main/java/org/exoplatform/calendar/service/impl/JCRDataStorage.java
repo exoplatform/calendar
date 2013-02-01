@@ -1349,9 +1349,8 @@ public class JCRDataStorage implements DataStorage {
     eventNode.setProperty(Utils.EXO_TASK_DELEGATOR, event.getTaskDelegator());
 
     GregorianCalendar startTime = Utils.getInstanceTempCalendar();
-    GregorianCalendar endTime = Utils.getInstanceTempCalendar();
-    // convert date time to GMT time zone before saving to database.
-    // dateTime.setTimeZone(TimeZone.getTimeZone("GMT"));
+    GregorianCalendar endTime =  Utils.getInstanceTempCalendar();
+
     startTime.setTime(event.getFromDateTime());
     eventNode.setProperty(Utils.EXO_FROM_DATE_TIME, startTime);
     eventNode.getSession().save();
@@ -1551,14 +1550,16 @@ public class JCRDataStorage implements DataStorage {
     publicEvent.setProperty(Utils.EXO_ROOT_EVENT_ID, event.getId());
     publicEvent.setProperty(Utils.EXO_EVENT_TYPE, event.getEventType());
     publicEvent.setProperty(Utils.EXO_CALENDAR_ID, event.getCalendarId());
-    java.util.Calendar dateTime = Utils.getInstanceTempCalendar();
-    dateTime.setTime(event.getFromDateTime());
-    fromDate = dateTime.get(java.util.Calendar.DAY_OF_YEAR);
-    publicEvent.setProperty(Utils.EXO_FROM_DATE_TIME, dateTime);
+    java.util.Calendar startTime = Utils.getInstanceTempCalendar();
+    java.util.Calendar endTime = Utils.getInstanceTempCalendar();
+
+    startTime.setTime(event.getFromDateTime());
+    fromDate = startTime.get(java.util.Calendar.DAY_OF_YEAR);
+    publicEvent.setProperty(Utils.EXO_FROM_DATE_TIME, startTime);
     publicEvent.getSession().save();
     publicEvent.setProperty(Utils.EXO_EVENT_STATE, event.getEventState());
-    dateTime.setTime(event.getToDateTime());
-    toDate = dateTime.get(java.util.Calendar.DAY_OF_YEAR);
+    endTime.setTime(event.getToDateTime());
+    toDate = endTime.get(java.util.Calendar.DAY_OF_YEAR);
     if (toDate > fromDate) {
       java.util.Calendar tmpTime = Utils.getInstanceTempCalendar();
       tmpTime.setTime(event.getFromDateTime());
@@ -1570,7 +1571,7 @@ public class JCRDataStorage implements DataStorage {
       publicEvent.setProperty(Utils.EXO_TO_DATE_TIME, tmpTime);
       publicEvent.getSession().save();
     } else {
-      publicEvent.setProperty(Utils.EXO_TO_DATE_TIME, dateTime);
+      publicEvent.setProperty(Utils.EXO_TO_DATE_TIME, endTime);
       publicEvent.getSession().save();
     }
     publicEvent.setProperty(Utils.EXO_PARTICIPANT, event.getParticipant());
