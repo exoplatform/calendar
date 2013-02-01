@@ -22,7 +22,7 @@
    Locale locale = context.getParentAppRequestContext().getLocale() ;
   dateTimeFormat = uicomponent.getDateTimeFormat() ;
   DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
-  _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");
+   
   selectedEvent = uicomponent.getSelectedEvent() ;
   boolean displaySearchResult = uicomponent.isDisplaySearchResult();
 
@@ -37,6 +37,10 @@
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListEvent\');');
   requirejs.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
 %>
+
+<div class="title">
+  <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl"); %>
+</div>  
 <div class="spliterResizableListArea mainWorkingPanel uiListView">
 <div id="bts_alert" class="alert fade in" style="display: none;">
   <button type="button" id="bts_close" class="close" style="padding-right: 15px;">x</button>
