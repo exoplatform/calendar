@@ -31,11 +31,10 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 %>
 
 
-<div class="uiBox">
   <div class="title">
     <% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl"); %>
   </div>
-  <div class="spliterResizableListArea mainWorkingPanel uiListView">
+  <div class="spliterResizableListArea mainWorkingPanel uiTaskView">
     <div id="bts_alert" class="alert fade in" style="display: none;">
       <button type="button" id="bts_close" class="close" style="padding-right: 15px;">x</button>
       <strong></strong>
@@ -145,8 +144,6 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
       </div>
       <%}%>
     </div>
-
-  </div>
 </div>
 
     <% /*Begin Popup Menu*/ %>
