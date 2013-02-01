@@ -104,10 +104,13 @@
 	    border-top: 1px solid @white;
 	    cursor: n-resize;
 	    height: 1px;
-	    margin: auto auto 1px;
+	    margin: -4px auto 1px;
 	    max-width: 13px;
 	    width: 20%;
 	    display: none;
+	}
+	.eventContainer + .resizeEventContainer {
+		margin-top: 0;
 	}
 	
 }
@@ -167,7 +170,7 @@
     -moz-user-select: none;
     .opacity(50);
     position: absolute;
-	background: #CCCCCC;
+	background: @borderColor;
 }
 
 .moreEventTitleBar {
