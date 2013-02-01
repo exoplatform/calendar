@@ -8,16 +8,26 @@ var _module = {};
 ScheduleSupport = {
 	//returns index of the cell in the first row with the time given in format : HH:MM (AM/PM)
 	indexFromTime : function(time) {
-	   
-	   var hours = parseInt(time.split(':')[0]);
-	   var mins = parseInt(time.split(':')[1].slice(0,2));
-	   if(time.indexOf('AM') > -1) {
-	       hours = (hours == 12) ? 0 : hours; // 12:00 AM -> 00:00 AM to calculate index
-	   }
-	   if(time.indexOf('PM') > -1) {
-	     hours += 12;
-	   }
-	   return (hours * 60 + mins)/15 + 1; // index start from 1
+	    var hourStr = time.split(':')[0];
+	    var minStr = time.split(':')[1].slice(0,2);
+	    var hours,mins;
+	    if(hourStr[0] == '0') {
+		hours = parseInt(hourStr[1]);
+	    } else {
+		hours = parseInt(hourStr);
+	    }
+	    if(minStr[0] == '0') {
+		mins = parseInt(minStr[1]);
+	    } else {
+		mins = parseInt(minStr);
+	    }
+	    if(time.indexOf('AM') > -1) {
+		hours = (hours == 12) ? 0 : hours; // 12:00 AM -> 00:00 AM to calculate index
+	    }
+	    if(time.indexOf('PM') > -1) {
+		hours += 12;
+	    }
+	    return (hours * 60 + mins)/15 + 1; // index start from 1
 	},
 
 	//apply green period in schedule tab 
