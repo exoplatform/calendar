@@ -501,7 +501,7 @@ EventMan.prototype.initWeek = function(rootNode) {
   this.week.weekIndex = 0;
   this.week.startWeek = Date.parse(this.dayNodes[0].getAttribute('starttimefull'));
   var len = (eXo.calendar.UICalendarPortlet.weekdays && document.getElementById("UIWeekView"))?eXo.calendar.UICalendarPortlet.weekdays: 7 ;
-  this.week.endWeek = this.week.startWeek + (1000 * 60 * 60 * 24 * len) -1;
+  this.week.endWeek = this.week.startWeek + (1000 * 60 * 60 * 24 * len) - 1;
   this.week.events = this.events;
   this.week.resetEventWeekIndex();
   // Set unlimited event visible for all days
@@ -550,7 +550,7 @@ EventMan.prototype.sortByWeek = function(){
 };
 
 function GUIMan(){
-  this.EVENT_BAR_HEIGH = 0;
+  this.EVENT_BAR_HEIGH = 17;
 }
 
 /**
@@ -585,11 +585,6 @@ GUIMan.prototype.initMonth = function(){
 GUIMan.prototype.initWeek = function() {
   var EventMan = _module.UICalendarMan.EventMan;
   var events = EventMan.events;
-  if (events.length > 0) {
-    if (events[0]) {
-      this.EVENT_BAR_HEIGH = events[0].rootNode.offsetHeight + 1;
-    }
-  }
   for (var i=0; i<events.length; i++) {
     var eventObj = events[i];
     var eventLabelNode = gj(eventObj.rootNode).find('div.eventAlldayContent')[0]; 
@@ -636,8 +631,8 @@ GUIMan.prototype.paintWeek = function() {
       maxEventRow = dayObj.visibleGroup.length;
     }
   }
-  this.eventAlldayNode.style.height = (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'28px';
-	if(gj.browser.msie != undefined) this.eventAlldayNode.firstChild.style.height = (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'28px';
+  var allDayTable = gj(this.eventAlldayNode).find('.allDayTable');
+  allDayTable.css('height', (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'17px');
 };
 
 /**
