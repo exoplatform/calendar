@@ -64,9 +64,12 @@ public class UnifiedQuery extends EventQuery {
         if (!Utils.isEmpty(getEventType())) {
           queryString.append(") ");
         }
+        if (!Utils.isEmpty(getState())) {
+          queryString.append(" AND " + Utils.EXO_EVENT_STATE + " <> '" + getState() + "'");
+        }
         if(getOrderBy() != null && getOrderBy().length > 0) {
           queryString.append(" ORDER BY ").append(getOrderBy()[0]);
-          if(!Utils.isEmpty(getOrderType())) queryString.append(" ").append(getOrderType().toUpperCase());
+          if(!Utils.isEmpty(getOrderType())) queryString.append(Utils.SPACE).append(getOrderType().toUpperCase());
         }
       }
     }

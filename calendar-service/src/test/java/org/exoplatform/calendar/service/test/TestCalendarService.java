@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
@@ -46,6 +47,7 @@ import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.impl.CalendarSearchResult;
 import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
 import org.exoplatform.calendar.service.impl.EventSearchConnector;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
@@ -129,7 +131,28 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(unifiedSearchService_);
 
   }
-
+  //mvn test -Dtest=TestCalendarService#testBuildDate
+  public void testBuildDate() throws Exception{
+    java.util.Calendar today = java.util.Calendar.getInstance() ;
+    CalendarEvent event = new CalendarEvent() ;
+    event.setFromDateTime(today.getTime()) ;
+    today.add(java.util.Calendar.HOUR, 4);
+    event.setToDateTime(today.getTime()) ;
+    
+    SimpleDateFormat sdf = new SimpleDateFormat("MMM", new Locale("VN"));
+    
+    //log.info(sdf.format(event.getFromDateTime())) ;
+    
+    sdf = new SimpleDateFormat("dd");
+    
+    //log.info(sdf.format(event.getFromDateTime())) ;
+    sdf = new SimpleDateFormat("EEEEE, MMMMMMMM dd, yyyy K:mm a") ;
+    
+    //log.info(sdf.format(event.getFromDateTime())) ;
+    
+  }
+  
+  //mvn test -Dtest=TestCalendarService#testUnifiedSeach
   public void testUnifiedSeach() throws Exception{
 
     //Simple case
@@ -182,6 +205,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     toCal.add(java.util.Calendar.HOUR, 1);
     calEvent.setFromDateTime(fromCal.getTime());
     calEvent.setToDateTime(toCal.getTime());
+    //calEvent.setEventState(CalendarEvent.CANCELLED);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, true);
     List<String> ids = new ArrayList<String>();
     ids.add(cal.getId());
@@ -237,14 +261,59 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
 
     //== test task search ==//
-    calEvent.setEventType(CalendarEvent.TYPE_TASK) ;
+    calEvent.setEventType(CalendarEvent.TYPE_TASK);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
     for(SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, item);
     }
-
+    //Test task status and icon 
+    
+    calEvent.setEventType(CalendarEvent.TYPE_TASK) ;
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size()) ;
+    for(SearchResult item : result) {
+      checkFieldsValueWithType(cal.getName(), calEvent, (CalendarSearchResult)item);
+    }
+    
+    // Does not search completed task 
+    calEvent.setEventState(CalendarEvent.COMPLETED);
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
+    query.setState(CalendarEvent.COMPLETED);
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(0,result.size());
+    
+    // search all need action
+    calEvent.setEventState(CalendarEvent.NEEDS_ACTION);
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
+    query.setState(CalendarEvent.COMPLETED);
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1,result.size());
+    CalendarSearchResult calItem = (CalendarSearchResult)result.toArray()[0] ;
+    assertEquals(Utils.TASK_ICON + calEvent.getEventState(), calItem.getImageUrl());
+    
+    // search all inprocess
+    calEvent.setEventState(CalendarEvent.IN_PROCESS);
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
+    query.setState(CalendarEvent.COMPLETED);
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1,result.size());
+    calItem = (CalendarSearchResult)result.toArray()[0] ;
+    assertEquals(Utils.TASK_ICON + calEvent.getEventState(), calItem.getImageUrl());
+    
+    // search all cancelled
+    calEvent.setEventState(CalendarEvent.CANCELLED);
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
+    query.setState(CalendarEvent.COMPLETED);
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1,result.size());
+    calItem = (CalendarSearchResult)result.toArray()[0] ;
+    assertEquals(Utils.TASK_ICON + calEvent.getEventState(), calItem.getImageUrl());
+    
+    
+    
     //Specia case//
     calEvent.setSummary("today is friday, we will have a weekend");
     calEvent.setEventType(CalendarEvent.TYPE_EVENT) ;
@@ -276,17 +345,15 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
     result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size()) ;
-
-     item = (SearchResult)result.toArray()[0] ;
-     checkFields(item);
-
-    
-     item2 = (SearchResult) result.toArray()[1] ;
-     checkFields(item2);
+    CalendarSearchResult calSerResult = (CalendarSearchResult)result.toArray()[0] ;
+     checkFields(calSerResult);
+     checkFieldsValueWithType(cal.getName(), calEvent, calSerResult);
+     
+     CalendarSearchResult calSerResult2 = (CalendarSearchResult)result.toArray()[1] ;
+     checkFields(calSerResult2);
+     checkFieldsValueWithType(cal.getName(), calEvent2, calSerResult2);
     
     assertEquals(false, item.getDate() > item2.getDate()) ;
-    
-
 
     calendarService_.removeUserEvent(username, ids.get(0), calEvent.getId());
     calendarService_.removeUserEvent(username, ids.get(0), calEvent2.getId());
@@ -302,21 +369,37 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(item.getImageUrl());
     assertEquals(true, item.getDate() > 0);
   }
+  private void checkFields(CalendarSearchResult item) {
+    checkFields((SearchResult)(item));
+    assertEquals(item.getDataType(), CalendarEvent.TYPE_EVENT);   
+  }
+  
   
   private void checkFieldsValueWithType(String calName, CalendarEvent calEvent, SearchResult item){
     assertEquals(calEvent.getSummary(), item.getTitle());
     if(CalendarEvent.TYPE_EVENT.equals(calEvent.getEventType())){
-      if(calEvent.getLocation() != null) assertEquals(calName + "-" + df.format(calEvent.getFromDateTime())+"-"+calEvent.getLocation(), item.getDetail()) ;
-      assertEquals(Utils.EVENT_ICON, item.getImageUrl());
-      assertEquals(calEvent.getFromDateTime().getTime(), item.getDate());
+      if(calEvent.getLocation() != null) assertEquals(calName + Utils.MINUS + df.format(calEvent.getFromDateTime())+Utils.MINUS+calEvent.getLocation(), item.getDetail()) ;
     } else {
-     assertEquals(calName + "- Due for: -" + df.format(calEvent.getToDateTime()), item.getDetail()) ;
-     assertEquals(Utils.TASK_ICON, item.getImageUrl());
-     assertEquals(calEvent.getToDateTime().getTime(), item.getDate());
+     assertEquals(calName +Utils.MINUS + Utils.DUE_FOR + df.format(calEvent.getToDateTime()), item.getDetail()) ;
     }
+    assertEquals(df.format(java.util.Calendar.getInstance().getTime()), df.format(new Date(item.getDate())));
     assertEquals(true, item.getRelevancy() > 0);
+    assertEquals(Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + calEvent.getId(), item.getUrl());
   }
 
+  private void checkFieldsValueWithType(String calName, CalendarEvent calEvent, CalendarSearchResult item){
+    checkFieldsValueWithType(calName,  calEvent,  (SearchResult)item);
+    if(CalendarEvent.TYPE_EVENT.equals(calEvent.getEventType())){
+      assertEquals(item.getFromDateTime().getTime(), calEvent.getFromDateTime());
+      assertNotNull(item.getImageUrl());
+      assertEquals(Utils.EVENT_ICON, item.getImageUrl());
+    } else {
+      assertEquals(Utils.TASK_ICON + calEvent.getEventState(), item.getImageUrl());
+      assertNull(item.getFromDateTime());
+    }
+    //log.info("excerpt() ===== "+item.getExcerpt());
+  }
+  
   public void testDefaultData() throws Exception {
     String defaultEventCategoriesConfig = "Birthday,Memo,Wedding,DayOff";
     String defaultCalendarId = "NewCalendarId";

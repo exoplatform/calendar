@@ -373,10 +373,12 @@ public class Utils {
 
   public static String[]     SYNC_PERIOD                = { SYNC_AUTO, SYNC_5MINS, SYNC_10MINS, SYNC_15MINS, SYNC_1HOUR, SYNC_1DAY, SYNC_1WEEK, SYNC_1YEAR };
   
+  //Unified search
+  public static final String DETAIL_PATH = "details";
+  public static final String DUE_FOR = "Due for: ";
   public static final String ORDER_TYPE_ASCENDING                  = "ASC";
-
   public static final String ORDER_TYPE_DESCENDING                 = "DESC";
-  
+
   public static String  ORDERBY_RELEVANCY  = "relevancy" ;
   public static String  ORDERBY_DATE  = "date" ;
   public static String  ORDERBY_TITLE  = "title" ;
@@ -386,17 +388,17 @@ public class Utils {
   
   public final static Map<String, String> sortFieldsMap = new LinkedHashMap<String, String>(){{
     put(ORDERBY_RELEVANCY, JCR_SCORE);
-    put(ORDERBY_DATE, EXO_FROM_DATE_TIME);
+    put(ORDERBY_DATE, EXO_DATE_CREATED);
     put(ORDERBY_TITLE, EXO_SUMMARY);
   }};
   
-  public final static String[] selectFields =  {EXO_ID, EXO_EVENT_TYPE,EXO_SUMMARY, EXO_CALENDAR_ID,EXO_DESCRIPTION,
-    EXO_FROM_DATE_TIME,EXO_TO_DATE_TIME, EXO_LOCATION, JCR_SCORE, JCR_EXCERPT};
+  public final static String[] selectFields =  {JCR_EXCERPT, EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION,
+    EXO_FROM_DATE_TIME, EXO_TO_DATE_TIME, EXO_EVENT_STATE, EXO_DATE_CREATED, JCR_SCORE, EXO_ID, EXO_CALENDAR_ID, EXO_EVENT_TYPE};
   
   public static String[] searchFields = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
   
-  public static String EVENT_ICON = "uiIconCalClockMini" ;
-  public static String TASK_ICON = "uiIconCalTaskMini" ;
+  public static String EVENT_ICON = "Icon" ;
+  public static String TASK_ICON = "uiIconAct" ;
   
   /**
    * The method creates an instance of calendar object with time zone is GMT 0

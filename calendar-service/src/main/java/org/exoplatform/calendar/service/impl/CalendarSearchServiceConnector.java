@@ -98,23 +98,23 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     try {
       String userId = ConversationState.getCurrent().getIdentity().getUserId() ;
       Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(SessionProvider.createSystemProvider(), userId);
-     
+
       List<Calendar> calendars = calendarService_.getUserCalendars(userId, true);
       GroupCalendarData sharedCalendar = calendarService_.getSharedCalendars(userId, true) ;
       if(sharedCalendar != null) calendars.addAll(sharedCalendar.getCalendars());
       Collection<Group> group = organizationService_.getGroupHandler().findGroupsOfUser(userId);
       if(!group.isEmpty()) {
         String[] groupIds = new String[group.size()];
-      int i = 0 ;
-      for(Group g : group) {
-        groupIds[i] = g.getId() ;
-        i++;
-      }
-      List<GroupCalendarData> groupCalendar = calendarService_.getGroupCalendars(groupIds, true, userId) ;
-      if(groupCalendar != null) 
-        for(GroupCalendarData gCal : groupCalendar){
-          if(gCal.getCalendars() != null) calendars.addAll(gCal.getCalendars());
+        int i = 0 ;
+        for(Group g : group) {
+          groupIds[i] = g.getId() ;
+          i++;
         }
+        List<GroupCalendarData> groupCalendar = calendarService_.getGroupCalendars(groupIds, true, userId) ;
+        if(groupCalendar != null) 
+          for(GroupCalendarData gCal : groupCalendar){
+            if(gCal.getCalendars() != null) calendars.addAll(gCal.getCalendars());
+          }
       }
       for(Calendar cal : calendars){
         calendarMap.put(cal.getId(), cal.getName()) ;
@@ -126,6 +126,8 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       eventQuery.setText(query) ;
       eventQuery.setOrderBy(new String[]{Utils.sortFieldsMap.get(sort)});
       eventQuery.setOrderType(order);
+      if(CalendarEvent.TYPE_TASK.equals(dataType))
+      eventQuery.setState(CalendarEvent.COMPLETED);
       //log.info("\n -------" + eventQuery.getQueryStatement() + "\n") ;
       QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
       QueryImpl jcrquery = (QueryImpl)qm.createQuery(eventQuery.getQueryStatement(), eventQuery.getQueryType());
@@ -140,7 +142,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
        */
       RowIterator rIt = result.getRows();
       while (rIt.hasNext()) {
-        events.add(buildResult(rIt.nextRow()));
+        events.add(buildResult(dataType, rIt.nextRow()));
       }
     }
     catch (Exception e) {
@@ -150,80 +152,92 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   }
 
-  private SearchResult buildResult(Object iter) {
-    SearchResult result = new SearchResult() ;
+  private SearchResult buildResult(String dataType, Object iter) {
     try {
       StringBuffer detail = new StringBuffer();
-      result.setTitle(buildValue(Utils.EXO_SUMMARY, iter));
+      String title = buildValue(Utils.EXO_SUMMARY, iter);
       detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
-      result.setUrl(buildValue(Utils.EXO_ID, iter));
-      result.setExcerpt(buildExcerpt(iter));
+      String url = Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + buildValue(Utils.EXO_ID, iter);
+      String excerpt = buildExcerpt(iter);
+      String detailValue = Utils.EMPTY_STR;
+      String imageUrl = buildImageUrl(iter);
       detail.append(buildDetail(iter));
-      if(detail.length() > 0) result.setDetail(detail.toString());
-      result.setRelevancy(buildScore(iter));
-      result.setDate(buildDate(iter)) ;
-      result.setImageUrl(buildImageUrl(iter));
+      if(detail.length() > 0) detailValue = detail.toString();
+      long relevancy = buildScore(iter);
+      long date = buildDate(iter) ;
+      CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
+      result.setDataType(dataType);
+      if(CalendarEvent.TYPE_EVENT.equals(dataType)){
+        result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME));
+      }
+      return result;
     }catch (Exception e) {
       log.info("Error when getting property from node " + e);
     }
-    return result;
+    return null;
   }
 
   private String buildExcerpt(Object iter) throws RepositoryException{
     if(iter instanceof Row){
       Row row = (Row) iter;
-      if(row.getValue(Utils.JCR_EXCERPT_ROW) != null)
-        return row.getValue(Utils.JCR_EXCERPT_ROW).getString();
+      if(row.getValue(Utils.JCR_EXCERPT_ROW) != null) {
+       String origin = (row.getValue(Utils.JCR_EXCERPT_ROW).getString());
+         origin.replace(row.getValue(Utils.EXO_CALENDAR_ID).getString(), "").replace(row.getValue(Utils.EXO_ID).getString(),"");
+        return origin;
+      }
     }
-     return "";
+    return Utils.EMPTY_STR;
   }
 
 
   private String buildImageUrl(Object iter) throws RepositoryException{
-    String icon = "";
+    String icon = null;
     if(iter instanceof Row){
       Row row = (Row) iter;
       if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
-        if(CalendarEvent.TYPE_EVENT.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString()))
-        icon = Utils.EVENT_ICON;
-        else icon = Utils.TASK_ICON;
+        if(CalendarEvent.TYPE_TASK.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString())) 
+          icon = row.getValue(Utils.EXO_EVENT_STATE).getString();
+        else icon = Utils.EVENT_ICON; 
     } else {
       Node eventNode = (Node) iter;
       if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
-       if(CalendarEvent.TYPE_EVENT.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString()))
-         icon = Utils.EVENT_ICON;
-       else icon = Utils.TASK_ICON;
+        if(CalendarEvent.TYPE_TASK.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString())) 
+        {
+          if(eventNode.hasProperty(Utils.EXO_EVENT_STATE))
+            icon = eventNode.getProperty(Utils.EXO_EVENT_STATE).getString();
+        } else icon = Utils.EVENT_ICON;
       }
     }
     return icon;
   }
 
-
   private long buildDate(Object iter) {
+    try {
+      return buildDate(iter, Utils.EXO_DATE_CREATED).getTimeInMillis();
+    } catch (Exception e) {
+      log.info("Clould not build date value to long from data " + e);
+      return 0;
+    }
+  }
+
+
+  private java.util.Calendar buildDate(Object iter, String readProperty){
     try {
       if(iter instanceof Row){
         Row row = (Row) iter;
-        if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
-          if(CalendarEvent.TYPE_EVENT.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString()))
-            return row.getValue(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
-          else return row.getValue(Utils.EXO_TO_DATE_TIME).getDate().getTimeInMillis();
+        return row.getValue(readProperty).getDate();
       } else {
         Node eventNode = (Node) iter;
-        if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
-          if(CalendarEvent.TYPE_EVENT.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString()))
-          if(eventNode.hasProperty(Utils.EXO_FROM_DATE_TIME)){
-            return eventNode.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
-          }  
-          } else {
-            if(eventNode.hasProperty(Utils.EXO_TO_DATE_TIME)){
-              return eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTimeInMillis();
-            }  
-          }
+        if(eventNode.hasProperty(readProperty)){
+          return eventNode.getProperty(readProperty).getDate();
+        } else {
+          return null ;
+        }
       }
     } catch (Exception e) {
-      log.info("No last modified date return by query " + e);
+      log.info("Could not build date value from " + readProperty + " : " + e);
+      return null;
     }
-    return 0;
   }
 
 
@@ -237,7 +251,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         return calendarMap.get(eventNode.getProperty(property).getString());
       }
     }
-    return null;
+    return Utils.EMPTY_STR;
   }
 
 
@@ -263,7 +277,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         return eventNode.getProperty(property).getString();
       }
     } 
-    return "";
+    return Utils.EMPTY_STR;
   }
 
   private String buildDetail(Object iter) throws RepositoryException{
@@ -274,26 +288,26 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
         if(CalendarEvent.TYPE_EVENT.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString())) {
           if(row.getValue(Utils.EXO_FROM_DATE_TIME) != null)
-            detail.append("-").append(df.format(row.getValue(Utils.EXO_FROM_DATE_TIME).getDate().getTime())) ;
+            detail.append(Utils.MINUS).append(df.format(row.getValue(Utils.EXO_FROM_DATE_TIME).getDate().getTime())) ;
           if(row.getValue(Utils.EXO_LOCATION) != null)
-            detail.append("-").append(row.getValue(Utils.EXO_LOCATION).getString()) ;
+            detail.append(Utils.MINUS).append(row.getValue(Utils.EXO_LOCATION).getString()) ;
         } else {
           if(row.getValue(Utils.EXO_TO_DATE_TIME) != null)
-            detail.append("- Due for: ").append("-").append(df.format(row.getValue(Utils.EXO_TO_DATE_TIME).getDate().getTime()));
+            detail.append(Utils.MINUS).append(Utils.DUE_FOR).append(df.format(row.getValue(Utils.EXO_TO_DATE_TIME).getDate().getTime()));
         }
     } else {
       Node eventNode = (Node) iter;
       if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
         if(CalendarEvent.TYPE_EVENT.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString())) {
           if(eventNode.hasProperty(Utils.EXO_FROM_DATE_TIME)) {
-            detail.append("-").append(df.format(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTime())) ;
+            detail.append(Utils.MINUS).append(df.format(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTime())) ;
           }
           if(eventNode.hasProperty(Utils.EXO_LOCATION)) {
-            detail.append("-").append(eventNode.getProperty(Utils.EXO_LOCATION).getString()) ;
+            detail.append(Utils.MINUS).append(eventNode.getProperty(Utils.EXO_LOCATION).getString()) ;
           }
         } else {
           if(eventNode.hasProperty(Utils.EXO_TO_DATE_TIME)) {
-            detail.append("- Due for: ").append("-").append(df.format(eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTime())) ;
+            detail.append(Utils.MINUS).append(Utils.DUE_FOR).append(df.format(eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTime())) ;
           }
         }
       }
