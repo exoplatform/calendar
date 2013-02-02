@@ -71,7 +71,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 	</div> 
     <div class="control-group">
 		<label class="control-label " ><%=parent.getLabel(parent.SELECT_COLOR)%>:</label>
-		<div class="controls">
+		<div class="controls pdT5">
 			<%parent.renderField(parent.SELECT_COLOR)%>
 		</div>
 	</div> 

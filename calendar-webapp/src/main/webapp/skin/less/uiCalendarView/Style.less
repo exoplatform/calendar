@@ -78,7 +78,9 @@
     color: @white;
 	line-height: 16px;
 }
-	
+.eventAlldayBoard .eventContainer {
+	padding-left: 0;
+}
 .eventDayContent, .eventWeekContent{
 		.eventContainerBorder{
 			position: absolute;
@@ -135,15 +137,18 @@
 }
 
 .eventWeekBar{
-	background: #f8f8f8;
-	tr td{
-		border-bottom: solid 1px #e6e6e6;
-		&.today{
+	> table {
+		background: #f8f8f8;
+		tr td{ 
+			border-bottom: solid 1px #e6e6e6;
+			&.today{
 			background: #f4f4f4;
+				}
+				a{
+					color: @textColor;
+				}
 		}
-		a{
-			color: @textColor;
-		}
+			
 	}
 }
 
