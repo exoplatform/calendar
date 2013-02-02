@@ -160,7 +160,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       }
   }
 
-  /**
+  /*
    * disable line split and table color 
    */
   if (canEdit && (canEdit == "false")) {
@@ -175,11 +175,14 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
       var actions = gj(menu).find("a");
       for (var j = 0; j < actions.length; j++) {
           if ((actions[j].href.indexOf("RemoveCalendar") >= 0) ||
-            (actions[j].href.indexOf("EditCalendar") >= 0)) 
+            (actions[j].href.indexOf("EditCalendar") >= 0) ||
+            (actions[j].href.indexOf("ChangeColor") >= 0)) 
           {
               actions[j].style.display = "none";
           }
       }
+      gj(menu).find(".lineSplit").hide();
+      gj(menu).find(".calendarTableColor").hide();
   }
 
   var contentContainerElm = gj(anchorElm).parents(".contentContainer")[0];
