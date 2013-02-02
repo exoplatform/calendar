@@ -3,7 +3,9 @@
 	.border-radius(2px);
 	display: inline-block;
 }
-
+.eventDescription{
+	.colorBox;
+}
 .uiCalPopover {
 	.popover-content {
 		.description {
@@ -151,10 +153,7 @@
 
 
 
-.UICalendarViewContainer, .uiCalendarViewContainer{
-	.eventDescription{
-		.colorBox;
-	}
+.UICalendarViewContainer, .uiCalendarViewContainer{	
 	.uiGrid.table tr td {					
 		font-size: 12px;
 	}
@@ -186,3 +185,22 @@
 		height: 19px;		/*fix bug for javasript weekview */
 	}
 }
+/*
+.eventWeekBar {
+	padding: 0 16px 0  0;
+	.uiGrid {
+		border-right: 1px solid @tableBorder;
+	}
+}
+.uiCalendarViewContainer  {
+	.eventWeekBar  .uiGrid {
+		border-right: 1px solid @tableBorder;
+	}
+
+}
+.eventWeekContent   {
+	 height: 400px;
+    overflow-x: hidden;
+    overflow-y: auto;
+	
+}*/
