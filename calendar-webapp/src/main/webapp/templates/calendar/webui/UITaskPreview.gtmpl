@@ -17,8 +17,14 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 requireJS.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
 requireJS.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");
 uiform.begin() ;
+def resizable = "";
 %>
-<div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox">
+<% if (uicomponent.isShowPopup()) { 
+resizable = "resizable";
+%>
+
+<% } %>
+<div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox $resizable " >
 <%if(!uicomponent.isShowPopup()){%><!-- TRUE when the preview is part of the calendar List View -->
 <div class="title">
 <a href="#" id="maximizeDetails" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
@@ -201,7 +207,7 @@ uiform.begin() ;
     String actionLabel  = _ctx.appRes(uicomponent.id + ".action." + uicomponent.CLOSE_POPUP);
     String calendarHome = uicomponent.getCalendarPortletUrl();
   %>
-    <div class="center" style="margin-top: 15px; margin-bottom: 5px;">
+    <div class="uiAction uiActionBorder" >
       <button onclick="window.location.replace('$calendarHome'); $actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
     </div>
   <% } %>

@@ -102,6 +102,19 @@ def eventList = [];
   
   <div id="UIWeekViewGridAllDay" class="eventAllDay" numberOfDays="$numberOfDays">
     <div class="eventAlldayBoard" style="position:relative">
+    <table class="uiGrid table allDayTable " cellspacing="0" cellpadding="0">
+      <tr>
+        <td style="width: 55px;"><div style="width: 55px;"><span></span></div></td>
+        <%
+        t = 0 ;
+        while(t++ <numberOfDays) {
+        %>
+        <td style="$styleWidth">
+        </td>
+        <% } %>
+      </tr>
+    </table>
+    
     <% for (event in uicomponent.allDayEvent) {
       begindate =  event.getFromDateTime().getTime() ;
       enddate = event.getToDateTime().getTime() ;
