@@ -16,13 +16,9 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import java.util.Calendar;
-
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.data.SearchResult;
-
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 /**
  * Created by The eXo Platform SAS
@@ -38,7 +34,7 @@ import com.sun.org.apache.bcel.internal.generic.RETURN;
  *
  */
 public class CalendarSearchResult extends SearchResult {
-  private Calendar fromDateTime;
+  private long fromDateTime;
   private String dataType;
 
   public CalendarSearchResult(String url,
@@ -54,11 +50,11 @@ public class CalendarSearchResult extends SearchResult {
    * 
    * @return from date time value of event type only
    */
-  public Calendar getFromDateTime() {
+  public long getFromDateTime() {
     return fromDateTime;
   }
 
-  public void setFromDateTime(Calendar fromDateTime) {
+  public void setFromDateTime(long fromDateTime) {
     this.fromDateTime = fromDateTime;
   }
 
@@ -73,13 +69,13 @@ public class CalendarSearchResult extends SearchResult {
   public void setDataType(String dataType) {
     this.dataType = dataType;
   }
-  
+
   /**
-   * @return icon base on task status if data is task 
+   * @return value base on task status if data is task 
+   *  canceled || needs-action || in-process
    */
   public String getImageUrl(){
-    if(CalendarEvent.TYPE_EVENT.equals(dataType)) return super.getImageUrl();
-    else return Utils.TASK_ICON + super.getImageUrl();
+    return super.getImageUrl();
   }
 
 }

@@ -154,7 +154,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   
   //mvn test -Dtest=TestCalendarService#testUnifiedSeach
   public void testUnifiedSeach() throws Exception{
-
+    String user2 = "john" ;
     //Simple case
     String keyword = "hello \"how are\" you " ;
     EventQuery query = new UnifiedQuery() ;
@@ -201,8 +201,10 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //Search summary 
     calEvent.setSummary("Have a meeting");
     java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 1);
     java.util.Calendar toCal = java.util.Calendar.getInstance();
     toCal.add(java.util.Calendar.HOUR, 1);
+    toCal.add(java.util.Calendar.MINUTE, 1);
     calEvent.setFromDateTime(fromCal.getTime());
     calEvent.setToDateTime(toCal.getTime());
     //calEvent.setEventState(CalendarEvent.CANCELLED);
@@ -292,7 +294,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     CalendarSearchResult calItem = (CalendarSearchResult)result.toArray()[0] ;
-    assertEquals(Utils.TASK_ICON + calEvent.getEventState(), calItem.getImageUrl());
+    assertEquals(calEvent.getEventState(), calItem.getImageUrl());
     
     // search all inprocess
     calEvent.setEventState(CalendarEvent.IN_PROCESS);
@@ -301,7 +303,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     calItem = (CalendarSearchResult)result.toArray()[0] ;
-    assertEquals(Utils.TASK_ICON + calEvent.getEventState(), calItem.getImageUrl());
+    assertEquals(calEvent.getEventState(), calItem.getImageUrl());
     
     // search all cancelled
     calEvent.setEventState(CalendarEvent.CANCELLED);
@@ -310,7 +312,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     calItem = (CalendarSearchResult)result.toArray()[0] ;
-    assertEquals(Utils.TASK_ICON + calEvent.getEventState(), calItem.getImageUrl());
+    assertEquals(calEvent.getEventState(), calItem.getImageUrl());
     
     
     
@@ -321,7 +323,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent2.setCalType(CalendarEvent.TYPE_EVENT);
     calEvent2.setFromDateTime(calEvent.getFromDateTime());
     calEvent2.setToDateTime(calEvent.getToDateTime());
-    calEvent2.setSummary("CEO come we will have some dayoff");
+    calEvent2.setSummary("Summary CEO come we will have some dayoff");
     calEvent2.setDescription("");
     calEvent2.setLocation("");
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
@@ -355,16 +357,99 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     
     assertEquals(false, item.getDate() > item2.getDate()) ;
 
+    //Test query filter by permission 
+    loginUser(user2) ;
+    Calendar johnCalendar = cal ;
+    String calendarId = "john_cal_id";
+    johnCalendar.setId(calendarId) ;
+    johnCalendar.setName("john calendar") ;
+    calendarService_.saveUserCalendar(user2, johnCalendar, true);
+    
+    assertEquals(calendarId,calendarService_.getUserCalendar(user2, johnCalendar.getId()).getId());
+    
+    EventCategory johnEventCategory = new EventCategory();
+    johnEventCategory.setName("john category");
+    johnEventCategory.setDescription("description");
+    
+    calendarService_.saveEventCategory(user2, eventCategory, true);
+    
+    CalendarEvent johnEvent = calEvent2 ;
+    johnEvent.setId(new CalendarEvent().getId()) ;
+    johnEvent.setCalendarId(johnCalendar.getId()) ;
+    johnEvent.setEventType(CalendarEvent.TYPE_EVENT);
+    
+    
+    calendarService_.saveUserEvent(user2, johnCalendar.getId(), johnEvent, true);
+    
+    assertEquals(1,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
+    
+    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size()) ;
+    
+    loginUser(username);
+    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(2, result.size()) ;
+    
+    //Test case search only up coming events or task 
+    
+    loginUser(user2) ;
+    
+    CalendarEvent inPassEvent = johnEvent ;
+    
+    inPassEvent.setId(new CalendarEvent().getId());
+    java.util.Calendar current = java.util.Calendar.getInstance() ;
+    current.add(java.util.Calendar.MINUTE, -1);
+    inPassEvent.setFromDateTime(current.getTime());
+   
+    
+    calendarService_.saveUserEvent(user2, calendarId, inPassEvent, true) ;
+    assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
+    
+    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size()) ;
+    
+    current = java.util.Calendar.getInstance();
+    current.add(java.util.Calendar.MINUTE, 1);
+    inPassEvent.setFromDateTime(current.getTime()) ;
+    
+    calendarService_.saveUserEvent(user2, calendarId, inPassEvent, false) ;
+    
+    assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
+    
+    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(2, result.size());
+    
+    //Search task due for and no need check from time
+    
+    current = java.util.Calendar.getInstance();
+    current.add(java.util.Calendar.MINUTE, -1);
+    inPassEvent.setFromDateTime(current.getTime()) ;
+    current.add(java.util.Calendar.MINUTE, 2);
+    inPassEvent.setToDateTime(current.getTime()) ;
+    inPassEvent.setEventType(CalendarEvent.TYPE_TASK) ;
+    
+    calendarService_.saveUserEvent(user2, calendarId, inPassEvent, false) ;
+    assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
+    
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+    
+    
     calendarService_.removeUserEvent(username, ids.get(0), calEvent.getId());
     calendarService_.removeUserEvent(username, ids.get(0), calEvent2.getId());
+    calendarService_.removeUserEvent(user2, johnCalendar.getId(), johnEvent.getId());
     calendarService_.removeEventCategory(username, eventCategory.getId());
+    calendarService_.removeEventCategory(user2, johnEventCategory.getId());
+    
     assertNotNull(calendarService_.removeUserCalendar(username, ids.get(0)));
+    assertNotNull(calendarService_.removeUserCalendar(user2, johnCalendar.getId()));
 
   }
   
   private void checkFields(SearchResult item) {
     assertNotNull(item.getTitle()) ;
     assertNotNull(item.getExcerpt()) ;
+    log.info("excerpt() ===== "+item.getExcerpt());
     assertNotNull(item.getDetail()) ;
     assertNotNull(item.getImageUrl());
     assertEquals(true, item.getDate() > 0);
@@ -378,9 +463,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   private void checkFieldsValueWithType(String calName, CalendarEvent calEvent, SearchResult item){
     assertEquals(calEvent.getSummary(), item.getTitle());
     if(CalendarEvent.TYPE_EVENT.equals(calEvent.getEventType())){
-      if(calEvent.getLocation() != null) assertEquals(calName + Utils.MINUS + df.format(calEvent.getFromDateTime())+Utils.MINUS+calEvent.getLocation(), item.getDetail()) ;
+      if(calEvent.getLocation() != null) assertEquals(calName + Utils.SPACE+ Utils.MINUS + Utils.SPACE+ df.format(calEvent.getFromDateTime())+ Utils.SPACE+Utils.MINUS+ Utils.SPACE+calEvent.getLocation(), item.getDetail()) ;
     } else {
-     assertEquals(calName +Utils.MINUS + Utils.DUE_FOR + df.format(calEvent.getToDateTime()), item.getDetail()) ;
+     assertEquals(calName + Utils.SPACE +Utils.MINUS+ Utils.SPACE + Utils.DUE_FOR + df.format(calEvent.getToDateTime()), item.getDetail()) ;
     }
     assertEquals(df.format(java.util.Calendar.getInstance().getTime()), df.format(new Date(item.getDate())));
     assertEquals(true, item.getRelevancy() > 0);
@@ -390,14 +475,13 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   private void checkFieldsValueWithType(String calName, CalendarEvent calEvent, CalendarSearchResult item){
     checkFieldsValueWithType(calName,  calEvent,  (SearchResult)item);
     if(CalendarEvent.TYPE_EVENT.equals(calEvent.getEventType())){
-      assertEquals(item.getFromDateTime().getTime(), calEvent.getFromDateTime());
+      assertEquals(item.getFromDateTime(), calEvent.getFromDateTime().getTime());
       assertNotNull(item.getImageUrl());
       assertEquals(Utils.EVENT_ICON, item.getImageUrl());
     } else {
-      assertEquals(Utils.TASK_ICON + calEvent.getEventState(), item.getImageUrl());
-      assertNull(item.getFromDateTime());
+      assertEquals(calEvent.getEventState(), item.getImageUrl());
+      assertEquals(0,item.getFromDateTime());
     }
-    //log.info("excerpt() ===== "+item.getExcerpt());
   }
   
   public void testDefaultData() throws Exception {
@@ -1164,17 +1248,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       calendarEvent.setFromDateTime(fromCal.getTime());
       calendarEvent.setToDateTime(toCal.getTime());
 
-      log.info("=====BEFORE SAVING=====");
-      log.info("START TIME: " + fromCal.getTime().toString());
-      log.info("ENDTIME: " + toCal.getTime().toString());
-
       calendarService_.saveUserEvent(username, calendar.getId(), calendarEvent, true);
 
       CalendarEvent findEvent = calendarService_.getEvent(username, calendarEvent.getId());
-
-      log.info("=====AFTER SAVING=====");
-      log.info("START TIME: " + findEvent.getFromDateTime().toString());
-      log.info("ENDTIME: " + findEvent.getToDateTime().toString());
 
       assertEquals(false, findEvent.getFromDateTime().equals(findEvent.getToDateTime()));
       // restore data storage

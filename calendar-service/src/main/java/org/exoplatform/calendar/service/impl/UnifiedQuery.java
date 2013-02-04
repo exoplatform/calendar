@@ -25,8 +25,10 @@ import java.util.regex.Pattern;
 
 import javax.jcr.query.Query;
 
+import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.commons.utils.ISO8601;
 
 /**
  * Created by The eXo Platform SAS
@@ -38,13 +40,16 @@ public class UnifiedQuery extends EventQuery {
 
   public String getQueryStatement() throws Exception {
     StringBuffer queryString = new StringBuffer("");
-    
+
     if (getQueryType().equals(Query.SQL)) {
       String text = getText() ;
       if (!Utils.isEmpty(text)) {
         queryString = new StringBuffer("SELECT ");
-        queryString.append(repeat("%s", Arrays.asList(Utils.selectFields), ","));
+        queryString.append(repeat("%s", Arrays.asList(Utils.SELECT_FIELDS), ","));
         queryString.append(" FROM " + getNodeType() + " WHERE ");
+        if(!Utils.isEmpty(getCalendarPath())) {
+          queryString.append("jcr:path LIKE '").append(getCalendarPath()).append("/%' AND ");
+        }
         if (!Utils.isEmpty(getEventType())) {
           queryString.append(Utils.EXO_EVENT_TYPE).append(" = '").append(getEventType()).append("' AND (");
         }
@@ -54,7 +59,7 @@ public class UnifiedQuery extends EventQuery {
           if(inputCount > 0) queryString.append(" OR ");
           //keyword.replaceAll("\"", "\\\"").replaceAll("-", Utils.EMPTY_STR);
           int filterCount = 0 ;
-          for(String filter : Utils.searchFields) {
+          for(String filter : Utils.SEARCH_FIELDS) {
             if(filterCount > 0) queryString.append(" OR ");
             queryString.append("CONTAINS(").append(filter).append(",'").append(keyword).append("')");
             filterCount ++ ;
@@ -64,8 +69,17 @@ public class UnifiedQuery extends EventQuery {
         if (!Utils.isEmpty(getEventType())) {
           queryString.append(") ");
         }
+        if (getFromDate() != null) {
+          queryString.append(" AND ");
+          if (CalendarEvent.TYPE_EVENT.equals(getEventType())) {
+            queryString.append(Utils.EXO_FROM_DATE_TIME);
+          } else {
+            queryString.append(Utils.EXO_TO_DATE_TIME);
+          }
+          queryString.append(" >= TIMESTAMP '").append(ISO8601.format(getFromDate())).append("'");
+        }
         if (!Utils.isEmpty(getState())) {
-          queryString.append(" AND " + Utils.EXO_EVENT_STATE + " <> '" + getState() + "'");
+          queryString.append(" AND ").append(Utils.EXO_EVENT_STATE).append(" <> '").append(getState()).append("'");
         }
         if(getOrderBy() != null && getOrderBy().length > 0) {
           queryString.append(" ORDER BY ").append(getOrderBy()[0]);
@@ -87,7 +101,7 @@ public class UnifiedQuery extends EventQuery {
     if(!remain.isEmpty()) terms.addAll(Arrays.asList(remain.split("\\s+")));
     return terms;
   }
-  
+
   private static String repeat(String format, Collection<String> strArr, String delimiter){
     StringBuilder sb=new StringBuilder();
     String delim = "";
