@@ -1,13 +1,13 @@
 <% String fieldName; %>
-<div class="uiForm $uicomponent.id">
+<div id="$uicomponent.id" class="uiConfirmForm">
 <% uiform.begin() %>
 <div class="form-horizontal resizable">
 
   <div class="control-group">
     <div class="controls-full center">
-      <span id="confirm" class="confirm">
+      <div id="confirm" class="confirm">
         <%=uicomponent.confirmMessage %>
-      </span>
+      </div>
     </div>
   </div>
 
