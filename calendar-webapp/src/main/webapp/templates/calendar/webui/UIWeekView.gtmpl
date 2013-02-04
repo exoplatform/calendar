@@ -69,9 +69,9 @@ def eventList = [];
 <div class="UIWeekView uiBox uiWeekView">
 <div class="title"><%_ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%></div>
   <div class="eventWeekBar">
-    <table class="uiGrid table "  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
+    <table style="table-layout:fixed;" class="uiGrid table "  cellspacing="0" cellpadding="0" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
         <tr>
-          <td style="width: 55px;" class="UIEmtyBlock"><div style="width: 55px;"><span></span></div></td>
+          <td style="width: 55px;" class="UIEmtyBlock"></td>
           <%
             cl = uicomponent.getBeginDateOfWeek() ;
             t = 0 ;
@@ -102,9 +102,9 @@ def eventList = [];
   
   <div id="UIWeekViewGridAllDay" class="eventAllDay" numberOfDays="$numberOfDays">
     <div class="eventAlldayBoard" style="position:relative">
-    <table class="uiGrid table allDayTable " cellspacing="0" cellpadding="0">
+    <table style="table-layout:fixed;" class="uiGrid table allDayTable " cellspacing="0" cellpadding="0">
       <tr>
-        <td style="width: 55px;"><div style="width: 55px;"><span></span></div></td>
+        <td style="width: 55px;"></td>
         <%
         t = 0 ;
         while(t++ <numberOfDays) {
@@ -295,7 +295,7 @@ def eventList = [];
         }
       %>
     </div>
-    <table class="uiGrid table " id="UIWeekViewGrid" lastupdatedid="<%=uicomponent.getLastUpdatedEventId()%>" cellspacing="0" cellpadding="0">
+    <table style="table-layout:fixed;" class="uiGrid table " id="UIWeekViewGrid" lastupdatedid="<%=uicomponent.getLastUpdatedEventId()%>" cellspacing="0" cellpadding="0">
       <tbody>
         <%
         boolean flag = false ;
@@ -323,11 +323,11 @@ def eventList = [];
         %>
         <tr class="$style $timeName">
     <%if(!flag) {%>
-      <td class="tdTime center">
+      <td class="tdTime center" style="width: 55px;">
     <%} else {%>
-      <td class="">
+      <td style="width: 55px;">
     <%}%>
-        <div style="width: 55px;">
+        <div>
         <%if(!flag) {println display;} else {println "&nbsp;";} %>
         </div>
       </td>

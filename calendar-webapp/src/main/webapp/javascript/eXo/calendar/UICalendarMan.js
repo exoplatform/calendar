@@ -501,7 +501,7 @@ EventMan.prototype.initWeek = function(rootNode) {
   this.week.weekIndex = 0;
   this.week.startWeek = Date.parse(this.dayNodes[0].getAttribute('starttimefull'));
   var len = (eXo.calendar.UICalendarPortlet.weekdays && document.getElementById("UIWeekView"))?eXo.calendar.UICalendarPortlet.weekdays: 7 ;
-  this.week.endWeek = this.week.startWeek + (1000 * 60 * 60 * 24 * len) - 1;
+  this.week.endWeek = this.week.startWeek + (1000 * 60 * 60 * 24 * len) - 1000;
   this.week.events = this.events;
   this.week.resetEventWeekIndex();
   // Set unlimited event visible for all days
@@ -523,7 +523,7 @@ EventMan.prototype.groupByWeek = function(){
       startCell = gj(weekNodes[i]).find('td.uiCellBlock')[0]; 
 //      startWeek = parseInt(startCell.getAttribute("startTime"));
       startWeek = Date.parse(startCell.getAttribute('starttimefull'));
-      endWeek = (startWeek + len * 24 * 60 * 60 * 1000) - 1;
+      endWeek = (startWeek + len * 24 * 60 * 60 * 1000) - 1000;
       currentWeek.startWeek = startWeek;
       currentWeek.endWeek = endWeek;
       if ((eventObj.startTime >= startWeek && eventObj.startTime < endWeek) ||
@@ -598,72 +598,89 @@ GUIMan.prototype.initWeek = function() {
 };
 
 GUIMan.prototype.paintWeek = function() {
-  var weekObj = _module.UICalendarMan.EventMan.week;
-  var maxEventRow = 0;
-  for (var i=0; i<weekObj.days.length; i++) {
-    var dayObj = weekObj.days[i];
-    var dayNode = this.dayNodes[i];
-    var dayInfo = {
-      width : dayNode.offsetWidth ,
-      top : 0,
-      startTime : Date.parse(dayNode.getAttribute('starttimefull'))
+    var weekObj = _module.UICalendarMan.EventMan.week;
+    var maxEventRow = 0;
+    for (var i=0; i<weekObj.days.length; i++) {
+	var dayObj = weekObj.days[i];
+	var dayNode = this.dayNodes[i];
+	var dayInfo = {
+		width : dayNode.offsetWidth ,
+		top : 0,
+		startTime : Date.parse(dayNode.getAttribute('starttimefull'))
+	}
+	dayInfo.pixelPerUnit = dayInfo.width / 100;
+
+	for (var j=0; j<dayObj.visibleGroup.length; j++) {
+	    var eventObj = dayObj.visibleGroup[j];
+	    if (!eventObj ||
+		    (dayObj.previousDay &&
+			    dayObj.previousDay.isVisibleEventExist(eventObj) >= 0)) {
+		continue;
+	    }
+	    var startTime = eventObj.weekStartTimeIndex[weekObj.weekIndex];
+	    var endTime = eventObj.endTime;
+	    if (endTime >= weekObj.endWeek) {
+		endTime = weekObj.endWeek;
+	    }
+	    dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * j);
+	    dayInfo.eventShiftRightPercent = (((new Date(startTime) - (new Date(dayInfo.startTime)))) / (1000 * 60 * 60 * 24)) * 100;
+	    this.drawEventByMiliseconds(eventObj, startTime, endTime, dayInfo, i);
+	}
+	// update max event rows
+	if (maxEventRow < dayObj.visibleGroup.length) {
+	    maxEventRow = dayObj.visibleGroup.length;
+	}
     }
-    dayInfo.pixelPerUnit = dayInfo.width / 100;
-    dayInfo.left = dayInfo.width * i ;
-    for (var j=0; j<dayObj.visibleGroup.length; j++) {
-      var eventObj = dayObj.visibleGroup[j];
-      if (!eventObj ||
-          (dayObj.previousDay &&
-          dayObj.previousDay.isVisibleEventExist(eventObj) >= 0)) {
-        continue;
-      }
-      var startTime = eventObj.weekStartTimeIndex[weekObj.weekIndex];
-      var endTime = eventObj.endTime;
-      if (endTime >= weekObj.endWeek) {
-        endTime = weekObj.endWeek;
-      }
-      dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * j);
-      dayInfo.eventShiftRightPercent = (((new Date(startTime) - (new Date(dayInfo.startTime)))) / (1000 * 60 * 60 * 24)) * 100;
-      this.drawEventByMiliseconds(eventObj, startTime, endTime, dayInfo);
-    }
-    // update max event rows
-    if (maxEventRow < dayObj.visibleGroup.length) {
-      maxEventRow = dayObj.visibleGroup.length;
-    }
-  }
-  var allDayTable = gj(this.eventAlldayNode).find('.allDayTable');
-  allDayTable.css('height', (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'17px');
+    var allDayTable = gj(this.eventAlldayNode).find('.allDayTable');
+    allDayTable.css('height', (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'17px');
 };
 
 /**
- * 
- * @param {EventObject} eventObj
- * @param {Integer} startTime
- * @param {Integer} endTime
- * @param {Object} dayInfo
+ * draws the event with given startTime and endTime
+ * event starts from the column startCol
  */
 
-GUIMan.prototype.drawEventByMiliseconds = function(eventObj, startTime, endTime, dayInfo) {
-	var eventNode = eventObj.rootNode;
-  var topPos = dayInfo.eventTop ;
-  var leftPos = dayInfo.left;
-  var delta = (new Date(endTime)) - (new Date(startTime));
-  delta /= (1000 * 60 * 60 * 24);
-  var eventLen = parseInt(delta * (dayInfo.width));
-  var leftPos = dayInfo.left + parseFloat((dayInfo.eventShiftRightPercent * dayInfo.width) / 100) + 1;
-	if(!eXo.core.Browser.isIE6() || (document.getElementById("UIPageDesktop")))	leftPos += 55 ;
-  eventNode.style.top = topPos + 'px';
-  eventNode.style.left = leftPos + 'px';
-  if(eXo.core.I18n.isRT()){
-  	leftPos += 17 ;
-	if(eXo.core.Browser.isIE6() || eXo.core.Browser.isIE7()) leftPos -= 16
-  	eventNode.style.right = leftPos + 'px';
-  }
-  eventNode.style.width = eventLen - 2 + 'px';
-	eventNode.style.visibility = 'visible';
-	this.setOverWeek(eventNode,startTime,endTime);
-};
+GUIMan.prototype.drawEventByMiliseconds = function(eventObj, startTime, endTime, dayInfo, startCol) {
+    var eventNode = eventObj.rootNode;
+    var topPos = dayInfo.eventTop ;
+    var leftPos = 56; // the empty td before all day event container has width = 55px;
+    var eventWidth = 0;
 
+    // get number of days
+    var delta = (new Date(endTime)) - (new Date(startTime));
+    delta /= (1000 * 60 * 60 * 24);
+    delta = Math.ceil(delta);
+
+    // calculate event's width (= sum of widths of cells from startCol to startCol + delta - 1)
+    for(var i = 0; i < delta; i++) { // can't multiply here, because the width of cells are not always equals.
+	eventWidth += gj(this.dayNodes[startCol++]).width();
+    }
+
+    eventWidth += delta - 1; // plus the separate lines between cells
+
+    startCol -= delta; // reset startCol
+    
+    // calculate event's left (= left of the startCol)
+    for (var l = 0; l < startCol; l++) {
+	leftPos += gj(this.dayNodes[l]).width() + 1;
+    }  
+
+
+    leftPos += parseFloat((dayInfo.eventShiftRightPercent * dayInfo.width) / 100);
+    // the left, width is different between browsers
+    if(gj.browser.webkit) { // chrome, safari
+	leftPos += 1;
+    } else {
+	eventWidth -= 1;
+    }
+     
+    eventNode.style.top = topPos + 'px';
+    eventNode.style.left = leftPos +'px';
+    eventNode.style.width = eventWidth + 'px';
+    eventNode.style.visibility = 'visible';
+    this.setOverWeek(eventNode,startTime,endTime);
+};
+  
 GUIMan.prototype.setOverWeek = function(eventNode,startTime,endTime){
 	var realStart = Date.parse(eventNode.getAttribute("startTimeFull"));
 	var realEnd = Date.parse(eventNode.getAttribute("endTimeFull"));
