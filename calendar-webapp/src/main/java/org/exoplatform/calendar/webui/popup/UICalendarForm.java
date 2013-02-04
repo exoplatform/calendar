@@ -386,6 +386,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   }
 
   public void setTimeZone(String value) {
+    if (value == null) return;
+
     UIFormInputWithActions calendarDetail = getChildById(INPUT_CALENDAR) ;
     UIFormStringInput timeZone = calendarDetail.getUIStringInput(TIMEZONE);
     timeZone.setValue(CalendarUtils.generateTimeZoneLabel(value));
