@@ -23,13 +23,13 @@
       <init-params>
         <properties-param>
           <name>job.info</name>
-          <description>save the monitor data  periodically</description>
+          <description>details of the execution of the email reminder job</description>
           <property name="jobName" value="ReminderJob"/>
           <property name="groupName" value="CollaborationSuite"/>
           <property name="job" value="org.exoplatform.calendar.service.ReminderJob"/>
           <property name="repeatCount" value="0"/>
-          <property name="period" value="180000"/>     
-          <property name="startTime" value="+60000"/>
+          <property name="period" value="180000"/><!-- 3 minutes -->
+          <property name="startTime" value="+60000"/><!-- start after 1 minute delay -->
           <property name="endTime" value=""/>               
         </properties-param>
         
@@ -43,13 +43,13 @@
       <init-params>
         <properties-param>
           <name>job.info</name>
-          <description>save the monitor data  periodically</description>
+          <description>details of the execution of the popup reminder job</description>
           <property name="jobName" value="PopupReminderJob"/>
           <property name="groupName" value="CollaborationSuite"/>
           <property name="job" value="org.exoplatform.calendar.service.PopupReminderJob"/>
           <property name="repeatCount" value="0"/>
-          <property name="period" value="15000"/>     
-          <property name="startTime" value="+60000"/>
+          <property name="period" value="15000"/>
+          <property name="startTime" value="+60000"/><!-- start after 1 minute delay -->
           <property name="endTime" value=""/>               
         </properties-param>
         <properties-param>
@@ -126,8 +126,4 @@
       </init-params>
     </component-plugin>
   </external-component-plugins>   
-  
-    
-    
-  
 </configuration>

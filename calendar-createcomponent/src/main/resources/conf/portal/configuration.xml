@@ -36,7 +36,7 @@
         </values-param>
         <values-param>
           <name>portal.resource.names</name>
-          <description>The properties files of the portal , those file will be merged into one ResoruceBundle properties </description>
+          <description>The properties files of the portal, these files will be merged into one ResourceBundle properties </description>
           <value>locale.cs.commons.cs-commons</value>
         </values-param>
        </init-params>

@@ -20,7 +20,7 @@
       <name>calendar.new.user.event.listener</name>
       <set-method>addListenerPlugin</set-method>
       <type>org.exoplatform.calendar.service.impl.NewUserListener</type>
-      <description>description</description>
+      <description>Config of the listener executed each time a new user is created.</description>
       <init-params>
         <value-param>
           <name>defaultEventCategories</name>
@@ -32,30 +32,6 @@
                     The value of this key is "Meeting", so "Meeting" will be display as default event category.
                   If the value is "Not exist key", because this key doesn't exist in resource bundle then 
                     "Not exist key" will be display as default event category.
-          -->
-        </value-param>
-        <value-param>
-          <name>defaultCalendarCategory</name>
-          <value>defaultCalendarCategoryId</value><!-- Single value, default calendar category's name is "My group"-->
-          <!-- The calendar category's name will be get from resource bundle by key "UICalendars.label." + defaultCalendarCategory's value. 
-               If the key does not exist, the defaultCalendarCategory's value will be used to display. 
-               Sample:
-                  If the value is "defaultCalendarCategoryId" then the resource bundle key is "UICalendars.label.defaultCalendarCategoryId".
-                    The value of this key is "My group", so "My group" will be display as default calendar category.
-                  If the value is "My calendar category", because this key doesn't exist in resource bundle then
-                    "My calendar category" will be display as default calendar category.
-          -->
-        </value-param>
-        <value-param>
-          <name>defaultCalendar</name>
-          <value>defaultCalendarId</value> <!-- Single value, default calendar's name is "Default"-->
-          <!-- The calendar's name will be get from resource bundle by key "UICalendars.label." + defaultCalendar's value. 
-               If the key does not exist, the defaultCalendar's value will be used to display. 
-               Sample: 
-                  If the value is "defaultCalendarId" then the resource bundle key is "UICalendars.label.defaultCalendarId".
-                    The value of this key is "Default", so "Default" will be display as default calendar.
-                  If the value is "My calendar", because this key doesn't exist in resource bundle then
-                    "My calendar" will be display as default calendar.
           -->
         </value-param>
         <!--Params for default calendar setting-->
@@ -91,7 +67,7 @@
         
          <value-param>
          <name>baseUrlForRss</name>
-         <value></value>
+         <value>philippe</value>
         </value-param>
         
          <value-param>
@@ -126,7 +102,7 @@
       <name>calendar.new.group.event.listener</name>
       <set-method>addListenerPlugin</set-method>
       <type>org.exoplatform.calendar.service.impl.NewGroupListener</type>
-      <description>description</description>
+      <description>Config of the listener executed each time a new group is created</description>
       <init-params>
         <value-param>
           <name>defaultEditPermission</name>
@@ -163,7 +139,7 @@
       <name>calendar.new.membership.event.listener</name>
       <set-method>addListenerPlugin</set-method>
       <type>org.exoplatform.calendar.service.impl.NewMembershipListener</type>
-      <description>description</description>       
+      <description>Config of the listener executed each time a new membership is created</description>       
     </component-plugin>
     
   </external-component-plugins>   
