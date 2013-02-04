@@ -185,9 +185,17 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   public void processRender(WebuiRequestContext arg0) throws Exception {
     super.processRender(arg0);
   }
+  
   public String getUserTimeZone() throws Exception {
     String timeZone = CalendarUtils.getCalendarService().getCalendarSetting(CalendarUtils.getCurrentUser()).getTimeZone() ;
-    return CalendarUtils.getTimeZone(timeZone) ;
+    TimeZone tz = TimeZone.getTimeZone(timeZone) ;
+    int rawOffset = tz.getRawOffset()  ;
+    // check if the time zone uses daylight saving time and the date selected is in daylight saving period
+    if(tz.useDaylightTime() && !tz.inDaylightTime(calendar_.getTime())) {
+      return String.valueOf(0 - rawOffset /60000);
+    } else {
+      return String.valueOf(0 - (rawOffset /60000 + tz.getDSTSavings()/60000)) ;  
+    }
   }
 
   public String getServerTimeZone() {
