@@ -204,7 +204,6 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
 	// There is at least 1 event category to show event form
 	if((selectedCategory != null) && (selectedCategory.options.length < 1)) {
     	var divEventCategory = gj(_module.UICalendarPortlet.filterSelect).parents(".EventCategory")[0] ;
-    	alert(divEventCategory.getAttribute("msg")) ;
     	return;
     }
 		
@@ -1552,16 +1551,19 @@ UICalendarPortlet.prototype.monthViewCallback = function(evt){
   var isEditable;
 
   if (!gj(src).parents(".eventBoxes")[0]) {
-    if (objectValue = gj(src).parents("td")[0].getAttribute("startTime")) {
-        	//TODO CS-2800
-      var startTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')));
-      var endTime = parseInt(Date.parse(gj(src).parents("td")[0].getAttribute('startTimeFull')))  + 24*60*60*1000 - 1;
-      for(var i = 0; i < links.length; i++){
+    var eventCell = gj(src);
+    if (gj(src).hasClass('dayBox')) {  // click on div dayBox
+        eventCell = gj(src).parent('td');
+    }
 
+    if (eventCell.attr('startTime')) {
+      var startTime = parseInt(Date.parse(eventCell.attr('startTimeFull')));
+      var endTime = startTime  + 24*60*60*1000 - 1;
+      for(var i = 0; i < links.length; i++){
         if (gj(links[i]).hasClass("createEvent")) {
-          links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");"
+          links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");";
         } else if(gj(links[i]).hasClass("createTask")) {
-          links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
+          links[i].href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");";
         }
       }
     }
