@@ -1,4 +1,4 @@
-(function(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview) {
+(function(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview, UIColorPicker) {
 var _module = {};
 eXo.calendar = eXo.calendar || {};
 function UICalendarPortlet(){
@@ -3240,8 +3240,9 @@ _module.UIWeekView = UIWeekView.UIWeekView ;
 _module.Reminder = Reminder.Reminder;
 _module.UICalendarMan = UICalendarMan.UICalendarMan;
 _module.UIEventPreview = UIEventPreview;
+_module.UIColorPicker = UIColorPicker;
 _module.UICalendarPortlet = new UICalendarPortlet();
 eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
 var uiPopup = uiPopupWindow ;
 return _module;
-})(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview);
+})(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview, UIColorPicker);

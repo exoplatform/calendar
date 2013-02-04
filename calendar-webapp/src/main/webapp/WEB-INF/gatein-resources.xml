@@ -83,6 +83,9 @@
     <depends>
       <module>UIEventPreview</module>
     </depends>
+    <depends>
+      <module>UIColorPicker</module>
+    </depends>
     </module>
   </portlet>
     <module>

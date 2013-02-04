@@ -1,10 +1,17 @@
 <%
-import java.util.Map;
-import java.util.Map.Entry;
-import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
+  import java.util.Map;
+  import java.util.Map.Entry;
+  import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
+
+  def rcontext = _ctx.getRequestContext() ;
+  def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.require("SHARED/jquery","gj");
 
   parent = uicomponent.getParent();
+
+
   private void renderActions(String fieldKey) {
     def actions = uicomponent.getActionField(fieldKey) ;
     if(actions != null) {
@@ -43,11 +50,10 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
       }
     }
   }
-  def rcontext = _ctx.getRequestContext() ;  
 %>
 <div id="$uicomponent.id" class="$uicomponent.id resizable">
   <div class="form-horizontal">
-    <div class="control-group">
+    <div id="displayName" class="control-group">
 		<label class="control-label" ><%=parent.getLabel(parent.DISPLAY_NAME)%>:</label>
 		<div class="controls">
 			<%parent.renderField(parent.DISPLAY_NAME)%>
@@ -70,7 +76,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 		</div>
 	</div> 
     <div class="control-group">
-		<label class="control-label " ><%=parent.getLabel(parent.SELECT_COLOR)%>:</label>
+		<label class="control-label" ><%=parent.getLabel(parent.SELECT_COLOR)%>:</label>
 		<div class="controls">
 			<%parent.renderField(parent.SELECT_COLOR)%>
 		</div>
