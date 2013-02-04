@@ -29,7 +29,7 @@ import org.exoplatform.webui.form.UIFormInputInfo;
  */
 @ComponentConfig (
                   lifecycle  = UIFormLifecycle.class,
-                  template =  "system:/groovy/webui/form/UIForm.gtmpl"
+                  template =  "app:/templates/calendar/webui/UIPopup/UIConfirmForm.gtmpl"
 )
 
 public class UIConfirmForm extends UIForm implements UIPopupComponent{
@@ -37,16 +37,13 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   public static String CONFIRM_TRUE = "true".intern();
   public static String CONFIRM_FALSE = "false".intern();
   private String config_id = "";
-  public UIConfirmForm() {
-    addUIFormInput(new UIFormInputInfo("confirm", "confirm", null)) ;
-  }
+  private String confirmMessage;
 
+  public UIConfirmForm() {}
 
   public void setConfirmMessage(String confirmMessage) {
-    getUIFormInputInfo("confirm").setValue(confirmMessage) ;
-    getUIFormInputInfo("confirm").setLabel("") ;
+    this.confirmMessage = confirmMessage;
   }
-
 
   @Override
    public String event(String name) throws Exception {

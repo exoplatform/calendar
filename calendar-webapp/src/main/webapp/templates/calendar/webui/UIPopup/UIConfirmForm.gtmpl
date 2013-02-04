@@ -1,0 +1,25 @@
+<% String fieldName; %>
+<div class="uiForm $uicomponent.id">
+<% uiform.begin() %>
+<div class="form-horizontal resizable">
+
+  <div class="control-group">
+    <div class="controls-full center">
+      <span id="confirm" class="confirm">
+        <%=uicomponent.confirmMessage %>
+      </span>
+    </div>
+  </div>
+
+</div>
+<div class="uiAction uiActionBorder">
+  <% for (action in uicomponent.getActions())
+   {
+	   String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action);
+		 String actionLink = uicomponent.event(action);
+	%>
+	  <button type="button" onclick="$actionLink" class="btn">$actionLabel</button>
+	<% } %>
+</div>
+<% uiform.end() %>
+</div>
