@@ -169,11 +169,13 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
   {
     public void execute(Event<UIPreview> event) throws Exception
     {
+      PortalRequestContext pContext = Util.getPortalRequestContext();
+      String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
       UIPreview uiPreview = event.getSource() ;
       UIPopupAction uiPopupAction = uiPreview.getAncestorOfType(UIPopupAction.class) ;
       uiPopupAction.deActivate() ;
       /* we do not want to allow opening of popup */
-      isClosed = true;
+      if (requestedURL.indexOf(CalendarUtils.DETAILS_URL) != -1) { isClosed = true; }
 
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }

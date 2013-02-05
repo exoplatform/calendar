@@ -201,9 +201,6 @@ public class UICalendarPortlet extends UIPortletApplication {
       
     if (url.contains(CalendarUtils.INVITATION_DETAIL_URL)) {
 
-      /* check if we are allowed to open preview for event, if not do not open popup */
-      if (UIPreview.isClosed == true) { UIPreview.isClosed = false; return; }
-
       // open event on source calendar to view
       url = url.substring(url.indexOf(CalendarUtils.INVITATION_DETAIL_URL) + CalendarUtils.INVITATION_DETAIL_URL.length());
       String[] params = url.split("/");
