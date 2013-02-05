@@ -17,10 +17,12 @@ TimePicker.prototype.initTime = function(id) {
 			var minute = currentTime.getMinutes();
 			var roundedTime = _module.TimePicker.round(minute, timeInterval);
 			var value;
-			if(roundedTime == 60){
+			if(roundedTime == 0) {
+				roundedTime = '00';	
+			} else if(roundedTime == 60){
 				hour+=1;
 				roundedTime = '00';				 
-			} 
+			}
 			value = hour+':'+ roundedTime;
 			gj(selectBox).find('option[value="'+ value +'"]').attr('selected','true');
 			gj(selectBox).change(_module.TimePicker.selectTime);
@@ -35,7 +37,8 @@ TimePicker.prototype.initTime = function(id) {
 }
 
 TimePicker.prototype.round = function(input, outDefault) {
-	if(input >= outDefault) return outDefault;
+	if(input == 0) return input;
+	if(input <= outDefault) return outDefault;
 	else return outDefault*2;
 }
 
