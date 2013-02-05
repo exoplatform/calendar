@@ -1,8 +1,17 @@
  <%
- 	_ctx.getRequestContext().getJavascriptManager().require("SHARED/uiForm");
+ def rcontext = _ctx.getRequestContext() ;
+ def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ requireJS.require("SHARED/uiForm");
+ requireJS.require("SHARED/TimePicker", "picker");
+ requireJS.addScripts('picker.initTime("'+ uicomponent.id +'");');
+ 
  %>
+ <script>
+ 
+ 
+ </script>
 <% uiform.begin()%>
-<div class="UIQuickAddEvent" id="$uicomponent.id">
+<div class="UIQuickAddEvent">
 	<div class="QuickAddEventContainer">
 
 		<div class="HorizontalLayout">
@@ -32,7 +41,7 @@
 							   </div>
 								</td>
 							<td class="FieldComponent">
-							 <div class="Time">
+							 <div id="startTimeId" class="Time">
                   <% uicomponent.renderField(uicomponent.START_TIME) %>
                </div>
               </td>
@@ -46,7 +55,7 @@
 							   </div>
 							</td>
 							<td class="FieldComponent">
-               <div class="Time">
+               <div id="endTimeId" class="Time">
                   <% uicomponent.renderField(uicomponent.END_TIME) %>
                </div>
               </td>

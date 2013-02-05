@@ -194,4 +194,17 @@
             <path>/javascript/eXo/cs/webservice/core/WebserviceManager.js</path>
         </script>
     </module>
+    <module>
+        <name>TimePicker</name>
+        <script>
+            <path>/javascript/eXo/cs/TimePicker.js</path>
+        </script>
+        <depends>
+            <module>base</module>
+        </depends>
+        <depends>
+            <module>jquery</module>
+            <as>gj</as>
+        </depends>
+     </module> 
 </gatein-resources>
