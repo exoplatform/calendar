@@ -3,8 +3,8 @@
 
   def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('#PermissionOwnerInput').click(function() { if (gj('#PermissionOwnerInput').attr('value') === 'Select Owner') { gj('#PermissionOwnerInput').attr('value', ''); } });");
-  requirejs.addScripts("gj('#PermissionOwnerInput').blur(function() { var value = gj('#PermissionOwnerInput').attr('value'); if ((value == null) || (value === '')) { gj('#PermissionOwnerInput').attr('value', 'Select Owner'); } });");
+  requirejs.addScripts("gj('#PermissionOwnerInput').click(function() { if (gj('#PermissionOwnerInput').attr('value') === 'Select recipient') { gj('#PermissionOwnerInput').attr('value', ''); } });");
+  requirejs.addScripts("gj('#PermissionOwnerInput').blur(function() { var value = gj('#PermissionOwnerInput').attr('value'); if ((value == null) || (value === '')) { gj('#PermissionOwnerInput').attr('value', 'Select recipient'); } });");
 
   uicomponent.renderChild(uicomponent.getChildById(uicomponent.POPUP_USER_SELECTOR));
 %>

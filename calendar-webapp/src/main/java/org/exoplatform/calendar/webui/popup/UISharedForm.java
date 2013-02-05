@@ -29,6 +29,7 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -120,7 +121,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
   public static final String INPUT_PERMISSION_OWNER = "PermissionOwnerInput";
 
-  public static final String INPUT_PERMISSION_OWNER_LABEL = "Select Owner";
+  public static final String INPUT_PERMISSION_OWNER_LABEL = "Select recipient";
 
   /* define a button type for action data */
   public static final int    TYPE_BUTTON = 5;
@@ -192,7 +193,9 @@ public class UISharedForm extends UIForm implements UIPopupComponent
   public void addPermission(Permission aPermission) throws Exception
   {
     /* if the permission is already there, do nothing */
-    if (containsPermission(aPermission.getOwner().getId())) return;
+    if (containsPermission(aPermission.getId())) return;
+    /* can not add current user to the grid */
+    if (aPermission.getId().equals(CalendarUtils.getCurrentUser())) return;
 
     calendarPermissions.add(aPermission);
     UIPermissionGrid permissionGrid = getChildById(PERMISSION_GRID);
@@ -723,6 +726,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       if (permissionStatement == null) return;
       String[] permissions = permissionStatement.split(CalendarUtils.COMMA);
       List<String> permissionsToAdd = new ArrayList<String>();
+      StringBuffer permissionsNonexistent = new StringBuffer();
 
       for (String permissionId : permissions)
       {
@@ -743,9 +747,13 @@ public class UISharedForm extends UIForm implements UIPopupComponent
             permissionsToAdd.add(permissionId);
             continue;
           }
+          else permissionsNonexistent.append(permissionId + CalendarUtils.COMMA + " ");
 
           Membership membership = organizationService.getMembershipHandler().findMembership(permissionId);
-          if (membership != null) permissionsToAdd.add(permissionId);
+          if (membership != null) {
+            permissionsToAdd.add(permissionId);
+          }
+          else permissionsNonexistent.append(permissionId + CalendarUtils.COMMA + " ");
           continue;
         }
 
@@ -755,12 +763,22 @@ public class UISharedForm extends UIForm implements UIPopupComponent
           permissionsToAdd.add(permissionId);
           continue;
         }
+        else permissionsNonexistent.append(permissionId + CalendarUtils.COMMA + " ");
       }
 
       for (String permission : permissionsToAdd.toArray(new String[]{}))
       {
         Permission aPermission = new Permission(PermissionOwner.createPermissionOwnerFrom(permission));
         sharedForm.addPermission(aPermission);
+      }
+
+      if (!permissionsNonexistent.toString().isEmpty())
+      {
+        permissionsNonexistent.deleteCharAt(permissionsNonexistent.lastIndexOf(CalendarUtils.COMMA));
+        event.getRequestContext().getUIApplication().addMessage(
+          new ApplicationMessage("UISharedForm.msg.permissions-do-not-exist",
+              new String[]{ permissionsNonexistent.toString() },
+              ApplicationMessage.WARNING ));
       }
 
       /* reset input to Select Owner*/
