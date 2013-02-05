@@ -18,6 +18,7 @@ package org.exoplatform.webservice.cs.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ public class MockCalendarService implements CalendarService{
   private Calendar cal_;
   private Map<String, List<CalendarEvent>> data_;
   private Map<String, CalendarImportExport>   calendarImportExport_ = new LinkedHashMap<String, CalendarImportExport>();
+  private CalendarSetting setting_ ;
 
   public MockCalendarService() throws Exception{
     calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(new JCRDataStorage(null, null)));
@@ -132,7 +134,8 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public CalendarSetting getCalendarSetting(String username) throws Exception {
-    return null;
+    if(setting_ == null) setting_ = new CalendarSetting() ;
+    return setting_;
   }
 
   @Override
@@ -142,7 +145,8 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public CalendarEvent getEvent(String username, String eventId) throws Exception {
-    return null;
+    Iterator<List<CalendarEvent>> iter = data_.values().iterator() ; 
+    return iter.next().get(0) ;
   }
 
   @Override

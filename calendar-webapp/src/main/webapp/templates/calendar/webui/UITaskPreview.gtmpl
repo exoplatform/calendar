@@ -160,4 +160,13 @@ uiform.begin() ;
       </div>
     </div>
   </div>
+  <% if (uicomponent.isShowPopup()) {
+    String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP, uicomponent.id);
+    String actionLabel  = _ctx.appRes(uicomponent.id + ".action." + uicomponent.CLOSE_POPUP);
+    String calendarHome = uicomponent.getCalendarPortletUrl();
+  %>
+    <div class="center" style="margin-top: 15px; margin-bottom: 5px;">
+      <button onclick="window.location.replace('$calendarHome'); $actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
+    </div>
+  <% } %>
 <%uiform.end();%>

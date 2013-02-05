@@ -19,7 +19,7 @@ def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
 requirejs.require("SHARED/csResources","cs");
 requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 requirejs.require("SHARED/jquery","gj");
-requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() {cs.Utils.showHidePane(this,gj('#UIListUsers').parent(),'$uicomponent.id'); });");
+requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() { cs.CSUtils.Utils.showHidePane(this,gj('#UIListUsers').parent(),'$uicomponent.id');  });");
 requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
 %>
 <div id="<%uicomponent.getId()%>"class="UIPreview">
@@ -167,8 +167,8 @@ requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarP
                     <%=uiform.getLabel('DeleteEvent')%>
                   </div>
                 </a>
+               <% } %>
                </div>
-               <%}%>
           </td>
          </tr>                    
         </table>
@@ -176,4 +176,13 @@ requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarP
    </div>
   </div>
 </div>
+<% if (uicomponent.isShowPopup()) {
+  String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP, uicomponent.id);
+  String actionLabel  = _ctx.appRes(uicomponent.id + ".action." + uicomponent.CLOSE_POPUP);
+  String calendarHome = uicomponent.getCalendarPortletUrl();
+%>
+  <div class="center" style="margin-top: 15px; margin-bottom: 5px;">
+    <button onclick="window.location.replace('$calendarHome'); $actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
+  </div>
+<% } %>
 <%uiform.end();%>

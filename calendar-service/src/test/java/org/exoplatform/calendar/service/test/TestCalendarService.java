@@ -23,12 +23,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
+import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
+import javax.jcr.Value;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
@@ -48,7 +50,7 @@ import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.organization.OrganizationService;
@@ -61,29 +63,47 @@ import org.exoplatform.services.organization.User;
  * July 3, 2008  
  */
 
-public class TestCalendarService extends BaseCalendarTestCase {
+public class TestCalendarService extends BaseCalendarServiceTestCase {
   public static final String COMA     = ",".intern();
-  
-  private CalendarService calendarService_;
-  
-  private OrganizationService organizationService;
 
+
+  private OrganizationService organizationService_;
+ 
+  private RepositoryService repositoryService_ ;
   private JCRDataStorage  storage_;
-
+  public CalendarService calendarService_;
   private static String   username = "root";
-
-  public TestCalendarService() throws Exception {
-    super();
-    calendarService_ = (CalendarService) container.getComponentInstanceOfType(CalendarService.class);
-    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) container.getComponentInstanceOfType(NodeHierarchyCreator.class);
-    storage_ = new JCRDataStorage(nodeHierarchyCreator, repositoryService);
-    organizationService = (OrganizationService) container.getComponentInstanceOfType(OrganizationService.class);
-  }
 
   public void setUp() throws Exception {
     super.setUp();
+    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) getService(NodeHierarchyCreator.class);
+    repositoryService_ = getService(RepositoryService.class);
+    storage_ = new JCRDataStorage(nodeHierarchyCreator,repositoryService_);
+    organizationService_ = (OrganizationService) getService(OrganizationService.class);
+    calendarService_ = getService(CalendarService.class);
   }
-  
+
+  public void testInitServices() throws Exception{
+    
+    assertNotNull(repositoryService_) ;
+    assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getName(), "repository");
+    assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getDefaultWorkspaceName(), "portal-test");
+    assertNotNull(organizationService_) ;
+    
+    assertEquals(organizationService_.getUserHandler().findAllUsers().getSize(), 8);
+    
+    assertNotNull(storage_);
+    
+    assertNotNull(storage_.getUserCalendarHome(username));
+    
+    assertNotNull(storage_.getPublicCalendarHome());
+    
+    assertNotNull(storage_.getPublicCalendarServiceHome());
+    
+    assertNotNull(calendarService_) ;
+
+  }
+ 
   public void testDefaultData() throws Exception {
     String defaultEventCategoriesConfig = "Birthday,Memo,Wedding,DayOff";
     String defaultCalendarId = "NewCalendarId";
@@ -103,12 +123,12 @@ public class TestCalendarService extends BaseCalendarTestCase {
     params.put(NewUserListener.CALENDAR_NAME, defaultCalendarIdParam);
     params.put(NewUserListener.EVENT_CATEGORIES, defaultEventCategoriesConfigParam);
     NewUserListener newUserListener = new NewUserListener(calendarService_, params);
-    organizationService.addListenerPlugin(newUserListener);
+    organizationService_.addListenerPlugin(newUserListener);
 
     // Create new user
     String newUserName = "testUser";
-    User newUser = organizationService.getUserHandler().createUserInstance(newUserName);
-    organizationService.getUserHandler().createUser(newUser, true);
+    User newUser = organizationService_.getUserHandler().createUserInstance(newUserName);
+    organizationService_.getUserHandler().createUser(newUser, true);
 
     // Create event category list from config
     String[] configValues = defaultEventCategoriesConfig.split(COMA);
@@ -128,14 +148,25 @@ public class TestCalendarService extends BaseCalendarTestCase {
     assertEquals(1, calendars.size());
     assertEquals(newUserName + "-" + defaultCalendarId, calendars.get(0).getId());
 
+    
     // Test default event categories
     List<EventCategory> eventCategories = calendarService_.getEventCategories(newUserName);
     assertEquals(defaultEventCategories.size(), eventCategories.size());
     for (EventCategory eventCategory : eventCategories) {
       assertTrue(defaultEventCategories.contains(eventCategory.getId()));
     }
+    for (EventCategory eventCategory : eventCategories) {
+      calendarService_.removeEventCategory(newUserName,eventCategory.getId());
+    }
+    eventCategories = calendarService_.getEventCategories(newUserName);
+    assertEquals(eventCategories.size(), 0);
+    
+    calendarService_.removeUserCalendar(newUserName, defaultCalendarId);
+    organizationService_.getUserHandler().removeUser(newUserName, true);
+    
   }
 
+ 
   public void testCalendar() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("categoryName");
@@ -158,15 +189,15 @@ public class TestCalendarService extends BaseCalendarTestCase {
     cal.setGroups(new String[] { "users", "admin" });
     cal.setViewPermission(new String[] { "member:/users", "member:/admin" });
     cal.setEditPermission(new String[] { "admin" });
-    calendarService_.savePublicCalendar(cal, true, username);
+    calendarService_.savePublicCalendar(cal, true);
     Calendar publicCal = calendarService_.getGroupCalendar(cal.getId());
     assertNotNull(publicCal);
     assertEquals(publicCal.getName(), "myCalendar");
 
     // get calendar in private folder by categoryID
-    List<Calendar> calendares = calendarService_.getUserCalendarsByCategory(username, calCategory.getId());
-    assertNotNull(calendares);
-    assertEquals(calendares.size(), 1);
+    List<Calendar> calendars = calendarService_.getUserCalendarsByCategory(username, calCategory.getId());
+    assertNotNull(calendars);
+    assertEquals(calendars.size(), 1);
 
     // get calendar in public folder by groupId
     List<GroupCalendarData> groupCalendarList = calendarService_.getGroupCalendars(new String[] { "users" }, true, username);
@@ -184,7 +215,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
     // update public calendar
     cal.setPublic(false);
     cal.setName("myCalendarUpdated");
-    calendarService_.savePublicCalendar(cal, false, username);
+    calendarService_.savePublicCalendar(cal, false);
     myCal = calendarService_.getGroupCalendar(cal.getId());
     assertEquals(myCal.getName(), "myCalendarUpdated");
 
@@ -205,8 +236,13 @@ public class TestCalendarService extends BaseCalendarTestCase {
     setting.setLocation("location");
     calendarService_.saveCalendarSetting(username, setting);
     assertEquals("url", calendarService_.getCalendarSetting(username).getBaseURL());
+    
+    calendars = calendarService_.getUserCalendars(username, true);
+    
+    assertEquals(calendars.size(), 0);
   }
 
+  
   public void testSharedCalendar() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("categoryName");
@@ -255,8 +291,10 @@ public class TestCalendarService extends BaseCalendarTestCase {
     calendarService_.removeSharedCalendar("john", cal.getId());
     assertNull(calendarService_.getSharedCalendars("john", true));
     calendarService_.removeCalendarCategory(username, calCategory.getId());
+    
   }
 
+  
   public void testCalendarCategory() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("categoryName");
@@ -291,6 +329,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
     assertEquals(removeCate.getName(), "categoryNameUpdated");
   }
 
+ 
   public void testEventCategory() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("categoryName");
@@ -338,7 +377,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
     assertEquals(0, calendarService_.getUserEventByCalendar(username, calendarIds).size());
     assertNotNull(calendarService_.removeUserCalendar(username, cal.getId()));
 
-    startSessionAs(username);
     calendarService_.getCalendarImportExports(CalendarService.ICALENDAR).importCalendar(username,
                                                                                         is,
                                                                                         null,
@@ -360,6 +398,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
     assertNotNull(calendarService_.removeCalendarCategory(username, calCategory.getId()));
   }
 
+  
   public void testPublicEvent() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("CalendarCategoryName");
@@ -371,7 +410,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
     cal.setDescription("CalendarDesscription");
     cal.setCategoryId(calCategory.getId());
     cal.setPublic(true);
-    calendarService_.savePublicCalendar(cal, true, username);
+    calendarService_.savePublicCalendar(cal, true);
 
     EventCategory eventCategory = new EventCategory();
     eventCategory.setName("EventCategoryName1");
@@ -399,6 +438,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
     calendarService_.removeCalendarCategory(username, calCategory.getId());
   }
 
+  
   public void testPrivateEvent() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("CalendarCategoryName");
@@ -455,7 +495,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
     calendarService_.removeUserCalendar(username, cal.getId());
     calendarService_.removeCalendarCategory(username, calCategory.getId());
   }
-
+ 
   public void testLastUpdatedTime() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("CalendarCategoryName");
@@ -467,7 +507,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
     cal.setDescription("CalendarDesscription");
     cal.setCategoryId(calCategory.getId());
     cal.setPublic(true);
-    calendarService_.savePublicCalendar(cal, true, username);
+    calendarService_.savePublicCalendar(cal, true);
 
     EventCategory eventCategory = new EventCategory();
     eventCategory.setName("LastUpdatedTimeEventCategoryName");
@@ -549,9 +589,10 @@ public class TestCalendarService extends BaseCalendarTestCase {
     calendarService_.removeCalendarCategory(username, calCategory.getId());
   }
 
+  
   public void testRemoteCalendar() throws Exception {
     String remoteUrl = "http://www.google.com/calendar/ical/exomailtest@gmail.com/private-462ee65e38f964b0aa64a37b427ed673/basic.ics";
-    
+
     // test Remote ICS
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("CalendarCategoryName");
@@ -578,33 +619,33 @@ public class TestCalendarService extends BaseCalendarTestCase {
     calendarService_.saveUserCalendar(username, cal, true);
     List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username, Arrays.asList(cal.getId()));
     assertTrue(events.size() > 0);
-    
+
     boolean isRemoteCalendar = calendarService_.isRemoteCalendar(username, cal.getId());
     assertTrue(isRemoteCalendar);
-    
+
     RemoteCalendar remoteCalendar = calendarService_.getRemoteCalendar(username, cal.getId());
     assertEquals(remoteUrl, remoteCalendar.getRemoteUrl());
-    
+
     Calendar calendar1 = calendarService_.getRemoteCalendar(username, remoteUrl, CalendarService.ICALENDAR);
     assertEquals(cal.getId(), calendar1.getId());
     assertEquals(cal.getCategoryId(), calendar1.getCategoryId());
-    
+
     int remoteCalendarCount = calendarService_.getRemoteCalendarCount(username);
     assertEquals(1, remoteCalendarCount);
-    
+
     String newRemoteUrl = "https://www.google.com/calendar/dav/exomailtest@gmail.com/events/";
     remoteCalendar.setRemoteUrl(newRemoteUrl);
     calendarService_.updateRemoteCalendarInfo(remoteCalendar);
-    
+
     remoteCalendar = calendarService_.getRemoteCalendar(username, cal.getId());
     assertEquals(newRemoteUrl, remoteCalendar.getRemoteUrl());
-    
+
     calendarService_.removeUserCalendar(username, cal.getId());
 
-    // test RemoteCaldav
+    //TODO this need to find MOCK server to test RemoteCaldav
     remoteCal.setType(CalendarService.CALDAV);
     remoteCal.setRemoteUser("exomailtest@gmail.com");
-    remoteCal.setRemotePassword("tuanpham");
+    remoteCal.setRemotePassword("");
     remoteCal.setRemoteUrl("https://www.google.com/calendar/dav/exomailtest@gmail.com/events/");
     try {
       cal = remoteCalendarService.importRemoteCalendar(remoteCal);
@@ -612,13 +653,14 @@ public class TestCalendarService extends BaseCalendarTestCase {
       log.info("Exception occurs when connect to remote calendar. Skip this test.");
       return;
     }
-    
+
     List<CalendarEvent> events1 = calendarService_.getUserEventByCalendar(username, Arrays.asList(cal.getId()));
     assertTrue(events1.size() > 0);
     calendarService_.removeUserCalendar(username, cal.getId());
     calendarService_.removeCalendarCategory(username, calCategory.getId());
   }
 
+ 
   public void testGetUserCalendar() {
     try {
       Calendar calendar = calendarService_.getUserCalendar(username, "Not exist calendar");
@@ -628,67 +670,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
     }
   }
 
-  public void testSaveUserCalendar() {
-    try {
-      CalendarCategory calendarCategory = createCalendarCategory("CalendarCategory", "CaldendarCategoryDescription");
-      Calendar calendar = createCalendar("CalendarName", "CalendarDesscription", calendarCategory.getId());
-
-      // Edit calendar
-      String newCalendarName = "CalendarName edited";
-      calendar.setName(newCalendarName);
-      calendarService_.saveUserCalendar(username, calendar, false);
-
-      List<Calendar> calendars = calendarService_.getUserCalendarsByCategory(username, calendarCategory.getId());
-      assertEquals(1, calendars.size());
-      Calendar edidedCalendar = calendars.get(0);
-      assertEquals(newCalendarName, edidedCalendar.getName());
-      
-      calendarService_.removeUserCalendar(username, calendar.getId());
-      calendarService_.removeCalendarCategory(username, calendarCategory.getId());
-    } catch (Exception e) {
-      fail();
-    }
-  }
-
-  public void testSavePublicCalendar() {
-    CalendarCategory calendarCategory = null;
-    try {
-      calendarCategory = createCalendarCategory("CalendarCategory", "CaldendarCategoryDescription");
-      Calendar calendar = createPublicCalendar("CalendarName", "CalendarDesscription", calendarCategory.getId());
-
-      // Add calendar again
-      calendarService_.savePublicCalendar(calendar, true, username);
-
-      // If there is no exception occur, then the test case fail
-      fail();
-    } catch (Exception e) {
-      assertEquals("This calendar is already exists", e.getMessage());
-    } finally {
-      if (calendarCategory != null) {
-        try {
-          calendarService_.removeCalendarCategory(username, calendarCategory.getId());
-        } catch (Exception e) {
-        }
-      }
-    }
-  }
-
-  public void testSaveCalendarCategory() {
-    try {
-      CalendarCategory calCategory = new CalendarCategory();
-      calCategory.setName("CalendarCategoryName");
-      calCategory.setDescription("CaldendarCategoryDescription");
-      calendarService_.saveCalendarCategory(username, calCategory, true);
-
-      // Add calendar category again
-      calendarService_.saveCalendarCategory(username, calCategory, true);
-
-      // If there is no exception occur, then the test case fail
-      fail();
-    } catch (Exception e) {
-      assertEquals("This calendar category is already exists! ", e.getMessage());
-    }
-  }
 
   public void testSaveEventCategory() {
     try {
@@ -721,26 +702,6 @@ public class TestCalendarService extends BaseCalendarTestCase {
       assertNotNull(edidedEventCategory);
       assertEquals(newEventCategoryName, edidedEventCategory.getName());
 
-      // Check user event
-      // EventQuery query3 = new EventQuery();
-      // query3.setCategoryId(new String[] { eventCategory.getId() });
-      // List<CalendarEvent> calendarEvents3 =
-      // calendarService_.getUserEvents(username, query3);
-      // assertEquals(1, calendarEvents3.size());
-      // CalendarEvent calendarEvent3 = calendarEvents3.get(0);
-      // assertNotNull(calendarEvent3);
-      // assertEquals(newEventCategoryName,
-      // calendarEvent3.getEventCategoryName());
-
-      // Check public event
-      // CalendarEvent calendarEvent4 =
-      // calendarService_.getGroupEvent(publicCalendar.getId(),
-      // publicEvent.getId());
-      // assertNotNull(calendarEvent4);
-      // assertEquals(newEventCategoryName,
-      // calendarEvent4.getEventCategoryName());
-      
-      
       calendarService_.removeUserEvent(username, calendar.getId(), userEvent.getId());
       calendarService_.removePublicEvent(publicCalendar.getId(), publicEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());
@@ -790,8 +751,8 @@ public class TestCalendarService extends BaseCalendarTestCase {
       assertNotNull(calendarEvent4);
       assertEquals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL, calendarEvent4.getEventCategoryId());
       assertEquals(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL, calendarEvent4.getEventCategoryName());
-      
-      
+
+
       calendarService_.removeUserEvent(username, calendar.getId(), userEvent.getId());
       calendarService_.removePublicEvent(publicCalendar.getId(), publicEvent.getId());
       calendarService_.removeUserCalendar(username, calendar.getId());
@@ -812,7 +773,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       java.util.Calendar fromCal = java.util.Calendar.getInstance();
       java.util.Calendar toCal = java.util.Calendar.getInstance();
       toCal.add(java.util.Calendar.HOUR, 1);
-      
+
       // Create attachment
       String attachmentName = "Acttach file";
       String attachmentMinetype = "MimeType";
@@ -825,7 +786,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
         }
       }) ;
       attachment.setMimeType(attachmentMinetype) ;
-      
+
       // Create reminder
       String reminderType = Reminder.TYPE_BOTH;
       long reminderAlarmBefore = new Date().getTime();
@@ -834,7 +795,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       reminder.setAlarmBefore(reminderAlarmBefore);
       reminder.setEmailAddress(reminderEmailAddress);
       reminder.setRepeate(false);
-      
+
       // Create and save event
       String eventSummay = "Have a meeting";
       CalendarEvent calendarEvent = new CalendarEvent();
@@ -846,11 +807,11 @@ public class TestCalendarService extends BaseCalendarTestCase {
       calendarEvent.setAttachment(Arrays.asList(attachment));
       calendarEvent.setReminders(Arrays.asList(reminder));
       calendarService_.saveUserEvent(username, calendar.getId(), calendarEvent, true);
-      
+
       CalendarEvent findEvent = calendarService_.getEvent(username, calendarEvent.getId());
       assertNotNull(findEvent);
       assertEquals(eventSummay, findEvent.getSummary());
-      
+
       // Check attachment
       List<Attachment> attachments = findEvent.getAttachment();
       assertNotNull(attachments);
@@ -858,7 +819,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       Attachment eventAttachment = attachments.get(0);
       assertEquals(attachmentName, eventAttachment.getName());
       assertEquals(attachmentMinetype, eventAttachment.getMimeType());
-      
+
       // Check reminder
       List<Reminder> reminders = findEvent.getReminders();
       assertNotNull(reminders);
@@ -868,16 +829,16 @@ public class TestCalendarService extends BaseCalendarTestCase {
       assertEquals(reminderAlarmBefore, eventReminder.getAlarmBefore());
       assertEquals(reminderEmailAddress, eventReminder.getEmailAddress());
       assertEquals(false, eventReminder.isRepeat());
-      
-      // Xóa reminder
+
+      // Remove reminder
       findEvent.setReminders(null);
       calendarService_.saveUserEvent(username, calendar.getId(), findEvent, false);
-      
+
       CalendarEvent findEvent1 = calendarService_.getEvent(username, calendarEvent.getId());
       assertNotNull(findEvent1);
       List<Reminder> reminders1 = findEvent1.getReminders();
       assertEquals(0, reminders1.size());
-      
+
       calendarService_.removeUserEvent(username, calendar.getId(), calendarEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());
       calendarService_.removeUserCalendar(username, calendar.getId());
@@ -887,15 +848,61 @@ public class TestCalendarService extends BaseCalendarTestCase {
     }
   }
 
+  public void testSaveUserEvent() {
+    try {
+      CalendarCategory calendarCategory = createCalendarCategory("categoryName", "description");
+      Calendar calendar = createCalendar("myCalendar", "Description", calendarCategory.getId());
+
+      EventCategory eventCategory = createEventCategory("eventCategoryName3", "description");
+
+      java.util.Calendar fromCal = java.util.Calendar.getInstance();
+      java.util.Calendar toCal = java.util.Calendar.getInstance();
+      toCal.add(java.util.Calendar.HOUR, 1);
+
+      // Create and save event
+      String eventSummay = "Have a meeting";
+      CalendarEvent calendarEvent = new CalendarEvent();
+      calendarEvent.setEventCategoryId(eventCategory.getId());
+      calendarEvent.setEventCategoryName(eventCategory.getName());
+      calendarEvent.setSummary(eventSummay);
+      calendarEvent.setFromDateTime(fromCal.getTime());
+      calendarEvent.setToDateTime(toCal.getTime());
+      
+      log.info("=====BEFORE SAVING=====");
+      log.info("START TIME: " + fromCal.getTime().toString());
+      log.info("ENDTIME: " + toCal.getTime().toString());
+      
+      calendarService_.saveUserEvent(username, calendar.getId(), calendarEvent, true);
+      
+      CalendarEvent findEvent = calendarService_.getEvent(username, calendarEvent.getId());
+      
+      log.info("=====AFTER SAVING=====");
+      log.info("START TIME: " + findEvent.getFromDateTime().toString());
+      log.info("ENDTIME: " + findEvent.getToDateTime().toString());
+      
+      assertEquals(false, findEvent.getFromDateTime().equals(findEvent.getToDateTime()));
+      // restore data storage
+      calendarService_.removeUserEvent(username, calendar.getId(), calendarEvent.getId());
+      calendarService_.removeEventCategory(username, eventCategory.getId());
+      calendarService_.removeUserCalendar(username, calendar.getId());
+      calendarService_.removeCalendarCategory(username, calendarCategory.getId());
+    } catch (Exception e) {
+      fail();
+    }
+    
+
+  }
   public void testRemoveSharedCalendarFolder() {
     try {
       CalendarCategory calendarCategory = createCalendarCategory("categoryName", "description");
-      createSharedCalendar("sharedCalendar", "shareDescription", calendarCategory.getId());
+      Calendar cal = createSharedCalendar("sharedCalendar", "shareDescription", calendarCategory.getId());
 
       calendarService_.removeSharedCalendarFolder("john");
 
       GroupCalendarData groupCalendarData = calendarService_.getSharedCalendars(username, true);
       assertNull(groupCalendarData);
+      calendarService_.removeUserCalendar(username, cal.getId());
+      calendarService_.removeCalendarCategory(username, calendarCategory.getId());
     } catch (Exception e) {
       fail();
     }
@@ -912,7 +919,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       assertEquals(Utils.PUBLIC_TYPE, calendarService_.getTypeOfCalendar(username, publicCalendar.getId()));
       assertEquals(Utils.SHARED_TYPE, calendarService_.getTypeOfCalendar("john", sharedCalendar.getId()));
       assertEquals(Utils.INVALID_TYPE, calendarService_.getTypeOfCalendar(username, "Not exist id"));
-      
+
       calendarService_.removeUserCalendar(username, calendar.getId());
       calendarService_.removePublicCalendar(publicCalendar.getId());
       calendarService_.removeSharedCalendar(username, sharedCalendar.getId());
@@ -938,7 +945,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
       List<CalendarEvent> events = new ArrayList<CalendarEvent>();
       events.add(event);
-      
+
       calendarService_.moveEvent(publicCalendar.getId(),
                                  calendar.getId(),
                                  String.valueOf(Calendar.TYPE_PUBLIC),
@@ -948,7 +955,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
 
       CalendarEvent userEvent = calendarService_.getEvent(username, event.getId());
       assertNotNull(userEvent);
-      
+
       List<CalendarEvent> events1 = new ArrayList<CalendarEvent>();
       events1.add(userEvent);
       calendarService_.moveEvent(calendar.getId(),
@@ -957,11 +964,11 @@ public class TestCalendarService extends BaseCalendarTestCase {
                                  String.valueOf(Calendar.TYPE_PUBLIC),
                                  events1,
                                  username);
-      
-      
+
+
       CalendarEvent publicEvent = calendarService_.getGroupEvent(publicCalendar.getId(), userEvent.getId());
       assertNotNull(publicEvent);
-      
+
       calendarService_.removeUserEvent(username, calendar.getId(), userEvent.getId());
       calendarService_.removePublicEvent(publicCalendar.getId(), publicEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());
@@ -992,8 +999,8 @@ public class TestCalendarService extends BaseCalendarTestCase {
       eventQuery.setToDate(toCal);
       eventQuery.setParticipants(new String[] { "root" });
       eventQuery.setNodeType("exo:calendarPublicEvent");
-      Map<String, String> parsMap = calendarService_.checkFreeBusy(eventQuery);
-      
+      calendarService_.checkFreeBusy(eventQuery);
+
       calendarService_.removePublicEvent(publicCalendar.getId(), publicEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());
       calendarService_.removePublicCalendar(publicCalendar.getId());
@@ -1003,19 +1010,10 @@ public class TestCalendarService extends BaseCalendarTestCase {
     }
   }
 
-  public void testCreateSessionProvider() {
-    try {
-      SessionProvider sessionProvider = storage_.createSessionProvider();
-      assertNotNull(sessionProvider);
-    } catch (Exception e) {
-      fail();
-    }
-  }
-
   public void testUpdateRecurrenceSeries() {
     try {
       TimeZone timezone = TimeZone.getTimeZone("GMT+7:00");
-      
+
       CalendarCategory calendarCategory = createCalendarCategory("categoryName", "description");
       Calendar calendar = createCalendar("myCalendar", "Description", calendarCategory.getId());
       Calendar publicCalendar = createPublicCalendar("publicCalendar", "publicDescription", calendarCategory.getId());
@@ -1052,7 +1050,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
                                      String.valueOf(Calendar.TYPE_PUBLIC),
                                      listEvent,
                                      username);
-      
+
       calendarService_.removeUserEvent(username, calendar.getId(), userEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());
       calendarService_.removeUserCalendar(username, calendar.getId());
@@ -1066,7 +1064,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
   public void testCalculateRecurrenceFinishDate() {
     try {
       TimeZone timeZone = TimeZone.getTimeZone("GMT");
-      
+
       java.util.Calendar fromCal = java.util.Calendar.getInstance(timeZone);
       fromCal.set(2011, 6, 20, 5, 30);
 
@@ -1097,7 +1095,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       fail();
     }
   }
-  
+
   public void testGetPublicEvents() {
     try {
       CalendarCategory calendarCategory = createCalendarCategory("categoryName", "description");
@@ -1110,7 +1108,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       toCal.add(java.util.Calendar.HOUR, 1);
 
       CalendarEvent publicEvent = createPublicEvent(publicCalendar.getId(), eventCategory, "Have a meeting", fromCal, toCal);
-      
+
       EventQuery eventQuery = new EventQuery();
       eventQuery.setCalendarId(new String[] {publicCalendar.getId()});
       List<CalendarEvent> events = calendarService_.getPublicEvents(eventQuery);
@@ -1118,7 +1116,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       CalendarEvent resultEvent = events.get(0);
       assertEquals(publicEvent.getId(), resultEvent.getId());
       assertEquals(publicEvent.getSummary(), resultEvent.getSummary());
-      
+
       calendarService_.removePublicEvent(publicCalendar.getId(), publicEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());
       calendarService_.removePublicCalendar(publicCalendar.getId());
@@ -1127,14 +1125,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       fail();
     }
   }
-  
-  public void test() {
-    try {
-    } catch (Exception e) {
-      fail();
-    } 
-  }
-  
+
   private CalendarCategory createCalendarCategory(String name, String description) {
     try {
       // Create and save calendar category
@@ -1194,7 +1185,7 @@ public class TestCalendarService extends BaseCalendarTestCase {
       publicCalendar.setDescription(desscription);
       publicCalendar.setCategoryId(calendarCategoryId);
       publicCalendar.setPublic(true);
-      calendarService_.savePublicCalendar(publicCalendar, true, username);
+      calendarService_.savePublicCalendar(publicCalendar, true);
       return publicCalendar;
     } catch (Exception e) {
       fail();
@@ -1255,23 +1246,5 @@ public class TestCalendarService extends BaseCalendarTestCase {
     }
   }
 
-  private CalendarEvent createSharedEvent(String sharedCalendarId,
-                                          EventCategory eventCategory,
-                                          String summary,
-                                          java.util.Calendar fromCal,
-                                          java.util.Calendar toCal) {
-    try {
-      CalendarEvent sharedEvent = new CalendarEvent();
-      sharedEvent.setCalendarId(sharedCalendarId);
-      sharedEvent.setSummary(summary);
-      sharedEvent.setEventType(CalendarEvent.TYPE_EVENT);
-      sharedEvent.setFromDateTime(fromCal.getTime());
-      sharedEvent.setToDateTime(toCal.getTime());
-      calendarService_.saveEventToSharedCalendar("john", sharedCalendarId, sharedEvent, true);
-      return sharedEvent;
-    } catch (Exception e) {
-      fail();
-      return null;
-    }
-  }
+ 
 }

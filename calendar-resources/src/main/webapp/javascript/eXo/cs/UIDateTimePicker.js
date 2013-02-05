@@ -1,7 +1,10 @@
+(function(wx, base, gj, uiCalendar){
+var _module = {};
+
 function UIDateTimePicker() {
   this.dateField = null ;
-  this.currentDate = null ; 	// Datetime value base of selectedDate for displaying calendar below
-  														// if selectedDate is invalid, currentDate deals with system time;
+  this.currentDate = null ;   // Datetime value base of selectedDate for displaying calendar below
+                              // if selectedDate is invalid, currentDate deals with system time;
   this.selectedDate = null ; //Datetime value of input date&time field
   this.months = ['January','February','March','April','May','June','July','August','September','October','November','December'] ;
   this.weekdays = ['S','M','T','W','T','F','S'] ;
@@ -10,35 +13,37 @@ function UIDateTimePicker() {
 } ;
 
 //UIDateTimePicker.prototype = eXo.webui.UICalendar ;
-UIDateTimePicker.prototype = wx.UICalendar ; //UICalendar of webui-ext module
+UIDateTimePicker.prototype = uiCalendar ; //UICalendar of webui-ext module
 
 UIDateTimePicker.prototype.getLang = function() {
-	try {
-		var lang = this.dateField.lang;
-		if (this.lang == lang) 
-			return;
-		this.lang = lang;
-		var languages = gj.globalEval(ajaxAsyncGetRequest(this.pathResource + this.lang.toLowerCase() + ".js", false));
-		if (!languages || (typeof(languages) != "object")) 
-			return;
-	
-	this.months = languages[0];
-	this.weekdays = languages[1];
-	this.tooltip = languages[2];
-	} 
-	catch (e) {}
+  try {
+    var lang = this.dateField.lang;
+    if (this.lang == lang) 
+      return;
+    this.lang = lang;
+    var languages = gj.globalEval(ajaxAsyncGetRequest(this.pathResource + this.lang.toLowerCase() + ".js", false));
+    if (!languages || (typeof(languages) != "object")) 
+      return;
+  
+
+  this.months = languages[0];
+
+  this.weekdays = languages[1];
+  this.tooltip = languages[2];
+  } 
+  catch (e) {}
 } ;
 
 UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
-	this.isDisplayTime = isDisplayTime ;
-	if (this.dateField) {
-		this.dateField.parentNode.style.position = '' ;
-	}
-	this.dateField = field ;
-	if (!document.getElementById(this.calendarId)) this.create();
+  this.isDisplayTime = isDisplayTime ;
+  if (this.dateField) {
+    this.dateField.parentNode.style.position = '' ;
+  }
+  this.dateField = field ;
+  if (!document.getElementById(this.calendarId)) this.create();
     this.show() ;
 
-	// fix bug for IE 6
+  // fix bug for IE 6
   var cld = document.getElementById(this.calendarId);
   if(base.Browser.isIE6())  {
     var blockClnd = document.getElementById('BlockCaledar') ;
@@ -49,9 +54,9 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
 };
 
 UIDateTimePicker.prototype.show = function() {
-	_module.UIDateTimePicker.getLang() ;
-	document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
-	
+  _module.UIDateTimePicker.getLang() ;
+  document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
+  
   var str = this.dateField.getAttribute("format") ;
   str = str.replace(/d{2}/,"(\\d{1,2}\\") ;
   str = str.replace(/M{2}/,"\\d{1,2}\\") ;
@@ -63,12 +68,12 @@ UIDateTimePicker.prototype.show = function() {
     str = str.replace(/s{2}/,"\\d{1,2})") ;    
   }
   str = "^" + str + "?$" ;
-	re = new RegExp(str,'i') ;
+  re = new RegExp(str,'i') ;
   this.selectedDate = new Date() ;
-	if (re.test(this.dateField.value)) {
-	  var dateParts = this.dateField.value.split(" ") ;
+  if (re.test(this.dateField.value)) {
+    var dateParts = this.dateField.value.split(" ") ;
     var spLine = dateParts[0].match(/\W{1}/) ;
-	  var arr = dateParts[0].split(spLine) ;
+    var arr = dateParts[0].split(spLine) ;
     var type = this.getTypeFormat() ;
     var month = 0 ;
     var date = 0 ;
@@ -87,41 +92,41 @@ UIDateTimePicker.prototype.show = function() {
         date = arr[0] ;
         month = arr[1] ;
     }
-		
-	  this.selectedDate.setMonth(parseInt(month,10) - 1) ;
-	  this.selectedDate.setDate(parseInt(date,10)) ;
-	  this.selectedDate.setFullYear(parseInt(arr[2],10)) ;
-	  if (dateParts.length > 1 && dateParts[dateParts.length - 1] != "") {
-	  	spLine = dateParts[dateParts.length - 1].match(/\W{1}/) ;
+    
+    this.selectedDate.setMonth(parseInt(month,10) - 1) ;
+    this.selectedDate.setDate(parseInt(date,10)) ;
+    this.selectedDate.setFullYear(parseInt(arr[2],10)) ;
+    if (dateParts.length > 1 && dateParts[dateParts.length - 1] != "") {
+      spLine = dateParts[dateParts.length - 1].match(/\W{1}/) ;
       arr = dateParts[dateParts.length - 1].split(spLine) ;
-	  	this.selectedDate.setHours(arr[0], 10) ;
-	  	this.selectedDate.setMinutes(arr[1], 10) ;
-	  	this.selectedDate.setSeconds(arr[2], 10) ;
-	  }
-	}
-	
-	this.currentDate = new Date(this.selectedDate.getTime()) ;
+      this.selectedDate.setHours(arr[0], 10) ;
+      this.selectedDate.setMinutes(arr[1], 10) ;
+      this.selectedDate.setSeconds(arr[2], 10) ;
+    }
+  }
+  
+  this.currentDate = new Date(this.selectedDate.getTime()) ;
   var clndr = document.getElementById(this.calendarId) ;
   clndr.firstChild.lastChild.innerHTML = this.renderCalendar() ;
   var x = 0 ;
   var y = this.dateField.offsetHeight ;
   with (clndr.firstChild.style) {
-  	display = 'block' ;
-	  left = x + "px" ;
-	  top = y + "px" ;
+    display = 'block' ;
+    left = x + "px" ;
+    top = y + "px" ;
   }
   if(base.Browser.isIE6()){
-		var ifr = gj(clndr).find('#' + this.calendarId + "IFrame")[0] ;
-		ifr.style.height = (gj(ifr).nextAll("div")[0].offsetHeight - 5) + "px";
-	}
-	var drag = document.getElementById("blockCaledar");		
-	drag.onmousedown = this.initDND ;
+    var ifr = gj(clndr).find('#' + this.calendarId + "IFrame")[0] ;
+    ifr.style.height = (gj(ifr).nextAll("div")[0].offsetHeight - 5) + "px";
+  }
+  var drag = document.getElementById("blockCaledar");   
+  drag.onmousedown = this.initDND ;
 } ;
 
 UIDateTimePicker.prototype.initDND = function(evt) {
-	var _e = evt || window.event;
-	_e.cancelBubble = true ;
-	_module.DragDrop.init(null, this, this.parentNode.parentNode, evt);
+  var _e = evt || window.event;
+  _e.cancelBubble = true ;
+  _module.DragDrop.init(null, this, this.parentNode.parentNode, evt);
 } ;
 
 UIDateTimePicker.prototype.getTypeFormat = function() {
@@ -175,28 +180,28 @@ UIDateTimePicker.prototype.renderCalendar = function() {
   var startDayOfWeek = this.getDayOfWeek(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, dayOfMonth) ;
   var daysInMonth = this.getDaysInMonth(this.currentDate.getFullYear(), this.currentDate.getMonth()) ;
   var clazz = null;
-	var table = '<div id="blockCaledar" class="BlockCalendar"><span></span></div>' ;
-	table += 		'<div class="UICalendar" onmousedown="event.cancelBubble = true">' ;
-	table += 		'	<table class="MonthYearBox">' ;
-	table += 		'	  <tr>' ;
-	table += 		'			<td class="MonthButton"><a class="PreviousMonth" title="' + this.tooltip[1]+ '" href="javascript:eXo.cs.UIDateTimePicker.changeMonth(-1);"></a></td>' ;
-	table += 		'			<td class="YearButton"><a class="PreviousYear" title="' + this.tooltip[0]+ '" href="javascript:eXo.cs.UIDateTimePicker.changeYear(-1);"></a></td>' ;
-	table += 		'			<td><span style="color:#f89302;">' + this.months[this.currentDate.getMonth()] + '</span> - <span>' + this.currentDate.getFullYear() + '</span></td>' ;
-	table += 		'			<td class="YearButton"><a class="NextYear" title="' + this.tooltip[3]+ '"  href="javascript:eXo.cs.UIDateTimePicker.changeYear(1);"></a></td>' ;
-	table += 		'			<td class="MonthButton"><a class="NextMonth" title="' + this.tooltip[2]+ '" href="javascript:eXo.cs.UIDateTimePicker.changeMonth(1);"></a></td>' ;
-	table += 		'		</tr>' ;
-	table += 		'	</table>' ;
-	table += 		'	<div style="margin-top: 6px;padding: 0px 5px;">' ;
-	table += 		'		<table>' ;
-	table += 		'			<tr>' ;
-	table += 		'				<td><font color="red">' + this.weekdays[0] + '</font></td><td>' + this.weekdays[1] + '</td><td>' + this.weekdays[2] + '</td><td>' + this.weekdays[3] + '</td><td>' + this.weekdays[4] + '</td><td>' + this.weekdays[5] + '</td><td>' + this.weekdays[6] + '</td>' ;
-	table += 		'			</tr>' ;
-	table += 		'		</table>' ;
-	table += 		'	</div>' ;
-	table += 		'	<div class="CalendarGrid">' ;
-	table += 		'	<table>' ;	
-	
-	
+  var table = '<div id="blockCaledar" class="BlockCalendar"><span></span></div>' ;
+  table +=    '<div class="UICalendar" onmousedown="event.cancelBubble = true">' ;
+  table +=    ' <table class="MonthYearBox">' ;
+  table +=    '   <tr>' ;
+  table +=    '     <td class="MonthButton"><a class="PreviousMonth" title="' + this.tooltip[1]+ '" href="javascript:eXo.cs.UIDateTimePicker.changeMonth(-1);"></a></td>' ;
+  table +=    '     <td class="YearButton"><a class="PreviousYear" title="' + this.tooltip[0]+ '" href="javascript:eXo.cs.UIDateTimePicker.changeYear(-1);"></a></td>' ;
+  table +=    '     <td><span style="color:#f89302;">' + this.months[this.currentDate.getMonth()] + '</span> - <span>' + this.currentDate.getFullYear() + '</span></td>' ;
+  table +=    '     <td class="YearButton"><a class="NextYear" title="' + this.tooltip[3]+ '"  href="javascript:eXo.cs.UIDateTimePicker.changeYear(1);"></a></td>' ;
+  table +=    '     <td class="MonthButton"><a class="NextMonth" title="' + this.tooltip[2]+ '" href="javascript:eXo.cs.UIDateTimePicker.changeMonth(1);"></a></td>' ;
+  table +=    '   </tr>' ;
+  table +=    ' </table>' ;
+  table +=    ' <div style="margin-top: 6px;padding: 0px 5px;">' ;
+  table +=    '   <table>' ;
+  table +=    '     <tr>' ;
+  table +=    '       <td><font color="red">' + this.weekdays[0] + '</font></td><td>' + this.weekdays[1] + '</td><td>' + this.weekdays[2] + '</td><td>' + this.weekdays[3] + '</td><td>' + this.weekdays[4] + '</td><td>' + this.weekdays[5] + '</td><td>' + this.weekdays[6] + '</td>' ;
+  table +=    '     </tr>' ;
+  table +=    '   </table>' ;
+  table +=    ' </div>' ;
+  table +=    ' <div class="CalendarGrid">' ;
+  table +=    ' <table>' ;  
+  
+  
   for (var week=0; week < 6; week++) {
     table += "<tr>";
     for (var dayOfWeek=0; dayOfWeek < 7; dayOfWeek++) {
@@ -221,30 +226,32 @@ UIDateTimePicker.prototype.renderCalendar = function() {
       }
     }
     table += "</tr>" ;
-  }		
-	table += 		'		</table>' ;
-	table += 		'	</div>' ;
-	if (this.isDisplayTime) {
-		table += 		'	<div class="CalendarTimeBox">' ;
-		table += 		'		<div class="CalendarTimeBoxR">' ;
-		table += 		'			<div class="CalendarTimeBoxM"><span><input class="InputTime" size="2" maxlength="2" value="' + this.currentDate.getHours() + '" onkeyup="eXo.cs.UIDateTimePicker.setHour(this)" >:<input size="2" class="InputTime" maxlength="2" value="' + this.currentDate.getMinutes() + '" onkeyup = "eXo.cs.UIDateTimePicker.setMinus(this)">:<input size="2" class="InputTime" maxlength="2" value="' + this.currentDate.getSeconds() + '" onkeyup = "eXo.cs.UIDateTimePicker.setSeconds(this)"></span></div>' ;
-		table += 		'		</div>' ;
-		table += 		'	</div>' ;
-	}
-	table += 		'</div>' ;
-	//table += 		'</div>' ;
-	return table ;
+  }   
+  table +=    '   </table>' ;
+  table +=    ' </div>' ;
+  if (this.isDisplayTime) {
+    table +=    ' <div class="CalendarTimeBox">' ;
+    table +=    '   <div class="CalendarTimeBoxR">' ;
+    table +=    '     <div class="CalendarTimeBoxM"><span><input class="InputTime" size="2" maxlength="2" value="' + this.currentDate.getHours() + '" onkeyup="eXo.cs.UIDateTimePicker.setHour(this)" >:<input size="2" class="InputTime" maxlength="2" value="' + this.currentDate.getMinutes() + '" onkeyup = "eXo.cs.UIDateTimePicker.setMinus(this)">:<input size="2" class="InputTime" maxlength="2" value="' + this.currentDate.getSeconds() + '" onkeyup = "eXo.cs.UIDateTimePicker.setSeconds(this)"></span></div>' ;
+    table +=    '   </div>' ;
+    table +=    ' </div>' ;
+  }
+  table +=    '</div>' ;
+  //table +=    '</div>' ;
+  return table ;
 } ;
 
 UIDateTimePicker.prototype.hide = function() {
-	if (this.dateField) {
-		document.getElementById(this.calendarId).firstChild.style.display = 'none';
-		this.dateField = null;
-	}
-	document.onclick = null;
+  if (this.dateField) {
+    document.getElementById(this.calendarId).firstChild.style.display = 'none';
+    this.dateField = null;
+  }
+  document.onclick = null;
 }
 
 
 window.eXo.cs = window.eXo.cs || {};  
 window.eXo.cs.UIDateTimePicker = new UIDateTimePicker();
 _module.UIDateTimePicker = window.eXo.cs.UIDateTimePicker;
+return _module.UIDateTimePicker;
+})(wx, base, gj, uiCalendar);

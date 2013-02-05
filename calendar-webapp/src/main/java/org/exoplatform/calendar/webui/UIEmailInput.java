@@ -12,7 +12,7 @@ public class UIEmailInput extends UIFormStringInput {
     super(arg0, arg1);
     this.value_ = value;
   }
-  public void decode(Object input, WebuiRequestContext context) throws Exception {
+  public void decode(Object input, WebuiRequestContext context){
     if(input != null) value_ = ((String)input).trim();
   }
   public void processRender(WebuiRequestContext context) throws Exception {

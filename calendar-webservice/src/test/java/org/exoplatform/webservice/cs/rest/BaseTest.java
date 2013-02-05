@@ -35,25 +35,24 @@ import org.exoplatform.services.rest.impl.ResourceBinder;
  * @version $Id: $
  */
 @ConfiguredBy({
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),
   @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
   @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/org/exoplatform/services/organization/TestOrganization-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.cs.webservice.rest.test-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration1.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration2.xml")
-  })
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.cs.test.portal-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.cs.webservice.rest.test-configuration.xml")
+})
 public abstract class BaseTest extends AbstractKernelTest {
 
   protected PortalContainer container;
-  
+
   protected ProviderBinder providers;
 
   protected ResourceBinder     binder;
 
   protected RequestHandlerImpl requestHandler;
-  
+
   protected OrganizationService  orgService;
- 
+
   protected ChromatticManager chromatticManager;
 
   public void setUp() throws Exception {
@@ -67,36 +66,15 @@ public abstract class BaseTest extends AbstractKernelTest {
     ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
     binder.clear();
   }
-  
+
   protected void start() {
     ((ComponentRequestLifecycle)orgService).startRequest(container);
   }
-  
+
   protected void stop() {
     ((ComponentRequestLifecycle)orgService).endRequest(container);
   }  
-  
+
   public void tearDown() throws Exception {
   }
-
-  public boolean registry(Object resource) throws Exception {
-//    container.registerComponentInstance(resource);
-    return binder.bind(resource);
-  }
-
-  public boolean registry(Class<?> resourceClass) throws Exception {
-//    container.registerComponentImplementation(resourceClass.getName(), resourceClass);
-    return binder.bind(resourceClass);
-  }
-
-  public boolean unregistry(Object resource) {
-//    container.unregisterComponentByInstance(resource);
-    return binder.unbind(resource.getClass());
-  }
-
-  public boolean unregistry(Class<?> resourceClass) {
-//    container.unregisterComponent(resourceClass.getName());
-    return binder.unbind(resourceClass);
-  }
-
 }

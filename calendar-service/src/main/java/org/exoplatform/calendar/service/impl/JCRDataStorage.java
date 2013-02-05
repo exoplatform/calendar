@@ -84,7 +84,6 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.AccessControlEntry;
 import org.exoplatform.services.jcr.access.PermissionType;
-import org.exoplatform.services.jcr.access.SystemIdentity;
 import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.exoplatform.services.jcr.core.ManageableRepository;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
@@ -97,6 +96,7 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.IdentityConstants;
 
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
@@ -190,7 +190,7 @@ public class JCRDataStorage implements DataStorage {
    */
   public Node getUserCalendarServiceHome(String username) throws Exception {
     // CS-2356
-    // SessionProvider sProvider = createSessionProvider();
+    //SessionProvider sProvider = createSessionProvider();
     SessionProvider sProvider = createSystemProvider();
     Node userNode = nodeHierarchyCreator_.getUserApplicationNode(sProvider, username);
     Node userApp = getNodeByPath(userNode.getPath(), sProvider);
@@ -1350,13 +1350,16 @@ public class JCRDataStorage implements DataStorage {
     eventNode.setProperty(Utils.EXO_LOCATION, event.getLocation());
     eventNode.setProperty(Utils.EXO_TASK_DELEGATOR, event.getTaskDelegator());
 
-    GregorianCalendar dateTime = Utils.getInstanceTempCalendar();
+    GregorianCalendar startTime = Utils.getInstanceTempCalendar();
+    GregorianCalendar endTime = Utils.getInstanceTempCalendar();
     // convert date time to GMT time zone before saving to database.
     // dateTime.setTimeZone(TimeZone.getTimeZone("GMT"));
-    dateTime.setTime(event.getFromDateTime());
-    eventNode.setProperty(Utils.EXO_FROM_DATE_TIME, dateTime);
-    dateTime.setTime(event.getToDateTime());
-    eventNode.setProperty(Utils.EXO_TO_DATE_TIME, dateTime);
+    startTime.setTime(event.getFromDateTime());
+    eventNode.setProperty(Utils.EXO_FROM_DATE_TIME, startTime);
+    eventNode.getSession().save();
+    endTime.setTime(event.getToDateTime());
+    eventNode.setProperty(Utils.EXO_TO_DATE_TIME, endTime);
+    eventNode.getSession().save();
     eventNode.setProperty(Utils.EXO_EVENT_TYPE, event.getEventType());
     eventNode.setProperty(Utils.EXO_REPEAT, event.getRepeatType());
     eventNode.setProperty(Utils.EXO_PRIORITY, event.getPriority());
@@ -1411,9 +1414,9 @@ public class JCRDataStorage implements DataStorage {
         eventNode.setProperty(Utils.EXO_EXCLUDE_ID, (Value[]) null);
 
       if (event.getRepeatUntilDate() != null) {
-        dateTime = Utils.getInstanceTempCalendar();
-        dateTime.setTime(event.getRepeatUntilDate());
-        eventNode.setProperty(Utils.EXO_REPEAT_UNTIL, dateTime);
+        GregorianCalendar dateRepeatTo = Utils.getInstanceTempCalendar();
+        dateRepeatTo.setTime(event.getRepeatUntilDate());
+        eventNode.setProperty(Utils.EXO_REPEAT_UNTIL, dateRepeatTo);
       } else {
         eventNode.setProperty(Utils.EXO_REPEAT_UNTIL, (Value) null);
       }
@@ -1446,9 +1449,9 @@ public class JCRDataStorage implements DataStorage {
       if (!Utils.isEmpty(repeatType) && !repeatType.equals(CalendarEvent.RP_NOREPEAT)) {
         Date repeatFinish = calculateRecurrenceFinishDate(event);
         if (repeatFinish != null) {
-          dateTime = Utils.getInstanceTempCalendar();
-          dateTime.setTime(repeatFinish);
-          eventNode.setProperty(Utils.EXO_REPEAT_FINISH_DATE, dateTime);
+          GregorianCalendar finishRepeatDate = Utils.getInstanceTempCalendar();
+          finishRepeatDate.setTime(repeatFinish);
+          eventNode.setProperty(Utils.EXO_REPEAT_FINISH_DATE, finishRepeatDate);
         }
       }
     }
@@ -1554,6 +1557,7 @@ public class JCRDataStorage implements DataStorage {
     dateTime.setTime(event.getFromDateTime());
     fromDate = dateTime.get(java.util.Calendar.DAY_OF_YEAR);
     publicEvent.setProperty(Utils.EXO_FROM_DATE_TIME, dateTime);
+    publicEvent.getSession().save();
     publicEvent.setProperty(Utils.EXO_EVENT_STATE, event.getEventState());
     dateTime.setTime(event.getToDateTime());
     toDate = dateTime.get(java.util.Calendar.DAY_OF_YEAR);
@@ -1566,8 +1570,10 @@ public class JCRDataStorage implements DataStorage {
       tmpTime.set(java.util.Calendar.MILLISECOND, 0);
       tmpTime.setTimeInMillis(tmpTime.getTimeInMillis() + (24 * 60 * 60 * 1000) - 1000);
       publicEvent.setProperty(Utils.EXO_TO_DATE_TIME, tmpTime);
+      publicEvent.getSession().save();
     } else {
       publicEvent.setProperty(Utils.EXO_TO_DATE_TIME, dateTime);
+      publicEvent.getSession().save();
     }
     publicEvent.setProperty(Utils.EXO_PARTICIPANT, event.getParticipant());
     try {
@@ -1597,13 +1603,14 @@ public class JCRDataStorage implements DataStorage {
             Node newEvent = dateFolder.getNode(ev.getId());
             newEvent.setProperty(Utils.EXO_ID, ev.getId());
             newEvent.setProperty(Utils.EXO_FROM_DATE_TIME, cal);
+            newEvent.getSession().save();
             java.util.Calendar tmpCal = Utils.getInstanceTempCalendar();
             if (i == toDate)
               tmpCal.setTime(event.getToDateTime());
             else
               tmpCal.setTimeInMillis(cal.getTimeInMillis() + (24 * 60 * 60 * 1000) - 1000);
             newEvent.setProperty(Utils.EXO_TO_DATE_TIME, tmpCal);
-            newEvent.save();
+            newEvent.getSession().save();
           }
         }
       }
@@ -1707,7 +1714,7 @@ public class JCRDataStorage implements DataStorage {
     if (extNode.canAddMixin("exo:privilegeable"))
       extNode.addMixin("exo:privilegeable");
     String[] arrayPers = { PermissionType.READ, PermissionType.ADD_NODE, PermissionType.SET_PROPERTY, PermissionType.REMOVE };
-    extNode.setPermission(SystemIdentity.ANY, arrayPers);
+    extNode.setPermission(IdentityConstants.ANY, arrayPers);
     List<AccessControlEntry> permsList = extNode.getACL().getPermissionEntries();
     for (AccessControlEntry accessControlEntry : permsList) {
       extNode.setPermission(accessControlEntry.getIdentity(), arrayPers);
@@ -1786,7 +1793,13 @@ public class JCRDataStorage implements DataStorage {
    */
   public CalendarSetting getCalendarSetting(String username) throws Exception {
     Node calendarHome = getUserCalendarServiceHome(username);
-    return getCalendarSetting(calendarHome);
+    CalendarSetting setting = getCalendarSetting(calendarHome);
+    if(setting == null) {
+      saveCalendarSetting(username, new CalendarSetting()) ;
+      setting = getCalendarSetting(calendarHome);
+    }
+     
+    return setting;
   }
 
   /**
@@ -4006,7 +4019,7 @@ public class JCRDataStorage implements DataStorage {
       log.info("No user session provider was available, trying to use a system session provider");
       provider = sessionProviderService_.getSystemSessionProvider(null);
     }
-    return provider;
+    return SessionProvider.createSystemProvider() ;
   }
 
   /**
@@ -4014,14 +4027,14 @@ public class JCRDataStorage implements DataStorage {
    */
   @SuppressWarnings("unused")
   public SessionProvider createUserProvider() {
-    return sessionProviderService_.getSessionProvider(null);
+    return SessionProvider.createSystemProvider() ;
   }
 
   /**
    * {@inheritDoc}
    */
   public SessionProvider createSystemProvider() {
-    return sessionProviderService_.getSystemSessionProvider(null);
+    return  SessionProvider.createSystemProvider() ;
   }
 
   /**

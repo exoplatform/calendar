@@ -1,6 +1,8 @@
-function Reminder() {
-  
-} ;
+(function(cs, gj){
+function Reminder() {} ;
+
+_module = {};
+eXo.calendar = {};
 
 Reminder.prototype.init = function(eXoUser, eXoToken, cometdContextName){
 	if(!cs.CSCometd) cs.CSCometd = cometd;
@@ -191,3 +193,5 @@ eXo.calendar.Box = new Box() ;
 eXo.calendar.Reminder = new Reminder() ;
 
 _module.Reminder = eXo.calendar.Reminder;
+return _module;
+})(cs, gj);
