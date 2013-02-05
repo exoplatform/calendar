@@ -64,7 +64,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private OrganizationService organizationService_;
 
   private static final Log     log                 = ExoLogger.getLogger("cs.calendar.unified.search.service");
-  private Map<String, String> calendarMap = new HashMap<String, String>();
+  private Map<String, String[]> calendarMap = new HashMap<String, String[]>();
 
 
 
@@ -117,7 +117,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       }
       calendarMap.clear();
       for(Calendar cal : calendars){
-        calendarMap.put(cal.getId(), cal.getName()) ;
+        calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone()}) ;
       }
 
       EventQuery eventQuery = new UnifiedQuery(); 
@@ -187,6 +187,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         long date = buildDate(iter) ;
         CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
         result.setDataType(dataType);
+        result.setTimeZoneName(calendarMap.get(calId)[1]);
         if(CalendarEvent.TYPE_EVENT.equals(dataType)){
           result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
         }
@@ -200,22 +201,28 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   private String buildExcerpt(Object iter) throws RepositoryException{
     StringBuffer origin = new StringBuffer(Utils.EMPTY_STR);
-    if(iter instanceof Row){
-      Row row = (Row) iter;
-      try {
-        if(row.getValue(Utils.JCR_EXCERPT_ROW.replace(Utils.DOT, Utils.EXO_SUMMARY)) != null) {
-          origin = new StringBuffer(row.getValue(Utils.JCR_EXCERPT_ROW.replace(Utils.DOT, Utils.EXO_SUMMARY)).getString());
-        }
-        if(row.getValue(Utils.JCR_EXCERPT_ROW.replace(Utils.DOT, Utils.EXO_DESCRIPTION)) != null){
-          origin.append(row.getValue(Utils.JCR_EXCERPT_ROW.replace(Utils.DOT, Utils.EXO_DESCRIPTION)).getString());
-        }
-        if(row.getValue(Utils.JCR_EXCERPT_ROW.replace(Utils.DOT, Utils.EXO_LOCATION)) != null){
-          origin.append(row.getValue(Utils.JCR_EXCERPT_ROW.replace(Utils.DOT, Utils.EXO_LOCATION)).getString());
-        }
-      } catch (Exception e) {
-        log.info("Error when building customer exerpt property from row " + e);
-        if(origin.toString().isEmpty()) origin.append(row.getValue(Utils.JCR_EXCERPT_ROW).getString());
+    try {
+      if(iter instanceof Row){
+        Row row = (Row) iter;
+        int counter = 0 ;
+        for(String field : Utils.SEARCH_FIELDS)
+          if(row.getValue(field) != null) {
+            if(counter > 0) origin.append(Utils.SPACE);
+            origin.append(row.getValue(field).getString());
+            counter++;
+          }
+      } else {
+        Node eventNode = (Node) iter;
+        int counter = 0 ;
+        for(String field : Utils.SEARCH_FIELDS)
+          if(eventNode.hasProperty(field)){
+            if(counter > 0) origin.append(Utils.SPACE);
+            origin.append(eventNode.getProperty(field).getString());
+            counter++;
+          }
       }
+    } catch (Exception e) {
+      log.info("Error when building customer exerpt property from data " + e);
     }
     return origin.toString();
   }
@@ -276,11 +283,11 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     if(iter instanceof Row){
       Row row = (Row) iter;
       if(row.getValue(property) != null && calendarMap.get(row.getValue(property).getString()) != null) 
-        return calendarMap.get(row.getValue(property).getString()) ;
+        return calendarMap.get(row.getValue(property).getString())[0] ;
     } else {
       Node eventNode = (Node) iter;
       if(eventNode.hasProperty(property) && calendarMap.get(eventNode.getProperty(property).getString()) != null){
-        return calendarMap.get(eventNode.getProperty(property).getString());
+        return calendarMap.get(eventNode.getProperty(property).getString())[0];
       }
     }
     return Utils.EMPTY_STR;

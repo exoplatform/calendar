@@ -16,8 +16,6 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.data.SearchResult;
 
 /**
@@ -36,6 +34,7 @@ import org.exoplatform.commons.api.search.data.SearchResult;
 public class CalendarSearchResult extends SearchResult {
   private long fromDateTime;
   private String dataType;
+  private String zoneName;
 
   public CalendarSearchResult(String url,
                               String title,
@@ -76,6 +75,13 @@ public class CalendarSearchResult extends SearchResult {
    */
   public String getImageUrl(){
     return super.getImageUrl();
+  }
+  public void setTimeZoneName(String name) {
+    zoneName = name;
+  }
+
+  public String getTimeZoneName() {
+    return zoneName;
   }
 
 }

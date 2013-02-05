@@ -33,6 +33,8 @@ import java.util.TimeZone;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.query.Query;
 
+import net.fortuna.ical4j.model.property.CalScale;
+
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarCategory;
@@ -163,6 +165,14 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(query.getText());
     assertNotNull(query.getQueryStatement());
     loginUser(username) ;
+    
+    CalendarSetting calSetting = calendarService_.getCalendarSetting(username) ;
+    TimeZone serverZone = TimeZone.getDefault();
+    assertNotNull(calSetting);
+    assertEquals(serverZone.getID(), calSetting.getTimeZone());
+    
+    
+    
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
     query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
 
@@ -181,6 +191,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     //create/get calendar in private folder
     Calendar cal = new Calendar();
+    cal.setTimeZone(calSetting.getTimeZone());
     cal.setName("myCalendar");
     cal.setDescription("Desscription");
     //cal.setCategoryId();
@@ -359,7 +370,10 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     //Test query filter by permission 
     loginUser(user2) ;
+    
     Calendar johnCalendar = cal ;
+    calSetting = calendarService_.getCalendarSetting(user2);
+    johnCalendar.setTimeZone(calSetting.getTimeZone());
     String calendarId = "john_cal_id";
     johnCalendar.setId(calendarId) ;
     johnCalendar.setName("john calendar") ;
@@ -449,7 +463,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   private void checkFields(SearchResult item) {
     assertNotNull(item.getTitle()) ;
     assertNotNull(item.getExcerpt()) ;
-    log.info("excerpt() ===== "+item.getExcerpt());
     assertNotNull(item.getDetail()) ;
     assertNotNull(item.getImageUrl());
     assertEquals(true, item.getDate() > 0);
@@ -470,6 +483,10 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(df.format(java.util.Calendar.getInstance().getTime()), df.format(new Date(item.getDate())));
     assertEquals(true, item.getRelevancy() > 0);
     assertEquals(Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + calEvent.getId(), item.getUrl());
+    StringBuffer sb = new StringBuffer(calEvent.getSummary()) ;
+    if(calEvent.getDescription() != null) sb.append(Utils.SPACE).append(calEvent.getDescription());
+    if(calEvent.getLocation() != null) sb.append(Utils.SPACE).append(calEvent.getLocation());
+    assertEquals(sb.toString(), item.getExcerpt());
   }
 
   private void checkFieldsValueWithType(String calName, CalendarEvent calEvent, CalendarSearchResult item){
@@ -482,6 +499,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       assertEquals(calEvent.getEventState(), item.getImageUrl());
       assertEquals(0,item.getFromDateTime());
     }
+    assertNotNull(item.getTimeZoneName());
   }
   
   public void testDefaultData() throws Exception {
