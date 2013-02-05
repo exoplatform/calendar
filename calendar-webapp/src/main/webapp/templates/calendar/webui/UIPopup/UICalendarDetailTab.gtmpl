@@ -53,7 +53,7 @@
 %>
 <div id="$uicomponent.id" class="$uicomponent.id resizable">
   <div class="form-horizontal">
-    <div id="displayName" class="control-group">
+    <div class="control-group">
 		<label class="control-label" ><%=parent.getLabel(parent.DISPLAY_NAME)%>:</label>
 		<div class="controls">
 			<%parent.renderField(parent.DISPLAY_NAME)%>

@@ -3,7 +3,7 @@
 function UIColorPicker() {}
 
 var _module = {} ;
-eXo.calendar = eXo.calendar || {}
+eXo.calendar = eXo.calendar || {} ;
 
 /* 
  * entry point of color picker, invoked when clicking on the color picker input
