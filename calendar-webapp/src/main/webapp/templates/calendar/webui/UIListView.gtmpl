@@ -163,9 +163,13 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
 			<i class="uiIconCalTaskMini uiIconLightGray"></i>
 			<%} else {%>
 			<i class="uiIconCalClockMini uiIconLightGray"></i>
-			<%}%>
-		<span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
-			<%=event.getSummary()%>
+			<%}
+      if(CalendarEvent.TYPE_TASK.equals(event.getEventType()) && event.eventState.equals(CalendarEvent.COMPLETED)){%> 
+		  <span rel="tooltip" data-placement="bottom" title="<%=event.summary%>" style="text-decoration:line-through;">
+    <% } else { %>
+      <span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
+    <% } %>
+			  <%=event.getSummary()%>
 		</span>
 	</td>
 	<td ><%=df.format(event.getFromDateTime())%></td>

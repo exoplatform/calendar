@@ -191,8 +191,11 @@
 							<i class="uiIconCalClockMini"></i>
 							<%}%>
 							<i class="uiIconCal<%=event.getPriority()%>Priority"></i>
-							
-							<span>
+						<%if(CalendarEvent.TYPE_TASK.equals(event.getEventType()) && event.eventState.equals(CalendarEvent.COMPLETED)){%>
+              <span style="text-decoration:line-through;">
+              <%} else {%>
+              <span>
+              <%}%>
 							  $event.summary
 							</span>
 						</div>
