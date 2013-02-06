@@ -16,7 +16,7 @@
 	<div class="pull-right">
 		<%uicomponent.renderChild(UISearchForm.class)%>
 		<span class="separatorLine"></span>
-		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar">
+		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>">
 			<i class="uiIconSetting uiIconLightGray"></i>
 		</a>
 		

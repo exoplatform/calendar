@@ -9,6 +9,6 @@ uiform.begin();
   requirejs.addScripts('cs.CSUtils.Utils.captureInput("value");');
 %>
 <div class="uiSearchForm uiSearchInput pull-right"  onclick="$action">
-    <div rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('Search')%>" onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
+    <div onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
 </div>
 <%uiform.end();%>

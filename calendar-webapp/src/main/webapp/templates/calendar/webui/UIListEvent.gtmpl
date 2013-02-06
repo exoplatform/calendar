@@ -172,7 +172,7 @@
 			<%} else {%>
 			  <i class="uiIconCalClockMini uiIconLightGray"></i>
 			<%}%>
-		  <span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
+		  <span>
 			  <%=event.getSummary()%>
 		  </span>
 	  </td>

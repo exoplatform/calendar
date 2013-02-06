@@ -165,9 +165,9 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
 			<i class="uiIconCalClockMini uiIconLightGray"></i>
 			<%}
       if(CalendarEvent.TYPE_TASK.equals(event.getEventType()) && event.eventState.equals(CalendarEvent.COMPLETED)){%> 
-		  <span rel="tooltip" data-placement="bottom" title="<%=event.summary%>" style="text-decoration:line-through;">
+		  <span style="text-decoration:line-through;">
     <% } else { %>
-      <span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
+      <span>
     <% } %>
 			  <%=event.getSummary()%>
 		</span>

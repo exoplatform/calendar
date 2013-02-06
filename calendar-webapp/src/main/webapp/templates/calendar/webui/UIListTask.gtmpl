@@ -103,8 +103,12 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 			<i class="uiIconCalTaskMini uiIconLightGray"></i>
 		  <%} else {%>
 			<i class="uiIconCalClockMini uiIconLightGray"></i>
-		  <%}%>
-		  <span rel="tooltip" data-placement="bottom" title="<%=event.summary%>">
+		  <%}
+		  if(CalendarEvent.TYPE_TASK.equals(event.getEventType()) && event.eventState.equals(CalendarEvent.COMPLETED)){%> 
+		  <span style="text-decoration:line-through;">
+           <% } else { %>
+          <span>
+           <% } %>
 			<%=event.getSummary()%>
 		  </span>
 	    </td>

@@ -22,7 +22,7 @@
           actionLabel = temp.substring(0, 21) + "..." + sizeLabel ;}
         }
         %>
-        <a rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
+        <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
         <%
         if(action.actionType == action.TYPE_ICON) {
         %>
@@ -133,7 +133,7 @@
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>:</div>
 		<div class="controls">
 			 <%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
-          <button rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>" onclick="<%= uicomponent.getParent().event("AddAttachment") %>" type="button" class="btn"><i class="uiIconAttach uiIconLightGray"></i> <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%></button>
+          <button onclick="<%= uicomponent.getParent().event("AddAttachment") %>" type="button" class="btn"><i class="uiIconAttach uiIconLightGray"></i> <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%></button>
 		</div>
 	</div>        
   </div><!--form-horizontal-->

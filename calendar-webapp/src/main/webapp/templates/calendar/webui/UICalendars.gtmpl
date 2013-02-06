@@ -162,7 +162,7 @@
 
     %>
     <div class="myCalendar">
-      <h6 class="calendarTitle" rel="tooltip" data-placement="bottom" title="Collapser my calendar">$publicCalendarTitle</h6>
+      <h6 class="calendarTitle">$publicCalendarTitle</h6>
 	      <div class="myCalendarContainer">
 	      <ul class="uiVTabContent">
 	      <%

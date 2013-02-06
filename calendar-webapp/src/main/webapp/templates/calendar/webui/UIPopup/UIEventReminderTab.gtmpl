@@ -54,9 +54,7 @@
 						<td class="fieldComponent">
 							<% 
 				  uiForm.renderField(uicomponent.FIELD_EMAIL_ADDRESS)
-				%> <a rel="tooltip" data-placement="bottom"
-							title="<%=uiForm.getLabel("SelectEmail")%>"
-							href="<%=uicomponent.event("AddEmailAddress")%>">
+				%> <a href="<%=uicomponent.event("AddEmailAddress")%>">
 							<i class="uiIconPlus uiIconLightGray"></i> <%=uiForm.getLabel("SelectEmail")%>
 						</a>
 						</td>

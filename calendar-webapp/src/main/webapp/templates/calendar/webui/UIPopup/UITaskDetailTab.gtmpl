@@ -130,7 +130,7 @@
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>:</div>
 		<div class="controls">
 			<%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
-            <button onclick="<%= uicomponent.getParent().event("AddAttachment") %>" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getParent().getName() + ".label.addfiles")%>" type="button" class="btn">
+            <button onclick="<%= uicomponent.getParent().event("AddAttachment") %>" type="button" class="btn">
               <i class="uiIconAttach uiIconLightGray"></i>
               <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%>
             </button>
