@@ -49,7 +49,7 @@
     <org.gatein.portal.version>3.5.0.Final</org.gatein.portal.version>
     <org.exoplatform.commons.version>4.0.0.Alpha1-unified-search-SNAPSHOT</org.exoplatform.commons.version>
     <org.gatein.wci.version>2.3.0.Final</org.gatein.wci.version>
-    <org.exoplatform.social.version>4.0.0.Alpha1-SNAPSHOT</org.exoplatform.social.version>
+    <org.exoplatform.social.version>4.0.0.Alpha1-unified-search-SNAPSHOT</org.exoplatform.social.version>
   </properties>
   <dependencyManagement>
     <dependencies>
