@@ -360,8 +360,8 @@ UICalendarPortlet.prototype.dateDiff = function(start, end){
     var start = this.getBeginDay(start);
     var end = this.getBeginDay(end);
     var msDiff = end - start;
-    var dateDiff = msDiff / (24 * 60 * 60 * 1000);
-    return dateDiff;
+    var dateDiff = msDiff / (24 * 60 * 60 * 1000 - 1000);
+    return Math.round(dateDiff);
 };
 
 /**

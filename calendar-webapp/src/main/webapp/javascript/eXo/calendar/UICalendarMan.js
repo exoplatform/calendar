@@ -191,7 +191,7 @@ EventObject.prototype.compare = function(event1, event2){
 function DayMan(){
   this.previousDay = false;
   this.nextDay = false;
-  this.MAX_EVENT_VISIBLE = (document.getElementById("UIWeekView"))?100 : 4;
+  this.MAX_EVENT_VISIBLE = (document.getElementById("UIWeekView"))?100 : 3;
   this.totalEventVisible = 0;
   this.visibleGroup = new Array();
   this.invisibleGroup = new Array();
@@ -256,7 +256,7 @@ DayMan.prototype.reIndex = function() {
     // check cross event conflic
     if (this.previousDay && 
         this.invisibleGroup.length > 0 &&
-        this.previousDay.visibleGroup[(this.MAX_EVENT_VISIBLE - 1)] == eventTmp) {
+        this.previousDay.visibleGroup[(this.MAX_EVENT_VISIBLE)] == eventTmp) {
       this.invisibleGroup.push(eventTmp);
       this.invisibleGroup = this.invisibleGroup.reverse();
       this.visibleGroup.push(this.invisibleGroup.pop());
@@ -665,15 +665,8 @@ GUIMan.prototype.drawEventByMiliseconds = function(eventObj, startTime, endTime,
 	leftPos += gj(this.dayNodes[l]).width() + 1;
     }  
 
-
     leftPos += parseFloat((dayInfo.eventShiftRightPercent * dayInfo.width) / 100);
-    // the left, width is different between browsers
-    if(gj.browser.webkit) { // chrome, safari
-	leftPos += 1;
-    } else {
-	eventWidth -= 1;
-    }
-     
+         
     eventNode.style.top = topPos + 'px';
     eventNode.style.left = leftPos +'px';
     eventNode.style.width = eventWidth + 'px';
@@ -785,9 +778,10 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
     // Pre-calculate event position
     var dayNode = (this.tableData[weekObj.weekIndex])[dayIndex];
     var dayInfo = {
-	    width : dayNode.offsetWidth - 1,
-	    left : dayNode.offsetLeft,
-	    top : dayNode.offsetTop + 20,
+	    startCol : dayIndex,
+	    width : gj(dayNode).width(),
+	    left : gj(dayNode).position().left,
+	    top : gj(dayNode).position().top + 20,
 	    beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
 	    endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
     }
@@ -802,10 +796,10 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	var startTime = eventObj.weekStartTimeIndex[weekObj.weekIndex];
 	var endTime = eventObj.endTime > weekObj.endWeek ? weekObj.endWeek : eventObj.endTime;
 	var delta = (new Date(endTime)) - (new Date(startTime));
-	delta /= (1000 * 60 * 60 *24);
+	delta /= (1000 * 60 * 60 *24 - 1000);
 	if (delta > 1 && 
 		dayObj.nextDay && 
-		i == (dayObj.MAX_EVENT_VISIBLE - 1)) {
+		i == (dayObj.MAX_EVENT_VISIBLE)) {
 	    var tmp = dayObj.nextDay;
 	    var cnt = 1;
 	    while (tmp.nextDay && cnt<=delta) {
@@ -815,7 +809,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 		cnt++;
 		tmp = tmp.nextDay;
 	    }
-	    endTime = startTime + ((1000 * 60 * 60 * 24) * cnt) - 1;
+	    endTime = startTime + ((1000 * 60 * 60 * 24) * cnt) - 1000;
 	}
 	dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * i);
 	this.drawEventByDay(eventObj, startTime, endTime, dayInfo);
@@ -939,8 +933,11 @@ GUIMan.prototype.showMore = function(evt) {
 
 	gj(moreEventContainer).css('position','absolute');
 	gj(moreEventContainer).css('top',gj(moreNode).position().top - 6);
-	gj(moreEventContainer).css('left',gj(moreNode).position().left);
-	cs.DOMUtil.listHideElements(moreEventContainer);
+	var moreLeft = gj(moreNode).position().left;
+	if(gj.browser.webkit) {
+	    moreLeft += 1;
+	}
+	gj(moreEventContainer).css('left', moreLeft);	cs.DOMUtil.listHideElements(moreEventContainer);
 	gj(moreEventContainer).on({'click':cs.CSUtils.EventManager.cancelBubble,
 	    'mousedown':function(evt){
 		cs.CSUtils.EventManager.cancelEvent(evt);
@@ -988,20 +985,14 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
     }
     var topPos = dayInfo.eventTop ;
     var leftPos = dayInfo.left ;
-    /*
-	endTime = new Date(parseInt(endTime));
-  startTime = new Date(parseInt(startTime));
-  var delta = endTime.getDay() - startTime.getDay(); 
-     */
-    //alert(startTime + '-' + endTime);
-    var delta = eXo.calendar.UICalendarPortlet.dateDiff(startTime,endTime);
+   
+    var delta = eXo.calendar.UICalendarPortlet.dateDiff(startTime, endTime);
     if (delta != 0) {
-	delta ++ ;
+	   delta ++ ;
     }
     if(delta <= 0) delta = 1;
-    var eventLen = Math.round(delta) * (dayInfo.width) + (delta - 1);
-    // relooking: fix width of events  > 4 days in month view
-  	if(delta >= 5) eventLen += delta - 4;
+    var eventLen = delta * (dayInfo.width) + (delta - 1);
+   
     eventNode.style.top = topPos + 'px';
     eventNode.style.left = leftPos + 'px';
     eventNode.style.width = eventLen + 'px';
@@ -1021,11 +1012,12 @@ GUIMan.prototype.setOverMonth = function(eventObj,beginMonth,endMonth){
     var color = eventNode.getAttribute('color');
     if(realStart < parseInt(beginMonth)){
 	var EventOnDayContent = gj(eventObj.rootNode).find('div.eventOnDayContent')[0];
-	var leftNode = gj('<div></div').addClass('leftContinueEvent  pull-left');
-	var icon = gj('<i></i>').addClass('uiIconMiniArrowLeft uiIconWhite');
-	leftNode.append(icon);
-	gj(EventOnDayContent).prepend(leftNode);  
-	this.removeContinueClass(eventObj.cloneNodes); 
+	if(!gj(EventOnDayContent).find('.leftContinueEvent')[0]) {
+	    var leftNode = gj('<div></div').addClass('leftContinueEvent  pull-left');
+	    var icon = gj('<i></i>').addClass('uiIconMiniArrowLeft uiIconWhite');
+	    leftNode.append(icon);
+	    gj(EventOnDayContent).prepend(leftNode);
+	}
     }
 };
 
@@ -1064,12 +1056,12 @@ GUIMan.prototype.addContinueClass = function(){
 
 	    var EventOnDayContent = gj(eventNode).find('div.eventOnDayContent')[0];
 
-	    var rightNode = gj('<div></div').addClass('rightContinueEvent  pull-right');
-	    var icon = gj('<i></i>').addClass('uiIconMiniArrowRight uiIconWhite');
-	    rightNode.append(icon);
-	    gj(EventOnDayContent).prepend(rightNode);
-	    gj('div.leftContinueEvent',EventOnDayContent).remove();
-
+	    if(!gj(EventOnDayContent).find('.rightContinueEvent')[0]) {
+		var rightNode = gj('<div></div').addClass('rightContinueEvent  pull-right');
+		var icon = gj('<i></i>').addClass('uiIconMiniArrowRight uiIconWhite');
+		rightNode.append(icon);
+		gj(EventOnDayContent).prepend(rightNode);
+	    }
 	}
     }
 }	;
