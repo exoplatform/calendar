@@ -36,7 +36,7 @@
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.Start_EVENT )%>
 							</td>
 								<td class="FieldComponent" >
-							   <div class="Date">
+							   <div id="startDateId"  class="Date">
 									<% uicomponent.renderField(uicomponent.Start_EVENT) %>
 							   </div>
 								</td>
@@ -50,7 +50,7 @@
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.END_EVENT )%>
 							</td>
 							<td class="FieldComponent">
-							   <div class="Date">
+							   <div id="endDateId" class="Date">
 									<% uicomponent.renderField(uicomponent.END_EVENT) %>
 							   </div>
 							</td>
