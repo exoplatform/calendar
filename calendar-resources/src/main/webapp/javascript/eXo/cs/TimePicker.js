@@ -10,7 +10,6 @@ TimePicker.prototype.initTime = function(id) {
 	var createForm = gj('#'+ id);
 	if(createForm){
 		var startTime  = gj(createForm).find('#startTimeId'); 
-		
 		var currentTime = new Date();
 		var timeInterval = 30;
 		if(startTime) {
@@ -86,6 +85,15 @@ TimePicker.prototype.addDate = function() {
 	 var startDateInput = gj('#startDateId input');
 	 var endDateInput = gj('#endDateId input');
 	 endDateInput.val(startDateInput.val());
+	 var startTime  = gj('#startTimeId'); 
+		if(startTime) {
+			var selectBox = gj(startTime).find('select')[0];
+			if(selectBox) {
+				_module.TimePicker.updateEndInput(gj(selectBox).val());
+			}
+
+		}
+	 
 }
 
  _module.TimePicker = new TimePicker();
