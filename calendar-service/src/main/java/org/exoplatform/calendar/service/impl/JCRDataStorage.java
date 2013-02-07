@@ -3206,6 +3206,11 @@ public class JCRDataStorage implements DataStorage {
     DateList list = recur.getDates(ical4jEventFrom, period, net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
     SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
     format.setTimeZone(TimeZone.getTimeZone("GMT"));
+   
+    java.util.Calendar cal = java.util.Calendar.getInstance();
+    TimeZone occurTimeZone = TimeZone.getTimeZone(timezone);
+    int hourDST = occurTimeZone.getDSTSavings()/3600000;
+
     for (Object dt : list) {
       DateTime ical4jStart = (DateTime) dt;
       ical4jStart.setUtc(true);
@@ -3221,6 +3226,29 @@ public class JCRDataStorage implements DataStorage {
       String recurId = format.format(occurrence.getFromDateTime());
       // if this occurrence was listed in the exclude list, skip
       if (excludeIds != null && excludeIds.contains(recurId)) continue;
+      
+      if(occurTimeZone.inDaylightTime(recurEvent.getFromDateTime())){
+        cal.setTime(occurrence.getFromDateTime());
+        cal.add(java.util.Calendar.HOUR, hourDST);
+        occurrence.setFromDateTime(cal.getTime());
+      }
+      if(occurTimeZone.inDaylightTime(occurrence.getFromDateTime())){
+
+        cal.setTime(occurrence.getFromDateTime());
+        cal.add(java.util.Calendar.HOUR, -hourDST);
+        occurrence.setFromDateTime(cal.getTime());
+      }
+      if(occurTimeZone.inDaylightTime(recurEvent.getToDateTime())){
+        cal.setTime(occurrence.getToDateTime());
+        cal.add(java.util.Calendar.HOUR, hourDST);
+        occurrence.setToDateTime(cal.getTime());
+      }
+      if(occurTimeZone.inDaylightTime(occurrence.getToDateTime())){
+        cal.setTime(occurrence.getToDateTime());
+        cal.add(java.util.Calendar.HOUR, -hourDST);
+        occurrence.setToDateTime(cal.getTime());
+      }
+
       occurrence.setRecurrenceId(recurId);
       occurrences.put(recurId, occurrence);
     }

@@ -103,34 +103,18 @@ public class UIMonthView extends UICalendarView {
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
-      TimeZone tz = TimeZone.getTimeZone(timezone);
-      Calendar cal = Calendar.getInstance();
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
       while (recurEventsIter.hasNext()) {
         CalendarEvent recurEvent = recurEventsIter.next();
         Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(recurEvent, eventQuery.getFromDate(), eventQuery.getToDate(), timezone);
         if (tempMap != null) {
           recurrenceEventsMap.put(recurEvent.getId(), tempMap);
-          
-          for(CalendarEvent event : tempMap.values()){
-            if(tz.inDaylightTime(event.getFromDateTime())){
-              cal.setTime(event.getFromDateTime());
-              cal.add(Calendar.HOUR, -1);
-              event.setFromDateTime(cal.getTime());
-            }
-            if(tz.inDaylightTime(event.getToDateTime())){
-              cal.setTime(event.getToDateTime());
-              cal.add(Calendar.HOUR, -1);
-              event.setToDateTime(cal.getTime());
-            }
-            allEvents.add(event);
-          }
+          allEvents.addAll(tempMap.values());          
         }
       }
     }
     
-    Iterator<UIComponent> childIter = getChildren().iterator() ;
-    
+    Iterator<UIComponent> childIter = getChildren().iterator() ;    
     while(childIter.hasNext()) {
       UIComponent comp = childIter.next() ;
       if (comp instanceof UICheckBoxInput) {
