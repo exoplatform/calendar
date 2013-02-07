@@ -5,7 +5,7 @@ _module = {};
 eXo.calendar = {};
 
 Reminder.prototype.init = function(eXoUser, eXoToken, cometdContextName){
-    if(!eXo.cs.CSCometd) eXo.cs.CSCometd = eXo.core.Cometd;
+    if(!eXo.cs.CSCometd) eXo.cs.CSCometd = cometd;
     eXo.cs.CSCometd.exoId = eXoUser;
     eXo.cs.CSCometd.exoToken = eXoToken;
     if(cometdContextName)
