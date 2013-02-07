@@ -123,11 +123,13 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
    */
   private String truncateLongName(String longName)
   {
+    if (longName.length() < 17) return longName;
+
     int secondWhiteSpacePos = getPositionOfSecondWhiteSpaceFrom(longName);
     if ( ( -1 < secondWhiteSpacePos) && (secondWhiteSpacePos < 20 ) )
       return longName.substring(0,secondWhiteSpacePos);
 
-    if (longName.length() > 20) return longName.substring(0, 17) + "..";
+    if (longName.length() > 20) return longName.substring(0, 17) + "...";
     return longName;
   }
 

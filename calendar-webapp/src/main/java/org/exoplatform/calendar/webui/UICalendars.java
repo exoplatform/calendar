@@ -451,11 +451,13 @@ public class UICalendars extends UIForm  {
    */
   private String truncateLongName(String longName)
   {
+    if (longName.length() < 17) return longName;
+
     int secondWhiteSpacePos = getPositionOfSecondWhiteSpaceFrom(longName);
     if ( ( -1 < secondWhiteSpacePos) && (secondWhiteSpacePos < 20 ) )
       return longName.substring(0,secondWhiteSpacePos);
 
-    if (longName.length() > 20) return longName.substring(0, 17) + "..";
+    if (longName.length() > 20) return longName.substring(0, 17) + "...";
     return longName;
   }
 
@@ -875,9 +877,6 @@ public class UICalendars extends UIForm  {
         GroupCalendarData gCalendarData = calService.getSharedCalendars(currentUser, true) ;
         if(gCalendarData != null) { 
           calendar = gCalendarData.getCalendarById(selectedCalendarId) ;
-          if(calendar != null && !CalendarUtils.isEmpty(calendar.getCalendarOwner())){
-            calendar.setName(calendar.getCalendarOwner() + "-" + calendar.getName()) ;
-          }
         }
       } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
         try {

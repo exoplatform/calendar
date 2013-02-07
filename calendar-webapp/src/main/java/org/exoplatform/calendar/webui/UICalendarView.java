@@ -1487,7 +1487,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         if (gCalendarData != null) {
           calendar = gCalendarData.getCalendarById(selectedCalendarId);
           if (calendar != null && !CalendarUtils.isEmpty(calendar.getCalendarOwner()))
-            calendar.setName(calendar.getCalendarOwner() + "-" + calendar.getName());
+            calendar.setName(calendar.getName());
         }
       } else if (calType.equals(CalendarUtils.PUBLIC_TYPE)) {
         try {
