@@ -41,7 +41,12 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+
+import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
 
 /**
  * Created by The eXo Platform SARL
@@ -367,6 +372,51 @@ public class Utils {
 
   public static String[]     SYNC_PERIOD                = { SYNC_AUTO, SYNC_5MINS, SYNC_10MINS, SYNC_15MINS, SYNC_1HOUR, SYNC_1DAY, SYNC_1WEEK, SYNC_1YEAR };
 
+  /*
+   * @since CS-5722 - vietnq
+   * constants for sharing and deleting job
+   */
+  public static final String SHARE_CALENDAR_GROUP = "CS-ShareCalenar";
+  
+  public static final String DELETE_SHARED_GROUP = "CS-DeleteShare";
+
+  public static final String SHARED_GROUPS        = "sharedGroups";
+
+  public static final String USER_NAME            = "userName";
+
+  public static final String CALENDAR_ID          = "calendarId";
+
+  public static final String JCR_DATA_STORAGE     = "JCRDataStorage";
+
+  public static final String SHARE_CAL_CHANEL     = "/eXo/Application/Calendar/notifyShareCalendar";
+  
+  public static final String REMOVED_USERS = "removedUsers";
+  
+  public static final String START_MESSAGE = "startMessage";
+  
+  public static final String STOP_MESSAGE = "stopMessage";
+  
+  public static final String ERROR_MESSAGE = "errorMessage";
+  
+  public static final String   START_SHARE_CALENDAR_JOB_KEY  = "ShareCalendarJob.start_share_job";
+  
+  public static final String   FINISH_SHARE_CALENDAR_JOB_KEY = "ShareCalendarJob.finish_share_job";
+  
+  public static final String ERROR_SHARE_CALENDAR_JOB_KEY = "ShareCalendarJob.error";
+
+  public static final String START_DELETING_CALENDAR_JOB_KEY = "DeleteShareJob.start_deleting";
+  
+  public static final String FINISH_DELETING_CALENDAR_JOB_KEY = "DeleteShareJob.finish_deleting";
+  
+  public static final String ERROR_DELETING_CALENDAR_JOB_KEY = "DeleteShareJob.error";
+  // message used when rb is null
+  public static final String START_SHARE_MESSAGE = "Sharing this calendar with group(s): %s.";
+  public static final String STOP_SHARE_MESSAGE = "This calendar was shared with group(s): %s";
+  public static final String ERROR_SHARE_MESSAGE = "Error while sharing this calendar with group(s): %s";
+  public static final String START_UN_SHARE_MESSAGE = "Unsharing this calendar with the group %s. It may take a long time to finish.";
+  public static final String STOP_UN_SHARE_MESSAGE = "This calendar was unshared with the group %s";
+  public static final String ERROR_UN_SHARE_MESSAGE = "Error while unsharing this calendar with group %s";
+
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
    * @return GregorianCalendar
@@ -443,12 +493,13 @@ public class Utils {
   public static PortalContainer getPortalContainer(JobExecutionContext context) {
     if (context == null)
       return null;
-    String portalName = context.getJobDetail().getKey().getGroup();
+    String portalName = ((JobDetailImpl)context.getJobDetail()).getGroup();
     if (portalName == null)
       return null;
     if (portalName.indexOf(COLON) > 0)
       portalName = portalName.substring(0, portalName.indexOf(":"));
     return RootContainer.getInstance().getPortalContainer(portalName);
+  
   }
 
   public static String getDisplaySharedCalendar(String sharedUserId, String calName) {

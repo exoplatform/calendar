@@ -5,33 +5,42 @@ _module = {};
 eXo.calendar = {};
 
 Reminder.prototype.init = function(eXoUser, eXoToken, cometdContextName){
-	if(!cs.CSCometd) cs.CSCometd = cometd;
-	cs.CSCometd.exoId = eXoUser;
-	cs.CSCometd.exoToken = eXoToken;
-	if(cometdContextName)
-		cs.CSCometd.url = '/' + cometdContextName + '/cometd';
-	cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
-		eXo.calendar.Reminder.alarm(eventObj) ;
-  });
-	if (!cs.CSCometd.isConnected()) {
-		cs.CSCometd.init();
-  }
+    if(!eXo.cs.CSCometd) eXo.cs.CSCometd = eXo.core.Cometd;
+    eXo.cs.CSCometd.exoId = eXoUser;
+    eXo.cs.CSCometd.exoToken = eXoToken;
+    if(cometdContextName)
+	eXo.cs.CSCometd.url = '/' + cometdContextName + '/cometd';
+    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
+	eXo.calendar.Reminder.alarm(eventObj) ;
+    });
+    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyShareCalendar',
+	    function(eventObj) {
+	eXo.calendar.Reminder.notifyShareCalendar(eventObj);
+    });
+    if (!eXo.cs.CSCometd.isConnected()) {
+	eXo.cs.CSCometd.init();
+    }
 } ;
 
 Reminder.prototype.initCometd = function() {
-	cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
-		eXo.calendar.Reminder.alarm(eventObj) ;
-  });
+    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {		
+	eXo.calendar.Reminder.alarm(eventObj) ;
+    });
+    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyShareCalendar',
+	    function(eventObj) {
+	eXo.calendar.Reminder.notifyShareCalendar(eventObj);
+    });
 }
 
+//@since CS-5722 popup notification for calendar sharing and unsharing job 
+Reminder.prototype.notifyShareCalendar = function(eventObj){
+    var message = eventObj.data;
+    var popup = gj('#shareCalendarNotification');
+    popup.find('.text').text(message);
+    popup.css('display','block');
+} ;
+
 Reminder.prototype.alarm = function(eventObj){
-//	var a = gj.parseJSON(eventObj.data);	
-//	var message = '<a class="Item" href="#">('+ a.fromDateTime.hours + ':' + a.fromDateTime.minutes + ') ' +a.summary+'</a>' ;
-//	var html = this.generateHTML(message) ;
-//	var popup = gj(this.createMessage(html, message)).find('div.UIPopupNotification')[0]; 
-//	eXo.calendar.Box.config(popup,popup.offsetHeight, 5, this.openCallback, this.closeBox) ;
-//	window.focus() ;
-//	return ;
     var event = gj.parseJSON(eventObj.data);
     var popupReminder = gj('.uiCalNotification');
     popupReminder.find('.title').text(event.summary);

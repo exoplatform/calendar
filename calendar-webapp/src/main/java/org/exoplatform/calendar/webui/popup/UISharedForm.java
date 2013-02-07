@@ -23,12 +23,15 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendars;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.scheduler.JobSchedulerService;
+import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
@@ -455,7 +458,8 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       List<String> editPermissions = new ArrayList<String>();
       /* set of users to share to */
       Set<String> sharedUsers      = new HashSet<String>();
-
+      Set<String> sharedGroups = new HashSet<String>();
+      
       Iterator<Permission> it = permissions.iterator();
       while (it.hasNext())
       {
@@ -476,7 +480,8 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
         if (owner.getOwnerType().equals(PermissionOwner.GROUP_OWNER))
         {
-          sharedUsers.addAll(UISharedForm.getUsersByGroupId(owner.getGroupId()));
+//          sharedUsers.addAll(UISharedForm.getUsersByGroupId(owner.getGroupId()));
+          sharedGroups.add(owner.getGroupId());
           continue;
         }
 
@@ -512,6 +517,8 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       }
 
       Set<String> oldSharedUsers = new HashSet<String>();
+      Set<String> oldSharedGroups = new HashSet<String>();
+      
       it = oldPermissions.iterator();
       while (it.hasNext())
       {
@@ -525,7 +532,8 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
         if (owner.getOwnerType().equals(PermissionOwner.GROUP_OWNER))
         {
-          oldSharedUsers.addAll(sharedForm.getUsersByGroupId(owner.getGroupId()));
+//          oldSharedUsers.addAll(sharedForm.getUsersByGroupId(owner.getGroupId()));
+          oldSharedGroups.add(owner.getGroupId());
           continue;
         }
 
@@ -554,11 +562,16 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       {
         calendarService.removeSharedCalendar(userToUnshare, sharedForm.calendarId_) ;
       }
-
+      if(oldSharedGroups.size() > 0) {
+        calendarService.removeSharedCalendarByJob(username, new ArrayList<String>(oldSharedGroups), sharedForm.calendarId_);
+      }
       calendar.setViewPermission(viewPermissions.toArray(new String[]{}));
       calendar.setEditPermission(editPermissions.toArray(new String[]{}));
       calendarService.saveUserCalendar(username, calendar, false) ;
       calendarService.shareCalendar(username, sharedForm.calendarId_, new ArrayList<String>(sharedUsers));
+      if(sharedGroups.size() > 0) {
+        calendarService.shareCalendarByRunJob(username, sharedForm.calendarId_, new ArrayList<String>(sharedGroups));
+      }
 
       /* close all child popup and close share popup */
       sharedForm.closeAllPopupAction();
@@ -797,6 +810,14 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       String permissionEntryId = event.getRequestContext().getRequestParameter(OBJECTID);
       UIPermissionEntry permissionEntry = ((UIPermissionGrid) sharedForm.getChildById(PERMISSION_GRID)).getChildById(permissionEntryId);
       Permission aPermission = permissionEntry.getPermission();
+      if(aPermission.getOwner().getOwnerType().equals(PermissionOwner.GROUP_OWNER)) {
+        JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)PortalContainer.getComponent(JobSchedulerService.class) ;
+        CalendarService calService = (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
+        if(calService.isGroupBeingShared(aPermission.getOwner().getGroupId(),schedulerService)) {
+          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("Unshare.beingshared.message",null)) ;
+          return;
+        }
+      }
       sharedForm.removePermission(aPermission.getId());
       event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
     }

@@ -25,6 +25,7 @@ import javax.jcr.Node;
 
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.services.scheduler.JobSchedulerService;
+import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.quartz.JobDetail;
 
 /**
@@ -793,4 +794,37 @@ public interface CalendarService {
    * @throws Exception
    */
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception;
+  
+  /**
+   * sharing a calendar with a group will run in background
+   * @since CS-5722
+   * @param username
+   * @param calendarId
+   * @param sharedGroups
+   * @throws Exception
+   */
+  public void shareCalendarByRunJob(String username, String calendarId, List<String> sharedGroups) throws Exception;
+
+  /**
+   * unsharing a calendar with a group will run in background
+   * @since CS-5722
+   * @param username
+   * @param removedUsers
+   * @param calendarId
+   * @throws Exception
+   */
+  public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception;
+
+  /**
+   * checks if a group is belong to a list of groups that's being shared
+   * @since CS-5722
+   * @param deletedGroup
+   * @param schedulerService_
+   * @return
+   * @throws Exception
+   */
+  public boolean isGroupBeingShared(String deletedGroup, JobSchedulerServiceImpl schedulerService_) throws Exception;
+
 }
+
+
