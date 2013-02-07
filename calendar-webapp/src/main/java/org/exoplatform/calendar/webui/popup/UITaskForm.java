@@ -135,6 +135,8 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   //private String newCategoryId_ = null ;
   private Map<String, String> delegators_ = new LinkedHashMap<String, String>() ;
 
+  public static final int LIMIT_FILE_UPLOAD = 10;
+
   public UITaskForm() throws Exception {
     super("UIEventForm");
     UITaskDetailTab uiTaskDetailTab =  new UITaskDetailTab(TAB_TASKDETAIL) ;
@@ -829,10 +831,13 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     @Override
     public void execute(Event<UITaskForm> event) throws Exception {
       UITaskForm uiForm = event.getSource() ;
+      UITaskDetailTab detailTab = uiForm.getChild(UITaskDetailTab.class);
       UIPopupContainer uiContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
       UIPopupAction uiChildPopup = uiContainer.getChild(UIPopupAction.class) ;
       UIAttachFileForm uiAttachFileForm = uiChildPopup.activate(UIAttachFileForm.class, 500) ;
       uiAttachFileForm.setAttSize(uiForm.getTotalAttachment()) ;
+      uiAttachFileForm.setLimitNumberOfFiles(LIMIT_FILE_UPLOAD - detailTab.getAttachments().size());
+      uiAttachFileForm.init();
       event.getRequestContext().addUIComponentToUpdateByAjax(uiChildPopup) ;
     }
   }

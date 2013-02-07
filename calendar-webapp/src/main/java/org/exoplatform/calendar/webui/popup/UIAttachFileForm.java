@@ -52,7 +52,7 @@ import org.exoplatform.webui.form.input.UIUploadInput;
     )
 
 public class UIAttachFileForm extends UIForm implements UIPopupComponent {
-  private static final Log log = ExoLogger.getExoLogger(UIAttachFileForm.class);
+  private static final Log LOG = ExoLogger.getExoLogger(UIAttachFileForm.class);
 
   final static public String FIELD_UPLOAD = "upload" ;  
   private int maxField = 10 ;
@@ -61,9 +61,16 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
 
   public UIAttachFileForm() throws Exception {
     setMultiPart(true) ;
-    /* on startup, we create one upload input field */
+  }
+
+  public void init()
+  {
     addUIFormInput(new UIUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, maxField, CalendarUtils.getLimitUploadSize()));
-    //createUploadInputNumber(1);
+  }
+
+  public void setLimitNumberOfFiles(int limitFile)
+  {
+    maxField = limitFile;
   }
 
   /**
@@ -98,8 +105,8 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     try {
       uservice.removeUploadResource(uploadId) ;
     } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.debug("Fail to remove upload resource", e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Fail to remove upload resource", e);
       }
     }
   }
