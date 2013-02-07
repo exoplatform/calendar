@@ -387,6 +387,14 @@
       <invitedTo>أنتم مدعوون الى</invitedTo>
       <fromWho>صاحب الدعوة</fromWho>
       <when>بتاريخ</when>
+      <likeToAttend>Would you like to attend?</likeToAttend>
+      <seeMoreDetails>Would you like to see more details?</seeMoreDetails>
+      <notSure>Not sure</notSure>
+      <importToExoCalendar>Import to your eXo Calendar</importToExoCalendar>
+      <jumpToExoCalendar>Jump to eXo Calendar</jumpToExoCalendar>
+      <or>or</or>
+      <yes>Yes</yes>
+      <no>No</no>
       <option>
         <none>لا شَيْء</none>
         <normal>مُتوسّطة</normal>

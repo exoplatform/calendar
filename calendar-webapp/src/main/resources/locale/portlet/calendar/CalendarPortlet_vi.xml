@@ -404,6 +404,14 @@
       <invitedTo>Gửi tới</invitedTo>
       <fromWho>Từ</fromWho>
       <when>Vào lúc</when>
+      <likeToAttend>Bạn có muốn tham dự không?</likeToAttend>
+      <seeMoreDetails>Bạn có muốn xem thêm chi tiết không?</seeMoreDetails>
+      <notSure>Không chắc</notSure>
+      <importToExoCalendar>Nhập vào lịch eXo của bạn</importToExoCalendar>
+      <jumpToExoCalendar>Chuyển đến lịch eXo</jumpToExoCalendar>
+      <or>hoặc</or>
+      <yes>Có</yes>
+      <no>Không</no>
       <option>
         <none>Không có</none>
         <normal>Bình thường</normal>

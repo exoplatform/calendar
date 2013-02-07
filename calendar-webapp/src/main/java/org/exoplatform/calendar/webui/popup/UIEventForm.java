@@ -1161,11 +1161,11 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     String eXoId = CalendarUtils.isEmpty(eXoIdMap.get(s)) ? "null":eXoIdMap.get(s);
     body.append("<tr>");
     body.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">");
-    body.append("Would you like to attend? </td><td> <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT, invitor, s, eXoId, event) + "\" >Yes</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.NOTSURE, invitor, s, eXoId, event) + "\" >Not sure</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.DENY, invitor, s, eXoId, event) + "\" >No</a>");
+    body.append(getLabel("likeToAttend")+" </td><td> <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT, invitor, s, eXoId, event) + "\" >"+getLabel("yes")+"</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.NOTSURE, invitor, s, eXoId, event) + "\" >"+getLabel("notSure")+"</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.DENY, invitor, s, eXoId, event) + "\" >"+getLabel("no")+"</a>");
     body.append("</td></tr>");
     body.append("<tr>");
     body.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">");
-    body.append("Would you like to see more details? </td><td><a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT_IMPORT, invitor, s, eXoId, event) + "\" >Import to your eXo Calendar</a> or <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.JUMP_TO_CALENDAR, invitor, s, eXoId, event) + "\" >Jump to eXo Calendar</a>");
+    body.append(getLabel("seeMoreDetails")+" </td><td><a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT_IMPORT, invitor, s, eXoId, event) + "\" >"+getLabel("importToExoCalendar")+"</a> "+getLabel("or")+" <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.JUMP_TO_CALENDAR, invitor, s, eXoId, event) + "\" >"+getLabel("jumpToExoCalendar")+"</a>");
     body.append("</td></tr>");
     body.append("</tbody>");
     body.append("</table>");
