@@ -343,6 +343,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         
         query.setOrderBy(new String[] { Utils.EXO_FROM_DATE_TIME });
         query.setOrderType(Utils.DESCENDING);
+        uiListView.setEventQuery(query);
         uiListView.setDisplaySearchResult(true) ;
         List<CalendarEvent> allEvents = uiListView.getAllEvents(query);
         uiListView.update(new EventPageList(allEvents,10));
