@@ -3,6 +3,7 @@
  def requireJS = rcontext.getJavascriptManager().getRequireJS();
  requireJS.require("SHARED/uiForm");
  requireJS.require("SHARED/TimePicker", "picker");
+ requireJS.addScripts('picker.datePattern="'+uicomponent.getDateTimeFormat()+'";');
  requireJS.addScripts('picker.initTime("'+ uicomponent.id +'");');
  
  %>

@@ -206,5 +206,8 @@
             <module>jquery</module>
             <as>gj</as>
         </depends>
+        <depends>
+            <module>uiCalendar</module>
+        </depends>
      </module> 
 </gatein-resources>
