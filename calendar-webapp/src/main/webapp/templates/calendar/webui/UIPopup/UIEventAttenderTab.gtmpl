@@ -20,7 +20,7 @@
       <div class="uiFormInputSetWithAction">
         <div class="formContainer">
           <div class="dateTimeContainer clearfix">
-            <div class="applySelectedDate pull-left">
+            <div class="applySelectedDate pull-left" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UIEventForm.label.checkTimeHelp')%>">
               <div class="pull-right">
                 <%uiForm.renderField(uicomponent.FIELD_CHECK_TIME)%>
               </div>

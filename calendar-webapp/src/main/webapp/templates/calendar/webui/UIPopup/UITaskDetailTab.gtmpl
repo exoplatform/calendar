@@ -22,7 +22,7 @@
           actionLabel = temp.substring(0, 21) + "..." + sizeLabel ;}
         }
         %>
-        <a rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
+        <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
         <%
         if(action.actionType == action.TYPE_ICON) {
         %>

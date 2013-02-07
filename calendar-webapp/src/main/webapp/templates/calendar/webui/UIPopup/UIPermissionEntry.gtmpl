@@ -16,7 +16,7 @@
 </td>
 <td class="center"><label class="UICheckbox"><% uicomponent.renderChild(checkbox); %><span></span></label></td>
 <td class="center">
-  <a rel="tooltip" data-placement="bottom" title="$deleteTitle" href="$deleteLink">
+  <a href="$deleteLink">
     <i class="uiIconDelete"></i>
   </a>
 </td>
