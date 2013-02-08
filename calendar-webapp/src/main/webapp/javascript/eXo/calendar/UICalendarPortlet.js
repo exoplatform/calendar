@@ -2756,7 +2756,7 @@ eXo.calendar.EventTooltip = {
 			var eventNode = cs.CSUtils.EventManager.getEventTarget(evt);
 			eventNode = gj(eventNode).parents('.UICalendarPortlet')[0]; 
 			self._container = gj(eventNode).find('div.uiCalPopover')[0];
-			gj(self._container).on({'mouseover':function(evt){
+			gj(self._container).off('mouseover mouseout click').on({'mouseover':function(evt){
 				self.cleanupTimer(evt);
 				},
 				'mouseout':function(evt){

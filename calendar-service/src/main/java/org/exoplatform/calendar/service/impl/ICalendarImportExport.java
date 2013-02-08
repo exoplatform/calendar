@@ -31,7 +31,6 @@ import java.util.Random;
 import java.util.TimeZone;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
@@ -81,7 +80,6 @@ import net.fortuna.ical4j.util.CompatibilityHints;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarCategory;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
@@ -471,7 +469,7 @@ public class ICalendarImportExport implements CalendarImportExport {
 
     CalendarService calService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
 
-   
+
     if (isNew) {
       Calendar exoCalendar = new Calendar();
       exoCalendar.setName(calendarName);
@@ -481,7 +479,7 @@ public class ICalendarImportExport implements CalendarImportExport {
       exoCalendar.setCalendarOwner(username);
       calService.saveUserCalendar(username, exoCalendar, true);
       calendarId = exoCalendar.getId();
-     }
+    }
     CalendarEvent exoEvent;
     ComponentList componentList = iCalendar.getComponents();
 
@@ -541,7 +539,7 @@ public class ICalendarImportExport implements CalendarImportExport {
             exoEvent.setEventState(CalendarEvent.ST_BUSY);
           }
           exoEvent = RemoteCalendarServiceImpl.setEventAttachment(event, exoEvent,eValue,sValue);
-
+          exoEvent.setRepeatType(CalendarEvent.RP_NOREPEAT);
           if (event.getProperty(Property.RECURRENCE_ID) != null) {
             RecurrenceId recurId = (RecurrenceId) event.getProperty(Property.RECURRENCE_ID);
             exoEvent.setRecurrenceId(format.format(new Date(recurId.getDate().getTime())));
