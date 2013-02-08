@@ -61,6 +61,7 @@ public class PopupReminderJob extends MultiTenancyJob {
           log_.debug("Calendar popup reminder service");
         java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
         ContinuationService continuation = (ContinuationService) container.getComponentInstanceOfType(ContinuationService.class);
+        CalendarService calendarService = (CalendarService) container.getComponentInstanceOfType(CalendarService.class);
         Node calendarHome = Utils.getPublicServiceHome(provider);
         if (calendarHome == null)
           return;
@@ -73,42 +74,20 @@ public class PopupReminderJob extends MultiTenancyJob {
         NodeIterator iter = results.getNodes();
         Node reminder;
         List<Reminder> popupReminders = new ArrayList<Reminder>();
+       
         while (iter.hasNext()) {
           reminder = iter.nextNode();
           boolean isRepeat = reminder.getProperty(Utils.EXO_IS_REPEAT).getBoolean();
           long fromTime = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
           long remindTime = reminder.getProperty(Utils.EXO_REMINDER_DATE).getDate().getTimeInMillis();
           long interval = reminder.getProperty(Utils.EXO_TIME_INTERVAL).getLong() * 60 * 1000;
+          
           Reminder rmdObj = new Reminder();
           rmdObj.setRepeate(isRepeat);
           if (reminder.hasProperty(Utils.EXO_OWNER))
             rmdObj.setReminderOwner(reminder.getProperty(Utils.EXO_OWNER).getString());
           if (reminder.hasProperty(Utils.EXO_EVENT_ID))
             rmdObj.setId(reminder.getProperty(Utils.EXO_EVENT_ID).getString());
-          if (reminder.hasProperty(Utils.EXO_FROM_DATE_TIME)) {
-            Calendar tempCal = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate();
-            rmdObj.setFromDateTime(tempCal.getTime());
-          }
-          
-          if (reminder.hasProperty(Utils.EXO_SUMMARY))
-            rmdObj.setSummary(reminder.getProperty(Utils.EXO_SUMMARY).getString());
-          rmdObj.setAlarmBefore(remindTime);
-          if (reminder.hasProperty(Utils.EXO_REMINDER_TYPE))
-            rmdObj.setReminderType(reminder.getProperty(Utils.EXO_REMINDER_TYPE).getString());
-          
-          // @since relooking, add infos about location, description and end time to rmdObj
-          if(reminder.hasProperty(Utils.EXO_LOCATION)) {
-            rmdObj.setLocation(reminder.getProperty(Utils.EXO_LOCATION).getString());
-          }
-          
-          if(reminder.hasProperty(Utils.EXO_DESCRIPTION)) {
-            rmdObj.setDescription(reminder.getProperty(Utils.EXO_DESCRIPTION).getString());
-          }
-          
-          if(reminder.hasProperty(Utils.EXO_TO_DATE_TIME)) {
-            Calendar tmpDate = reminder.getProperty(Utils.EXO_TO_DATE_TIME).getDate();
-            rmdObj.setEndDateTime(tmpDate.getTime());
-          }
           
           if (isRepeat) {
             if (fromCalendar.getTimeInMillis() >= fromTime) {
@@ -132,10 +111,11 @@ public class PopupReminderJob extends MultiTenancyJob {
         if (!popupReminders.isEmpty()) {
           for (Reminder rmdObj : popupReminders) {
             for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
+              CalendarEvent event = calendarService.getEventById(rmdObj.getId());
               JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
-              JsonValue json = generatorImpl.createJsonObject(rmdObj);
-              continuation.sendMessage(user, "/eXo/Application/Calendar/messages", json, rmdObj.toString());
-              log_.info(String.format("sent message for event: %s", rmdObj.getSummary()));
+              JsonValue json = generatorImpl.createJsonObject(event);
+              continuation.sendMessage(user, "/eXo/Application/Calendar/messages", json);
+              log_.info(String.format("sent message for event: %s", event.getSummary()));
             }
           }
         }

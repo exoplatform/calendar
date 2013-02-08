@@ -53,8 +53,6 @@ public class Reminder {
 
   private Date                 fromDateTime;
   
-  private Date toDateTime;
-
   private boolean              isRepeat       = false;
 
   private long                 repeatInterval = 0;
@@ -63,24 +61,6 @@ public class Reminder {
 
   private String               description;
   
-  private String location;
-
-  public Date getEndDateTime() {
-    return toDateTime;
-  }
-
-  public void setEndDateTime(Date endDateTime) {
-    this.toDateTime = endDateTime;
-  }
-  
-  public String getLocation() {
-    return location;
-  }
-
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
   public Reminder() {
     id = "Reminder" + IdGenerator.generate();
   }

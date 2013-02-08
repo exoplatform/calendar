@@ -919,4 +919,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     }
     return false;
   }
+
+  @Override
+  public CalendarEvent getEventById(String eventId) throws Exception {
+    return storage_.getEventById(eventId);
+  }
 }

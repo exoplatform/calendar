@@ -824,6 +824,8 @@ public interface CalendarService {
    * @throws Exception
    */
   public boolean isGroupBeingShared(String deletedGroup, JobSchedulerServiceImpl schedulerService_) throws Exception;
+  
+  public CalendarEvent getEventById(String eventId) throws Exception;
 
 }
 

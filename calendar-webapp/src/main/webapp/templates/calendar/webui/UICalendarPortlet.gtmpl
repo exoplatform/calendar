@@ -35,7 +35,7 @@
       <div class="text"></div>
     </div>   
     
-		<div class="alert uiNotification uiCalNotification" style="display:none;" >
+		<div id="popupReminder" class="alert uiNotification uiCalNotification" style="display:none;" >
 			<a data-dismiss="alert" href="#" class="close " data-placement="bottom" rel="tooltip"  data-original-title="close"><i class="uiIconClose uiIconLightGray"></i></a>
 			<div class="clearfix ">
 				<div class="pull-left"><i class="uiIconBell"></i></div>

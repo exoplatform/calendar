@@ -696,6 +696,31 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     }
   }
 
+  public void testGetEventById() throws Exception {
+    Calendar calendar = createCalendar("myCalendar", "Description");
+
+    EventCategory eventCategory = createEventCategory("eventCategoryName3", "description");
+
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.HOUR, 1);
+ // Create and save event
+    String eventSummay = "Have a meeting";
+    CalendarEvent calendarEvent = new CalendarEvent();
+    calendarEvent.setEventCategoryId(eventCategory.getId());
+    calendarEvent.setEventCategoryName(eventCategory.getName());
+    calendarEvent.setSummary(eventSummay);
+    calendarEvent.setFromDateTime(fromCal.getTime());
+    calendarEvent.setToDateTime(toCal.getTime());
+    calendarService_.saveUserEvent(username, calendar.getId(), calendarEvent, true);
+    
+    CalendarEvent findEvent1 = calendarService_.getEventById(calendarEvent.getId());
+    assertNotNull(findEvent1);
+
+    calendarService_.removeUserEvent(username, calendar.getId(), calendarEvent.getId());
+    calendarService_.removeEventCategory(username, eventCategory.getId());
+    calendarService_.removeUserCalendar(username, calendar.getId());
+  }
   public void testRemoveSharedCalendarFolder() {
     try {
       createSharedCalendar("sharedCalendar", "shareDescription");
