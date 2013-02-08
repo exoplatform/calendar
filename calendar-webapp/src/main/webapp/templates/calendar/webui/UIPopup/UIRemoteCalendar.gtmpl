@@ -2,108 +2,105 @@
   def jsMan = _ctx.getRequestContext().getJavascriptManager() ;
   def requireJS=jsMan.getRequireJS();
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-  requireJS.addScripts("cal.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "') ;");
-//jsMan.addJavascript("eXo.calendar.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "') ;");
+  requireJS.addScripts("cal.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "');");
   uiform.setLocale();
 %>
 <div class="uiForm uiRemoteCalendar">
   <%uiform.begin()%>
   <div class="form-horizontal resizable">
       <div class="control-group">
-			<label class="control-label " ><%=uicomponent.getLabel(uicomponent.URL)%>:</label>
-			<div class="controls">
-				<%uicomponent.renderField(uicomponent.URL)%>
-			</div>
-		</div>
-        <div class="control-group">
-			<label class="control-label " ><%=uicomponent.getLabel(uicomponent.NAME)%>:</label>
-			<div class="controls">
-				 <%uicomponent.renderField(uicomponent.NAME)%>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label " ><%=uicomponent.getLabel(uicomponent.DESCRIPTION)%>:</label>
-			<div class="controls descriptionArea">
-				 <%uicomponent.renderField(uicomponent.DESCRIPTION)%>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label " ><%=uicomponent.getLabel(uicomponent.COLOR)%>:</label>
-			<div class="controls">
-				 <%uicomponent.renderField(uicomponent.COLOR)%>
-			</div>
-		</div>		
-		<div class="control-group">
-			<label class="control-label " ><%=uicomponent.getLabel(uicomponent.FIELD_BEFORE_DATE_SELECTBOX)%>:</label>
-			<div class="controls">
-				<%uicomponent.renderField(uicomponent.FIELD_BEFORE_DATE_SELECTBOX)%>
-			</div>
-		</div>		
-        <div class="control-group">
-			<label class="control-label " ><%=uicomponent.getLabel(uicomponent.FIELD_AFTER_DATE_SELECTBOX)%>:</label>
-			<div class="controls">
-				<%uicomponent.renderField(uicomponent.FIELD_AFTER_DATE_SELECTBOX)%>
-			</div>
-		</div>
-		<%              
-		  field = uicomponent.getChildById(uicomponent.USE_AUTHENTICATION);
-		  label = _ctx.appRes(uicomponent.id + ".label." + field.getId()) ;
-		  def useAuthentication = field.isChecked();
-		  def accountColor = "";
-		  def fieldUsername = uicomponent.getChildById(uicomponent.USERNAME);
-		  def labelUsername = _ctx.appRes(uicomponent.id+ ".label." + fieldUsername.getId()) ;
-		  
-		  def fieldPW = uicomponent.getChildById(uicomponent.PASSWORD);
-		  def labelPW = _ctx.appRes(uicomponent.id+ ".label." + fieldPW.getId()) ;
-		  
-		  if(!useAuthentication){
-			accountColor= "color:gray;"
-			fieldUsername.setEnable(false);
-			fieldPW.setEnable(false);
-		  } else {
-			accountColor= "color:black;";
-			fieldUsername.setEnable(true);
-			fieldPW.setEnable(true);                
-		  }
-		%>
-		
-		<div  class="control-group checkBoxArea">
-			<label class="control-label"  >$label:</label>				  
-			<div class="controls" id='<%=field.getId()%>'><%uicomponent.renderUIComponent(field)%></div>
-		</div>
-		<div class="control-group" id='id-<%=fieldUsername.getId()%>'  >
-			<label class="control-label " >$labelUsername:</label>
-			<div class="controls">
-				<%uicomponent.renderUIComponent(fieldUsername)%>&nbsp;*
-			</div>
-		</div>		
-		 <div class="control-group" id='id-<%=fieldPW.getId()%>'>
-			<label class="control-label " >$labelPW:</label>
-			<div class="controls">
-				<%uicomponent.renderUIComponent(fieldPW)%>&nbsp;*
-			</div>
-		</div>         
-                      
-			
-			<% if (!uicomponent.isAddNew_) { %>
-            <div class="control-group">
-				<label class="control-label " ><%=uicomponent.getLabel(uicomponent.LAST_UPDATED)%>:</label>
-				<div class="controls">
-					 <%=uicomponent.getLastUpdated()%>
-				</div>
-            </div>
-            <% } %>
-		</div>
+        <label class="control-label"><%=uicomponent.getLabel(uicomponent.URL)%>:</label>
+        <div class="controls">
+          <%uicomponent.renderField(uicomponent.URL)%>
+        </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label"><%=uicomponent.getLabel(uicomponent.NAME)%>:</label>
+      <div class="controls">
+         <%uicomponent.renderField(uicomponent.NAME)%>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label"><%=uicomponent.getLabel(uicomponent.DESCRIPTION)%>:</label>
+      <div class="controls descriptionArea">
+         <%uicomponent.renderField(uicomponent.DESCRIPTION)%>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label"><%=uicomponent.getLabel(uicomponent.COLOR)%>:</label>
+      <div class="controls">
+         <%uicomponent.renderField(uicomponent.COLOR)%>
+      </div>
+    </div>    
+    <div class="control-group">
+      <label class="control-label"><%=uicomponent.getLabel(uicomponent.FIELD_BEFORE_DATE_SELECTBOX)%>:</label>
+      <div class="controls">
+        <%uicomponent.renderField(uicomponent.FIELD_BEFORE_DATE_SELECTBOX)%>
+      </div>
+    </div>    
+    <div class="control-group">
+      <label class="control-label"><%=uicomponent.getLabel(uicomponent.FIELD_AFTER_DATE_SELECTBOX)%>:</label>
+      <div class="controls">
+        <%uicomponent.renderField(uicomponent.FIELD_AFTER_DATE_SELECTBOX)%>
+      </div>
+    </div>
+    <%              
+      field = uicomponent.getChildById(uicomponent.USE_AUTHENTICATION);
+      label = _ctx.appRes(uicomponent.id + ".label." + field.getId());
+      def useAuthentication = field.isChecked();
+      def accountColor = "";
+      def fieldUsername = uicomponent.getChildById(uicomponent.USERNAME);
+      def labelUsername = _ctx.appRes(uicomponent.id+ ".label." + fieldUsername.getId()) ;
       
-            <div class="uiAction uiActionBorder"> 
-			  <% for(action in uicomponent.getActions()) { 
-				   String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
-				   String link = uicomponent.event(action) ;
-			  %>
-			<button type="button" onclick="$link" class="btn">
-			  $actionLabel
-			</button>
-		  <%}%>        
+      def fieldPW = uicomponent.getChildById(uicomponent.PASSWORD);
+      def labelPW = _ctx.appRes(uicomponent.id+ ".label." + fieldPW.getId()) ;
+      
+      if(!useAuthentication){
+        accountColor= "color:gray;";
+        fieldUsername.setEnable(false);
+        fieldPW.setEnable(false);
+      } else {
+        accountColor= "color:black;";
+        fieldUsername.setEnable(true);
+        fieldPW.setEnable(true);                
+      }
+    %>
+    
+    <div class="control-group checkBoxArea">
+      <label class="control-label"  >$label:</label>          
+      <div class="controls" id='<%=field.getId()%>'><%uicomponent.renderUIComponent(field)%></div>
+    </div>
+    <div class="control-group" id='id-<%=fieldUsername.getId()%>'>
+      <label class="control-label">$labelUsername:</label>
+      <div class="controls">
+        <%uicomponent.renderUIComponent(fieldUsername)%>&nbsp;*
+      </div>
+    </div>    
+    <div class="control-group" id='id-<%=fieldPW.getId()%>'>
+      <label class="control-label">$labelPW:</label>
+      <div class="controls">
+        <%uicomponent.renderUIComponent(fieldPW)%>&nbsp;*
+      </div>
+    </div>                      
+      <% if (!uicomponent.isAddNew_) { %>
+          <div class="control-group">
+            <label class="control-label" ><%=uicomponent.getLabel(uicomponent.LAST_UPDATED)%>:</label>
+            <div class="controls">
+               <%=uicomponent.getLastUpdated()%>
+            </div>
+          </div>
+      <%  } %>
+  </div>   
+  <div class="uiAction uiActionBorder"> 
+    <% for(action in uicomponent.getActions()) { 
+       String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+       String link = uicomponent.event(action) ;
+    %>
+      <button type="button" onclick="$link" class="btn">
+        $actionLabel
+      </button>
+    <%}%>
+  </div>            
   <%uiform.end()%>
 </div>
 
