@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.0.0.Alpha1-unified-search-SNAPSHOT</version>
+    <version>4.0.0-unified-search-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-service</artifactId>
   <packaging>jar</packaging>
@@ -55,10 +55,6 @@
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-comet-service</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.exoplatform.commons</groupId>
-      <artifactId>commons-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
