@@ -89,7 +89,6 @@ public class UICreateEvent extends UIForm {
   public static final String SLASH_COLON = "/:";
   public static final String OPEN_PARENTHESIS = "(";
   public static final String CLOSE_PARENTHESIS = ")";
-  static List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
   private static Log log = ExoLogger.getLogger(UICreateEvent.class);
   static String CHOIX = "Choix";
 
@@ -107,7 +106,7 @@ public class UICreateEvent extends UIForm {
   public static final long DEFAULT_TIME_INTERVAL = 30;
 
   public UICreateEvent() throws Exception {
-    addUIFormInput(new UIFormRadioBoxInput(CHOIX, "Event", options));
+    addUIFormInput(new UIFormRadioBoxInput(CHOIX, "Event", getTypeValue()));
     addUIFormInput(new UIFormStringInput(TITLE, TITLE, null));
     addUIFormInput(new UIFormDateTimeInput(Start_EVENT, Start_EVENT, getInstanceOfCurrentCalendar().getTime(), false));
     addUIFormInput(new UIFormDateTimeInput(END_EVENT, END_EVENT, getInstanceOfCurrentCalendar().getTime(), false));
@@ -359,10 +358,13 @@ public class UICreateEvent extends UIForm {
   }
 
 
-  static {
-    options.add(new SelectItemOption("Event"));
-    options.add(new SelectItemOption("Task"));
-  }
+
+    private List<SelectItemOption<String>> getTypeValue() {
+        List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
+        options.add(new SelectItemOption<String>("Event", "Event")) ;
+        options.add(new SelectItemOption<String>("Task", "Task")) ;
+        return options ;
+    }
 
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String timeFormat) {
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
