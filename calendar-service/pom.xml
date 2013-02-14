@@ -139,8 +139,8 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-  <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
-  <dependency>
+    <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <scope>test</scope>
