@@ -473,6 +473,12 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.portal</artifactId>
         <version>${org.gatein.portal.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.gatein.portal</groupId>
+        <artifactId>exo.portal.component.portal</artifactId>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <!-- To be fixed in the original project -->
