@@ -94,7 +94,7 @@
       <% for (String groupId : calendarGroups) { %>
         <tr>
           <td><%=uicomponent.truncateGroupId(groupId) %></td>
-	      <td class="inputLarge">
+	      <td class="inputLarge vertical-align">
 	      <% if(uicomponent.getChildById(groupId+uiCalendarForm.PERMISSION_SUB) != null) {
              uiCalendarForm.renderField(groupId+uiCalendarForm.PERMISSION_SUB) ;
           } else { %>
