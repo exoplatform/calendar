@@ -86,9 +86,9 @@
 		        if (UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups())) css = "IconUnCheckBox checkbox";
 		        if(chk.isChecked()) css = "iconCheckBox checkbox";
 		    %>
-		        <li class="calendarItem  CalendarItemPrivate ClearFix" calColor="$color" canEdit="true" id="$calendarId" calType="0" isRemote="$isRemote">
+		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="true" id="$calendarId" calType="0" isRemote="$isRemote">
 		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
-              <div class="calendarCheckboxBlock" calId="$calendarId">
+              <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
                 <a href="javascript:void(0);" class="$color">
                   <span class="colorOpacity">
                     <span class="$css"></span>
@@ -133,9 +133,9 @@
 		        if (UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups())) css = "IconUnCheckBox checkbox";
 		        if (chk.isChecked()) css = "iconCheckBox checkbox";
 		      %>
-		      <li class="calendarItem CalendarItemShared ClearFix" calColor="$color" id="$calendarId" calType="1" canEdit="$isEditable">
+		      <li class="calendarItem CalendarItemShared" calColor="$color" id="$calendarId" calType="1" canEdit="$isEditable">
 		        <div id="UICalendars_CalendarPopupMenu2" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
-            <div class="calendarCheckboxBlock" calId="$calendarId">
+            <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
               <a href="javascript:void(0);" class="$color">
                 <span class="colorOpacity">
                   <span class="$css"></span>
@@ -186,9 +186,9 @@
 		        if (UICalendarPortlet.isInSpace() && !uicomponent.isCalendarOfSpace(calendar.getGroups())) css = "IconUnCheckBox checkbox";
 		        if (chk.isChecked()) css = "iconCheckBox checkbox";
 		      %>
-		      <li class="calendarItem calendarItemPublic ClearFix"  calColor="$color" canEdit="$isEditable" id="$calendarId" calType="2" >
+		      <li class="calendarItem calendarItemPublic "  calColor="$color" canEdit="$isEditable" id="$calendarId" calType="2" >
 		        <div id="UICalendars_CalendarPopupMenu3" class="uiIconCalSettingMini uiIconLightGray pull-right" ></div>
-            <div class="calendarCheckboxBlock" calId="$calendarId">
+            <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
               <a href="javascript:void(0);" class="$color">
                 <span class="colorOpacity">
                   <span class="$css"></span>
