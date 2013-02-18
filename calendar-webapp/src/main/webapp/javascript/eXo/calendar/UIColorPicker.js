@@ -1,9 +1,9 @@
 (function(gj){
 
-function UIColorPicker() {}
-
 var _module = {} ;
 eXo.calendar = eXo.calendar || {} ;
+
+function UIColorPicker() {}
 
 /* 
  * entry point of color picker, invoked when clicking on the color picker input
@@ -29,8 +29,11 @@ UIColorPicker.prototype.adaptPopup = function(inputColorPicker) {
 
 /*
  * change color of current input 
+ * @param a tag with colorCell class
  */
-UIColorPicker.prototype.setColor = function(color) {
+UIColorPicker.prototype.setColor = function(colorCell) {
+  var clazz = gj(colorCell).attr('class').split(' '); 
+  var color = gj.trim(clazz[0]); 
   var className = 'displayValue ' + color;
   var spanDisplayedColor = gj(this.inputColorPicker).children('span.displayValue')[0];
   spanDisplayedColor.className = className; // change displayed color
@@ -69,5 +72,6 @@ UIColorPicker.prototype.updateNewSelectedColor = function() {
 _module.UIColorPicker      = new UIColorPicker();
 eXo.calendar.UIColorPicker = _module.UIColorPicker;
 
-return _module;
+return _module.UIColorPicker;
+
 }) (gj);

@@ -88,16 +88,6 @@
     </depends>
     </module>
   </portlet>
-    <module>
-    <name>UIColorPicker</name>
-    <script>
-      <path>/javascript/eXo/calendar/UIColorPicker.js</path>
-    </script>
-    <depends>
-      <module>jquery</module>
-      <as>gj</as>
-    </depends>
-  </module>
   <module>
     <name>ScheduleSupport</name>
     <script>
@@ -250,6 +240,16 @@
     <depends>
       <module>Highlighter</module>
     </depends> 
+  </module>
+  <module>
+    <name>UIColorPicker</name>
+    <script>
+      <path>/javascript/eXo/calendar/UIColorPicker.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
   </module>
 </gatein-resources>
 

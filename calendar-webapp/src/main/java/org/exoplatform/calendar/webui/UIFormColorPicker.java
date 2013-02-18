@@ -196,6 +196,11 @@ public class UIFormColorPicker extends UIFormInputBase<String>
     RequireJS requireJS = jsManager.getRequireJS();
     requireJS.require("SHARED/jquery","gj");
     requireJS.require("SHARED/bts_dropdown","btsdropdown");
+    requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+
+    requireJS.addScripts("gj('div.uiColorPickerInput').click(function(){ cal.UIColorPicker.adaptPopup(this); });");
+    requireJS.addScripts("gj('a.colorCell').click(function(){ cal.UIColorPicker.setColor(this); });");
+
     String value = getValue();
     if (value != null)
     {
@@ -203,7 +208,7 @@ public class UIFormColorPicker extends UIFormInputBase<String>
     }
     Writer w = context.getWriter();
     w.write("<div class='uiFormColorPicker dropdown'>");
-    w.write("<div class=\"uiColorPickerInput dropdown-toggle\" data-toggle=\"dropdown\" onclick=\"eXo.calendar.UIColorPicker.adaptPopup(this)\">");
+    w.write("<div class=\"uiColorPickerInput dropdown-toggle\" data-toggle=\"dropdown\">");
     w.write("<span class=\" displayValue " + value + "\"><span><b class=\"caret\"></b></span></span>");
     w.write("</div>");
     w.write("<ul class='calendarTableColor dropdown-menu' role=\"menu\" selectedColor=\"" + value + " \">");
@@ -218,9 +223,7 @@ public class UIFormColorPicker extends UIFormInputBase<String>
       int j = 0 ;
       while(j < items && count < size){
         Color color = getColors()[count] ;
-        String actionLink = "javascript:eXo.calendar.UIColorPicker.setColor('" + color.getName() + "')";
-        w.write("<a href=\"");
-        w.write(actionLink);
+        w.write("<a href=\"javascript:void(0);");
         w.write("\" class=\"");
         w.write(color.getName());
         w.write(" colorCell \" onmousedown=\"event.cancelBubble=true\"><i class=\"");
