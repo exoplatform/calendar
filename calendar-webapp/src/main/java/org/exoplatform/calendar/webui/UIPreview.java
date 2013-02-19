@@ -30,6 +30,8 @@ import org.exoplatform.download.InputStreamDownloadResource;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -56,6 +58,7 @@ import javax.servlet.http.HttpServletRequest;
 )
 public class UIPreview extends UICalendarView implements UIPopupComponent
 {
+  private static final Log LOG = ExoLogger.getExoLogger(UIPreview.class);
   private CalendarEvent event_ = null ;
   private boolean isShowPopup_ = false ;
 

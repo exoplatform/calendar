@@ -10,12 +10,11 @@ function UIDateTimePicker() {
   this.weekdays = ['S','M','T','W','T','F','S'] ;
   this.tooltip = ['Previous Year', 'Previous Month', 'Next Month', 'Next Year'];
   this.pathResource = "/csResources/javascript/eXo/cs/lang/";
-} ;
 
-//UIDateTimePicker.prototype = eXo.webui.UICalendar ;
-UIDateTimePicker.prototype = uiCalendar ; //UICalendar of webui-ext module
 
-UIDateTimePicker.prototype.getLang = function() {
+
+
+this.getLang = function() {
   try {
     var lang = this.dateField.lang;
     if (this.lang == lang) 
@@ -34,7 +33,7 @@ UIDateTimePicker.prototype.getLang = function() {
   catch (e) {}
 } ;
 
-UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
+this.init = function(field, isDisplayTime) {
   this.isDisplayTime = isDisplayTime ;
   if (this.dateField) {
     this.dateField.parentNode.style.position = '' ;
@@ -53,7 +52,7 @@ UIDateTimePicker.prototype.init = function(field, isDisplayTime) {
   field.parentNode.insertBefore(cld, field) ;
 };
 
-UIDateTimePicker.prototype.show = function() {
+this.show = function() {
   _module.UIDateTimePicker.getLang() ;
   document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
   
@@ -123,13 +122,13 @@ UIDateTimePicker.prototype.show = function() {
   drag.onmousedown = this.initDND ;
 } ;
 
-UIDateTimePicker.prototype.initDND = function(evt) {
+this.initDND = function(evt) {
   var _e = evt || window.event;
   _e.cancelBubble = true ;
   _module.DragDrop.init(null, this, this.parentNode.parentNode, evt);
 } ;
 
-UIDateTimePicker.prototype.getTypeFormat = function() {
+this.getTypeFormat = function() {
   var dateMask = ["dd/MM/yyyy","dd-MM-yyyy","MM/dd/yyyy","MM-dd-yyyy"] ;
   var dateTimeFormat = this.dateField.getAttribute("format") ;
   var dateFormat = (this.isDisplayTime)?dateTimeFormat.split(' ')[0].trim() : dateTimeFormat ;
@@ -140,7 +139,7 @@ UIDateTimePicker.prototype.getTypeFormat = function() {
   return false ;
 }
 
-UIDateTimePicker.prototype.setDate = function(year, month, day) {
+this.setDate = function(year, month, day) {
   if (this.dateField) {
     if (month < 10) month = "0" + month ;
     if (day < 10) day = "0" + day ;
@@ -174,7 +173,7 @@ UIDateTimePicker.prototype.setDate = function(year, month, day) {
   return ;
 } ;
 
-UIDateTimePicker.prototype.renderCalendar = function() {
+this.renderCalendar = function() {
   var dayOfMonth = 1 ;
   var validDay = 0 ;
   var startDayOfWeek = this.getDayOfWeek(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, dayOfMonth) ;
@@ -241,7 +240,7 @@ UIDateTimePicker.prototype.renderCalendar = function() {
   return table ;
 } ;
 
-UIDateTimePicker.prototype.hide = function() {
+this.hide = function() {
   if (this.dateField) {
     document.getElementById(this.calendarId).firstChild.style.display = 'none';
     this.dateField = null;
@@ -249,8 +248,10 @@ UIDateTimePicker.prototype.hide = function() {
   document.onclick = null;
 }
 
+};
 
 window.eXo.cs = window.eXo.cs || {};  
+UIDateTimePicker.prototype = uiCalendar;
 window.eXo.cs.UIDateTimePicker = new UIDateTimePicker();
 _module.UIDateTimePicker = window.eXo.cs.UIDateTimePicker;
 return _module.UIDateTimePicker;
