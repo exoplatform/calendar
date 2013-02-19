@@ -1,6 +1,20 @@
-<div class="UIQuickAddEvent" id="QuickAddEventContainer">
+ <%
+ def rcontext = _ctx.getRequestContext() ;
+ def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ requireJS.require("SHARED/uiForm");
+ requireJS.require("SHARED/TimePicker", "picker");
+ requireJS.addScripts('picker.datePattern="'+uicomponent.getDateTimeFormat()+'";');
+ requireJS.addScripts('picker.initTime("'+ uicomponent.id +'");');
+ 
+ %>
+ <script>
+ 
+ 
+ </script>
+<% uiform.begin()%>
+<div class="UIQuickAddEvent">
 	<div class="QuickAddEventContainer">
-		<% uiform.begin()%>
+
 		<div class="HorizontalLayout">
 			<div class="FormContainer">
 				<table class="UIFormGrid">
@@ -22,20 +36,30 @@
 						<tr>
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.Start_EVENT )%>
 							</td>
-							<div class="Date">
-								<td class="FieldComponent" colspan="2">
+								<td class="FieldComponent" >
+							   <div id="startDateId"  class="Date">
 									<% uicomponent.renderField(uicomponent.Start_EVENT) %>
+							   </div>
 								</td>
-							</div>
+							<td class="FieldComponent">
+							 <div id="startTimeId" class="Time">
+                  <% uicomponent.renderField(uicomponent.START_TIME) %>
+               </div>
+              </td>
 						</tr>
 						<tr>
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.END_EVENT )%>
 							</td>
-							<div class="Date">
-								<td class="FieldComponent" colspan="2">
+							<td class="FieldComponent">
+							   <div id="endDateId" class="Date">
 									<% uicomponent.renderField(uicomponent.END_EVENT) %>
-								</td>
-							</div>
+							   </div>
+							</td>
+							<td class="FieldComponent">
+               <div id="endTimeId" class="Time">
+                  <% uicomponent.renderField(uicomponent.END_TIME) %>
+               </div>
+              </td>
 						</tr>
 						<tr>
 							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.CALENDAR )%>
@@ -73,6 +97,7 @@
 			</div>
 		</div>
 		<% }%>
-		<%uiform.end()%>
+
 	</div>
 </div>
+<%uiform.end()%>
