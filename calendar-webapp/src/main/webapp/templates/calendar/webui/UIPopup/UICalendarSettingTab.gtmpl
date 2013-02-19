@@ -36,7 +36,7 @@
   requireJS.addScripts('cal.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
  // rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.initSettingTab("'+uicomponent.id+'") ;') ;
 %>
-<div id="$uicomponent.id" class="$uicomponent.id resizable">
+<div id="$uicomponent.id" class="settingCalendarTab resizable">
 	<div class="form-horizontal">
 		<div class="control-group">
 			<div class="control-label" ><%=uiForm.getLabel(uicomponent.VIEW_TYPE)%>:</div>
@@ -71,11 +71,11 @@
 		</div>    
 		 <div class="control-group checkBoxArea">
 			<div class="control-label" ><%=uiForm.getLabel(uicomponent.ISSHOWWORKINGTIME)%>:</div>
-			<div class="controls">
+			<div class="controls clearfix">
 				<div class="workingTimeCheck  pull-left">
 				<%uiForm.renderField(uicomponent.ISSHOWWORKINGTIME)%>
 			  </div>
-			  <div class="workingTime selectboxMini pull-left">
+			  <div class="workingTime selectboxMini">
 				<span class="pull-left pdT5"><%=uiForm.getLabel(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;&nbsp;</span>
 				<div class="pull-left"><%uiForm.renderField(uicomponent.WORKINGTIME_BEGIN)%>&nbsp;</div>
 				<span class="pull-left pdT5"><%=uiForm.getLabel(uicomponent.WORKINGTIME_END)%>&nbsp;&nbsp;</span>
