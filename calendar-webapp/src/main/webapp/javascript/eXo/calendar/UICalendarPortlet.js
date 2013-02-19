@@ -142,7 +142,7 @@ UICalendarPortlet.prototype.checkPermission = function(eventObj){
 	var calId = eventObj.getAttribute("calid");
 	var calType = eventObj.getAttribute("calType");
 	var baseURL  = (_module.restContext)?eXo.env.portal.context+ '/' + _module.restContext +'/cs/calendar/checkPermission/':'portal/rest/cs/calendar/checkPermission/';
-	var url = baseURL + cs.CSCometd.exoId +"/"+ calId +"/"+ calType +"/";
+    var url = baseURL + cometd.exoId +"/"+ calId +"/"+ calType +"/";
 	this.makeRequest(url,this.postCheck);
 };
 
@@ -1030,7 +1030,7 @@ UIResizeEvent.prototype.start = function(evt, innerElement, outerElement, contai
  * @param {Object} evt Mouse event
  */
 UIResizeEvent.prototype.execute = function(evt){
-		eXo.calendar.EventTooltip.disable(evt);
+	eXo.calendar.EventTooltip.disable(evt);
     var _e = window.event || evt;
     var UIResizeEvent = eXo.calendar.UIResizeEvent;
     var mouseY = base.Browser.findMouseRelativeY(UIResizeEvent.container, _e);
@@ -1058,11 +1058,11 @@ UIResizeEvent.prototype.execute = function(evt){
  * @param {Object} evt Mouse event
  */
 UIResizeEvent.prototype.end = function(evt){
-	gj(document).off("mousemove mouseup");
+  gj(document).off("mousemove mouseup");
   var _e = window.event || evt;
   var UIResizeEvent = eXo.calendar.UIResizeEvent;
-	_module.UICalendarPortlet.checkPermission(UIResizeEvent.outerElement) ;
-	eXo.calendar.EventTooltip.enable();
+  _module.UICalendarPortlet.checkPermission(UIResizeEvent.outerElement) ;
+  eXo.calendar.EventTooltip.enable();
 };
 
 /**
@@ -1128,28 +1128,28 @@ UICalendarPortlet.prototype.resetZIndex = function(obj){
         //alert(e.message) ;
     }
 };
-/**
+/*
  * Initializes drag and drop actions
  * @param {Object} evt Mouse event
  */
 
 UICalendarPortlet.prototype.initDND = function(evt){
-	eXo.calendar.EventTooltip.disable(evt);
-	var _e = window.event || evt;
+  eXo.calendar.EventTooltip.disable(evt);
+  var _e = window.event || evt;
   cs.CSUtils.EventManager.cancelBubble(evt);
-	if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) return ;
-    var UICalendarPortlet = _module.UICalendarPortlet;
-    UICalendarPortlet.dragObject = this;
-    UICalendarPortlet.resetZIndex(UICalendarPortlet.dragObject);
-    UICalendarPortlet.dragContainer = gj(UICalendarPortlet.dragObject).parents(".eventDayContainer")[0];
-    UICalendarPortlet.resetZIndex(UICalendarPortlet.dragObject);
-    UICalendarPortlet.eventY = _e.clientY;
-    UICalendarPortlet.eventTop = UICalendarPortlet.dragObject.offsetTop;
-    gj(UICalendarPortlet.dragContainer).on({'mousemove':UICalendarPortlet.dragStart,
+  if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) return ;
+  var UICalendarPortlet = _module.UICalendarPortlet;
+  UICalendarPortlet.dragObject = this;
+  UICalendarPortlet.resetZIndex(UICalendarPortlet.dragObject);
+  UICalendarPortlet.dragContainer = gj(UICalendarPortlet.dragObject).parents(".eventDayContainer")[0];
+  UICalendarPortlet.resetZIndex(UICalendarPortlet.dragObject);
+  UICalendarPortlet.eventY = _e.clientY;
+  UICalendarPortlet.eventTop = UICalendarPortlet.dragObject.offsetTop;
+  gj(UICalendarPortlet.dragContainer).on({'mousemove':UICalendarPortlet.dragStart,
     	'mouseup':UICalendarPortlet.dragEnd});
-    UICalendarPortlet.title = gj(UICalendarPortlet.dragObject).find("span")[0].innerHTML;
-	UICalendarPortlet.dropCallback = UICalendarPortlet.dayviewDropCallback;
-	UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
+  UICalendarPortlet.title = gj(UICalendarPortlet.dragObject).find("span")[0].innerHTML;
+  UICalendarPortlet.dropCallback = UICalendarPortlet.dayviewDropCallback;
+  UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
 };
 /**
  * Processes when dragging object
@@ -1182,38 +1182,43 @@ UICalendarPortlet.prototype.dragStart = function(evt){
 };
 /**
  * Updates title of event when dragging calendar event
- * @param {Object} events DOM elemnt contains a calendar event
+ * @param {Object} events DOM element contains a calendar event
  * @param {Object} posY Position of the event
  */
 UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
-    var min = this.pixelsToMins(posY);
-    var timeFormat = events.getAttribute("timeFormat");
-    var title = gj(events).find("div.eventTitle")[0];
-    // keeps string for icons for event type and event priority
-    var html = gj(title).html();
-    var arr = html.split("</i>");
-    var str = "";
-    for(var j = 0; j < arr.length - 1; j++) {
-     str += arr[j] + "</i>";
-    }
+  var min = this.pixelsToMins(posY);
+  var timeFormat = events.getAttribute("timeFormat");
+  var title = gj(events).find("div.eventTitle")[0];
+  // keeps string for icons for event type and event priority
+  var html = gj(title).html();
+  var arr = html.split("</i>");
+  var str = "";
+  for(var j = 0; j < arr.length - 1; j++) {
+    str += arr[j] + "</i>";
+  }
     
-    var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
-    timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
-	am: "AM",
-	pm: "PM"
-    };
-    if (type == 1) {
-	title.innerHTML = str + this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
-    }
+  var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
+  timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
+	  am: "AM",
+	  pm: "PM"
+  };
+
+  if (type == 1) {
+	  title.innerHTML = str + this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
+  }
     
-    //update string for start - end time
-    if(delta > 30)	{
-	str += this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
-	title.innerHTML = str;  
-    } else {
-	str += this.minToTime(min,timeFormat);
-	title.innerHTML = str;
-    }
+  //update string for start - end time
+  if (delta > 30)	{
+    var timeValue = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
+	  str += timeValue;
+	  title.innerHTML = str;
+    events.setAttribute('titleHTML', timeValue);
+  } else {
+    var timeValue = this.minToTime(min,timeFormat);
+	  str += timeValue;
+	  title.innerHTML = str;
+    events.setAttribute('titleHTML', timeValue);
+  }
 }
 
 /**
@@ -1221,7 +1226,7 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
  */
 
 UICalendarPortlet.prototype.dragEnd = function(){
-	gj(this).off('mousemove');
+    gj(this).off('mousemove');
 	var me = _module.UICalendarPortlet;
 	var dragObject = me.dragObject;
 	var eventTop = me.eventTop ;
