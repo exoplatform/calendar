@@ -647,4 +647,9 @@ public class MockCalendarService implements CalendarService{
                                         List<String> unsharedGroups,
                                         String calendarId) throws Exception {
   }
+
+  @Override
+  public CalendarEvent getEventById(String eventId) throws Exception {
+    return null;
+  }
 }
