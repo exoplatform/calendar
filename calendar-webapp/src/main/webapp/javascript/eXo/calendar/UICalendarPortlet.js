@@ -2756,207 +2756,212 @@ gtnav.ScrollManager.prototype.csCheckAvailableSpace = function(maxSpace) { // in
 };
 
 eXo.calendar.EventTooltip = {
-  UTC_0: "UTC:0",
+	UTC_0: "UTC:0",
 	isDnD: false,
 	timer: 1000,
 	getContainer: function(evt){
-		var self = eXo.calendar.EventTooltip;
-		if(self._container) delete self._container;
-		if(!self._container){
-			var eventNode = cs.CSUtils.EventManager.getEventTarget(evt);
-			eventNode = gj(eventNode).parents('.UICalendarPortlet')[0]; 
-			self._container = gj(eventNode).find('div.uiCalPopover')[0];
-			gj(self._container).off('mouseover mouseout click').on({'mouseover':function(evt){
-				self.cleanupTimer(evt);
-				},
-				'mouseout':function(evt){
-					self.hide(evt);
-				},
-				'click':function(evt){
-					self.hideElement();
-					self.editEvent(self.currentEvent);
-				}});
-		}
-	},
-	editEvent: function(eventNode){				
-    var eventId = eventNode.getAttribute("eventId");
-    var calendarId = eventNode.getAttribute("calid");
-    var calendarType = eventNode.getAttribute("caltype");
-    uiForm.submitEvent(_module.UICalendarPortlet.portletId + '#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType);
-	},
-	show: function(evt){
-		var self = eXo.calendar.EventTooltip;
-		self.currentEvent = this;
-		self.cleanupTimer(evt);
-		if(eXo.calendar.EventTooltip.isDnD == true) return;		
-		self.getContainer(evt);
-		self.overTimer = setTimeout(function(){
-			var url = eXo.env.portal.context + "/" + _module.restContext;
-			url += "/cs/calendar/getevent/" + self.currentEvent.getAttribute("eventid");
-			self.makeRequest("GET",url);
-		},self.timer);
-	},
-	hide: function(evt){
-		var self = eXo.calendar.EventTooltip;
-		self.cleanupTimer(evt);
-		self.outTimer = setTimeout(function(){
-			self.hideElement();					
-		},self.timer);
-		eXo.calendar.EventTooltip.isDnD == false;
-	},
-	hideElement: function(){
-		if(this._container) this._container.style.display = "none";
-	},
-	disable: function(evt){
-		this.hideElement();
-		if(evt && cs.CSUtils.EventManager.getMouseButton(evt) != 2) this.isDnD = true;
-	},
-	enable: function(){
-		this.isDnD = false;
-	},
-	cleanupTimer:function(evt){
-		if(this.outTimer) clearTimeout(this.outTimer);
-		if(this.overTimer) clearTimeout(this.overTimer);
-	},
-	makeRequest: function(method, url, queryString){
-		var request = new eXo.portal.AjaxRequest(method, url, queryString) ;
-	  request.onSuccess = this.render ;
-	  request.onLoading = function(){
-			gj(eXo.calendar.EventTooltip._container).find('.popover-content').text("Loading...");
-		} ;
-	  eXo.portal.CurrentRequest = request ;
-	  request.process() ;				
-	},
-	parseData: function(req){
-		var data = gj.parseJSON(req.responseText);
-		var time = this.getRealTime(data);
-		return {
-			title: data.summary,
-			description: data.description,
-			time:time,
-			location: data.location
-		}
-	},
-	// return 1 if event is all day, 2 if event happens in 1 day, 3 for other cases. 
-	isAllday:function(eventObject){
-	    var startDate = new Date(parseInt(eventObject.startDateTime) + parseInt(eventObject.startTimeOffset));
-	    var endDate = new Date(parseInt(eventObject.endDateTime) + parseInt(eventObject.endTimeOffset));
-	    var delta = eventObject.endDateTime - eventObject.startDateTime;
-	    if(startDate.getUTCDate() == endDate.getUTCDate() && startDate.getUTCMonth() == endDate.getUTCMonth()) {
-		return delta == (24*60 - 1)*60*1000 ? 1 : 2;
-	    } else {
-		return 3;
+	    var self = eXo.calendar.EventTooltip;
+	    if(self._container) delete self._container;
+	    if(!self._container){
+		var eventNode = cs.CSUtils.EventManager.getEventTarget(evt);
+		eventNode = gj(eventNode).parents('.UICalendarPortlet')[0]; 
+		self._container = gj(eventNode).find('div.uiCalPopover')[0];
+		gj(self._container).off('mouseover mouseout click').on({'mouseover':function(evt){
+		    self.cleanupTimer(evt);
+		},
+		'mouseout':function(evt){
+		    self.hide(evt);
+		},
+		'click':function(evt){
+		    self.hideElement();
+		    self.editEvent(self.currentEvent);
+		}});
 	    }
 	},
+	editEvent: function(eventNode){				
+	    var eventId = eventNode.getAttribute("eventId");
+	    var calendarId = eventNode.getAttribute("calid");
+	    var calendarType = eventNode.getAttribute("caltype");
+	    uiForm.submitEvent(_module.UICalendarPortlet.portletId + '#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType);
+	},
+	show: function(evt){
+	    var self = eXo.calendar.EventTooltip;
+	    self.currentEvent = this;
+	    self.cleanupTimer(evt);
+	    if(eXo.calendar.EventTooltip.isDnD == true) return;		
+	    self.getContainer(evt);
+	    self.overTimer = setTimeout(function(){
+		var url = eXo.env.portal.context + "/" + _module.restContext;
+		url += "/cs/calendar/getevent/" + self.currentEvent.getAttribute("eventid");
+		self.makeRequest("GET",url);
+	    },self.timer);
+	},
+	hide: function(evt){
+	    var self = eXo.calendar.EventTooltip;
+	    self.cleanupTimer(evt);
+	    self.outTimer = setTimeout(function(){
+		self.hideElement();					
+	    },self.timer);
+	    eXo.calendar.EventTooltip.isDnD == false;
+	},
+	hideElement: function(){
+	    if(this._container) this._container.style.display = "none";
+	},
+	disable: function(evt){
+	    this.hideElement();
+	    if(evt && cs.CSUtils.EventManager.getMouseButton(evt) != 2) this.isDnD = true;
+	},
+	enable: function(){
+	    this.isDnD = false;
+	},
+	cleanupTimer:function(evt){
+	    if(this.outTimer) clearTimeout(this.outTimer);
+	    if(this.overTimer) clearTimeout(this.overTimer);
+	},
+	makeRequest: function(method, url, queryString){
+	    var request = new eXo.portal.AjaxRequest(method, url, queryString) ;
+	    request.onSuccess = this.render ;
+	    request.onLoading = function(){
+		gj(eXo.calendar.EventTooltip._container).find('.popover-content').text("Loading...");
+	    } ;
+	    eXo.portal.CurrentRequest = request ;
+	    request.process() ;				
+	},
+	parseData: function(req){
+	    var data = gj.parseJSON(req.responseText);
+	    var time = this.getRealTime(data);
+	    return {
+		title: data.summary,
+		description: data.description,
+		time:time,
+		location: data.location
+	    }
+	},
+
 	// returns the string for event time
 	// all day: Thu, December 05, 00:00 - 23:59
 	// 1 day: Thu, December 05, 09:00AM - 10:00AM
 	// > 2 days: Thu, December 05, 09:00AM - Fri, December 06, 10:00PM
 	getRealTime: function(data){
 	    var time = "";
-	    var type = this.isAllday(data);
+	    var type = _module.UICalendarPortlet.isAllday(data);
 	    var startDate = new Date(parseInt(data.startDateTime) + parseInt(data.startTimeOffset));
 	    var endDate = new Date(parseInt(data.endDateTime) + parseInt(data.endTimeOffset));
 
-	    var startDayName = gj(".ShortDayName").get(startDate.getUTCDay() - 1).getAttribute("name");
-	    var startMonthName = gj(".LocalizedMonthName").get(startDate.getUTCMonth()).getAttribute("name");
-
-	    var endDayName = gj(".ShortDayName").get(endDate.getUTCDay() - 1).getAttribute("name");
-	    var endMonthName = gj(".LocalizedMonthName").get(endDate.getUTCMonth()).getAttribute("name");
-
-	    var startDateInMonth = startDate.getUTCDate() < 10 ? '0' + startDate.getUTCDate() : startDate.getUTCDate();
-	    var endDateInMonth = endDate.getUTCDate() < 10 ? '0' + endDate.getUTCDate() : endDate.getUTCDate();
-
 	    if(type == 1 ) {
-		return startDayName + ', ' + startMonthName + ' ' + startDateInMonth;
+		return _module.UICalendarPortlet.getDateString(startDate);
 	    }
 	    if(type == 2) {
-		time = startDayName + ', ' + startMonthName + ' ' + startDateInMonth;
-		time += ', ' + this.getFormattedHour(startDate) + ' - ' + this.getFormattedHour(endDate);
+		time = _module.UICalendarPortlet.getDateString(startDate);
+		time += ', ' + _module.UICalendarPortlet.getFormattedHour(startDate) + ' - ' + _module.UICalendarPortlet.getFormattedHour(endDate);
 		return time;
 	    }
 	    else {
-		time = startDayName + ', ' + startMonthName + ' ' + startDateInMonth + ', ' + this.getFormattedHour(startDate);
-		time += ' - ' + endDayName + ', ' + endMonthName + ' ' + endDateInMonth + ', ' + this.getFormattedHour(endDate);
+		time = _module.UICalendarPortlet.getDateString(startDate) + ', ' + _module.UICalendarPortlet.getFormattedHour(startDate);
+		time += ' - ' + _module.UICalendarPortlet.getDateString(endDate) + ', ' + _module.UICalendarPortlet.getFormattedHour(endDate);
 		return time;
 	    }
 	},
-	// get time string with AM or PM localized if needed, for ex: 08:00 AM 
-	getFormattedHour: function(date) {
-	    var hours = date.getUTCHours();
-	    var mins = date.getUTCMinutes();
-	    mins = mins < 10 ? '0' + mins : mins;
-	    // if timeFormat = "HH:mm" -> no AM or PM
-	    if(_module.UICalendarPortlet.timeFormat.length == 5) {
-		hours = hours < 10 ? '0' + hours : hours;
-		return hours + ':' + mins;
-	    } else {
-		var amOrPm = hours >= 12 ? gj("#PMString")[0].getAttribute("name") : gj("#AMString")[0].getAttribute("name");
-		hours = hours - 12;
-		if(hours > 0) {
-			hours = hours < 10 ? '0' + hours : hours;
-			return hours + ':' + mins + ' ' + amOrPm;
- 
-		} else {
-		    hours = hours + 12;
-		    hours = hours < 10 ? '0' + hours : hours;
-		    return hours + ':' + mins + ' ' + amOrPm;
-		}
-	    }
-	},
+
 	convertTimezone: function(datetime){
-		var time = parseInt(datetime.time);
-		var eventTimezone = parseInt(datetime.timezoneOffset);
-		var settingTimezone = parseInt(_module.UICalendarPortlet.settingTimezone);
-		time += (eventTimezone + settingTimezone)*60*1000;
-		return time;
+	    var time = parseInt(datetime.time);
+	    var eventTimezone = parseInt(datetime.timezoneOffset);
+	    var settingTimezone = parseInt(_module.UICalendarPortlet.settingTimezone);
+	    time += (eventTimezone + settingTimezone)*60*1000;
+	    return time;
 	},
 	render: function(req){		
-		var self = eXo.calendar.EventTooltip;
-		var data = self.parseData(req);
-		if(!data) return ;
-		var color = gj(self.currentEvent).attr('class').split(' ')[2];
-		if(!color) {
-            color = gj(self.currentEvent).find('.eventOnDayBorder').attr('class').split(' ')[1];
-        }
-		var html = '<div class="title clearfix"><div class="pull-left"><span class="colorBox ' + color + '"></span></div><div class="text">'  + data.title + '</div></div>';
-		html += '<div class="time clearfix"><div class="pull-left"><i class="uiIconCalClockMini"></i></div><div class="text">' + data.time + '</div></div>';
-		if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + data.location + '</div></div>';
-		if(data.description) html += '<div class="description ">' + data.description + '</div>';
-		self._container.style.display = "block";
-		//self._container.innerHTML = '<div class="popover top"><span class="arrow"></span><div class="popover-content">' + html + '</div></div>';
-        var popoverContent = gj(self._container).find('.popover-content');
-        popoverContent.text('');
-		popoverContent.append(html);
-        self._container.style.zIndex = 1000;
-		self.positioning();
+	    var self = eXo.calendar.EventTooltip;
+	    var data = self.parseData(req);
+	    if(!data) return ;
+	    var color = gj(self.currentEvent).attr('class').split(' ')[2];
+	    if(!color) {
+		color = gj(self.currentEvent).find('.eventOnDayBorder').attr('class').split(' ')[1];
+	    }
+	    var html = '<div class="title clearfix"><div class="pull-left"><span class="colorBox ' + color + '"></span></div><div class="text">'  + data.title + '</div></div>';
+	    html += '<div class="time clearfix"><div class="pull-left"><i class="uiIconCalClockMini"></i></div><div class="text">' + data.time + '</div></div>';
+	    if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + data.location + '</div></div>';
+	    if(data.description) html += '<div class="description ">' + data.description + '</div>';
+	    self._container.style.display = "block";
+	    //self._container.innerHTML = '<div class="popover top"><span class="arrow"></span><div class="popover-content">' + html + '</div></div>';
+	    var popoverContent = gj(self._container).find('.popover-content');
+	    popoverContent.text('');
+	    popoverContent.append(html);
+	    self._container.style.zIndex = 1000;
+	    self.positioning();
 	},
 	positioning: function(){
-		var offsetTooltip = this._container.offsetParent;
-		var offsetEvent = this.currentEvent.offsetParent;
-		if(_module.UICalendarPortlet.viewType == "UIDayView") 
-			offsetEvent = gj(offsetEvent).parents(".eventDayContainer")[0];
-		var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2
-		var extraY = 0;
-		var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
-		var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;		
-		this._container.style.top = y + "px";
+	    var offsetTooltip = this._container.offsetParent;
+	    var offsetEvent = this.currentEvent.offsetParent;
+	    if(_module.UICalendarPortlet.viewType == "UIDayView") 
+		offsetEvent = gj(offsetEvent).parents(".eventDayContainer")[0];
+	    var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2
+	    var extraY = 0;
+	    var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
+	    var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;		
+	    this._container.style.top = y + "px";
+	    this._container.style.left = x + "px";
+	    var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
+	    if(relativeX > document.documentElement.offsetWidth) {
+		extraX = document.documentElement.offsetWidth - relativeX;
+		x += extraX;
 		this._container.style.left = x + "px";
-		var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
-		if(relativeX > document.documentElement.offsetWidth) {
-			extraX = document.documentElement.offsetWidth - relativeX;
-			x += extraX;
-			this._container.style.left = x + "px";
-		}
+	    }
 	}	
 }
+// return 1 if event is all day, 2 if event happens in 1 day, 3 for other cases. 
+
+UICalendarPortlet.prototype.isAllday = function(eventObject) {
+    var startDate = new Date(parseInt(eventObject.startDateTime) + parseInt(eventObject.startTimeOffset));
+    var endDate = new Date(parseInt(eventObject.endDateTime) + parseInt(eventObject.endTimeOffset));
+    var delta = eventObject.endDateTime - eventObject.startDateTime;
+    if(startDate.getUTCDate() == endDate.getUTCDate() && startDate.getUTCMonth() == endDate.getUTCMonth()) {
+	return delta == (24*60 - 1)*60*1000 ? 1 : 2;
+    } else {
+	return 3;
+    }
+};
+// get time string with AM or PM localized if needed, for ex: 08:00 AM 
+
+UICalendarPortlet.prototype.getFormattedHour = function(date) {
+    var hours = date.getUTCHours();
+    var mins = date.getUTCMinutes();
+    mins = mins < 10 ? '0' + mins : mins;
+    // if timeFormat = "HH:mm" -> no AM or PM
+    if(_module.UICalendarPortlet.timeFormat.length == 5) {
+	hours = hours < 10 ? '0' + hours : hours;
+	return hours + ':' + mins;
+    } else {
+	var amOrPm = hours >= 12 ? gj("#PMString")[0].getAttribute("name") : gj("#AMString")[0].getAttribute("name");
+	hours = hours - 12;
+	if(hours > 0) {
+	    hours = hours < 10 ? '0' + hours : hours;
+	    return hours + ':' + mins + ' ' + amOrPm;
+
+	} else {
+	    hours = hours + 12;
+	    hours = hours < 10 ? '0' + hours : hours;
+	    return hours + ':' + mins + ' ' + amOrPm;
+	}
+    }
+};
+
+UICalendarPortlet.prototype.getDateString = function(date) {
+    var dateString = "";
+    var type = _module.UICalendarPortlet.isAllday(date);
+
+    var dayName = gj(".ShortDayName").get(date.getUTCDay() - 1).getAttribute("name");
+    var monthName = gj(".LocalizedMonthName").get(date.getUTCMonth()).getAttribute("name");
+    var dateInMonth = date.getUTCDate() < 10 ? '0' + date.getUTCDate() : date.getUTCDate();
+
+    return dayName + ", " + monthName + " " + dateInMonth;
+
+};
 
 
 //eXo.calendar.CalendarScrollManager = new CalendarScrollManager();
 _module.CalendarScrollManager = new CalendarScrollManager();
 eXo.calendar.CalendarScrollManager = _module.CalendarScrollManager;
-
-
 
 UICalendarPortlet.prototype.useAuthenticationForRemoteCalendar = function(id) {
   var USE_AUTHENTICATION = "useAuthentication";
@@ -3019,7 +3024,6 @@ UICalendarPortlet.prototype.editRepeat = function(id) {
 }
 
 UICalendarPortlet.prototype.changeRepeatType = function(id) {
-    console.log(id);
   var weeklyByDayClass = "weeklyByDay";
   var monthlyTypeClass = "monthlyType";
   var RP_END_AFTER = "endAfter";

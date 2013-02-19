@@ -30,6 +30,8 @@
       
       <div class="UICalendarEventTooltip" ><span></span></div>
     
+    <div id="restContext" value="<%= uicomponent.getRestContextName() %>"></div>
+
     <div id="shareCalendarNotification" class="alert uiNotification uiCalNotification" style="display:none;">
       <a data-dismiss="alert" href="#" class="close " data-placement="bottom" rel="tooltip"  data-original-title="close"><i class="uiIconClose uiIconLightGray"></i></a>
       <div class="text"></div>
@@ -45,20 +47,19 @@
 			</div>
 			<div class="notificationBox">
 				<div class="title">
-					<p>Event/Task title</p>
+					<p></p>
 				</div>
 				<div class="clearfix">
 					<div class="pull-left"><i class="uiIconClock uiIconLightGray"></i></div>
 					<div class="text">
-						<p class="fromTime">Sun january 12 , 2012 10: 00AM</p>
-						<p class="toTime">Mon january 12 , 2012 10: 00AM</p>
+						<p class="time"></p>
 					</div>
 				</div>
 				<div class="clearfix">
 					<div class="pull-left"><i class="uiIconCheckin uiIconLightGray"></i></div>
 					<div class="text">
-						<p class="location">M8  18 Thai Ha</p>
-						<p class="description">Event/task description in details..</p>
+						<p class="location"></p>
+						<p class="description"></p>
 					</div>
 				</div>
 			</div>			

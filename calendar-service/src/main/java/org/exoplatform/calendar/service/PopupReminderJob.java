@@ -17,7 +17,6 @@
 package org.exoplatform.calendar.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -34,8 +33,6 @@ import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
-import org.exoplatform.ws.frameworks.json.value.JsonValue;
 import org.quartz.JobExecutionContext;
 
 public class PopupReminderJob extends MultiTenancyJob {
@@ -61,7 +58,6 @@ public class PopupReminderJob extends MultiTenancyJob {
           log_.debug("Calendar popup reminder service");
         java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
         ContinuationService continuation = (ContinuationService) container.getComponentInstanceOfType(ContinuationService.class);
-        CalendarService calendarService = (CalendarService) container.getComponentInstanceOfType(CalendarService.class);
         Node calendarHome = Utils.getPublicServiceHome(provider);
         if (calendarHome == null)
           return;
@@ -111,11 +107,7 @@ public class PopupReminderJob extends MultiTenancyJob {
         if (!popupReminders.isEmpty()) {
           for (Reminder rmdObj : popupReminders) {
             for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
-              CalendarEvent event = calendarService.getEventById(rmdObj.getId());
-              JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
-              JsonValue json = generatorImpl.createJsonObject(event);
-              continuation.sendMessage(user, "/eXo/Application/Calendar/messages", json);
-              log_.info(String.format("sent message for event: %s", event.getSummary()));
+              continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
             }
           }
         }
