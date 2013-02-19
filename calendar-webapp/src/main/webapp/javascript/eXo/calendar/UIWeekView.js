@@ -393,6 +393,10 @@ UIWeekView.prototype.removeTooltip = function(){
 	}
 };
 
+/**
+ * resize the event in weekview
+ * minimum height is 15px
+ */
 UIWeekView.prototype.initResize = function(evt) {
 	eXo.calendar.EventTooltip.disable(evt);
 	var _e = window.event || evt ;
@@ -401,16 +405,20 @@ UIWeekView.prototype.initResize = function(evt) {
 	//_e.cancelBubble = true ;
 	if(_e.button == 2) return ;
 	var UIResizeEvent = eXo.calendar.UIResizeEvent ;
-	var outerElement = gj(this).parents('.eventContainerBorder')[0]; 
-	var innerElement = gj(this).prevAll('div')[0];
+	// this : the marker - div tag with class resizeEventContainer
+	var eventContainer = gj(this).parents('.eventContainerBorder')[0]; 
+	var siblingOfMarker = gj(this).prevAll('div')[0];
 	var container = gj("#UIWeekViewGrid").parents('.eventWeekContent')[0];
-	var minHeight = 15 ;
+	var minHeight = 15 ; // minimum height is 15 px
 	var interval = _module.UICalendarPortlet.interval ;
-	UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval) ;
+	UIResizeEvent.start(_e, siblingOfMarker, eventContainer, container, minHeight, interval) ;
 	_module.UICalendarPortlet.dropCallback = _module.UIWeekView.resizeCallback;
-	_module.UICalendarPortlet.setPosition(outerElement);
+	_module.UICalendarPortlet.setPosition(eventContainer);
 } ;
 
+/**
+ * update event after resizing
+ */
 UIWeekView.prototype.resizeCallback = function(evt) {
     var UICalendarPortlet = _module.UICalendarPortlet;
     var UIResizeEvent = eXo.calendar.UIResizeEvent ;

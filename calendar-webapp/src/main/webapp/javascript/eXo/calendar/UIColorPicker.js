@@ -5,7 +5,7 @@ eXo.calendar = eXo.calendar || {} ;
 
 function UIColorPicker() {}
 
-/* 
+/**
  * entry point of color picker, invoked when clicking on the color picker input
  * adapt the popup to overlap the parent div (tab Details)
  * note that we use boopstrap dropdown to display the table color
@@ -27,7 +27,7 @@ UIColorPicker.prototype.adaptPopup = function(inputColorPicker) {
   gj(this.tableColor).css('top', offsetTop + 'px');
 };
 
-/*
+/**
  * change color of current input 
  * @param a tag with colorCell class
  */
@@ -44,7 +44,7 @@ UIColorPicker.prototype.setColor = function(colorCell) {
 };
 
 
-/*
+/**
  * clear the selected cell
  */
 UIColorPicker.prototype.clearSelectedColor = function() {  

@@ -1046,11 +1046,10 @@ UIResizeEvent.prototype.execute = function(evt){
         if (mDelta % UIResizeEvent.interval == 0) {
             UIResizeEvent.outerElement.style.height = UIResizeEvent.beforeHeight - 2 + mDelta + "px";
             UIResizeEvent.innerElement.style.height = UIResizeEvent.innerElementHeight + mDelta + "px";
-            
         }
     }
 		var min = (base.Browser.isIE6())?(UIResizeEvent.outerElement.offsetTop - 1) : UIResizeEvent.outerElement.offsetTop;
-		_module.UICalendarPortlet.updateTitle(UIResizeEvent.outerElement, UIResizeEvent.outerElement.offsetTop, 1);
+        _module.UICalendarPortlet.updateTitle(UIResizeEvent.outerElement, UIResizeEvent.outerElement.offsetTop, 1);
 };
 
 /**
@@ -1196,30 +1195,36 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
   for(var j = 0; j < arr.length - 1; j++) {
     str += arr[j] + "</i>";
   }
-    
+   
   var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
   timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
 	  am: "AM",
 	  pm: "PM"
   };
 
+  var timeValue;
   if (type == 1) {
-	  title.innerHTML = str + this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
-  }
-    
-  //update string for start - end time
-  if (delta > 30)	{
-    var timeValue = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
-	  str += timeValue;
-	  title.innerHTML = str;
-    events.setAttribute('titleHTML', timeValue);
-  } else {
-    var timeValue = this.minToTime(min,timeFormat);
-	  str += timeValue;
-	  title.innerHTML = str;
+    // action resizing
+    timeValue = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
+    title.innerHTML = str + timeValue;
     events.setAttribute('titleHTML', timeValue);
   }
-}
+  else {
+    // action moving event  
+    // update string for start - end time
+    if (delta > 30)	{
+      timeValue = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
+      str += timeValue;
+      title.innerHTML = str;
+      events.setAttribute('titleHTML', timeValue);
+    } else {
+      timeValue = this.minToTime(min,timeFormat);
+	  str += timeValue;
+	  title.innerHTML = str;
+      events.setAttribute('titleHTML', timeValue);
+    }
+  }
+};
 
 /**
  * End calendar event dragging, this method clean up some unused properties and execute callback function
