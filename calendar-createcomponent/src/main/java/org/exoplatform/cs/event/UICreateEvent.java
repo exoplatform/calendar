@@ -215,8 +215,8 @@ public class UICreateEvent extends UIForm {
           calService.savePublicEvent(calEvent.getCalendarId(), calEvent, true);
         }
         String defaultMsg = "The {0} added to the {1}.";
-        String message =  UICreateEvent.getResourceBundle(uiForm.getId()+".msg.add-successfully",defaultMsg);
-        message = message.replace("{0}", calEvent.getEventType()).replace("{1}", calName);
+        String message =  UICreateEvent.getResourceBundle(uiForm.getId()+".msg.add-successfully."+ calEvent.getEventType(),defaultMsg);
+        message = message.replace("{1}", calName);
         Event<UIComponent> cancelEvent = uiForm.<UIComponent>getParent().createEvent("Cancel", Event.Phase.PROCESS, event.getRequestContext());
         if (cancelEvent != null) {
           cancelEvent.broadcast();
