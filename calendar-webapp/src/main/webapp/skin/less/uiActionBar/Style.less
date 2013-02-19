@@ -7,7 +7,6 @@
 	}
 	.settingActionBar{
 		margin: 5px 15px 0 9px;
-		display: inline-block;
 	}
 	.leftActionBar{
 		margin-right: 260px;
@@ -16,10 +15,14 @@
 		background: #cbcbcb;
 		.box-shadow(1px 0 0 #fff);
 		width: 1px;
-		height: 25px;
+		height: 26px;		
 		display: inline-block;
 		vertical-align: middle;
 		margin-right: 7px;
+		&.pull-right {
+			top: 1px;
+			position: relative;
+		}
 	}
 	.alignBtnGroup{
 		text-align: center;

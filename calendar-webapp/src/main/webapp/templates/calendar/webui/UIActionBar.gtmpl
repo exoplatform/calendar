@@ -15,11 +15,11 @@
 <div id="$uicomponent.id" class="uiActionBar uiGrayLightBox clearfix"> 
 	<div class="pull-right">
 		<%uicomponent.renderChild(UISearchForm.class)%>
-		<span class="separatorLine"></span>
-		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>">
+		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar  pull-right"  rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>">
 			<i class="uiIconSetting uiIconLightGray"></i>
 		</a>
 		
+		<span class="separatorLine pull-right"></span>
 	</div>
 	<div class="pull-left">
 		<div class="Title ControlButton ActionBarButton">
