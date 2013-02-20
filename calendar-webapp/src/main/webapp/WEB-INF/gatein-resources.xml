@@ -193,6 +193,10 @@
       <path>/javascript/eXo/calendar/UICalendarDragDrop.js</path>
     </script>
     <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
       <module>csResources</module>
       <as>cs</as>
     </depends>

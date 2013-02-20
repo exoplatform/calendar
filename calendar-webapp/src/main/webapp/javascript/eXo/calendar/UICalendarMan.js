@@ -1134,5 +1134,6 @@ eXo.calendar.UICalendarMan = {
 _module.UICalendarMan = eXo.calendar.UICalendarMan;
 eXo.calendar.Highlighter = Highlighter.Highlighter;
 _module.Highlighter = Highlighter.Highlighter;
+
 return _module;
 })(cs, gj, Highlighter);

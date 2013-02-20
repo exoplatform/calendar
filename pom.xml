@@ -5,7 +5,7 @@
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
     <version>9-beta-1</version>
-    <relativePath />
+    <relativePath></relativePath>
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
@@ -24,12 +24,11 @@
     <module>calendar-statistics</module>
     <module>calendar-createcomponent</module>
   </modules>
-
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
-    <url>http://fisheye.exoplatform.org/browse/calendar</url>
     <tag>HEAD</tag>
+    <url>http://fisheye.exoplatform.org/browse/calendar</url>
   </scm>
   <properties>
     <!-- **************************************** -->
@@ -72,9 +71,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-         <groupId>org.exoplatform.calendar</groupId>
-         <artifactId>calendar-component-create</artifactId>
-         <version>${project.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-component-create</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -482,6 +481,12 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.portal</artifactId>
         <version>${org.gatein.portal.version}</version>
+        <classifier>tests</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.gatein.portal</groupId>
+        <artifactId>exo.portal.component.portal</artifactId>
+        <version>${org.gatein.portal.version}</version>
         <exclusions>
           <exclusion>
             <!-- To be fixed in the original project -->
@@ -678,7 +683,7 @@
     </dependencies>
   </dependencyManagement>
   <build>
-     <pluginManagement>
+    <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

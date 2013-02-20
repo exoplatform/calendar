@@ -1,38 +1,77 @@
-<div class="uiQuickAddEvent" id="QuickAddEventContainer">
-	<div class="quickAddEventContainer">
-		<% uiform.begin()%>
-				<div class="form-horizontal">
-					<div class="control-group">
-						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.CHOIX)%>:</label>
-						<div class="controls">
-							<% uicomponent.renderField(uicomponent.CHOIX) %>
-						</div>
-					</div>    
-					<div class="control-group">
-						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.TITLE )%>:</label>
-						<div class="controls">
-							<% uicomponent.renderField(uicomponent.TITLE ) %>
-						</div>
-					</div>    
-					<div class="control-group">
-						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.Start_EVENT )%>:</label>
-						<div class="controls">
-							<% uicomponent.renderField(uicomponent.Start_EVENT) %>
-						</div>
-					</div>    
-					<div class="control-group">
-						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.END_EVENT )%>:</label>
-						<div class="controls">
-							<% uicomponent.renderField(uicomponent.END_EVENT) %>
-						</div>
-					</div>   
-					<div class="control-group">
-						<label class="control-label" ><%=uicomponent.getLabel(uicomponent.CALENDAR )%>:</label>
-						<div class="controls">
-							<% uicomponent.renderField(uicomponent.CALENDAR ) %>
-						</div>
-					</div>   
-				</div>
+ <%
+ def rcontext = _ctx.getRequestContext() ;
+ def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ requireJS.require("SHARED/uiForm");
+ requireJS.require("SHARED/TimePicker", "picker");
+ requireJS.addScripts('picker.datePattern="'+uicomponent.getDateTimeFormat()+'";');
+ requireJS.addScripts('picker.initTime("'+ uicomponent.id +'");');
+ 
+ %>
+ <script>
+ 
+ 
+ </script>
+<% uiform.begin()%>
+<div class="UIQuickAddEvent">
+	<div class="QuickAddEventContainer">
+
+		<div class="HorizontalLayout">
+			<div class="FormContainer">
+				<table class="UIFormGrid">
+					<tbody>
+						<tr>
+							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.CHOIX)%>
+							</td>
+							<td class="FieldComponent" colspan="2">
+								<% uicomponent.renderField(uicomponent.CHOIX) %>
+							</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.TITLE )%>
+							</td>
+							<td class="FieldComponent" colspan="2">
+								<% uicomponent.renderField(uicomponent.TITLE ) %>
+							</td>
+						</tr>
+						<tr>
+							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.Start_EVENT )%>
+							</td>
+								<td class="FieldComponent" >
+							   <div id="startDateId"  class="Date">
+									<% uicomponent.renderField(uicomponent.Start_EVENT) %>
+							   </div>
+								</td>
+							<td class="FieldComponent">
+							 <div id="startTimeId" class="Time">
+                  <% uicomponent.renderField(uicomponent.START_TIME) %>
+               </div>
+              </td>
+						</tr>
+						<tr>
+							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.END_EVENT )%>
+							</td>
+							<td class="FieldComponent">
+							   <div id="endDateId" class="Date">
+									<% uicomponent.renderField(uicomponent.END_EVENT) %>
+							   </div>
+							</td>
+							<td class="FieldComponent">
+               <div id="endTimeId" class="Time">
+                  <% uicomponent.renderField(uicomponent.END_TIME) %>
+               </div>
+              </td>
+						</tr>
+						<tr>
+							<td class="FieldLabel"><%=uicomponent.getLabel(uicomponent.CALENDAR )%>
+							</td>
+							<td class="FieldComponent" colspan="2">
+								<% uicomponent.renderField(uicomponent.CALENDAR ) %>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
 		<% if(uicomponent.getActions() != null) { %>
 			<div id="$uicomponent.id" class="uiAction uiActionBorder">
 				<% for(action in uicomponent.getActions()) { %>
@@ -40,6 +79,7 @@
 				<% } %>
 			</div>
 		<% }%>
-		<%uiform.end()%>
+
 	</div>
 </div>
+<%uiform.end()%>

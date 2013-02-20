@@ -62,9 +62,9 @@ import javax.servlet.http.HttpServletRequest;
 )
 public class UIPreview extends UICalendarView implements UIPopupComponent
 {
+  private static final Log LOG = ExoLogger.getExoLogger(UIPreview.class);
   private CalendarEvent event_ = null ;
   private boolean isShowPopup_ = false ;
-  private static final Log LOG = ExoLogger.getExoLogger(UIPreview.class);
 
   public static final int DEFAULT_THUMBNAIL_DIMENSION = 50;
   public static final int DEFAULT_PREVIEW_DIMENSION   = 170;
