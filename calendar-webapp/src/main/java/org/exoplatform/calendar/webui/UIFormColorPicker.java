@@ -198,7 +198,7 @@ public class UIFormColorPicker extends UIFormInputBase<String>
     requireJS.require("SHARED/bts_dropdown","btsdropdown");
     requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
 
-    requireJS.addScripts("gj('div.uiColorPickerInput').click(function(){ cal.UIColorPicker.adaptPopup(this); });");
+    requireJS.addScripts("gj(document).ready(function() { gj('div.uiColorPickerInput').click(function(){ cal.UIColorPicker.adaptPopup(this); }); });");
     requireJS.addScripts("gj('a.colorCell').click(function(){ cal.UIColorPicker.setColor(this); });");
 
     String value = getValue();
