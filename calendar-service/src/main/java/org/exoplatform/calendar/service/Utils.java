@@ -21,7 +21,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.jcr.Node;
@@ -240,6 +242,8 @@ public class Utils {
   public static final String EXO_REPEAT_BYMONTHDAY      = "exo:repeatByMonthDay";
 
   public static final String EXO_REPEAT_FINISH_DATE     = "exo:repeatFinishDate";
+  
+  public static final String EXO_DATE_CREATED           = "exo:dateCreated";
 
   public static final String X_STATUS                   = "X-STATUS".intern();
 
@@ -263,6 +267,8 @@ public class Utils {
 
   public static final String JCR_DATA                   = "jcr:data".intern();
 
+  public static final String JCR_SCORE                  = "jcr:score";
+  
   public static final String MIMETYPE_TEXTPLAIN         = "text/plain".intern();
 
   public static final String MIMETYPE_ICALENDAR         = "TEXT/CALENDAR".intern();
@@ -366,7 +372,35 @@ public class Utils {
   public static final String MIMETYPE_TEXTHTML          = "text/html".intern();
 
   public static String[]     SYNC_PERIOD                = { SYNC_AUTO, SYNC_5MINS, SYNC_10MINS, SYNC_15MINS, SYNC_1HOUR, SYNC_1DAY, SYNC_1WEEK, SYNC_1YEAR };
+  
+  //Unified search
+  public static final String DETAIL_PATH = "details";
+  public static final String DUE_FOR = "Due for: ";
+  public static final String ORDER_TYPE_ASCENDING                  = "ASC";
+  public static final String ORDER_TYPE_DESCENDING                 = "DESC";
+  public static final String DOT = ".";
 
+  public static String  ORDERBY_RELEVANCY  = "relevancy" ;
+  public static String  ORDERBY_DATE  = "date" ;
+  public static String  ORDERBY_TITLE  = "title" ;
+  public static String  DATE_TIME_FORMAT = "EEEEE, MMMMMMMM d, yyyy K:mm a";
+  public static String  JCR_EXCERPT = "excerpt(.)";
+  public static String  JCR_EXCERPT_ROW = "rep:excerpt(.)";
+  
+  public final static Map<String, String> SORT_FIELD_MAP = new LinkedHashMap<String, String>(){{
+    put(ORDERBY_RELEVANCY, JCR_SCORE);
+    put(ORDERBY_DATE, EXO_DATE_CREATED);
+    put(ORDERBY_TITLE, EXO_SUMMARY);
+  }};
+  
+  public final static String[] SELECT_FIELDS =  {JCR_EXCERPT, EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION,
+    EXO_FROM_DATE_TIME, EXO_TO_DATE_TIME, EXO_EVENT_STATE, EXO_DATE_CREATED, JCR_SCORE, EXO_ID, EXO_CALENDAR_ID, EXO_EVENT_TYPE};
+  
+  public static String[] SEARCH_FIELDS = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
+  
+  public static String EVENT_ICON = "Icon" ;
+  public static String TASK_ICON = "uiIconAct" ;
+  
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
    * @return GregorianCalendar

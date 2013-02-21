@@ -5,7 +5,7 @@
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
     <version>9-beta-1</version>
-    <relativePath />
+    <relativePath></relativePath>
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
@@ -24,12 +24,11 @@
     <module>calendar-statistics</module>
     <module>calendar-createcomponent</module>
   </modules>
-
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
-    <url>http://fisheye.exoplatform.org/browse/calendar</url>
     <tag>HEAD</tag>
+    <url>http://fisheye.exoplatform.org/browse/calendar</url>
   </scm>
   <properties>
     <!-- **************************************** -->
@@ -49,8 +48,8 @@
     <org.exoplatform.ws.version>2.3.0-GA</org.exoplatform.ws.version>
     <org.exoplatform.jcr.version>1.15.0-GA</org.exoplatform.jcr.version>
     <org.gatein.portal.version>3.5.0.Final</org.gatein.portal.version>
-    <org.exoplatform.commons.version>4.0.0-SNAPSHOT</org.exoplatform.commons.version>
     <org.gatein.wci.version>2.3.0.Final</org.gatein.wci.version>
+    <org.exoplatform.commons.version>4.0.0-SNAPSHOT</org.exoplatform.commons.version>
     <org.exoplatform.social.version>4.0.0-SNAPSHOT</org.exoplatform.social.version>
   </properties>
   <dependencyManagement>
@@ -70,9 +69,9 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-         <groupId>org.exoplatform.calendar</groupId>
-         <artifactId>calendar-component-create</artifactId>
-         <version>${project.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-component-create</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -670,7 +669,7 @@
     </dependencies>
   </dependencyManagement>
   <build>
-     <pluginManagement>
+    <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
