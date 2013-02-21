@@ -133,7 +133,7 @@
       <name>ecm.new.group.event.listener</name>
       <set-method>addListenerPlugin</set-method>
       <type>org.exoplatform.services.jcr.ext.hierarchy.impl.NewGroupListener</type>
-      <description>description</description>
+      <description>listener for new group</description>
       <init-params>
         <object-param>
           <name>configuration></name>
@@ -171,7 +171,7 @@
       <name>ecm.new.user.event.listener</name>
       <set-method>addListenerPlugin</set-method>
       <type>org.exoplatform.services.jcr.ext.hierarchy.impl.NewUserListener</type>
-      <description>description</description>
+      <description>listener for new user</description>
       <init-params>
         <object-param>
           <name>configuration</name>

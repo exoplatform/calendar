@@ -36,12 +36,12 @@
         </value-param>
         <!--Params for default calendar setting-->
         <value-param>
-         <name>viewType</name>
+         <name>viewType</name><!-- default view type -->
          <value>1</value><!-- DAY_VIEW = "0" ; WEEK_VIEW = "1" ; MONTH_VIEW = "2" ; YEAR_VIEW = "3" ; LIST_VIEW = "4" ; SCHEDULE_VIEW = "5" ; WORKING_VIEW = "6" ;-->
         </value-param>
         
         <value-param>
-         <name>weekStartOn</name>
+         <name>weekStartOn</name><!-- default start day of the week -->
          <value>2</value><!--SUNDAY = "1" ; MONDAY = "2" ; TUESDAY = "3" ; WEDNESDAY = "4" ; THURSDAY = "5" ; FRIDAY = "6" ;SATURDAY = "7" ;-->
         </value-param>
         
@@ -66,23 +66,23 @@
         </value-param>
         
          <value-param>
-         <name>baseUrlForRss</name>
-         <value>philippe</value>
+         <name>baseUrlForRss</name><!-- base url for rss -->
+         <value>philippe</value><!-- default value is <serverBaseUrl>/calendar/iCalRss  -->
         </value-param>
         
          <value-param>
-         <name>isShowWorkingTime</name>
+         <name>isShowWorkingTime</name><!-- show working time, area out of working time is darkened in the calendar view-->
          <value>false</value><!-- boolean true/false -->
         </value-param>
         
          <value-param>
-         <name>workingTimeBegin</name>
-         <value>08:00</value><!--  -->
+         <name>workingTimeBegin</name><!-- begin time of working day -->
+         <value>08:00</value>
         </value-param>
         
          <value-param>
-           <name>workingTimeEnd</name>
-           <value>18:00</value><!--  -->
+           <name>workingTimeEnd</name><!-- end time of working day -->
+           <value>18:00</value>
         </value-param>
         
         <values-param>
