@@ -43,7 +43,7 @@
     Reminder.prototype.alarm = function(eventObj){
 	var eventId = eventObj.data;
 	var popupReminder = gj('#popupReminder');
-	var url = eXo.env.portal.context + "/" + gj("#restContext").attr("value") + "/cs/calendar/getevent/" + eventId;
+	var url = eXo.env.portal.context + "/" + gj("#restContext").attr("value") + "/cs/calendar/geteventbyid/" + eventId;
 	gj.getJSON(url, function(data) {
 	    popupReminder.find('.title').html(data.summary);
 	    popupReminder.find('p.time').html(_module.Reminder.getTimeString(data));

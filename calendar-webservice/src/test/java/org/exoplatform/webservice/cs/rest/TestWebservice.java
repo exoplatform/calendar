@@ -17,16 +17,11 @@
 
 package org.exoplatform.webservice.cs.rest;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.ListIterator;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import org.exoplatform.calendar.service.Calendar;
@@ -34,7 +29,6 @@ import org.exoplatform.calendar.service.CalendarCategory;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.common.http.HTTPStatus;
-import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.RuntimeDelegateImpl;
@@ -234,6 +228,36 @@ public class TestWebservice extends AbstractResourceTest {
     calendarService.saveUserEvent(extURI, cal.getId(), calE, true);
     
     String eventURI = "/cs/calendar/getevent/" + calE.getId();
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service("GET", eventURI, baseURI, h, null, writer);
+    
+    assertNotNull(response);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    
+    deleteData(username, calCate.getId());
+    
+  }
+  
+  public void testGetEventById() throws Exception {
+
+    //Create calendar
+    CalendarCategory calCate = createCalendarCategory("categoryName");
+    calendarService.saveCalendarCategory(username, calCate, true) ;
+
+    //create/get calendar in private folder
+    Calendar cal = createCalendar("myCalendar",calCate.getId());
+     
+
+    String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
+
+    cal.setPublicUrl(extURI);
+    
+    calendarService.saveUserCalendar(username, cal, true);
+    
+    CalendarEvent calE = createEvent("newEvent", cal.getId(), new Date(), new Date(), CalendarEvent.TYPE_EVENT);
+    calendarService.saveUserEvent(extURI, cal.getId(), calE, true);
+    
+    String eventURI = "/cs/calendar/geteventbyid/" + calE.getId();
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service("GET", eventURI, baseURI, h, null, writer);
     

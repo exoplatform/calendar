@@ -650,6 +650,7 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public CalendarEvent getEventById(String eventId) throws Exception {
-    return null;
+    Iterator<List<CalendarEvent>> iter = data_.values().iterator() ; 
+    return iter.next().get(0) ;
   }
 }

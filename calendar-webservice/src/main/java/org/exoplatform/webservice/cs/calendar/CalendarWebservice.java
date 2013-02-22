@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import javax.annotation.security.RolesAllowed;
-import javax.jcr.PathNotFoundException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -630,7 +629,7 @@ public class CalendarWebservice implements ResourceContainer{
   }
   
   /**
-   * Produce the content of a given event basing on its Id.
+   * Produce the content of a given private event basing on its Id.
    * It requires authentication and permission of the _Users_ group only.
    * @param eventid The event Id.
    * @return JSon data type 
@@ -648,6 +647,36 @@ public class CalendarWebservice implements ResourceContainer{
       }
       String username = ConversationState.getCurrent().getIdentity().getUserId();
       CalendarEvent calEvent = calendarService.getEvent(username, eventid);
+      CalendarSetting calSetting = calendarService.getCalendarSetting(username);
+      if(calEvent.getAttachment()!= null && !calEvent.getAttachment().isEmpty()) calEvent.setAttachment(null);
+      SingleEvent data = makeSingleEvent(calSetting, calEvent);
+      //data.setCalendars(calList);
+      return Response.ok(data, MediaType.APPLICATION_JSON).cacheControl(cc).build();
+    }catch(Exception e){
+      return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
+    }
+  }
+  
+  
+  /**
+   * Produce the content of a given event basing on its Id.
+   * It requires authentication and permission of the _Users_ group only.
+   * @param eventid The event Id.
+   * @return JSon data type 
+   * @throws Exception
+   * 
+   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEventById
+   */
+  @GET
+  @RolesAllowed("users")
+  @Path("/geteventbyid/{eventid}")
+  public Response getEventById(@PathParam("eventid") String eventid) throws Exception{
+    try{      
+      if(getCalendarService() instanceof Response) {
+        return (Response) getCalendarService();
+      }
+      String username = ConversationState.getCurrent().getIdentity().getUserId();
+      CalendarEvent calEvent = calendarService.getEventById(eventid);
       CalendarSetting calSetting = calendarService.getCalendarSetting(username);
       if(calEvent.getAttachment()!= null && !calEvent.getAttachment().isEmpty()) calEvent.setAttachment(null);
       SingleEvent data = makeSingleEvent(calSetting, calEvent);

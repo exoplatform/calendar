@@ -2758,7 +2758,7 @@ gtnav.ScrollManager.prototype.csCheckAvailableSpace = function(maxSpace) { // in
 eXo.calendar.EventTooltip = {
 	UTC_0: "UTC:0",
 	isDnD: false,
-	timer: 1000,
+	timer: 500,
 	getContainer: function(evt){
 	    var self = eXo.calendar.EventTooltip;
 	    if(self._container) delete self._container;
@@ -2792,7 +2792,7 @@ eXo.calendar.EventTooltip = {
 	    self.getContainer(evt);
 	    self.overTimer = setTimeout(function(){
 		var url = eXo.env.portal.context + "/" + _module.restContext;
-		url += "/cs/calendar/getevent/" + self.currentEvent.getAttribute("eventid");
+		url += "/cs/calendar/geteventbyid/" + self.currentEvent.getAttribute("eventid");
 		self.makeRequest("GET",url);
 	    },self.timer);
 	},
