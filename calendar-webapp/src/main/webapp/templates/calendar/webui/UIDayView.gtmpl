@@ -178,11 +178,11 @@
 							<!---- DISPLAYING EVENT SUMMARY ---->
 							<% if ( (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (ce.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
 							<!-- if the element is of type TASK check whether it's completed -->
-							<div class="eventContainer pull-left" style="text-decoration:line-through;">
+							<div class="eventContainer " style="text-decoration:line-through;">
 							  <%=ce.getSummary()%>
 							</div>
 							<% } else { %>
-							<div class="eventContainer pull-left">
+							<div class="eventContainer ">
 								<%=ce.getSummary()%>
 							</div>
 							<% } %>

@@ -249,11 +249,11 @@ def eventList = [];
         <!---- DISPLAYING EVENT SUMMARY ---->
         <% if ( (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
         <!-- if the element is of type TASK check whether it's completed -->
-        <div unselectable="on" class="eventContainer pull-left" style=" display: inline !important; text-decoration:line-through; ">
+        <div unselectable="on" class="eventContainer" style="text-decoration:line-through; ">
           <%=event.summary%>
         </div>
         <% } else { %>
-        <div class="eventContainer pull-left" style=" display: inline !important; ">
+        <div class="eventContainer " >
           <%=event.summary%>
         </div>
         <% } %>
