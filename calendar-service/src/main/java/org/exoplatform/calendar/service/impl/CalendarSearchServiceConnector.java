@@ -137,7 +137,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       eventQuery.setOrderBy(new String[]{sortBy});
       eventQuery.setOrderType(order);
       if(CalendarEvent.TYPE_TASK.equals(dataType))
-        eventQuery.setState(CalendarEvent.COMPLETED);
+        eventQuery.setState(CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED);
       //log.info("\n -------" + eventQuery.getQueryStatement() + "\n") ;
       QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
       QueryImpl jcrquery = (QueryImpl)qm.createQuery(eventQuery.getQueryStatement(), eventQuery.getQueryType());

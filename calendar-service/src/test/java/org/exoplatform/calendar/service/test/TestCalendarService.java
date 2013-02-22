@@ -290,18 +290,19 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     for(SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, (CalendarSearchResult)item);
     }
+    String status = CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED ;
     
     // Does not search completed task 
     calEvent.setEventState(CalendarEvent.COMPLETED);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    query.setState(CalendarEvent.COMPLETED);
+    query.setState(status);
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(0,result.size());
     
     // search all need action
     calEvent.setEventState(CalendarEvent.NEEDS_ACTION);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    query.setState(CalendarEvent.COMPLETED);
+    query.setState(status);
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     CalendarSearchResult calItem = (CalendarSearchResult)result.toArray()[0] ;
@@ -310,21 +311,18 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     // search all inprocess
     calEvent.setEventState(CalendarEvent.IN_PROCESS);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    query.setState(CalendarEvent.COMPLETED);
+    query.setState(status);
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     calItem = (CalendarSearchResult)result.toArray()[0] ;
     assertEquals(calEvent.getEventState(), calItem.getImageUrl());
     
-    // search all cancelled
+    // Does not search cancelled task
     calEvent.setEventState(CalendarEvent.CANCELLED);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    query.setState(CalendarEvent.COMPLETED);
+    query.setState(status);
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
-    assertEquals(1,result.size());
-    calItem = (CalendarSearchResult)result.toArray()[0] ;
-    assertEquals(calEvent.getEventState(), calItem.getImageUrl());
-    
+    assertEquals(0,result.size());
     
     
     //Specia case//
@@ -404,7 +402,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size()) ;
     
-    //Test case search only up coming events or task 
+    //Test case search only up coming events only
     
     loginUser(user2) ;
     
@@ -414,6 +412,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     java.util.Calendar current = java.util.Calendar.getInstance() ;
     current.add(java.util.Calendar.MINUTE, -1);
     inPassEvent.setFromDateTime(current.getTime());
+    
+    
+  
    
     
     calendarService_.saveUserEvent(user2, calendarId, inPassEvent, true) ;
@@ -448,7 +449,40 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
     
+    //Not search task in cancelled 
     
+    
+    CalendarEvent cancelledTask = johnEvent ;
+    
+    cancelledTask.setId(new CalendarEvent().getId());
+    current = java.util.Calendar.getInstance() ;
+    current.add(java.util.Calendar.MINUTE, -1);
+    cancelledTask.setFromDateTime(current.getTime());
+    cancelledTask.setEventType(CalendarEvent.TYPE_TASK);
+    cancelledTask.setEventState(CalendarEvent.CANCELLED) ;
+    
+
+    calendarService_.saveUserEvent(user2, calendarId, cancelledTask, true) ;
+    assertEquals(3,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
+    
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+    
+    
+    
+    //Search task not completed or not cancelled in part
+    
+    current = java.util.Calendar.getInstance() ;
+    current.add(java.util.Calendar.MINUTE, -10);
+    cancelledTask.setFromDateTime(current.getTime());
+    cancelledTask.setEventState(CalendarEvent.NEEDS_ACTION) ;
+    calendarService_.saveUserEvent(user2, calendarId, cancelledTask, false) ;
+    assertEquals(3,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
+    
+    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(2, result.size());
+    
+    // Clean up data 
     calendarService_.removeUserEvent(username, ids.get(0), calEvent.getId());
     calendarService_.removeUserEvent(username, ids.get(0), calEvent2.getId());
     calendarService_.removeUserEvent(user2, johnCalendar.getId(), johnEvent.getId());
