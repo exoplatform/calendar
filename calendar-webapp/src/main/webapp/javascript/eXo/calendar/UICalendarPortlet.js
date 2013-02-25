@@ -2805,7 +2805,7 @@ eXo.calendar.EventTooltip = {
 	    eXo.calendar.EventTooltip.isDnD == false;
 	},
 	hideElement: function(){
-	    if(this._container) this._container.style.display = "none";
+	    gj(eXo.calendar.EventTooltip._container).css('display','none');
 	},
 	disable: function(evt){
 	    this.hideElement();
@@ -2822,7 +2822,7 @@ eXo.calendar.EventTooltip = {
 	    var request = new eXo.portal.AjaxRequest(method, url, queryString) ;
 	    request.onSuccess = this.render ;
 	    request.onLoading = function(){
-		gj(eXo.calendar.EventTooltip._container).find('.popover-content').text("Loading...");
+		gj(eXo.calendar.EventTooltip._container).css('display','none');
 	    } ;
 	    eXo.portal.CurrentRequest = request ;
 	    request.process() ;				
