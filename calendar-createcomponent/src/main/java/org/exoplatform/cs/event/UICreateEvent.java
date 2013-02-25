@@ -62,12 +62,12 @@ import org.exoplatform.webui.form.UIFormStringInput;
                  template = "classpath:groovy/webui/create/UICreateEvent.gtmpl",
                  events = {
 
-                       @EventConfig(
-                                    listeners = UICreateEvent.CancelActionListener.class,
-                                    phase = Event.Phase.DECODE
-                           )  ,
                          @EventConfig(
                                  listeners = UICreateEvent.NextActionListener.class,
+                                 phase = Event.Phase.DECODE
+                         ) ,
+                         @EventConfig(
+                                 listeners = UICreateEvent.CancelActionListener.class,
                                  phase = Event.Phase.DECODE
                          )
                  }
