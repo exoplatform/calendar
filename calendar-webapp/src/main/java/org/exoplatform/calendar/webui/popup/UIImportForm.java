@@ -338,6 +338,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       UploadService uploadService = (UploadService)PortalContainer.getComponent(UploadService.class);
       UIUploadInput input = uiForm.getUIInput(FIELD_UPLOAD);
       UploadResource[] resource = input.getUploadResources() ;
+      if(resource.length >0)
       uploadService.removeUploadResource(resource[0].getUploadId());
       calendarPortlet.cancelAction();
     }
