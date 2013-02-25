@@ -177,7 +177,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
 
     Collection<String> params = new ArrayList<String>();
-    Collection<SearchResult> result = unifiedSearchService_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertNotNull(result) ;
     assertEquals(0, result.size());
 
@@ -229,7 +229,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //=Keyword to search=//
     keyword = "do \"you getting\" Have some busy day?" ;
     query.setText(keyword);
-    result = unifiedSearchService_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     //Success to search 
     assertEquals(1, result.size()) ;
     
@@ -242,7 +242,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     keyword = "do \"you getting\" CEO" ;
     query.setText(keyword);
-    result = unifiedSearchService_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     //Success to search 
     assertEquals(1, result.size()) ;
     for(SearchResult item : result) {
@@ -255,7 +255,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     keyword = "hanoi CEO" ;
     query.setText(keyword);
     query.setOrderBy(new String[]{Utils.ORDERBY_DATE});
-    result = unifiedSearchService_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     //Success to search 
     assertEquals(1, result.size()) ;
     for(SearchResult item : result) {
@@ -266,7 +266,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent.setEventType(CalendarEvent.TYPE_EVENT) ;
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     query.setOrderBy(new String[]{Utils.ORDERBY_RELEVANCY});
-    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
     for(SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, item);
@@ -276,7 +276,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //== test task search ==//
     calEvent.setEventType(CalendarEvent.TYPE_TASK);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
     for(SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, item);
@@ -285,7 +285,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     
     calEvent.setEventType(CalendarEvent.TYPE_TASK) ;
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
     for(SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, (CalendarSearchResult)item);
@@ -296,14 +296,14 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent.setEventState(CalendarEvent.COMPLETED);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     query.setState(status);
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(0,result.size());
     
     // search all need action
     calEvent.setEventState(CalendarEvent.NEEDS_ACTION);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     query.setState(status);
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     CalendarSearchResult calItem = (CalendarSearchResult)result.toArray()[0] ;
     assertEquals(calEvent.getEventState(), calItem.getImageUrl());
@@ -312,7 +312,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent.setEventState(CalendarEvent.IN_PROCESS);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     query.setState(status);
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     calItem = (CalendarSearchResult)result.toArray()[0] ;
     assertEquals(calEvent.getEventState(), calItem.getImageUrl());
@@ -321,7 +321,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent.setEventState(CalendarEvent.CANCELLED);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     query.setState(status);
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(0,result.size());
     
     
@@ -340,7 +340,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     keyword = "\"we will have\" friday \"" ;
     query.setText(keyword);
     query.setOrderType(Utils.ORDER_TYPE_DESCENDING);
-    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size()) ;
 
     SearchResult item = (SearchResult)result.toArray()[0] ;
@@ -354,7 +354,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     
     query.setOrderBy(new String[]{Utils.ORDERBY_DATE});
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
-    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size()) ;
     CalendarSearchResult calSerResult = (CalendarSearchResult)result.toArray()[0] ;
      checkFields(calSerResult);
@@ -395,11 +395,11 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     
     assertEquals(1,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
     
-    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
     
     loginUser(username);
-    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size()) ;
     
     //Test case search only up coming events only
@@ -420,7 +420,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(user2, calendarId, inPassEvent, true) ;
     assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
     
-    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
     
     current = java.util.Calendar.getInstance();
@@ -431,7 +431,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     
     assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
     
-    result = eventSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size());
     
     //Search task due for and no need check from time
@@ -446,7 +446,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(user2, calendarId, inPassEvent, false) ;
     assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
     
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
     
     //Not search task in cancelled 
@@ -465,7 +465,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(user2, calendarId, cancelledTask, true) ;
     assertEquals(3,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
     
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
     
     
@@ -479,7 +479,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(user2, calendarId, cancelledTask, false) ;
     assertEquals(3,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
     
-    result = taskSearchConnector_.search(query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size());
     
     // Clean up data 

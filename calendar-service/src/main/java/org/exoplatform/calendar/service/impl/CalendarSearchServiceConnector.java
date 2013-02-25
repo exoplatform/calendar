@@ -38,6 +38,7 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
+import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -77,7 +78,8 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
 
   @Override
-  public Collection<SearchResult> search(String query,
+  public Collection<SearchResult> search(SearchContext context,
+                                         String query,
                                          Collection<String> sites,
                                          int offset,
                                          int limit,
