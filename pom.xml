@@ -51,6 +51,7 @@
     <org.gatein.wci.version>2.3.0.Final</org.gatein.wci.version>
     <org.exoplatform.commons.version>4.0.0-SNAPSHOT</org.exoplatform.commons.version>
     <org.exoplatform.social.version>4.0.0-SNAPSHOT</org.exoplatform.social.version>
+    <ical4j.version>1.0-beta5</ical4j.version>
   </properties>
   <dependencyManagement>
     <dependencies>
