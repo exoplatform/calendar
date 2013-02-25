@@ -950,6 +950,6 @@ _module.DateTimeFormater = new DateTimeFormater();
 document.onclick = DOMUtil.DOMUtil.cleanUpHiddenElements;
 _module.Mouse = Browser.Mouse;
 _module.Browser = Browser.Browser;
-
+_module.DOMUtil = DOMUtil.DOMUtil;
 return _module;
 })(DOMUtil, base, Browser, gj);
