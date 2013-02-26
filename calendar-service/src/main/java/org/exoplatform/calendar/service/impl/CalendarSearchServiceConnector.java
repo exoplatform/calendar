@@ -85,12 +85,12 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
                                          int limit,
                                          String sort,
                                          String order) {
-    return searchData(null, query, sites, offset, limit, sort, order);
+    return searchData(context, null, query, sites, offset, limit, sort, order);
 
   }
 
 
-  protected Collection<SearchResult> searchData(String dataType, String query,
+  protected Collection<SearchResult> searchData(SearchContext context, String dataType, String query,
                                                 Collection<String> sites,
                                                 int offset,
                                                 int limit,
