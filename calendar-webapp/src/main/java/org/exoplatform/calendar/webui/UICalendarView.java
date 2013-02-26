@@ -19,16 +19,7 @@ package org.exoplatform.calendar.webui;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.jcr.PathNotFoundException;
 
@@ -772,7 +763,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   /**
   * Get data about recurrence events <br/>
   * Each item of the map has the key is the eventid of recurrence event.
-  * The value is the map contains all occurrence events with the key is the recurrence-id
+  * The value of the map contains all occurrence events with the key is the recurrence-id
   * @return the Map contains recurrence events data
   */
   public Map<String, Map<String, CalendarEvent>> getRecurrenceMap() {
@@ -1119,7 +1110,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       org.exoplatform.calendar.service.Calendar calendar = null;
 
       try {
-        // if event is occurrence event (not exception)
+        // if event is occurrence event (instance of repetitive event)
         if (isOccur && !Utils.isEmpty(recurId)) {
           CalendarEvent currentOccurrence = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
           uiCalendarView.setCurrentOccurrence(currentOccurrence);
@@ -1528,13 +1519,13 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public static class ConfirmDeleteOnlyInstance extends EventListener<UICalendarView> {
     public void execute(Event<UICalendarView> event) throws Exception {
       // delete the only selected event
-
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
 
       try {
         CalendarEvent occurrence = uiCalendarView.getcurrentOccurrence();
+
         String calendarId = occurrence.getCalendarId();
         String calType = occurrence.getCalType();
         String username = CalendarUtils.getCurrentUser();
@@ -1547,7 +1538,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
           return;
         }
-
         calService.removeOccurrenceInstance(username, occurrence);
         if (uiCalendarView instanceof UIListView) {
           uiCalendarView.refresh();

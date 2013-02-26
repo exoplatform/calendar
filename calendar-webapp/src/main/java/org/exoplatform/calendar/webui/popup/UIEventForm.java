@@ -136,7 +136,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
 }
 )
 public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISelector{
-  private Log log = ExoLogger.getLogger(this.getClass());
+  private static final Log LOG = ExoLogger.getLogger(UIEventForm.class);
   final public static String TAB_EVENTDETAIL = "eventDetail".intern() ;
   final public static String TAB_EVENTREMINDER = "eventReminder".intern() ;
   final public static String TAB_EVENTSHARE = "eventShare".intern() ;
@@ -199,9 +199,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       saveEventInvitation = getLabel("SaveEvent-Invitation") ;
       saveEventNoInvitation = getLabel("SaveEvent-NoSendInvitation") ;
     } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.debug("Fail to get label: " + saveEventInvitation, e);
-        log.debug("Fail to get label: " + saveEventNoInvitation, e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Fail to get label: " + saveEventInvitation, e);
+        LOG.debug("Fail to get label: " + saveEventNoInvitation, e);
       }
     }
     UIEventDetailTab eventDetailTab =  new UIEventDetailTab(TAB_EVENTDETAIL) ;
@@ -234,7 +234,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     try {
       return super.getLabel(id) ;
     } catch (Exception e) {
-      log.warn("Can not find " + getId() + ".label." + id);
+      LOG.warn("Can not find " + getId() + ".label." + id);
       return id ;
     }
   }
@@ -473,8 +473,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     try {
       from = getEventFromDate(dateFormat, timeFormat) ;
     } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.debug("Faile to get event from date", e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Faile to get event from date", e);
       }
       errorMsg_ = getId() +  ".msg.event-fromdate-notvalid" ;
       return false ;
@@ -486,8 +486,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     try {
       to = getEventToDate(dateFormat, timeFormat) ;
     } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.debug("Fail to get event to date", e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Fail to get event to date", e);
       }
       errorMsg_ = getId() +  ".msg.event-fromdate-notvalid" ;
       return false ;
@@ -735,8 +735,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       String time =  eventReminderTab.getUIFormSelectBox(UIEventReminderTab.POPUP_REPEAT_INTERVAL).getValue() ;
       return Long.parseLong(time) ;
     } catch (Exception e){
-      if (log.isDebugEnabled()) {
-        log.debug("Can't get time from POPUP_REPEAT_INTERVAL", e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Can't get time from POPUP_REPEAT_INTERVAL", e);
       }
     }
     return 0 ;
@@ -1123,8 +1123,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         attachmentCal.setMimeType("text/calendar") ;
       } catch (Exception e) {
         attachmentCal = null;
-        if (log.isDebugEnabled()) {
-          log.debug("Fail to create attachment", e);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Fail to create attachment", e);
         }
       for (String s : sbAddress.toString().split(CalendarUtils.COMMA)) {
         if (CalendarUtils.isEmpty(s)) continue;
@@ -1284,8 +1284,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       return calendarEvent;
     } catch (Exception e) {
       event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIEventForm.msg.error-send-email", null));
-      if (log.isDebugEnabled()) {
-        log.debug("Fail to send mail ivitation to the participant", e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Fail to send mail ivitation to the participant", e);
       }
     }
     return null;
@@ -1456,7 +1456,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
           CalendarEvent tempCal = sendInvitation(event, calSetting, calendarEvent);
           calendarEvent = tempCal != null ? tempCal : calendarEvent;
         } catch (Exception e) {
-          if (log.isWarnEnabled()) log.warn("Sending invitation failed!" , e);
+          if (LOG.isWarnEnabled()) LOG.warn("Sending invitation failed!" , e);
         }
       }
       if(uiForm.isAddNew_){
@@ -1465,7 +1465,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         }else if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)){
           calService.saveEventToSharedCalendar(username , calendarId, calendarEvent, uiForm.isAddNew_) ;
         }else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)){
-          calService.savePublicEvent(calendarId, calendarEvent, uiForm.isAddNew_) ;          
+          calService.savePublicEvent(calendarId, calendarEvent, uiForm.isAddNew_) ;
         }
       } else  {
         String fromCal = uiForm.oldCalendarId_.split(CalendarUtils.COLON)[1].trim() ;
@@ -1481,7 +1481,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
             calService.updateOccurrenceEvent(fromCal, toCal, fromType, toType, listEvent, username);
           } else {
             // update series:
-            
+
             if (CalendarUtils.isSameDate(oldCalendarEvent.getFromDateTime(), calendarEvent.getFromDateTime())) {
               calService.updateRecurrenceSeries(fromCal, toCal, fromType, toType, calendarEvent, username);
             }
@@ -1514,8 +1514,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }catch (Exception e) {
       event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIEventForm.msg.add-event-error", null));
-      if (log.isDebugEnabled()) {
-        log.debug("Fail to add the event", e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Fail to add the event", e);
       }
     }
     
