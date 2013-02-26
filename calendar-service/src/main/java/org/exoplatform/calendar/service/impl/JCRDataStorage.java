@@ -1043,6 +1043,13 @@ public class JCRDataStorage implements DataStorage {
     if (originalEvent.getRepeatType().equals(CalendarEvent.RP_NOREPEAT))
       return;
 
+    List<CalendarEvent> exceptions = getExceptionEvents(username, originalEvent);
+    if (exceptions != null && exceptions.size() > 0) {
+      for (CalendarEvent exception : exceptions) {
+        removeReference(exception);  // remove reference to original event to avoid ReferentialIntegrityException 
+      }
+    }
+
     // delete original node
     if (calType == Calendar.TYPE_PRIVATE) {
       removeUserEvent(username, originalEvent.getCalendarId(), originalEvent.getId());
@@ -1055,6 +1062,20 @@ public class JCRDataStorage implements DataStorage {
     if (calType == Calendar.TYPE_SHARED) {
       removeSharedEvent(username, originalEvent.getCalendarId(), originalEvent.getId());
       return;
+    }
+  }
+  // removes reference of an exception event to the original event 
+  private void removeReference(CalendarEvent exceptionEvent) throws Exception {
+    Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+    QueryManager queryManager = calendarApp.getSession().getWorkspace().getQueryManager();
+    String sql = "select * from exo:repeatCalendarEvent where exo:id=" + "\'" + exceptionEvent.getId() + "\'";
+    Query query = queryManager.createQuery(sql, Query.SQL);
+    QueryResult result = query.execute();
+    NodeIterator nodesIt = result.getNodes();
+    if(nodesIt.hasNext()) {
+      Node eventNode = nodesIt.nextNode();
+      eventNode.setProperty(Utils.EXO_ORIGINAL_REFERENCE, (Value)null);
+      eventNode.getSession().save();
     }
   }
 
