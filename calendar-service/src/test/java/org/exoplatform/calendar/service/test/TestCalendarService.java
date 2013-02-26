@@ -25,16 +25,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
 import javax.jcr.query.Query;
 
-import net.fortuna.ical4j.model.property.CalScale;
-
+import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarCategory;
@@ -56,9 +57,24 @@ import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.service.impl.TaskSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
+import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
+import org.exoplatform.portal.config.UserPortalConfig;
+import org.exoplatform.portal.config.UserPortalConfigService;
+import org.exoplatform.portal.mop.SiteKey;
+import org.exoplatform.portal.mop.SiteType;
+import org.exoplatform.portal.mop.navigation.NavigationContext;
+import org.exoplatform.portal.mop.navigation.NavigationService;
+import org.exoplatform.portal.mop.navigation.NodeContext;
+import org.exoplatform.portal.mop.navigation.NodeModel;
+import org.exoplatform.portal.mop.navigation.Scope;
+import org.exoplatform.portal.mop.user.UserNavigation;
+import org.exoplatform.portal.mop.user.UserPortal;
+import org.exoplatform.portal.mop.user.UserPortalContext;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.jcr.util.IdGenerator;
@@ -67,6 +83,11 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.exoplatform.web.controller.QualifiedName;
+import org.exoplatform.web.controller.metadata.ControllerDescriptor;
+import org.exoplatform.web.controller.metadata.DescriptorBuilder;
+import org.exoplatform.web.controller.router.Router;
+import org.exoplatform.web.controller.router.RouterConfigException;
 
 /**
  * Created by The eXo Platform SARL
@@ -78,8 +99,6 @@ import org.exoplatform.services.security.MembershipEntry;
 
 
 public class TestCalendarService extends BaseCalendarServiceTestCase {
-  public static final String COMA     = ",".intern();
-
 
   private OrganizationService organizationService_;
 
@@ -140,20 +159,20 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     event.setFromDateTime(today.getTime()) ;
     today.add(java.util.Calendar.HOUR, 4);
     event.setToDateTime(today.getTime()) ;
-    
+
     SimpleDateFormat sdf = new SimpleDateFormat("MMM", new Locale("VN"));
-    
+
     //log.info(sdf.format(event.getFromDateTime())) ;
-    
+
     sdf = new SimpleDateFormat("dd");
-    
+
     //log.info(sdf.format(event.getFromDateTime())) ;
     sdf = new SimpleDateFormat("EEEEE, MMMMMMMM dd, yyyy K:mm a") ;
-    
+
     //log.info(sdf.format(event.getFromDateTime())) ;
-    
+
   }
-  
+
   //mvn test -Dtest=TestCalendarService#testUnifiedSeach
   public void testUnifiedSeach() throws Exception{
     String user2 = "john" ;
@@ -165,14 +184,14 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(query.getText());
     assertNotNull(query.getQueryStatement());
     loginUser(username) ;
-    
+
     CalendarSetting calSetting = calendarService_.getCalendarSetting(username) ;
     TimeZone serverZone = TimeZone.getDefault();
     assertNotNull(calSetting);
     assertEquals(serverZone.getID(), calSetting.getTimeZone());
-    
-    
-    
+
+
+
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
     query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
 
@@ -232,9 +251,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     //Success to search 
     assertEquals(1, result.size()) ;
-    
+
     for(SearchResult item : result) {
-     checkFieldsValueWithType(cal.getName(), calEvent, item);
+      checkFieldsValueWithType(cal.getName(), calEvent, item);
     }
 
     //Search summary and description 
@@ -246,7 +265,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //Success to search 
     assertEquals(1, result.size()) ;
     for(SearchResult item : result) {
-     checkFieldsValueWithType(cal.getName(), calEvent, item);
+      checkFieldsValueWithType(cal.getName(), calEvent, item);
     }
 
     //Search summary , description and location
@@ -282,7 +301,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       checkFieldsValueWithType(cal.getName(), calEvent, item);
     }
     //Test task status and icon 
-    
+
     calEvent.setEventType(CalendarEvent.TYPE_TASK) ;
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
@@ -291,14 +310,14 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       checkFieldsValueWithType(cal.getName(), calEvent, (CalendarSearchResult)item);
     }
     String status = CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED ;
-    
+
     // Does not search completed task 
     calEvent.setEventState(CalendarEvent.COMPLETED);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     query.setState(status);
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(0,result.size());
-    
+
     // search all need action
     calEvent.setEventState(CalendarEvent.NEEDS_ACTION);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
@@ -307,7 +326,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(1,result.size());
     CalendarSearchResult calItem = (CalendarSearchResult)result.toArray()[0] ;
     assertEquals(calEvent.getEventState(), calItem.getImageUrl());
-    
+
     // search all inprocess
     calEvent.setEventState(CalendarEvent.IN_PROCESS);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
@@ -316,15 +335,15 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(1,result.size());
     calItem = (CalendarSearchResult)result.toArray()[0] ;
     assertEquals(calEvent.getEventState(), calItem.getImageUrl());
-    
+
     // Does not search cancelled task
     calEvent.setEventState(CalendarEvent.CANCELLED);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     query.setState(status);
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(0,result.size());
-    
-    
+
+
     //Specia case//
     calEvent.setSummary("today is friday, we will have a weekend");
     calEvent.setEventType(CalendarEvent.TYPE_EVENT) ;
@@ -346,29 +365,29 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     SearchResult item = (SearchResult)result.toArray()[0] ;
     checkFields(item);
 
-    
+
     SearchResult item2 = (SearchResult) result.toArray()[1] ;
     checkFields(item2);
-    
+
     assertEquals(false, item2.getRelevancy() > item.getRelevancy()) ;
-    
+
     query.setOrderBy(new String[]{Utils.ORDERBY_DATE});
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
     result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size()) ;
     CalendarSearchResult calSerResult = (CalendarSearchResult)result.toArray()[0] ;
-     checkFields(calSerResult);
-     checkFieldsValueWithType(cal.getName(), calEvent, calSerResult);
-     
-     CalendarSearchResult calSerResult2 = (CalendarSearchResult)result.toArray()[1] ;
-     checkFields(calSerResult2);
-     checkFieldsValueWithType(cal.getName(), calEvent2, calSerResult2);
-    
+    checkFields(calSerResult);
+    checkFieldsValueWithType(cal.getName(), calEvent, calSerResult);
+
+    CalendarSearchResult calSerResult2 = (CalendarSearchResult)result.toArray()[1] ;
+    checkFields(calSerResult2);
+    checkFieldsValueWithType(cal.getName(), calEvent2, calSerResult2);
+
     assertEquals(false, item.getDate() > item2.getDate()) ;
 
     //Test query filter by permission 
     loginUser(user2) ;
-    
+
     Calendar johnCalendar = cal ;
     calSetting = calendarService_.getCalendarSetting(user2);
     johnCalendar.setTimeZone(calSetting.getTimeZone());
@@ -376,143 +395,190 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     johnCalendar.setId(calendarId) ;
     johnCalendar.setName("john calendar") ;
     calendarService_.saveUserCalendar(user2, johnCalendar, true);
-    
+
     assertEquals(calendarId,calendarService_.getUserCalendar(user2, johnCalendar.getId()).getId());
-    
+
     EventCategory johnEventCategory = new EventCategory();
     johnEventCategory.setName("john category");
     johnEventCategory.setDescription("description");
-    
+
     calendarService_.saveEventCategory(user2, eventCategory, true);
-    
+
     CalendarEvent johnEvent = calEvent2 ;
     johnEvent.setId(new CalendarEvent().getId()) ;
     johnEvent.setCalendarId(johnCalendar.getId()) ;
     johnEvent.setEventType(CalendarEvent.TYPE_EVENT);
-    
-    
+
+
     calendarService_.saveUserEvent(user2, johnCalendar.getId(), johnEvent, true);
-    
+
     assertEquals(1,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
-    
+
     result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
-    
+
     loginUser(username);
     result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size()) ;
-    
+
     //Test case search only up coming events only
-    
+
     loginUser(user2) ;
-    
+
     CalendarEvent inPassEvent = johnEvent ;
-    
+
     inPassEvent.setId(new CalendarEvent().getId());
     java.util.Calendar current = java.util.Calendar.getInstance() ;
     current.add(java.util.Calendar.MINUTE, -1);
     inPassEvent.setFromDateTime(current.getTime());
-    
-    
-  
-   
-    
+
+
+
+
+
     calendarService_.saveUserEvent(user2, calendarId, inPassEvent, true) ;
     assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
-    
+
     result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size()) ;
-    
+
     current = java.util.Calendar.getInstance();
     current.add(java.util.Calendar.MINUTE, 1);
     inPassEvent.setFromDateTime(current.getTime()) ;
-    
+
     calendarService_.saveUserEvent(user2, calendarId, inPassEvent, false) ;
-    
+
     assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
-    
+
     result = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size());
-    
+
     //Search task due for and no need check from time
-    
+
     current = java.util.Calendar.getInstance();
     current.add(java.util.Calendar.MINUTE, -1);
     inPassEvent.setFromDateTime(current.getTime()) ;
     current.add(java.util.Calendar.MINUTE, 2);
     inPassEvent.setToDateTime(current.getTime()) ;
     inPassEvent.setEventType(CalendarEvent.TYPE_TASK) ;
-    
+
     calendarService_.saveUserEvent(user2, calendarId, inPassEvent, false) ;
     assertEquals(2,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
-    
+
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
-    
+
     //Not search task in cancelled 
-    
-    
+
+
     CalendarEvent cancelledTask = johnEvent ;
-    
+
     cancelledTask.setId(new CalendarEvent().getId());
     current = java.util.Calendar.getInstance() ;
     current.add(java.util.Calendar.MINUTE, -1);
     cancelledTask.setFromDateTime(current.getTime());
     cancelledTask.setEventType(CalendarEvent.TYPE_TASK);
     cancelledTask.setEventState(CalendarEvent.CANCELLED) ;
-    
+
 
     calendarService_.saveUserEvent(user2, calendarId, cancelledTask, true) ;
     assertEquals(3,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
-    
+
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
-    
-    
-    
+
+
+
     //Search task not completed or not cancelled in part
-    
+
     current = java.util.Calendar.getInstance() ;
     current.add(java.util.Calendar.MINUTE, -10);
     cancelledTask.setFromDateTime(current.getTime());
     cancelledTask.setEventState(CalendarEvent.NEEDS_ACTION) ;
     calendarService_.saveUserEvent(user2, calendarId, cancelledTask, false) ;
     assertEquals(3,calendarService_.getUserEventByCalendar(user2, Arrays.asList(new String[]{calendarId})).size());
-    
+
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size());
+
+    //test search context to build url 
+    SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"));
+    assertNotNull(sc);
+    Router rt = sc.getRouter();
+    assertNotNull(rt);
+
+    ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ExoContainerContext.class);
+    String portalName = context.getPortalContainerName();
+
+
+    //router page expected return /portal/intranet/calendar
+    String spaceGroupId = null;
+    String siteName = "intranet";
+    String url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    assertEquals("/"+portalName+"/"+siteName+"/" + Utils.PAGE_NAGVIGATION, url);
+
+    spaceGroupId = "/spaces/space1";
+    //router space expected return /portal/g/:spaces:space1/space1/calendar
+    url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    assertEquals("/"+portalName+"/g/"+ spaceGroupId.replaceAll(Utils.SLASH, "%3A")+"/space1/" + Utils.PAGE_NAGVIGATION, url);
+
+    result = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+    url = CalendarSearchResult.getUrl(rt, portalName, "webexplorer", null, "calendar");
+    for( SearchResult sr : result){
+      checkFields(sr);
+      assertEquals(url + Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + sr.getUrl().split(Utils.SLASH)[sr.getUrl().split(Utils.SLASH).length-1], sr.getUrl());
+    }
     
+    // search space event and build url 
+    
+    
+
     // Clean up data 
     calendarService_.removeUserEvent(username, ids.get(0), calEvent.getId());
     calendarService_.removeUserEvent(username, ids.get(0), calEvent2.getId());
     calendarService_.removeUserEvent(user2, johnCalendar.getId(), johnEvent.getId());
     calendarService_.removeEventCategory(username, eventCategory.getId());
     calendarService_.removeEventCategory(user2, johnEventCategory.getId());
-    
+
     assertNotNull(calendarService_.removeUserCalendar(username, ids.get(0)));
     assertNotNull(calendarService_.removeUserCalendar(user2, johnCalendar.getId()));
 
   }
-  
+
+  private Router loadConfiguration(String path) throws IOException{
+    InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+    try {
+      ControllerDescriptor routerDesc = new DescriptorBuilder().build(in);
+      return new Router(routerDesc);
+    } catch (RouterConfigException e) {
+      log.info(e.getMessage());
+    }finally {
+      in.close();
+    }
+    return null;
+  }
+
   private void checkFields(SearchResult item) {
     assertNotNull(item.getTitle()) ;
     assertNotNull(item.getExcerpt()) ;
     assertNotNull(item.getDetail()) ;
     assertNotNull(item.getImageUrl());
+    assertNotNull(item.getUrl());
     assertEquals(true, item.getDate() > 0);
   }
   private void checkFields(CalendarSearchResult item) {
     checkFields((SearchResult)(item));
     assertEquals(item.getDataType(), CalendarEvent.TYPE_EVENT);   
   }
-  
-  
+
+
   private void checkFieldsValueWithType(String calName, CalendarEvent calEvent, SearchResult item){
     assertEquals(calEvent.getSummary(), item.getTitle());
     if(CalendarEvent.TYPE_EVENT.equals(calEvent.getEventType())){
       if(calEvent.getLocation() != null) assertEquals(calName + Utils.SPACE+ Utils.MINUS + Utils.SPACE+ df.format(calEvent.getFromDateTime())+ Utils.SPACE+Utils.MINUS+ Utils.SPACE+calEvent.getLocation(), item.getDetail()) ;
     } else {
-     assertEquals(calName + Utils.SPACE +Utils.MINUS+ Utils.SPACE + Utils.DUE_FOR + df.format(calEvent.getToDateTime()), item.getDetail()) ;
+      assertEquals(calName + Utils.SPACE +Utils.MINUS+ Utils.SPACE + Utils.DUE_FOR + df.format(calEvent.getToDateTime()), item.getDetail()) ;
     }
     assertEquals(df.format(java.util.Calendar.getInstance().getTime()), df.format(new Date(item.getDate())));
     assertEquals(true, item.getRelevancy() > 0);
@@ -535,7 +601,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     }
     assertNotNull(item.getTimeZoneName());
   }
-  
+
   public void testDefaultData() throws Exception {
     String defaultEventCategoriesConfig = "Birthday,Memo,Wedding,DayOff";
     String defaultCalendarId = "NewCalendarId";
@@ -563,7 +629,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     organizationService_.getUserHandler().createUser(newUser, true);
 
     // Create event category list from config
-    String[] configValues = defaultEventCategoriesConfig.split(COMA);
+    String[] configValues = defaultEventCategoriesConfig.split(Utils.COMMA);
     List<String> defaultEventCategories = new ArrayList<String>();
     defaultEventCategories.add(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
     for (int i = 0; i < configValues.length; i++) {
