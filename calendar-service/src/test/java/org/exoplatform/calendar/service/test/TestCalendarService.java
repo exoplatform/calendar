@@ -741,6 +741,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   }
 
 
+  //mvn test -Dtest=TestCalendarService#testSharedCalendar
   public void testSharedCalendar() throws Exception {
     CalendarCategory calCategory = new CalendarCategory();
     calCategory.setName("categoryName");
@@ -771,8 +772,13 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarEvent.setCalendarId(cal.getId());
     calendarEvent.setSummary("calendarEvent");
     calendarEvent.setEventType(CalendarEvent.TYPE_EVENT);
-    calendarEvent.setFromDateTime(new Date());
-    calendarEvent.setToDateTime(new Date());
+    java.util.Calendar current = java.util.Calendar.getInstance() ;
+    current.add(java.util.Calendar.MINUTE, 10);
+    
+    calendarEvent.setFromDateTime(current.getTime());
+    current.add(java.util.Calendar.MINUTE, 30);
+    calendarEvent.setToDateTime(current.getTime());
+    
     calendarService_.saveEventToSharedCalendar("john", cal.getId(), calendarEvent, true);
 
     List<String> calendarIds = new ArrayList<String>();
@@ -781,7 +787,23 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     CalendarEvent event = calendarService_.getUserEventByCalendar(username, calendarIds).get(0);
     assertEquals("calendarEvent", event.getSummary());
-
+    
+    
+    //Test search shared event 
+    loginUser("john");
+    EventQuery query = new UnifiedQuery();
+    query.setText("calendarEvent");
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+    Collection<SearchResult> rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, rs.size());
+    
+    loginUser(username);
+    
+    rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, rs.size());
+    
     calendarService_.removeSharedEvent("john", cal.getId(), calendarEvent.getId());
     List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username, calendarIds);
     assertEquals(0, events.size());
