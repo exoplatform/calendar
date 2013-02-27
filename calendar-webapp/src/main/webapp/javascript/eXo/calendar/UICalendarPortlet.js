@@ -6,7 +6,6 @@ function UICalendarPortlet(){
 	this.portletId = "calendars";
 	this.currentDate = 0;
 	this.CELL_HEIGHT = 20;
-	if(base.Browser.webkit != 0) this.CELL_HEIGHT = 21;
 	this.MINUTE_PER_CELL = 30;
 	this.PIXELS_PER_MINUTE = this.CELL_HEIGHT / this.MINUTE_PER_CELL; 
 	this.MINUTES_PER_PIXEL = this.MINUTE_PER_CELL / this.CELL_HEIGHT;
@@ -2227,7 +2226,6 @@ UISelection.prototype.start = function(evt){
     try {
 	evt.preventDefault();
         var UISelection = eXo.calendar.UISelection;
-		if(base.Browser.webkit != 0) UISelection.step = 21;
         var src = cs.CSUtils.EventManager.getEventTarget(evt);
 
         if ((src == UISelection.block) || (cs.CSUtils.EventManager.getMouseButton(evt) == 2) || (gj(src).hasClass("TdTime"))) {
