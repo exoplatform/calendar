@@ -6,7 +6,6 @@ function UICalendarPortlet(){
 	this.portletId = "calendars";
 	this.currentDate = 0;
 	this.CELL_HEIGHT = 20;
-	if(base.Browser.webkit != 0) this.CELL_HEIGHT = 21;
 	this.MINUTE_PER_CELL = 30;
 	this.PIXELS_PER_MINUTE = this.CELL_HEIGHT / this.MINUTE_PER_CELL; 
 	this.MINUTES_PER_PIXEL = this.MINUTE_PER_CELL / this.CELL_HEIGHT;
@@ -1150,35 +1149,20 @@ UICalendarPortlet.prototype.initDND = function(evt){
   UICalendarPortlet.title = gj(UICalendarPortlet.dragObject).find("span")[0].innerHTML;
   UICalendarPortlet.dropCallback = UICalendarPortlet.dayviewDropCallback;
   UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
+  return false; // prevent default drag event of browser.
 };
 /**
  * Processes when dragging object
  * @param {Object} evt Mouse event
  */
 UICalendarPortlet.prototype.dragStart = function(evt){
-    var _e = evt;
-    _e.preventDefault();
-    var UICalendarPortlet = _module.UICalendarPortlet;
-    var delta = null;
-    var mouseY = base.Browser.findMouseRelativeY(UICalendarPortlet.dragContainer, _e) + UICalendarPortlet.dragContainer.scrollTop;
-    var posY = UICalendarPortlet.dragObject.offsetTop;
-    var height = UICalendarPortlet.dragObject.offsetHeight;
-    if (mouseY <= posY) {
-        UICalendarPortlet.dragObject.style.top = parseInt(UICalendarPortlet.dragObject.style.top) - UICalendarPortlet.interval + "px";
-    }
-    else {
-        if (mouseY >= (posY + height)) {
-            UICalendarPortlet.dragObject.style.top = parseInt(UICalendarPortlet.dragObject.style.top) + UICalendarPortlet.interval + "px";
-        }
-        else {
-            delta = _e.clientY - UICalendarPortlet.eventY;
-            if (delta % UICalendarPortlet.interval == 0) {
-                var top = UICalendarPortlet.eventTop + delta;
-                UICalendarPortlet.dragObject.style.top = top + "px";
-            }
-        }
-		}
-    UICalendarPortlet.updateTitle(UICalendarPortlet.dragObject, posY);
+  evt.preventDefault();
+  var UICalendarPortlet = _module.UICalendarPortlet;
+  var mouseY = base.Browser.findMouseRelativeY(UICalendarPortlet.dragContainer, evt) + UICalendarPortlet.dragContainer.scrollTop;
+  var posY = UICalendarPortlet.dragObject.offsetTop;
+  UICalendarPortlet.updateTitle(UICalendarPortlet.dragObject, posY); 
+  var delta = parseInt((mouseY - posY) - (mouseY - posY) % UICalendarPortlet.interval);
+  UICalendarPortlet.dragObject.style.top = posY + delta  + "px";
 };
 /**
  * Updates title of event when dragging calendar event
@@ -2225,15 +2209,12 @@ function UISelection(){
  */
 UISelection.prototype.start = function(evt){
     try {
-	evt.preventDefault();
+    evt.preventDefault();
         var UISelection = eXo.calendar.UISelection;
-		if(base.Browser.webkit != 0) UISelection.step = 21;
-        var src = cs.CSUtils.EventManager.getEventTarget(evt);
-
-        if ((src == UISelection.block) || (cs.CSUtils.EventManager.getMouseButton(evt) == 2) || (gj(src).hasClass("TdTime"))) {
-			return;
+        var src = evt.target;
+        if ((src == UISelection.block) || evt.which != 1 || (gj(src).hasClass("TdTime"))) {
+            return;
         }
-        
         UISelection.startTime = parseInt(Date.parse(src.getAttribute("startFull")));//src.getAttribute("startTime");
         UISelection.startX = base.Browser.findPosXInContainer(src, UISelection.container) - _module.UICalendarPortlet.portletNode.parentNode.scrollTop;
         UISelection.block.style.display = "block";
@@ -2244,7 +2225,7 @@ UISelection.prototype.start = function(evt){
         UISelection.block.style.height = UISelection.step + "px";
         UISelection.block.style.zIndex = 1;
         gj(document).off('mousemove mouseup').on({'mousemove':UISelection.execute,
-        	'mouseup':UISelection.clear});
+            'mouseup':UISelection.clear});
     } 
     catch (e) {
         window.status = e.message ;
@@ -2258,37 +2239,20 @@ UISelection.prototype.start = function(evt){
 UISelection.prototype.execute = function(evt){
     var UISelection = eXo.calendar.UISelection;
     var _e = window.event || evt;
-    var delta = null;
-	var containerHeight = UISelection.container.offsetHeight;
-    var scrollTop = cs.CSUtils.Utils.getScrollTop(UISelection.block);
+    var containerHeight = UISelection.container.offsetHeight;
+    var scrollTop = gj(UISelection.block).scrollTop();
     var mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e);// + UISelection.relativeObject.scrollTop;
     if (document.getElementById("UIPageDesktop")) 
-        mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e) + scrollTop;
+        {
+         mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e) + scrollTop;   
+        }
     var posY = UISelection.block.offsetTop;
     var height = UISelection.block.offsetHeight;
-    delta = posY + height - mouseY;
-    if (UISelection.startY < mouseY) {
-        UISelection.block.style.top = UISelection.startY + "px";
-        if (delta >= UISelection.step) {
-            UISelection.block.style.height = height - UISelection.step + "px";
-        }
-        if ((mouseY >= (posY + height)) && ((posY + height)< containerHeight) ) {
-            UISelection.block.style.height = height + UISelection.step + "px";
-        }
-    }
-    else {
-        delta = mouseY - posY;
-        UISelection.block.style.bottom = UISelection.startY - UISelection.step + "px";
-        if ((mouseY <= posY) && (posY > 0)) {
-            UISelection.block.style.top = posY - UISelection.step + "px";
-            UISelection.block.style.height = height + UISelection.step + "px";
-        }
-        if (delta >= UISelection.step) {
-            UISelection.block.style.top = posY + UISelection.step + "px";
-            UISelection.block.style.height = height - UISelection.step + "px";
-        }
-    }
+    var delta = mouseY - UISelection.startY - (mouseY - UISelection.startY) % UISelection.step;    
     
+    gj(UISelection.block).css('height', Math.abs(delta) + UISelection.step + "px");
+    gj(UISelection.block).css('top', delta > 0 ? UISelection.startY : UISelection.startY + delta + "px");
+       
 };
 
 /**

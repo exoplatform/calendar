@@ -86,13 +86,13 @@ resizable = "resizable";
 					def icon = uicomponent.getFileExtension(attachFile.name);
 					def fist = icon.substring(0,1);
 					def last = icon.substring(1);
-					def full = "uiIcon"+fist.toUpperCase() + last.toLowerCase() ;
+					def full = "uiIcon16x16File"+fist.toUpperCase() + last.toLowerCase() ;
 					
 			%>	 
 
 			  <div class="attachmentIcon" >
 				<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
-					<i class="uiIconFile $full uiIconLightGray"></i>&nbsp;$attachFile.name
+					<i class="uiIcon16x16File  $full uiIconLightGray"></i>&nbsp;$attachFile.name
 				</a>
 			  (<%=CalendarUtils.convertSize(attachFile.size)%>)
 			  </div>

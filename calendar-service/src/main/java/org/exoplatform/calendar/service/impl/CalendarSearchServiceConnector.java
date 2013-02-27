@@ -38,6 +38,7 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
+import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -77,18 +78,19 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
 
   @Override
-  public Collection<SearchResult> search(String query,
+  public Collection<SearchResult> search(SearchContext context,
+                                         String query,
                                          Collection<String> sites,
                                          int offset,
                                          int limit,
                                          String sort,
                                          String order) {
-    return searchData(null, query, sites, offset, limit, sort, order);
+    return searchData(context, null, query, sites, offset, limit, sort, order);
 
   }
 
 
-  protected Collection<SearchResult> searchData(String dataType, String query,
+  protected Collection<SearchResult> searchData(SearchContext context, String dataType, String query,
                                                 Collection<String> sites,
                                                 int offset,
                                                 int limit,
@@ -127,7 +129,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       eventQuery.setEventType(dataType);
       eventQuery.setText(query) ;
       String sortBy =  Utils.SORT_FIELD_MAP.get(sort);
-
       if(Utils.ORDERBY_DATE.equals(sortBy)) {
         if(CalendarEvent.TYPE_EVENT.equals(dataType))
           sortBy = Utils.EXO_FROM_DATE_TIME ;
@@ -137,7 +138,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       eventQuery.setOrderBy(new String[]{sortBy});
       eventQuery.setOrderType(order);
       if(CalendarEvent.TYPE_TASK.equals(dataType))
-        eventQuery.setState(CalendarEvent.COMPLETED);
+        eventQuery.setState(CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED);
       //log.info("\n -------" + eventQuery.getQueryStatement() + "\n") ;
       QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
       QueryImpl jcrquery = (QueryImpl)qm.createQuery(eventQuery.getQueryStatement(), eventQuery.getQueryType());
@@ -152,7 +153,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
        */
       RowIterator rIt = result.getRows();
       while (rIt.hasNext()) {
-        SearchResult rs = buildResult(dataType, rIt.nextRow());
+        SearchResult rs = buildResult(context, dataType, rIt.nextRow());
         if(rs != null) events.add(rs);
       }
     }
@@ -162,7 +163,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     return events;
   }
 
-  private SearchResult buildResult(String dataType, Object iter) {
+  private SearchResult buildResult(SearchContext sc, String dataType, Object iter) {
     try {
       String calId = null;
       if(iter instanceof Row){
@@ -177,7 +178,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         StringBuffer detail = new StringBuffer();
         String title = buildValue(Utils.EXO_SUMMARY, iter);
         detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
-        String url = Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + buildValue(Utils.EXO_ID, iter);
+        String url = CalendarSearchResult.buildLink(sc, calId, buildValue(Utils.EXO_ID, iter));
         String excerpt = buildExcerpt(iter);
         String detailValue = Utils.EMPTY_STR;
         String imageUrl = buildImageUrl(iter);

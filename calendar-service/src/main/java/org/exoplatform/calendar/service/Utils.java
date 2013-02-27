@@ -447,9 +447,13 @@ public class Utils {
     EXO_FROM_DATE_TIME, EXO_TO_DATE_TIME, EXO_EVENT_STATE, EXO_DATE_CREATED, JCR_SCORE, EXO_ID, EXO_CALENDAR_ID, EXO_EVENT_TYPE};
   
   public static String[] SEARCH_FIELDS = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
+  public static String EVENT_ICON = "Icon";
+  public static String TASK_ICON = "uiIconAct";
   
-  public static String EVENT_ICON = "Icon" ;
-  public static String TASK_ICON = "uiIconAct" ;
+  public static final String PAGE_NAGVIGATION = "calendar";
+  public static final String PORTLET_NAME = "CalendarPortlet";
+  public static final String SPACES_GROUP = "spaces";
+  public static final String SPACE_ID_PREFIX = "_space_calendar";
   
 
   /**
@@ -532,7 +536,7 @@ public class Utils {
     if (portalName == null)
       return null;
     if (portalName.indexOf(COLON) > 0)
-      portalName = portalName.substring(0, portalName.indexOf(":"));
+      portalName = portalName.substring(0, portalName.indexOf(COLON));
     return RootContainer.getInstance().getPortalContainer(portalName);
   
   }
