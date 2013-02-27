@@ -1149,35 +1149,20 @@ UICalendarPortlet.prototype.initDND = function(evt){
   UICalendarPortlet.title = gj(UICalendarPortlet.dragObject).find("span")[0].innerHTML;
   UICalendarPortlet.dropCallback = UICalendarPortlet.dayviewDropCallback;
   UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
+  return false; // prevent default drag event of browser.
 };
 /**
  * Processes when dragging object
  * @param {Object} evt Mouse event
  */
 UICalendarPortlet.prototype.dragStart = function(evt){
-    var _e = evt;
-    _e.preventDefault();
-    var UICalendarPortlet = _module.UICalendarPortlet;
-    var delta = null;
-    var mouseY = base.Browser.findMouseRelativeY(UICalendarPortlet.dragContainer, _e) + UICalendarPortlet.dragContainer.scrollTop;
-    var posY = UICalendarPortlet.dragObject.offsetTop;
-    var height = UICalendarPortlet.dragObject.offsetHeight;
-    if (mouseY <= posY) {
-        UICalendarPortlet.dragObject.style.top = parseInt(UICalendarPortlet.dragObject.style.top) - UICalendarPortlet.interval + "px";
-    }
-    else {
-        if (mouseY >= (posY + height)) {
-            UICalendarPortlet.dragObject.style.top = parseInt(UICalendarPortlet.dragObject.style.top) + UICalendarPortlet.interval + "px";
-        }
-        else {
-            delta = _e.clientY - UICalendarPortlet.eventY;
-            if (delta % UICalendarPortlet.interval == 0) {
-                var top = UICalendarPortlet.eventTop + delta;
-                UICalendarPortlet.dragObject.style.top = top + "px";
-            }
-        }
-		}
-    UICalendarPortlet.updateTitle(UICalendarPortlet.dragObject, posY);
+  evt.preventDefault();
+  var UICalendarPortlet = _module.UICalendarPortlet;
+  var mouseY = base.Browser.findMouseRelativeY(UICalendarPortlet.dragContainer, evt) + UICalendarPortlet.dragContainer.scrollTop;
+  var posY = UICalendarPortlet.dragObject.offsetTop;
+  UICalendarPortlet.updateTitle(UICalendarPortlet.dragObject, posY); 
+  var delta = parseInt((mouseY - posY) - (mouseY - posY) % UICalendarPortlet.interval);
+  UICalendarPortlet.dragObject.style.top = posY + delta  + "px";
 };
 /**
  * Updates title of event when dragging calendar event
