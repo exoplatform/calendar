@@ -1,26 +1,6 @@
 package org.exoplatform.cs.event;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TimeZone;
-
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
@@ -43,12 +23,12 @@ import org.exoplatform.webui.core.model.SelectOption;
 import org.exoplatform.webui.core.model.SelectOptionGroup;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormDateTimeInput;
-import org.exoplatform.webui.form.UIFormRadioBoxInput;
-import org.exoplatform.webui.form.UIFormSelectBox;
-import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
-import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.*;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Calendar;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,7 +45,7 @@ import org.exoplatform.webui.form.UIFormStringInput;
                          @EventConfig(
                                  listeners = UICreateEvent.NextActionListener.class,
                                  phase = Event.Phase.DECODE
-                         ) ,
+                       )   ,
                          @EventConfig(
                                  listeners = UICreateEvent.CancelActionListener.class,
                                  phase = Event.Phase.DECODE
@@ -184,8 +164,8 @@ public class UICreateEvent extends UIForm {
         String calName="";
         if(calService.getUserCalendar(username,uiForm.getEventCalendar())!=null){
 
-          if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(username)) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(NewUserListener.defaultCalendarName)) {
-            calName = getResourceBundle("UICreateEvent.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+          if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(username)) ) {
+            calName = calService.getUserCalendar(username,uiForm.getEventCalendar()).getName();
 
           }
         }else {
