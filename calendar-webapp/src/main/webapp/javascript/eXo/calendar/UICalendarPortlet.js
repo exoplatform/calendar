@@ -2209,14 +2209,12 @@ function UISelection(){
  */
 UISelection.prototype.start = function(evt){
     try {
-	evt.preventDefault();
+    evt.preventDefault();
         var UISelection = eXo.calendar.UISelection;
-        var src = cs.CSUtils.EventManager.getEventTarget(evt);
-
-        if ((src == UISelection.block) || (cs.CSUtils.EventManager.getMouseButton(evt) == 2) || (gj(src).hasClass("TdTime"))) {
-			return;
+        var src = evt.target;
+        if ((src == UISelection.block) || evt.which != 1 || (gj(src).hasClass("TdTime"))) {
+            return;
         }
-        
         UISelection.startTime = parseInt(Date.parse(src.getAttribute("startFull")));//src.getAttribute("startTime");
         UISelection.startX = base.Browser.findPosXInContainer(src, UISelection.container) - _module.UICalendarPortlet.portletNode.parentNode.scrollTop;
         UISelection.block.style.display = "block";
@@ -2227,7 +2225,7 @@ UISelection.prototype.start = function(evt){
         UISelection.block.style.height = UISelection.step + "px";
         UISelection.block.style.zIndex = 1;
         gj(document).off('mousemove mouseup').on({'mousemove':UISelection.execute,
-        	'mouseup':UISelection.clear});
+            'mouseup':UISelection.clear});
     } 
     catch (e) {
         window.status = e.message ;
@@ -2241,37 +2239,20 @@ UISelection.prototype.start = function(evt){
 UISelection.prototype.execute = function(evt){
     var UISelection = eXo.calendar.UISelection;
     var _e = window.event || evt;
-    var delta = null;
-	var containerHeight = UISelection.container.offsetHeight;
-    var scrollTop = cs.CSUtils.Utils.getScrollTop(UISelection.block);
+    var containerHeight = UISelection.container.offsetHeight;
+    var scrollTop = gj(UISelection.block).scrollTop();
     var mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e);// + UISelection.relativeObject.scrollTop;
     if (document.getElementById("UIPageDesktop")) 
-        mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e) + scrollTop;
+        {
+         mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e) + scrollTop;   
+        }
     var posY = UISelection.block.offsetTop;
     var height = UISelection.block.offsetHeight;
-    delta = posY + height - mouseY;
-    if (UISelection.startY < mouseY) {
-        UISelection.block.style.top = UISelection.startY + "px";
-        if (delta >= UISelection.step) {
-            UISelection.block.style.height = height - UISelection.step + "px";
-        }
-        if ((mouseY >= (posY + height)) && ((posY + height)< containerHeight) ) {
-            UISelection.block.style.height = height + UISelection.step + "px";
-        }
-    }
-    else {
-        delta = mouseY - posY;
-        UISelection.block.style.bottom = UISelection.startY - UISelection.step + "px";
-        if ((mouseY <= posY) && (posY > 0)) {
-            UISelection.block.style.top = posY - UISelection.step + "px";
-            UISelection.block.style.height = height + UISelection.step + "px";
-        }
-        if (delta >= UISelection.step) {
-            UISelection.block.style.top = posY + UISelection.step + "px";
-            UISelection.block.style.height = height - UISelection.step + "px";
-        }
-    }
+    var delta = mouseY - UISelection.startY - (mouseY - UISelection.startY) % UISelection.step;    
     
+    gj(UISelection.block).css('height', Math.abs(delta) + UISelection.step + "px");
+    gj(UISelection.block).css('top', delta > 0 ? UISelection.startY : UISelection.startY + delta + "px");
+       
 };
 
 /**
