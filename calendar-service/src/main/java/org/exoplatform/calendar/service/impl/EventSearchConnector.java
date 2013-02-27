@@ -19,6 +19,7 @@ package org.exoplatform.calendar.service.impl;
 import java.util.Collection;
 
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.xml.InitParams;
 
@@ -35,13 +36,13 @@ public class EventSearchConnector extends CalendarSearchServiceConnector {
     // TODO Auto-generated constructor stub
   }
 
-  public Collection<SearchResult> search(String query,
+  public Collection<SearchResult> search(SearchContext context, String query,
                                          Collection<String> sites,
                                          int offset,
                                          int limit,
                                          String sort,
                                          String order) {
-    return searchData(CalendarEvent.TYPE_EVENT, query, sites, offset, limit, sort, order);
+    return searchData(context, CalendarEvent.TYPE_EVENT, query, sites, offset, limit, sort, order);
   }
 
 }

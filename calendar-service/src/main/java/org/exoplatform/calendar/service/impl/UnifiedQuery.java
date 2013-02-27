@@ -69,17 +69,15 @@ public class UnifiedQuery extends EventQuery {
         if (!Utils.isEmpty(getEventType())) {
           queryString.append(") ");
         }
-        if (getFromDate() != null) {
+        if (getFromDate() != null && CalendarEvent.TYPE_EVENT.equals(getEventType())) {
           queryString.append(" AND ");
-          if (CalendarEvent.TYPE_EVENT.equals(getEventType())) {
-            queryString.append(Utils.EXO_FROM_DATE_TIME);
-          } else {
-            queryString.append(Utils.EXO_TO_DATE_TIME);
-          }
+          queryString.append(Utils.EXO_FROM_DATE_TIME);
           queryString.append(" >= TIMESTAMP '").append(ISO8601.format(getFromDate())).append("'");
         }
         if (!Utils.isEmpty(getState())) {
-          queryString.append(" AND ").append(Utils.EXO_EVENT_STATE).append(" <> '").append(getState()).append("'");
+          if(getState().indexOf(Utils.COLON) >0)
+            for(String state : getState().split(Utils.COLON))
+          queryString.append(" AND ").append(Utils.EXO_EVENT_STATE).append(" <> '").append(state).append("'");
         }
         if(getOrderBy() != null && getOrderBy().length > 0) {
           queryString.append(" ORDER BY ").append(getOrderBy()[0]);
