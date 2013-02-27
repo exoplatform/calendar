@@ -98,11 +98,21 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
                                                 String order) {
     List<SearchResult> events = new ArrayList<SearchResult>();
     try {
+      calendarMap.clear();
       String userId = ConversationState.getCurrent().getIdentity().getUserId() ;
       Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(SessionProvider.createSystemProvider(), userId);
-      List<Calendar> calendars = calendarService_.getUserCalendars(userId, true);
+      List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
+      for(Calendar cal : privateCalendars){
+        calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone(), String.valueOf(Utils.PRIVATE_TYPE)}) ;
+      }
+
       GroupCalendarData sharedCalendar = calendarService_.getSharedCalendars(userId, true) ;
-      if(sharedCalendar != null) calendars.addAll(sharedCalendar.getCalendars());
+      if(sharedCalendar != null) {
+        List<Calendar> shareCalendars = sharedCalendar.getCalendars();
+        for(Calendar cal : shareCalendars){
+          calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone(), String.valueOf(Utils.SHARED_TYPE)}) ;
+        }
+      }
       Collection<Group> group = organizationService_.getGroupHandler().findGroupsOfUser(userId);
       if(!group.isEmpty()) {
         String[] groupIds = new String[group.size()];
@@ -112,14 +122,15 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           i++;
         }
         List<GroupCalendarData> groupCalendar = calendarService_.getGroupCalendars(groupIds, true, userId) ;
-        if(groupCalendar != null) 
+        if(groupCalendar != null) {
+          List<Calendar> spaceCalendars = new ArrayList<Calendar>();
           for(GroupCalendarData gCal : groupCalendar){
-            if(gCal.getCalendars() != null) calendars.addAll(gCal.getCalendars());
+            if(gCal.getCalendars() != null) spaceCalendars.addAll(gCal.getCalendars());
           }
-      }
-      calendarMap.clear();
-      for(Calendar cal : calendars){
-        calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone()}) ;
+          for(Calendar cal : spaceCalendars){
+            calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone(), String.valueOf(Utils.PUBLIC_TYPE)}) ;
+          }
+        }
       }
 
       EventQuery eventQuery = new UnifiedQuery(); 
@@ -153,7 +164,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
        */
       RowIterator rIt = result.getRows();
       while (rIt.hasNext()) {
-        SearchResult rs = buildResult(context, dataType, rIt.nextRow());
+        SearchResult rs = buildResult(context, sites, dataType, rIt.nextRow());
         if(rs != null) events.add(rs);
       }
     }
@@ -163,7 +174,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     return events;
   }
 
-  private SearchResult buildResult(SearchContext sc, String dataType, Object iter) {
+  private SearchResult buildResult(SearchContext sc, Collection<String> siteKeys, String dataType, Object iter) {
     try {
       String calId = null;
       if(iter instanceof Row){
@@ -178,7 +189,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         StringBuffer detail = new StringBuffer();
         String title = buildValue(Utils.EXO_SUMMARY, iter);
         detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
-        String url = CalendarSearchResult.buildLink(sc, calId, buildValue(Utils.EXO_ID, iter));
+        String url = CalendarSearchResult.buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
         String excerpt = buildExcerpt(iter);
         String detailValue = Utils.EMPTY_STR;
         String imageUrl = buildImageUrl(iter);

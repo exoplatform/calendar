@@ -401,6 +401,7 @@ public class Utils {
   public static String TASK_ICON = "uiIconAct";
   
   public static final String PAGE_NAGVIGATION = "calendar";
+  public static final String NONE_NAGVIGATION = "#";
   public static final String PORTLET_NAME = "CalendarPortlet";
   public static final String SPACES_GROUP = "spaces";
   public static final String SPACE_ID_PREFIX = "_space_calendar";
