@@ -447,7 +447,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(2, result.size());
 
     //test search context to build url 
-    SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"));
+    SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), "");
     assertNotNull(sc);
     Router rt = sc.getRouter();
     assertNotNull(rt);
@@ -1626,7 +1626,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       calendarService_.savePublicEvent(spaceCal.getId(), publicEvent, true);
       query.setText("\"space event\"");
       loginUser("raul");
-      SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"));
+      SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), "");
       assertNotNull(sc);
       
       //Case build url for event detail in calendar
