@@ -565,7 +565,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     } else {
       assertEquals(calName + Utils.SPACE +Utils.MINUS+ Utils.SPACE + Utils.DUE_FOR + df.format(calEvent.getToDateTime()), item.getDetail()) ;
     }
-    assertEquals(df.format(java.util.Calendar.getInstance().getTime()), df.format(new Date(item.getDate())));
+    SimpleDateFormat tempFm = new SimpleDateFormat("MM/dd/yyyy hh");
+    assertEquals(tempFm.format(new Date()), tempFm.format(new Date(item.getDate())));
     assertEquals(true, item.getRelevancy() > 0);
     assertEquals(Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + calEvent.getId(), item.getUrl());
     StringBuffer sb = new StringBuffer(calEvent.getSummary()) ;
