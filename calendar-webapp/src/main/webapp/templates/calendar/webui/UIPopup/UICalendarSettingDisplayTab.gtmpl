@@ -40,9 +40,16 @@
   private void renderNotice()
   {
     %>
+    
     <div id="settingNotice" class="settingNotice">
-      <%=_ctx.appRes("UICalendarSettingForm.label.note") %>
-	  </div>
+      <%
+      String words = _ctx.appRes("UICalendarSettingForm.label.note");
+      String[] labels = words.split(":");
+	  String label = labels[0];
+	  String content = labels[1];
+      %>
+      <strong>$label</strong>: $content
+	</div>
     <%
   }
 
