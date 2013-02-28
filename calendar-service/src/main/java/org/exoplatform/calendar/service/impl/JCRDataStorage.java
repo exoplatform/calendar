@@ -1401,11 +1401,14 @@ public class JCRDataStorage implements DataStorage {
 
     GregorianCalendar startTime = Utils.getInstanceTempCalendar();
     GregorianCalendar endTime = Utils.getInstanceTempCalendar();
-
-    startTime.setTime(event.getFromDateTime());
+    if (event.getFromDateTime() !=null) {
+      startTime.setTime(event.getFromDateTime());
+    }
     eventNode.setProperty(Utils.EXO_FROM_DATE_TIME, startTime);
     eventNode.getSession().save();
-    endTime.setTime(event.getToDateTime());
+    if (event.getToDateTime() != null) {
+      endTime.setTime(event.getToDateTime());
+    }
     eventNode.setProperty(Utils.EXO_TO_DATE_TIME, endTime);
     eventNode.getSession().save();
     eventNode.setProperty(Utils.EXO_EVENT_TYPE, event.getEventType());

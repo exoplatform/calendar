@@ -28,6 +28,10 @@ import java.util.List;
  * Jul 2, 2007  
  */
 public interface CalendarImportExport {
+  public static final String PRIVATE_TYPE = String.valueOf(Calendar.TYPE_PRIVATE);
+  public static final String SHARED_TYPE  = String.valueOf(Calendar.TYPE_SHARED);
+  public static final String PUBLIC_TYPE  = String.valueOf(Calendar.TYPE_PUBLIC);
+
 
   /**
    * The method imports events form icalendar(.ics) or outlook calendar exported .csv file to the system

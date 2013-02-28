@@ -54,6 +54,14 @@ public class CalendarEvent {
   final public static String   PRIORITY_NORMAL = "normal".intern();
 
   final public static String   PRIORITY_HIGH   = "high".intern();
+  
+  final public static int      PRI_UNDEFINED   = 0;
+
+  final public static int      PRI_HIGH        = 1;
+
+  final public static int      PRI_MEDIUM      = 2;
+
+  final public static int      PRI_LOW         = 3;
 
   final public static String[] PRIORITY        = { PRIORITY_NONE, PRIORITY_HIGH, PRIORITY_NORMAL, PRIORITY_LOW };
 

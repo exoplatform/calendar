@@ -766,8 +766,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
     }
     if (event.getLocation() != null)
       exoEvent.setLocation(event.getLocation().getValue());
-    if (event.getPriority() != null)
-      exoEvent.setPriority(CalendarEvent.PRIORITY[Integer.parseInt(event.getPriority().getValue())]);
+    ICalendarImportExport.setPriorityExoEvent(event.getPriority(), exoEvent);
     
     if (event.getProperty(Utils.X_STATUS) != null) {
       exoEvent.setEventState(event.getProperty(Utils.X_STATUS).getValue());
@@ -831,8 +830,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
       exoEvent.setToDateTime(task.getDue().getDate());
     if (task.getLocation() != null)
       exoEvent.setLocation(task.getLocation().getValue());
-    if (task.getPriority() != null)
-      exoEvent.setPriority(CalendarEvent.PRIORITY[Integer.parseInt(task.getPriority().getValue())]);
+    ICalendarImportExport.setPriorityExoEvent(task.getPriority(), exoEvent);
     if (vFreeBusyData.get(task.getUid().getValue()) != null) {
       exoEvent.setStatus(CalendarEvent.ST_BUSY);
     }

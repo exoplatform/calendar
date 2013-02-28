@@ -25,21 +25,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
 import javax.jcr.query.Query;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventCategory;
@@ -59,22 +57,9 @@ import org.exoplatform.calendar.service.impl.TaskSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
-import org.exoplatform.portal.config.UserPortalConfig;
-import org.exoplatform.portal.config.UserPortalConfigService;
-import org.exoplatform.portal.mop.SiteKey;
-import org.exoplatform.portal.mop.SiteType;
-import org.exoplatform.portal.mop.navigation.NavigationContext;
-import org.exoplatform.portal.mop.navigation.NavigationService;
-import org.exoplatform.portal.mop.navigation.NodeContext;
-import org.exoplatform.portal.mop.navigation.NodeModel;
-import org.exoplatform.portal.mop.navigation.Scope;
-import org.exoplatform.portal.mop.user.UserNavigation;
-import org.exoplatform.portal.mop.user.UserPortal;
-import org.exoplatform.portal.mop.user.UserPortalContext;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
@@ -84,7 +69,6 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
-import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.controller.metadata.ControllerDescriptor;
 import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.router.Router;
@@ -1429,6 +1413,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       SessionProvider sessionProvider = storage_.createSessionProvider();
       assertNotNull(sessionProvider);
     } catch (Exception e) {
+      e.printStackTrace();
       fail();
     }
   }
@@ -1658,5 +1643,50 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       fail();
       return null;
     }
+  }
+  //mvn test -Dtest=TestCalendarService#testImportExportIcs
+  public void testImportExportIcs() throws Exception {
+    CalendarImportExport calIE = calendarService_.getCalendarImportExports(CalendarService.ICALENDAR);
+    String calendarId = "IcsCalendar";
+    Calendar cal = new Calendar();
+    cal.setId(calendarId);
+    cal.setName(calendarId);
+    cal.setPublic(true);
+    calendarService_.saveUserCalendar(username, cal, true);
+    // event with high priority
+    InputStream icalInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("ObmCalendar_isolated.ics");
+    // event with medium priority
+    InputStream icalInputStream2 = Thread.currentThread().getContextClassLoader().getResourceAsStream("ObmCalendar_isolated_p2.ics");
+    // event with low priority
+    InputStream icalInputStream3 = Thread.currentThread().getContextClassLoader().getResourceAsStream("ObmCalendar_isolated_p3.ics");
+    calIE.importCalendar(username, icalInputStream, calendarId, calendarId, null, null, false);
+    calIE.importCalendar(username, icalInputStream2, calendarId, calendarId, null, null, false);
+    calIE.importCalendar(username, icalInputStream3, calendarId, calendarId, null, null, false);
+    List<String> calendarIds = new ArrayList<String>();
+    calendarIds.add(calendarId);
+    List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username, calendarIds);
+    assertEquals(3, events.size());
+    CalendarEvent event = events.get(0) ;
+    assertEquals(CalendarEvent.PRIORITY[CalendarEvent.PRI_HIGH], event.getPriority());
+    CalendarEvent event2 = events.get(1) ;
+    assertEquals(CalendarEvent.PRIORITY[CalendarEvent.PRI_MEDIUM],  event2.getPriority());
+    CalendarEvent event3 = events.get(2) ;
+    assertEquals(CalendarEvent.PRIORITY[CalendarEvent.PRI_LOW],  event3.getPriority());
+    
+    assertNotNull(event.getFromDateTime());
+    assertNotNull(event.getToDateTime());
+    assertNotNull(event.getSummary());
+    //export single event by id
+    OutputStream icalOutputStream  =  calIE.exportEventCalendar(username, calendarId, CalendarImportExport.PRIVATE_TYPE, event.getId());
+    assertNotNull(icalOutputStream);
+    
+    //export events in set of calendar
+    icalOutputStream.close();
+    icalOutputStream  =  calIE.exportCalendar(username, calendarIds, CalendarImportExport.PRIVATE_TYPE, 3);
+    assertNotNull(icalOutputStream);
+    
+    icalOutputStream.close();
+    icalInputStream.close();
+    calendarService_.removeUserCalendar(username, calendarId);
   }
 }
