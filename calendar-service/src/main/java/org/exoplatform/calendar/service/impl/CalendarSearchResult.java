@@ -16,7 +16,31 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import org.apache.commons.collections.map.HashedMap;
+import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.portal.config.UserPortalConfig;
+import org.exoplatform.portal.config.UserPortalConfigService;
+import org.exoplatform.portal.mop.SiteKey;
+import org.exoplatform.portal.mop.SiteType;
+import org.exoplatform.portal.mop.navigation.NavigationContext;
+import org.exoplatform.portal.mop.navigation.NavigationService;
+import org.exoplatform.portal.mop.navigation.NodeContext;
+import org.exoplatform.portal.mop.navigation.NodeModel;
+import org.exoplatform.portal.mop.navigation.Scope;
+import org.exoplatform.portal.mop.user.UserNavigation;
+import org.exoplatform.portal.mop.user.UserPortalContext;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.web.controller.QualifiedName;
+import org.exoplatform.web.controller.router.Router;
 
 /**
  * Created by The eXo Platform SAS
@@ -83,5 +107,100 @@ public class CalendarSearchResult extends SearchResult {
   public String getTimeZoneName() {
     return zoneName;
   }
+  
+  public static String buildLink(SearchContext sc, String calendarId, String eventId) {
+    String url = "";
+    if(sc != null)
+    try {
+      Router router = sc.getRouter();
+      ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
+          .getComponentInstanceOfType(ExoContainerContext.class);
+      String handler = context.getPortalContainerName();
+      SiteKey siteKey = null ;
+      String pageName = Utils.PAGE_NAGVIGATION;
+      if (calendarId.indexOf(Utils.SPACE_ID_PREFIX) > 0) {
+        String spaceGroupId = calendarId.split(Utils.SPACE_ID_PREFIX)[0];
+        siteKey = SiteKey.group(spaceGroupId);
+        String siteName = getSiteName(siteKey);
+        url = getUrl(router, handler, siteName, spaceGroupId, pageName);
+      } else {
+        UserPortalConfig prc = getUserPortalConfig();
+        siteKey = SiteKey.portal(prc.getPortalConfig().getName());
+        String siteName = getSiteName(siteKey);
+        url = getUrl(router, handler, siteName, null, pageName);
+      }
+    } catch (Exception e) {
+      url = "";
+    }
+    return new StringBuffer(url).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
+  }
 
+  private static UserPortalConfig getUserPortalConfig() throws Exception {
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    UserPortalConfigService userPortalConfigSer = (UserPortalConfigService)
+        container.getComponentInstanceOfType(UserPortalConfigService.class);
+
+    UserPortalContext NULL_CONTEXT = new UserPortalContext() {
+      public ResourceBundle getBundle(UserNavigation navigation) {
+        return null;
+      }
+
+      public Locale getUserLocale() {
+        return Locale.ENGLISH;
+      }
+    };
+
+    String remoteId = ConversationState.getCurrent().getIdentity().getUserId() ;
+    UserPortalConfig userPortalCfg = userPortalConfigSer.
+        getUserPortalConfig(userPortalConfigSer.getDefaultPortal(), remoteId, NULL_CONTEXT);
+    return userPortalCfg;
+  }
+
+  private static String getSiteName(SiteKey siteKey) {
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
+    NavigationContext nav = navService.loadNavigation(siteKey);
+    NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
+
+    if (parentNodeCtx.getSize() >= 1) {
+      Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
+      if (siteKey.getType() == SiteType.GROUP) {
+        children = parentNodeCtx.get(0).getNodes();
+      }
+      Iterator<NodeContext<?>> it = children.iterator();
+
+      NodeContext<?> child = null;
+      while (it.hasNext()) {
+        child = it.next();
+        if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
+          break;
+        }
+      }
+      return child.getName();
+    }
+    return Utils.EMPTY_STR;
+  }
+  
+  public static String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
+    try {
+
+      HashedMap qualifiedName = new HashedMap();
+
+      qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
+      qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
+      qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
+      if(Utils.isEmpty(spaceGroupId)) {
+        qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteName);
+        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.PORTAL.getName());
+      } else {
+        String groupId = spaceGroupId.split("/")[2];
+        qualifiedName.put(QualifiedName.create("gtn", "sitename"), spaceGroupId.replaceAll("/", ":"));
+        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
+        qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
+      }
+      return "/" + handler + router.render(qualifiedName);
+    } catch (Exception e) {
+      return null;
+    }
+  }
 }
