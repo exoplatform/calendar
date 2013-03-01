@@ -189,7 +189,7 @@
   <div class="control-label center" style="padding: 5px;">
     <%=uiform.getLabel('noData')%>
   </div>
-  <%} else { %>
+  <%} else if(uicomponent.pageList_.getAvailablePage() > 1){ %>
   <div class="pull-right">
     <% _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl"); %>
   </div>
