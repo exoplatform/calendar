@@ -345,25 +345,12 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
           calEvent.setParticipant(new String[]{username}) ;
           calEvent.setParticipantStatus(new String[] {username + ":"});
           calEvent.setSendOption(uiPortlet.getCalendarSetting().getSendOption());
-          String emailAddress = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail() ;
-          if(CalendarUtils.isEmailValid(emailAddress)) {
-            List<Reminder> reminders = new ArrayList<Reminder>() ;
-            Reminder email = new Reminder(Reminder.TYPE_EMAIL) ;
-            email.setReminderType(Reminder.TYPE_EMAIL) ;
-            email.setAlarmBefore(5) ;
-            email.setEmailAddress(emailAddress) ;
-            email.setRepeate(Boolean.FALSE) ;
-            email.setRepeatInterval(0) ;
-            email.setFromDateTime(from) ;      
-            reminders.add(email) ;
-            calEvent.setReminders(reminders) ;
-          }
-          calEvent.setRepeatType(CalendarEvent.RP_NOREPEAT) ;
         } else {
           calEvent.setEventType(CalendarEvent.TYPE_TASK) ;
           calEvent.setEventState(CalendarEvent.NEEDS_ACTION) ;
           calEvent.setTaskDelegator(event.getRequestContext().getRemoteUser());
         }
+        uiForm.autoAddReminder(calEvent, from, username);
         calEvent.setEventCategoryId(uiForm.getEventCategory());
         //String eventCategoryName = CalendarUtils.getCalendarService().getEventCategory(SessionProviderFactory.createSessionProvider(), username, uiForm.getEventCategory()).getName() ;
         //calEvent.setEventCategoryName(eventCategoryName) ;
@@ -460,7 +447,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       UIPopupAction uiPopupAction = porlet.getChild(UIPopupAction.class) ;
       if(uiForm.isEvent()) {
         uiPopupAction.deActivate() ;
-        UIPopupContainer uiPouContainer = uiPopupAction.activate(UIPopupContainer.class, 600) ;
+        UIPopupContainer uiPouContainer = uiPopupAction.activate(UIPopupContainer.class, 700) ;
         uiPouContainer.setId(UIPopupContainer.UIEVENTPOPUP) ;
         UIEventForm uiEventForm = uiPouContainer.addChild(UIEventForm.class, null, null) ;
         uiEventForm.update(uiForm.calType_, uiForm.getUIFormSelectBoxGroup(FIELD_CALENDAR).getOptions()) ;
@@ -510,6 +497,10 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         uiTaskForm.setEventToDate(to, dateFormat, timeFormat) ;
         uiTaskForm.setEventAllDate(uiForm.getIsAllDay()) ;
         uiTaskForm.setSelectedCategory(uiForm.getEventCategory()) ;
+        uiTaskForm.setEmailAddress(CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail()) ;
+        uiTaskForm.setEmailRemindBefore(String.valueOf(5));
+        uiTaskForm.setEmailReminder(true) ;
+        uiTaskForm.setEmailRepeat(false) ;
         if (uiForm.getEventCalendar() != null) uiTaskForm.setSelectedCalendarId(uiForm.getEventCalendar());
       }
       //event.getRequestContext().addUIComponentToUpdateByAjax(porlet.findFirstComponentOfType(UICalendarWorkingContainer.class)) ;
@@ -534,6 +525,23 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         event.getRequestContext().addUIComponentToUpdateByAjax(popupWindow) ;
       }
     }
+  }
+  public void autoAddReminder(CalendarEvent calEvent, Date from, String username) throws Exception{
+    String emailAddress = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail() ;
+    if(CalendarUtils.isEmailValid(emailAddress)) {
+      List<Reminder> reminders = new ArrayList<Reminder>() ;
+      Reminder email = new Reminder(Reminder.TYPE_EMAIL) ;
+      email.setReminderType(Reminder.TYPE_EMAIL) ;
+      email.setAlarmBefore(5) ;
+      email.setEmailAddress(emailAddress) ;
+      email.setRepeate(Boolean.FALSE) ;
+      email.setRepeatInterval(0) ;
+      email.setFromDateTime(from) ;      
+      reminders.add(email) ;
+      calEvent.setReminders(reminders) ;
+    }
+    calEvent.setRepeatType(CalendarEvent.RP_NOREPEAT) ;
+    
   }
 
 }

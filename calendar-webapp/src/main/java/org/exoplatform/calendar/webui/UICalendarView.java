@@ -1096,7 +1096,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiEventForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
             uiEventForm.setSelectedCalendarId(calendarId);
             uiPopupContainer.addChild(uiEventForm);
-            uiPopupAction.activate(uiPopupContainer, 800, 0);
+            uiPopupAction.activate(uiPopupContainer, 700, 0);
             event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
           } else if (CalendarEvent.TYPE_TASK.equals(eventCalendar.getEventType())) {
             uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP);
@@ -1105,7 +1105,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiTaskForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
             uiTaskForm.setSelectedCalendarId(calendarId);
             uiPopupContainer.addChild(uiTaskForm);
-            uiPopupAction.activate(uiPopupContainer, 700, 0);
+            uiPopupAction.activate(uiPopupContainer, 600, 0);
             event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
           }
         } else {
