@@ -19,10 +19,6 @@
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
   //yearViewAction = uicomponent.TYPE_YEAR +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
   WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
-   Locale locale = context.getParentAppRequestContext().getLocale() ;
-  dateTimeFormat = uicomponent.getDateTimeFormat() ;
-  DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
-   
   selectedEvent = uicomponent.getSelectedEvent() ;
   boolean displaySearchResult = uicomponent.isDisplaySearchResult();
 
@@ -176,8 +172,8 @@
 			  <%=event.getSummary()%>
 		  </span>
 	  </td>
-	  <td ><%=df.format(event.getFromDateTime())%></td>
-	  <td ><%=df.format(event.getToDateTime())%></td>
+	  <td ><%=uicomponent.getDateTimeString(event.getFromDateTime())%></td>
+	  <td ><%=uicomponent.getDateTimeString(event.getToDateTime())%></td>
 	  <td ><%=(event.getDescription() == null)? "": event.getDescription()%></td>
   </tr>
   <% } %>
