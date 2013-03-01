@@ -134,8 +134,7 @@ public class CalendarSearchResult extends SearchResult {
           if(!Utils.isEmpty(siteKey.getName())) {
             String pageName = getSiteName(siteKey);
             if(Utils.isEmpty(pageName)) {
-              //will replace from Search Context
-              siteKey = SiteKey.portal("intranet");
+              siteKey = SiteKey.portal(sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME);
               pageName = getSiteName(siteKey);
             }
             url = new StringBuffer(getUrl(router, handler, siteKey.getName(), spaceGroupId, pageName)).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();

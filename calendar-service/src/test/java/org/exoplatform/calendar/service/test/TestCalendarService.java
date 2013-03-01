@@ -446,8 +446,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(2, result.size());
 
+    String siteName = "classic";
     //test search context to build url 
-    SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), "");
+    SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), siteName);
     assertNotNull(sc);
     Router rt = sc.getRouter();
     assertNotNull(rt);
@@ -456,7 +457,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     //router page expected return /portal/intranet/calendar
     String spaceGroupId = null;
-    String siteName = "classic";
     String url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
     assertEquals("/"+portalName+"/"+siteName+"/" + Utils.PAGE_NAGVIGATION, url);
     spaceGroupId = "/spaces/space1";
@@ -471,6 +471,24 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       assertEquals(url + Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + sr.getUrl().split(Utils.SLASH)[sr.getUrl().split(Utils.SLASH).length-1], sr.getUrl());
     }
 
+    //site name null
+    sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), null);
+    //siteName = Utils.DEFAULT_SITENAME;
+    spaceGroupId = null;
+    url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    assertEquals("/"+portalName+"/"+siteName+"/" + Utils.PAGE_NAGVIGATION, url);
+    spaceGroupId = "/spaces/space1";
+    //router space expected return /portal/g/:spaces:space1/space1/calendar
+    url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    assertEquals("/"+portalName+"/g/"+ spaceGroupId.replaceAll(Utils.SLASH, ":")+"/space1/" + Utils.PAGE_NAGVIGATION, url);
+    result = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+    url = CalendarSearchResult.getUrl(rt, portalName, siteName, null, Utils.PAGE_NAGVIGATION);
+    for( SearchResult sr : result){
+      checkFields(sr);
+      assertEquals(url + Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + sr.getUrl().split(Utils.SLASH)[sr.getUrl().split(Utils.SLASH).length-1], sr.getUrl());
+    }
+    
     // Clean up data 
     calendarService_.removeUserEvent(username, ids.get(0), calEvent.getId());
     calendarService_.removeUserEvent(username, ids.get(0), calEvent2.getId());

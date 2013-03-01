@@ -400,6 +400,7 @@ public class Utils {
   public static String EVENT_ICON = "Icon";
   public static String TASK_ICON = "uiIconAct";
   
+  public static final String DEFAULT_SITENAME = "intranet";
   public static final String PAGE_NAGVIGATION = "calendar";
   public static final String NONE_NAGVIGATION = "#";
   public static final String PORTLET_NAME = "CalendarPortlet";
