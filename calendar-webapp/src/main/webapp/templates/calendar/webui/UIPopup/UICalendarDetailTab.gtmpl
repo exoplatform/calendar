@@ -82,14 +82,14 @@
 	</div> 
 	<% if (!parent.isAddNew()) { %>
 	<div class="control-group">
-		<label class="control-label" ><%=parent.getLabel(parent.PRIVATE_URL)%></label>
+		<label class="control-label" ><%=parent.getLabel(parent.PRIVATE_URL)%>:</label>
 		<div class="controls pdT5">
 			<%parent.renderField(parent.PRIVATE_URL)%>
 			<%renderActions(parent.PRIVATE_URL) ;%>
 		</div>
 	</div>       
 	<div class="control-group">
-		<label class="control-label" ><%=parent.getLabel(parent.PUBLIC_URL)%></label>
+		<label class="control-label" ><%=parent.getLabel(parent.PUBLIC_URL)%>:</label>
 		<div class="controls pdT5">
 			<% if (!CalendarUtils.isEmpty(parent.calendar_.getPublicUrl())) { %>
 			
