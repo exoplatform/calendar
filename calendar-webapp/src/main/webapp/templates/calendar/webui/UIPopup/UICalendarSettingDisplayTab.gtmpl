@@ -42,14 +42,8 @@
     %>
     
     <div id="settingNotice" class="settingNotice">
-      <%
-      String words = _ctx.appRes("UICalendarSettingForm.label.note");
-      String[] labels = words.split(":");
-	  String label = labels[0];
-	  String content = labels[1];
-      %>
-      <strong>$label</strong>: $content
-	</div>
+      <strong><%=_ctx.appRes("UICalendarSettingForm.label.label") %></strong> <%=_ctx.appRes("UICalendarSettingForm.label.note") %>
+	   </div>
     <%
   }
 
