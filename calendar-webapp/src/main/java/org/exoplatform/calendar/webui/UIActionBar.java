@@ -26,6 +26,8 @@ import org.exoplatform.calendar.webui.popup.UICalendarSettingFeedTab;
 import org.exoplatform.calendar.webui.popup.UICalendarSettingForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -58,7 +60,9 @@ public class UIActionBar extends UIContainer  {
   final static String CATEGORYID = "categoryId".intern() ;
   private boolean isShowPane_ = true ;
   private String currentView_ = null ;
-  
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIActionBar.class);
+
   public UIActionBar() throws Exception {
     addChild(UISearchForm.class, null, null) ;
   }
@@ -91,7 +95,7 @@ public class UIActionBar extends UIContainer  {
 
   static public class ChangeViewActionListener extends EventListener<UIActionBar> {
     public void execute(Event<UIActionBar> event) throws Exception {
-      UIActionBar uiActionBar = event.getSource() ;     
+      UIActionBar uiActionBar = event.getSource() ;
       String viewType = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String categoryId = event.getRequestContext().getRequestParameter("categoryId") ;
       UICalendarPortlet uiPortlet = uiActionBar.getAncestorOfType(UICalendarPortlet.class) ;
