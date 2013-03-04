@@ -15,14 +15,7 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 package org.exoplatform.calendar.service.impl;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
@@ -53,6 +46,8 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.OrganizationService;
@@ -91,6 +86,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   protected List<CalendarEventListener>       eventListeners_       = new ArrayList<CalendarEventListener>(3);
 
   private RemoteCalendarService               remoteCalendarService;
+
+  private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);
 
   public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs) throws Exception {
     storage_ = new JCRDataStorage(nodeHierarchyCreator, reposervice);
@@ -309,12 +306,16 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    CalendarEvent oldEvent = getGroupEvent(event.getId());
     storage_.savePublicEvent(calendarId, event, isNew);
     for (CalendarEventListener cel : eventListeners_) {
-      if (isNew)
+      if (isNew) {
         cel.savePublicEvent(event, calendarId);
-      else
-        cel.updatePublicEvent(event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
+      } else {
+        cel.updatePublicEvent(oldEvent, event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
+      }
     }
   }
 
@@ -322,7 +323,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public CalendarEvent removePublicEvent(String calendarId, String eventId) throws Exception {
-    return storage_.removePublicEvent(calendarId, eventId);
+    CalendarEvent event = storage_.removePublicEvent(calendarId, eventId);
+    for (CalendarEventListener cel : eventListeners_) {
+      cel.deletePublicEvent(event, calendarId);
+    }
+    return event ;
   }
 
   /**
@@ -429,7 +434,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void removeSharedCalendar(String username, String calendarId) throws Exception {
     storage_.removeSharedCalendar(username, calendarId);
   }
-  
+
   public void removeSharedCalendarFolder(String username) throws Exception {
     storage_.removeSharedCalendarFolder(username);
   }
@@ -466,12 +471,31 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void moveEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception {
+    Map<String,  CalendarEvent> oldEventList = new HashMap<String, CalendarEvent>();
+    if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
+      for (CalendarEvent event : calEvents) {
+        oldEventList.put(event.getId(), getGroupEvent(event.getId()));
+      }
+    }
     storage_.moveEvent(fromCalendar, toCalendar, fromType, toType, calEvents, username);
+
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEventListener cel : eventListeners_) {
-        for (CalendarEvent event : calEvents)
-          cel.updatePublicEvent(event, toCalendar);
-
+        for (CalendarEvent event : calEvents) {
+          if (!oldEventList.isEmpty() && oldEventList.get(event.getId()) != null) {
+            cel.updatePublicEvent(oldEventList.get(event.getId()), event, toCalendar);
+            storage_.savePublicEvent(toCalendar, event, false) ;
+          }
+        }
+      }
+    }
+    
+    if (!fromType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) ) {
+      for(CalendarEventListener cel : eventListeners_) {
+        for (CalendarEvent event : calEvents) {
+          cel.savePublicEvent(event, toCalendar);
+          storage_.savePublicEvent(toCalendar, event, false) ;
+        }
       }
     }
   }
@@ -662,7 +686,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public Calendar importRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception {
     return remoteCalendarService.importRemoteCalendar(remoteCalendar);
   }
-  
+
   /**
    * {@inheritDoc}
    */
@@ -714,8 +738,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       jobData.put(repositoryService.getCurrentRepository()
                   .getConfiguration()
                   .getName(), repositoryService.getCurrentRepository()
-                                                                                 .getConfiguration()
-                                                                                 .getName());
+                  .getConfiguration()
+                  .getName());
       PeriodInfo periodInfo = new PeriodInfo(null, null, 0, 5 * 60 * 1000);
       schedulerService.addPeriodJob(info, periodInfo, jobData);
     }
@@ -760,7 +784,29 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   @Override
   public void updateOccurrenceEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception {
+    // keep map of old events to compare
+    Map<String,  CalendarEvent> oldEventList = new HashMap<String, CalendarEvent>();
+    if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
+      for (CalendarEvent event : calEvents) {
+        oldEventList.put(event.getId(), getGroupEvent(event.getId()));
+      }
+    }
     storage_.updateOccurrenceEvent(fromCalendar, toCalendar, fromType, toType, calEvents, username);
+    if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
+      for (CalendarEventListener cel : eventListeners_) {
+        for (CalendarEvent event : calEvents) {
+          // if event existed, update the activity
+          if (oldEventList.get(event.getId()) != null) {
+            cel.updatePublicEvent(oldEventList.get(event.getId()), event, toCalendar);
+            storage_.savePublicEvent(toCalendar, event, false) ;
+          } else {
+            // publish new activity
+            cel.savePublicEvent(event, toCalendar);
+            storage_.savePublicEvent(toCalendar, event, false);
+          }
+        }
+      }
+    }
   }
 
   @Override
@@ -784,6 +830,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   @Override
   public void removeRecurrenceSeries(String username, CalendarEvent originalEvent) throws Exception {
     storage_.removeRecurrenceSeries(username, originalEvent);
+    if(originalEvent.getActivityId() != null) {
+      for (CalendarEventListener cel : eventListeners_) {
+        cel.deletePublicEvent(originalEvent, originalEvent.getCalendarId());
+      }
+    }
   }
 
   /*
@@ -792,7 +843,25 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   @Override
   public void updateRecurrenceSeries(String fromCalendar, String toCalendar, String fromType, String toType, CalendarEvent occurrence, String username) throws Exception {
+    CalendarEvent oldEvent = getGroupEvent(occurrence.getId());
+    if (oldEvent == null) oldEvent = getEvent(username, occurrence.getId());
     storage_.updateRecurrenceSeries(fromCalendar, toCalendar, fromType, toType, occurrence, username);
+    if(toType.equalsIgnoreCase(String.valueOf(Utils.PUBLIC_TYPE))) {
+      for (CalendarEventListener cel : eventListeners_) {
+        if(oldEvent != null) {
+          if (oldEvent.getActivityId() != null)
+          {
+            occurrence.setActivityId(oldEvent.getActivityId());
+            cel.updatePublicEvent(oldEvent, occurrence, fromCalendar);
+          }
+          else {
+            cel.updatePublicEvent(occurrence, toCalendar);
+          }
+          storage_.savePublicEvent(toCalendar, occurrence, false) ;
+        }
+      }
+    }
+    
   }
 
   /*
@@ -811,6 +880,73 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   @Override
   public void removeOccurrenceInstance(String username, CalendarEvent occurrence) throws Exception {
     storage_.removeOccurrenceInstance(username, occurrence);
+
+    /*=== check if we remove the last instance of repetitive event ===*/
+    String calendarId = occurrence.getCalendarId();
+    int calType = Integer.parseInt(occurrence.getCalType());
+    CalendarEvent repetitiveEvent = null;
+
+    // get the original repetitive event
+    if (calType == Calendar.TYPE_PRIVATE)
+      repetitiveEvent = storage_.getUserEvent(username, calendarId, occurrence.getId());
+    else if (calType == Calendar.TYPE_PUBLIC)
+      repetitiveEvent = storage_.getGroupEvent(calendarId, occurrence.getId());
+    else if (calType == Calendar.TYPE_SHARED)
+      repetitiveEvent = storage_.getSharedEvent(username, calendarId, occurrence.getId());
+
+    if (isEventSeriesGettingToLastItem(repetitiveEvent, username))
+    {
+      /* remove the original repetitive event */
+      removeRecurrenceSeries(username, repetitiveEvent);
+      return ;
+    }
+
+    if(occurrence.getActivityId() != null) {
+      for (CalendarEventListener cel : eventListeners_) {
+        cel.deletePublicEvent(occurrence, occurrence.getCalendarId());
+      }  
+    }
+    else /* remove an instance of repetitive event */
+    {
+      /* reset date for occurrence to avoids posting changed date */
+      occurrence.setFromDateTime(repetitiveEvent.getFromDateTime());
+      occurrence.setToDateTime(repetitiveEvent.getToDateTime());
+
+      for (CalendarEventListener cel : eventListeners_) {
+        cel.updatePublicEvent(occurrence, repetitiveEvent, repetitiveEvent.getCalendarId());
+      }
+    }
+    
+  }
+
+  /**
+   * check if the series of event is getting to its last item
+   *
+   * @param repetitiveEvent
+   * @return
+   */
+  private boolean isEventSeriesGettingToLastItem(CalendarEvent repetitiveEvent, String username) throws Exception
+  {
+    /* event repeated unlimited  */
+    if ((repetitiveEvent.getRepeatCount() <= 0) && (repetitiveEvent.getRepeatUntilDate() == null)) return false;
+
+    /* event repeated to a certain date */
+    if ((repetitiveEvent.getRepeatCount() <= 0) && (repetitiveEvent.getRepeatUntilDate() != null))
+    {
+      CalendarSetting calendarSetting = getCalendarSetting(username);
+      TimeZone timezone = TimeZone.getTimeZone(calendarSetting.getTimeZone()); // europe brussels
+      java.util.Calendar fromDate = java.util.Calendar.getInstance(timezone);
+      fromDate.setTime(repetitiveEvent.getFromDateTime());
+      java.util.Calendar toDate   = java.util.Calendar.getInstance(timezone);
+      toDate.setTime(repetitiveEvent.getRepeatUntilDate()); // correct date
+
+      Map<String, CalendarEvent> occurrenceEvents = getOccurrenceEvents(repetitiveEvent, fromDate, toDate, calendarSetting.getTimeZone()); // not null
+      return (occurrenceEvents.keySet().size() == 0);
+    }
+
+    /* event with repeat_count set*/
+    int numberOfOccurrences = (int) repetitiveEvent.getRepeatCount();
+    return (repetitiveEvent.getExcludeId().length == numberOfOccurrences);
   }
 
   @Override

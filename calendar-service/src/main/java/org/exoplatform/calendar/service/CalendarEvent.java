@@ -178,7 +178,7 @@ public class CalendarEvent {
   /**
    * Values: LOW, NORMAL, HIGHT
    */
-  private String               priority;
+  private String               priority = PRIORITY_NONE;
 
   private boolean              isPrivate       = true;
 
@@ -202,6 +202,7 @@ public class CalendarEvent {
 
   private List<Attachment>     attachment;
 
+  private String activityId ;
   public CalendarEvent() {
     id = "Event" + IdGenerator.generate();
   }
@@ -695,5 +696,13 @@ public class CalendarEvent {
   {
     long differenceInMin = ( getToDateTime().getTime() - getFromDateTime().getTime() ) / (1000 * 60);
     return (differenceInMin <= 30);
+  }
+
+  public String getActivityId() {
+    return activityId;
+  }
+
+  public void setActivityId(String activityId) {
+    this.activityId = activityId;
   }
 }

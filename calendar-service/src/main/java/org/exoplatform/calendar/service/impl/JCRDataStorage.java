@@ -96,8 +96,8 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.services.security.IdentityConstants;
-
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -1080,19 +1080,13 @@ public class JCRDataStorage implements DataStorage {
 
   public void removeRecurrenceSeries(String username, CalendarEvent originalEvent) throws Exception {
     int calType = Integer.parseInt(originalEvent.getCalType());
-    // get the list of exception node
     if (originalEvent.getRepeatType().equals(CalendarEvent.RP_NOREPEAT))
       return;
+
     List<CalendarEvent> exceptions = getExceptionEvents(username, originalEvent);
     if (exceptions != null && exceptions.size() > 0) {
       for (CalendarEvent exception : exceptions) {
-        // remove mixin type or remove event?
-        if (calType == Calendar.TYPE_PRIVATE)
-          removeUserEvent(username, exception.getCalendarId(), exception.getId());
-        else if (calType == Calendar.TYPE_PUBLIC)
-          removePublicEvent(exception.getCalendarId(), exception.getId());
-        else if (calType == Calendar.TYPE_SHARED)
-          removeSharedEvent(username, exception.getCalendarId(), exception.getId());
+        removeReference(exception);  // remove reference to original event to avoid ReferentialIntegrityException 
       }
     }
 
@@ -1108,6 +1102,20 @@ public class JCRDataStorage implements DataStorage {
     if (calType == Calendar.TYPE_SHARED) {
       removeSharedEvent(username, originalEvent.getCalendarId(), originalEvent.getId());
       return;
+    }
+  }
+  // removes reference of an exception event to the original event 
+  private void removeReference(CalendarEvent exceptionEvent) throws Exception {
+    Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+    QueryManager queryManager = calendarApp.getSession().getWorkspace().getQueryManager();
+    String sql = "select * from exo:repeatCalendarEvent where exo:id=" + "\'" + exceptionEvent.getId() + "\'";
+    Query query = queryManager.createQuery(sql, Query.SQL);
+    QueryResult result = query.execute();
+    NodeIterator nodesIt = result.getNodes();
+    if(nodesIt.hasNext()) {
+      Node eventNode = nodesIt.nextNode();
+      eventNode.setProperty(Utils.EXO_ORIGINAL_REFERENCE, (Value)null);
+      eventNode.getSession().save();
     }
   }
 
@@ -1344,6 +1352,10 @@ public class JCRDataStorage implements DataStorage {
         event.setRepeatByMonthDay(byMonthDays);
       }
     }
+    String activitiId = ActivityTypeUtils.getActivityId(eventNode) ;
+    if(activitiId != null) {
+      event.setActivityId(ActivityTypeUtils.getActivityId(eventNode));
+    }
     return event;
   }
 
@@ -1506,7 +1518,9 @@ public class JCRDataStorage implements DataStorage {
         }
       }
     }
-
+    if(event.getActivityId() != null) {
+      ActivityTypeUtils.attachActivityId(eventNode, event.getActivityId());
+    }
     calendarNode.getSession().save();
     addEvent(event);
   }
@@ -4016,55 +4030,6 @@ public class JCRDataStorage implements DataStorage {
         originalEvent = getGroupEvent(fromCalendar, eventId);
       else if (calType == Calendar.TYPE_SHARED)
         originalEvent = getSharedEvent(username, fromCalendar, eventId);
-
-      // do we need to get the list of exception events to update?
-      List<CalendarEvent> exceptions = getExceptionEvents(username, originalEvent);
-      if (exceptions != null && exceptions.size() > 0) {
-        for (CalendarEvent exception : exceptions) {
-          boolean change = false;
-          if (exception.getSummary().equals(originalEvent.getSummary())
-              && !originalEvent.getSummary().equals(occurrence.getSummary())) {
-            exception.setSummary(occurrence.getSummary());
-            change = true;
-          }
-          if ((occurrence.getDescription() != null && !occurrence.getDescription()
-                                                                 .equals(originalEvent.getDescription()))
-              || (occurrence.getDescription() == null && originalEvent.getDescription() != null)) {
-            exception.setDescription(occurrence.getDescription());
-            change = true;
-          }
-          if (!fromCalendar.equals(toCalendar)) {
-            if (calType == Calendar.TYPE_PRIVATE)
-              removeUserEvent(username, fromCalendar, exception.getId());
-            else if (calType == Calendar.TYPE_PUBLIC)
-              removePublicEvent(fromCalendar, exception.getId());
-            else if (calType == Calendar.TYPE_SHARED)
-              removeSharedEvent(username, fromCalendar, exception.getId());
-
-            exception.setCalendarId(toCalendar);
-            // when moving exception occurrence to another calendar, the
-            // exception occurrence will become 'normal' event, it dont' have
-            // reference to recurrence series
-            exception.setIsExceptionOccurrence(false);
-            if (toCalType == Calendar.TYPE_PRIVATE)
-              saveUserEvent(username, toCalendar, exception, true);
-            else if (toCalType == Calendar.TYPE_PUBLIC)
-              savePublicEvent(toCalendar, exception, true);
-            else if (toCalType == Calendar.TYPE_SHARED)
-              saveEventToSharedCalendar(username, toCalendar, exception, true);
-          } else {
-            if (!change)
-              continue;
-            if (calType == Calendar.TYPE_PRIVATE)
-              saveUserEvent(username, exception.getCalendarId(), exception, false);
-            else if (calType == Calendar.TYPE_PUBLIC)
-              savePublicEvent(exception.getCalendarId(), exception, false);
-            else if (calType == Calendar.TYPE_SHARED)
-              saveEventToSharedCalendar(username, exception.getCalendarId(), exception, false);
-          }
-        }
-      }
-
       // update original event from occurrence
       java.util.Calendar fromDate = Utils.getInstanceTempCalendar();
       fromDate.setTime(originalEvent.getFromDateTime());

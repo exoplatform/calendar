@@ -42,4 +42,14 @@ public class CalendarUpdateEventListener extends BaseComponentPlugin implements 
 
   }
 
+  @Override
+  public void deletePublicEvent(CalendarEvent event, String calendarId) {
+    
+  }
+
+  @Override
+  public void updatePublicEvent(CalendarEvent oldEvent, CalendarEvent event, String calendarId) {
+    
+  }
+
 }

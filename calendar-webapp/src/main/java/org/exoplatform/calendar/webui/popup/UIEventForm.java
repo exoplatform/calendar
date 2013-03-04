@@ -137,7 +137,9 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
 }
 )
 public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISelector{
+
   private static final Log LOG = ExoLogger.getExoLogger(UIEventForm.class);
+
   final public static String TAB_EVENTDETAIL = "eventDetail".intern() ;
   final public static String TAB_EVENTREMINDER = "eventReminder".intern() ;
   final public static String TAB_EVENTSHARE = "eventShare".intern() ;
@@ -1473,7 +1475,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         }else if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)){
           calService.saveEventToSharedCalendar(username , calendarId, calendarEvent, uiForm.isAddNew_) ;
         }else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)){
-          calService.savePublicEvent(calendarId, calendarEvent, uiForm.isAddNew_) ;          
+          calService.savePublicEvent(calendarId, calendarEvent, uiForm.isAddNew_) ;
         }
       } else  {
         String fromCal = uiForm.oldCalendarId_.split(CalendarUtils.COLON)[1].trim() ;
@@ -1489,7 +1491,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
             calService.updateOccurrenceEvent(fromCal, toCal, fromType, toType, listEvent, username);
           } else {
             // update series:
-            
+
             if (CalendarUtils.isSameDate(oldCalendarEvent.getFromDateTime(), calendarEvent.getFromDateTime())) {
               calService.updateRecurrenceSeries(fromCal, toCal, fromType, toType, calendarEvent, username);
             }
