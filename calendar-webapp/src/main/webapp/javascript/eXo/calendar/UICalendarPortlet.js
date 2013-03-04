@@ -2593,7 +2593,7 @@ UICalendarPortlet.prototype.removeEmailReminder = function(obj){
 	uiEmailAddressLabel = uiEmailAddressLabel.innerHTML.toString().trim();
 	uiEmailInput.value = this.removeItem(uiEmailInput.value,uiEmailAddressLabel);
 	gj(uiEmailAddressItem).remove();
-	if(_module.UICalendarPortlet.getElementById("UIEventForm")) {
+	if(gj(obj).parents(".UIEventForm")[0]) {
 		uiForm.submitForm('UIEventForm','RemoveEmail', true);		
 	} else if(_module.UICalendarPortlet.getElementById("UITaskForm")) { 
 		uiForm.submitForm('UITaskForm','RemoveEmail', true);	
@@ -2603,7 +2603,8 @@ UICalendarPortlet.prototype.removeEmailReminder = function(obj){
 UICalendarPortlet.prototype.removeItem = function(str,removeValue){
 	if(str.indexOf(",") <= 0) return "";
 	var list = str.split(",");
-	list.remove(removeValue);
+    var index = list.indexOf(removeValue);
+    list.splice(index, 1);
 	var tmp = "";
 	for(var i = 0 ; i < list.length; i++){
 		tmp += ","+list[i];

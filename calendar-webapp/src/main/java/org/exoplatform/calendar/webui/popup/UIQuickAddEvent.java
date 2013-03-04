@@ -445,11 +445,11 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       String dateFormat = calendarSetting.getDateFormat() ;
       String timeFormat = calendarSetting.getTimeFormat() ;
       UIPopupAction uiPopupAction = porlet.getChild(UIPopupAction.class) ;
+      uiPopupAction.deActivate() ;
+      UIPopupContainer uiPopupContainer = uiPopupAction.activate(UIPopupContainer.class, 750) ;
       if(uiForm.isEvent()) {
-        uiPopupAction.deActivate() ;
-        UIPopupContainer uiPouContainer = uiPopupAction.activate(UIPopupContainer.class, 700) ;
-        uiPouContainer.setId(UIPopupContainer.UIEVENTPOPUP) ;
-        UIEventForm uiEventForm = uiPouContainer.addChild(UIEventForm.class, null, null) ;
+        uiPopupContainer.setId(UIPopupContainer.UIEVENTPOPUP) ;
+        UIEventForm uiEventForm = uiPopupContainer.addChild(UIEventForm.class, null, null) ;
         uiEventForm.update(uiForm.calType_, uiForm.getUIFormSelectBoxGroup(FIELD_CALENDAR).getOptions()) ;
         uiEventForm.initForm(calendarSetting, null, null) ;
         uiEventForm.setEventSumary(uiForm.getEventSummary()) ;
@@ -476,8 +476,6 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         uiEventForm.setEmailRepeat(false) ;
         if (uiForm.getEventCalendar() != null) uiEventForm.setSelectedCalendarId(uiForm.getEventCalendar());
       } else {
-        uiPopupAction.deActivate() ;
-        UIPopupContainer uiPopupContainer  = uiPopupAction.activate(UIPopupContainer.class, 600) ;
         uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP) ;
         UITaskForm uiTaskForm = uiPopupContainer.addChild(UITaskForm.class, null, null) ;
         uiTaskForm.update(uiForm.calType_, uiForm.getUIFormSelectBoxGroup(FIELD_CALENDAR).getOptions()) ;

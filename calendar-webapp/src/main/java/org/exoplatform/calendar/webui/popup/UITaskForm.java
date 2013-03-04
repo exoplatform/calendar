@@ -84,7 +84,6 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
           events = {
             @EventConfig(listeners = UITaskForm.SaveActionListener.class),
             @EventConfig(listeners = UITaskForm.AddCategoryActionListener.class, phase = Phase.DECODE),
-            @EventConfig(listeners = UITaskForm.AddEmailAddressActionListener.class, phase = Phase.DECODE),
             @EventConfig(listeners = UITaskForm.AddAttachmentActionListener.class, phase = Phase.DECODE),
             @EventConfig(listeners = UITaskForm.DownloadAttachmentActionListener.class, phase = Phase.DECODE),
             @EventConfig(listeners = UITaskForm.RemoveAttachmentActionListener.class, phase = Phase.DECODE),
@@ -806,21 +805,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       uiForm.setSelectedTab(TAB_TASKDETAIL) ;
       uiCategoryMan.categoryId_ = uiForm.getTaskCategory() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiChildPopup) ;
-    }
-  }
-  static  public class AddEmailAddressActionListener extends EventListener<UITaskForm> {
-    @Override
-    public void execute(Event<UITaskForm> event) throws Exception {
-      UITaskForm uiForm = event.getSource() ;
-      uiForm.setSelectedTab(TAB_TASKREMINDER) ;
-      if(!uiForm.getEmailReminder()) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UITaskForm.msg.email-reminder-required", null));
-      } else {
-        UIPopupAction uiPopupAction  = uiForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class) ;
-        UIAddressForm uiAddressForm = uiPopupAction.activate(UIAddressForm.class, 640) ;
-        UITaskForm.showAddressForm(uiAddressForm, uiForm.getEmailAddress());
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
-      }
     }
   }
   

@@ -866,7 +866,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       String value = uiForm.getUIFormSelectBox(EVENT_CATEGORIES).getValue();
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction uiParenPopup = uiPortlet.getChild(UIPopupAction.class);
-      UIPopupContainer uiPopupContainer = uiParenPopup.activate(UIPopupContainer.class, 800);
+      UIPopupContainer uiPopupContainer = uiParenPopup.activate(UIPopupContainer.class, 750);
       if (CalendarEvent.TYPE_TASK.equals(type)) {
         uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP);
         UITaskForm uiTaskForm = uiPopupContainer.addChild(UITaskForm.class, null, null);
@@ -1170,7 +1170,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiEventForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
             uiEventForm.setSelectedCalendarId(calendarId);
             uiPopupContainer.addChild(uiEventForm);
-            uiPopupAction.activate(uiPopupContainer, 700, 0);
+            uiPopupAction.activate(uiPopupContainer, 750, 0);
             event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
           } else if (CalendarEvent.TYPE_TASK.equals(eventCalendar.getEventType())) {
             uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP);
@@ -1179,7 +1179,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiTaskForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
             uiTaskForm.setSelectedCalendarId(calendarId);
             uiPopupContainer.addChild(uiTaskForm);
-            uiPopupAction.activate(uiPopupContainer, 600, 0);
+            uiPopupAction.activate(uiPopupContainer, 750, 0);
             event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
           }
         } else {

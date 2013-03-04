@@ -49,7 +49,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
   @ComponentConfig (
                     template = "app:/templates/calendar/webui/UIPopup/UIEventReminderTab.gtmpl",
                     events = {
-                        @EventConfig(listeners = UIEventReminderTab.AddEmailAddressActionListener.class)
+                        @EventConfig(listeners = UIEventReminderTab.AddEmailAddressActionListener.class, phase = Phase.DECODE)
                     }
 
   ),

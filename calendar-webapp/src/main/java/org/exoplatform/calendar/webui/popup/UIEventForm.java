@@ -53,6 +53,7 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
@@ -1751,7 +1752,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     public void execute(Event<UIEventForm> event) throws Exception {
       UIEventForm uiForm = event.getSource() ;
       uiForm.setEmailAddress(uiForm.getEmailAddress());
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getChild(UIEventReminderTab.class)) ;
+      Util.getPortalRequestContext().setResponseComplete(true);
+      //event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getChild(UIEventReminderTab.class)) ;
     }
   }
   
