@@ -97,12 +97,14 @@ public class NewGroupListener extends GroupEventListener {
       calendar.setTimeZone(defaultTimeZone);
     calendar.setCalendarColor(Calendar.COLORS[new Random().nextInt(Calendar.COLORS.length)]);
     List<String> perms = new ArrayList<String>();
+    if(viewPermission != null)
     for (String s : viewPermission) {
       if (!perms.contains(s))
         perms.add(s);
     }
     calendar.setViewPermission(perms.toArray(new String[perms.size()]));
     perms.clear();
+    if(editPermission != null)
     for (String s : editPermission) {
       String groupKey = groupId + "/:" + s;
       if (!perms.contains(groupKey))

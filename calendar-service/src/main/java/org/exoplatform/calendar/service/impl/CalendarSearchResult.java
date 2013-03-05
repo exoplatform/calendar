@@ -16,6 +16,9 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
@@ -41,6 +44,8 @@ import org.exoplatform.portal.mop.user.UserPortalContext;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.controller.router.Router;
+import org.exoplatform.web.controller.router.URIWriter;
+import org.mortbay.log.Log;
 
 /**
  * Created by The eXo Platform SAS
@@ -107,49 +112,53 @@ public class CalendarSearchResult extends SearchResult {
   public String getTimeZoneName() {
     return zoneName;
   }
-  
-  public static String buildLink(SearchContext sc, String calendarId, String eventId) {
-    String url = "";
+
+  public static String buildLink(SearchContext sc, Collection<String> siteKeys, String calendarId, String eventId) {
+    String url = Utils.NONE_NAGVIGATION;
     if(sc != null)
-    try {
-      Router router = sc.getRouter();
-      ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
-          .getComponentInstanceOfType(ExoContainerContext.class);
-      String handler = context.getPortalContainerName();
-      SiteKey siteKey = null ;
-      String pageName = Utils.PAGE_NAGVIGATION;
-      if (calendarId.indexOf(Utils.SPACE_ID_PREFIX) > 0) {
-        String spaceGroupId = calendarId.split(Utils.SPACE_ID_PREFIX)[0];
-        siteKey = SiteKey.group(spaceGroupId);
-        String siteName = getSiteName(siteKey);
-        url = getUrl(router, handler, siteName, spaceGroupId, pageName);
-      } else {
-        UserPortalConfig prc = getUserPortalConfig();
-        siteKey = SiteKey.portal(prc.getPortalConfig().getName());
-        String siteName = getSiteName(siteKey);
-        url = getUrl(router, handler, siteName, null, pageName);
+      try {
+        Router router = sc.getRouter();
+        ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
+            .getComponentInstanceOfType(ExoContainerContext.class);
+        String handler = context.getPortalContainerName();
+        SiteKey siteKey = null ;
+        String spaceGroupId = null;
+        if (calendarId.indexOf(Utils.SPACE_ID_PREFIX) > 0) {
+          spaceGroupId = String.format("/%s/%s", Utils.SPACES_GROUP, calendarId.replaceFirst(Utils.SPACE_ID_PREFIX, ""));// /spaces/space1
+          siteKey = SiteKey.group(spaceGroupId);
+        } else {
+          UserPortalConfig prc = getUserPortalConfig();
+          siteKey = SiteKey.portal(prc.getPortalConfig().getName());
+        }
+        if(siteKey != null) {
+          if(!Utils.isEmpty(siteKey.getName())) {
+            String pageName = getSiteName(siteKey);
+            if(Utils.isEmpty(pageName)) {
+              siteKey = SiteKey.portal(sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME);
+              pageName = getSiteName(siteKey);
+            }
+            url = new StringBuffer(getUrl(router, handler, siteKey.getName(), spaceGroupId, pageName)).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
+          }
+        }
+      } catch (Exception e) {
+        Log.info("Could not build the link of event/task " + e.getMessage());
+        //e.printStackTrace();
       }
-    } catch (Exception e) {
-      url = "";
-    }
-    return new StringBuffer(url).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
+    return url;
   }
 
   private static UserPortalConfig getUserPortalConfig() throws Exception {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     UserPortalConfigService userPortalConfigSer = (UserPortalConfigService)
         container.getComponentInstanceOfType(UserPortalConfigService.class);
-
     UserPortalContext NULL_CONTEXT = new UserPortalContext() {
       public ResourceBundle getBundle(UserNavigation navigation) {
         return null;
       }
-
       public Locale getUserLocale() {
         return Locale.ENGLISH;
       }
     };
-
     String remoteId = ConversationState.getCurrent().getIdentity().getUserId() ;
     UserPortalConfig userPortalCfg = userPortalConfigSer.
         getUserPortalConfig(userPortalConfigSer.getDefaultPortal(), remoteId, NULL_CONTEXT);
@@ -161,31 +170,26 @@ public class CalendarSearchResult extends SearchResult {
     NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
     NavigationContext nav = navService.loadNavigation(siteKey);
     NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
-
     if (parentNodeCtx.getSize() >= 1) {
       Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
       if (siteKey.getType() == SiteType.GROUP) {
         children = parentNodeCtx.get(0).getNodes();
       }
       Iterator<NodeContext<?>> it = children.iterator();
-
       NodeContext<?> child = null;
       while (it.hasNext()) {
         child = it.next();
         if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
-          break;
+          return child.getName();
         }
       }
-      return child.getName();
     }
     return Utils.EMPTY_STR;
   }
-  
+
   public static String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
     try {
-
       HashedMap qualifiedName = new HashedMap();
-
       qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
       qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
       qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
@@ -198,7 +202,7 @@ public class CalendarSearchResult extends SearchResult {
         qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
         qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
       }
-      return "/" + handler + router.render(qualifiedName);
+      return "/" + handler + URLDecoder.decode(router.render(qualifiedName), "UTF-8");
     } catch (Exception e) {
       return null;
     }
