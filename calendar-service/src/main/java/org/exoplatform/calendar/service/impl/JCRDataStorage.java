@@ -3413,7 +3413,7 @@ public class JCRDataStorage implements DataStorage {
     net.fortuna.ical4j.model.TimeZone tz = registry.getTimeZone(timezone);
     DateTime ical4jEventFrom = new DateTime(recurEvent.getFromDateTime());
     ical4jEventFrom.setTimeZone(tz);
-
+    
     java.util.Calendar occurenceFrom = java.util.Calendar.getInstance();
     occurenceFrom.setTime(from.getTime());
     // because occurrence event can begin before the 'from' but end after
@@ -3440,13 +3440,30 @@ public class JCRDataStorage implements DataStorage {
 
       // make occurrence
       CalendarEvent occurrence = new CalendarEvent(recurEvent);
-      java.util.Calendar temp = Utils.getInstanceTempCalendar();
-      temp.setTimeInMillis(ical4jStart.getTime());
-      occurrence.setFromDateTime(temp.getTime());
-      temp.add(java.util.Calendar.MINUTE, diffMinutes);
-      occurrence.setToDateTime(temp.getTime());
+      
+      
 
+      java.util.Calendar startTime = Utils.getInstanceTempCalendar();
+      java.util.Calendar endTime = Utils.getInstanceTempCalendar();
+      
+      startTime.setTimeInMillis(ical4jStart.getTime());
+      
+      //work around for CAL-351
+      java.util.Calendar repeatFrom = java.util.Calendar.getInstance(TimeZone.getTimeZone(timezone));
+      repeatFrom.setTime(recurEvent.getFromDateTime());
+      int delta = ical4jEventFrom.getDate() - repeatFrom.get(java.util.Calendar.DATE);
+      // because ical4j timezone registry always returns null, we need to workaround here by manually correcting the date.
+      if(delta != 0) {
+        startTime.add(java.util.Calendar.DATE, delta);
+      }
+      occurrence.setFromDateTime(startTime.getTime());
+      
+      endTime.setTime(startTime.getTime());
+      endTime.add(java.util.Calendar.MINUTE, diffMinutes);
+      occurrence.setToDateTime(endTime.getTime());
+      
       String recurId = format.format(occurrence.getFromDateTime());
+      
       // if this occurrence was listed in the exclude list, skip
       if (excludeIds != null && excludeIds.contains(recurId))
         continue;

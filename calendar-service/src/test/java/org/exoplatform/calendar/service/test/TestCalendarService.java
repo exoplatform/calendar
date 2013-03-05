@@ -1475,6 +1475,40 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       fail();
     }
   }
+
+  public void testGetOccurrenceEvents() throws Exception {
+    String timeZone = "Asia/Ho_Chi_Minh";
+    TimeZone tz = TimeZone.getTimeZone(timeZone);
+    java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
+    fromCal.set(2013, 2, 7, 5, 30);
+
+    java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
+    toCal.set(2013, 2, 7, 6, 30);
+
+    CalendarEvent recurEvent = new CalendarEvent();
+    recurEvent.setFromDateTime(fromCal.getTime());
+    recurEvent.setToDateTime(toCal.getTime());
+    recurEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
+    String[] days = {"TH"};
+    recurEvent.setRepeatByDay(days);
+    recurEvent.setRepeatUntilDate(null);
+    java.util.Calendar from = java.util.Calendar.getInstance(tz);
+    java.util.Calendar to = java.util.Calendar.getInstance(tz);
+    from.set(2013, 2, 1, 0, 0, 0);
+    to.set(2013, 2, 12, 0, 0, 0);
+    Map<String, CalendarEvent> occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+    
+    assertEquals(1, occMap.size());
+    
+    CalendarEvent occEvent = occMap.get(occMap.keySet().iterator().next());
+    java.util.Calendar occCal = java.util.Calendar.getInstance(tz);
+    occCal.setTime(occEvent.getFromDateTime());
+    
+    assertEquals(occCal.get(java.util.Calendar.DATE), 7);
+    assertEquals(occCal.get(java.util.Calendar.MONTH), 2);
+    assertEquals(occCal.get(java.util.Calendar.YEAR), 2013);
+  }
+  
   //mvn test -Dtest=TestCalendarService#testGetPublicEvents
   public void testGetPublicEvents() {
     try {
