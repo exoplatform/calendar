@@ -3433,27 +3433,29 @@ public class JCRDataStorage implements DataStorage {
     java.util.Calendar cal = java.util.Calendar.getInstance();
     TimeZone occurTimeZone = TimeZone.getTimeZone(timezone);
     int hourDST = occurTimeZone.getDSTSavings() / 3600000;
-
+    
+    Boolean isDaily = recurEvent.getRepeatType().equals(CalendarEvent.RP_DAILY);
+    java.util.Calendar repeatFrom = java.util.Calendar.getInstance(TimeZone.getTimeZone(timezone));
+    repeatFrom.setTime(recurEvent.getFromDateTime());
+    int delta = ical4jEventFrom.getDate() - repeatFrom.get(java.util.Calendar.DATE);
+    if(delta > 0 && !isDaily) { //CAL-386
+      list.add(ical4jEventFrom);
+    }
+    
     for (Object dt : list) {
       DateTime ical4jStart = (DateTime) dt;
       ical4jStart.setUtc(true);
 
       // make occurrence
       CalendarEvent occurrence = new CalendarEvent(recurEvent);
-      
-      
 
       java.util.Calendar startTime = Utils.getInstanceTempCalendar();
       java.util.Calendar endTime = Utils.getInstanceTempCalendar();
       
       startTime.setTimeInMillis(ical4jStart.getTime());
       
-      //work around for CAL-351
-      java.util.Calendar repeatFrom = java.util.Calendar.getInstance(TimeZone.getTimeZone(timezone));
-      repeatFrom.setTime(recurEvent.getFromDateTime());
-      int delta = ical4jEventFrom.getDate() - repeatFrom.get(java.util.Calendar.DATE);
-      // because ical4j timezone registry always returns null, we need to workaround here by manually correcting the date.
-      if(delta != 0) {
+      // CAL-351: because ical4j timezone registry always returns null, we need to workaround here by manually correcting the date.
+      if(delta != 0 && !ical4jStart.equals(ical4jEventFrom) && !isDaily) {
         startTime.add(java.util.Calendar.DATE, delta);
       }
       occurrence.setFromDateTime(startTime.getTime());
