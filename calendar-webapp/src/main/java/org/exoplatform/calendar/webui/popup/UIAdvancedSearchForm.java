@@ -16,33 +16,11 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.UIActionBar;
-import org.exoplatform.calendar.webui.UICalendarPortlet;
-import org.exoplatform.calendar.webui.UICalendarView;
-import org.exoplatform.calendar.webui.UICalendarViewContainer;
-import org.exoplatform.calendar.webui.UICalendars;
-import org.exoplatform.calendar.webui.UIFormDateTimePicker;
-import org.exoplatform.calendar.webui.UIListView;
-import org.exoplatform.calendar.webui.UIPreview;
-import org.exoplatform.calendar.webui.UIWeekView;
+import org.exoplatform.calendar.webui.*;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -57,6 +35,10 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by The eXo Platform SARL

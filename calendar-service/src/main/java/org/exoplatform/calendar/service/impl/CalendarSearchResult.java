@@ -16,14 +16,6 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.data.SearchContext;
@@ -34,18 +26,19 @@ import org.exoplatform.portal.config.UserPortalConfig;
 import org.exoplatform.portal.config.UserPortalConfigService;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.mop.SiteType;
-import org.exoplatform.portal.mop.navigation.NavigationContext;
-import org.exoplatform.portal.mop.navigation.NavigationService;
-import org.exoplatform.portal.mop.navigation.NodeContext;
-import org.exoplatform.portal.mop.navigation.NodeModel;
-import org.exoplatform.portal.mop.navigation.Scope;
+import org.exoplatform.portal.mop.navigation.*;
 import org.exoplatform.portal.mop.user.UserNavigation;
 import org.exoplatform.portal.mop.user.UserPortalContext;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.web.controller.QualifiedName;
 import org.exoplatform.web.controller.router.Router;
-import org.exoplatform.web.controller.router.URIWriter;
 import org.mortbay.log.Log;
+
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Created by The eXo Platform SAS

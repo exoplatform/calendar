@@ -16,33 +16,15 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.Reminder;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.webui.CalendarView;
-import org.exoplatform.calendar.webui.UICalendarPortlet;
-import org.exoplatform.calendar.webui.UICalendarViewContainer;
-import org.exoplatform.calendar.webui.UIFormDateTimePicker;
-import org.exoplatform.calendar.webui.UIMiniCalendar;
+import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.webui.*;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
-import org.exoplatform.web.application.JavascriptManager;
 import org.exoplatform.web.application.RequestContext;
-import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -53,13 +35,16 @@ import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.input.UICheckBoxInput;
-import org.exoplatform.webui.form.UIFormSelectBox;
-import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
-import org.exoplatform.webui.form.UIFormStringInput;
-import org.exoplatform.webui.form.UIFormTextAreaInput;
+import org.exoplatform.webui.form.*;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by The eXo Platform SARL
@@ -279,7 +264,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       if (summary == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId()
             + ".msg.summary-field-required", null, AbstractApplicationMessage.WARNING));
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
       summary = summary.trim();
@@ -293,12 +278,12 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       if(!CalendarUtils.isEmpty(description)) description = description.replaceAll(CalendarUtils.GREATER_THAN, "").replaceAll(CalendarUtils.SMALLER_THAN,"") ;
       if(CalendarUtils.isEmpty(uiForm.getEventCalendar())) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.calendar-field-required", null, AbstractApplicationMessage.WARNING)) ;
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return ;
       }
       if(CalendarUtils.isEmpty(uiForm.getEventCategory())) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.category-field-required", null, AbstractApplicationMessage.WARNING)) ;
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return ;
       }
       UIFormDateTimePicker fromField = uiForm.getChildById(FIELD_FROM);
@@ -306,24 +291,24 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       Date to = uiForm.getEventToDate(uiPortlet.getCalendarSetting().getDateFormat(), uiPortlet.getCalendarSetting().getTimeFormat()) ;
       if(from == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.fromDate-format", null, AbstractApplicationMessage.WARNING)) ;
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return ;
       }
       if(to == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.toDate-format", null, AbstractApplicationMessage.WARNING)) ;
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return ;
       }
       if(from.after(to) || from.equals(to)) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.logic-required", null, AbstractApplicationMessage.WARNING)) ;
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return ;
       }
       
       CalendarService calService =  CalendarUtils.getCalendarService() ;
       if(calService.isRemoteCalendar(CalendarUtils.getCurrentUser(), uiForm.getEventCalendar())) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, AbstractApplicationMessage.WARNING));
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
       

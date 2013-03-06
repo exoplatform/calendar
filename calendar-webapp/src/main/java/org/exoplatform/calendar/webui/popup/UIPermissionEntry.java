@@ -1,14 +1,11 @@
 package org.exoplatform.calendar.webui.popup;
 
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.exoplatform.calendar.webui.popup.UISharedForm.Permission;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
-import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.lifecycle.Lifecycle;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-import org.exoplatform.calendar.webui.popup.UISharedForm.Permission;
 
 /**
  * represents an entry for permission in the grid

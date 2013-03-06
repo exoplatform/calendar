@@ -16,15 +16,14 @@
  */
 package org.exoplatform.calendar.service;
 
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
+
+import javax.jcr.Node;
+import javax.jcr.Session;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
 
 /**
  * Created by The eXo Platform SAS
@@ -108,15 +107,6 @@ public interface DataStorage {
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception;
 
   /**
-   * Get all calendars of a user by category
-   * @param username
-   * @param calendarCategoryId
-   * @return the list of all user calendars from specific category
-   * @throws Exception
-   */
-  public List<Calendar> getUserCalendarsByCategory(String username, String calendarCategoryId) throws Exception;
-
-  /**
    * Save a user calendar
    * @param username
    * @param calendar
@@ -179,58 +169,6 @@ public interface DataStorage {
    * @throws Exception
    */
   public Calendar getCalendar(String[] defaultFilterCalendars, String username, Node calNode, boolean isShowAll) throws Exception;
-
-  /**
-   * @deprecated
-   * @param username
-   * @param isShowAll
-   * @return
-   * @throws Exception
-   */
-  public List<GroupCalendarData> getCalendarCategories(String username, boolean isShowAll) throws Exception;
-
-  /**
-   * Get all calendar categories of a user
-   * @param username
-   * @return the list of calendar categories of user
-   * @throws Exception
-   */
-  public List<CalendarCategory> getCategories(String username) throws Exception;
-
-  /**
-   * Get a calendar category of a user
-   * @param username
-   * @param calendarCategoryId
-   * @return the CalendarCategory object
-   * @throws Exception
-   */
-  public CalendarCategory getCalendarCategory(String username, String calendarCategoryId) throws Exception;
-
-  /**
-   * Save calendar category
-   * @param username
-   * @param calendarCategory
-   * @param isNew
-   * @throws Exception
-   */
-  public void saveCalendarCategory(String username, CalendarCategory calendarCategory, boolean isNew) throws Exception;
-
-  /**
-   * Remove a calendar category
-   * @param username
-   * @param calendarCategoryId
-   * @return the CalendarCategory which is removed
-   * @throws Exception
-   */
-  public CalendarCategory removeCalendarCategory(String username, String calendarCategoryId) throws Exception;
-
-  /**
-   * Get calendar category from a JCR node
-   * @param calCategoryNode
-   * @return the CalendarCategory object
-   * @throws Exception
-   */
-  public CalendarCategory getCalendarCategory(Node calCategoryNode) throws Exception;
 
   // Event Category APIs
 
@@ -523,16 +461,6 @@ public interface DataStorage {
 
   /**
    * @param username
-   * @param calendars
-   * @param rssData
-   * @param importExport
-   * @return
-   * @throws Exception
-   */
-  public int generateCalDav(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData, CalendarImportExport importExport) throws Exception;
-
-  /**
-   * @param username
    * @param calendarId
    * @throws Exception
    */
@@ -564,50 +492,6 @@ public interface DataStorage {
    * @throws Exception
    */
   public int generateRss(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData, CalendarImportExport importExport) throws Exception;
-
-  /**
-   * @param username
-   * @param calendarId
-   * @param imp
-   * @throws Exception
-   */
-  public void updateRss(String username, String calendarId, CalendarImportExport imp) throws Exception;
-
-  /**
-   * @param username
-   * @param calendarId
-   * @param imp
-   * @param number
-   * @throws Exception
-   */
-  public void updateRss(String username, String calendarId, CalendarImportExport imp, int number) throws Exception;
-
-  /**
-   * @param username
-   * @param calendarId
-   * @param imp
-   * @throws Exception
-   */
-  public void updateCalDav(String username, String calendarId, CalendarImportExport imp) throws Exception;
-
-  /**
-   * @param username
-   * @param calendarId
-   * @param imp
-   * @param number
-   * @throws Exception
-   */
-  public void updateCalDav(String username, String calendarId, CalendarImportExport imp, int number) throws Exception;
-
-  /**
-   * @param username
-   * @param calendarIds
-   * @param rssData
-   * @param importExport
-   * @return
-   * @throws Exception
-   */
-  public int generateCalDav(String username, List<String> calendarIds, RssData rssData, CalendarImportExport importExport) throws Exception;
 
   /**
    * @param portalName
@@ -778,7 +662,7 @@ public interface DataStorage {
    * Create a session provider for current context. The method first try to get a normal session provider, 
    * then attempts to create a system provider if the first one was not available.
    * @return a SessionProvider initialized by current SessionProviderService
-   * @see SessionProviderService#getSessionProvider(null)
+   * see SessionProviderService#getSessionProvider(null)
    */
   public SessionProvider createSessionProvider();
 

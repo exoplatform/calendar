@@ -16,9 +16,9 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.List;
-
 import org.exoplatform.commons.exception.ExoMessageException;
+
+import java.util.List;
 
 /**
  * @author Tuan Nguyen (tuan08@users.sourceforge.net)

@@ -19,7 +19,6 @@ package org.exoplatform.calendar.webui.popup;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormInputInfo;
 
 /**
  * Created by The eXo Platform SAS

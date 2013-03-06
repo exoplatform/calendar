@@ -110,7 +110,7 @@ public class UICreateEvent extends UIForm {
       if (summary == null || summary.trim().length() <= 0) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId()
                                                                                        + ".msg.summary-field-required", null, ApplicationMessage.WARNING));
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
       summary = summary.trim();
@@ -121,24 +121,24 @@ public class UICreateEvent extends UIForm {
       Date to = uiForm.getDateTime(toField, UICreateEvent.END_TIME);
       if (from == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.fromDate-format", null, ApplicationMessage.WARNING));
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
       if (to == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.toDate-format", null, ApplicationMessage.WARNING));
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
       if (from.after(to) || from.equals(to)) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() + ".msg.logic-required", null, ApplicationMessage.WARNING));
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
 
       CalendarService calService = getCalendarService();
       if (calService.isRemoteCalendar(getCurrentUser(), uiForm.getEventCalendar())) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage(uiForm.getId() +".msg.cant-add-event-on-remote-calendar", null, ApplicationMessage.WARNING));
-        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).setFullRender(true);
+        ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return;
       }
 

@@ -31,29 +31,18 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
-import org.exoplatform.webui.core.UIApplication;
-import org.exoplatform.webui.core.UIBreadcumbs;
-import org.exoplatform.webui.core.UIComponent;
-import org.exoplatform.webui.core.UIPageIterator;
-import org.exoplatform.webui.core.UIPopupWindow;
-import org.exoplatform.webui.core.UITree;
+import org.exoplatform.webui.core.*;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormCheckBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -139,10 +128,10 @@ public class UIUserSelector extends UIForm implements UIPopupComponent
       for (Object obj : uiIterator_.getCurrentPageData())
       {
         User user = (User)obj;
-        UIFormCheckBoxInput<Boolean> uiFormCheckBoxInput = getUIFormCheckBoxInput(user.getUserName());
+        UICheckBoxInput uiFormCheckBoxInput = getUICheckBoxInput(user.getUserName());
         if (uiFormCheckBoxInput == null)
         {
-          uiFormCheckBoxInput = new UIFormCheckBoxInput<Boolean>(user.getUserName(), user.getUserName(), false);
+          uiFormCheckBoxInput = new UICheckBoxInput(user.getUserName(), user.getUserName(), false);
           addUIFormInput(uiFormCheckBoxInput);
         }
 
@@ -392,7 +381,7 @@ public class UIUserSelector extends UIForm implements UIPopupComponent
     for (Object o : this.uiIterator_.getCurrentPageData())
     {
       User u = (User) o;
-      UIFormCheckBoxInput input = this.getUIFormCheckBoxInput(u.getUserName());
+      UICheckBoxInput input = this.getUICheckBoxInput(u.getUserName());
       if (input != null)
       {
         this.uiIterator_.setSelectedItem(u.getUserName(), input.isChecked());

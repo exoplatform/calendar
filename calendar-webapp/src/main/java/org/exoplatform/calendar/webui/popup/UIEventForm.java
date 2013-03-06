@@ -16,39 +16,12 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.Reminder;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.webui.CalendarView;
-import org.exoplatform.calendar.webui.UICalendarPortlet;
-import org.exoplatform.calendar.webui.UICalendarViewContainer;
-import org.exoplatform.calendar.webui.UIFormDateTimePicker;
-import org.exoplatform.calendar.webui.UIListContainer;
-import org.exoplatform.calendar.webui.UIMiniCalendar;
+import org.exoplatform.calendar.webui.*;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
@@ -76,18 +49,19 @@ import org.exoplatform.webui.core.model.SelectOptionGroup;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.input.UICheckBoxInput;
-import org.exoplatform.webui.form.UIFormInputInfo;
-import org.exoplatform.webui.form.UIFormInputWithActions;
+import org.exoplatform.webui.form.*;
 import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
-import org.exoplatform.webui.form.UIFormRadioBoxInput;
-import org.exoplatform.webui.form.UIFormSelectBox;
-import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
-import org.exoplatform.webui.form.UIFormTabPane;
-import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.organization.account.UIUserSelector;
+
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by The eXo Platform SARL
@@ -296,7 +270,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       // if it's exception occurrence, disabled repeat checkbox, it means you can't convert a exception occurrence to a repeating event 
       if ((CalendarEvent.RP_NOREPEAT.equals(calendarEvent_.getRepeatType()) || calendarEvent_.getRepeatType() == null) && !CalendarUtils.isEmpty(calendarEvent_.getRecurrenceId())
           && calendarEvent_.getIsExceptionOccurrence()) {
-        getChild(UIEventDetailTab.class).getUICheckBoxInput(UIEventDetailTab.FIELD_ISREPEAT).setEnable(false);
+        getChild(UIEventDetailTab.class).getUICheckBoxInput(UIEventDetailTab.FIELD_ISREPEAT).setDisabled(true);
       }
       
       setSelectedEventPriority(eventCalendar.getPriority()) ;
@@ -2195,7 +2169,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       this.participant = participant;
       User user = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(participant);
       if (user != null) {
-        this.name = user.getFullName();
+        this.name = user.getDisplayName();
         this.email = user.getEmail();
       } else if (participant.matches(CalendarUtils.contactRegex)) {
         this.name = participant.substring(0, participant.lastIndexOf(CalendarUtils.OPEN_PARENTHESIS));

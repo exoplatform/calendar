@@ -16,9 +16,8 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.*;
-
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.PageList;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
@@ -32,6 +31,11 @@ import org.exoplatform.webui.core.UITree;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.organization.UIGroupMembershipSelector;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by The eXo Platform SARL
@@ -105,7 +109,8 @@ public class UIGroupSelector extends UIGroupMembershipSelector implements UIPopu
     OrganizationService service = getApplicationComponent(OrganizationService.class) ;
     String currenUser = CalendarUtils.getCurrentUser();
     if(TYPE_USER.equals(type_)){
-      PageList userPageList = service.getUserHandler().findUsersByGroup(this.getCurrentGroup().getId()) ;    
+      PageList userPageList = service.getUserHandler().findUsersByGroup(this.getCurrentGroup().getId()) ;
+      ListAccess userList  = service.getUserHandler().findUsersByGroupId(this.getCurrentGroup().getId());
       for(Object child : userPageList.getAll()){
         User useObj = ((User)child) ;
         if(!children.contains(useObj.getUserName())) {

@@ -16,10 +16,6 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
@@ -36,12 +32,16 @@ import org.exoplatform.webui.core.UIPageIterator;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
-import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 @ComponentConfig(
                  lifecycle = UIFormLifecycle.class,
                  template =  "app:/templates/calendar/webui/UIPopup/UIAddressForm.gtmpl",

@@ -16,11 +16,6 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -43,6 +38,9 @@ import org.exoplatform.webui.event.EventListener;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by The eXo Platform SARL

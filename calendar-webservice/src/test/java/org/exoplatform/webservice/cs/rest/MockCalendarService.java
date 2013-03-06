@@ -16,31 +16,8 @@
  */
 package org.exoplatform.webservice.cs.rest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.jcr.Node;
-
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarCategory;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.CalendarUpdateEventListener;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.FeedData;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.RemoteCalendar;
-import org.exoplatform.calendar.service.RemoteCalendarService;
-import org.exoplatform.calendar.service.RssData;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
 import org.exoplatform.calendar.service.impl.ICalendarImportExport;
@@ -50,6 +27,9 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.quartz.JobDetail;
+
+import javax.jcr.Node;
+import java.util.*;
 
 /**
  * Created by The eXo Platform SAS
@@ -96,17 +76,6 @@ public class MockCalendarService implements CalendarService{
 
   }
 
-  @Override
-  public int generateCalDav(String username,
-                            LinkedHashMap<String, Calendar> calendars,
-                            RssData rssData) throws Exception {
-    return 0;
-  }
-
-  @Override
-  public int generateCalDav(String username, List<String> calendarIds, RssData rssData) throws Exception {
-    return 0;
-  }
 
   @Override
   public int generateRss(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData) throws Exception {
@@ -118,15 +87,6 @@ public class MockCalendarService implements CalendarService{
     return 0;
   }
 
-  @Override
-  public List<GroupCalendarData> getCalendarCategories(String username, boolean isShowAll) throws Exception {
-    return null;
-  }
-
-  @Override
-  public CalendarCategory getCalendarCategory(String username, String calendarCategoryId) throws Exception {
-    return null;
-  }
 
   @Override
   public CalendarImportExport getCalendarImportExports(String type) {
@@ -137,11 +97,6 @@ public class MockCalendarService implements CalendarService{
   public CalendarSetting getCalendarSetting(String username) throws Exception {
     if(setting_ == null) setting_ = new CalendarSetting() ;
     return setting_;
-  }
-
-  @Override
-  public List<CalendarCategory> getCategories(String username) throws Exception {
-    return null;
   }
 
   @Override
@@ -235,11 +190,6 @@ public class MockCalendarService implements CalendarService{
   }
 
   @Override
-  public List<Calendar> getUserCalendarsByCategory(String username, String calendarCategoryId) throws Exception {
-    return null;
-  }
-
-  @Override
   public List<CalendarEvent> getUserEventByCalendar(String username, List<String> calendarIds) throws Exception {
     return data_.get(calendarIds.get(0));
   }
@@ -259,12 +209,6 @@ public class MockCalendarService implements CalendarService{
 
   }
 
-  @Override
-  public CalendarCategory removeCalendarCategory(String username, String calendarCategoryId) throws Exception {
-    log.info("\n\n Data clean up");
-    data_.clear();
-    return null;
-  }
 
   @Override
   public void removeEventCategory(String username, String eventCategoryName) throws Exception {
@@ -301,10 +245,6 @@ public class MockCalendarService implements CalendarService{
     return null;
   }
 
-  @Override
-  public void saveCalendarCategory(String username, CalendarCategory calendarCategory, boolean isNew) throws Exception {
-
-  }
 
   @Override
   public void saveCalendarSetting(String username, CalendarSetting setting) throws Exception {
@@ -321,11 +261,6 @@ public class MockCalendarService implements CalendarService{
                                         String calendarId,
                                         CalendarEvent event,
                                         boolean isNew) throws Exception {
-
-  }
-
-  @Override
-  public void savePublicCalendar(Calendar calendar, boolean isNew, String username) throws Exception {
 
   }
 
@@ -379,26 +314,6 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public void shareCalendar(String username, String calendarId, List<String> receiverUsers) throws Exception {
-
-  }
-
-  @Override
-  public void updateCalDav(String usename, String calendarId, CalendarImportExport imp) throws Exception {
-
-  }
-
-  @Override
-  public void updateCalDav(String usename, String calendarId, CalendarImportExport imp, int number) throws Exception {
-
-  }
-
-  @Override
-  public void updateRss(String usename, String calendarId, CalendarImportExport imp) throws Exception {
-
-  }
-
-  @Override
-  public void updateRss(String usename, String calendarId, CalendarImportExport imp, int number) throws Exception {
 
   }
 

@@ -16,16 +16,6 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -42,15 +32,17 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
-import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
-import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.event.Event.Phase;
+import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputInfo;
-import org.exoplatform.webui.form.input.UICheckBoxInput;
-import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
+
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -101,8 +93,8 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
       if(calendar.getId().equals(selectedCalendarId)) checkBox.setChecked(true) ; 
       else checkBox.setChecked(false) ;
-      if(eventId != null) checkBox.setEnable(false) ;
-      else checkBox.setEnable(true) ;
+      if(eventId != null) checkBox.setDisabled(true) ;
+      else checkBox.setDisabled(false) ;
       addUIFormInput(checkBox) ;
       names_.put(calendar.getId(), truncateLongName(calendar.getName())) ;
       longNames_.put(calendar.getId(), calendar.getName()) ;

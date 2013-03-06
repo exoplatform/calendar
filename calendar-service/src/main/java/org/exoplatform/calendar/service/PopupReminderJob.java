@@ -16,9 +16,13 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
+import org.exoplatform.commons.utils.ISO8601;
+import org.exoplatform.job.MultiTenancyJob;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.ws.frameworks.cometd.ContinuationService;
+import org.quartz.JobExecutionContext;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -26,14 +30,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-
-import org.exoplatform.job.MultiTenancyJob;
-import org.exoplatform.commons.utils.ISO8601;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.quartz.JobExecutionContext;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 public class PopupReminderJob extends MultiTenancyJob {
   private static Log log_ = ExoLogger.getLogger("cs.calendar.job.popup");

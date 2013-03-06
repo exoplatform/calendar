@@ -16,19 +16,18 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.commons.utils.ISO8601;
+
+import javax.jcr.query.Query;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.jcr.query.Query;
-
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.commons.utils.ISO8601;
 
 /**
  * Created by The eXo Platform SAS

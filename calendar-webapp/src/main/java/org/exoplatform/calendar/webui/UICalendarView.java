@@ -15,7 +15,6 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 package org.exoplatform.calendar.webui;
-
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;

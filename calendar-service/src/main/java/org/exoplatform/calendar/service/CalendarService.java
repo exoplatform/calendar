@@ -16,17 +16,16 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-
-import javax.jcr.Node;
-
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.quartz.JobDetail;
+
+import javax.jcr.Node;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Created by The eXo Platform SARL
@@ -42,63 +41,6 @@ public interface CalendarService {
   final public static String EXPORTEDCSV = "ExportedCsv(.csv)".intern();
 
   final public static String CALDAV      = "CalDAV".intern();
-
-  /**
-   * The method gets all calendar category of current user from data base
-   * @deprecated
-   * @param username current user name
-   * @return List of CalendarCategory object
-   * @throws Exception
-   * @see CalendarCategory
-   */
-  public List<CalendarCategory> getCategories(String username) throws Exception;
-
-  /**
-   * The method gets all groups of private calendar, and each GroupCalendar contains List of Calendar object
-   * @deprecated
-   * Since calendar 4 we decided that remove group of private calendar so all private calendar should be single belong to user
-   * @since calendar 4.0
-   * @param username current user name
-   * @param isShowAll The parameter to make sure that the user want to show all calendar or not, if it is <b>true</b> then 
-   * it gets all calendars, if <b>false</b> it will check from calendar setting to know which calendar will be shown
-   * @return List<GroupCalendarData> List of GroupCalendarData
-   * @throws Exception
-   * @see GroupCalendarData
-   */
-  public List<GroupCalendarData> getCalendarCategories(String username, boolean isShowAll) throws Exception;
-  
- 
-  /**
-   * The method gets the calendar category by given id
-   * @param username current user name 
-   * @param calendarCategoryId id of calendar category
-   * @return CalendarCategory
-   * @throws Exception
-   * @see CalendarCategory
-   */
-  @Deprecated
-  public CalendarCategory getCalendarCategory(String username, String calendarCategoryId) throws Exception;
-
-  /**
-   * Save details of category for a user
-   * @param username current user name(or user id)
-   * @param calendarCategory the object that contains category details
-   * @param isNew the boolean value to point out that add new category or update
-   * @throws Exception
-   */
-  @Deprecated
-  public void saveCalendarCategory(String username, CalendarCategory calendarCategory, boolean isNew) throws Exception;
-
-  /**
-   * The method used for removing one category by id
-   * @param username current user name(or user id)
-   * @param calendarCategoryId given category id
-   * @return
-   * @throws Exception
-   * @see CalendarCategory
-   */
-  @Deprecated
-  public CalendarCategory removeCalendarCategory(String username, String calendarCategoryId) throws Exception;
 
   /**
    * The method get private calendar by given calendarId, and all calendar related to this category will be removed
@@ -121,16 +63,6 @@ public interface CalendarService {
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception;
 
-  /**
-   * The method look up all private calendars by given category id
-   * @deprecated
-   * @param username current user name(or user id)
-   * @param calendarCategoryId given calendar category id
-   * @return List calendar object
-   * @throws Exception
-   * @see Calendar
-   */
-  public List<Calendar> getUserCalendarsByCategory(String username, String calendarCategoryId) throws Exception;
 
   /**
    * The method saves private calendar infomations in to data base
@@ -162,7 +94,7 @@ public interface CalendarService {
    * The method  gets all calendar of a group user, we called it is group calendar
    * it means the calendar for group of users and depen on the permission the user will have right to view or edit that calendar
    * @param calendarId given calendar id
-   * @return Calendar object contants infomations
+   * @return Calendar object contains information
    * @throws Exception
    * @see Calendar
    */
@@ -174,23 +106,16 @@ public interface CalendarService {
    * @param groupIds The group ids that current user belong
    * @param isShowAll Gets all calendar or use setting from calendar setting
    * @param username current user name(or user id)
-   * @return List of GroupCalendarData and each GroupCalendarData contants List of calendar object too
+   * @return List of GroupCalendarData and each GroupCalendarData contains List of calendar object too
    * @throws Exception
    * @see GroupCalendarData
    */
   public List<GroupCalendarData> getGroupCalendars(String[] groupIds, boolean isShowAll, String username) throws Exception;
 
   /**
-   * @deprecated
-   * @see #savePublicCalendar(Calendar calendar, boolean isNew)
-   */
-  public void savePublicCalendar(Calendar calendar, boolean isNew, String username) throws Exception;
-
-  /**
   * The method save calendar to public area (group calendar)
   * @param calendar
-  * @param isNew Boolean value will be checked is it add new or update infomations only
-  * @param username current user name(or user id)
+  * @param isNew Boolean value will be checked is it add new or update information only
   * @throws Exception
   */
   public void savePublicCalendar(Calendar calendar, boolean isNew) throws Exception;
@@ -216,7 +141,6 @@ public interface CalendarService {
    * Save event category to data base, every user will have their own category to classify events, and it will use unique name in data base
    * @param username current user name(or user id)
    * @param eventCategory
-   * @param values 
    * @param isNew
    * @throws Exception
    */
@@ -232,7 +156,6 @@ public interface CalendarService {
 
   /**
    * The method gets category of event by given id
-   * @param userSession The session of current logedin user
    * @param username current user name(or user id)
    * @param eventCategoryId given event category id
    * @return event category object contents infomations
@@ -243,7 +166,6 @@ public interface CalendarService {
 
   /**
    * The method gets category of event by given id
-   * @param userSession The session of current logedin user
    * @param username current user name(or user id)
    * @param eventCategoryName given event category name
    * @return event category object contents infomations
@@ -254,7 +176,6 @@ public interface CalendarService {
 
   /**
    * The method gets list events and tasks of given private calendar ids 
-   * @param userSession The session of current logedin user
    * @param username current user name(or user id)
    * @param calendarIds given calendar ids
    * @return List of events and tasks
@@ -264,7 +185,6 @@ public interface CalendarService {
 
   /**
    * The method gets all events and tasks by given conditions in event query
-   * @param userSession The session of current logedin user
    * @param username current user name(or user id)
    * @param eventQuery given coditons
    * @return List of CalendarEvent object (events and tasks)
@@ -275,7 +195,7 @@ public interface CalendarService {
 
   /**
    * Get a personal event for a given owner
-   * @param owner user id of the event owner
+   * @param username user id of the event owner
    * @param eventId id of event to get
    * @return CalendarEvent in the personal events of owner 
    * @throws Exception 
@@ -403,7 +323,7 @@ public interface CalendarService {
   /**
    * The menthod uses to make url to contants links to subcribe calendar folows RSS stand
    * @param username current user name(or user id)
-   * @param calendars
+   * @param calendarIds
    * @param rssData object contants infomations about the rss feed
    * @return
    * @throws Exception
@@ -413,7 +333,6 @@ public interface CalendarService {
 
   /**
    * It gets data form server and show the url to view contents of RSS
-   * @param systemSession Sessesion to access the public data
    * @param username current user name(or user id)
    * @return List of FeedData
    * @throws Exception
@@ -431,7 +350,6 @@ public interface CalendarService {
 
   /**
    * The method query events and tasks form given coditions, the coditions know by set value for eventquery
-   * @param userSession The session of current logedin user
    * @param username current user name(or user id)
    * @param eventQuery object contants coditions to query
    * @param publicCalendarIds pulic calendar ids
@@ -443,7 +361,6 @@ public interface CalendarService {
 
   /**
    * The method query all events, tasks and mark to hightlight the date have events or tasks 
-   * @param userSession The session of current logedin user
    * @param username current user name(or user id)
    * @param eventQuery object contants coditions to query
    * @param publicCalendarIds publicCalendarIds pulic calendar ids
@@ -454,7 +371,6 @@ public interface CalendarService {
 
   /**
    * The method share the private calendar to other user, it can share for one or many users
-   * @param systemSession Sessesion to access the public data
    * @param username current user name(or user id)
    * @param calendarId given calendar id
    * @param receiverUsers List receive user username or id
@@ -464,7 +380,6 @@ public interface CalendarService {
 
   /**
    * The method gets all shared calendars of the current user
-   * @param systemSession Sessesion to access the public data
    * @param username current user name(or user id)
    * @param isShowAll boolean value to point out that it will get all calendars or use user's clendar setting
    * @return
@@ -519,25 +434,6 @@ public interface CalendarService {
    */
   public Map<String, String> checkFreeBusy(EventQuery eventQuery) throws Exception;
 
-  /**
-   * The method genarete links to access calendar throw WEBDAV, it will require user name and password when access
-   * @param username current user name(or user id)
-   * @param calendars List calendar ids will look up and publicing
-   * @param rssData Object contants infomations about rss feed
-   * @return
-   * @throws Exception
-   */
-  public int generateCalDav(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData) throws Exception;
-
-  /**
-   * The method genarete links to access calendar throw WEBDAV, it will require user name and password when access
-   * @param username current user name(or user id)
-   * @param calendars List calendar ids will look up and publicing
-   * @param rssData Object contants infomations about rss feed
-   * @return
-   * @throws Exce
-   */
-  public int generateCalDav(String username, List<String> calendarIds, RssData rssData) throws Exception;
 
   /**
    * The method removes the events or tasks form shared calendar, orloginal item will be removed
@@ -577,26 +473,6 @@ public interface CalendarService {
   public void addListenerPlugin(CalendarUpdateEventListener listener) throws Exception;
 
   public void addEventListenerPlugin(CalendarEventListener listener) throws Exception;
-
-  /**
-   * The method update exited rss data when calendar has been changed
-   * @param usename 
-   * @param calendarId calendar id
-   * Added from 1.3
-   */
-  public void updateRss(String usename, String calendarId, CalendarImportExport imp) throws Exception;
-
-  public void updateRss(String usename, String calendarId, CalendarImportExport imp, int number) throws Exception;
-
-  /**
-   * The method update exited rss data when calendar has been changed
-   * @param usename 
-   * @param calendarId calendar id
-   * Added from 1.3
-   */
-  public void updateCalDav(String usename, String calendarId, CalendarImportExport imp) throws Exception;
-
-  public void updateCalDav(String usename, String calendarId, CalendarImportExport imp, int number) throws Exception;
 
   public int getTypeOfCalendar(String userName, String calendarId) throws Exception;
 
@@ -649,8 +525,8 @@ public interface CalendarService {
    * Check if the remote url is valid, in 2 cases of iCalendar url or CalDav url, with authentication
    * @param url the remote url
    * @param type the type of remote calendar, iCalendar or CalDav
-   * @param username the remote username used to authenticate
-   * @param password the remote password used to authenticate
+   * @param remoteUser the remote username used to authenticate
+   * @param remotePassword the remote password used to authenticate
    * @return true if remote url is available in case of iCalendar and CalDav access support in case of CalDav
    * @throws Exception
    */
@@ -659,7 +535,6 @@ public interface CalendarService {
   /**
    * Import an online .ics or through CalDav access to local calendar
    * @param remoteCalendar object content all properties for remote calendar.
-   * @param credentials
    * @throws Exception
    */
   public Calendar importRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception;
@@ -667,8 +542,8 @@ public interface CalendarService {
   /**
    * Reload remote calendar data
    * @param username owner of the calendar
-   * @param remoteCalendar object content all properties for remote calendar.Id id of the calendar
-   * @return the remote Calendar ojbect
+   * @param remoteCalendarId object content all properties for remote calendar.Id id of the calendar
+   * @return the remote Calendar object
    * @throws Exception
    */
   public Calendar refreshRemoteCalendar(String username, String remoteCalendarId) throws Exception;
@@ -809,7 +684,7 @@ public interface CalendarService {
    * unsharing a calendar with a group will run in background
    * @since CS-5722
    * @param username
-   * @param removedUsers
+   * @param unsharedGroups
    * @param calendarId
    * @throws Exception
    */
