@@ -160,12 +160,12 @@ public class UICalendars extends UIForm  {
         }
         if (calendarId == null)
         {
-          getUIFormCheckBoxInput(component.getId()).setChecked(false) ;
+          getUICheckBoxInput(component.getId()).setChecked(false) ;
           continue;
         }
 
         if (isCalendarOfSpace(calendarId)) {
-          getUIFormCheckBoxInput(component.getId()).setChecked(true) ;
+          getUICheckBoxInput(component.getId()).setChecked(true) ;
         }else{
           getUICheckBoxInput(component.getId()).setChecked(false) ;
         }
