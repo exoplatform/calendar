@@ -16,17 +16,16 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.webui.core.model.SelectItemOption;
+import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormInputBase;
+
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.exoplatform.web.application.RequireJS;
-import org.exoplatform.webui.application.WebuiRequestContext;
-import org.exoplatform.webui.core.UIComponent;
-import org.exoplatform.webui.core.model.SelectItemOption;
-import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.webui.form.UIFormInputBase;
 
 /**
  * Created by The eXo Platform SARL

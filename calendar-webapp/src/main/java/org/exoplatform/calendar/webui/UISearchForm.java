@@ -16,19 +16,8 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
-import org.exoplatform.calendar.webui.popup.UIPopupAction;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -40,6 +29,10 @@ import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by The eXo Platform SARL

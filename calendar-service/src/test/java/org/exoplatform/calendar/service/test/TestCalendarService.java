@@ -16,46 +16,9 @@
  */
 package org.exoplatform.calendar.service.test;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-
-import javax.jcr.PathNotFoundException;
-import javax.jcr.query.Query;
-
-import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Reminder;
-import org.exoplatform.calendar.service.RemoteCalendar;
-import org.exoplatform.calendar.service.RemoteCalendarService;
-import org.exoplatform.calendar.service.RssData;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.CalendarSearchResult;
-import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
-import org.exoplatform.calendar.service.impl.EventSearchConnector;
-import org.exoplatform.calendar.service.impl.JCRDataStorage;
-import org.exoplatform.calendar.service.impl.NewGroupListener;
-import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.service.impl.TaskSearchConnector;
-import org.exoplatform.calendar.service.impl.UnifiedQuery;
+import org.exoplatform.calendar.service.impl.*;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.ExoContainerContext;
@@ -76,6 +39,15 @@ import org.exoplatform.web.controller.metadata.ControllerDescriptor;
 import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.router.Router;
 import org.exoplatform.web.controller.router.RouterConfigException;
+
+import javax.jcr.PathNotFoundException;
+import javax.jcr.query.Query;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by The eXo Platform SARL

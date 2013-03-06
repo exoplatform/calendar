@@ -16,8 +16,6 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import java.util.List;
-
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.container.xml.InitParams;
@@ -26,6 +24,8 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserEventListener;
+
+import java.util.List;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang
@@ -75,10 +75,8 @@ public class NewUserListener extends UserEventListener {
 
   final public static String ST_USER_IGNORE                         = "ignoredUsers".intern();
 
-  final public static String DEFAULT_CALENDAR_CATEGORYID = "defaultCalendarCategoryId";
   final public static String DEFAULT_CALENDAR_ID = "defaultCalendarId";
   
-  final public static String DEFAULT_CALENDAR_CATEGORYNAME = "defaultCalendarCategoryName";
   final public static String DEFAULT_CALENDAR_NAME = "defaultCalendarName";
   
   final public static String DEFAULT_EVENTCATEGORY_ID_ALL = "defaultEventCategoryIdAll";
@@ -108,14 +106,9 @@ public class NewUserListener extends UserEventListener {
   public static String[] defaultEventCategoryNames = DEFAULT_EVENT_CATEGORY_NAMES;
 
   private CalendarService cservice_;
-  @Deprecated
-  public static String defaultCalendarCategoryId = DEFAULT_CALENDAR_CATEGORYID;
-  @Deprecated
-  public static String defaultCalendarCategoryName = DEFAULT_CALENDAR_CATEGORYNAME;
 
-  @Deprecated
   public static String defaultCalendarId = DEFAULT_CALENDAR_ID;
-  @Deprecated
+
   public static String defaultCalendarName = DEFAULT_CALENDAR_NAME;
   
   private List<String> ignore_users_;

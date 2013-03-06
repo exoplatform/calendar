@@ -16,19 +16,9 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.*;
-
-import javax.jcr.PathNotFoundException;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.popup.*;
 import org.exoplatform.services.log.ExoLogger;
@@ -39,14 +29,15 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIComponent;
-import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
-import org.exoplatform.calendar.webui.UIFormColorPicker;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
+
+import javax.jcr.PathNotFoundException;
+import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -63,8 +54,7 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                  events = {
                    @EventConfig(listeners = UICalendars.AddCalendarActionListener.class),
                    @EventConfig(listeners = UICalendars.AddEventCategoryActionListener.class),
-                   @EventConfig(phase=Phase.DECODE, listeners = UICalendars.DeleteGroupActionListener.class, confirm="UICalendars.msg.confirm-delete-group"),
-                   @EventConfig(listeners = UICalendars.ExportCalendarActionListener.class), 
+                   @EventConfig(listeners = UICalendars.ExportCalendarActionListener.class),
                    @EventConfig(listeners = UICalendars.ExportCalendarsActionListener.class), 
                    @EventConfig(listeners = UICalendars.ImportCalendarActionListener.class),
                    @EventConfig(listeners = UICalendars.AddEventActionListener.class),
@@ -570,25 +560,6 @@ public class UICalendars extends UIForm  {
         event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet) ;
         return;
       }
-    }
-  }
-
-  static  public class DeleteGroupActionListener extends EventListener<UICalendars> {
-    @Override
-    public void execute(Event<UICalendars> event) throws Exception {
-      UICalendars uiComponent = event.getSource() ;
-      String calendarCategoryId = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      UICalendarPortlet uiPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
-      uiPortlet.cancelAction() ;
-      CalendarService calService = uiComponent.getApplicationComponent(CalendarService.class) ;
-      String username = CalendarUtils.getCurrentUser() ;
-      calService.removeCalendarCategory(username, calendarCategoryId) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent) ; 
-      UICalendarWorkingContainer uiWorkingContainer = uiPortlet.findFirstComponentOfType(UICalendarWorkingContainer.class) ;
-      UICalendarViewContainer uiViewContainer = uiPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
-      uiComponent.updateView(uiComponent, event);
-      uiViewContainer.refresh() ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;
     }
   }
 

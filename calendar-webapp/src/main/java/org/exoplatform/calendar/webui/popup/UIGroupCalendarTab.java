@@ -16,8 +16,6 @@
  */
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.*;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -26,6 +24,8 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormStringInput;
+
+import java.util.*;
 
 /**
  * Created by The eXo Platform SAS

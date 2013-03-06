@@ -4,10 +4,6 @@
  **************************************************************************/
 package org.exoplatform.calendar.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.GroupCalendarData;
@@ -17,6 +13,10 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.GroupEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Author : Huu-Dung Kieu huu-dung.kieu@bull.be 14 f�vr. 08

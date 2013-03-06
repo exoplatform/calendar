@@ -15,11 +15,12 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 package org.exoplatform.calendar.webui;
-import java.util.Calendar;
 
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
+
+import java.util.Calendar;
 /**
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen

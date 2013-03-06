@@ -16,9 +16,9 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.Date;
-
 import org.exoplatform.services.jcr.util.IdGenerator;
+
+import java.util.Date;
 
 /**
  * Created by The eXo Platform SARL

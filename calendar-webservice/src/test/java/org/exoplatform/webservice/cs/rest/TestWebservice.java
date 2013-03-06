@@ -17,15 +17,7 @@
 
 package org.exoplatform.webservice.cs.rest;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.RuntimeDelegate;
-
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarCategory;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.common.http.HTTPStatus;
@@ -37,6 +29,12 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.webservice.cs.calendar.CalendarWebservice;
+
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.RuntimeDelegate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * Created by The eXo Platform SARL Author : Volodymyr Krasnikov
@@ -70,21 +68,10 @@ public class TestWebservice extends AbstractResourceTest {
     
   }
 
-
-  private CalendarCategory createCalendarCategory(String name) {
-
-    CalendarCategory calCategory = new CalendarCategory() ;
-    calCategory.setName(name) ;
-    calCategory.setDescription("Description") ;
-    //assertNotNull(calendarService);
-    return calCategory ;
-  }
-
-  private Calendar createCalendar(String name, String categoryId) {
+  private Calendar createCalendar(String name) {
     Calendar cal = new Calendar() ;
     cal.setName(name) ;
     cal.setDescription("Desscription") ;
-    cal.setCategoryId(categoryId) ;
     cal.setPublic(true) ;
     return cal;
   }
@@ -98,20 +85,12 @@ public class TestWebservice extends AbstractResourceTest {
     c.setToDateTime(to);
     return c ;
   }
-  
-  private void deleteData(String username, String calId) throws Exception {
-    calendarService.removeCalendarCategory(username, calId); 
-  }
-  
+
   public void testCheckPublicRss() throws Exception {
    
 
-    //Create calendar
-    CalendarCategory calCate = createCalendarCategory("categoryName");
-    calendarService.saveCalendarCategory(username, calCate, true) ;
-
     //create/get calendar in private folder
-    Calendar cal = createCalendar("myCalendar",calCate.getId());
+    Calendar cal = createCalendar("myCalendar");
      
 
     String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
@@ -140,18 +119,14 @@ public class TestWebservice extends AbstractResourceTest {
     assertEquals(HTTPStatus.OK, response.getStatus());
 
    
-    deleteData(username, calCate.getId());
+    //deleteData(username, calCate.getId());
     
   }
 
   public void testUpcomingEvent() throws Exception {
     
-    //Create calendar
-    CalendarCategory calCate = createCalendarCategory("categoryName");
-    calendarService.saveCalendarCategory(username, calCate, true) ;
-
-    //create/get calendar in private folder
-    Calendar cal = createCalendar("myCalendar",calCate.getId());
+  //create/get calendar in private folder
+    Calendar cal = createCalendar("myCalendar");
      
 
     String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
@@ -174,17 +149,13 @@ public class TestWebservice extends AbstractResourceTest {
     assertNotNull(response);
     assertEquals(HTTPStatus.OK ,response.getStatus());
     
-    deleteData(username, calCate.getId());
+    //deleteData(username, calCate.getId());
   }
 
   public void testUpdateStatus() throws Exception {
 
-    //Create calendar
-    CalendarCategory calCate = createCalendarCategory("categoryName");
-    calendarService.saveCalendarCategory(username, calCate, true) ;
-
     //create/get calendar in private folder
-    Calendar cal = createCalendar("myCalendar",calCate.getId());
+    Calendar cal = createCalendar("myCalendar");
      
 
     String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
@@ -205,17 +176,13 @@ public class TestWebservice extends AbstractResourceTest {
     assertNotNull(response);
     assertEquals(HTTPStatus.OK, response.getStatus());
     
-    deleteData(username, calCate.getId());
+    //deleteData(username, calCate.getId());
   }
   
   public void testGetEvent() throws Exception {
 
-    //Create calendar
-    CalendarCategory calCate = createCalendarCategory("categoryName");
-    calendarService.saveCalendarCategory(username, calCate, true) ;
-
     //create/get calendar in private folder
-    Calendar cal = createCalendar("myCalendar",calCate.getId());
+    Calendar cal = createCalendar("myCalendar");
      
 
     String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
@@ -234,20 +201,15 @@ public class TestWebservice extends AbstractResourceTest {
     assertNotNull(response);
     assertEquals(HTTPStatus.OK, response.getStatus());
     
-    deleteData(username, calCate.getId());
+    //deleteData(username, calCate.getId());
     
   }
   
   public void testGetEventById() throws Exception {
 
-    //Create calendar
-    CalendarCategory calCate = createCalendarCategory("categoryName");
-    calendarService.saveCalendarCategory(username, calCate, true) ;
-
     //create/get calendar in private folder
-    Calendar cal = createCalendar("myCalendar",calCate.getId());
+    Calendar cal = createCalendar("myCalendar");
      
-
     String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
 
     cal.setPublicUrl(extURI);
@@ -264,19 +226,13 @@ public class TestWebservice extends AbstractResourceTest {
     assertNotNull(response);
     assertEquals(HTTPStatus.OK, response.getStatus());
     
-    deleteData(username, calCate.getId());
-    
+    //deleteData(username, calCate.getId());
   }
   public void testGetCalendars() throws Exception {
-    
-    //Create calendar
-    CalendarCategory calCate = createCalendarCategory("categoryName");
-    calendarService.saveCalendarCategory(username, calCate, true) ;
 
     //create/get calendar in private folder
-    Calendar cal = createCalendar("myCalendar",calCate.getId());
+    Calendar cal = createCalendar("myCalendar");
      
-
     String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
 
     cal.setPublicUrl(extURI);
@@ -290,8 +246,7 @@ public class TestWebservice extends AbstractResourceTest {
     assertNotNull(response);
     assertEquals(HTTPStatus.OK, response.getStatus());
     
-    deleteData(username, calCate.getId());
-
+    //deleteData(username, calCate.getId());
   }
   
   private void login() {

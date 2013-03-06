@@ -15,30 +15,9 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 package org.exoplatform.calendar.service.impl;
-import java.util.*;
-
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
 
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarCategory;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.CalendarUpdateEventListener;
-import org.exoplatform.calendar.service.DeleteShareJob;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.FeedData;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.RemoteCalendar;
-import org.exoplatform.calendar.service.RemoteCalendarService;
-import org.exoplatform.calendar.service.RssData;
-import org.exoplatform.calendar.service.ShareCalendarJob;
-import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
-import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -49,8 +28,8 @@ import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
@@ -58,13 +37,15 @@ import org.exoplatform.services.scheduler.PeriodInfo;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.picocontainer.Startable;
-
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
+
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
+import java.util.*;
 
 
 /**
@@ -100,42 +81,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     Utils.EVENT_NUMBER = Integer.parseInt(eventNumber);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Deprecated
-  public List<CalendarCategory> getCategories(String username) throws Exception {
-    return storage_.getCategories(username);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Deprecated
-  public List<GroupCalendarData> getCalendarCategories(String username, boolean isShowAll) throws Exception {
-    return storage_.getCalendarCategories(username, isShowAll);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public CalendarCategory getCalendarCategory(String username, String calendarCategoryId) throws Exception {
-    return storage_.getCalendarCategory(username, calendarCategoryId);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public void saveCalendarCategory(String username, CalendarCategory calendarCategory, boolean isNew) throws Exception {
-    storage_.saveCalendarCategory(username, calendarCategory, isNew);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public CalendarCategory removeCalendarCategory(String username, String calendarCategoryId) throws Exception {
-    return storage_.removeCalendarCategory(username, calendarCategoryId);
-  }
 
   /**
    * {@inheritDoc}
@@ -156,13 +101,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return storage_.getUserCalendars(username, isShowAll);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Deprecated
-  public List<Calendar> getUserCalendarsByCategory(String username, String calendarCategoryId) throws Exception {
-    return storage_.getUserCalendarsByCategory(username, calendarCategoryId);
-  }
 
   /**
    * {@inheritDoc}
@@ -195,11 +133,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  @Deprecated
-  public void savePublicCalendar(Calendar calendar, boolean isNew, String username) throws Exception {
-    storage_.savePublicCalendar(calendar, isNew, username);
-  }
-
   public void savePublicCalendar(Calendar calendar, boolean isNew) throws Exception {
     storage_.savePublicCalendar(calendar, isNew, null);
   }
@@ -368,13 +301,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  public int generateCalDav(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData) throws Exception {
-    return storage_.generateCalDav(username, calendars, rssData, calendarImportExport_.get(CalendarService.ICALENDAR));
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   public List<FeedData> getFeeds(String username) throws Exception {
     return storage_.getFeeds(username);
   }
@@ -530,29 +456,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     listeners_.add(listener);
   }
 
-  public void updateCalDav(String usename, String calendarId, CalendarImportExport imp) throws Exception {
-    storage_.updateCalDav(usename, calendarId, imp);
-  }
-
-  public void updateCalDav(String usename, String calendarId, CalendarImportExport imp, int number) throws Exception {
-    storage_.updateCalDav(usename, calendarId, imp, number);
-  }
-
-  public void updateRss(String usename, String calendarId, CalendarImportExport imp) throws Exception {
-    storage_.updateRss(usename, calendarId, imp);
-
-  }
-
-  public void updateRss(String usename, String calendarId, CalendarImportExport imp, int number) throws Exception {
-    storage_.updateRss(usename, calendarId, imp, number);
-  }
-
   public int getTypeOfCalendar(String userName, String calendarId) throws Exception {
     return storage_.getTypeOfCalendar(userName, calendarId);
-  }
-
-  public int generateCalDav(String username, List<String> calendarIds, RssData rssData) throws Exception {
-    return storage_.generateCalDav(username, calendarIds, rssData, calendarImportExport_.get(CalendarService.ICALENDAR));
   }
 
   public int generateRss(String username, List<String> calendarIds, RssData rssData) throws Exception {
@@ -1027,7 +932,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     }
     continuation.sendMessage(username,Utils.SHARE_CAL_CHANEL,startMessage);
     SimpleTriggerImpl trigger = new SimpleTriggerImpl(jobInfo.getJobName(), jobInfo.getGroupName(), new Date());
-    
+
     JobDetailImpl job = new JobDetailImpl(jobInfo.getJobName(), jobInfo.getGroupName(), jobInfo.getJob());
     
     job.setDescription(jobInfo.getDescription());

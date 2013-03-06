@@ -16,10 +16,10 @@
  **/
 package org.exoplatform.calendar.service;
 
+import org.exoplatform.services.jcr.util.IdGenerator;
+
 import java.util.Locale;
 import java.util.TimeZone;
-
-import org.exoplatform.services.jcr.util.IdGenerator;
 
 /**
  * Created by The eXo Platform SARL
