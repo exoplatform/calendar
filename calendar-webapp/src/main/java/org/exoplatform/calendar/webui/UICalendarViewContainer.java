@@ -134,7 +134,7 @@ public class UICalendarViewContainer extends UIContainer  {
      }
    }
    protected boolean isInSpace() {
-     return ((UICalendarPortlet) getAncestorOfType(UICalendarPortlet.class)).isInSpace() ;
+     return UICalendarPortlet.isInSpace() ;
    }
    public void applySeting() throws Exception {
      for(UIComponent comp : getChildren()) {

@@ -1241,7 +1241,9 @@ public class JCRDataStorage implements DataStorage {
       Node calendarNode = getPublicCalendarHome().getNode(calendarId);
       NodeIterator it = calendarNode.getNodes();
       while (it.hasNext()) {
-        events.add(getEvent(it.nextNode()));
+        CalendarEvent event = getEvent(it.nextNode());
+        event.setCalType(String.valueOf(Calendar.TYPE_PUBLIC));
+        events.add(event);
       }
     }
     return events;

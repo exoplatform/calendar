@@ -39,7 +39,6 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIComponent;
-import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
@@ -91,11 +90,6 @@ public class UICalendars extends UIForm  {
   private boolean isShowTaskList_ = false ;
 
   /**
-   * contains non duplicated public calendars id
-   */
-  private String[] publicCalendarIds = {} ;
-
-  /**
    * contains key as <type_calendar>:<calendar_id> and value as color of calendar
    * example: key 2:calendar1401dda8c0a801303011177469ff542e, value: color code
    */
@@ -112,7 +106,7 @@ public class UICalendars extends UIForm  {
       return key ;
     }
   }
-  public String[] getPublicCalendarIds(){ return publicCalendarIds ; }
+  
   public void setShowTaskList(boolean isShowTaskList) {
     this.isShowTaskList_ = isShowTaskList;
   }
@@ -168,14 +162,14 @@ public class UICalendars extends UIForm  {
             }
           }
         }
-        if (calendarId == null)
+        if (calendarId == null && getUICheckBoxInput(component.getId()) != null)
         {
-          getUIFormCheckBoxInput(component.getId()).setChecked(false) ;
+          getUICheckBoxInput(component.getId()).setChecked(false) ;
           continue;
         }
-
+        if(getUICheckBoxInput(component.getId()) != null)
         if (isCalendarOfSpace(calendarId)) {
-          getUIFormCheckBoxInput(component.getId()).setChecked(true) ;
+          getUICheckBoxInput(component.getId()).setChecked(true) ;
         }else{
           getUICheckBoxInput(component.getId()).setChecked(false) ;
         }
@@ -254,7 +248,7 @@ public class UICalendars extends UIForm  {
 
     if(calendars != null) {
       for (Calendar calendar : calendars) {
-        colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
+        colorMap_.put(buildId(Calendar.TYPE_PRIVATE ,calendar.getId()), calendar.getCalendarColor()) ;
         UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
         if (checkbox == null) {
           checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
@@ -316,7 +310,7 @@ public class UICalendars extends UIForm  {
       List<Calendar> calendars = group.getCalendars() ;
       for(Calendar calendar : calendars) {
         map.put(calendar.getId(), calendar.getId()) ;
-        colorMap_.put(Calendar.TYPE_PUBLIC + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
+        colorMap_.put(buildId(Calendar.TYPE_PUBLIC, calendar.getId()), calendar.getCalendarColor()) ;
         UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
         if (checkbox == null) {
           checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
@@ -327,7 +321,6 @@ public class UICalendars extends UIForm  {
         }
       }
     }
-    publicCalendarIds = map.values().toArray(new String[]{}) ;
     return groupCalendars ;
   }
 
@@ -385,7 +378,7 @@ public class UICalendars extends UIForm  {
       calendars.addAll(group.getCalendars()) ;
       for(Calendar calendar : calendars) {
         map.put(calendar.getId(), calendar.getId()) ;
-        colorMap_.put(Calendar.TYPE_PUBLIC + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
+        colorMap_.put(buildId(Calendar.TYPE_PUBLIC ,calendar.getId()), calendar.getCalendarColor()) ;
 
         /* add a checkbox for each calendar */
         UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
@@ -398,10 +391,27 @@ public class UICalendars extends UIForm  {
         }
       }
     }
-
-    publicCalendarIds = map.values().toArray(new String[]{}) ;
     return new ArrayList<Calendar>(new HashSet<Calendar>(calendars));
   }
+  
+  public String[] getPublicCalendarIds() {
+    try{ 
+    String userId = CalendarUtils.getCurrentUser();
+    String[] groups = CalendarUtils.getUserGroups(userId);
+    if(UICalendarPortlet.isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    CalendarService calendarService = CalendarUtils.getCalendarService();
+    Set<String> set = new HashSet<String>();
+    for (GroupCalendarData group : calendarService.getGroupCalendars(groups, false, userId)) {
+      for (org.exoplatform.calendar.service.Calendar calendar : group.getCalendars()) {
+        set.add(calendar.getId());
+        colorMap_.put(buildId(Calendar.TYPE_PUBLIC, calendar.getId()), calendar.getCalendarColor());
+      }
+    }
+    return set.toArray(new String[] {});
+    } catch (Exception e) {
+      return null;
+    }
+}
 
   /**
    * return a group of shared calendars for current users
@@ -429,7 +439,7 @@ public class UICalendars extends UIForm  {
     for(Calendar calendar : calendars) {
       String color = map.get(calendar.getId()) ;
       if(color == null) color = calendar.getCalendarColor() ;
-      colorMap_.put(Calendar.TYPE_SHARED + CalendarUtils.COLON + calendar.getId(), color) ;
+      colorMap_.put(buildId(Calendar.TYPE_SHARED, calendar.getId()), color) ;
       UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
       if (checkbox == null) {
         checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
@@ -443,6 +453,9 @@ public class UICalendars extends UIForm  {
     return groupCalendars ;
   }
 
+  public static String buildId(int calTye, String calId){
+    return new StringBuffer(String.valueOf(calTye)).append(CalendarUtils.COLON).append(calId).toString();
+  }
 
   /**
    * truncate a long name into a name with .. if length of name is larger than 20 characters

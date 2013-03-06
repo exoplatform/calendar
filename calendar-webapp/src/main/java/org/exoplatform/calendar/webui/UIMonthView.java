@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.webui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -98,8 +99,10 @@ public class UIMonthView extends UICalendarView {
     eventQuery.setFromDate(getBeginDateOfMonthView()) ;
     eventQuery.setToDate(getEndDateOfMonthView()) ;
     eventQuery.setExcludeRepeatEvent(true);
-    List<CalendarEvent> allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars()) ;
-    
+    List<CalendarEvent> allEvents ;
+    if(isInSpace()) {  
+      allEvents = calendarService.getGroupEventByCalendar(Arrays.asList(getPublicCalendars()));
+    } else allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {

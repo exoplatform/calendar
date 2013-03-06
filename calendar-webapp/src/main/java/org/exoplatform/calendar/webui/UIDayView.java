@@ -25,6 +25,7 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -86,8 +87,11 @@ public class UIDayView extends UICalendarView {
     eventQuery.setFromDate(begin) ;
     eventQuery.setToDate(end) ;
     eventQuery.setExcludeRepeatEvent(true);
-    events = calendarService.getEvents(username, eventQuery, getPublicCalendars()) ;
-    
+    if(isInSpace()) { 
+      events = calendarService.getGroupEventByCalendar(Arrays.asList(getPublicCalendars()));
+    }
+    else
+      events = calendarService.getEvents(username, eventQuery, getPublicCalendars());
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());    
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {

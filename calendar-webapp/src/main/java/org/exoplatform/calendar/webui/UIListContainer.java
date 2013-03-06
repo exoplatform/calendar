@@ -89,4 +89,9 @@ public class UIListContainer extends UIContainer implements CalendarView {
     getChild(UIListView.class).setCategoryId(categoryId);
     getChild(UIListView.class).refresh() ;
   }
+
+  @Override
+  public boolean isInSpace() {
+    return UICalendarPortlet.isInSpace();
+  }
 }

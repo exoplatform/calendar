@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.webui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -51,27 +53,27 @@ import org.exoplatform.webui.event.EventListener;
  * Aus 01, 2007 2:48:18 PM 
  */
 @ComponentConfig(
-    lifecycle =UIFormLifecycle.class,
-    template = "app:/templates/calendar/webui/UIWeekView.gtmpl",
-    events = {
-      @EventConfig(listeners = UICalendarView.AddEventActionListener.class),  
-      @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-      @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
-      @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
-      @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
-      @EventConfig(listeners = UICalendarView.ViewActionListener.class),
-      @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-      @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
-      @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),
-      @EventConfig(listeners = UIWeekView.UpdateEventActionListener.class),
-      @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
-      @EventConfig(listeners = UIWeekView.UpdateAllDayEventActionListener.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
-    }
-)
+                 lifecycle =UIFormLifecycle.class,
+                 template = "app:/templates/calendar/webui/UIWeekView.gtmpl",
+                 events = {
+                   @EventConfig(listeners = UICalendarView.AddEventActionListener.class),  
+                   @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
+                   @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
+                   @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.ViewActionListener.class),
+                   @EventConfig(listeners = UICalendarView.EditActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),
+                   @EventConfig(listeners = UIWeekView.UpdateEventActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
+                   @EventConfig(listeners = UIWeekView.UpdateAllDayEventActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
+                 }
+    )
 public class UIWeekView extends UICalendarView {
   private static final Log log = ExoLogger.getExoLogger(UIWeekView.class);
 
@@ -116,8 +118,11 @@ public class UIWeekView extends UICalendarView {
     eventQuery.setToDate(endDateOfWeek) ; 
     eventQuery.setExcludeRepeatEvent(true);
     // get normal events and exception occurrences, exclude original recurrence events
-    List<CalendarEvent> allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars())  ;
-    
+    List<CalendarEvent> allEvents ;
+    if(isInSpace()) {  
+      allEvents = calendarService.getGroupEventByCalendar(Arrays.asList(getPublicCalendars()));
+    } else allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
+
     List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
@@ -131,7 +136,7 @@ public class UIWeekView extends UICalendarView {
         }
       }
     }
-    
+
     Iterator<CalendarEvent> iter = allEvents.iterator() ;
     while(iter.hasNext()) {
       CalendarEvent event = iter.next() ;
@@ -195,12 +200,12 @@ public class UIWeekView extends UICalendarView {
     return dataMap ;
   }
   public boolean isShowCustomView() {return isShowCustomView_ ;}
-  
+
   static  public class UpdateEventActionListener extends EventListener<UIWeekView> {
     @Override
     public void execute(Event<UIWeekView> event) throws Exception {
       UIWeekView calendarview = event.getSource() ;
-      
+
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(eventId + CALENDARID);
@@ -208,7 +213,7 @@ public class UIWeekView extends UICalendarView {
       String startTime = event.getRequestContext().getRequestParameter(eventId + START_TIME);
       String finishTime = event.getRequestContext().getRequestParameter(eventId + FINISH_TIME);
       String currentDate = event.getRequestContext().getRequestParameter(eventId + CURRENT_DATE);
-      
+
       Boolean isOccur = false;
       if (!Utils.isEmpty(event.getRequestContext().getRequestParameter(eventId+ ISOCCUR))) {
         isOccur = Boolean.parseBoolean(event.getRequestContext().getRequestParameter(eventId + ISOCCUR));
@@ -216,16 +221,16 @@ public class UIWeekView extends UICalendarView {
       String recurId = null;
       if (isOccur)
         recurId = event.getRequestContext().getRequestParameter(eventId+ RECURID);
-      
+
       String username = CalendarUtils.getCurrentUser() ;
       CalendarService calendarService = CalendarUtils.getCalendarService() ;
-      
+
       CalendarEvent eventCalendar = calendarview.getDataMap().get(eventId) ;
       if (isOccur && !Utils.isEmpty(recurId)) {
         eventCalendar = calendarview.getRecurrenceMap().get(eventId).get(recurId);
       }
       //CalendarEvent oldEvent = new CalendarEvent(eventCalendar);
-      
+
       if(eventCalendar != null) {
         CalendarService calService = CalendarUtils.getCalendarService() ;
         try {
@@ -235,13 +240,13 @@ public class UIWeekView extends UICalendarView {
           } else if(eventCalendar.getCalType().equals(CalendarUtils.SHARED_TYPE)){
             if(calService.getSharedCalendars(username, true) != null)
               calendar = 
-                calService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
+              calService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
           } else if(eventCalendar.getCalType().equals(CalendarUtils.PUBLIC_TYPE)) {
             calendar = calService.getGroupCalendar(calendarId) ;
           }
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-            } else {
+          } else {
             Calendar cal = calendarview.getInstanceTempCalendar() ;
             int hoursBg = (Integer.parseInt(startTime)/60) ;
             int minutesBg = (Integer.parseInt(startTime)%60) ;
@@ -290,7 +295,7 @@ public class UIWeekView extends UICalendarView {
             calendarview.refresh() ;
             UIMiniCalendar uiMiniCalendar = uiCalendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
-            
+
             // @since plf 4
             JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
             RequireJS requireJS = jsManager.getRequireJS();
@@ -350,16 +355,16 @@ public class UIWeekView extends UICalendarView {
           } else if(CalendarUtils.SHARED_TYPE.equals(calType)) {
             if(calendarService.getSharedCalendars(username, true) != null)
               calendar = 
-                calendarService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
+              calendarService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
           } else if(CalendarUtils.PUBLIC_TYPE.equals(calType)) {
             calendar = calendarService.getGroupCalendar(calendarId) ;
           }
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-            } else {
+          } else {
             // cs-4429: fix for group calendar permission !?
             if((CalendarUtils.SHARED_TYPE.equals(calType) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(OrganizationService.class), Utils.getEditPerUsers(calendar), username)) ||
-               (CalendarUtils.PUBLIC_TYPE.equals(calType) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username))) 
+                (CalendarUtils.PUBLIC_TYPE.equals(calType) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username))) 
             {
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit-event", null, 1)) ;
               calendarview.refresh() ;

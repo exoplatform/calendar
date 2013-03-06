@@ -23,7 +23,6 @@ import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.exoplatform.Constants;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -40,7 +39,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
-import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiApplication;
@@ -60,16 +58,16 @@ import org.mortbay.cometd.continuation.EXoContinuationBayeux;
  * Aug 01, 2007
  */
 @ComponentConfig(
-    lifecycle = UIApplicationLifecycle.class, 
-    template = "app:/templates/calendar/webui/UICalendarPortlet.gtmpl"
-)
+                 lifecycle = UIApplicationLifecycle.class, 
+                 template = "app:/templates/calendar/webui/UICalendarPortlet.gtmpl"
+    )
 public class UICalendarPortlet extends UIPortletApplication {
-  
+
   private static Log log = ExoLogger.getLogger("org.exoplatform.calendar.webui.UICalendarPortlet");
-  
+
   private static String SPACE_ID_KEY = "UICalendarPortlet_Space_Id";
-  
-  
+
+
   public UICalendarPortlet() throws Exception {
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
     uiActionBar.setCurrentView(UICalendarViewContainer.TYPES[Integer.parseInt(getCalendarSetting().getViewType())]) ;
@@ -92,7 +90,7 @@ public class UICalendarPortlet extends UIPortletApplication {
   public Calendar getUserCalendar() {    
     return CalendarUtils.getInstanceOfCurrentCalendar();
   }
-  
+
   public String getSettingTimeZone() throws Exception {
     return String.valueOf(TimeZone.getTimeZone(getCalendarSetting().getTimeZone()).getRawOffset()/1000/60) ;
   }
@@ -108,30 +106,30 @@ public class UICalendarPortlet extends UIPortletApplication {
     popupAction.deActivate() ;
     context.addUIComponentToUpdateByAjax(popupAction) ;
   }
-  
+
   public String getRemoteUser() throws Exception {
     return CalendarUtils.getCurrentUser() ;
   }
   public String getUserToken()throws Exception {
     ContinuationService continuation = CalendarUtils.getContinuationService() ;
     try {
-        return continuation.getUserToken(this.getRemoteUser());
+      return continuation.getUserToken(this.getRemoteUser());
     } catch (Exception e) {
       log.debug("\n\n can not get UserToken", e);
       return "" ;
     }
   }
-  
+
   protected String getCometdContextName() {
     EXoContinuationBayeux bayeux = (EXoContinuationBayeux) PortalContainer.getInstance()
-                                                                          .getComponentInstanceOfType(AbstractBayeux.class);
+        .getComponentInstanceOfType(AbstractBayeux.class);
     return (bayeux == null ? "cometd" : bayeux.getCometdContextName());
   }
-  
+
   public String getRestContextName() {
     return PortalContainer.getInstance().getRestContextName();
   }
-  
+
   /**
    * get space id if the request comes from one Social space, else return null.
    * @return 
@@ -157,7 +155,25 @@ public class UICalendarPortlet extends UIPortletApplication {
     }
     return spaceIdStr;
   }
-  
+
+  public static String getGroupIdOfSpace(){
+    PortletRequestContext pContext = RequestContext.getCurrentInstance();
+    SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+    try {
+      PortletRequest portletRequest = pContext.getRequest();
+      PortletPreferences pref = portletRequest.getPreferences();
+      if (pref.getValue("SPACE_URL", null) != null) {
+        String url = pref.getValue("SPACE_URL", null);
+        Space space = sService.getSpaceByUrl(url);
+        return space.getGroupId();
+      }
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("Getting space id in the UICalendar portlet failed.", e);
+    }
+    return null;
+  }
+
   public static boolean isInSpace() {
     return getSpaceId() != null;
   }
@@ -206,7 +222,7 @@ public class UICalendarPortlet extends UIPortletApplication {
       }
       return;
     }
-      
+
     if (url.contains(CalendarUtils.INVITATION_DETAIL_URL)) {
 
       // open event on source calendar to view
@@ -215,10 +231,10 @@ public class UICalendarPortlet extends UIPortletApplication {
       String inviter = params[0];
       String eventId = params[1];
       int calType = Integer.parseInt(params[2]);
-        
+
       org.exoplatform.calendar.service.Calendar calendar = null;
       CalendarEvent event = null;
-        
+
       if (calType == org.exoplatform.calendar.service.Calendar.TYPE_PRIVATE || calType == org.exoplatform.calendar.service.Calendar.TYPE_SHARED) {
         event = calService.getEvent(inviter, eventId) ;
         String calendarId = event.getCalendarId();
@@ -234,7 +250,7 @@ public class UICalendarPortlet extends UIPortletApplication {
       if (calendar == null)
       {
         context.getUIApplication().addMessage(
-            new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
+                                              new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
         return ;
       }
 
@@ -268,7 +284,7 @@ public class UICalendarPortlet extends UIPortletApplication {
       else
       {
         webuiRequestContext.getUIApplication().addMessage(
-            new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
+                                                          new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
         return ;
       }
     }
