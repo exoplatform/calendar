@@ -320,7 +320,7 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
   // msg: Please check at least one event or task.
   // parent: UIListContainer 
   // obj : UIHeaderBar_3
-	var	cont = gj(obj).parents('#' + parentId)[0]; 
+  var	cont = gj(obj).parents('#' + parentId)[0];
 	var checkboxes = gj(cont).find("input.checkbox");
 	var i = checkboxes.length;
 	var actionLink = obj.getAttribute("actionLink");
@@ -328,14 +328,15 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
 	var check = false ;
 	var n = 1;
 	if(parentId == "UICalendarViewContainer") n = 0;
-	
-  /* loop throuth the checkboxes */
+
+  /* loop through the checkboxes - one checkbox = 1 selected event */
   while (i>n) {
 		i--;
-		if (checkboxes[i].checked) {
-			var parentTr = gj(checkboxes[i]).parents("tr")[0];
-      isEditable = parentTr.getAttribute("isEditable");
+    if (checkboxes[i].checked) {
+      var eventBoxes = gj(checkboxes[i]).parents(".eventBoxes")[0];
+      isEditable = eventBoxes.getAttribute("isEditable");
 
+      /* check permission of user to event */
       if (isEditable && (isEditable === "true")) {
         check = true;
 			  break ;
@@ -344,22 +345,12 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
 	}
 
   if (check) gj.globalEval(actionLink);
-  else { 
+  else {
     var alertDialog = gj("#bts_alert");
     gj("#bts_alert").show();
     gj("#bts_alert").children("strong").html(msg);
     gj("#bts_alert").children("#bts_close").click(function() { gj(this).parent().hide(); }  );
-  }  
-
-  /** 
-  alert(isEditable);
-  if (isEditable && (isEditable === true)) {
-	//if(check) eval(actionLink);
-	  if(check) gj.globalEval(actionLink);
-	  else gj(".alert").alert();//alert(msg);
   }
-  else alert("You do not have delete permission on this event");
-  **/
 };
 
 Utils.prototype.swapClass = function(obj,hoverClass){
