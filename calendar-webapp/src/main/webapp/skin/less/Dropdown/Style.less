@@ -13,3 +13,35 @@
 	}
 
 }
+
+
+// Arrows
+.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft,
+.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft:after {
+  position: absolute;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft:after {
+  content: "";
+  z-index: -1;
+}
+
+  
+.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft {
+	top: 50%;
+	left: -@popoverArrowWidth;
+	margin-top: -@popoverArrowWidth;
+	border-width: @popoverArrowWidth @popoverArrowWidth @popoverArrowWidth 0;
+	border-right-color: @popoverArrowColor; 
+	&:after {
+	  border-width: @popoverArrowOuterWidth @popoverArrowOuterWidth @popoverArrowOuterWidth 0;
+	  border-right-color: @popoverArrowOuterColor;
+	  bottom: -@popoverArrowOuterWidth;
+	  left: -1px;
+	}
+}
+  
