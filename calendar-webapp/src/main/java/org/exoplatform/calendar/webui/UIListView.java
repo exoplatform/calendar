@@ -190,6 +190,9 @@ public class UIListView extends UICalendarView {
   private List<String> findCalendarIds() throws Exception {
     List<String> calendarIds = new ArrayList<String>();
     UICalendars uiCalendars = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
+    if(isInSpace()){
+      return Arrays.asList(getPublicCalendars());
+    }
     List<String> checkedCals = uiCalendars.getCheckedCalendars();
     List<org.exoplatform.calendar.service.Calendar> privateCalendar = uiCalendars.getAllPrivateCalendars();
     List<org.exoplatform.calendar.service.Calendar> publicCalendar = uiCalendars.getAllPublicCalendars();

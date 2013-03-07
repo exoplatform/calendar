@@ -93,7 +93,8 @@ public class UIDayView extends UICalendarView {
     eventQuery.setToDate(end) ;
     eventQuery.setExcludeRepeatEvent(true);
     if(isInSpace()) { 
-      events = calendarService.getGroupEventByCalendar(Arrays.asList(getPublicCalendars()));
+      eventQuery.setCalendarId(getPublicCalendars());
+      events = calendarService.getPublicEvents(eventQuery);
     }
     else
       events = calendarService.getEvents(username, eventQuery, getPublicCalendars());

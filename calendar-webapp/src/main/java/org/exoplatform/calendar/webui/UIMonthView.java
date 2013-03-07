@@ -100,7 +100,8 @@ public class UIMonthView extends UICalendarView {
     eventQuery.setExcludeRepeatEvent(true);
     List<CalendarEvent> allEvents ;
     if(isInSpace()) {  
-      allEvents = calendarService.getGroupEventByCalendar(Arrays.asList(getPublicCalendars()));
+      eventQuery.setCalendarId(getPublicCalendars());
+      allEvents = calendarService.getPublicEvents(eventQuery);
     } else allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());

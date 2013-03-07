@@ -80,10 +80,23 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     String username = CalendarUtils.getCurrentUser() ;
     CalendarService cservice = CalendarUtils.getCalendarService() ;
     options.add(new SelectItemOption<String>("", "")) ;
-    for(Calendar cal : cservice.getUserCalendars(username, true)) {
-      options.add(new SelectItemOption<String>(cal.getName(), Calendar.TYPE_PRIVATE + CalendarUtils.COLON + cal.getId())) ;
+    String[] groupIds = CalendarUtils.getUserGroups(username);
+    if(UICalendarPortlet.isInSpace()){
+      groupIds = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    } else {
+      for(Calendar cal : cservice.getUserCalendars(username, true)) {
+        options.add(new SelectItemOption<String>(cal.getName(), Calendar.TYPE_PRIVATE + CalendarUtils.COLON + cal.getId())) ;
+      }
+      GroupCalendarData sharedData  = cservice.getSharedCalendars(CalendarUtils.getCurrentUser(), true) ;
+      if(sharedData != null) {
+        for(Calendar cal : sharedData.getCalendars()) {
+          String owner = "" ;
+          if(cal.getCalendarOwner() != null) owner = cal.getCalendarOwner() + "- " ;
+          options.add(new SelectItemOption<String>(owner + cal.getName(), Calendar.TYPE_SHARED + CalendarUtils.COLON + cal.getId())) ;
+        }
+      }
     }
-    List<GroupCalendarData> groupCals  = cservice.getGroupCalendars(CalendarUtils.getUserGroups(username), true, username) ;
+    List<GroupCalendarData> groupCals  = cservice.getGroupCalendars(groupIds, true, username) ;
     for(GroupCalendarData groupData : groupCals) {
       String groupName = groupData.getName();
       if(groupData != null) {
@@ -91,14 +104,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
           options.add(new SelectItemOption<String>(CalendarUtils.getGroupCalendarName(groupName.substring(
             groupName.lastIndexOf("/") + 1),cal.getName()), Calendar.TYPE_PUBLIC + CalendarUtils.COLON + cal.getId())) ;
         }
-      }
-    }
-    GroupCalendarData sharedData  = cservice.getSharedCalendars(CalendarUtils.getCurrentUser(), true) ;
-    if(sharedData != null) {
-      for(Calendar cal : sharedData.getCalendars()) {
-        String owner = "" ;
-        if(cal.getCalendarOwner() != null) owner = cal.getCalendarOwner() + "- " ;
-        options.add(new SelectItemOption<String>(owner + cal.getName(), Calendar.TYPE_SHARED + CalendarUtils.COLON + cal.getId())) ;
       }
     }
     addChild(new UIFormSelectBox(CALENDAR, CALENDAR, options)) ;

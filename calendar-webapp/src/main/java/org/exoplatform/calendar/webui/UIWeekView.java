@@ -119,7 +119,8 @@ public class UIWeekView extends UICalendarView {
     // get normal events and exception occurrences, exclude original recurrence events
     List<CalendarEvent> allEvents ;
     if(isInSpace()) {  
-      allEvents = calendarService.getGroupEventByCalendar(Arrays.asList(getPublicCalendars()));
+      eventQuery.setCalendarId(getPublicCalendars());
+      allEvents = calendarService.getPublicEvents(eventQuery);
     } else allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
 
     List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
