@@ -16,12 +16,12 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.util.Collection;
+
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.xml.InitParams;
-
-import java.util.Collection;
 
 /**
  * Created by The eXo Platform SAS

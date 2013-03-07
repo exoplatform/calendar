@@ -16,8 +16,27 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
+
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
@@ -31,12 +50,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.query.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SAS
@@ -52,7 +65,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private OrganizationService organizationService_;
 
   private static final Log     log                 = ExoLogger.getLogger("cs.calendar.unified.search.service");
-  private Map<String, String[]> calendarMap = new HashMap<String, String[]>();
+  private Map<String, Calendar> calendarMap = new HashMap<String,  Calendar>();
 
 
 
@@ -90,14 +103,14 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(SessionProvider.createSystemProvider(), userId);
       List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
       for(Calendar cal : privateCalendars){
-        calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone(), String.valueOf(Utils.PRIVATE_TYPE)}) ;
+        calendarMap.put(cal.getId(), cal);
       }
 
       GroupCalendarData sharedCalendar = calendarService_.getSharedCalendars(userId, true) ;
       if(sharedCalendar != null) {
         List<Calendar> shareCalendars = sharedCalendar.getCalendars();
         for(Calendar cal : shareCalendars){
-          calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone(), String.valueOf(Utils.SHARED_TYPE)}) ;
+          calendarMap.put(cal.getId(), cal);
         }
       }
       Collection<Group> group = organizationService_.getGroupHandler().findGroupsOfUser(userId);
@@ -115,7 +128,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
             if(gCal.getCalendars() != null) spaceCalendars.addAll(gCal.getCalendars());
           }
           for(Calendar cal : spaceCalendars){
-            calendarMap.put(cal.getId(), new String[]{cal.getName(), cal.getTimeZone(), String.valueOf(Utils.PUBLIC_TYPE)}) ;
+            calendarMap.put(cal.getId(), cal);
           }
         }
       }
@@ -173,24 +186,29 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           calId = eventNode.getProperty(Utils.EXO_CALENDAR_ID).getString() ;
       }
       if(calendarMap.keySet().contains(calId)) {
-        StringBuffer detail = new StringBuffer();
-        String title = buildValue(Utils.EXO_SUMMARY, iter);
-        detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
-        String url = CalendarSearchResult.buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
-        String excerpt = buildExcerpt(iter);
-        String detailValue = Utils.EMPTY_STR;
-        String imageUrl = buildImageUrl(iter);
-        detail.append(buildDetail(iter));
-        if(detail.length() > 0) detailValue = detail.toString();
-        long relevancy = buildScore(iter);
-        long date = buildDate(iter) ;
-        CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
-        result.setDataType(dataType);
-        result.setTimeZoneName(calendarMap.get(calId)[1]);
-        if(CalendarEvent.TYPE_EVENT.equals(dataType)){
-          result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
+        Calendar cal = calendarMap.get(calId);
+        String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
+        int calType = calendarService_.getTypeOfCalendar(currentUser, calId);
+        if(isSearchable(calType, cal, currentUser, iter)){
+          StringBuffer detail = new StringBuffer();
+          String title = buildValue(Utils.EXO_SUMMARY, iter);
+          detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
+          String url = CalendarSearchResult.buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
+          String excerpt = buildExcerpt(iter);
+          String detailValue = Utils.EMPTY_STR;
+          String imageUrl = buildImageUrl(iter);
+          detail.append(buildDetail(iter));
+          if(detail.length() > 0) detailValue = detail.toString();
+          long relevancy = buildScore(iter);
+          long date = buildDate(iter) ;
+          CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
+          result.setDataType(dataType);
+          result.setTimeZoneName(cal.getTimeZone());
+          if(CalendarEvent.TYPE_EVENT.equals(dataType)){
+            result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
+          }
+          return result;
         }
-        return result;
       }
     }catch (Exception e) {
       log.info("Error when building result object from result data " + e);
@@ -226,7 +244,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     return origin.toString();
   }
 
-
   private String buildImageUrl(Object iter) throws RepositoryException{
     String icon = null;
     if(iter instanceof Row){
@@ -257,7 +274,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     }
   }
 
-
   private java.util.Calendar buildDate(Object iter, String readProperty){
     try {
       if(iter instanceof Row){
@@ -277,16 +293,15 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     }
   }
 
-
   private String buildCalName(String property, Object iter) throws RepositoryException{
     if(iter instanceof Row){
       Row row = (Row) iter;
       if(row.getValue(property) != null && calendarMap.get(row.getValue(property).getString()) != null) 
-        return calendarMap.get(row.getValue(property).getString())[0] ;
+        return calendarMap.get(row.getValue(property).getString()).getName() ;
     } else {
       Node eventNode = (Node) iter;
       if(eventNode.hasProperty(property) && calendarMap.get(eventNode.getProperty(property).getString()) != null){
-        return calendarMap.get(eventNode.getProperty(property).getString())[0];
+        return calendarMap.get(eventNode.getProperty(property).getString()).getName();
       }
     }
     return Utils.EMPTY_STR;
@@ -351,5 +366,15 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       }
     }  
     return detail.toString();
+  }
+
+  private boolean isSearchable(int calType, Calendar cal, String uId,  Object iter) throws Exception{
+    Row row = (Row) iter;
+    boolean isTask = CalendarEvent.TYPE_TASK.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString());
+    boolean isPrivateCalendar = (Calendar.TYPE_PRIVATE == calType);
+    boolean isPrivateEvent = row.getValue(Utils.EXO_IS_PRIVATE).getBoolean();
+    boolean isViewPublic = (!isPrivateCalendar && !isPrivateEvent);
+    boolean isEditable = (!isTask && !isPrivateCalendar && isPrivateEvent && (cal.getEditPermission() != null) && Utils.canEdit(organizationService_, cal.getEditPermission(), uId)); 
+    return (isTask || isPrivateCalendar || isViewPublic || isEditable); 
   }
 }
