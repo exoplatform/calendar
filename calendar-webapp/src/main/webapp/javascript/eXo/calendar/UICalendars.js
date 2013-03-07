@@ -191,6 +191,13 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
     menu.style.top = (cs.CSUtils.Browser.findPosY(anchorElm) - Math.round(menu.offsetHeight/3)) + 'px';
   }
 
+  /* reposition menu to a distance of 3 px to bottom of viewport if it exceeds the viewport */
+  var viewportYofMenu = menu.getBoundingClientRect().top + menu.offsetHeight;
+  var deltaToRepositionMenu = viewportYofMenu - gj(window).height();
+  if (deltaToRepositionMenu > 0) {
+    menu.style.top = (gj(menu).position().top - deltaToRepositionMenu - 3) + 'px';
+  }
+
   UICalendars.resetSettingButton(UICalendars.currentAnchorElm);
   UICalendars.currentAnchorElm = anchorElm;
   if (gj(UICalendars.currentAnchorElm).hasClass("IconHoverSetting")) {
