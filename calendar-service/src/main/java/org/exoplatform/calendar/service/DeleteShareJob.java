@@ -39,38 +39,37 @@ public class DeleteShareJob implements Job, InterruptableJob{
 
   private static Log         log                  = ExoLogger.getLogger("cs.service.job");
 
- 
-
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
+    log.info("Start un-sharing job");
     
-    log.info("Start deleting sharing job");
-    
-    ContinuationService continuation = (ContinuationService) PortalContainer.getInstance()
-        .getComponentInstanceOfType(ContinuationService.class);
-
-    OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
-
-    CalendarService calendarService = (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
-
-    JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-
-    String username = jobDataMap.getString(Utils.USER_NAME);
-    
-
-    String calendarId = jobDataMap.getString(Utils.CALENDAR_ID);
-    List<String> removedGroups = (ArrayList<String>) jobDataMap.get(Utils.REMOVED_USERS);
-    String stopMessage = jobDataMap.getString(Utils.STOP_MESSAGE);
-    Calendar cal;
     try {
-      cal = calendarService.getUserCalendar(username, calendarId);
+      ContinuationService continuation = (ContinuationService) PortalContainer.getInstance()
+          .getComponentInstanceOfType(ContinuationService.class);
+      OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
+      CalendarService calendarService = (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
+
+      JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+
+      String username = jobDataMap.getString(Utils.USER_NAME);
+      String calendarId = jobDataMap.getString(Utils.CALENDAR_ID);
+      List<String> unSharedGroups = (ArrayList<String>) jobDataMap.get(Utils.REMOVED_USERS);
       
+      Calendar cal = calendarService.getUserCalendar(username, calendarId);
+      
+      String calendarName = cal.getName();
+      
+      String startMessage  = Utils.buildMessageToSend(Utils.START_UN_SHARE, calendarName, unSharedGroups);
+      String stopMessage = Utils.buildMessageToSend(Utils.FINISH_UN_SHARE, calendarName, unSharedGroups);
+      // send notification about un-sharing job
+      continuation.sendMessage(username, Utils.SHARE_CAL_CHANEL, startMessage);
+     
       List<String> viewUsers = new ArrayList<String>() ;
       if (cal.getViewPermission() != null) {
         viewUsers = Arrays.asList(cal.getViewPermission()) ;
       }
       
-      for(String group : removedGroups) {
+      for(String group : unSharedGroups) {
         for (User user : oService.getUserHandler().findUsersByGroup(group).getAll()) {
           String userId = user.getUserName();
           boolean deleteShared = true ;
@@ -88,18 +87,14 @@ public class DeleteShareJob implements Job, InterruptableJob{
           }
         }
       }
-      
+      // send message about finishing the job
       continuation.sendMessage(username, Utils.SHARE_CAL_CHANEL, stopMessage);
-
-      log.info("Finish deleting job");
+      
+      log.info("Finish un-sharing job");
     } catch (Exception e) {
-      String errorMessage = jobDataMap.getString(Utils.ERROR_MESSAGE);
-      continuation.sendMessage(username,Utils.SHARE_CAL_CHANEL, errorMessage);
-      log.debug("Error while deleting sharing for calendar",e);
+      log.debug("Error while un-sharing calendar for groups",e);
     }
   }
-
-
 
   @Override
   public void interrupt() throws UnableToInterruptJobException {
@@ -107,9 +102,3 @@ public class DeleteShareJob implements Job, InterruptableJob{
   }
   
 }
-
-
-
-
-
-

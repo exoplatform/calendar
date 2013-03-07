@@ -34,10 +34,26 @@
 
 //  @since CS-5722 popup notification for calendar sharing and unsharing job 
     Reminder.prototype.notifyShareCalendar = function(eventObj){
-	var message = eventObj.data;
+	var data = eventObj.data;
+	console.log(data);
 	var popup = gj('#shareCalendarNotification');
-	popup.find('.text').text(message);
-	popup.fadeIn().delay(3000).fadeOut('slow');
+	popup.css('display','none');
+	var params = data.split(',');
+	var type = params[0];
+	var calendarName = params[1];
+	var groups = "";
+	for(var i = 2; i < params.length; i++) {
+	    if(i == params.length - 1) groups += params[i];
+	    else groups += params[i] + ',';
+	}
+	var textEl = popup.find('.' + type);
+	textEl.find('.calendarName').text(calendarName);
+	textEl.find('.group').text(groups);
+	textEl.prevAll().css('display','none');
+	textEl.nextAll().css('display','none');
+	textEl.css('display','block');
+	popup.css('display','block');
+	setTimeout(function(){popup.css('display','none')},3000);
     } ;
 //  display popup reminder
     Reminder.prototype.alarm = function(eventObj){

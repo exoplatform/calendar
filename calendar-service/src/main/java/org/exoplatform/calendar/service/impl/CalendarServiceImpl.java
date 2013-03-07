@@ -865,9 +865,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public void shareCalendarByRunJob(String username, String calendarId, List<String> sharedGroups) throws Exception{
     JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().getComponentInstance(JobSchedulerService.class) ;
-    ContinuationService continuation = (ContinuationService) PortalContainer.getInstance()
-        .getComponentInstanceOfType(ContinuationService.class);
-    
     JobInfo jobInfo = new JobInfo(sharedGroups.toString(),Utils.SHARE_CALENDAR_GROUP, ShareCalendarJob.class);
     List<String> newSharedGroups = new ArrayList<String>();
     //check if a group is being shared, remove it from the job
@@ -876,22 +873,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         newSharedGroups.add(group);
       }
     }
+    
     if(newSharedGroups.size() > 0) {
-      String startMessage = String.format(Utils.START_SHARE_MESSAGE, sharedGroups.toString());
-      String stopMessage = String.format(Utils.STOP_SHARE_MESSAGE, sharedGroups.toString());
-      String errorMessage = String.format(Utils.ERROR_SHARE_MESSAGE, sharedGroups.toString());
-      ResourceBundle rb = getResourceBundle();
-      if(rb!=null) {
-        startMessage = String.format(rb.getString(Utils.START_SHARE_CALENDAR_JOB_KEY),sharedGroups.toString());
-        stopMessage = String.format(rb.getString(Utils.FINISH_SHARE_CALENDAR_JOB_KEY),sharedGroups.toString());
-        errorMessage = String.format(rb.getString(Utils.ERROR_SHARE_CALENDAR_JOB_KEY),sharedGroups.toString());
-      }
-      continuation.sendMessage(username, Utils.SHARE_CAL_CHANEL,startMessage);
-      SimpleTriggerImpl trigger = new SimpleTriggerImpl();
-      trigger.setName(jobInfo.getJobName());
-      trigger.setGroup(jobInfo.getGroupName());
-      trigger.setStartTime(new Date());
-
       JobDetailImpl job = new JobDetailImpl();
       job.setName(jobInfo.getJobName());
       job.setGroup(jobInfo.getGroupName());
@@ -901,13 +884,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       job.getJobDataMap().put(Utils.SHARED_GROUPS, newSharedGroups);
       job.getJobDataMap().put(Utils.USER_NAME, username);
       job.getJobDataMap().put(Utils.CALENDAR_ID, calendarId);
-      job.getJobDataMap().put(Utils.JCR_DATA_STORAGE, storage_);
-      job.getJobDataMap().put(Utils.STOP_MESSAGE, stopMessage);
-      job.getJobDataMap().put(Utils.ERROR_MESSAGE, errorMessage);
+
+      SimpleTriggerImpl trigger = new SimpleTriggerImpl();
+      trigger.setName(jobInfo.getJobName());
+      trigger.setGroup(jobInfo.getGroupName());
+      trigger.setStartTime(new Date());
 
       schedulerService.addJob(job, trigger);
     }
-    
   }
 
   /**
@@ -915,37 +899,28 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception {
     JobSchedulerServiceImpl  schedulerService_ = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().getComponentInstance(JobSchedulerService.class) ;
-    ContinuationService continuation = (ContinuationService) PortalContainer.getInstance()
-        .getComponentInstanceOfType(ContinuationService.class);
-    
     JobInfo jobInfo = new JobInfo(unsharedGroups.toString(), Utils.DELETE_SHARED_GROUP, DeleteShareJob.class);
     
-    String startMessage = String.format(Utils.START_UN_SHARE_MESSAGE, unsharedGroups.toString());
-    String stopMessage = String.format(Utils.STOP_UN_SHARE_MESSAGE, unsharedGroups.toString());
-    String errorMessage = String.format(Utils.ERROR_UN_SHARE_MESSAGE, unsharedGroups.toString());
-    
-    ResourceBundle rb = getResourceBundle();
-    if(rb != null) {
-      startMessage = String.format(rb.getString(Utils.START_DELETING_CALENDAR_JOB_KEY),unsharedGroups.toString());
-      stopMessage = String.format(rb.getString(Utils.FINISH_DELETING_CALENDAR_JOB_KEY),unsharedGroups.toString());
-      errorMessage = String.format(rb.getString(Utils.ERROR_DELETING_CALENDAR_JOB_KEY),unsharedGroups.toString());
-    }
-    continuation.sendMessage(username,Utils.SHARE_CAL_CHANEL,startMessage);
-    SimpleTriggerImpl trigger = new SimpleTriggerImpl(jobInfo.getJobName(), jobInfo.getGroupName(), new Date());
-
-    JobDetailImpl job = new JobDetailImpl(jobInfo.getJobName(), jobInfo.getGroupName(), jobInfo.getJob());
+    JobDetailImpl job = new JobDetailImpl();
+    job.setName(jobInfo.getJobName());
+    job.setGroup(jobInfo.getGroupName());
+    job.setJobClass(jobInfo.getJob());    
     
     job.setDescription(jobInfo.getDescription());
     job.getJobDataMap().put(Utils.USER_NAME, username);
     job.getJobDataMap().put(Utils.REMOVED_USERS,unsharedGroups);
     job.getJobDataMap().put(Utils.CALENDAR_ID, calendarId);
-    job.getJobDataMap().put(Utils.STOP_MESSAGE, stopMessage);
-    job.getJobDataMap().put(Utils.ERROR_MESSAGE, errorMessage);
+
+    SimpleTriggerImpl trigger = new SimpleTriggerImpl();
+    trigger.setName(jobInfo.getJobName());
+    trigger.setGroup(jobInfo.getGroupName());
+    trigger.setStartTime(new Date());
     
     schedulerService_.addJob(job, trigger);
   }  
 
-  public boolean isGroupBeingShared(String deletedGroup, JobSchedulerServiceImpl schedulerService_) throws Exception {
+  
+  public boolean isGroupBeingShared(String group, JobSchedulerServiceImpl schedulerService_) throws Exception {
     List<?> list = schedulerService_.getAllExcutingJobs();
 
     for (Object obj : list) {
@@ -953,7 +928,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       JobDetail tmp = (JobDetail) jec.getJobDetail();
       if (tmp.getKey().getGroup().equals(Utils.SHARE_CALENDAR_GROUP)) {
         List<String> sharedGroups = (List<String>) tmp.getJobDataMap().get(Utils.SHARED_GROUPS);
-        if(sharedGroups.contains(deletedGroup)) {
+        if(sharedGroups.contains(group)) {
           return true;
         }
       }

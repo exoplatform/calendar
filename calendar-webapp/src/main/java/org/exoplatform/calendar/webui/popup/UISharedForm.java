@@ -546,7 +546,8 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
       /* find users who are removed from share list */
       oldSharedUsers.removeAll(sharedUsers);
-
+      /* find groups that are removed from share list */
+      oldSharedGroups.removeAll(sharedGroups);
       /* remove current user from the list of shared users */
       userIt = oldSharedUsers.iterator();
       while (userIt.hasNext())
@@ -810,6 +811,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       String permissionEntryId = event.getRequestContext().getRequestParameter(OBJECTID);
       UIPermissionEntry permissionEntry = ((UIPermissionGrid) sharedForm.getChildById(PERMISSION_GRID)).getChildById(permissionEntryId);
       Permission aPermission = permissionEntry.getPermission();
+      
       if(aPermission.getOwner().getOwnerType().equals(PermissionOwner.GROUP_OWNER)) {
         JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)PortalContainer.getComponent(JobSchedulerService.class) ;
         CalendarService calService = (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;

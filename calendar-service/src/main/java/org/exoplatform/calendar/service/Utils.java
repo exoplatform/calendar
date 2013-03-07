@@ -386,31 +386,18 @@ public class Utils {
   
   public static final String REMOVED_USERS = "removedUsers";
   
-  public static final String START_MESSAGE = "startMessage";
+  public static final String START_SHARE = "startShare";
   
-  public static final String STOP_MESSAGE = "stopMessage";
+  public static final String FINISH_SHARE = "finishShare";
   
-  public static final String ERROR_MESSAGE = "errorMessage";
+  public static final String START_UN_SHARE = "startUnShare";
   
-  public static final String   START_SHARE_CALENDAR_JOB_KEY  = "ShareCalendarJob.start_share_job";
+  public static final String FINISH_UN_SHARE = "finishUnShare";
   
-  public static final String   FINISH_SHARE_CALENDAR_JOB_KEY = "ShareCalendarJob.finish_share_job";
+  public static final String ERROR_SHARE = "errorShare";
   
-  public static final String ERROR_SHARE_CALENDAR_JOB_KEY = "ShareCalendarJob.error";
-
-  public static final String START_DELETING_CALENDAR_JOB_KEY = "DeleteShareJob.start_deleting";
+  public static final String ERROR_UN_SHARE = "errorUnShare";
   
-  public static final String FINISH_DELETING_CALENDAR_JOB_KEY = "DeleteShareJob.finish_deleting";
-  
-  public static final String ERROR_DELETING_CALENDAR_JOB_KEY = "DeleteShareJob.error";
-  // message used when rb is null
-  public static final String START_SHARE_MESSAGE = "Sharing this calendar with group(s): %s.";
-  public static final String STOP_SHARE_MESSAGE = "This calendar was shared with group(s): %s";
-  public static final String ERROR_SHARE_MESSAGE = "Error while sharing this calendar with group(s): %s";
-  public static final String START_UN_SHARE_MESSAGE = "Unsharing this calendar with the group %s. It may take a long time to finish.";
-  public static final String STOP_UN_SHARE_MESSAGE = "This calendar was unshared with the group %s";
-  public static final String ERROR_UN_SHARE_MESSAGE = "Error while unsharing this calendar with group %s";
-
   //Unified search
   public static final String DETAIL_PATH = "details";
   public static final String DUE_FOR = "Due for: ";
@@ -611,4 +598,16 @@ public class Utils {
     return sessionProviderService.getSystemSessionProvider(null);
   }
 
+  public static String buildMessageToSend(String type, String calendarName, List<String> groups) {
+    StringBuilder sb = new StringBuilder("");
+    sb.append(type);
+    sb.append(",");
+    sb.append(calendarName);
+    Iterator<String> it = groups.iterator();
+    while (it.hasNext()) {
+      sb.append(",");
+      sb.append(it.next());
+    }
+    return sb.toString();
+  }
 }
