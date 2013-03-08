@@ -16,11 +16,35 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.jcr.PathNotFoundException;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.popup.*;
+import org.exoplatform.calendar.webui.popup.UICalendarForm;
+import org.exoplatform.calendar.webui.popup.UICalendarSettingForm;
+import org.exoplatform.calendar.webui.popup.UIEventCategoryManager;
+import org.exoplatform.calendar.webui.popup.UIExportForm;
+import org.exoplatform.calendar.webui.popup.UIImportForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
+import org.exoplatform.calendar.webui.popup.UIPopupContainer;
+import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
+import org.exoplatform.calendar.webui.popup.UIRemoteCalendar;
+import org.exoplatform.calendar.webui.popup.UISharedForm;
+import org.exoplatform.calendar.webui.popup.UISubscribeForm;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -35,9 +59,6 @@ import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import javax.jcr.PathNotFoundException;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -504,7 +525,6 @@ public class UICalendars extends UIForm  {
       return CalendarUtils.canEdit(null, Utils.getEditPerUsers(calendar), currentUser) ;
     } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
       calendar = calService.getGroupCalendar(calendarId) ;
-      // cs-4429: fix for group calendar permissions
       return CalendarUtils.canEdit(uiComponent.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), currentUser) ;
     }  
     return false ;
@@ -644,7 +664,6 @@ public class UICalendars extends UIForm  {
       try {
         String calendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;        
         String clientTime = CalendarUtils.getCurrentTime(uiComponent) ;
-        //String clientTime = event.getRequestContext().getRequestParameter(CURRENTTIME) ;
         String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
         String categoryId = event.getRequestContext().getRequestParameter("categoryId") ;
         Calendar calendar = CalendarUtils.getCalendar(calType, calendarId);
@@ -728,7 +747,6 @@ public class UICalendars extends UIForm  {
             return;
           }
 
-          // cs-4429: fix for group calendar permission
           String[] checkPerms = uiComponent.getCheckPermissionString().split(CalendarUtils.COMMA);
           if((CalendarUtils.SHARED_TYPE.equals(calType) && !uiComponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)) ||
               (CalendarUtils.PUBLIC_TYPE.equals(calType) && !uiComponent.canEdit(calendar.getEditPermission(), checkPerms))) 
@@ -789,7 +807,6 @@ public class UICalendars extends UIForm  {
             for(GroupCalendarData groupCal : uiComponent.getPublicCalendars()) {
               for(Calendar cal : groupCal.getCalendars()) {
                 if(cal.getId().equals(calendarId)) {
-                  // cs-4429: fix for group calendar permission
                   canEdit = CalendarUtils.canEdit(oService, (groupCal.getCalendarById(calendarId)).getEditPermission(), username) ;
                   break ;
                 }
@@ -880,7 +897,6 @@ public class UICalendars extends UIForm  {
         if(calType.equals(CalendarUtils.SHARED_TYPE)) {
           canEdit = CalendarUtils.canEdit(null, Utils.getEditPerUsers(calendar), currentUser) ;
         } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
-          // cs-4429: fix for group calendar permission
           canEdit = CalendarUtils.canEdit(CalendarUtils.getOrganizationService(), calendar.getEditPermission(), currentUser) ;
         }
         if(!calType.equals(CalendarUtils.PRIVATE_TYPE) && !canEdit) {
@@ -967,7 +983,6 @@ public class UICalendars extends UIForm  {
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
-            // cs-4429: fix for group calendar permission
             if(!CalendarUtils.canEdit(uiComponent.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username)){
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, AbstractApplicationMessage.WARNING)) ;
               return ;

@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.data.SearchContext;

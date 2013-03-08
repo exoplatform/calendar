@@ -16,9 +16,24 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.*;
-import org.exoplatform.calendar.webui.*;
+import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.Reminder;
+import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.CalendarView;
+import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarViewContainer;
+import org.exoplatform.calendar.webui.UIFormDateTimePicker;
+import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -35,16 +50,13 @@ import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.*;
+import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormSelectBox;
+import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
+import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by The eXo Platform SARL
@@ -269,11 +281,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       }
       summary = summary.trim();
       summary = CalendarUtils.enCodeTitle(summary);
-      /*if(!CalendarUtils.isNameValid(summary, CalendarUtils.SIMPLECHARACTER)){
-        uiApp.addMessage(new ApplicationMessage(uiForm.getId() + ".msg.summary-invalid", CalendarUtils.SIMPLECHARACTER, ApplicationMessage.WARNING) ) ;
-        
-        return ;
-      }*/      
+
       String description = uiForm.getEventDescription() ;
       if(!CalendarUtils.isEmpty(description)) description = description.replaceAll(CalendarUtils.GREATER_THAN, "").replaceAll(CalendarUtils.SMALLER_THAN,"") ;
       if(CalendarUtils.isEmpty(uiForm.getEventCalendar())) {
@@ -337,8 +345,6 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         }
         uiForm.autoAddReminder(calEvent, from, username);
         calEvent.setEventCategoryId(uiForm.getEventCategory());
-        //String eventCategoryName = CalendarUtils.getCalendarService().getEventCategory(SessionProviderFactory.createSessionProvider(), username, uiForm.getEventCategory()).getName() ;
-        //calEvent.setEventCategoryName(eventCategoryName) ;
         UIFormSelectBox selectBox = (UIFormSelectBox)uiForm.getChildById(FIELD_CATEGORY) ;
         for (SelectItemOption<String> o : selectBox.getOptions()) {
           if (o.getValue().equals(selectBox.getValue())) {
@@ -371,7 +377,6 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
             event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UICalendarPortlet.class)) ;
             return ;
           }
-          // cs-4429: fix for group calendar permission
           if(CalendarUtils.PUBLIC_TYPE.equals(uiForm.calType_) && !uiForm.canEdit(calendar.getEditPermission())) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
             uiForm.reset() ;
@@ -386,25 +391,15 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         }else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)){
           calService.savePublicEvent(calEvent.getCalendarId(), calEvent, true) ;          
         }
-        /*UIPopupAction uiPopupAction = uiForm.getAncestorOfType(UIPopupAction.class) ;
-        uiPopupAction.deActivate() ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;*/
+
         UICalendarViewContainer uiContainer = uiPortlet.findFirstComponentOfType(UICalendarViewContainer.class);
         UIMiniCalendar uiMiniCalendar = uiPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
         CalendarView calendarView = (CalendarView)uiContainer.getRenderedChild() ;
 
-        /* 
-        if (calendarView instanceof UIListContainer) {
-          ((UIListContainer)calendarView).setDisplaySearchResult(false) ;
-        }
-        */
         calendarView.setLastUpdatedEventId(calEvent.getId()) ; 
         uiContainer.refresh() ;
         uiForm.reset() ;
-        
-        //CS-3155
-        //event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer.getParent()) ;
         
         UIPopupWindow popupWindow = uiForm.getAncestorOfType(UIPopupWindow.class);
         if (popupWindow != null) {
@@ -486,7 +481,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         uiTaskForm.setEmailRepeat(false) ;
         if (uiForm.getEventCalendar() != null) uiTaskForm.setSelectedCalendarId(uiForm.getEventCalendar());
       }
-      //event.getRequestContext().addUIComponentToUpdateByAjax(porlet.findFirstComponentOfType(UICalendarWorkingContainer.class)) ;
+
       UIPopupWindow popupWindow = uiForm.getAncestorOfType(UIPopupWindow.class);
       if (popupWindow != null) {
         popupWindow.setShow(false);
@@ -500,8 +495,6 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     public void execute(Event<UIQuickAddEvent> event) throws Exception {      
       UIQuickAddEvent uiQuickAddEvent = event.getSource() ;
       uiQuickAddEvent.reset() ;
-      /*event.getRequestContext().addUIComponentToUpdateByAjax( 
-        event.getSource().getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendarWorkingContainer.class)) ;*/
       UIPopupWindow popupWindow = uiQuickAddEvent.getAncestorOfType(UIPopupWindow.class);
       if (popupWindow != null) {
         popupWindow.setShow(false);

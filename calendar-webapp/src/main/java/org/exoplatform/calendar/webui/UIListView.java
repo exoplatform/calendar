@@ -16,8 +16,21 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.EventPageList;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
@@ -31,9 +44,6 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import java.util.*;
-import java.util.Calendar;
 
 /**
  * Created by The eXo Platform SARL
@@ -407,7 +417,6 @@ public class UIListView extends UICalendarView {
       String categoryId = uiListView.getUIFormSelectBox(EVENT_CATEGORIES).getValue() ;
       uiListView.setCategoryId(categoryId) ;
       uiListView.refresh() ;
-      //uiListView.updateCurrentPage(uiListView.pageList_.getCurrentPage()) ;
       UIMiniCalendar uiMiniCalendar = uiListView.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;
       uiMiniCalendar.setCategoryId(categoryId) ;
       UIPreview uiPreview = uiListView.getAncestorOfType(UIListContainer.class).getChild(UIPreview.class) ;
@@ -474,8 +483,6 @@ public class UIListView extends UICalendarView {
       UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
       UIAdvancedSearchForm uiAdvancedSearchForm = popupAction.activate(UIAdvancedSearchForm.class, 600) ;
       uiAdvancedSearchForm.setSearchValue(currentView.getKeyWords()) ;
-      //uiForm.reset() ;
-     // event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
   }

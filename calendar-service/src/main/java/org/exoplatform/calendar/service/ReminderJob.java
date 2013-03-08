@@ -16,6 +16,14 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.util.GregorianCalendar;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.ws.rs.core.MediaType;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
@@ -25,15 +33,6 @@ import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.mail.Message;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.ws.rs.core.MediaType;
-import java.util.GregorianCalendar;
 
 public class ReminderJob extends MultiTenancyJob {
   private static Log log_ = ExoLogger.getLogger("cs.calendar.job.mail");  

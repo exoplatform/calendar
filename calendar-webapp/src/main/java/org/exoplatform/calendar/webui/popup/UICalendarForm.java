@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
@@ -328,7 +327,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       groupTab.setRendered(false) ;
     }
 
-    //    setLocale(calendar.getLocale()) ;
     setTimeZone(calendar.getTimeZone()) ;
     setSelectedColor(calendar.getCalendarColor()) ;
     if(calendar.getPrivateUrl() == null || calendar.getPrivateUrl().isEmpty()) {
@@ -582,7 +580,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       }
 
       uiGroupSelector.setSelectedGroups(groups);
-      // set component to passes chosen group to
+      /* set component to passes chosen group to */
       uiGroupSelector.setComponent(uiCalendarForm, new String[] { uiCalendarForm.ADD_GROUP_INPUT });
 
       UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class);
@@ -669,7 +667,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       try {
         UICalendarForm uiForm = event.getSource() ;
         String displayName = uiForm.getUIStringInput(DISPLAY_NAME).getValue() ;
-        //      CS-3009
         displayName = CalendarUtils.reduceSpace(displayName) ;
         displayName = displayName.trim() ;
         CalendarService calendarService = CalendarUtils.getCalendarService() ;

@@ -16,16 +16,51 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import com.sun.syndication.feed.synd.*;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
-import net.fortuna.ical4j.model.*;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.RRule;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TimeZone;
+import javax.jcr.AccessDeniedException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarImportExport;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.DataStorage;
+import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.EventPageList;
+import org.exoplatform.calendar.service.EventPageListQuery;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.Reminder;
+import org.exoplatform.calendar.service.RemoteCalendar;
+import org.exoplatform.calendar.service.RssData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.container.ExoContainer;
@@ -47,21 +82,27 @@ import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.IdentityConstants;
-
-import javax.jcr.*;
-import javax.jcr.Property;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Date;
-import java.util.Map.Entry;
-import java.util.TimeZone;
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.XmlReader;
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.NumberList;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.WeekDayList;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.RRule;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang
@@ -142,7 +183,6 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public Node getUserCalendarServiceHome(String username) throws Exception {
-    // CS-2356
     // SessionProvider sProvider = createSessionProvider();
     SessionProvider sProvider = createSystemProvider();
     Node userNode = nodeHierarchyCreator_.getUserApplicationNode(sProvider, username);
@@ -292,7 +332,6 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         log.error("Exception occurred when removing calendar " + calendarId, e);
       } finally {
-        // provider.close() ;
       }
       try {
         removeFeed(username, calendarId);
@@ -385,7 +424,6 @@ public class JCRDataStorage implements DataStorage {
         syncRemoveEvent(eventFolder, eventNode.getName());
       }
       calNode.remove();
-      // calendarHome.save() ;
       calendarHome.getSession().save();
       return calendar;
     }
@@ -494,7 +532,6 @@ public class JCRDataStorage implements DataStorage {
         }
       }
 
-      // cs-2020
       if (getSharedCalendarHome().hasNode(username)) {
         PropertyIterator iterPro = getSharedCalendarHome().getNode(username).getReferences();
         while (iterPro.hasNext()) {
@@ -526,9 +563,6 @@ public class JCRDataStorage implements DataStorage {
     Node eventCategoryHome = getEventCategoryHome(username);
     if (eventCategoryHome.hasNode(eventCategoryId)) {
       Node eventCategoryNode = eventCategoryHome.getNode(eventCategoryId);
-      // CS-3482
-      // SessionProvider systemSession = SessionProvider.createSystemProvider()
-      // ;
       for (CalendarEvent ce : getUserEventByCategory(username, eventCategoryId)) {
         ce.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
         ce.setEventCategoryName(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL);
@@ -721,8 +755,6 @@ public class JCRDataStorage implements DataStorage {
     event.setCalendarId(calendarId); // make sur the event is attached to the
                                      // calendar
     if (event.getReminders() != null && event.getReminders().size() > 0) {
-      // Need to use system session
-      // SessionProvider systemSession = SessionProvider.createSystemProvider();
       try {
         Node reminderFolder = getReminderFolder(event.getFromDateTime());
         saveEvent(calendarNode, event, reminderFolder, isNew);
@@ -730,7 +762,6 @@ public class JCRDataStorage implements DataStorage {
         if (log.isDebugEnabled())
           log.debug(e);
       } finally {
-        // systemSession.close() ;
       }
     } else {
       saveEvent(calendarNode, event, null, isNew);
@@ -1203,7 +1234,6 @@ public class JCRDataStorage implements DataStorage {
         if (log.isDebugEnabled())
           log.debug(e);
       } finally {
-        // systemSession.close() ;
       }
     }
 
@@ -1519,7 +1549,6 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public Node getReminderFolder(Date fromDate) throws Exception {
-    // CS-3165
     Node publicApp = getPublicCalendarServiceHome();
     Node dateFolder = getDateFolder(publicApp, fromDate);
     try {
@@ -2298,7 +2327,6 @@ public class JCRDataStorage implements DataStorage {
         int eventFromDayOfYear = eventFormDate.get(java.util.Calendar.DAY_OF_YEAR);
         int eventToDayOfYear = eventToDate.get(java.util.Calendar.DAY_OF_YEAR);
 
-        // CS-911
         if (eventFormDate.get(java.util.Calendar.YEAR) < fromDate.get(java.util.Calendar.YEAR)) {
           eventFromDayOfYear = 1;
         }
@@ -2602,7 +2630,6 @@ public class JCRDataStorage implements DataStorage {
         calendar = iter.nextProperty().getParent();
         if (calendar.getProperty(Utils.EXO_ID).getString().equals(calendarId)) {
 
-          // CS-2389
           if (!canEdit(calendar, username)) {
             log.debug("\n Do not have edit permission. \n");
             throw new AccessDeniedException();
@@ -2685,13 +2712,11 @@ public class JCRDataStorage implements DataStorage {
     try {
       events.addAll(getSharedEvents(username, eventQuery));
       if (publicCalendarIds != null && publicCalendarIds.length > 0) {
-        // add to fix bug CS-2728
         eventQuery.setCalendarId(publicCalendarIds);
         events.addAll(getPublicEvents(eventQuery));
       }
 
       // add recurrence events
-
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
         log.debug("Fail to get events", e);
@@ -3611,7 +3636,6 @@ public class JCRDataStorage implements DataStorage {
       originalEvent.setReminders(occurrence.getReminders());
       originalEvent.setSendOption(occurrence.getSendOption());
       originalEvent.setStatus(occurrence.getStatus());
-      // originalEvent.setLastUpdatedTime(Utils.getInstanceTempCalendar().getTime());
       originalEvent.setPriority(occurrence.getPriority());
       originalEvent.setRepeatType(occurrence.getRepeatType());
       originalEvent.setRepeatUntilDate(occurrence.getRepeatUntilDate());
@@ -3789,7 +3813,6 @@ public class JCRDataStorage implements DataStorage {
     } catch (Exception e) {
       throw new Exception(e.getClass().toString(), e.fillInStackTrace());
     } finally {
-      // session.close() ;
     }
   }
 
@@ -3872,7 +3895,6 @@ public class JCRDataStorage implements DataStorage {
   @SuppressWarnings("unused")
   public void closeSessionProvider(SessionProvider sessionProvider) {
     if (sessionProvider != null) {
-      // sessionProvider.close();
     }
   }
 

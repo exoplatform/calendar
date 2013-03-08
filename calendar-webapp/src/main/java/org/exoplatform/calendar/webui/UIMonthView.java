@@ -17,15 +17,12 @@
 package org.exoplatform.calendar.webui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.jcr.PathNotFoundException;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -283,8 +280,7 @@ public class UIMonthView extends UICalendarView {
             if(calendar == null) {
               continue ;
             } else {
-              // cs-4429: fix for group calendar permission
-              boolean bGroupPermit = (CalendarUtils.SHARED_TYPE.equals(ce.getCalType()) 
+              boolean bGroupPermit = (CalendarUtils.SHARED_TYPE.equals(ce.getCalType())
                   && !CalendarUtils.canEdit(CalendarUtils.getOrganizationService(), Utils.getEditPerUsers(calendar), username))
                   || (CalendarUtils.PUBLIC_TYPE.equals(ce.getCalType()) 
                       && !CalendarUtils.canEdit(CalendarUtils.getOrganizationService(), calendar.getEditPermission(), username));

@@ -16,6 +16,15 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
@@ -46,8 +55,6 @@ import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.organization.UIGroupMembershipSelector;
 import org.exoplatform.webui.organization.account.UIGroupSelector;
 import org.exoplatform.webui.organization.account.UIUserSelector;
-
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -480,7 +487,6 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
         if (owner.getOwnerType().equals(PermissionOwner.GROUP_OWNER))
         {
-//          sharedUsers.addAll(UISharedForm.getUsersByGroupId(owner.getGroupId()));
           sharedGroups.add(owner.getGroupId());
           continue;
         }
@@ -532,7 +538,6 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
         if (owner.getOwnerType().equals(PermissionOwner.GROUP_OWNER))
         {
-//          oldSharedUsers.addAll(sharedForm.getUsersByGroupId(owner.getGroupId()));
           oldSharedGroups.add(owner.getGroupId());
           continue;
         }

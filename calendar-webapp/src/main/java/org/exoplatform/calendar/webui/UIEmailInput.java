@@ -1,10 +1,9 @@
 package org.exoplatform.calendar.webui;
 
+import java.io.Writer;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.form.UIFormStringInput;
-
-import java.io.Writer;
 
 public class UIEmailInput extends UIFormStringInput {
   

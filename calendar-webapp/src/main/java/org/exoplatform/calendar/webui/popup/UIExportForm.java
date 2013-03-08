@@ -16,6 +16,15 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -39,10 +48,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL

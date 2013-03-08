@@ -16,12 +16,39 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarImportExport;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.CalendarUpdateEventListener;
+import org.exoplatform.calendar.service.DeleteShareJob;
+import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.EventPageList;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.RemoteCalendar;
+import org.exoplatform.calendar.service.RemoteCalendarService;
+import org.exoplatform.calendar.service.RssData;
+import org.exoplatform.calendar.service.ShareCalendarJob;
+import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
@@ -35,17 +62,12 @@ import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.PeriodInfo;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
-import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.picocontainer.Startable;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
-
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import java.util.*;
 
 
 /**
@@ -859,7 +881,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return storage_.searchHighlightRecurrenceEvent(username, eventQuery, publicCalendarIds, timezone);
   }
 
-//@since CS-5722 Add jobs for sharing and unsharing calendar with group
   /**
    * {@inheritDoc}
    */

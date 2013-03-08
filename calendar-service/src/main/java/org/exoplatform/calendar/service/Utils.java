@@ -16,6 +16,18 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import javax.jcr.Node;
+import javax.jcr.Session;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -32,11 +44,6 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-import java.util.*;
-import java.util.Calendar;
 
 /**
  * Created by The eXo Platform SARL
@@ -367,7 +374,6 @@ public class Utils {
   public static String[]     SYNC_PERIOD                = { SYNC_AUTO, SYNC_5MINS, SYNC_10MINS, SYNC_15MINS, SYNC_1HOUR, SYNC_1DAY, SYNC_1WEEK, SYNC_1YEAR };
 
   /*
-   * @since CS-5722 - vietnq
    * constants for sharing and deleting job
    */
   public static final String SHARE_CALENDAR_GROUP = "CS-ShareCalenar";

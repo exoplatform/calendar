@@ -16,13 +16,21 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.RssData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
@@ -45,9 +53,10 @@ import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
-
-import java.io.ByteArrayInputStream;
-import java.util.*;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 
 /**
  * Created by The eXo Platform SARL
@@ -70,7 +79,6 @@ import java.util.*;
 public class UIEditFeed extends UIForm implements UIPopupComponent{
   private static final Log log = ExoLogger.getExoLogger(UIEditFeed.class);
   
-  //final static private String SELECT_CALENDAR = "selectCalendar".intern() ;
   final static private String URL = "url".intern() ;
   final static private String NAME = "name".intern() ;
   final static private String CALENDAR = "calendar".intern() ;

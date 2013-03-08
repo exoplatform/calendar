@@ -16,6 +16,12 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 import org.exoplatform.commons.utils.LazyPageList;
@@ -30,8 +36,6 @@ import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormRadioBoxInput;
-
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL

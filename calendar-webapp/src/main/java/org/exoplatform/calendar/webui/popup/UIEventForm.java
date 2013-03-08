@@ -16,12 +16,38 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.webui.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.Reminder;
+import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.CalendarView;
+import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarViewContainer;
+import org.exoplatform.calendar.webui.UIFormDateTimePicker;
+import org.exoplatform.calendar.webui.UIListContainer;
+import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
@@ -49,19 +75,18 @@ import org.exoplatform.webui.core.model.SelectOptionGroup;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.*;
+import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormInputInfo;
+import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormInputWithActions.ActionData;
+import org.exoplatform.webui.form.UIFormRadioBoxInput;
+import org.exoplatform.webui.form.UIFormSelectBox;
+import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
+import org.exoplatform.webui.form.UIFormTabPane;
+import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.organization.account.UIUserSelector;
-
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Created by The eXo Platform SARL
@@ -248,7 +273,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       setEventToDate(eventCalendar.getToDateTime(),calSetting.getDateFormat(), calSetting.getTimeFormat()) ;
       setSelectedCalendarId(eventCalendar.getCalendarId()) ;
 
-      // cs-1790
       String eventCategoryId = eventCalendar.getEventCategoryId() ;
       if(!CalendarUtils.isEmpty(eventCategoryId)) {
         UIFormSelectBox selectBox = eventDetailTab.getUIFormSelectBox(UIEventDetailTab.FIELD_CATEGORY) ;
@@ -916,7 +940,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   protected void  setParticipantStatusValues(String[] values) throws Exception {
     participantStatus_.clear();
     participantStatusList_.clear();
-   // StringBuilder buider = new StringBuilder("") ;
     for (String par : values) {
       String[] entry = par.split(":");
       if(entry.length> 0 && StringUtils.isNotBlank(entry[0])){
@@ -1038,8 +1061,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     sbBody.append("</tr>") ;
     sbBody.append("<tr>") ;
     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(FIELD_MEETING)+"</td>") ;
-    //cs-2407
-    //cs-764
     toId = toId.replace(CalendarUtils.BREAK_LINE, CalendarUtils.COMMA);
     if (CalendarUtils.isEmpty(getInvitationEmail())) {
       sbBody.append("<td style=\"padding: 4px;\">" +toId + "</td>") ;
@@ -1335,7 +1356,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)) {
       canEdit = CalendarUtils.canEdit(null, org.exoplatform.calendar.service.Utils.getEditPerUsers(currentCalendar), username) ;
     } else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)) {
-      // cs-4429: fix for group calendar permission
       canEdit = CalendarUtils.canEdit(
         CalendarUtils.getOrganizationService(), currentCalendar.getEditPermission(), username) ;
     }
@@ -1404,7 +1424,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         break ;
       }
     }              
-    //}
     calendarEvent.setLocation(location) ;
 
     if (uiForm.getEventIsRepeat()) {
@@ -1471,7 +1490,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
               calService.updateRecurrenceSeries(fromCal, toCal, fromType, toType, calendarEvent, username);
             }
             else {
-              //calService.updateRecurrenceSeries(fromCal, toCal, fromType, toType, calendarEvent, username);
               calService.updateOccurrenceEvent(fromCal, toCal, fromType, toType, listEvent, username);
             }
           }
@@ -1727,7 +1745,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       UIEventForm uiForm = event.getSource() ;
       uiForm.setEmailAddress(uiForm.getEmailAddress());
       Util.getPortalRequestContext().setResponseComplete(true);
-      //event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getChild(UIEventReminderTab.class)) ;
     }
   }
   

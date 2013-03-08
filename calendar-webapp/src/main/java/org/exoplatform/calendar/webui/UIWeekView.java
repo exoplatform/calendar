@@ -15,9 +15,8 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 package org.exoplatform.calendar.webui;
- 
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,9 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.jcr.PathNotFoundException;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -108,8 +105,6 @@ public class UIWeekView extends UICalendarView {
     String username = CalendarUtils.getCurrentUser() ;
     EventQuery eventQuery = new EventQuery() ;
     eventQuery.setFromDate(getBeginDateOfWeek()) ;
-    //eventQuery.setToDate(getEndDateOfWeek()) ; 
-    //Fix for CS-2986
     Calendar endDateOfWeek = getEndDateOfWeek();
     Date toDate = endDateOfWeek.getTime();
     toDate.setTime(toDate.getTime()-1);
@@ -149,7 +144,6 @@ public class UIWeekView extends UICalendarView {
         String key = keyGen(c.get(Calendar.DATE), c.get(Calendar.MONTH), c.get(Calendar.YEAR)) ;
         if(isSameDate(c.getTime(), beginEvent) && (isSameDate(c.getTime(), endEvent)) && eventAmount < CalendarUtils.MILISECONS_OF_DAY){
           eventData_.get(key).add(event) ;
-          //dataMap_.put(event.getId(), event) ;
           iter.remove() ;
         }  
         c.add(Calendar.DATE, 1) ;
@@ -229,7 +223,6 @@ public class UIWeekView extends UICalendarView {
       if (isOccur && !Utils.isEmpty(recurId)) {
         eventCalendar = calendarview.getRecurrenceMap().get(eventId).get(recurId);
       }
-      //CalendarEvent oldEvent = new CalendarEvent(eventCalendar);
 
       if(eventCalendar != null) {
         CalendarService calService = CalendarUtils.getCalendarService() ;
@@ -296,12 +289,10 @@ public class UIWeekView extends UICalendarView {
             UIMiniCalendar uiMiniCalendar = uiCalendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
 
-            // @since plf 4
             JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
             RequireJS requireJS = jsManager.getRequireJS();
             requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
             requireJS.addScripts("cal.UIWeekView.setSize();cal.UIWeekView.cleanUp();");
-            //event.getRequestContext().addUIComponentToUpdateByAjax(calendarview.getParent()) ;
           }
         } catch (PathNotFoundException e) {
           if (log.isDebugEnabled()) {
@@ -362,7 +353,6 @@ public class UIWeekView extends UICalendarView {
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
-            // cs-4429: fix for group calendar permission !?
             if((CalendarUtils.SHARED_TYPE.equals(calType) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(OrganizationService.class), Utils.getEditPerUsers(calendar), username)) ||
                 (CalendarUtils.PUBLIC_TYPE.equals(calType) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username))) 
             {

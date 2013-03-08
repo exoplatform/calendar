@@ -17,6 +17,11 @@
 
 package org.exoplatform.webservice.cs.rest;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.RuntimeDelegate;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -29,12 +34,6 @@ import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.webservice.cs.calendar.CalendarWebservice;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.RuntimeDelegate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 
 /**
  * Created by The eXo Platform SARL Author : Volodymyr Krasnikov

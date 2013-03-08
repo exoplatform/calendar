@@ -15,6 +15,7 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 package org.exoplatform.calendar.webui;
+
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -31,9 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-
 import javax.jcr.PathNotFoundException;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -723,14 +722,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected List<String> getDisplayTimes(String timeFormat, int timeInterval, Locale locale) {
     List<String> displayTimes = new ArrayList<String>();
-    // Calendar cal = CalendarUtils.getInstanceOfCurrentCalendar() ;
     Calendar cal = Calendar.getInstance(locale);
     cal.set(Calendar.HOUR_OF_DAY, 0);
     cal.set(Calendar.MINUTE, 0);
     cal.set(Calendar.MILLISECOND, 0);
     DateFormat valuedf = new SimpleDateFormat(CalendarUtils.TIMEFORMAT, locale);
     DateFormat df = new SimpleDateFormat(timeFormat, locale);
-    // df.setCalendar(cal) ;
     for (int i = 0; i < 24 * (60 / timeInterval); i++) {
       displayTimes.add(valuedf.format(cal.getTime()) + "_" + df.format(cal.getTime()));
       cal.add(java.util.Calendar.MINUTE, timeInterval);
@@ -830,7 +827,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public List<CalendarEvent> getSelectedEvents(String eventIds) throws Exception {
     String[] list = eventIds.split(",");
-    // CalendarService calService = CalendarUtils.getCalendarService() ;
     List<CalendarEvent> dataList = new ArrayList<CalendarEvent>();
     for (int i = 0; i < list.length; i++) {
       CalendarEvent evt = getDataMap().get(list[i]);
@@ -879,8 +875,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
       String type = event.getRequestContext().getRequestParameter(OBJECTID);
       String formTime = uiForm.getDefaultStartTimeOfEvent();
-      // String formTime =
-      // event.getRequestContext().getRequestParameter(CURRENTTIME) ;
       String value = uiForm.getUIFormSelectBox(EVENT_CATEGORIES).getValue();
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction uiParenPopup = uiPortlet.getChild(UIPopupAction.class);
@@ -920,7 +914,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         else
           uiEventForm.setSelectedCategory(value);
       }
-      // event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiParenPopup);
     }
   }

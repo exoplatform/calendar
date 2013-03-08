@@ -16,6 +16,11 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.FeedData;
@@ -33,8 +38,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.UIFormRadioBoxInput;
 
-import java.util.*;
-
 /**
  * Created by The eXo Platform SARL
  * Author : Pham Tuan
@@ -43,7 +46,6 @@ import java.util.*;
  */
 
 @ComponentConfig(
-    //lifecycle = UIFormLifecycle.class,
     template = "app:/templates/calendar/webui/UIPopup/UICalendarSettingFeedTab.gtmpl",
     events = {
         @EventConfig(listeners = UICalendarSettingFeedTab.ShowPageActionListener.class, phase = Phase.DECODE),
@@ -97,7 +99,6 @@ public class UICalendarSettingFeedTab extends UIFormInputWithActions {
   public long getCurrentPage() { return getChild(UIGrid.class).getUIPageIterator().getCurrentPage();}
   
   public void setFeedList(List<FeedData> feedList) throws Exception {
-    //ObjectPageList objPageList = new ObjectPageList(feedList, 10) ;
     LazyPageList<FeedData> pageList = new LazyPageList<FeedData>(new ListAccessImpl<FeedData>(FeedData.class, feedList), 10);
     getChild(UIGrid.class).getUIPageIterator().setPageList(pageList) ;
   }

@@ -32,6 +32,11 @@
  */
 package org.exoplatform.cs.statistics;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -43,12 +48,6 @@ import org.exoplatform.services.jcr.statistics.JCRStatisticsManager;
 import org.exoplatform.services.jcr.statistics.Statistics;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * This aspect is used to collect all the statistics of all the methods of the JCR API.

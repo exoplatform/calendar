@@ -16,10 +16,32 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.webui.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.Reminder;
+import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.CalendarView;
+import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarViewContainer;
+import org.exoplatform.calendar.webui.UIFormDateTimePicker;
+import org.exoplatform.calendar.webui.UIListContainer;
+import org.exoplatform.calendar.webui.UIListView;
+import org.exoplatform.calendar.webui.UIMiniCalendar;
+import org.exoplatform.calendar.webui.UIPreview;
 import org.exoplatform.calendar.webui.popup.UIAddressForm.ContactData;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -41,13 +63,13 @@ import org.exoplatform.webui.core.model.SelectOptionGroup;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
-import org.exoplatform.webui.form.*;
+import org.exoplatform.webui.form.UIFormInputWithActions;
+import org.exoplatform.webui.form.UIFormSelectBox;
+import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
+import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.UIFormTabPane;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.organization.account.UIUserSelector;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -108,7 +130,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   
   private String oldCalendarId_ = null ;
   private String newCalendarId_ = null ;
-  //private String newCategoryId_ = null ;
   private Map<String, String> delegators_ = new LinkedHashMap<String, String>() ;
 
   public static final int LIMIT_FILE_UPLOAD = 10;
@@ -169,7 +190,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       setEventToDate(eventCalendar.getToDateTime(),calSetting.getDateFormat(),  calSetting.getTimeFormat()) ;
       setSelectedCalendarId(eventCalendar.getCalendarId()) ;
 
-      //    cs-1790
       String eventCategoryId = eventCalendar.getEventCategoryId() ;
       if(!CalendarUtils.isEmpty(eventCategoryId)) {
         UIFormSelectBox selectBox = taskDetailTab.getUIFormSelectBox(UITaskDetailTab.FIELD_CATEGORY) ;
@@ -185,8 +205,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
         }
         selectBox.setValue(eventCalendar.getEventCategoryId()) ;
       }
-      // cs-1911
-      StringBuilder delegator = new StringBuilder("") ;      
+      StringBuilder delegator = new StringBuilder("") ;
       if (eventCalendar.getTaskDelegator() != null)
         for (String user : eventCalendar.getTaskDelegator().split(CalendarUtils.COMMA))
           if (CalendarUtils.getOrganizationService().getUserHandler().findUserByName(user) != null) {
@@ -941,7 +960,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
           if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)) {
             canEdit = CalendarUtils.canEdit(null, Utils.getEditPerUsers(currentCalendar), username) ;
           } else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)) {
-            // cs-4429: fix for group calendar permission
             canEdit = CalendarUtils.canEdit(CalendarUtils.getOrganizationService(),currentCalendar.getEditPermission(), username) ;
           }
           if(!canEdit && !uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE) ) {
