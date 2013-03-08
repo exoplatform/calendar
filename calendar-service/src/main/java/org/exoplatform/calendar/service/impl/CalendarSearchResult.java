@@ -61,7 +61,7 @@ public class CalendarSearchResult extends SearchResult {
   private long fromDateTime;
   private String dataType;
   private String zoneName;
-
+  private String taskStatus;
   public CalendarSearchResult(String url,
                               String title,
                               String excerpt,
@@ -95,10 +95,6 @@ public class CalendarSearchResult extends SearchResult {
     this.dataType = dataType;
   }
 
-  /**
-   * @return value base on task status if data is task 
-   *  canceled || needs-action || in-process
-   */
   public String getImageUrl(){
     return super.getImageUrl();
   }
@@ -203,5 +199,17 @@ public class CalendarSearchResult extends SearchResult {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  /**
+   * @return value base on task status if data is task 
+   *  needs-action || in-process
+   */
+  public String getTaskStatus() {
+    return taskStatus;
+  }
+
+  public void setTaskStatus(String taskStatus) {
+    this.taskStatus = taskStatus;
   }
 }

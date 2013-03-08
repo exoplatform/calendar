@@ -422,8 +422,8 @@ public class Utils {
     EXO_FROM_DATE_TIME, EXO_TO_DATE_TIME, EXO_EVENT_STATE,EXO_IS_PRIVATE, EXO_DATE_CREATED, JCR_SCORE, EXO_ID, EXO_CALENDAR_ID, EXO_EVENT_TYPE};
   
   public static String[] SEARCH_FIELDS = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
-  public static String EVENT_ICON = "Icon";
-  public static String TASK_ICON = "uiIconAct";
+  public static String EVENT_ICON_URL = null;
+  public static String TASK_ICON_URL = "/social-resources/skin/images/Activity/status-task.png";
   
   public static final String DEFAULT_SITENAME = "intranet";
   public static final String PAGE_NAGVIGATION = "calendar";

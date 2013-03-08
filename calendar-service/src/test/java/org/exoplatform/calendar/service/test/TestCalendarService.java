@@ -316,7 +316,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     CalendarSearchResult calItem = (CalendarSearchResult)result.toArray()[0] ;
-    assertEquals(calEvent.getEventState(), calItem.getImageUrl());
+    assertEquals(calEvent.getEventState(), calItem.getTaskStatus());
 
     // search all inprocess
     calEvent.setEventState(CalendarEvent.IN_PROCESS);
@@ -325,7 +325,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     result = taskSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1,result.size());
     calItem = (CalendarSearchResult)result.toArray()[0] ;
-    assertEquals(calEvent.getEventState(), calItem.getImageUrl());
+    assertEquals(calEvent.getEventState(), calItem.getTaskStatus());
 
     // Does not search cancelled task
     calEvent.setEventState(CalendarEvent.CANCELLED);
@@ -617,14 +617,21 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(item.getTitle()) ;
     assertNotNull(item.getExcerpt()) ;
     assertNotNull(item.getDetail()) ;
-    assertNotNull(item.getImageUrl());
+    assertNull(item.getImageUrl());
     assertNotNull(item.getUrl());
     //log.info(item.getUrl());
     assertEquals(true, item.getDate() > 0);
   }
   private void checkFields(CalendarSearchResult item) {
     checkFields((SearchResult)(item));
-    assertEquals(item.getDataType(), CalendarEvent.TYPE_EVENT);   
+    assertEquals(item.getDataType(), CalendarEvent.TYPE_EVENT);  
+    if(CalendarEvent.TYPE_EVENT.equals(item.getDataType())){
+      assertNull(item.getImageUrl());
+      assertNull(item.getTaskStatus());
+    } else if (CalendarEvent.TYPE_TASK.equals(item.getDataType())){
+      assertEquals(Utils.TASK_ICON_URL, item.getImageUrl());
+      assertNotNull(item.getTaskStatus());
+    }
   }
 
 
@@ -650,11 +657,12 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     checkFieldsValueWithType(calName,  calEvent,  (SearchResult)item);
     if(CalendarEvent.TYPE_EVENT.equals(calEvent.getEventType())){
       assertEquals(item.getFromDateTime(), calEvent.getFromDateTime().getTime());
-      assertNotNull(item.getImageUrl());
-      assertEquals(Utils.EVENT_ICON, item.getImageUrl());
-    } else {
-      assertEquals(calEvent.getEventState(), item.getImageUrl());
+      assertNull(item.getImageUrl());
+      assertEquals(Utils.EVENT_ICON_URL, item.getImageUrl());
+    } else if(CalendarEvent.TYPE_TASK.equals(calEvent.getEventType())){
       assertEquals(0,item.getFromDateTime());
+      assertNotNull(item.getImageUrl());
+      assertEquals(Utils.TASK_ICON_URL, item.getImageUrl());
     }
     assertNotNull(item.getTimeZoneName());
   }

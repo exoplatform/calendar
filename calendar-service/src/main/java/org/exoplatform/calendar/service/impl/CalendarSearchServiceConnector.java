@@ -206,6 +206,8 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           result.setTimeZoneName(cal.getTimeZone());
           if(CalendarEvent.TYPE_EVENT.equals(dataType)){
             result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
+          } else if (CalendarEvent.TYPE_TASK.equals(dataType)) {
+            result.setTaskStatus(buildValue(Utils.EXO_EVENT_STATE, iter));
           }
           return result;
         }
@@ -250,16 +252,14 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       Row row = (Row) iter;
       if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
         if(CalendarEvent.TYPE_TASK.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString())) 
-          icon = row.getValue(Utils.EXO_EVENT_STATE).getString();
-        else icon = Utils.EVENT_ICON; 
+          icon = Utils.TASK_ICON_URL;
+        else icon = Utils.EVENT_ICON_URL; 
     } else {
       Node eventNode = (Node) iter;
       if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
         if(CalendarEvent.TYPE_TASK.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString())) 
-        {
-          if(eventNode.hasProperty(Utils.EXO_EVENT_STATE))
-            icon = eventNode.getProperty(Utils.EXO_EVENT_STATE).getString();
-        } else icon = Utils.EVENT_ICON;
+          icon = Utils.TASK_ICON_URL;
+        else icon = Utils.EVENT_ICON_URL;
       }
     }
     return icon;
