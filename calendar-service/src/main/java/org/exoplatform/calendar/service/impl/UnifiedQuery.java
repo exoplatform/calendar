@@ -16,18 +16,17 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.commons.utils.ISO8601;
-
-import javax.jcr.query.Query;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.jcr.query.Query;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.commons.utils.ISO8601;
 
 /**
  * Created by The eXo Platform SAS
@@ -56,7 +55,6 @@ public class UnifiedQuery extends EventQuery {
         int inputCount = 0 ;
         for(String keyword : inputs){
           if(inputCount > 0) queryString.append(" OR ");
-          //keyword.replaceAll("\"", "\\\"").replaceAll("-", Utils.EMPTY_STR);
           int filterCount = 0 ;
           for(String filter : Utils.SEARCH_FIELDS) {
             if(filterCount > 0) queryString.append(" OR ");

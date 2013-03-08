@@ -16,6 +16,9 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
@@ -38,10 +41,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 @ComponentConfig(
                  lifecycle = UIFormLifecycle.class,
                  template =  "app:/templates/calendar/webui/UIPopup/UIAddressForm.gtmpl",
@@ -63,8 +62,6 @@ public class UIAddressForm extends UIForm implements UIPopupComponent {
   private UIPageIterator uiPageIterator_ ;
   protected String[] actions_ = new String[]{"Add", "Replace", "Cancel"}; 
   
-  // CS- 3130
-  // public LinkedHashMap<String, Contact> checkedList_ = new LinkedHashMap<String, Contact>() ;
   public List<String> checkedList_ = new ArrayList<String>();
   public void setRecipientsType(String type)  {
     recipientsType=type;

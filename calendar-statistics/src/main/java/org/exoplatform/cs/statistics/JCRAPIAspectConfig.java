@@ -16,13 +16,12 @@
  */
 package org.exoplatform.cs.statistics;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValuesParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The configuration of the {@link JCRAPIAspect}

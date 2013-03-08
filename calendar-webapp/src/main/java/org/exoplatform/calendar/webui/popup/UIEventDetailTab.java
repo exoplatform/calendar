@@ -16,18 +16,27 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
-import org.exoplatform.webui.form.*;
+import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormInputInfo;
+import org.exoplatform.webui.form.UIFormInputWithActions;
+import org.exoplatform.webui.form.UIFormSelectBox;
+import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
+import org.exoplatform.webui.form.UIFormStringInput;
+import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
-
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -58,7 +67,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
   final public static String FIELD_PRIORITY = "priority".intern() ; 
   final public static String FIELD_DESCRIPTION = "description".intern() ;
   final static public String FIELD_ATTACHMENTS = "attachments".intern() ;
-  //@since plf4 relooking
+
   final static public String LABEL_ADD_ATTACHMENTS = "addfiles";
 
   protected List<Attachment> attachments_ = new ArrayList<Attachment>() ;
@@ -90,8 +99,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     addUIFormInput(new UIFormDateTimePicker(FIELD_TO, FIELD_TO, new Date(), false));
     addUIFormInput(new UICheckBoxInput(FIELD_CHECKALL, FIELD_CHECKALL, null));
     addUIFormInput(new UIFormStringInput(FIELD_PLACE, FIELD_PLACE, null));
-    //addUIFormInput(new UIFormSelectBox(FIELD_REPEAT, FIELD_REPEAT, getRepeater())) ;
-    
+
     addUIFormInput(new UICheckBoxInput(FIELD_ISREPEAT, FIELD_ISREPEAT, false));
     ActionData editRepeatAction = new ActionData() ;
     editRepeatAction.setActionType(ActionData.TYPE_ICON) ;
@@ -101,8 +109,6 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     List<ActionData> editRepeatActions = new ArrayList<ActionData>() ;
     editRepeatActions.add(editRepeatAction) ;
     setActionField(FIELD_ISREPEAT, editRepeatActions) ;
-    
-    //addUIFormInput(new UIFormDateTimePicker(FIELD_REPEAT_UNTIL, FIELD_REPEAT_UNTIL, null, false));
     
     addUIFormInput(new UIFormSelectBox(FIELD_PRIORITY, FIELD_PRIORITY, getPriority())) ;
     ActionData addEmailAddress = new ActionData() ;

@@ -16,6 +16,10 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -25,11 +29,6 @@ import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Created by The eXo Platform SARL
@@ -58,9 +57,6 @@ public class UIMiniCalendar extends UICalendarView  {
   public void updateMiniCal() throws Exception {
     dataMap.clear() ;
     EventQuery eventQuery = new EventQuery() ;
-    /*if(categoryId_ != null && categoryId_.toLowerCase().equals("null")) {
-      eventQuery.setCategoryId(new String[]{categoryId_}) ;
-    }*/
     eventQuery.setFromDate(getBeginDateOfMonth()) ;
     eventQuery.setToDate(getEndDateOfMonth()) ;
     eventQuery.setExcludeRepeatEvent(true);
@@ -156,7 +152,6 @@ public class UIMiniCalendar extends UICalendarView  {
         miniCal.calendar_.add(Calendar.YEAR, -1) ;
       }
       miniCal.setCurrentDay(1);
-      //miniCal.updateMiniCal() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(miniCal.getParent()) ;
     }
   }

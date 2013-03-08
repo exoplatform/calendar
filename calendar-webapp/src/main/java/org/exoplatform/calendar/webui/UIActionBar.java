@@ -16,6 +16,7 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.List;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -32,8 +33,6 @@ import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-
-import java.util.List;
 
 /**
  * Created by The eXo Platform SARL

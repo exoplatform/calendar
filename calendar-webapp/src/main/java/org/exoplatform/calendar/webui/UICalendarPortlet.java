@@ -15,13 +15,12 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 package org.exoplatform.calendar.webui;
+
 import java.util.Calendar;
 import java.util.TimeZone;
-
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;

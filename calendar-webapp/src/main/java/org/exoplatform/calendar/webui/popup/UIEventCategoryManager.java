@@ -16,11 +16,22 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.io.Writer;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.*;
+import org.exoplatform.calendar.webui.UIActionBar;
+import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarViewContainer;
+import org.exoplatform.calendar.webui.UICalendars;
+import org.exoplatform.calendar.webui.UIListContainer;
+import org.exoplatform.calendar.webui.UIListView;
+import org.exoplatform.calendar.webui.UIMiniCalendar;
+import org.exoplatform.calendar.webui.UISearchForm;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.portal.webui.container.UIContainer;
@@ -32,11 +43,6 @@ import org.exoplatform.webui.core.UIGrid;
 import org.exoplatform.webui.core.lifecycle.UIContainerLifecycle;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
-
-import java.io.Writer;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by The eXo Platform SARL
@@ -113,13 +119,10 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
       }
     }
     UIGrid uiGrid = getChild(UIGrid.class) ; 
-    //ObjectPageList objPageList = new ObjectPageList(categories, 10) ;
     LazyPageList<EventCategory> pageList = new LazyPageList<EventCategory>(new ListAccessImpl<EventCategory>(EventCategory.class, categories), 10);
     uiGrid.getUIPageIterator().setPageList(pageList) ;   
   }
-  /* private SessionProvider getSession() {
-    return SessionProviderFactory.createSessionProvider() ;
-  }*/
+
   static  public class EditActionListener extends EventListener<UIEventCategoryManager> {
     @Override
     public void execute(Event<UIEventCategoryManager> event) throws Exception {

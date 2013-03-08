@@ -16,13 +16,38 @@
  */
 package org.exoplatform.webservice.cs.calendar;
 
-import com.sun.syndication.feed.synd.*;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TimeZone;
+import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarImportExport;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.EventPageList;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
@@ -32,16 +57,15 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.webservice.cs.bean.EventData;
 import org.exoplatform.webservice.cs.bean.SingleEvent;
-
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.XmlReader;
 
 
 /**
@@ -108,7 +132,6 @@ public class CalendarWebservice implements ResourceContainer{
                                   String username, @PathParam("calendarId")
                                   String calendarId, @PathParam("type")
                                   String type) throws Exception {
-    //StringBuffer buffer = new StringBuffer();
   EventData eventData = new EventData();
     CacheControl cacheControl = new CacheControl();
     cacheControl.setNoCache(true);
@@ -127,7 +150,6 @@ public class CalendarWebservice implements ResourceContainer{
         OrganizationService oService = (OrganizationService)ExoContainerContext
         .getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
         cal = calendarService.getGroupCalendar(calendarId) ;
-        // cs-4429: fix for group calendar permission
         if(Utils.canEdit(oService, cal.getEditPermission(), username)) {
           eventData.setPermission(true);
         } 
@@ -491,7 +513,7 @@ public class CalendarWebservice implements ResourceContainer{
       java.util.Calendar fromCal = calSetting.createCalendar(currentDate);
       java.util.Calendar toCal = calSetting.createCalendar(currentDate);
       toCal.add(java.util.Calendar.DAY_OF_YEAR, 1);
-      toCal.add(java.util.Calendar.SECOND, -1); // To fix CS-5412 
+      toCal.add(java.util.Calendar.SECOND, -1);
       EventQuery eventQuery = new EventQuery();
       eventQuery.setFromDate(fromCal);
       eventQuery.setToDate(toCal);
@@ -623,7 +645,6 @@ public class CalendarWebservice implements ResourceContainer{
       CalendarSetting calSetting = calendarService.getCalendarSetting(username);
       if(calEvent.getAttachment()!= null && !calEvent.getAttachment().isEmpty()) calEvent.setAttachment(null);
       SingleEvent data = makeSingleEvent(calSetting, calEvent);
-      //data.setCalendars(calList);
       return Response.ok(data, MediaType.APPLICATION_JSON).cacheControl(cc).build();
     }catch(Exception e){
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
@@ -653,7 +674,6 @@ public class CalendarWebservice implements ResourceContainer{
       CalendarSetting calSetting = calendarService.getCalendarSetting(username);
       if(calEvent.getAttachment()!= null && !calEvent.getAttachment().isEmpty()) calEvent.setAttachment(null);
       SingleEvent data = makeSingleEvent(calSetting, calEvent);
-      //data.setCalendars(calList);
       return Response.ok(data, MediaType.APPLICATION_JSON).cacheControl(cc).build();
     }catch(Exception e){
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();

@@ -16,11 +16,10 @@
  */
 package org.exoplatform.calendar.webui.listener;
 
+import java.util.Map;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.ext.UIExtensionEventListener;
-
-import java.util.Map;
 
 /**
  * Created by The eXo Platform SAS

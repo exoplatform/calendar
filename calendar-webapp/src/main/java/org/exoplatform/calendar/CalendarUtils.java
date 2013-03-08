@@ -16,7 +16,38 @@
  **/
 package org.exoplatform.calendar;
 
-import org.exoplatform.calendar.service.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.jcr.PathNotFoundException;
+import javax.mail.internet.InternetAddress;
+import javax.portlet.PortletPreferences;
+import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.popup.UIAddressForm.ContactData;
 import org.exoplatform.container.PortalContainer;
@@ -42,18 +73,6 @@ import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.core.model.SelectOption;
 import org.exoplatform.webui.core.model.SelectOptionGroup;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-
-import javax.jcr.PathNotFoundException;
-import javax.mail.internet.InternetAddress;
-import javax.portlet.PortletPreferences;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Calendar;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by The eXo Platform SARL
@@ -259,7 +278,6 @@ public class CalendarUtils {
     calendar.setLenient(false);
     calendar.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
     calendar.setFirstDayOfWeek(Integer.parseInt(calendarSetting.getWeekStartOn()));
-    // fix CS-4725
     calendar.setMinimalDaysInFirstWeek(4);
     return calendar;
   }
@@ -350,7 +368,6 @@ public class CalendarUtils {
       String minStr = (minutes < 10) ? ("0" + Integer.toString(minutes)) : Integer.toString(minutes);
       label = "(GMT " + ((timeZone.getRawOffset() >= 0) ? "+" : "") 
           + hrStr + ":" + minStr + ") " + timeZoneID ;
-      //subZoneMap.put(tz,  str) ;
 
     }
     return label;
@@ -361,7 +378,6 @@ public class CalendarUtils {
     for (String tz : timeZoneIds){
       if(tz.lastIndexOf("/") > 0 && tz.toLowerCase().lastIndexOf("etc".toLowerCase()) < 0 && tz.toLowerCase().lastIndexOf("system") < 0) {
         String str = generateTimeZoneLabel(tz);
-        //subZoneMap.put(tz,  str) ;
         options.add(new SelectItemOption<String>(str, tz)) ;
       } 
     }
@@ -638,11 +654,8 @@ public class CalendarUtils {
       SelectOptionGroup sharedGrp = new SelectOptionGroup(CalendarUtils.SHARED_CALENDARS);
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
         if(CalendarUtils.canEdit(null, Utils.getEditPerUsers(c), username)){
-          //String owner = "" ;
-          //if(c.getCalendarOwner() != null) owner = c.getCalendarOwner() + " - " ;
           if (!hash.containsKey(c.getId())) {
             hash.put(c.getId(), "");
-            //sharedGrp.addOption(new SelectOption(owner + c.getName(), CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + c.getId())) ;
             sharedGrp.addOption(new SelectOption(c.getName(), CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + c.getId())) ;
           }
         }
@@ -696,7 +709,6 @@ public class CalendarUtils {
       OrganizationService oService = (OrganizationService)PortalContainer.getComponent(OrganizationService.class) ;
       for(GroupCalendarData g : lgcd) {
         for(org.exoplatform.calendar.service.Calendar c : g.getCalendars()){
-          // cs-4429: fix for group calendar permission
           if(CalendarUtils.canEdit(oService, c.getEditPermission(), username)){
             list.add(c) ; 
           }
@@ -755,7 +767,6 @@ public class CalendarUtils {
     addressList = addressList.replaceAll(SEMICOLON,COMMA) ;
     List<String> emails = new ArrayList<String>() ;
     emails.addAll(Arrays.asList(addressList.split(COMMA))) ;
-    //String emailRegex = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-.]+\\.[A-Za-z]{2,5}" ;
     for (String email : emails) {
       email = email.trim() ;
       try{
@@ -802,7 +813,6 @@ public class CalendarUtils {
     }
   }
   public static boolean isEmailValid(String value) {
-    //String emailRegex = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-.]+\\.[A-Za-z]{2,5}" ;
     return (value!= null && value.trim().length() > 0 && value.trim().matches(emailRegex)) ;
   }
   public static boolean isAllEmailValid(String addressList) {
@@ -865,10 +875,6 @@ public class CalendarUtils {
     }
     return data.toString();
   }
-
-  //  public static String getResourceBundle(String key) {
-  //    return getResourceBundle(key, null);
-  //  }
 
   public static String getResourceBundle(String key, String defaultValue) {
     WebuiRequestContext context = RequestContext.getCurrentInstance();

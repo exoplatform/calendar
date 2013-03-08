@@ -16,10 +16,20 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccessImpl;
-import org.exoplatform.services.organization.*;
+import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.MembershipHandler;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.Query;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -33,9 +43,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by The eXo Platform SARL
@@ -100,7 +107,6 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
 
   public void init(Collection<String> pars) throws Exception{
     OrganizationService service = getApplicationComponent(OrganizationService.class) ;
-    //ObjectPageList objPageList = new ObjectPageList(service.getUserHandler().getUserPageList(0).getAll(), 10) ;
     LazyPageList<User> pageList = new LazyPageList<User>(new ListAccessImpl<User>(User.class, service.getUserHandler().getUserPageList(0).getAll()), 10);
     uiIterator_.setPageList(pageList) ;
     pars_ = pars ;
@@ -231,8 +237,6 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
       OrganizationService service = uiForm.getApplicationComponent(OrganizationService.class) ;
       String keyword = uiForm.getUIStringInput(FIELD_KEYWORD).getValue();
       String filter = uiForm.getUIFormSelectBox(FIELD_FILTER).getValue() ;
-      //uiForm.groupId_ = null ;  
-      //uiForm.setSelectedGroup(null) ;
       if(CalendarUtils.isEmpty(keyword)) {
         uiForm.init(uiForm.pars_) ;
       }  else {
@@ -262,7 +266,6 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
             }
           }
         }
-        //ObjectPageList objPageList = new ObjectPageList(results, 10) ;
         LazyPageList<User> pageList = new LazyPageList<User>(new ListAccessImpl<User>(User.class, results) , 10);
         uiForm.uiIterator_.setPageList(pageList);
       }

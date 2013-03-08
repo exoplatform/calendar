@@ -19,6 +19,9 @@
 
 package org.exoplatform.calendar.webui;
 
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import org.exoplatform.calendar.webui.UIFormColorPicker.Colors.Color;
 import org.exoplatform.commons.utils.HTMLEntityEncoder;
 import org.exoplatform.web.application.JavascriptManager;
@@ -27,10 +30,6 @@ import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInput;
 import org.exoplatform.webui.form.UIFormInputBase;
-
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by The eXo Platform SAS

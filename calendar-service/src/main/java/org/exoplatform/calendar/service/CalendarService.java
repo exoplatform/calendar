@@ -16,16 +16,15 @@
  **/
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.calendar.service.impl.CalendarEventListener;
-import org.exoplatform.services.scheduler.JobSchedulerService;
-import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
-import org.quartz.JobDetail;
-
-import javax.jcr.Node;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import javax.jcr.Node;
+import org.exoplatform.calendar.service.impl.CalendarEventListener;
+import org.exoplatform.services.scheduler.JobSchedulerService;
+import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
+import org.quartz.JobDetail;
 
 /**
  * Created by The eXo Platform SARL
@@ -672,7 +671,8 @@ public interface CalendarService {
   
   /**
    * sharing a calendar with a group will run in background
-   * @since CS-5722
+   * add jobs for sharing and unsharing calendar with group
+   *
    * @param username
    * @param calendarId
    * @param sharedGroups
@@ -682,7 +682,6 @@ public interface CalendarService {
 
   /**
    * unsharing a calendar with a group will run in background
-   * @since CS-5722
    * @param username
    * @param unsharedGroups
    * @param calendarId
@@ -692,7 +691,6 @@ public interface CalendarService {
 
   /**
    * checks if a group is belong to a list of groups that's being shared
-   * @since CS-5722
    * @param deletedGroup
    * @param schedulerService_
    * @return

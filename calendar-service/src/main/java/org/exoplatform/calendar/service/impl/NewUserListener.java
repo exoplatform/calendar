@@ -16,6 +16,7 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.util.List;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.container.xml.InitParams;
@@ -24,8 +25,6 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserEventListener;
-
-import java.util.List;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang

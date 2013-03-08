@@ -16,10 +16,9 @@
  **/
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.services.jcr.util.IdGenerator;
-
 import java.util.Date;
 import java.util.List;
+import org.exoplatform.services.jcr.util.IdGenerator;
 
 /**
  * Created by The eXo Platform SARL
@@ -230,7 +229,6 @@ public class CalendarEvent {
     this.setParticipantStatus(event.getParticipantStatus());
     this.setReminders(event.getReminders());
     this.setPriority(event.getPriority());
-    // this.setLastUpdatedTime(event.getLastUpdatedTime());
     this.setRepeatUntilDate(event.getRepeatUntilDate());
     this.setRepeatCount(event.getRepeatCount());
     this.setRepeatInterval(event.getRepeatInterval());

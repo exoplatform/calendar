@@ -16,11 +16,6 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import org.exoplatform.web.application.RequestContext;
-import org.exoplatform.web.application.RequireJS;
-import org.exoplatform.webui.application.WebuiRequestContext;
-import org.exoplatform.webui.form.UIFormInputBase;
-
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -29,6 +24,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import org.exoplatform.web.application.RequestContext;
+import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.webui.form.UIFormInputBase;
 
 /**
  * Created by The eXo Platform SAS

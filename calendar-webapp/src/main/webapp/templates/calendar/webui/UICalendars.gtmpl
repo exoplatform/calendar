@@ -229,6 +229,7 @@
 	<% /*Begin Popup Menu - Calendar Actions */ %>
 
 	<div class="uiRightClickPopupMenu CalendarMainPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none ;">
+	  <span class="arrowLeft" style="top: 29%"></span>
 	  <ul class="uiDropDownCal" style="display:block;">
 	    <li>
 	      <a href="<%=uicomponent.event('AddCalendar','id')%>">
@@ -268,6 +269,7 @@
   <% /*Begin Popup Menu - Calendar Menu*/ %>
 
 	<div class="uiRightClickPopupMenu CalendarPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none;" id="CalendarPopupMenu" eXoCallback="eXo.calendar.UICalendarPortlet.calendarMenuCallback">
+			<span class="arrowLeft"></span>
 			<ul class="uiDropDownCal" style="display:block;">
 				<li>
 					<a id="AddEvent" href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithId(this, 1, 'objectId=id');">

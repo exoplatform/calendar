@@ -16,6 +16,10 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.PageList;
@@ -31,11 +35,6 @@ import org.exoplatform.webui.core.UITree;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.organization.UIGroupMembershipSelector;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by The eXo Platform SARL

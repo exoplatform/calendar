@@ -16,11 +16,32 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.EventPageList;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.*;
+import org.exoplatform.calendar.webui.UIActionBar;
+import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarView;
+import org.exoplatform.calendar.webui.UICalendarViewContainer;
+import org.exoplatform.calendar.webui.UICalendars;
+import org.exoplatform.calendar.webui.UIFormDateTimePicker;
+import org.exoplatform.calendar.webui.UIListView;
+import org.exoplatform.calendar.webui.UIPreview;
+import org.exoplatform.calendar.webui.UIWeekView;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -35,10 +56,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -256,7 +273,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
       }
       try {
         EventQuery query = new EventQuery() ;
-        //query.setQueryType(Query.SQL) ;
         if(! CalendarUtils.isEmpty(text)) query.setText(CalendarUtils.encodeJCRText(text)) ;
         query.setEventType(uiForm.getUIFormSelectBox(UIAdvancedSearchForm.TYPE).getValue()) ;
         if(uiForm.isSearchTask()) query.setState(uiForm.getTaskState()) ; 
@@ -271,7 +287,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
               log.debug("Fail to set calendar id", e);
             }
           }
-          //if (!checkedCals.contains(calendarId)) query.setCalendarId(new String[]{"null"}) ; 
         }
         String categoryId = uiForm.getUIFormSelectBox(UIAdvancedSearchForm.CATEGORY).getValue() ;
         if(categoryId != null && categoryId.trim().length() > 0) query.setCategoryId(new String[]{categoryId}) ;
@@ -284,10 +299,8 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         } else if (fromDate !=null) {
           cal.setTime(fromDate) ;
           query.setFromDate(CalendarUtils.getBeginDay(cal)) ;
-          //query.setToDate(CalendarUtils.getEndDay(cal)) ;
         } else if (toDate !=null) {
           cal.setTime(toDate) ;
-          //query.setFromDate(CalendarUtils.getBeginDay(cal)) ;
           query.setToDate(CalendarUtils.getEndDay(cal)) ;
         }
         String priority = uiForm.getUIFormSelectBox(UIAdvancedSearchForm.PRIORITY).getValue() ;
@@ -303,7 +316,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         calendarViewContainer.initView(UICalendarViewContainer.LIST_VIEW) ;
         UIListView uiListView = calendarViewContainer.findFirstComponentOfType(UIListView.class) ;
         
-        // CS-3610
         uiListView.setViewType(UICalendarView.TYPE_BOTH);
         uiListView.setSortedField(UIListView.EVENT_START);
         uiListView.setIsAscending(false);

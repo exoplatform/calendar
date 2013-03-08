@@ -4,6 +4,9 @@
  **************************************************************************/
 package org.exoplatform.calendar.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.GroupCalendarData;
@@ -13,10 +16,6 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.GroupEventListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Author : Huu-Dung Kieu huu-dung.kieu@bull.be 14 f�vr. 08
@@ -78,7 +77,7 @@ public class NewGroupListener extends GroupEventListener {
         if (groupId.equalsIgnoreCase(g))
           return;
         // if(g.contains("/spaces/*") && groupId.toLowerCase().contains("spaces/")) return;
-        // CS-4474: ignore create calendar for group of space
+        // ignore create calendar for group of space
         if ((g.lastIndexOf(Utils.SLASH_AST) > -1) && ((g.substring(0, g.lastIndexOf(Utils.SLASH_AST))).equalsIgnoreCase(parentId)))
           return;
       }

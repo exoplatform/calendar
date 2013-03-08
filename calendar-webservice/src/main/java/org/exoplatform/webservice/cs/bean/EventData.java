@@ -16,10 +16,9 @@
  */
 package org.exoplatform.webservice.cs.bean;
 
+import java.util.List;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
-
-import java.util.List;
 
 /**
  * Created by The eXo Platform SAS

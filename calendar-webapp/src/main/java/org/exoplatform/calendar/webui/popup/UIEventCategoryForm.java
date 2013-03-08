@@ -16,6 +16,7 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import javax.jcr.ItemExistsException;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
@@ -36,8 +37,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
-
-import javax.jcr.ItemExistsException;
 
 /**
  * Created by The eXo Platform SARL

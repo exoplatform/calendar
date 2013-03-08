@@ -16,6 +16,15 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
@@ -29,10 +38,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputWithActions;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * Created by The eXo Platform SARL
@@ -81,7 +86,6 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
         }
       }
     }
-    //boolean isCheckFreeTime = getUICheckBoxInput(FIELD_CHECK_TIME).isChecked() ;
     if(newPars.size() > 0) {
       EventQuery eventQuery = new EventQuery() ;
       eventQuery.setFromDate(CalendarUtils.getBeginDay(calendar_)) ;

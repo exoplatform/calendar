@@ -19,6 +19,14 @@
 
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.exoplatform.commons.serialization.api.annotations.Serialized;
 import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.commons.utils.ObjectPageList;
@@ -31,7 +39,12 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
-import org.exoplatform.webui.core.*;
+import org.exoplatform.webui.core.UIApplication;
+import org.exoplatform.webui.core.UIBreadcumbs;
+import org.exoplatform.webui.core.UIComponent;
+import org.exoplatform.webui.core.UIPageIterator;
+import org.exoplatform.webui.core.UIPopupWindow;
+import org.exoplatform.webui.core.UITree;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.event.Event;
@@ -41,9 +54,6 @@ import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
-
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by The eXo Platform SARL
@@ -175,14 +185,6 @@ public class UIUserSelector extends UIForm implements UIPopupComponent
   {
     return uiIterator_.getCurrentPage();
   }
-
-  // update data, review later
-  //  public void init(Collection<String> pars) throws Exception{
-  //    OrganizationService service = getApplicationComponent(OrganizationService.class) ;
-  //    ObjectPageList objPageList = new ObjectPageList(service.getUserHandler().getUserPageList(0).getAll(), 10) ;
-  //    uiIterator_.setPageList(objPageList) ;
-  //    pars_ = pars ;
-  //  }
 
   private List<SelectItemOption<String>> getFilters() throws Exception
   {

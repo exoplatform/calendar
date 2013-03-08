@@ -16,14 +16,13 @@
  */
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.jcr.Node;
+import javax.jcr.Session;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
 
 /**
  * Created by The eXo Platform SAS

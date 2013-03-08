@@ -16,19 +16,18 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Calendar;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Session;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Session;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Calendar;
 
 /**
  * Created by The eXo Platform SARL

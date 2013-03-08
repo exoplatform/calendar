@@ -16,11 +16,10 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.Calendar;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
-
-import java.util.Calendar;
 /**
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen
@@ -29,7 +28,6 @@ import java.util.Calendar;
  */
 
 @ComponentConfig(
-    //lifecycle = UIContainerLifecycle.class,
     template =  "app:/templates/calendar/webui/UIListContainer.gtmpl"
 )
 public class UIListContainer extends UIContainer implements CalendarView {

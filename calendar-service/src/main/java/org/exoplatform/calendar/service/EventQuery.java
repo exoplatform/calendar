@@ -16,9 +16,8 @@
  **/
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.commons.utils.ISO8601;
-
 import javax.jcr.query.Query;
+import org.exoplatform.commons.utils.ISO8601;
 
 /**
  * Created by The eXo Platform SARL
