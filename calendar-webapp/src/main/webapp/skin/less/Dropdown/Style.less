@@ -16,8 +16,8 @@
 
 
 // Arrows
-.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft,
-.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft:after {
+.arrowLeft,
+.arrowLeft:after{
   position: absolute;
   display: inline-block;
   width: 0;
@@ -25,22 +25,22 @@
   border-color: transparent;
   border-style: solid;
 }
-.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft:after {
+.arrowLeft:after{
   content: "";
   z-index: -1;
 }
 
   
-.uiRightClickPopupMenu.CalendarPopupMenu .arrowLeft {
-	top: 50%;
-	left: -@popoverArrowWidth;
-	margin-top: -@popoverArrowWidth;
-	border-width: @popoverArrowWidth @popoverArrowWidth @popoverArrowWidth 0;
+.arrowLeft{
+	top: 50%; 
+	left: -9px;
+	margin-top: -@popoverArrowWidth; 
+	border-width: 9px  9px 9px 0;
 	border-right-color: @popoverArrowColor; 
 	&:after {
-	  border-width: @popoverArrowOuterWidth @popoverArrowOuterWidth @popoverArrowOuterWidth 0;
+	  border-width: 10px 10px 10px 0;
 	  border-right-color: @popoverArrowOuterColor;
-	  bottom: -@popoverArrowOuterWidth;
+	  bottom: -10px;
 	  left: -1px;
 	}
 }
