@@ -229,7 +229,7 @@
 	<% /*Begin Popup Menu - Calendar Actions */ %>
 
 	<div class="uiRightClickPopupMenu CalendarMainPopupMenu dropdown-menu uiDropdownWithIcon" style="display: none ;">
-	  <span class="arrowLeft"></span>
+	  <span class="arrowLeft" style="top: 29%"></span>
 	  <ul class="uiDropDownCal" style="display:block;">
 	    <li>
 	      <a href="<%=uicomponent.event('AddCalendar','id')%>">
