@@ -645,9 +645,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(true, item.getRelevancy() > 0);
     //case could not init url
     assertEquals(Utils.NONE_NAGVIGATION, item.getUrl());
-    StringBuffer sb = new StringBuffer(calEvent.getSummary()) ;
-    if(calEvent.getDescription() != null) sb.append(Utils.SPACE).append(calEvent.getDescription());
-    if(calEvent.getLocation() != null) sb.append(Utils.SPACE).append(calEvent.getLocation());
+    StringBuffer sb = new StringBuffer(Utils.EMPTY_STR) ;
+    if(calEvent.getDescription() != null) sb.append(calEvent.getDescription());
     assertEquals(sb.toString(), item.getExcerpt());
   }
 

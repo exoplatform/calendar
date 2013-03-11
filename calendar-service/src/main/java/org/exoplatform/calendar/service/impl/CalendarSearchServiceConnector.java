@@ -192,7 +192,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           String title = buildValue(Utils.EXO_SUMMARY, iter);
           detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
           String url = CalendarSearchResult.buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
-          String excerpt = buildExcerpt(iter);
+          String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
           String detailValue = Utils.EMPTY_STR;
           String imageUrl = buildImageUrl(iter);
           detail.append(buildDetail(iter));
