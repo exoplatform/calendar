@@ -2985,8 +2985,12 @@ public class JCRDataStorage implements DataStorage {
       // make occurrence
       CalendarEvent occurrence = new CalendarEvent(recurEvent);
 
-      java.util.Calendar startTime = Utils.getInstanceTempCalendar();
-      java.util.Calendar endTime = Utils.getInstanceTempCalendar();
+      TimeZone serverTimeZone = TimeZone.getDefault();
+      TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+      
+      java.util.Calendar startTime = java.util.Calendar.getInstance(userTimeZone);
+      java.util.Calendar endTime = java.util.Calendar.getInstance(userTimeZone);
+      
       startTime.setTimeInMillis(ical4jStart.getTime());
       
       // CAL-351: because ical4j timezone registry always returns null, we need to workaround here by manually correcting the date.
@@ -3004,10 +3008,8 @@ public class JCRDataStorage implements DataStorage {
       // if this occurrence was listed in the exclude list, skip
       if (excludeIds != null && excludeIds.contains(recurId))
         continue;
-
-      TimeZone serverTimeZone = TimeZone.getDefault();
-      TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
-
+      
+      // if server or user timezone uses DST, need to adapt the time occurrence 
       if(serverTimeZone.useDaylightTime() || userTimeZone.useDaylightTime()) {
         adaptTimeToDST(occurrence, recurEvent, serverTimeZone, userTimeZone);    
       }
@@ -3018,36 +3020,50 @@ public class JCRDataStorage implements DataStorage {
 
   }
 
+  // here we need to edit the occurrence to have correct time 
+  // following the DST condition of created date and occur date
   private void adaptTimeToDST(CalendarEvent occurrence, CalendarEvent recurEvent, TimeZone serverTimeZone, TimeZone userTimeZone) {
-    java.util.Calendar from = Utils.getInstanceTempCalendar();
-    java.util.Calendar to = Utils.getInstanceTempCalendar();
+    java.util.Calendar from = java.util.Calendar.getInstance(userTimeZone);
+    java.util.Calendar to = java.util.Calendar.getInstance(userTimeZone);
     from.setTime(occurrence.getFromDateTime());
     to.setTime(occurrence.getToDateTime());
-    int dstServer = serverTimeZone.getDSTSavings() / 3600000;
-    int dstUser = userTimeZone.getDSTSavings() / 3600000;
     
-    if(serverTimeZone.useDaylightTime()) { 
-      // if the created use DST, must update time of the occurrence if the occur date does not use DST
-      if(serverTimeZone.inDaylightTime(recurEvent.getFromDateTime())) {
-        if(!serverTimeZone.inDaylightTime(occurrence.getFromDateTime())) {
-          from.add(java.util.Calendar.HOUR, -dstServer);
-          to.add(java.util.Calendar.HOUR, -dstServer);
-        }
-      } else {
-        // if the created does not use DST, must update time of the occurrence if the occur date uses DST
-        if(serverTimeZone.inDaylightTime(occurrence.getFromDateTime())) {
-          from.add(java.util.Calendar.HOUR, dstServer);
-          to.add(java.util.Calendar.HOUR, dstServer);
-        }
-      }
-    } 
+    Boolean serverUseDst = serverTimeZone.useDaylightTime();
+    Boolean userUseDst = userTimeZone.useDaylightTime();
     
-    if(userTimeZone.useDaylightTime()){
-      // server time zone does not use DST, just need to update when the occur date uses DST with user time zone
-      if(userTimeZone.inDaylightTime(occurrence.getFromDateTime())) {
-        from.add(java.util.Calendar.HOUR, -dstUser);
-        to.add(java.util.Calendar.HOUR, -dstUser);
-      }
+    /* just need to adapt if only 1 of server time zone and user time zone uses DST */
+    
+    if(serverUseDst && !userUseDst) {
+        int dstServer = serverTimeZone.getDSTSavings() / 3600000;
+        // if occur date uses DST
+    	if(serverTimeZone.inDaylightTime(occurrence.getFromDateTime())) {
+    		from.add(java.util.Calendar.HOUR, dstServer);
+    		to.add(java.util.Calendar.HOUR, dstServer);
+    	}
+    	// if original created date of event uses DST
+    	if(serverTimeZone.inDaylightTime(recurEvent.getFromDateTime())) {
+    		from.add(java.util.Calendar.HOUR, -dstServer);
+    		to.add(java.util.Calendar.HOUR, -dstServer);
+    	}
+    }
+    
+    if(!serverUseDst && userUseDst) {
+        int dstUser = userTimeZone.getDSTSavings() / 3600000;
+        
+        Boolean originalUseDst = userTimeZone.inDaylightTime(recurEvent.getFromDateTime()); 
+        Boolean occurenceUseDst = userTimeZone.inDaylightTime(occurrence.getFromDateTime());
+    	
+        // if original created date uses DST but occur date does not use DST
+        if(originalUseDst && !occurenceUseDst) {
+    		from.add(java.util.Calendar.HOUR, dstUser);
+    		to.add(java.util.Calendar.HOUR, dstUser);
+    	}
+    	
+        // if occur date uses DST but original created date does not use DST
+        if(!originalUseDst && occurenceUseDst) {
+    		from.add(java.util.Calendar.HOUR, -dstUser);
+    		to.add(java.util.Calendar.HOUR, -dstUser);
+    	}
     }
     
     occurrence.setFromDateTime(from.getTime());
