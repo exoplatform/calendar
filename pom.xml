@@ -22,7 +22,7 @@
     <module>calendar-extension</module>
     <module>calendar-injector</module>
     <module>calendar-statistics</module>
-    <module>calendar-createcomponent</module>
+    <module>calendar-component-create</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
