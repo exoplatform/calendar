@@ -268,7 +268,10 @@ UICalendarPortlet.prototype.fillData = function(uiform, data) {
 	if(data.calendar)
 		for(i=0; i < calendar.options.length;  i++) {
 			var value = calendar.options[i].value ;
-			calendar.options[i].selected = (value.match(data.calendar) != null);		   
+			if(value.match(data.calendar) != null){
+				calendar.options[i].selected = true;
+				break;
+			}
 		}
 	else
 		for(i=0; i < calendar.options.length;  i++) {			
@@ -3023,7 +3026,6 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
   
   gj(repeatTypeSelectBox).on('change', function() {
     var type = repeatTypeSelectBox.options[repeatTypeSelectBox.selectedIndex].value;
-    console.log(type);
     if (type == "weekly") {
       monthlyType.style.display = 'none';
       weeklyByDay.style.display = '';

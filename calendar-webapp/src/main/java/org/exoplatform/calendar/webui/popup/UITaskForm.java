@@ -126,7 +126,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   private CalendarEvent calendarEvent_ = null ;
   private String errorMsg_ = null ;
   private String errorValues = null ;
-  private String calType_ = "0" ;
+  protected String calType_ = "0" ;
   
   private String oldCalendarId_ = null ;
   private String newCalendarId_ = null ;
@@ -364,8 +364,8 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   public void setSelectedCalendarId(String value) {
     UITaskDetailTab taskDetailTab =  getChildById(TAB_TASKDETAIL) ;
-    value = calType_ + CalendarUtils.COLON + value ;
-    taskDetailTab.getUIFormSelectBoxGroup(UITaskDetailTab.FIELD_CALENDAR).setValue(value) ;
+    String selectedCal = new StringBuffer(calType_).append(CalendarUtils.COLON).append(value).toString();
+    taskDetailTab.getUIFormSelectBoxGroup(UITaskDetailTab.FIELD_CALENDAR).setValue(selectedCal) ;
   }
 
   protected String getTaskCategory() {

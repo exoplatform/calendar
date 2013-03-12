@@ -549,8 +549,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   }
   public void setSelectedCalendarId(String value) {
     UIEventDetailTab eventDetailTab =  getChildById(TAB_EVENTDETAIL) ;
-    value = calType_ + CalendarUtils.COLON + value ;
-    eventDetailTab.getUIFormSelectBoxGroup(UIEventDetailTab.FIELD_CALENDAR).setValue(value) ;
+    String selectedCal = new StringBuffer(calType_).append(CalendarUtils.COLON).append(value).toString();
+    eventDetailTab.getUIFormSelectBoxGroup(UIEventDetailTab.FIELD_CALENDAR).setValue(selectedCal);
     oldCalendarId_ = value ;
   }
 
@@ -2186,7 +2186,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       this.participant = participant;
       User user = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(participant);
       if (user != null) {
-        this.name = user.getDisplayName();
+        this.name = UIEventAttenderTab.getFullname(participant);
         this.email = user.getEmail();
       } else if (participant.matches(CalendarUtils.contactRegex)) {
         this.name = participant.substring(0, participant.lastIndexOf(CalendarUtils.OPEN_PARENTHESIS));
