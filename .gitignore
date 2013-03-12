@@ -20,3 +20,4 @@ pom.xml.versionsBackup
 pom.xml~
 *~
 .DS_Store
+transaction.log
