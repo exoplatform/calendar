@@ -418,6 +418,8 @@ public class Utils {
   public static String  JCR_EXCERPT = "excerpt(.)";
   public static String  JCR_EXCERPT_ROW = "rep:excerpt(.)";
   
+  public static String DATE_FORMAT_RECUR_ID = "yyyyMMdd'T'HHmmss'Z'";
+  
   public final static Map<String, String> SORT_FIELD_MAP = new LinkedHashMap<String, String>(){{
     put(ORDERBY_RELEVANCY, JCR_SCORE);
     put(ORDERBY_DATE, EXO_DATE_CREATED);
@@ -615,5 +617,25 @@ public class Utils {
       sb.append(it.next());
     }
     return sb.toString();
+  }
+  
+  public static Calendar getBeginDay(Calendar cal) {
+    Calendar newCal = (Calendar) cal.clone();
+
+    newCal.set(Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(Calendar.MINUTE, 0) ;
+    newCal.set(Calendar.SECOND, 0) ;
+    newCal.set(Calendar.MILLISECOND, 0) ;
+    return newCal ;
+  }
+  
+  public static Calendar getEndDay(Calendar cal)  {
+    Calendar newCal = (Calendar) cal.clone();    
+    newCal.set(Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(Calendar.MINUTE, 0) ;
+    newCal.set(Calendar.SECOND, 0) ;
+    newCal.set(Calendar.MILLISECOND, 0) ;
+    newCal.add(Calendar.HOUR_OF_DAY, 24) ;
+    return newCal ;
   }
 }

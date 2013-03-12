@@ -2967,7 +2967,7 @@ public class JCRDataStorage implements DataStorage {
     DateList list = recur.getDates(ical4jEventFrom,
                                    period,
                                    net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
-    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+    SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
     format.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     Boolean isDaily = recurEvent.getRepeatType().equals(CalendarEvent.RP_DAILY);
@@ -3003,16 +3003,17 @@ public class JCRDataStorage implements DataStorage {
       endTime.add(java.util.Calendar.MINUTE, diffMinutes);
       occurrence.setToDateTime(endTime.getTime());
       
-      String recurId = format.format(occurrence.getFromDateTime());
-      
-      // if this occurrence was listed in the exclude list, skip
-      if (excludeIds != null && excludeIds.contains(recurId))
-        continue;
-      
       // if server or user timezone uses DST, need to adapt the time occurrence 
       if(serverTimeZone.useDaylightTime() || userTimeZone.useDaylightTime()) {
         adaptTimeToDST(occurrence, recurEvent, serverTimeZone, userTimeZone);    
       }
+      
+      String recurId = format.format(occurrence.getFromDateTime());
+      
+      // if this occurrence was listed in the exclude list, skip
+      if (excludeIds != null && excludeIds.contains(recurId))
+    	  continue;
+      
       occurrence.setRecurrenceId(recurId);
       occurrences.put(recurId, occurrence);
     }
