@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
@@ -680,6 +681,54 @@ public class CalendarWebservice implements ResourceContainer{
     }
   }
   
+  /**
+   * Produces the content of an occurrence of repetitive event basing on its event id and recur id
+   * It requires authentication and permission of the _Users_ group only.
+   * @param eventid The id of the original event
+   * @param recurid The id of the occurrence
+   * @return JSon data type
+   * @throws Exception
+   * 
+   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getOccurrenceEvent
+   */
+  @GET
+  @RolesAllowed("users")
+  @Path("getoccurrence/{eventid}/{recurid}")
+  public Response getOccurrenceEvent(@PathParam("eventid") String eventId, 
+                                     @PathParam("recurid") String recurId) throws Exception {
+    try {
+      if(getCalendarService() instanceof Response) {
+        return (Response) getCalendarService();
+      }
+      
+      String username = ConversationState.getCurrent().getIdentity().getUserId();
+      CalendarSetting calSetting = calendarService.getCalendarSetting(username);
+      String timezoneId = calSetting.getTimeZone();
+      TimeZone timezone = TimeZone.getTimeZone(timezoneId);
+      
+      CalendarEvent orgEvent = calendarService.getEventById(eventId); // the repetitive event of which we need to find the occurrence
+      
+      SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+      Date occurDate = sdf.parse(recurId); // get the date that the occurrence appear in the time table
+      
+      java.util.Calendar cal = java.util.Calendar.getInstance(timezone);
+      cal.setTime(occurDate);
+      
+      java.util.Calendar from = Utils.getBeginDay(cal);
+      java.util.Calendar to = Utils.getEndDay(cal);
+      
+      /* Here we get occurrences of the repetitive event in the occurDate 
+       * so that the result must be <recurId, occurrence> (occurrence: the occurrence event that we are searching for)
+       */
+      Map<String, CalendarEvent> occMap = calendarService.getOccurrenceEvents(orgEvent, from, to, timezoneId);
+      CalendarEvent occEvent = occMap.get(recurId);
+      SingleEvent data = makeSingleEvent(calSetting, occEvent);
+      
+      return Response.ok(data, MediaType.APPLICATION_JSON).cacheControl(cc).build();
+    } catch (Exception e) {
+      return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
+    }
+  }
   /**
    * Provide the end-point to answer or reply an invitation to join any given event by its Id.
    * @param calendarId The calendar Id to which the event belongs.

@@ -2748,10 +2748,13 @@ eXo.calendar.EventTooltip = {
 	    }
 	},
 	editEvent: function(eventNode){				
-	    var eventId = eventNode.getAttribute("eventId");
+		var eventId = eventNode.getAttribute("eventId");
 	    var calendarId = eventNode.getAttribute("calid");
 	    var calendarType = eventNode.getAttribute("caltype");
-	    uiForm.submitEvent(_module.UICalendarPortlet.portletId + '#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType);
+	    var isOccur = eventNode.getAttribute("isOccur");
+	    var recurId = eventNode.getAttribute("recurId");
+	    if (recurId == "null") recurId = "";
+	    uiForm.submitEvent(_module.UICalendarPortlet.portletId + '#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isOccur + '&recurId=' + recurId);		
 	},
 	show: function(evt){
 	    var self = eXo.calendar.EventTooltip;
@@ -2761,7 +2764,14 @@ eXo.calendar.EventTooltip = {
 	    self.getContainer(evt);
 	    self.overTimer = setTimeout(function(){
 		var url = eXo.env.portal.context + "/" + _module.restContext;
-		url += "/cs/calendar/geteventbyid/" + self.currentEvent.getAttribute("eventid");
+		var eventId = self.currentEvent.getAttribute("eventid");
+		var recurId = self.currentEvent.getAttribute("recurid");
+		var isOccur = self.currentEvent.getAttribute("isoccur");
+		if(isOccur == "true" && recurId != "null") { //if the event is belong to a repetitive event
+			url += "/cs/calendar/getoccurrence/" + self.currentEvent.getAttribute("eventid") + "/" + recurId;
+		} else {
+			url += "/cs/calendar/geteventbyid/" + eventId;
+		}
 		self.makeRequest("GET",url);
 	    },self.timer);
 	},

@@ -17,6 +17,7 @@
 
 package org.exoplatform.webservice.cs.rest;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,6 +26,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
@@ -227,6 +229,37 @@ public class TestWebservice extends AbstractResourceTest {
     
     //deleteData(username, calCate.getId());
   }
+  
+  public void testGetOccurrence() throws Exception {
+    //create/get calendar in private folder
+    Calendar cal = createCalendar("myCalendar");
+
+    String extURI = "/cs/calendar/subscribe/" + username + "/" + cal.getId() + "/0";
+
+    cal.setPublicUrl(extURI);
+
+    calendarService.saveUserCalendar(username, cal, true);
+
+    java.util.Calendar fromTime = java.util.Calendar.getInstance();
+    java.util.Calendar toTime = java.util.Calendar.getInstance();
+    toTime.add(java.util.Calendar.HOUR, 1);
+    
+    CalendarEvent event = createEvent("newEvent", cal.getId(), fromTime.getTime(), toTime.getTime(), CalendarEvent.TYPE_EVENT);
+    event.setRepeatType(CalendarEvent.RP_DAILY);
+    calendarService.saveUserEvent(extURI, cal.getId(), event, true);
+
+    SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    String recurId = sdf.format(fromTime.getTime());
+
+    String eventURI = "/cs/calendar/getoccurrence/" + event.getId() + "/" + recurId;
+
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service("GET", eventURI, baseURI, h, null, writer);
+
+    assertNotNull(response);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+  }
+  
   public void testGetCalendars() throws Exception {
 
     //create/get calendar in private folder
