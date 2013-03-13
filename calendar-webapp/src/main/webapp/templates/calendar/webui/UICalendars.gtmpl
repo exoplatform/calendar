@@ -75,7 +75,7 @@
 	        {
 		        if (uicomponent.getChildById(calendar.getId()) == null) continue;
 				   	def calendarId   = calendar.id ;
-		        def calendarName = uicomponent.truncateLongName(calendar.name) ;
+		        def calendarName = calendar.name;
 		        def color        = calendar.calendarColor ;
 		        def icon         = "CalendarIcon" ;
 		        def isRemote     = uicomponent.isRemoteCalendar(calendarId) ;
@@ -169,7 +169,7 @@
 	        {
 		        if (uicomponent.getChildById(calendar.getId()) == null) continue
 	          def calendarId   = calendar.id ;
-		        def calendarName = uicomponent.truncateLongName(calendar.name) ;
+		        def calendarName = calendar.name;
 		        def css          = "iconCheckBox checkbox" ;
 		        def color        = calendar.calendarColor ;
 		        def isEditable   = uicomponent.canEdit(calendar.getEditPermission(), checkPerms) ;
