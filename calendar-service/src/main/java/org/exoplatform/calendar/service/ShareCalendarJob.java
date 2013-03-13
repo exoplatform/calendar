@@ -58,21 +58,21 @@ public class ShareCalendarJob implements Job, InterruptableJob {
       String calendarId = jobDataMap.getString(Utils.CALENDAR_ID);
       List<String> sharedGroups = (List<String>) jobDataMap.get(Utils.SHARED_GROUPS);
 
+      OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
       CalendarService calendarService = (CalendarService) PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
       
       Calendar cal = calendarService.getUserCalendar(user, calendarId);
       
       String calendarName = cal.getName();
       
-      String startMessage = Utils.buildMessageToSend(Utils.START_SHARE, calendarName, sharedGroups);
-      String stopMessage = Utils.buildMessageToSend(Utils.FINISH_SHARE, calendarName, sharedGroups);
+      String startMessage = Utils.buildMessageToSend(Utils.START_SHARE, calendarName, sharedGroups, oService);
+      String stopMessage = Utils.buildMessageToSend(Utils.FINISH_SHARE, calendarName, sharedGroups, oService);
       
       ContinuationService continuation = (ContinuationService) PortalContainer.getInstance()
           .getComponentInstanceOfType(ContinuationService.class);
       //send notification about starting sharing job
       continuation.sendMessage(user, Utils.SHARE_CAL_CHANEL, startMessage);
       
-      OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
 
       Map<String, String> perms = new HashMap<String, String>() ;
       Map<String, String> sharedUsers  = new HashMap<String, String>() ;

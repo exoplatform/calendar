@@ -63,8 +63,8 @@ public class DeleteShareJob implements Job, InterruptableJob{
       
       String calendarName = cal.getName();
       
-      String startMessage  = Utils.buildMessageToSend(Utils.START_UN_SHARE, calendarName, unSharedGroups);
-      String stopMessage = Utils.buildMessageToSend(Utils.FINISH_UN_SHARE, calendarName, unSharedGroups);
+      String startMessage  = Utils.buildMessageToSend(Utils.START_UN_SHARE, calendarName, unSharedGroups, oService);
+      String stopMessage = Utils.buildMessageToSend(Utils.FINISH_UN_SHARE, calendarName, unSharedGroups, oService);
       // send notification about un-sharing job
       continuation.sendMessage(username, Utils.SHARE_CAL_CHANEL, startMessage);
      

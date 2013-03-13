@@ -21,13 +21,16 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import javax.jcr.Node;
 import javax.jcr.Session;
+
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -538,11 +541,8 @@ public class Utils {
     if (calendar.getEditPermission() != null)
       for (String editPer : calendar.getEditPermission()) {
         if (editPer.contains(Utils.SLASH)) {
-          if (organizationService.getGroupHandler().findGroupById(editPer) != null) {
-            for (User user : organizationService.getUserHandler().findUsersByGroup(editPer).getAll()) {
-              sharedUsers.add(user.getUserName());
-            }
-          }
+          // edit permision has form: groupId/:membership, for ex: /platform/user/:*.* or /platform/:*.member
+          sharedUsers.addAll(getUsersCanEdit(editPer));
         } else {
           sharedUsers.add(editPer);
         }
@@ -603,8 +603,15 @@ public class Utils {
     SessionProviderService sessionProviderService = (SessionProviderService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SessionProviderService.class);
     return sessionProviderService.getSystemSessionProvider(null);
   }
-
-  public static String buildMessageToSend(String type, String calendarName, List<String> groups) {
+  
+  /**
+   * build message about job sharing calendar for groups
+   * @param type The type can be: share,un-share,finishShare,finishUnShare
+   * @param calendarName
+   * @param groups Groups that are shared/un-shared
+   * @return String in form [type, calendarName, group1, group2,..]
+   */
+  public static String buildMessageToSend(String type, String calendarName, List<String> groups, OrganizationService oService) throws Exception {
     StringBuilder sb = new StringBuilder("");
     sb.append(type);
     sb.append(",");
@@ -612,8 +619,80 @@ public class Utils {
     Iterator<String> it = groups.iterator();
     while (it.hasNext()) {
       sb.append(",");
-      sb.append(it.next());
+      String groupId = it.next();
+      Group group = oService.getGroupHandler().findGroupById(groupId);
+      sb.append(group.getGroupName());
     }
     return sb.toString();
+  }
+  public static Calendar getBeginDay(Calendar cal) {
+    Calendar newCal = (Calendar) cal.clone();
+
+    newCal.set(Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(Calendar.MINUTE, 0) ;
+    newCal.set(Calendar.SECOND, 0) ;
+    newCal.set(Calendar.MILLISECOND, 0) ;
+    return newCal ;
+  }
+  
+  public static Calendar getEndDay(Calendar cal)  {
+    Calendar newCal = (Calendar) cal.clone();    
+    newCal.set(Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(Calendar.MINUTE, 0) ;
+    newCal.set(Calendar.SECOND, 0) ;
+    newCal.set(Calendar.MILLISECOND, 0) ;
+    newCal.add(Calendar.HOUR_OF_DAY, 24) ;
+    return newCal ;
+  }
+  
+  /**
+   * get list of user by membership id and group id
+   * example of membership id: validator, group id: /platform/users
+   * @param membershipId
+   * @param groupId
+   * @return
+   * @throws Exception
+   */
+  public static Set<String> getUserByMembershipId(String membershipId, String groupId) throws Exception
+  {
+    OrganizationService organizationService = (OrganizationService)PortalContainer.getInstance().
+        getComponentInstance(OrganizationService.class) ;
+    List<User> usersInGroup = organizationService.getUserHandler().findUsersByGroup(groupId).getAll();
+    Set<String> userIds = new HashSet<String>();
+    
+    if (usersInGroup == null) return userIds;
+    
+    if("*".equals(membershipId)) { // if membership id is "*" that means we get all users in the group
+      for(User user : usersInGroup.toArray(new User[]{})) {
+        userIds.add(user.getUserName());
+      }
+      return userIds;
+    } else {
+      for (User user : usersInGroup.toArray(new User[]{}))
+      {
+        Membership membership = organizationService.getMembershipHandler().findMembershipByUserGroupAndType(user.getUserName(),
+            groupId, membershipId);
+        if (membership != null) {
+          userIds.add(user.getUserName());
+        }
+      }
+      return userIds;
+    }
+    
+  }
+  /**
+   * gets users by edit permission 
+   * @param editPer in form groupid/:*.membershipId for ex: /platform/user/:*.*
+   * @return
+   * @throws Exception
+   */
+  public static List<String> getUsersCanEdit(String editPer) throws Exception {
+    List<String> result = new ArrayList<String>();
+    String[] perArr = editPer.split(":");
+    String membershipId = perArr[1].substring(2);
+    String groupId = perArr[0].substring(0, perArr[0].length() - 1);
+    Set<String> usersCanEdit = getUserByMembershipId(membershipId, groupId);
+    result.addAll(usersCanEdit);
+    return result;
   }
 }
