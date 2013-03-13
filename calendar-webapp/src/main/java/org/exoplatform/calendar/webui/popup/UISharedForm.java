@@ -28,6 +28,7 @@ import java.util.Set;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendars;
 import org.exoplatform.container.PortalContainer;
@@ -381,34 +382,6 @@ public class UISharedForm extends UIForm implements UIPopupComponent
   }
 
   /**
-   * get list of user by membership id and group id
-   * example of membership id: validator, group id: /platform/users
-   *
-   * @param membershipId
-   * @param groupId
-   * @return
-   * @throws Exception
-   */
-  private static Set<String> getUserByMembershipId(String membershipId, String groupId) throws Exception
-  {
-    OrganizationService organizationService = CalendarUtils.getOrganizationService();
-    List<User> usersInGroup = organizationService.getUserHandler().findUsersByGroup(groupId).getAll();
-    Set<String> userIds = new HashSet<String>();
-    if (usersInGroup == null) return userIds;
-
-    for (User user : usersInGroup.toArray(new User[]{}))
-    {
-      Membership membership = organizationService.getMembershipHandler().findMembershipByUserGroupAndType(user.getUserName(),
-          groupId, membershipId);
-      if (membership != null) {
-        userIds.add(user.getUserName());
-      }
-    }
-
-    return userIds;
-  }
-
-  /**
    * check edit permission of user on shared calendar
    *
    * @param calendar
@@ -437,7 +410,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
       if (owner.getOwnerType().equals(PermissionOwner.MEMBERSHIP_OWNER))
       {
-        users.addAll(getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
+        users.addAll(Utils.getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
         continue;
       }
     }
@@ -493,7 +466,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
         if (owner.getOwnerType().equals(PermissionOwner.MEMBERSHIP_OWNER))
         {
-          sharedUsers.addAll(UISharedForm.getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
+          sharedUsers.addAll(Utils.getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
           continue;
         }
       }
@@ -544,7 +517,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
         if (owner.getOwnerType().equals(PermissionOwner.MEMBERSHIP_OWNER))
         {
-          oldSharedUsers.addAll(sharedForm.getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
+          oldSharedUsers.addAll(Utils.getUserByMembershipId(owner.getMembership(), owner.getGroupId()));
           continue;
         }
       }
