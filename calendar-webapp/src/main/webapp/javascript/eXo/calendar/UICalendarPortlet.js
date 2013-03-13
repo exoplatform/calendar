@@ -617,6 +617,7 @@ UICalendarPortlet.prototype.checkLayout = function(){
 	_module.LayoutManager.switchCallback = _module.UICalendarPortlet.switchLayoutCallback;
 	_module.LayoutManager.resetCallback = _module.UICalendarPortlet.resetLayoutCallback;
 	_module.LayoutManager.check();
+	gj('#ShowHideAll').find('i').css('display','block');
 };
 
 /** 
