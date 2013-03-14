@@ -551,7 +551,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     UIEventDetailTab eventDetailTab =  getChildById(TAB_EVENTDETAIL) ;
     String selectedCal = new StringBuffer(calType_).append(CalendarUtils.COLON).append(value).toString();
     eventDetailTab.getUIFormSelectBoxGroup(UIEventDetailTab.FIELD_CALENDAR).setValue(selectedCal);
-    oldCalendarId_ = value ;
+    oldCalendarId_ = selectedCal ;
   }
 
   protected String getEventCategory() {
