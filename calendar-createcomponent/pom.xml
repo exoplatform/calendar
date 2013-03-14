@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>calendar</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0-Beta2</version>
     <groupId>org.exoplatform.calendar</groupId>
   </parent>
   <artifactId>calendar-component-create</artifactId>
