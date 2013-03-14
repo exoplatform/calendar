@@ -2,7 +2,7 @@
 <!DOCTYPE configuration SYSTEM "http://www.exoplatform.org/dtd/indexing-configuration-1.0.dtd">
 <configuration xmlns:exo="http://www.exoplatform.com/jcr/exo/1.0">
 
-	<!-- FORUM: Events AND Tasks -->
+	<!-- Events AND Tasks -->
 	<index-rule nodeType="exo:calendarEvent"> 
 		<!-- Event: title -->
   		<property boost="3.0">exo:summary</property>
