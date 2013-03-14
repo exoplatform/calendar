@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import org.exoplatform.calendar.service.Calendar;
@@ -50,6 +52,7 @@ import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.log.ExoLogger;
@@ -76,6 +79,8 @@ import org.quartz.impl.triggers.SimpleTriggerImpl;
  */
 public class CalendarServiceImpl implements CalendarService, Startable {
 
+  private final AtomicBoolean                 isRBLoaded_           = new AtomicBoolean(); 
+  
   private ResourceBundle                      rb_;
 
   private ResourceBundleService               rbs_;
@@ -92,8 +97,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);
 
-  public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs) throws Exception {
-    storage_ = new JCRDataStorage(nodeHierarchyCreator, reposervice);
+  public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs, CacheService cservice) throws Exception {
+    storage_ = new JCRDataStorage(nodeHierarchyCreator, reposervice, cservice);
     calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(storage_));
     calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(storage_));
     remoteCalendarService = new RemoteCalendarServiceImpl(storage_);
@@ -103,7 +108,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     Utils.EVENT_NUMBER = Integer.parseInt(eventNumber);
   }
 
-
+  public JCRDataStorage getDataStorage() {
+    return storage_;
+  } 
+  
   /**
    * {@inheritDoc}
    */
@@ -115,11 +123,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception {
-    try {
-      rb_ = rbs_.getResourceBundle(Utils.RESOURCEBUNDLE_NAME, Locale.getDefault());
-    } catch (MissingResourceException e) {
-      rb_ = null;
-    }
     return storage_.getUserCalendars(username, isShowAll);
   }
 
@@ -487,23 +490,29 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   public ResourceBundle getResourceBundle() throws Exception {
+    if (!isRBLoaded_.get()) {
+      synchronized (isRBLoaded_) {
+        if (!isRBLoaded_.get()) {
+          try {
+            rb_ = rbs_.getResourceBundle(Utils.RESOURCEBUNDLE_NAME, Locale.getDefault());
+          } catch (MissingResourceException e) {
+            rb_ = null;
+          }
+          isRBLoaded_.set(true);
+        }
+      }
+    } 
     return rb_;
   }
 
-  public EventCategory getEventCategoryByName(String username, String eventCategoryName) throws Exception {    
+  public EventCategory getEventCategoryByName(String username, String eventCategoryName) throws Exception {   
+    ResourceBundle rb = getResourceBundle(); 
     for (EventCategory ev : storage_.getEventCategories(username)) {
       if (ev.getName().equalsIgnoreCase(eventCategoryName)) {
         return ev;
-      } else {
-        try {
-          ResourceBundle rb = null;
-          rb = rbs_.getResourceBundle(Utils.RESOURCEBUNDLE_NAME, Locale.getDefault());
-          if (eventCategoryName.equalsIgnoreCase(rb.getString("UICalendarView.label." + ev.getId())))
-            return ev;
-        } catch (MissingResourceException e) {
-          continue;
-        }
-      }
+      }  else if (rb != null && eventCategoryName.equalsIgnoreCase(rb.getString("UICalendarView.label." + ev.getId()))) {
+        return ev;
+      } 
     }
     return null;
   }
@@ -559,18 +568,15 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     storage_.autoShareCalendar(groups, userName);
   }
 
-  @Override
   public void addEventListenerPlugin(CalendarEventListener listener) throws Exception {
     eventListeners_.add(listener);
   }
 
-  @Override
   public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
     storage_.assignGroupTask(taskId, calendarId, assignee);
 
   }
 
-  @Override
   public void setGroupTaskStatus(String taskId, String calendarId, String status) throws Exception {
     storage_.setGroupTaskStatus(taskId, calendarId, status);
   }
@@ -578,7 +584,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  @Override
   public boolean isRemoteCalendar(String username, String calendarId) throws Exception {
     return storage_.isRemoteCalendar(username, calendarId);
   }
@@ -586,7 +591,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  @Override
   public boolean isValidRemoteUrl(String url, String type, String remoteUser, String remotePassword) throws Exception {
     return remoteCalendarService.isValidRemoteUrl(url, type, remoteUser, remotePassword);
   }
@@ -594,7 +598,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  @Override
   public Calendar updateRemoteCalendarInfo(RemoteCalendar remoteCalendar) throws Exception {
     return storage_.updateRemoteCalendarInfo(remoteCalendar);
   }
@@ -609,7 +612,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  @Override
   public Calendar importRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception {
     return remoteCalendarService.importRemoteCalendar(remoteCalendar);
   }
@@ -617,7 +619,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  @Override
   public RemoteCalendar getRemoteCalendar(String owner, String calendarId) throws Exception {
     return storage_.getRemoteCalendar(owner, calendarId);
   }
@@ -625,7 +626,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  @Override
   public RemoteCalendarService getRemoteCalendarService() throws Exception {
     return remoteCalendarService;
   }
@@ -700,7 +700,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * (non-Javadoc)
    * @see org.exoplatform.calendar.service.CalendarService#getOccurrenceEvents(org.exoplatform.calendar.service.CalendarEvent, java.util.Calendar, java.util.Calendar)
    */
-  @Override
   public Map<String, CalendarEvent> getOccurrenceEvents(CalendarEvent recurEvent, java.util.Calendar from, java.util.Calendar to, String timezone) throws Exception {
     return storage_.getOccurrenceEvents(recurEvent, from, to, timezone);
   }
@@ -709,7 +708,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * (non-Javadoc)
    * @see org.exoplatform.calendar.service.CalendarService#updateOccurrenceEvent(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List, java.lang.String)
    */
-  @Override
   public void updateOccurrenceEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception {
     // keep map of old events to compare
     Map<String,  CalendarEvent> oldEventList = new HashMap<String, CalendarEvent>();
@@ -736,7 +734,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     }
   }
 
-  @Override
   public List<CalendarEvent> getOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception {
     return storage_.getOriginalRecurrenceEvents(username, from, to, publicCalendarIds);
   }
@@ -745,7 +742,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * (non-Javadoc)
    * @see org.exoplatform.calendar.service.CalendarService#getExceptionEvents(org.exoplatform.calendar.service.CalendarEvent)
    */
-  @Override
   public List<CalendarEvent> getExceptionEvents(String username, CalendarEvent recurEvent) throws Exception {
     return storage_.getExceptionEvents(username, recurEvent);
   }
@@ -754,7 +750,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * (non-Javadoc)
    * @see org.exoplatform.calendar.service.CalendarService#removeRecurrenceSeries(java.lang.String, org.exoplatform.calendar.service.CalendarEvent)
    */
-  @Override
   public void removeRecurrenceSeries(String username, CalendarEvent originalEvent) throws Exception {
     storage_.removeRecurrenceSeries(username, originalEvent);
     if(originalEvent.getActivityId() != null) {
@@ -768,7 +763,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * (non-Javadoc)
    * @see org.exoplatform.calendar.service.CalendarService#updateRecurrenceSeries(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List, java.lang.String)
    */
-  @Override
   public void updateRecurrenceSeries(String fromCalendar, String toCalendar, String fromType, String toType, CalendarEvent occurrence, String username) throws Exception {
     CalendarEvent oldEvent = getGroupEvent(occurrence.getId());
     if (oldEvent == null) oldEvent = getEvent(username, occurrence.getId());
@@ -795,7 +789,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * (non-Javadoc)
    * @see org.exoplatform.calendar.service.CalendarService#getSharedEvent(java.lang.String, java.lang.String, java.lang.String)
    */
-  @Override
   public CalendarEvent getSharedEvent(String username, String calendarId, String eventId) throws Exception {
     return storage_.getSharedEvent(username, calendarId, eventId);
   }
@@ -804,7 +797,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * (non-Javadoc)
    * @see org.exoplatform.calendar.service.CalendarService#removeOccurrenceInstance(java.lang.String, org.exoplatform.calendar.service.CalendarEvent)
    */
-  @Override
   public void removeOccurrenceInstance(String username, CalendarEvent occurrence) throws Exception {
     storage_.removeOccurrenceInstance(username, occurrence);
 
@@ -876,7 +868,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return (repetitiveEvent.getExcludeId().length == numberOfOccurrences);
   }
 
-  @Override
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception {
     return storage_.searchHighlightRecurrenceEvent(username, eventQuery, publicCalendarIds, timezone);
   }
@@ -957,7 +948,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return false;
   }
 
-  @Override
   public CalendarEvent getEventById(String eventId) throws Exception {
     return storage_.getEventById(eventId);
   }
@@ -966,5 +956,18 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   @Override
   public Calendar getCalendarById(String calId) throws Exception {
     return storage_.getCalendarById(calId);
+  }  
+  /**
+   * @see org.exoplatform.calendar.service.CalendarService#autoShareCalendar(java.util.List, java.lang.String)
+   */
+  public void autoShareCalendar(List<String> groupsOfUser, String reciever) throws Exception {
+    storage_.autoShareCalendar(groupsOfUser, reciever);
+  }
+
+  /**
+   * @see org.exoplatform.calendar.service.CalendarService#autoRemoveShareCalendar(java.lang.String, java.lang.String)
+   */
+  public void autoRemoveShareCalendar(String groupId, String username) throws Exception {
+    storage_.autoRemoveShareCalendar(groupId, username);
   }
 }
