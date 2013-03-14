@@ -51,7 +51,7 @@
               <property name="jgroups-multiplexer-stack" value="false" />
               <property name="jbosscache-shareable" value="true" />
               <property name="max-volatile-time" value="60" />
-              <property name="indexing-configuration-path" value="war:/cs-extension/jcr/indexing-configuration.xml" />
+              <property name="indexing-configuration-path" value="war:/calendar-extension/jcr/indexing-configuration.xml" />
             </properties>
           </query-handler>
           
