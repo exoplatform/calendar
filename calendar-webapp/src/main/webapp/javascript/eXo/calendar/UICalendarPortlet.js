@@ -2064,7 +2064,8 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
 
 };
 
-UICalendarPortlet.prototype.isAllday = function(form,selecedCalendarID){
+// init script for UIEventDetailTab
+UICalendarPortlet.prototype.initDetailTab = function(form,selecedCalendarID){
   try {
       if (typeof(form) == "string") 
           form = _module.UICalendarPortlet.getElementById(form);
@@ -2078,6 +2079,16 @@ UICalendarPortlet.prototype.isAllday = function(form,selecedCalendarID){
               break;
           }
       }
+      
+      // assign event when user change time by typing
+      var UIComboboxInputs = gj(form).find("input.UIComboboxInput");
+      for(var i = 0; i < UIComboboxInputs.length; i++) {
+    	  gj(UIComboboxInputs[i]).live('change', function() {
+    		  _module.ScheduleSupport.syncTimeBetweenEventTabs();
+    		  _module.ScheduleSupport.applyPeriod();
+    	  });
+      }
+      
      /**
        * Preselect calendar when add event/task
        */
@@ -2304,9 +2315,8 @@ UICalendarPortlet.prototype.checkAllInBusy = function(chk){
     }
 };
 
-/**
- * Sets up checking free/busy
- * @param {Object} container DOM element contains event data
+/*
+ * Init scripts for Schedule tab
  */
 UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone){
     if (typeof(container) == "string") 

@@ -41,7 +41,7 @@
   def requireJS = rcontext.getJavascriptManager().getRequireJS();
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.require("SHARED/jquery","gj");
-  requireJS.addScripts('cal.UICalendarPortlet.isAllday("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
+  requireJS.addScripts('cal.UICalendarPortlet.initDetailTab("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
   requireJS.addScripts("cal.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
   requireJS.addScripts("gj('#UIEventDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
 
