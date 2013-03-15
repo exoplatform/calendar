@@ -1635,7 +1635,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
     toCal.set(2013, 2, 7, 6, 30);
 
+    Calendar calendar = createCalendar(username, "unified search test");
     CalendarEvent recurEvent = new CalendarEvent();
+    recurEvent.setSummary("repeated past");
     recurEvent.setFromDateTime(fromCal.getTime());
     recurEvent.setToDateTime(toCal.getTime());
     recurEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
@@ -1646,17 +1648,32 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     java.util.Calendar to = java.util.Calendar.getInstance(tz);
     from.set(2013, 2, 1, 0, 0, 0);
     to.set(2013, 2, 12, 0, 0, 0);
+    
+    calendarService_.saveUserCalendar(username, calendar, true);
+    calendarService_.saveUserEvent(username, calendar.getId(), recurEvent, true);
     Map<String, CalendarEvent> occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
 
     assertEquals(1, occMap.size());
-
+    
     CalendarEvent occEvent = occMap.get(occMap.keySet().iterator().next());
     java.util.Calendar occCal = java.util.Calendar.getInstance(tz);
     occCal.setTime(occEvent.getFromDateTime());
-
+    
     assertEquals(occCal.get(java.util.Calendar.DATE), 7);
     assertEquals(occCal.get(java.util.Calendar.MONTH), 2);
     assertEquals(occCal.get(java.util.Calendar.YEAR), 2013);
+    
+    EventQuery query = new UnifiedQuery() ;
+    query.setQueryType(Query.SQL);
+    query.setText("past") ;
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertNotNull(result) ;
+    assertEquals(1, result.size());
+    calendarService_.removeUserEvent(username, calendar.getId(), recurEvent.getId());
+    calendarService_.removeUserCalendar(username, calendar.getId());
   }
 
   /**
