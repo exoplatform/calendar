@@ -6,7 +6,9 @@
 %>
 <div class="uiCalendarViewContainer" id="$uicomponent.id" style="position: relative;">
 <% if(!uicomponent.isInSpace()){%>
-<div id="ShowHideAll" class="resizeButton "  style="position: absolute; top: 0px; left: -8px; width: 3px; height:500px; "><i class="uiIconMiniArrowLeft uiIconLightGray"></i></div>
+<div id="ShowHideAll" class="resizeButton "  style="position: absolute; top: 0px; left: -8px; width: 3px; height:500px; ">
+  <i class="uiIconMiniArrowLeft uiIconLightGray" style="display:none;"></i>
+</div>
 <%}%>
   <%
     List children = uicomponent.getChildren() ;

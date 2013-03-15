@@ -64,12 +64,16 @@ CalendarLayout.prototype.loadDOMElements = function() {
 };
 
 CalendarLayout.prototype.updateCalendarContainerLayout = function() {
-  this.loadDOMElements();
-  if (this.layoutcookie.indexOf("1") >= 0) {
-    this.collapseCalendarContainer();
-  } else {
-    this.expandCalendarContainer();
-  }
+	this.loadDOMElements();
+	var arrowIcon = gj("#ShowHideAll").find('i');
+	if (this.layoutcookie.indexOf("1") >= 0) {
+		arrowIcon.attr('class','uiIconMiniArrowRight');
+		arrowIcon.css('display','block');
+		this.collapseCalendarContainer();
+
+	} else {
+		this.expandCalendarContainer();
+	}
 };
 
 

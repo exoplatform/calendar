@@ -2678,11 +2678,7 @@ public class JCRDataStorage implements DataStorage {
     for (Value v : editValues) {
       String value = v.getString();
       if (value.contains(Utils.SLASH)) {
-        if (oService.getGroupHandler().findGroupById(value) != null) {
-          for (User user : oService.getUserHandler().findUsersByGroup(value).getAll()) {
-            editPerms.add(user.getUserName());
-          }
-        }
+        editPerms.addAll(Utils.getUsersCanEdit(value));
       } else {
         editPerms.add(value);
       }

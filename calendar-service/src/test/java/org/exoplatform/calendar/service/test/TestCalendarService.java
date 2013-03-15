@@ -1825,15 +1825,42 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     }
   }
 
-  public void test() {
-    try {
-    } catch (Exception e) {
+  public void testShareCalendarWithEditPermission() throws Exception {
+    Calendar cal = createCalendar("test share", "test sharing with edit permission");
+    
+    List<String> sharedUsers = new ArrayList<String>();
+    
+    // need to update these below values if test-portal-configuration.xml is changed
+    String sharedUser = "mary";
+    String sharedGroup = "/platform/guests/:*.*"; // demo is a member
+    String sharedMemberShip = "/organization/management/executive-board/:*.manager"; // john is a member
+    
+    String[] sharedList = new String[]{sharedUser, sharedGroup, sharedMemberShip};
+    
+    // test share for user with edit permission
+    cal.setViewPermission(sharedList);
+    cal.setEditPermission(sharedList);
+    
+    sharedUsers.add(sharedUser);
+    sharedUsers.addAll(Utils.getUsersCanEdit(sharedGroup));
+    sharedUsers.addAll(Utils.getUsersCanEdit(sharedMemberShip));
+    
+    calendarService_.saveUserCalendar(username, cal, false);
+    calendarService_.shareCalendar(username, cal.getId(), sharedUsers);
+    
+    CalendarEvent eventByMary = newEvent("mary");
+    CalendarEvent eventByJohn = newEvent("john");
+    CalendarEvent eventByDemo = newEvent("demo");
+    
+    try{
+      calendarService_.saveEventToSharedCalendar("john", cal.getId(), eventByJohn, true);
+      calendarService_.saveEventToSharedCalendar("mary", cal.getId(), eventByMary, true);
+      calendarService_.saveEventToSharedCalendar("demo", cal.getId(), eventByDemo, true);
+    } catch(Exception e) {
       fail();
-    } 
+    }
   }
-
-
-
+  
   private Calendar createSharedCalendar(String name, String description) {
     try {
       Calendar sharedCalendar = new Calendar();
@@ -1984,5 +2011,15 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     icalOutputStream.close();
     icalInputStream.close();
     calendarService_.removeUserCalendar(username, calendarId);
+  }
+  
+  private CalendarEvent newEvent(String summary) {
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary(summary);
+    java.util.Calendar from = java.util.Calendar.getInstance();
+    event.setFromDateTime(from.getTime());
+    from.add(java.util.Calendar.HOUR, 1);
+    event.setToDateTime(from.getTime());
+    return event;
   }
 }
