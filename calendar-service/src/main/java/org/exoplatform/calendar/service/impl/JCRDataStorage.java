@@ -442,7 +442,12 @@ public class JCRDataStorage implements DataStorage {
     if (!isShowAll && defaultFilterCalendars != null
         && Arrays.asList(defaultFilterCalendars).contains(calNode.getName()))
       return calendar;
-    calendar = new Calendar();
+    calendar = getCalendarFromNode(calNode);
+    return calendar;
+  }
+  
+  private Calendar getCalendarFromNode(Node calNode) throws Exception{
+   Calendar calendar = new Calendar();
     if (calNode.hasProperty(Utils.EXO_ID))
       calendar.setId(calNode.getProperty(Utils.EXO_ID).getString());
     if (calNode.hasProperty(Utils.EXO_NAME))
@@ -4382,6 +4387,21 @@ public class JCRDataStorage implements DataStorage {
     NodeIterator nodesIt = result.getNodes();
     if(nodesIt.hasNext()) {
       return getEvent(nodesIt.nextNode());
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public Calendar getCalendarById(String calId) throws Exception {
+    Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+    QueryManager queryManager = calendarApp.getSession().getWorkspace().getQueryManager();
+    String sql = "select * from exo:calendar where exo:id=" + "\'" + calId + "\'";
+    Query query = queryManager.createQuery(sql, Query.SQL);
+    QueryResult result = query.execute();
+    NodeIterator nodesIt = result.getNodes();
+    if(nodesIt.hasNext()) {
+      return getCalendarFromNode(nodesIt.nextNode());
     } else {
       return null;
     }

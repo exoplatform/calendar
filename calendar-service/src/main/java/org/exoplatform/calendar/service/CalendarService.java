@@ -699,6 +699,8 @@ public interface CalendarService {
   public boolean isGroupBeingShared(String deletedGroup, JobSchedulerServiceImpl schedulerService_) throws Exception;
   
   public CalendarEvent getEventById(String eventId) throws Exception;
+  
+  public Calendar getCalendarById(String calId) throws Exception;
 
 }
 

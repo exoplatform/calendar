@@ -18,8 +18,11 @@ package org.exoplatform.calendar.webui;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -191,16 +194,10 @@ public class UICalendarPortlet extends UIPortletApplication {
       String inviter = params[0];
       String eventId = params[1];
       int calType = Integer.parseInt(params[2]);
-      CalendarEvent event = null;
-      if (calType == org.exoplatform.calendar.service.Calendar.TYPE_PUBLIC) {
-        event = calService.getGroupEvent(eventId);
-      }
-      else {
-        event = calService.getEvent(inviter, eventId) ;
-      }
-
+      CalendarEvent event = calService.getEventById(eventId);
       if (event != null) {
         // update status
+        event.setCalType(String.valueOf(calType));
         calService.confirmInvitation(inviter, user.getEmail(), username, calType, event.getCalendarId(), eventId, Utils.ACCEPT);
         // pop-up event form
         UIPopupAction uiParentPopup = this.getChild(UIPopupAction.class);
@@ -222,36 +219,21 @@ public class UICalendarPortlet extends UIPortletApplication {
     }
 
     if (url.contains(CalendarUtils.INVITATION_DETAIL_URL)) {
-
       // open event on source calendar to view
       url = url.substring(url.indexOf(CalendarUtils.INVITATION_DETAIL_URL) + CalendarUtils.INVITATION_DETAIL_URL.length());
       String[] params = url.split("/");
       String inviter = params[0];
       String eventId = params[1];
       int calType = Integer.parseInt(params[2]);
-
-      org.exoplatform.calendar.service.Calendar calendar = null;
-      CalendarEvent event = null;
-
-      if (calType == org.exoplatform.calendar.service.Calendar.TYPE_PRIVATE || calType == org.exoplatform.calendar.service.Calendar.TYPE_SHARED) {
-        event = calService.getEvent(inviter, eventId) ;
-        String calendarId = event.getCalendarId();
-        calendar = calService.getUserCalendar(inviter, calendarId);
-      }
-      else {
-        if (calType == org.exoplatform.calendar.service.Calendar.TYPE_PUBLIC) {
-          event = calService.getGroupEvent(eventId);
-          String calendarId = event.getCalendarId();
-          calendar = calService.getGroupCalendar(calendarId);
-        }
-      }
+      CalendarEvent event = calService.getEventById(eventId);
+      event.setCalType(String.valueOf(calType));
+      org.exoplatform.calendar.service.Calendar calendar = calService.getCalendarById(event.getCalendarId());
       if (calendar == null)
       {
         context.getUIApplication().addMessage(
                                               new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
         return ;
       }
-
       openEventPreviewPopup(event, context);
     }
   }
@@ -267,27 +249,15 @@ public class UICalendarPortlet extends UIPortletApplication {
    */
   private void processEventDetailsURL(WebuiRequestContext webuiRequestContext, String eventId) throws Exception
   {
-    /* check if we are allowed to open preview for event, if not do not open popup */
-    if (UIPreview.isClosed == true) { UIPreview.isClosed = false; return; }
-
-    String username = CalendarUtils.getCurrentUser();
     CalendarService calService = CalendarUtils.getCalendarService();
-
     /* find event from username and event id */
-    CalendarEvent event = calService.getEvent(username, eventId) ;
-    if (event == null)
-    {
-      event = calService.getGroupEvent(eventId);
-      if (event != null) event.setCalType(String.valueOf(org.exoplatform.calendar.service.Calendar.TYPE_PUBLIC));
-      else
-      {
-        webuiRequestContext.getUIApplication().addMessage(
-                                                          new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
-        return ;
-      }
+    CalendarEvent event = calService.getEventById(eventId) ;
+    if (event == null){
+      webuiRequestContext.getUIApplication().addMessage(new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
+    } else {
+      event.setCalType(String.valueOf(calService.getTypeOfCalendar(CalendarUtils.getCurrentUser(), event.getCalendarId())));
+      openEventPreviewPopup(event, webuiRequestContext);
     }
-
-    openEventPreviewPopup(event, webuiRequestContext);
   }
 
 
@@ -301,13 +271,13 @@ public class UICalendarPortlet extends UIPortletApplication {
   private void openEventPreviewPopup(CalendarEvent event, WebuiRequestContext webuiRequestContext) throws Exception
   {
     UIPopupAction uiPopupAction = getChild(UIPopupAction.class);
-    /* the close button does not work for this window's url so disable it */
-    uiPopupAction.getChild(UIPopupWindow.class).setShowCloseButton(false);
-
-    UIPreview uiPreview = uiPopupAction.activate(UIPreview.class, 700);
-    uiPreview.setEvent(event) ;
-    uiPreview.setId("UIPreviewPopup") ;
-    uiPreview.setShowPopup(true) ;
+    uiPopupAction.deActivate();
+    UIPopupContainer uiPopupContainer = uiPopupAction.activate(UIPopupContainer.class, 700);
+    uiPopupContainer.setId("UIEventPreview");
+    UIPreview uiPreview = uiPopupContainer.addChild(UIPreview.class, null, null);
+    uiPreview.setEvent(event);
+    uiPreview.setId("UIPreviewPopup");
+    uiPreview.setShowPopup(true);
     webuiRequestContext.addUIComponentToUpdateByAjax(uiPopupAction);
   }
 
@@ -321,32 +291,34 @@ public class UICalendarPortlet extends UIPortletApplication {
    */
   private void processExternalUrl(WebuiRequestContext webuiRequestContext) throws Exception
   {
+    PortletRequestContext plRequestContext = (PortletRequestContext)webuiRequestContext;
     PortalRequestContext pContext = Util.getPortalRequestContext();
-    String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
+    String isClosing = ((RenderRequest)plRequestContext.getRequest()).getParameter(CalendarUtils.IS_CLOSING);
+    if(!String.valueOf(true).equals(isClosing)){
+      String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
 
-    if (requestedURL.contains(CalendarUtils.INVITATION_URL))
-    {
-      try {
-        processInvitationURL(webuiRequestContext, pContext, requestedURL);
-      }
-      catch (Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug("Invitation url is not valid", e);
+      if (requestedURL.contains(CalendarUtils.INVITATION_URL))
+      {
+        try {
+          processInvitationURL(webuiRequestContext, pContext, requestedURL);
+        }
+        catch (Exception e) {
+          if (log.isDebugEnabled()) {
+            log.debug("Invitation url is not valid", e);
+          }
         }
       }
-    }
-    else if (requestedURL.contains(CalendarUtils.DETAILS_URL))
-    {
-      /* need to check whether the url is pointing to an event id */
-      String eventId = requestedURL.substring(requestedURL.indexOf(CalendarUtils.DETAILS_URL) + CalendarUtils.DETAILS_URL.length());
-      if (!eventId.startsWith("Event")) return;
-      processEventDetailsURL(webuiRequestContext, eventId);
+      else if (requestedURL.contains(CalendarUtils.DETAILS_URL))
+      {
+        String eventId = requestedURL.substring(requestedURL.indexOf(CalendarUtils.DETAILS_URL) + CalendarUtils.DETAILS_URL.length());
+        if (!eventId.startsWith("Event")) return;
+        processEventDetailsURL(webuiRequestContext, eventId);
+      }
     }
   }
 
   public void processRender(WebuiApplication app, WebuiRequestContext context) throws Exception {
     processExternalUrl(context);
-
     super.processRender(app, context);
   }
 }

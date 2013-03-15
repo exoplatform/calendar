@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import javax.portlet.ActionResponse;
 import javax.servlet.http.HttpServletRequest;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
@@ -35,6 +36,8 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -48,15 +51,15 @@ import org.exoplatform.webui.event.EventListener;
  * Aus 01, 2007 2:48:18 PM 
  */
 @ComponentConfig(
-    lifecycle = UIFormLifecycle.class,
-    template =  "app:/templates/calendar/webui/UIDefaultPreview.gtmpl",
-    events = {
-      @EventConfig(listeners = UIPreview.DownloadActionListener.class),
-      @EventConfig(listeners = UICalendarView.EditActionListener.class),  
-      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-      @EventConfig(listeners = UIPreview.CloseWindowActionListener.class)
-    }
-)
+                 lifecycle = UIFormLifecycle.class,
+                 template =  "app:/templates/calendar/webui/UIDefaultPreview.gtmpl",
+                 events = {
+                   @EventConfig(listeners = UIPreview.DownloadActionListener.class),
+                   @EventConfig(listeners = UICalendarView.EditActionListener.class),  
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UIPreview.CloseWindowActionListener.class)
+                 }
+    )
 public class UIPreview extends UICalendarView implements UIPopupComponent
 {
   private static final Log LOG = ExoLogger.getExoLogger(UIPreview.class);
@@ -121,7 +124,6 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
   {
     return ImageIO.read(attachment.getInputStream()).getHeight();
   }
-  public static boolean isClosed = false;
 
   private static final String CLOSE_POPUP = "CloseWindow";
 
@@ -257,15 +259,19 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
   {
     public void execute(Event<UIPreview> event) throws Exception
     {
+      PortletRequestContext plContext = (PortletRequestContext) event.getRequestContext();
       PortalRequestContext pContext = Util.getPortalRequestContext();
       String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
       UIPreview uiPreview = event.getSource() ;
       UIPopupAction uiPopupAction = uiPreview.getAncestorOfType(UIPopupAction.class) ;
       uiPopupAction.deActivate() ;
+      WebuiRequestContext requestContext = event.getRequestContext();
       /* we do not want to allow opening of popup */
-      if (requestedURL.indexOf(CalendarUtils.DETAILS_URL) != -1) { isClosed = true; }
-
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
+      requestContext.addUIComponentToUpdateByAjax(uiPopupAction);
+      if (requestedURL.indexOf(CalendarUtils.DETAILS_URL) != -1 || requestedURL.indexOf(CalendarUtils.DETAIL_URL) != -1) { 
+        ((ActionResponse)plContext.getResponse()).setRenderParameter(CalendarUtils.IS_CLOSING, String.valueOf(true));
+        requestContext.getJavascriptManager().addJavascript("ajaxRedirect('" + uiPreview.getCalendarPortletUrl() + "');");
+      }
     }
   }
 

@@ -169,6 +169,8 @@ public class CalendarUtils {
   public final static String INVITATION_IMPORT_URL = "/invitation/import/".intern();
   public final static String INVITATION_DETAIL_URL = "/invitation/detail/".intern();
   public static final String DETAILS_URL = "/details/";
+  public static final String DETAIL_URL = "/detail/";
+  public static final String IS_CLOSING = "closingPopup";
 
   private static Log log = ExoLogger.getLogger(CalendarUtils.class);
 

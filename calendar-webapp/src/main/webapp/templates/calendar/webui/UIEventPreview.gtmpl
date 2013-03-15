@@ -217,7 +217,7 @@ resizable = "resizable";
   String calendarHome = uicomponent.getCalendarPortletUrl();
 %>
    <div class="uiAction uiActionBorder" >
-    <button onclick="window.location.replace('$calendarHome'); $actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
+    <button onclick="$actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
   </div>
 <% } %>
 <%uiform.end();%>

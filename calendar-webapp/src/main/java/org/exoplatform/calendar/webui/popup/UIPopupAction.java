@@ -40,7 +40,7 @@ public class UIPopupAction extends UIContainer {
   @Override
   public void processRender(WebuiRequestContext context) throws Exception {
     context.getWriter().append("<span class=\"").append(getId()).append("\" id=\"").append(getId()).append("\">");
-    renderChildren(context) ;
+    if(!getChildren().isEmpty())renderChildren(context) ;
     context.getWriter().append("</span>");
     RequireJS requireJS = Util.getPortalRequestContext().getJavascriptManager().getRequireJS();
     requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
