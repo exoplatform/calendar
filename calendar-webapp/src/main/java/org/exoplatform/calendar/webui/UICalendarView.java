@@ -1075,6 +1075,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           uiPreview.setEvent(eventCalendar);
           uiPreview.setId("UIPreviewPopup");
           uiPreview.setShowPopup(true);
+          uiPreview.setPreviewByUrl(false);
           event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
         }
       } else {

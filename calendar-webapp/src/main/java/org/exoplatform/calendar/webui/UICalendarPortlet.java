@@ -19,11 +19,10 @@ package org.exoplatform.calendar.webui;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import javax.portlet.ActionResponse;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -67,7 +66,6 @@ public class UICalendarPortlet extends UIPortletApplication {
   private static Log log = ExoLogger.getLogger("org.exoplatform.calendar.webui.UICalendarPortlet");
 
   private static String SPACE_ID_KEY = "UICalendarPortlet_Space_Id";
-
 
   public UICalendarPortlet() throws Exception {
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
@@ -222,7 +220,6 @@ public class UICalendarPortlet extends UIPortletApplication {
       // open event on source calendar to view
       url = url.substring(url.indexOf(CalendarUtils.INVITATION_DETAIL_URL) + CalendarUtils.INVITATION_DETAIL_URL.length());
       String[] params = url.split("/");
-      String inviter = params[0];
       String eventId = params[1];
       int calType = Integer.parseInt(params[2]);
       CalendarEvent event = calService.getEventById(eventId);
@@ -278,6 +275,7 @@ public class UICalendarPortlet extends UIPortletApplication {
     uiPreview.setEvent(event);
     uiPreview.setId("UIPreviewPopup");
     uiPreview.setShowPopup(true);
+    uiPreview.setPreviewByUrl(true);
     webuiRequestContext.addUIComponentToUpdateByAjax(uiPopupAction);
   }
 
@@ -291,29 +289,24 @@ public class UICalendarPortlet extends UIPortletApplication {
    */
   private void processExternalUrl(WebuiRequestContext webuiRequestContext) throws Exception
   {
-    PortletRequestContext plRequestContext = (PortletRequestContext)webuiRequestContext;
     PortalRequestContext pContext = Util.getPortalRequestContext();
-    String isClosing = ((RenderRequest)plRequestContext.getRequest()).getParameter(CalendarUtils.IS_CLOSING);
-    if(!String.valueOf(true).equals(isClosing)){
-      String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
-
-      if (requestedURL.contains(CalendarUtils.INVITATION_URL))
-      {
-        try {
-          processInvitationURL(webuiRequestContext, pContext, requestedURL);
-        }
-        catch (Exception e) {
-          if (log.isDebugEnabled()) {
-            log.debug("Invitation url is not valid", e);
-          }
+    String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
+    if (requestedURL.contains(CalendarUtils.INVITATION_URL))
+    {
+      try {
+        processInvitationURL(webuiRequestContext, pContext, requestedURL);
+      }
+      catch (Exception e) {
+        if (log.isDebugEnabled()) {
+          log.debug("Invitation url is not valid", e);
         }
       }
-      else if (requestedURL.contains(CalendarUtils.DETAILS_URL))
-      {
-        String eventId = requestedURL.substring(requestedURL.indexOf(CalendarUtils.DETAILS_URL) + CalendarUtils.DETAILS_URL.length());
-        if (!eventId.startsWith("Event")) return;
-        processEventDetailsURL(webuiRequestContext, eventId);
-      }
+    }
+    else if (requestedURL.contains(CalendarUtils.DETAILS_URL))
+    {
+      String eventId = requestedURL.substring(requestedURL.indexOf(CalendarUtils.DETAILS_URL) + CalendarUtils.DETAILS_URL.length());
+      if (!eventId.startsWith("Event")) return;
+      processEventDetailsURL(webuiRequestContext, eventId);
     }
   }
 

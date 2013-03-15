@@ -19,9 +19,10 @@ package org.exoplatform.calendar.webui;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import javax.imageio.ImageIO;
-import javax.portlet.ActionResponse;
 import javax.servlet.http.HttpServletRequest;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -34,8 +35,6 @@ import org.exoplatform.download.InputStreamDownloadResource;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -62,19 +61,16 @@ import org.exoplatform.webui.event.EventListener;
     )
 public class UIPreview extends UICalendarView implements UIPopupComponent
 {
-  private static final Log LOG = ExoLogger.getExoLogger(UIPreview.class);
-  private CalendarEvent event_ = null ;
-  private boolean isShowPopup_ = false ;
-
   public static final int DEFAULT_THUMBNAIL_DIMENSION = 50;
   public static final int DEFAULT_PREVIEW_DIMENSION   = 170;
-
+  private CalendarEvent event_ = null;
+  private boolean isShowPopup_ = false;
   private Map<String, String> iconMap;
-
+  private boolean isPreviewByUrl = false;
+  
   public UIPreview() throws Exception {
     initIconMap();
   }
-
   private void initIconMap() {
     iconMap = new HashMap<String, String>();
     iconMap.put("pdf", "uiFileTypeIconPdf uiFileTypeIcon");
@@ -92,7 +88,7 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
     return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
   }
 
-  private String getIconStyleForAttachment(Attachment attachment)
+  protected String getIconStyleForAttachment(Attachment attachment)
   {
     if (iconMap.keySet().contains(getFileExtension(attachment.getName())))
       return iconMap.get(getFileExtension(attachment.getName()));
@@ -125,7 +121,7 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
     return ImageIO.read(attachment.getInputStream()).getHeight();
   }
 
-  private static final String CLOSE_POPUP = "CloseWindow";
+  protected static final String CLOSE_POPUP = "CloseWindow";
 
   /**
    * scale the image and return dimensions of image given one fixed dimension
@@ -244,7 +240,7 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
    *
    * @return
    */
-  private String getCalendarPortletUrl()
+  public static String getCalendarPortletUrl()
   {
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
@@ -255,11 +251,17 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
     return "";
   }
 
+  public boolean isPreviewByUrl() {
+    return isPreviewByUrl;
+  }
+
+  public void setPreviewByUrl(boolean isPreviewByUrl) {
+    this.isPreviewByUrl = isPreviewByUrl;
+  }
   public static class CloseWindowActionListener extends EventListener<UIPreview>
   {
     public void execute(Event<UIPreview> event) throws Exception
     {
-      PortletRequestContext plContext = (PortletRequestContext) event.getRequestContext();
       PortalRequestContext pContext = Util.getPortalRequestContext();
       String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();
       UIPreview uiPreview = event.getSource() ;
@@ -268,9 +270,9 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
       WebuiRequestContext requestContext = event.getRequestContext();
       /* we do not want to allow opening of popup */
       requestContext.addUIComponentToUpdateByAjax(uiPopupAction);
-      if (requestedURL.indexOf(CalendarUtils.DETAILS_URL) != -1 || requestedURL.indexOf(CalendarUtils.DETAIL_URL) != -1) { 
-        ((ActionResponse)plContext.getResponse()).setRenderParameter(CalendarUtils.IS_CLOSING, String.valueOf(true));
-        requestContext.getJavascriptManager().addJavascript("ajaxRedirect('" + uiPreview.getCalendarPortletUrl() + "');");
+      if (requestedURL.indexOf(CalendarUtils.DETAILS_URL) != -1 || requestedURL.indexOf(CalendarUtils.DETAIL_URL) != -1) {
+        uiPreview.setPreviewByUrl(false);
+        event.getRequestContext().sendRedirect(getCalendarPortletUrl());
       }
     }
   }

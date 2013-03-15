@@ -212,7 +212,8 @@ resizable = "resizable";
 </div>
 <!-- TRUE when the preview is in a popup -->
 <% if (uicomponent.isShowPopup()) {
-  String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP, uicomponent.id);
+  String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP);
+  if(uicomponent.isPreviewByUrl()){ actionLink = uicomponent.url(uicomponent.CLOSE_POPUP);}
   String actionLabel  = _ctx.appRes(uicomponent.id + ".action." + uicomponent.CLOSE_POPUP);
   String calendarHome = uicomponent.getCalendarPortletUrl();
 %>
