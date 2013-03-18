@@ -936,10 +936,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     List<?> list = schedulerService_.getAllExcutingJobs();
 
     for (Object obj : list) {
-      JobExecutionContext jec = (JobExecutionContext) obj;
-      JobDetail tmp = (JobDetail) jec.getJobDetail();
-      if (tmp.getKey().getGroup().equals(Utils.SHARE_CALENDAR_GROUP)) {
-        List<String> sharedGroups = (List<String>) tmp.getJobDataMap().get(Utils.SHARED_GROUPS);
+      JobExecutionContext job = (JobExecutionContext) obj;
+      JobDataMap jobDataMap = job.getJobDetail().getJobDataMap();
+      List<String> sharedGroups = (List<String>) jobDataMap.get(Utils.SHARED_GROUPS);
+      if(sharedGroups != null) {
         if(sharedGroups.contains(group)) {
           return true;
         }
