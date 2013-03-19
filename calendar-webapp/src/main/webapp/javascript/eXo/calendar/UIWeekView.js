@@ -29,8 +29,18 @@ UIWeekView.prototype.init = function() {
 	var len = UIWeekView.items.length ;
 	if (len <= 0) {
 	  this.initAllday() ;
-      this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+
       this.increaseWidth(EventWeekContent);
+
+      this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+
+      /* resize content each time the window is resized */
+      gj(window).resize(function() {
+        UIWeekView.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+  
+        UIWeekView.resizeWidth(EventWeekContent);  
+      });
+	  
 	  return;
 	}	
 	var marker = null ;
