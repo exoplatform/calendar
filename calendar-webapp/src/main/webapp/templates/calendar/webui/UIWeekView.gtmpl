@@ -109,7 +109,7 @@ def eventList = [];
         t = 0 ;
         while(t++ <numberOfDays) {
         %>
-        <td style="$styleWidth">
+        <td class="whiteTd" style="$styleWidth">
         </td>
         <% } %>
       </tr>

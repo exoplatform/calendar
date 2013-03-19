@@ -396,13 +396,20 @@ WeekMan.prototype.compareEventByWeek = function(event1, event2, weekIndex){
   }
 };
 
-function EventMan(){}
+function EventMan(){
+  this.originalHeightOfEventMonthContent = null;
+}
 
 /**
  *
  * @param {Object} rootNode
  */
 EventMan.prototype.initMonth = function(rootNode){
+  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+  var UICalendarPortlet = _module.UICalendarPortlet,
+      rowContainerDay   = gj(rootNode).find(".rowContainerDay")[0],
+      EventMan          = _module.UICalendarMan.EventMan ;
+
   this.cleanUp();
   rootNode = typeof(rootNode) == 'string' ? document.getElementById(rootNode) : rootNode;
   this.rootNode = rootNode;
@@ -410,7 +417,7 @@ EventMan.prototype.initMonth = function(rootNode){
   this.weeks = new Array();
   var DOMUtil = cs.DOMUtil;
   // Parse all event node to event object
-  var allEvents = gj(rootNode).find('div.dayContentContainer'); 
+  var allEvents = gj(rootNode).find('div.dayContentContainer');
   // Create and init all event
   for (var i = 0; i < allEvents.length; i++) {
     if (allEvents[i].style.display == 'none') {
@@ -425,7 +432,52 @@ EventMan.prototype.initMonth = function(rootNode){
   this.UIMonthViewGrid = document.getElementById('UIMonthViewGrid');
   this.groupByWeek();
   this.sortByWeek();
+
+  /*=== resize width ===*/
+  this.increaseWidth(rowContainerDay);
+
+  /*=== resize height to stop at bottom of the page - for month view ===*/
+  if (this.originalHeightOfEventMonthContent === null) {
+    this.originalHeightOfEventMonthContent = gj(rowContainerDay).height();
+  }
+  UICalendarPortlet.resizeHeight(rowContainerDay, 6, this.originalHeightOfEventMonthContent);
+
+  /* resize content each time the window resizes */
+  gj(window).resize(function() {
+    UICalendarPortlet.resizeHeight(rowContainerDay, 6, EventMan.originalHeightOfEventMonthContent);
+    
+    EventMan.resizeWidth(rowContainerDay);
+  });
 };
+
+/**
+ * Increase the width to include the scrollbar
+ */
+EventMan.prototype.increaseWidth = function(contentContainer) {
+  var originalWidth       = gj(contentContainer).width(),
+      eventMonthContainer = gj(contentContainer).parents(".eventMonthContainer")[0],
+      widthOfTitleBar     = gj(eventMonthContainer).siblings(".dayTitleBar")[0].offsetWidth;
+
+  if (widthOfTitleBar === originalWidth) {
+    gj(contentContainer).css("width", (originalWidth + 20));
+    gj(this.UIMonthViewGrid).css("width", originalWidth);
+  }
+};
+
+/**
+ * Resize width for month view to include the scrollbar
+ * @param {Object} contentContainer DOM element
+ */
+EventMan.prototype.resizeWidth = function(contentContainer) {
+  var eventMonthContainer = gj(contentContainer).parents(".eventMonthContainer")[0],
+      dayTitleBar         = gj(eventMonthContainer).siblings(".dayTitleBar")[0],
+      resizedWidth        = gj(dayTitleBar).width(),
+      eventTable          = gj(contentContainer).children("table#UIMonthViewGrid")[0];
+  
+  gj(eventTable).css("width", resizedWidth);
+  gj(contentContainer).css("width", (resizedWidth + 20));
+};
+
 
 EventMan.prototype.cleanUp = function() {
   if (!this.events ||

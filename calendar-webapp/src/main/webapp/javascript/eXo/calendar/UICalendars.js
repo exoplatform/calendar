@@ -14,7 +14,9 @@ UICalendars.prototype.init = function(calendarsForm) {
 _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
   if (typeof(calendarsForm) == "string") 
     calendarsForm = _module.UICalendarPortlet.getElementById(calendarsForm);
-  var UICalendarPortlet = _module.UICalendarPortlet;
+  var UICalendarPortlet = _module.UICalendarPortlet,
+      contentContainer = gj(calendarsForm).find(".contentContainer")[0],
+      originalHeight = gj(contentContainer).height();
   _module.UICalendarPortlet.filterForm = calendarsForm;
   this.calsFormElem = calendarsForm;
   var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
@@ -27,7 +29,16 @@ _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").U
   for (var j = 0; j < clen; j++) {
     var checkBox = gj(CalendarItem[j]).find('div.calendarCheckboxBlock')[0];
     checkBox.onclick = UICalendarPortlet.filterByCalendar;
-}
+  }
+
+  /*=== resize height ===*/
+  UICalendarPortlet.resizeHeight(contentContainer, 20, originalHeight);
+
+  /* resize content each time the window is resized */
+  gj(window).resize(function() {
+    UICalendarPortlet.resizeHeight(contentContainer, 20, originalHeight);
+  });
+
 };
 
 UICalendars.prototype.resetSettingButton = function(settingButton) {
