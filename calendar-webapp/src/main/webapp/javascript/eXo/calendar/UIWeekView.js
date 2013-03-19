@@ -1,7 +1,8 @@
 (function(base, cs, gj, UICalendarMan){
-function UIWeekView() {
-	
+function UIWeekView() {	
+  this.originalHeightOfEventWeekContent = null;
 }
+
 var _module = {};
 eXo.calendar = eXo.calendar || {} ;
 
@@ -27,8 +28,9 @@ UIWeekView.prototype.init = function() {
 	}
 	var len = UIWeekView.items.length ;
 	if (len <= 0) {
-		this.initAllday() ;
-		return;
+	  this.initAllday() ;
+      this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+	  return;
 	}	
 	var marker = null ;
 	for(var i = 0 ; i < len ; i ++){		
@@ -68,7 +70,56 @@ UIWeekView.prototype.init = function() {
 	this.setSize() ;
 	this.initAllday() ;
 	//UICalendarPortlet.setFocus() ;
+  
+  /*=== resize width ===*/
+  var originalWidth   = gj(EventWeekContent).width(),
+      widthOfTitleBar = gj(EventWeekContent).siblings(".eventWeekBar")[0].offsetWidth;
+
+  if (originalWidth === widthOfTitleBar) {
+    gj(EventWeekContent).css("width", (originalWidth + 20));
+    var eventTable = gj(EventWeekContent).children("table.uiGrid")[0];
+    gj(eventTable).css("width", originalWidth);
+  }
+
+  /*=== resize height ===*/
+  this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+
+  /* resize content each time the window is resized */
+  gj(window).resize(function() {
+    UIWeekView.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+  
+    UIWeekView.resizeWidth(EventWeekContent);  
+  });
+  
 } ;
+
+/**
+ * Resize height for week view
+ * @param {Object} contentContainer DOM element
+ * @param int      originalHeight   original height of content container
+ */
+UIWeekView.prototype.resizeHeight = function(contentContainer, originalHeight) {
+  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+  var UICalendarPortlet = _module.UICalendarPortlet ;
+  if (originalHeight === null) {
+  	originalHeight = gj(contentContainer).height();
+  }
+  UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight); 
+};
+
+/**
+ * Resize width for week view to include the scrollbar
+ * @param {Object} contentContainer DOM element
+ */
+UIWeekView.prototype.resizeWidth = function(contentContainer) {
+  var eventWeekBar = gj(contentContainer).siblings(".eventWeekBar")[0],
+      resizedWidth = eventWeekBar.offsetWidth,
+      eventTable   = gj(contentContainer).children("table.uiGrid")[0];
+  
+  gj(eventTable).css("width", resizedWidth);
+  gj(contentContainer).css("width", (resizedWidth + 20));
+};
+
 
 UIWeekView.prototype.distributeEvent = function() {
 	var UIWeekView = _module.UIWeekView ;
@@ -181,20 +232,23 @@ UIWeekView.prototype.adjustWidth = function(el) {
 			setLeft(el[j],offsetLeft + (parseFloat(el[j-1].style.width) + 1)*n);
 	    }
 	    else {		
-			setLeft(el[j],offsetLeft);
+			setLeft(el[j], offsetLeft);
 	    }
 	    n++ ;
 	}
     }
 
-    function setLeft(obj,left){
-	obj.style.left = left + "px";
-	if(base.I18n.isRT()){
-	    if(base.Browser.isIE6()) left -= cs.Utils.getScrollbarWidth();
-	    obj.style.right = left + "px";	
-	}
+    function setLeft(obj, left){
+	    obj.style.left = left + "px";
+
+	    if(base.I18n.isRT()){
+	      if(base.Browser.isIE6()) left -= cs.Utils.getScrollbarWidth();
+	      obj.style.right = left + "px";
+	    }
     }
+
 } ;
+
 
 UIWeekView.prototype.showInCol = function(obj) {
 	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
