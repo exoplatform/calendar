@@ -434,14 +434,7 @@ EventMan.prototype.initMonth = function(rootNode){
   this.sortByWeek();
 
   /*=== resize width ===*/
-  var originalWidth       = gj(rowContainerDay).width(),
-      eventMonthContainer = gj(rowContainerDay).parents(".eventMonthContainer")[0],
-      widthOfTitleBar     = gj(eventMonthContainer).siblings(".dayTitleBar")[0].offsetWidth;
-
-  if (widthOfTitleBar === originalWidth) {
-    gj(rowContainerDay).css("width", (originalWidth + 20));
-    gj(this.UIMonthViewGrid).css("width", originalWidth);
-  }
+  this.increaseWidth(rowContainerDay);
 
   /*=== resize height to stop at bottom of the page - for month view ===*/
   if (this.originalHeightOfEventMonthContent === null) {
@@ -455,6 +448,20 @@ EventMan.prototype.initMonth = function(rootNode){
     
     EventMan.resizeWidth(rowContainerDay);
   });
+};
+
+/**
+ * Increase the width to include the scrollbar
+ */
+EventMan.prototype.increaseWidth = function(contentContainer) {
+  var originalWidth       = gj(contentContainer).width(),
+      eventMonthContainer = gj(contentContainer).parents(".eventMonthContainer")[0],
+      widthOfTitleBar     = gj(eventMonthContainer).siblings(".dayTitleBar")[0].offsetWidth;
+
+  if (widthOfTitleBar === originalWidth) {
+    gj(contentContainer).css("width", (originalWidth + 20));
+    gj(this.UIMonthViewGrid).css("width", originalWidth);
+  }
 };
 
 /**

@@ -30,6 +30,7 @@ UIWeekView.prototype.init = function() {
 	if (len <= 0) {
 	  this.initAllday() ;
       this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+      this.increaseWidth(EventWeekContent);
 	  return;
 	}	
 	var marker = null ;
@@ -72,14 +73,7 @@ UIWeekView.prototype.init = function() {
 	//UICalendarPortlet.setFocus() ;
   
   /*=== resize width ===*/
-  var originalWidth   = gj(EventWeekContent).width(),
-      widthOfTitleBar = gj(EventWeekContent).siblings(".eventWeekBar")[0].offsetWidth;
-
-  if (originalWidth === widthOfTitleBar) {
-    gj(EventWeekContent).css("width", (originalWidth + 20));
-    var eventTable = gj(EventWeekContent).children("table.uiGrid")[0];
-    gj(eventTable).css("width", originalWidth);
-  }
+  this.increaseWidth(EventWeekContent);
 
   /*=== resize height ===*/
   this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
@@ -92,6 +86,21 @@ UIWeekView.prototype.init = function() {
   });
   
 } ;
+
+/**
+ * Increase the width to include the scrollbar
+ */
+UIWeekView.prototype.increaseWidth = function(contentContainer) {
+  var originalWidth   = gj(contentContainer).width(),
+      widthOfTitleBar = gj(contentContainer).siblings(".eventWeekBar")[0].offsetWidth;
+
+  if (originalWidth === widthOfTitleBar) {
+
+    gj(contentContainer).css("width", (originalWidth + 20));
+    var eventTable = gj(contentContainer).children("table.uiGrid")[0];
+    gj(eventTable).css("width", originalWidth);
+  }
+};
 
 /**
  * Resize height for week view
@@ -113,7 +122,7 @@ UIWeekView.prototype.resizeHeight = function(contentContainer, originalHeight) {
  */
 UIWeekView.prototype.resizeWidth = function(contentContainer) {
   var eventWeekBar = gj(contentContainer).siblings(".eventWeekBar")[0],
-      resizedWidth = eventWeekBar.offsetWidth,
+      resizedWidth = gj(eventWeekBar).width(),
       eventTable   = gj(contentContainer).children("table.uiGrid")[0];
   
   gj(eventTable).css("width", resizedWidth);
