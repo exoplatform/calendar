@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.query.Query;
@@ -105,42 +107,91 @@ public class EventPageListQuery extends JCRPageList {
   }
 
   public static CalendarEvent getEventFromNode(CalendarEvent event, Node eventNode, Node reminderFolder) throws Exception {
-    if (eventNode.hasProperty(Utils.EXO_ID))
-      event.setId(eventNode.getProperty(Utils.EXO_ID).getString());
-    if (eventNode.hasProperty(Utils.EXO_CALENDAR_ID))
-      event.setCalendarId(eventNode.getProperty(Utils.EXO_CALENDAR_ID).getString());
-    if (eventNode.hasProperty(Utils.EXO_SUMMARY))
-      event.setSummary(eventNode.getProperty(Utils.EXO_SUMMARY).getString());
-    if (eventNode.hasProperty(Utils.EXO_EVENT_CATEGORYID))
-      event.setEventCategoryId(eventNode.getProperty(Utils.EXO_EVENT_CATEGORYID).getString());
-    if (eventNode.hasProperty(Utils.EXO_EVENT_CATEGORY_NAME))
-      event.setEventCategoryName(eventNode.getProperty(Utils.EXO_EVENT_CATEGORY_NAME).getString());
-    if (eventNode.hasProperty(Utils.EXO_LOCATION))
-      event.setLocation(eventNode.getProperty(Utils.EXO_LOCATION).getString());
-    if (eventNode.hasProperty(Utils.EXO_TASK_DELEGATOR))
-      event.setTaskDelegator(eventNode.getProperty(Utils.EXO_TASK_DELEGATOR).getString());
-    if (eventNode.hasProperty(Utils.EXO_REPEAT))
-      event.setRepeatType(eventNode.getProperty(Utils.EXO_REPEAT).getString());
-    if (eventNode.hasProperty(Utils.EXO_DESCRIPTION))
-      event.setDescription(eventNode.getProperty(Utils.EXO_DESCRIPTION).getString());
-    if (eventNode.hasProperty(Utils.EXO_FROM_DATE_TIME))
-      event.setFromDateTime(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTime());
-    if (eventNode.hasProperty(Utils.EXO_TO_DATE_TIME))
-      event.setToDateTime(eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTime());
-    if (eventNode.hasProperty(Utils.EXO_EVENT_TYPE))
-      event.setEventType(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString());
-    if (eventNode.hasProperty(Utils.EXO_PRIORITY))
-      event.setPriority(eventNode.getProperty(Utils.EXO_PRIORITY).getString());
-    if (eventNode.hasProperty(Utils.EXO_IS_PRIVATE))
-      event.setPrivate(eventNode.getProperty(Utils.EXO_IS_PRIVATE).getBoolean());
-    if (eventNode.hasProperty(Utils.EXO_EVENT_STATE))
-      event.setEventState(eventNode.getProperty(Utils.EXO_EVENT_STATE).getString());
-    if (eventNode.hasProperty(Utils.EXO_SEND_OPTION))
-      event.setSendOption(eventNode.getProperty(Utils.EXO_SEND_OPTION).getString());
-    if (eventNode.hasProperty(Utils.EXO_MESSAGE))
-      event.setMessage(eventNode.getProperty(Utils.EXO_MESSAGE).getString());
-    if (eventNode.hasProperty(Utils.EXO_DATE_MODIFIED))
-      event.setLastUpdatedTime(eventNode.getProperty(Utils.EXO_DATE_MODIFIED).getDate().getTime());
+    StringBuilder namePattern = new StringBuilder(512);
+    namePattern.append(Utils.EXO_ID).append('|').append(Utils.EXO_CALENDAR_ID).append('|').append(Utils.EXO_SUMMARY)
+         .append('|').append(Utils.EXO_EVENT_CATEGORYID).append('|').append(Utils.EXO_EVENT_CATEGORY_NAME).append('|')
+         .append(Utils.EXO_LOCATION).append('|').append(Utils.EXO_TASK_DELEGATOR).append('|').append(Utils.EXO_REPEAT)
+         .append('|').append(Utils.EXO_DESCRIPTION).append('|').append(Utils.EXO_FROM_DATE_TIME).append('|')
+         .append(Utils.EXO_TO_DATE_TIME).append('|').append(Utils.EXO_EVENT_TYPE).append('|')
+         .append(Utils.EXO_PRIORITY).append('|').append(Utils.EXO_IS_PRIVATE).append('|').append(Utils.EXO_EVENT_STATE).append('|')
+         .append(Utils.EXO_SEND_OPTION).append('|').append(Utils.EXO_MESSAGE).append('|').append(Utils.EXO_DATE_MODIFIED)
+         .append('|').append(Utils.EXO_INVITATION).append('|').append(Utils.EXO_PARTICIPANT).append('|')
+         .append(Utils.EXO_PARTICIPANT_STATUS);
+    PropertyIterator it = eventNode.getProperties(namePattern.toString());
+    while (it.hasNext()) {
+      Property p = it.nextProperty();
+      String name = p.getName();
+      if (name.equals(Utils.EXO_ID)) {
+        event.setId(p.getString());
+      } else if (name.equals(Utils.EXO_CALENDAR_ID)) {
+        event.setCalendarId(p.getString());
+      } else if (name.equals(Utils.EXO_SUMMARY)) {
+        event.setSummary(p.getString());
+      } else if (name.equals(Utils.EXO_EVENT_CATEGORYID)) {
+        event.setEventCategoryId(p.getString());
+      } else if (name.equals(Utils.EXO_EVENT_CATEGORY_NAME)) {
+        event.setEventCategoryName(p.getString());
+      } else if (name.equals(Utils.EXO_LOCATION)) {
+        event.setLocation(p.getString());
+      } else if (name.equals(Utils.EXO_TASK_DELEGATOR)) {
+        event.setTaskDelegator(p.getString());
+      } else if (name.equals(Utils.EXO_REPEAT)) {
+        event.setRepeatType(p.getString());
+      } else if (name.equals(Utils.EXO_DESCRIPTION)) {
+        event.setDescription(p.getString());
+      } else if (name.equals(Utils.EXO_FROM_DATE_TIME)) {
+        event.setFromDateTime(p.getDate().getTime());
+      } else if (name.equals(Utils.EXO_TO_DATE_TIME)) {
+        event.setToDateTime(p.getDate().getTime());
+      } else if (name.equals(Utils.EXO_EVENT_TYPE)) {
+        event.setEventType(p.getString());
+      } else if (name.equals(Utils.EXO_PRIORITY)) {
+        event.setPriority(p.getString());
+      } else if (name.equals(Utils.EXO_IS_PRIVATE)) {
+        event.setPrivate(p.getBoolean());
+      } else if (name.equals(Utils.EXO_EVENT_STATE)) {
+        event.setEventState(p.getString());
+      } else if (name.equals(Utils.EXO_SEND_OPTION)) {
+        event.setSendOption(p.getString());
+      } else if (name.equals(Utils.EXO_MESSAGE)) {
+        event.setMessage(p.getString());
+      } else if (name.equals(Utils.EXO_DATE_MODIFIED)) {
+        event.setLastUpdatedTime(p.getDate().getTime());
+      } else if (name.equals(Utils.EXO_INVITATION)) {
+        Value[] values = p.getValues();
+        if (values.length == 1) {
+          event.setInvitation(new String[] { values[0].getString() });
+        } else {
+          String[] invites = new String[values.length];
+          for (int i = 0; i < values.length; i++) {
+            invites[i] = values[i].getString();
+          }
+          event.setInvitation(invites);
+        }
+      } else if (name.equals(Utils.EXO_PARTICIPANT)) {
+        Value[] values = p.getValues();
+        if (values.length == 1) {
+          event.setParticipant(new String[] { values[0].getString() });
+        } else {
+          String[] participant = new String[values.length];
+          for (int i = 0; i < values.length; i++) {
+            participant[i] = values[i].getString();
+          }
+          event.setParticipant(participant);
+        }
+      } else if (name.equals(Utils.EXO_PARTICIPANT_STATUS)) {
+        Value[] values = p.getValues();
+        if (values.length == 1) {
+          event.setParticipantStatus(new String[] { values[0].getString() });
+        } else {
+          String[] participantStatus = new String[values.length];
+          for (int i = 0; i < values.length; i++) {
+            participantStatus[i] = values[i].getString();
+          }
+          event.setParticipantStatus(participantStatus);
+        }
+      }
+    }
     try {
       event.setReminders(getReminders(eventNode, reminderFolder));
     } catch (Exception e) {
@@ -149,42 +200,6 @@ public class EventPageListQuery extends JCRPageList {
       }
     }
     event.setAttachment(getAttachments(eventNode));
-    if (eventNode.hasProperty(Utils.EXO_INVITATION)) {
-      Value[] values = eventNode.getProperty(Utils.EXO_INVITATION).getValues();
-      if (values.length == 1) {
-        event.setInvitation(new String[] { values[0].getString() });
-      } else {
-        String[] invites = new String[values.length];
-        for (int i = 0; i < values.length; i++) {
-          invites[i] = values[i].getString();
-        }
-        event.setInvitation(invites);
-      }
-    }
-    if (eventNode.hasProperty(Utils.EXO_PARTICIPANT)) {
-      Value[] values = eventNode.getProperty(Utils.EXO_PARTICIPANT).getValues();
-      if (values.length == 1) {
-        event.setParticipant(new String[] { values[0].getString() });
-      } else {
-        String[] participant = new String[values.length];
-        for (int i = 0; i < values.length; i++) {
-          participant[i] = values[i].getString();
-        }
-        event.setParticipant(participant);
-      }
-    }
-    if (eventNode.hasProperty(Utils.EXO_PARTICIPANT_STATUS)) {
-      Value[] values = eventNode.getProperty(Utils.EXO_PARTICIPANT_STATUS).getValues();
-      if (values.length == 1) {
-        event.setParticipantStatus(new String[] { values[0].getString() });
-      } else {
-        String[] participantStatus = new String[values.length];
-        for (int i = 0; i < values.length; i++) {
-          participantStatus[i] = values[i].getString();
-        }
-        event.setParticipantStatus(participantStatus);
-      }
-    }
     return event;
   }
 
@@ -244,22 +259,32 @@ public class EventPageListQuery extends JCRPageList {
         if (reminderNode.isNodeType(Utils.EXO_REMINDER)) {
           Reminder reminder = new Reminder();
           reminder.setId(reminderNode.getName());
-          if (reminderNode.hasProperty(Utils.EXO_OWNER))
-            reminder.setReminderOwner(reminderNode.getProperty(Utils.EXO_OWNER).getString());
-          if (reminderNode.hasProperty(Utils.EXO_EVENT_ID))
-            reminder.setEventId(reminderNode.getProperty(Utils.EXO_EVENT_ID).getString());
-          if (reminderNode.hasProperty(Utils.EXO_REMINDER_TYPE))
-            reminder.setReminderType(reminderNode.getProperty(Utils.EXO_REMINDER_TYPE).getString());
-          if (reminderNode.hasProperty(Utils.EXO_ALARM_BEFORE))
-            reminder.setAlarmBefore(reminderNode.getProperty(Utils.EXO_ALARM_BEFORE).getLong());
-          if (reminderNode.hasProperty(Utils.EXO_EMAIL))
-            reminder.setEmailAddress(reminderNode.getProperty(Utils.EXO_EMAIL).getString());
-          if (reminderNode.hasProperty(Utils.EXO_IS_REPEAT))
-            reminder.setRepeate(reminderNode.getProperty(Utils.EXO_IS_REPEAT).getBoolean());
-          if (reminderNode.hasProperty(Utils.EXO_TIME_INTERVAL))
-            reminder.setRepeatInterval(reminderNode.getProperty(Utils.EXO_TIME_INTERVAL).getLong());
-          if (reminderNode.hasProperty(Utils.EXO_DESCRIPTION))
-            reminder.setDescription(reminderNode.getProperty(Utils.EXO_DESCRIPTION).getString());
+          StringBuilder namePattern = new StringBuilder(128);
+          namePattern.append(Utils.EXO_OWNER).append('|').append(Utils.EXO_EVENT_ID).append('|').append(Utils.EXO_REMINDER_TYPE)
+               .append('|').append(Utils.EXO_ALARM_BEFORE).append('|').append(Utils.EXO_EMAIL).append('|')
+               .append(Utils.EXO_IS_REPEAT).append('|').append(Utils.EXO_TIME_INTERVAL).append('|').append(Utils.EXO_DESCRIPTION);
+          PropertyIterator it = reminderNode.getProperties(namePattern.toString());
+          while (it.hasNext()) {
+            Property p = it.nextProperty();
+            String name = p.getName();
+            if (name.equals(Utils.EXO_OWNER)) {
+              reminder.setReminderOwner(p.getString());
+            } else if (name.equals(Utils.EXO_EVENT_ID)) {
+              reminder.setEventId(p.getString());
+            } else if (name.equals(Utils.EXO_REMINDER_TYPE)) {
+              reminder.setReminderType(p.getString());
+            } else if (name.equals(Utils.EXO_ALARM_BEFORE)) {
+              reminder.setAlarmBefore(p.getLong());
+            } else if (name.equals(Utils.EXO_EMAIL)) {
+              reminder.setEmailAddress(p.getString());
+            } else if (name.equals(Utils.EXO_IS_REPEAT)) {
+              reminder.setRepeate(p.getBoolean());
+            } else if (name.equals(Utils.EXO_TIME_INTERVAL)) {
+              reminder.setRepeatInterval(p.getLong());
+            } else if (name.equals(Utils.EXO_DESCRIPTION)) {
+              reminder.setDescription(p.getString());
+            }              
+          }
           reminder.setFromDateTime(fromDate);
           reminders.add(reminder);
         }

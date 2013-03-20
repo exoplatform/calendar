@@ -701,6 +701,9 @@ public interface CalendarService {
   public CalendarEvent getEventById(String eventId) throws Exception;
   
   public Calendar getCalendarById(String calId) throws Exception;
+  public void autoShareCalendar(List<String> groupsOfUser, String reciever) throws Exception; 
+  
+  public void autoRemoveShareCalendar(String groupId, String username) throws Exception;   
 
 }
 

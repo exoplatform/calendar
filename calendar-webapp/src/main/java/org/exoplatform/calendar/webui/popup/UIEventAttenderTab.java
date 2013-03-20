@@ -67,6 +67,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     addUIFormInput(new UICheckBoxInput(FIELD_DATEALL, FIELD_DATEALL, false)) ;
     UICheckBoxInput checkFreeInput = new UICheckBoxInput(FIELD_CHECK_TIME, FIELD_CHECK_TIME, false) ;
     checkFreeInput.setOnChange("OnChange") ;
+    checkFreeInput.setChecked(true);
     addUIFormInput(checkFreeInput) ;
   }
   protected UIFormComboBox getUIFormComboBox(String id) {

@@ -468,7 +468,7 @@ UICalendarPortlet.prototype.setTimeValue = function(event, start,end,currentCol)
  */
 UICalendarPortlet.prototype.getWorkingdays = function(weekdays){
     this.weekdays = weekdays;
-}
+};
 
 /* common method */
 /**
@@ -505,27 +505,34 @@ UICalendarPortlet.prototype.setFocus = function(){
 		obj = gj(obj).find("div.eventBoardContainer")[0];
     var container = gj(obj).parents(".eventDayContainer")[0];
   } else return ;
+  
   var events = gj(obj).find("div.eventContainerBorder");
-	events = this.getBlockElements(events);
+  events = this.getBlockElements(events);
   var len = events.length;
-	var scrollTop =  this.timeToMin((new Date()).getTime());
-	if(this.workingStart){
-		if(len == 0) scrollTop = this.workingStart ;
-		else {
-			scrollTop = (this.hasEventThrough(scrollTop,events))? scrollTop : this.workingStart ;
-		}
-	}	
-    var lastUpdatedId = obj.getAttribute("lastUpdatedId");
-    if (lastUpdatedId && (lastUpdatedId != "null")) {
-        for (var i = 0; i < len; i++) {
-            if (events[i].getAttribute("eventId") == lastUpdatedId) {
-                scrollTop = events[i].offsetTop;
-                break;
-            }
-        }
+	
+  var scrollTop =  this.timeToMin((new Date()).getTime());  
+  if(this.workingStart){
+	if(len == 0) {
+      scrollTop = (this.workingStart - 100);
     }
-    container.scrollTop = scrollTop;
+	else {
+	  scrollTop = (this.hasEventThrough(scrollTop,events))? scrollTop : (this.workingStart - 100) ;
+	}
+  }	
+    
+  var lastUpdatedId = obj.getAttribute("lastUpdatedId");
+  if (lastUpdatedId && (lastUpdatedId != "null") && (len !== 0)) {
+    for (var i = 0; i < len; i++) {
+      if (events[i].getAttribute("eventId") == lastUpdatedId) {
+        scrollTop = events[i].offsetTop;
+        break;
+      }
+    }
+  }
+  
+  container.scrollTop = scrollTop;
 };
+
 /**
  * 
  * @param {Object} min minutes
@@ -839,12 +846,15 @@ UICalendarPortlet.prototype.adjustWidth = function(el, totalWidth){
 		}
 	}
 };
+
 /**
- * Sort event elemnents in time table
+ * Sort event elements in time table
  */
 UICalendarPortlet.prototype.showEvent = function(){
     this.init();
-    var EventDayContainer = gj(this.viewer).parents(".eventDayContainer")[0];
+    var EventDayContainer = gj(this.viewer).parents(".eventDayContainer")[0],
+        originalHeight = gj(EventDayContainer).height();
+
 	if (!EventDayContainer) return ;
     this.editAlldayEvent(EventDayContainer);
     if (!this.init()) 
@@ -852,8 +862,11 @@ UICalendarPortlet.prototype.showEvent = function(){
     this.viewType = "UIDayView";
     var el = this.getElements(this.viewer);
     el = this.sortByAttribute(el, "startTime");
-    if (el.length <= 0) 
+    if (el.length <= 0) {
+        this.resizeHeightForDayView(EventDayContainer, originalHeight);
         return;
+    }
+
     var marker = null;
     for (var i = 0; i < el.length; i++) {
         this.setSize(el[i]);
@@ -883,11 +896,60 @@ UICalendarPortlet.prototype.showEvent = function(){
     this.adjustWidth(this.items);
     // display events after positioning
     for(var i = 0; i < el.length; i++) {
-	gj(el[i]).css('display','block');
+	    gj(el[i]).css('display','block');
     }
+
+    /*=== resize height to stop at bottom of the page - for dayview ===*/
+    this.resizeHeightForDayView(EventDayContainer, originalHeight);
+
     this.items = null;
     this.viewer = null;
 };
+
+/**
+ * resize height for day view to stop at bottom of the page
+ * @param {Object} contentContainer DOM element
+ * @param int      originalHeight   original height of content container
+ */
+UICalendarPortlet.prototype.resizeHeightForDayView = function(contentContainer, originalHeight) {
+  this.resizeHeight(contentContainer, 6, originalHeight);
+
+  /* resize content each time the window is resized */
+  gj(window).resize(function() {
+    _module.UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
+  });
+};
+
+
+/**
+ * Resize content container to stop at the bottom of the page
+ * @param {Object} contentContainer DOM element to be resized
+ * @param int      deltaHeight      additional height to add
+ * @param int      originalHeight   original height of content container
+ */
+UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeight, originalHeight) {
+  var viewPortHeight = gj(window).height(),
+      positionYofContentContainer = gj(contentContainer).offset().top,
+      height,
+      totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
+      originalTotalY    = gj(contentContainer).offset().top + originalHeight;
+
+  if (viewPortHeight > originalTotalY) {
+    /* keep the original height */
+    gj(contentContainer).css("height", originalHeight);
+  }
+  else {
+    /* container out of viewport or container original height below viewport */
+    height = viewPortHeight - positionYofContentContainer - deltaHeight;
+    gj(contentContainer).css("height", height);
+    gj(contentContainer).css("overflow", "auto");
+    
+    if (gj.browser.mozilla) {
+      gj(contentContainer).css("overflow-x", "hidden");
+    }
+  }
+};
+
 
 UICalendarPortlet.prototype.editAlldayEvent = function(cont){
 	cont = gj(cont).prevAll("div")[0];
@@ -963,6 +1025,31 @@ UICalendarPortlet.prototype.sortByAttribute = function(obj, attribute){
     }
     return obj;
 };
+
+/**
+ * Scroll to last update event in list view
+ * @param {Object} DOM uiListContainer element
+ */
+UICalendarPortlet.prototype.scrollToActiveEventInListView = function(uiListContainer) {
+  var events = gj(uiListContainer).find("tr.uiListViewRow");
+  events = this.getBlockElements(events);
+  var len = events.length;
+  var scrollTop;
+
+  var lastUpdatedId = gj(uiListContainer).attr("lastUpdatedId");
+  if (lastUpdatedId && (lastUpdatedId != "null")) {
+        for (var i = 0; i < len; i++) {
+            if (events[i].getAttribute("eventId") == lastUpdatedId) {
+                scrollTop = gj(events[i]).offset().top;
+                break;
+            }
+        }
+  }
+
+  /* minus 145 to compensate the distance between uiListContainer and table contains event */
+  uiListContainer.scrollTop = scrollTop - 145;
+};
+
 /* for resizing event box */
 /**
  * Class to control calendar event resizing
@@ -2064,7 +2151,8 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
 
 };
 
-UICalendarPortlet.prototype.isAllday = function(form,selecedCalendarID){
+// init script for UIEventDetailTab
+UICalendarPortlet.prototype.initDetailTab = function(form,selecedCalendarID){
   try {
       if (typeof(form) == "string") 
           form = _module.UICalendarPortlet.getElementById(form);
@@ -2078,6 +2166,16 @@ UICalendarPortlet.prototype.isAllday = function(form,selecedCalendarID){
               break;
           }
       }
+      
+      // assign event when user change time by typing
+      var UIComboboxInputs = gj(form).find("input.UIComboboxInput");
+      for(var i = 0; i < UIComboboxInputs.length; i++) {
+    	  gj(UIComboboxInputs[i]).live('change', function() {
+    		  _module.ScheduleSupport.syncTimeBetweenEventTabs();
+    		  _module.ScheduleSupport.applyPeriod();
+    	  });
+      }
+      
      /**
        * Preselect calendar when add event/task
        */
@@ -2304,9 +2402,8 @@ UICalendarPortlet.prototype.checkAllInBusy = function(chk){
     }
 };
 
-/**
- * Sets up checking free/busy
- * @param {Object} container DOM element contains event data
+/*
+ * Init scripts for Schedule tab
  */
 UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone){
     if (typeof(container) == "string") 
@@ -2935,7 +3032,6 @@ UICalendarPortlet.prototype.getDateString = function(date) {
     var dateInMonth = date.getUTCDate() < 10 ? '0' + date.getUTCDate() : date.getUTCDate();
 
     return dayName + ", " + monthName + " " + dateInMonth;
-
 };
 
 

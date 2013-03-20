@@ -16,7 +16,7 @@
 		<div class="quickAddEventContainer">
 			<div class="form-horizontal">
 			   <div class="control-group choiceOption">
-					<label class="control-label"><%=uicomponent.getLabel(uicomponent.CHOIX)%>:</label>
+					<label class="control-label"><%=uicomponent.getLabel(uicomponent.CHOIX)%></label>
 					<div class="controls">
 						<% uicomponent.renderField(uicomponent.CHOIX) %>
 					</div>

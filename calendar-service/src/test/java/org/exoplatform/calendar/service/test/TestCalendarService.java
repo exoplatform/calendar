@@ -50,6 +50,7 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarSearchResult;
 import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
+import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.EventSearchConnector;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.NewGroupListener;
@@ -104,14 +105,13 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   public void setUp() throws Exception {
     super.setUp();
-    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) getService(NodeHierarchyCreator.class);
     repositoryService_ = getService(RepositoryService.class);
-    storage_ = new JCRDataStorage(nodeHierarchyCreator,repositoryService_);
-    organizationService_ = (OrganizationService) getService(OrganizationService.class);
     calendarService_ = getService(CalendarService.class);
+    organizationService_ = (OrganizationService) getService(OrganizationService.class);
     unifiedSearchService_ = getService(CalendarSearchServiceConnector.class);
     taskSearchConnector_ = getService(TaskSearchConnector.class);
     eventSearchConnector_ = getService(EventSearchConnector.class);
+    storage_ = ((CalendarServiceImpl)calendarService_).getDataStorage(); 
   }
 
   private void loginUser(String userId) {
@@ -1852,8 +1852,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     String sharedMemberShip = "/organization/management/executive-board/:*.manager"; // john is a member
 
     String[] sharedList = new String[]{sharedUser, sharedGroup, sharedMemberShip};
-
-    // test share for user with edit permission
     cal.setViewPermission(sharedList);
     cal.setEditPermission(sharedList);
 
