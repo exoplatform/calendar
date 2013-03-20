@@ -14,13 +14,5 @@
   <import>war:/cs-extension/cs/calendar/calendar-service-configuration.xml</import>
   <import>war:/cs-extension/cs/webservice/webservice-configuration.xml</import>
   <import>war:/cs-extension/cs/cs-configuration.xml</import>
-    
-       
-    
-      
-        
- 
-     
-  
   
 </configuration>

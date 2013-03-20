@@ -22,25 +22,4 @@
   xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
   xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
-  <external-component-plugins>
-    <target-component>org.exoplatform.services.resources.ResourceBundleService</target-component>
-    <component-plugin>
-      <name>CS Commons UI Component Resource Bundle</name>
-      <set-method>addResourceBundle</set-method>
-      <type>org.exoplatform.services.resources.impl.BaseResourceBundlePlugin</type>
-      <init-params>
-        <values-param>
-          <name>classpath.resources</name>
-          <description>The resources that start with the following package name should be load from file system</description>
-          <value>locale.cs.commons.cs-commons</value>          
-        </values-param>
-        <values-param>
-          <name>portal.resource.names</name>
-          <description>The properties files of the portal, these files will be merged into one ResourceBundle properties </description>
-          <value>locale.cs.commons.cs-commons</value>
-        </values-param>
-       </init-params>
-    </component-plugin>
-  </external-component-plugins>
-
 </configuration>
