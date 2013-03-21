@@ -5,7 +5,7 @@
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
     <version>9-SNAPSHOT</version>
-    <relativePath></relativePath>
+    <relativePath />
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
@@ -213,7 +213,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
       <!-- Our own project modules -->
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
