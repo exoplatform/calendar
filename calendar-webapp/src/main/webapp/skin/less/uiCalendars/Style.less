@@ -58,16 +58,12 @@
 		.colorOpacity {
 			.border-radius(@borderRadiusSmall);
 			display: block;
-			height: 12px;
-			width: 12px;
+			.square(12px);
 		}
 		
 		.calendarName{
-			overflow: hidden;
-			width: 150px; 
-			 height: 18px;
-		    text-overflow: ellipsis;
-		    white-space: nowrap;
+			.text-overflow();
+			 .size(18px,130px);
 		}
 		
 		.uiVTabContent{
