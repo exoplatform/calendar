@@ -27,7 +27,22 @@ CalendarLayout.prototype.init = function() {
       UICalendarWorkingContainer.style.height = this.uiCalendarWorkingContainerHeight + 'px';
     }
   }
+
+  /*=== reduce height of left navigation container to left navigation ===*/
+  var leftNavigationContainer = gj(".LeftNavigationTDContainer")[0],
+      leftNavigation = gj(leftNavigationContainer).children("#LeftNavigation")[0],
+      leftNavigationContainerHeight = gj(leftNavigationContainer).height(),
+      leftNavigationHeight = gj(leftNavigation).height();
+
+  if ((leftNavigationHeight !== null) && (leftNavigationContainerHeight !== null)) {
+      if (leftNavigationContainerHeight > leftNavigationHeight) {
+          gj(leftNavigationContainer).height(leftNavigationHeight);
+      }
+  }
+
 };
+
+
 /**
  * This function is installed in the 'setInterval' function to be executed each 200ms to adjust the application height.  
  */
@@ -36,21 +51,22 @@ CalendarLayout.prototype.adjustApplicationHeight = function() {
   
 };
 
+
 CalendarLayout.prototype.updateUICalendarViewLayout = function(view) {
-  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
     var CalendarLayout = _module.CalendarLayout;
     var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
     var UICalendarViewContainer = gj(UICalendarPortlet).find('div.' + CalendarLayout.UI_CALENDAR_VIEW_CONTAINER)[0];
     var uCVCHeight = UICalendarViewContainer.offsetHeight;
     var uiMainWorkingArea = gj(UICalendarPortlet).find('div.' + CalendarLayout.MAIN_WORKING_PANEL)[0]; 
     if (uCVCHeight != CalendarLayout.uiCalendarWorkingContainerHeight) {
-  if (uiMainWorkingArea) {
-      if (view != this.UI_LIST_VIEW || uCVCHeight > CalendarLayout.uiCalendarWorkingContainerHeight) {
-    uiMainWorkingArea.style.height = (uiMainWorkingArea.offsetHeight + CalendarLayout.uiCalendarWorkingContainerHeight - uCVCHeight) + "px";
-      } else {
-    uiMainWorkingArea.style.height = "auto";
-      }
-  }
+        if (uiMainWorkingArea) {
+            if (view != this.UI_LIST_VIEW || uCVCHeight > CalendarLayout.uiCalendarWorkingContainerHeight) {
+                uiMainWorkingArea.style.height = (uiMainWorkingArea.offsetHeight + CalendarLayout.uiCalendarWorkingContainerHeight - uCVCHeight) + "px";
+            } else {
+                uiMainWorkingArea.style.height = "auto";
+            }
+        }
     }
 };
 

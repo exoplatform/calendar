@@ -9,6 +9,7 @@ function UICalendarPortlet(){
 	this.MINUTE_PER_CELL = 30;
 	this.PIXELS_PER_MINUTE = this.CELL_HEIGHT / this.MINUTE_PER_CELL; 
 	this.MINUTES_PER_PIXEL = this.MINUTE_PER_CELL / this.CELL_HEIGHT;
+    this.originalHeightOfEventDayContent = null;
 }
 
 UICalendarPortlet.prototype.onLoad = function(param){
@@ -629,9 +630,10 @@ UICalendarPortlet.prototype.checkLayout = function(){
 
 /** 
  * Switch among types of layout
- * @param {Int} layout Layout value in order number
+ * @param {int} layout Layout value in order number
  */
 UICalendarPortlet.prototype.switchLayout = function(layout){
+    console.log("UICalendarPortlet.prototype.switchLayout - layout: " + layout);
 	var layoutMan = _module.LayoutManager ;
 	if(layout == 0){
 		layoutMan.reset(); 
@@ -639,8 +641,14 @@ UICalendarPortlet.prototype.switchLayout = function(layout){
 	}
 	layoutMan.switchLayout(layout);
 	_module.UICalendarPortlet.resortEvents();
+
+    /* resize the uiCalendars */
+    if (layout === 1) {
+        console.log("resize the uiCalendars");
+        _module.UICalendars.init("UICalendars");
+    }
 };
-/* for event */
+
 /**
  * Initialize some properties in Day view
  */
@@ -853,8 +861,10 @@ UICalendarPortlet.prototype.adjustWidth = function(el, totalWidth){
  */
 UICalendarPortlet.prototype.showEvent = function(){
     this.init();
-    var EventDayContainer = gj(this.viewer).parents(".eventDayContainer")[0],
-        originalHeight = gj(EventDayContainer).height();
+    var EventDayContainer = gj(this.viewer).parents(".eventDayContainer")[0];
+    if (this.originalHeightOfEventDayContent === null) {
+        this.originalHeightOfEventDayContent = gj(EventDayContainer).height();
+    }
 
 	if (!EventDayContainer) return ;
     this.editAlldayEvent(EventDayContainer);
@@ -864,7 +874,7 @@ UICalendarPortlet.prototype.showEvent = function(){
     var el = this.getElements(this.viewer);
     el = this.sortByAttribute(el, "startTime");
     if (el.length <= 0) {
-        this.resizeHeightForDayView(EventDayContainer, originalHeight);
+        this.resizeHeightForDayView(EventDayContainer, this.originalHeightOfEventDayContent);
         return;
     }
 
@@ -901,7 +911,7 @@ UICalendarPortlet.prototype.showEvent = function(){
     }
 
     /*=== resize height to stop at bottom of the page - for dayview ===*/
-    this.resizeHeightForDayView(EventDayContainer, originalHeight);
+    this.resizeHeightForDayView(EventDayContainer, this.originalHeightOfEventDayContent);
 
     this.items = null;
     this.viewer = null;
@@ -913,12 +923,12 @@ UICalendarPortlet.prototype.showEvent = function(){
  * @param {int}    originalHeight   original height of content container
  */
 UICalendarPortlet.prototype.resizeHeightForDayView = function(contentContainer, originalHeight) {
-  this.resizeHeight(contentContainer, 6, originalHeight);
+    this.resizeHeight(contentContainer, 6, originalHeight);
 
-  /* resize content each time the window is resized */
-  gj(window).resize(function() {
-    _module.UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
-  });
+    /* resize content each time the window is resized */
+    gj(window).resize(function() {
+        _module.UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
+    });
 };
 
 
@@ -929,12 +939,15 @@ UICalendarPortlet.prototype.resizeHeightForDayView = function(contentContainer, 
  * @param {int}    originalHeight   original height of content container
  */
 UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeight, originalHeight) {
-  var viewPortHeight = gj(window).height(),
+    console.log("UICalendarPortlet.prototype.resizeHeight");
+  var viewPortHeight    = gj(window).height(),
       positionYofContentContainer = gj(contentContainer).offset().top,
       height,
       totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
       originalTotalY    = gj(contentContainer).offset().top + originalHeight;
 
+    console.log("originalHeight: " + originalHeight + " - viewPortHeight :" + viewPortHeight);
+    console.log(gj(contentContainer).offset().top + " - originalTotalY: " +  originalTotalY);
   if (viewPortHeight > originalTotalY) {
     /* keep the original height */
     gj(contentContainer).css("height", originalHeight);
@@ -1061,7 +1074,7 @@ function UIResizeEvent(){
 }
 
 /**
- * Initilize some propertis of UIResizeEvent
+ * Initialize some properties of UIResizeEvent
  * @param {Object} evt Mouse event
  */
 UIResizeEvent.prototype.init = function(evt){

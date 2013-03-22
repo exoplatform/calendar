@@ -1,6 +1,6 @@
 (function(base, cs, gj, UICalendarMan){
 function UIWeekView() {	
-  this.originalHeightOfEventWeekContent = null;
+    this.originalHeightOfEventWeekContent = null;
 }
 
 var _module = {};
@@ -14,6 +14,7 @@ UIWeekView.prototype.mousePos = function(evt){
 } ;
 
 UIWeekView.prototype.init = function() {
+    console.log("UIWeekView.prototype.init");
     _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var UICalendarPortlet = _module.UICalendarPortlet ;
 	var UIWeekView = _module.UIWeekView ;
@@ -21,28 +22,35 @@ UIWeekView.prototype.init = function() {
 	var allEvents = gj(uiCalendarViewContainer).find('div.eventContainerBorder');
 	this.container = document.getElementById("UIWeekViewGrid") ;
 	var EventWeekContent = gj(this.container).parents(".eventWeekContent")[0] ;
+    if (this.originalHeightOfEventWeekContent === null) {
+        this.originalHeightOfEventWeekContent = gj(EventWeekContent).height();
+    }
+
 	this.items = new Array() ;
 	_module.UICalendarPortlet.viewType = "UIWeekView" ;
 	for(var i = 0 ; i < allEvents.length ; i ++) {
 		if(allEvents[i].style.display != "none") this.items.push(allEvents[i]) ;
 	}
 	var len = UIWeekView.items.length ;
-	if (len <= 0) {
-	  this.initAllday() ;
 
-      this.increaseWidth(EventWeekContent);
+    /* no events in view */
+    if (len <= 0) {
+	    this.initAllday() ;
 
-      this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+        this.increaseWidth(EventWeekContent);
 
-      /* resize content each time the window is resized */
-      gj(window).resize(function() {
-        UIWeekView.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+        this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+        var originalHeight = this.originalHeightOfEventWeekContent;
+        /* resize content each time the window is resized */
+        gj(window).resize(function() {
+            UIWeekView.resizeHeight(EventWeekContent, originalHeight);
   
-        UIWeekView.resizeWidth(EventWeekContent);  
-      });
+            UIWeekView.resizeWidth(EventWeekContent);
+        });
 	  
-	  return;
-	}	
+	    return;
+	}
+
 	var marker = null ;
 	for(var i = 0 ; i < len ; i ++){		
 		var height = parseInt(this.items[i].getAttribute("endTime")) - parseInt(this.items[i].getAttribute("startTime")) ;
@@ -77,53 +85,56 @@ UIWeekView.prototype.init = function() {
 		}
 	}
 	this.cols = gj(firstTr).find("td") ;
+
+    /*=== resize width ===*/
+    this.increaseWidth(EventWeekContent);
+
+    /*=== resize height ===*/
+    this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
+
+    /* resize content each time the window is resized */
+    var originalHeight = this.originalHeightOfEventWeekContent;
+    gj(window).resize(function() {
+        console.log("resize on weekview");
+        UIWeekView.resizeHeight(EventWeekContent, originalHeight);
+
+        UIWeekView.resizeWidth(EventWeekContent);
+    });
+
 	this.distributeEvent() ;
 	this.setSize() ;
 	this.initAllday() ;
+
 	//UICalendarPortlet.setFocus() ;
-  
-  /*=== resize width ===*/
-  this.increaseWidth(EventWeekContent);
 
-  /*=== resize height ===*/
-  this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
-
-  /* resize content each time the window is resized */
-  gj(window).resize(function() {
-    UIWeekView.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
-  
-    UIWeekView.resizeWidth(EventWeekContent);  
-  });
-  
 } ;
 
 /**
  * Increase the width to include the scrollbar
  */
 UIWeekView.prototype.increaseWidth = function(contentContainer) {
+    console.log("UIWeekView.prototype.increaseWidth");
   var originalWidth   = gj(contentContainer).width(),
       widthOfTitleBar = gj(contentContainer).siblings(".eventWeekBar")[0].offsetWidth;
 
-  if (originalWidth === widthOfTitleBar) {
-
-    gj(contentContainer).css("width", (originalWidth + 20));
-    var eventTable = gj(contentContainer).children("table.uiGrid")[0];
-    gj(eventTable).css("width", originalWidth);
+  if (originalWidth !== widthOfTitleBar) {
+      gj(contentContainer).css("width", widthOfTitleBar);
   }
+
+  gj(contentContainer).css("width", (widthOfTitleBar + 20));
+  var eventTable = gj(contentContainer).children("table.uiGrid")[0];
+  gj(eventTable).css("width", widthOfTitleBar);
 };
 
 /**
  * Resize height for week view
  * @param {Object} contentContainer DOM element
- * @param int      originalHeight   original height of content container
+ * @param {int}    originalHeight   original height of content container
  */
 UIWeekView.prototype.resizeHeight = function(contentContainer, originalHeight) {
-  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-  var UICalendarPortlet = _module.UICalendarPortlet ;
-  if (originalHeight === null) {
-  	originalHeight = gj(contentContainer).height();
-  }
-  UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight); 
+    console.log("UIWeekView.prototype.resizeHeight");
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+    _module.UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
 };
 
 /**
@@ -141,19 +152,23 @@ UIWeekView.prototype.resizeWidth = function(contentContainer) {
 
 
 UIWeekView.prototype.distributeEvent = function() {
-	var UIWeekView = _module.UIWeekView ;
-	var len = UIWeekView.cols.length ;
-	for(var i = 1 ; i < len ; i ++) {
-		if (gj(UIWeekView.cols[i]).children('div.eventContainerBorder').length < 0)
-			return ;
-		var colIndex = parseInt(UIWeekView.cols[i].getAttribute("eventindex")) ;
-		var eventIndex = null ;
+    console.log("UIWeekView.prototype.distributeEvent");
+	var UIWeekView = _module.UIWeekView,
+        len = UIWeekView.cols.length ;
+
+    for(var i = 1 ; i < len ; i ++) {
+		if (gj(UIWeekView.cols[i]).children('div.eventContainerBorder').length < 0) { return ; }
+
+		var colIndex   = parseInt(UIWeekView.cols[i].getAttribute("eventindex")),
+		    eventIndex = null;
+
 		for(var j = 0 ; j < UIWeekView.items.length ; j ++){		
 			eventIndex = parseInt(UIWeekView.items[j].getAttribute("eventindex")) ;
 			if (colIndex == eventIndex) UIWeekView.cols[i].appendChild(UIWeekView.items[j]) ;
 		}			
 	}
 } ;
+
 
 UIWeekView.prototype.onResize = function() {
 	    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
@@ -163,6 +178,7 @@ UIWeekView.prototype.onResize = function() {
 } ;
 
 UIWeekView.prototype.setSize = function() {
+    console.log("UIWeekView.prototype.setSize");
 	var UIWeekView = _module.UIWeekView ;
 	if(!UIWeekView.cols) return ;
 	var len = UIWeekView.cols.length ;
@@ -172,6 +188,7 @@ UIWeekView.prototype.setSize = function() {
 } ;
 
 UIWeekView.prototype.adjustWidth = function(el) {
+    console.log("UIWeekView.prototype.adjustWidth");
     var UICalendarPortlet = _module.UICalendarPortlet ;
     var inter = UICalendarPortlet.getInterval(el) ;
     if (el.length <= 0) return ;
@@ -270,6 +287,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
 
 
 UIWeekView.prototype.showInCol = function(obj) {
+    console.log("UIWeekView.prototype.showInCol");
 	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 	var items = _module.UICalendarPortlet.getElements(obj) ;
 	var len = items.length ;
@@ -280,7 +298,8 @@ UIWeekView.prototype.showInCol = function(obj) {
 	var width = parseFloat((obj.offsetWidth - 2)/container.offsetWidth)*100 ;
 	items = _module.UICalendarPortlet.sortByAttribute(items, "startTime") ;
 	UIWeekView.adjustWidth(items, obj.offsetWidth, base.Browser.findPosXInContainer(obj, container,base.I18n.isRT())) ;
-} ;
+};
+
 
 UIWeekView.prototype.dragStart = function(evt) {
 	_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
