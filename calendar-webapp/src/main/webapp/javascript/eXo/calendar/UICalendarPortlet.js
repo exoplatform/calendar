@@ -633,7 +633,6 @@ UICalendarPortlet.prototype.checkLayout = function(){
  * @param {int} layout Layout value in order number
  */
 UICalendarPortlet.prototype.switchLayout = function(layout){
-    console.log("UICalendarPortlet.prototype.switchLayout - layout: " + layout);
 	var layoutMan = _module.LayoutManager ;
 	if(layout == 0){
 		layoutMan.reset(); 
@@ -644,7 +643,6 @@ UICalendarPortlet.prototype.switchLayout = function(layout){
 
     /* resize the uiCalendars */
     if (layout === 1) {
-        console.log("resize the uiCalendars");
         _module.UICalendars.init("UICalendars");
     }
 };
@@ -939,15 +937,12 @@ UICalendarPortlet.prototype.resizeHeightForDayView = function(contentContainer, 
  * @param {int}    originalHeight   original height of content container
  */
 UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeight, originalHeight) {
-    console.log("UICalendarPortlet.prototype.resizeHeight");
   var viewPortHeight    = gj(window).height(),
       positionYofContentContainer = gj(contentContainer).offset().top,
       height,
       totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
       originalTotalY    = gj(contentContainer).offset().top + originalHeight;
 
-    console.log("originalHeight: " + originalHeight + " - viewPortHeight :" + viewPortHeight);
-    console.log(gj(contentContainer).offset().top + " - originalTotalY: " +  originalTotalY);
   if (viewPortHeight > originalTotalY) {
     /* keep the original height */
     gj(contentContainer).css("height", originalHeight);

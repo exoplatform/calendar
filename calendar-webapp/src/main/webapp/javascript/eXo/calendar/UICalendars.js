@@ -11,7 +11,6 @@ var _module = {} ;
 eXo.calendar = eXo.calendar || {}
 
 UICalendars.prototype.init = function(calendarsForm) {
-    console.log("UICalendars.prototype.init");
     _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 
     if (typeof(calendarsForm) == "string") {
@@ -40,14 +39,12 @@ UICalendars.prototype.init = function(calendarsForm) {
         checkBox.onclick = UICalendarPortlet.filterByCalendar;
     }
 
-    console.log("content container : " + contentContainer);
     /*=== resize height ===*/
     UICalendarPortlet.resizeHeight(contentContainer, 20, this.originalHeight);
 
     /* resize content each time the window is resized */
     var originalHeight = this.originalHeight
     gj(window).resize(function() {
-        console.log("resize on uiCalendars - originalHeight : " + originalHeight);
         UICalendarPortlet.resizeHeight(contentContainer, 20, originalHeight);
     });
 };

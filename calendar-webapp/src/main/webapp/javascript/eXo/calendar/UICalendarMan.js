@@ -405,7 +405,6 @@ function EventMan(){
  * @param {Object} rootNode
  */
 EventMan.prototype.initMonth = function(rootNode){
-    console.log("EventMan.prototype.initMonth");
     _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
     var UICalendarPortlet = _module.UICalendarPortlet,
         rowContainerDay   = gj(rootNode).find(".rowContainerDay")[0],
@@ -840,7 +839,6 @@ GUIMan.prototype.paintMonth = function(){
  * @param {Integer} dayIndex
  */
 GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
-    console.log("GUIMan.prototype.drawDay");
     var dayObj = weekObj.days[dayIndex];
     // Pre-calculate event position
     var dayNode = (this.tableData[weekObj.weekIndex])[dayIndex];
@@ -852,9 +850,6 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	    beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
 	    endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
     }
-
-    console.log(" dayInfo : " + dayInfo.top);
-    console.log("scroll top : " + gj(dayNode).scrollTop());
 
     // Draw visible events
     for (var i=0; i<dayObj.visibleGroup.length; i++) {
@@ -940,10 +935,6 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	    moreEventList.appendChild(eventNode);
 	    var topPos = this.EVENT_BAR_HEIGH * i;
 	    eventNode.style.top = topPos + 16 + 'px';
-
-        console.log("top : " + eventNode.style.top);
-        console.log("scroll top : " + gj(eventNode).scrollTop());
-
 	    eventNode.setAttribute('used', 'true');
 	}
 	this.setWidthForMoreEvent(moreEventList,i,dayNode);
