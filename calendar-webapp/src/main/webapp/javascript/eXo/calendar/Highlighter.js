@@ -207,7 +207,7 @@ Highlighter.prototype.execute = function(evt) {
 			if (len >= 0) {
 				startIndex = sPos.y ;
 				lastIndex = startIndex + len ;
-				startBlock = Highlighter.startBlock
+				startBlock = Highlighter.startBlock ;
 				endBlock = Highlighter.block[lastIndex] ;
 				startX = base.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) ;
 				startY = base.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) ;
@@ -262,6 +262,9 @@ Highlighter.prototype.end = function(evt) {
 	var Highlighter = _module.Highlighter;
 	if (Highlighter.callback) eval(Highlighter.callback) ;
 	gj(document).off("mousemove mouseup");
+    if (Highlighter.startBlock) {
+        Highlighter.startBlock.style.display = "none";
+    }
 } ;
 
 Highlighter.prototype.setCallback = function(str) {
