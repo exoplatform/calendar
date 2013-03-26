@@ -411,7 +411,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         String handler = context.getPortalContainerName();
         SiteKey siteKey = null ;
         String spaceGroupId = null;
-        if (calendarId.indexOf(Utils.SPACE_ID_PREFIX) > 0) {
+        if (calendarId.indexOf(Utils.SPACE_CALENDAR_ID_SUFFIX) > 0) {
           spaceGroupId = calendarMap.get(calendarId).getCalendarOwner();
           siteKey = SiteKey.group(spaceGroupId);
         } else {

@@ -441,7 +441,8 @@ public class Utils {
   public static final String NONE_NAGVIGATION = "#";
   public static final String PORTLET_NAME = "CalendarPortlet";
   public static final String SPACES_GROUP = "spaces";
-  public static final String SPACE_ID_PREFIX = "_space_calendar";
+  public static final String SPACES_GROUP_ID_PREFIX = "/spaces/";
+  public static final String SPACE_CALENDAR_ID_SUFFIX = "_space_calendar";
   
 
   /**
@@ -697,5 +698,28 @@ public class Utils {
     Set<String> usersCanEdit = getUserByMembershipId(membershipId, groupId);
     result.addAll(usersCanEdit);
     return result;
+  }
+  /**
+   * Gets id for a calendar space by space group id
+   * 
+   * @param spaceGroupId in form  ex: /spaces/mobile_team
+   * @return calendar id in form ex: mobile_team_space_calendar
+   */
+  public static String getCalendarIdFromSpace(String spaceGroupId) {
+    StringBuilder sb = new StringBuilder(spaceGroupId.substring(SPACES_GROUP_ID_PREFIX.length()));
+    sb.append(SPACE_CALENDAR_ID_SUFFIX);
+    return sb.toString();
+  }
+  
+  /**
+   * Gets space group id from calendar id of a space calendar
+   * 
+   * @param calendarId in form ex: mobile_team_space_calendar
+   * @return space group id ex: /spaces/mobile_team
+   */
+  public static String getSpaceGroupIdFromCalendarId(String calendarId) {
+    StringBuilder sb = new StringBuilder(SPACES_GROUP_ID_PREFIX);
+    sb.append(calendarId.split(SPACE_CALENDAR_ID_SUFFIX)[0]);
+    return sb.toString();
   }
 }

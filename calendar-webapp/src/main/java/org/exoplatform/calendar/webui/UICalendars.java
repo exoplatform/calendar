@@ -298,11 +298,11 @@ public class UICalendars extends UIForm  {
    */
   protected boolean isCalendarOfSpace(String calendarId)
   {
-    String spaceId = UICalendarPortlet.getSpaceId();
-    if (spaceId == null) {
+    String spaceGroupId = UICalendarPortlet.getGroupIdOfSpace();
+    if(spaceGroupId == null) {
       return true;
     }
-    return calendarId.contains(spaceId);
+    return spaceGroupId.equals(Utils.getSpaceGroupIdFromCalendarId(calendarId));
   }
 
   /**
