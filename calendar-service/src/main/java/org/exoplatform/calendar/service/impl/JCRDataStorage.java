@@ -865,8 +865,7 @@ public class JCRDataStorage implements DataStorage {
                                   String calendarId,
                                   CalendarEvent event,
                                   boolean isNew) throws Exception {
-    int calType = Integer.parseInt(event.getCalType());
-
+    int calType = getTypeOfCalendar(username, calendarId);
     if (calType == Calendar.TYPE_PRIVATE) {
       Node calendarNode = getUserCalendarHome(username).getNode(calendarId);
       event.setCalendarId(calendarId);
@@ -2699,11 +2698,12 @@ public class JCRDataStorage implements DataStorage {
       while (iter.hasNext()) {
         try {
           Node calendar = iter.nextProperty().getParent();
-          if (!calendarId.equals(calendar.getProperty(Utils.EXO_ID)))
+          if (!calendarId.equals(calendar.getProperty(Utils.EXO_ID).getString()))
             continue;
           if (calendar.hasNode(eventId)) {
             CalendarEvent event = getEvent(calendar.getNode(eventId));
             event.setCalType(String.valueOf(Calendar.TYPE_SHARED));
+            return event;
           }
         } catch (Exception e) {
           log.error("Exception when get shared event", e);

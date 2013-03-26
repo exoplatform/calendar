@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +78,9 @@ import org.exoplatform.web.controller.metadata.ControllerDescriptor;
 import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.router.Router;
 import org.exoplatform.web.controller.router.RouterConfigException;
+import org.hibernate.mapping.Array;
+
+import com.google.javascript.jscomp.mozilla.rhino.ast.FunctionNode.Form;
 
 /**
  * Created by The eXo Platform SARL
@@ -851,10 +855,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     List<String> calendarIds = new ArrayList<String>();
     calendarIds.add(cal.getId());
     assertEquals(1, calendarService_.getSharedEventByCalendars("john", calendarIds).size());
-
+    assertNotNull(calendarService_.getSharedEvent("john", cal.getId(), calendarEvent.getId()));
     CalendarEvent event = calendarService_.getUserEventByCalendar(username, calendarIds).get(0);
     assertEquals("calendarEvent", event.getSummary());
-
 
     //Test search shared event 
     loginUser("john");
@@ -1718,6 +1721,111 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     fromCal.add(java.util.Calendar.DATE, 7);
 
     assertNotNull(occMap.get(format.format(fromCal.getTime())));
+
+  }
+
+  /**
+   * test duplicate event issue in shared calendar when break occurrence series 
+   * @since CAL-358
+   * @throws Exception
+   */
+  public void testGetOccurrenceEvents3() throws Exception {
+    String timeZone = "Asia/Ho_Chi_Minh";
+    TimeZone tz = TimeZone.getTimeZone(timeZone);
+    java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
+    fromCal.set(2013, 2, 7, 5, 30);
+
+    java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
+    toCal.set(2013, 2, 7, 6, 30);
+
+    Calendar calendar = createCalendar(username, "unified search test");
+    CalendarEvent recurEvent = new CalendarEvent();
+    recurEvent.setSummary("repeated past");
+    recurEvent.setFromDateTime(fromCal.getTime());
+    recurEvent.setToDateTime(toCal.getTime());
+    recurEvent.setRepeatType(CalendarEvent.RP_DAILY);
+    recurEvent.setRepeatInterval(1);
+    recurEvent.setRepeatCount(6);
+    recurEvent.setRepeatUntilDate(null);
+    recurEvent.setRepeatByDay(null);
+    //recurEvent.setRepeatByMonthDay(new long[] { 2, 3, 4, 5, 7 });
+    //recurEvent.setRepeatInterval(2);
+    recurEvent.setRepeatUntilDate(null);
+    java.util.Calendar from = java.util.Calendar.getInstance(tz);
+    java.util.Calendar to = java.util.Calendar.getInstance(tz);
+    from.set(2013, 2, 1, 0, 0, 0);
+    to.set(2013, 2, 12, 0, 0, 0);
+
+    calendarService_.saveUserCalendar(username, calendar, true);
+    calendarService_.saveUserEvent(username, calendar.getId(), recurEvent, true);
+    List<CalendarEvent> original = calendarService_.getOriginalRecurrenceEvents(username, from, to, null);
+    assertEquals(1, original.size());
+
+    Map<String, CalendarEvent> occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+    assertEquals(5, occMap.size());
+
+    SimpleDateFormat sf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    sf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    String reocurenceId1 = sf.format(fromCal.getTime());
+    CalendarEvent occEvent1 = occMap.get(reocurenceId1);
+
+    java.util.Calendar occCal = java.util.Calendar.getInstance(tz);
+    occCal.setTime(occEvent1.getFromDateTime());
+
+    assertEquals(occCal.get(java.util.Calendar.DATE), 7);
+    assertEquals(occCal.get(java.util.Calendar.MONTH), 2);
+    assertEquals(occCal.get(java.util.Calendar.YEAR), 2013);
+
+    fromCal.add(java.util.Calendar.DATE, 1);
+    String reocurenceId2 = sf.format(fromCal.getTime());
+    CalendarEvent occEvent2 = occMap.get(reocurenceId2);
+    occCal = java.util.Calendar.getInstance(tz);
+    occCal.setTime(occEvent2.getFromDateTime());
+
+    assertEquals(occCal.get(java.util.Calendar.DATE), 8);
+    assertEquals(occCal.get(java.util.Calendar.MONTH), 2);
+    assertEquals(occCal.get(java.util.Calendar.YEAR), 2013);
+
+    //Break first event in series and save 
+    //set break ID
+    
+    
+    List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
+    occEvent1.setIsExceptionOccurrence(true);
+    occEvent1.setSummary("broken series event");
+    occEvent1.setRecurrenceId(reocurenceId1);
+    listEvent.add(occEvent1);
+    calendar.setEditPermission(new String[]{"john", username});
+    calendarService_.saveUserCalendar(username, calendar, false);
+    calendarService_.shareCalendar(username, calendar.getId(), Arrays.asList(new String[]{"john"})); 
+    loginUser("john");
+    calendarService_.updateOccurrenceEvent(calendar.getId(), calendar.getId(), String.valueOf(Calendar.TYPE_SHARED), String.valueOf(Calendar.TYPE_SHARED), listEvent, "john");
+    recurEvent.setExcludeId(new String[]{reocurenceId1});
+    calendarService_.saveEventToSharedCalendar("john", calendar.getId(), recurEvent, false); 
+   
+    //check occurrences
+    original = calendarService_.getOriginalRecurrenceEvents(username, from, to, null);
+    assertEquals(1, original.size());
+    occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+    assertEquals(4, occMap.size());
+    listEvent = new ArrayList<CalendarEvent>();
+    occEvent2.setSummary("broken series event 2");
+    occEvent2.setIsExceptionOccurrence(true);
+    occEvent2.setRecurrenceId(reocurenceId2);
+    listEvent.add(occEvent2);
+    calendarService_.updateOccurrenceEvent(calendar.getId(), calendar.getId(), String.valueOf(Calendar.TYPE_SHARED), String.valueOf(Calendar.TYPE_SHARED), listEvent, "john");
+    recurEvent.setExcludeId(new String[]{reocurenceId1, reocurenceId2});
+    calendarService_.saveEventToSharedCalendar("john", calendar.getId(), recurEvent, false); 
+    
+    original = calendarService_.getOriginalRecurrenceEvents(username, from, to, null);
+    assertEquals(1, original.size());
+    occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+    assertEquals(3, occMap.size());
+    
+    calendarService_.removeSharedEvent("john", calendar.getId(), recurEvent.getId());
+    calendarService_.removeSharedCalendar("john", calendar.getId());
+    calendarService_.removeUserEvent(username, calendar.getId(), recurEvent.getId());
+    calendarService_.removeUserCalendar(username, calendar.getId());
 
   }
 
