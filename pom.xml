@@ -59,39 +59,113 @@
     <org.exoplatform.doc.doc-style.version>4.0.0-SNAPSHOT</org.exoplatform.doc.doc-style.version>
   </properties>
   <dependencyManagement>
-    <!-- ### NEVER CHANGE THIS ORDER ### -->
-    <!-- * From low level to top level projects -->
-    <!-- * maven-depmgt-pom at the end -->
+    <!-- ### NEVER CHANGE THIS ORDER OF DEPMGT ### -->
+    <!-- * From top level to bottom projects -->
+    <!-- * maven-depmgt-pom must be the first -->
+    <!-- * Your own modules -->
+    <!-- * And projects below you -->
     <dependencies>
-      <!-- Import versions of kernel modules to use -->
+      <!-- Import versions of external dependencies to use -->
       <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>kernel-parent</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
+        <groupId>org.exoplatform</groupId>
+        <artifactId>maven-depmgt-pom</artifactId>
+        <version>${org.exoplatform.depmgt.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Import versions of core modules to use -->
+      <!-- Our own project modules -->
       <dependency>
-        <groupId>org.exoplatform.core</groupId>
-        <artifactId>core-parent</artifactId>
-        <version>${org.exoplatform.core.version}</version>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-component-create</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-extension-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-extension-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-extension-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-injector</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-resources</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-resources</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-statistics</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-webservice</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <!-- Import versions from social project -->
+      <dependency>
+        <groupId>org.exoplatform.social</groupId>
+        <artifactId>social</artifactId>
+        <version>${org.exoplatform.social.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>			
+      <!-- Import versions from commons project -->
+      <dependency>
+        <groupId>org.exoplatform.commons</groupId>
+        <artifactId>commons</artifactId>
+        <version>${org.exoplatform.commons.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Import versions of ws modules to use -->
+      <!-- Import versions from platform-ui project -->
       <dependency>
-        <groupId>org.exoplatform.ws</groupId>
-        <artifactId>ws-parent</artifactId>
-        <version>${org.exoplatform.ws.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- Import versions of jcr modules to use -->
-      <dependency>
-        <groupId>org.exoplatform.jcr</groupId>
-        <artifactId>jcr-parent</artifactId>
-        <version>${org.exoplatform.jcr.version}</version>
+        <groupId>org.exoplatform.platform-ui</groupId>
+        <artifactId>platform-ui</artifactId>
+        <version>${org.exoplatform.platform-ui.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -189,110 +263,38 @@
         <artifactId>wci-wci</artifactId>
         <version>${org.gatein.wci.version}</version>
       </dependency>
-      <!-- Import versions from platform-ui project -->
+      <!-- Import versions of jcr modules to use -->
       <dependency>
-        <groupId>org.exoplatform.platform-ui</groupId>
-        <artifactId>platform-ui</artifactId>
-        <version>${org.exoplatform.platform-ui.version}</version>
+        <groupId>org.exoplatform.jcr</groupId>
+        <artifactId>jcr-parent</artifactId>
+        <version>${org.exoplatform.jcr.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Import versions from commons project -->
+      <!-- Import versions of ws modules to use -->
       <dependency>
-        <groupId>org.exoplatform.commons</groupId>
-        <artifactId>commons</artifactId>
-        <version>${org.exoplatform.commons.version}</version>
+        <groupId>org.exoplatform.ws</groupId>
+        <artifactId>ws-parent</artifactId>
+        <version>${org.exoplatform.ws.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Import versions from social project -->
+      <!-- Import versions of core modules to use -->
       <dependency>
-        <groupId>org.exoplatform.social</groupId>
-        <artifactId>social</artifactId>
-        <version>${org.exoplatform.social.version}</version>
+        <groupId>org.exoplatform.core</groupId>
+        <artifactId>core-parent</artifactId>
+        <version>${org.exoplatform.core.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Our own project modules -->
+      <!-- Import versions of kernel modules to use -->
       <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-common</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-component-create</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-extension-config</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-extension-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-extension-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-injector</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-resources</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-resources</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-service</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-statistics</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-webservice</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- Import versions of external dependencies to use -->
-      <dependency>
-        <groupId>org.exoplatform</groupId>
-        <artifactId>maven-depmgt-pom</artifactId>
-        <version>${org.exoplatform.depmgt.version}</version>
+        <groupId>org.exoplatform.kernel</groupId>
+        <artifactId>kernel-parent</artifactId>
+        <version>${org.exoplatform.kernel.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
+      </dependency>			
       <!-- Use to generate some documentation -->
       <dependency>
         <groupId>org.exoplatform.doc</groupId>
