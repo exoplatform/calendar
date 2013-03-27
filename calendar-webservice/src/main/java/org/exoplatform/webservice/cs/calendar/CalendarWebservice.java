@@ -58,6 +58,7 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.webservice.cs.bean.EventData;
 import org.exoplatform.webservice.cs.bean.SingleEvent;
+
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -125,6 +126,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.checkPermission
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -179,6 +181,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.event
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -232,6 +235,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.feed
+   * @LevelAPI Experimental
    */
   @SuppressWarnings("unchecked")
   @GET
@@ -346,6 +350,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.publicProcess
+   * @LevelAPI Experimental
    */
   @GET
   @Path("/subscribe/{username}/{calendarId}/{type}")
@@ -398,6 +403,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return : text/calendar MimeType (ICalendar format) 
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.privateProcess
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -440,6 +446,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return Response of a JSon object. The JSon object includes the list of events saved in "info" property.  
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEvents
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -491,6 +498,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception : HTTPStatus.INTERNAL_ERROR , HTTPStatus.UNAUTHORIZED , HTTPStatus.NO_CONTENT
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.upcomingEvent
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -546,6 +554,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return true/false
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.updateStatus
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -585,6 +594,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.getCalendars
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -632,6 +642,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEvent
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -661,6 +672,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEventById
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -690,6 +702,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.getOccurrenceEvent
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -742,6 +755,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @throws Exception
    * 
    * @anchor CSref.PublicRESTAPIs.CalendarApplication.processInvitationReply
+   * @LevelAPI Experimental
    */
   @GET
   @Path("/invitation/{calendarId}/{calType}/{eventId}/{inviter}/{invitee}/{eXoId}/{answer}")
