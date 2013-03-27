@@ -16,6 +16,7 @@
  */
 package org.exoplatform.webservice.cs.rest;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,10 +39,13 @@ import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
 import org.exoplatform.calendar.service.impl.ICalendarImportExport;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.scheduler.JobSchedulerService;
@@ -63,8 +67,8 @@ public class MockCalendarService implements CalendarService{
   private CalendarSetting setting_ ;
 
   public MockCalendarService() throws Exception{
-    calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(new JCRDataStorage(null, null)));
-    calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(new JCRDataStorage(null, null)));
+    calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(new JCRDataStorage(null, null,(CacheService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CacheService.class))));
+    calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(new JCRDataStorage(null, null, (CacheService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CacheService.class))));
   }
 
   @Override
@@ -479,7 +483,16 @@ public class MockCalendarService implements CalendarService{
   public Map<String,CalendarEvent> getOccurrenceEvents(CalendarEvent recurEvent,
                                                  java.util.Calendar from,
                                                  java.util.Calendar to, String timezone) throws Exception {
-    return null;
+    Iterator<List<CalendarEvent>> iter = data_.values().iterator() ; 
+    CalendarEvent event =  iter.next().get(0);
+    Map<String, CalendarEvent> result = new HashMap<String, CalendarEvent>();
+    SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    if(event.getRepeatType() != null) {
+      String recurId = sdf.format(event.getFromDateTime());
+      result.put(recurId, event);
+    }
+    return result;
+    
   }
 
   /* (non-Javadoc)
@@ -584,5 +597,18 @@ public class MockCalendarService implements CalendarService{
   public CalendarEvent getEventById(String eventId) throws Exception {
     Iterator<List<CalendarEvent>> iter = data_.values().iterator() ; 
     return iter.next().get(0) ;
+  }
+
+  @Override
+  public Calendar getCalendarById(String calId) throws Exception {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
+  public void autoShareCalendar(List<String> groupsOfUser, String reciever) throws Exception {
+  }
+
+  @Override
+  public void autoRemoveShareCalendar(String groupId, String username) throws Exception {
   }
 }

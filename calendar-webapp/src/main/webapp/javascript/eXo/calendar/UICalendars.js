@@ -1,33 +1,52 @@
 (function(cs, gj, base){
 function UICalendars() {
-  this.POPUP_CONTAINER_ID = "tmpMenuElement";
-  this.calsFormElem = null;
-  this.currentMenuElm = null;
-  this.currentAnchorElm = null;
-  
+    this.POPUP_CONTAINER_ID = "tmpMenuElement";
+    this.calsFormElem     = null;
+    this.currentMenuElm   = null;
+    this.currentAnchorElm = null;
+    this.originalHeight   = null;
 }
 
 var _module = {} ;
 eXo.calendar = eXo.calendar || {}
 
 UICalendars.prototype.init = function(calendarsForm) {
-_module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-  if (typeof(calendarsForm) == "string") 
-    calendarsForm = _module.UICalendarPortlet.getElementById(calendarsForm);
-  var UICalendarPortlet = _module.UICalendarPortlet;
-  _module.UICalendarPortlet.filterForm = calendarsForm;
-  this.calsFormElem = calendarsForm;
-  var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
-  var CalendarItem = gj(calendarsForm).find('li.calendarItem'); 
-  var len = CalendarGroup.length;
-  var clen = CalendarItem.length;
-  for (var i = 0; i < len; i++) {
-      CalendarGroup[i].onclick = UICalendarPortlet.filterByGroup;
-  }
-  for (var j = 0; j < clen; j++) {
-    var checkBox = gj(CalendarItem[j]).find('div.calendarCheckboxBlock')[0];
-    checkBox.onclick = UICalendarPortlet.filterByCalendar;
-}
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+
+    if (typeof(calendarsForm) == "string") {
+      calendarsForm = _module.UICalendarPortlet.getElementById(calendarsForm);
+    }
+
+    var UICalendarPortlet = _module.UICalendarPortlet,
+        contentContainer  = gj(calendarsForm).find(".contentContainer")[0];
+
+    if (this.originalHeight === null) {
+        this.originalHeight = gj(contentContainer).height();
+    }
+
+    _module.UICalendarPortlet.filterForm = calendarsForm;
+    this.calsFormElem = calendarsForm;
+    var CalendarGroup = gj(calendarsForm).find('input.CalendarGroup');
+    var CalendarItem = gj(calendarsForm).find('li.calendarItem');
+    var len = CalendarGroup.length;
+    var clen = CalendarItem.length;
+
+    for (var i = 0; i < len; i++) {
+        CalendarGroup[i].onclick = UICalendarPortlet.filterByGroup;
+    }
+    for (var j = 0; j < clen; j++) {
+        var checkBox = gj(CalendarItem[j]).find('div.calendarCheckboxBlock')[0];
+        checkBox.onclick = UICalendarPortlet.filterByCalendar;
+    }
+
+    /*=== resize height ===*/
+    UICalendarPortlet.resizeHeight(contentContainer, 20, this.originalHeight);
+
+    /* resize content each time the window is resized */
+    var originalHeight = this.originalHeight
+    gj(window).resize(function() {
+        UICalendarPortlet.resizeHeight(contentContainer, 20, originalHeight);
+    });
 };
 
 UICalendars.prototype.resetSettingButton = function(settingButton) {

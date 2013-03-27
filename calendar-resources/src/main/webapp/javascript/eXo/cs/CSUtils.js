@@ -333,7 +333,7 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
   while (i>n) {
 		i--;
     if (checkboxes[i].checked) {
-      var eventBoxes = gj(checkboxes[i]).parents(".eventBoxes")[0];
+      var eventBoxes = gj(checkboxes[i]).parents(".uiListViewRow")[0];
       isEditable = eventBoxes.getAttribute("isEditable");
 
       /* check permission of user to event */
@@ -782,6 +782,8 @@ LayoutManager.prototype.check = function(){
 };
 
 LayoutManager.prototype.switchLayout = function(layout){
+	arrowIcon = gj("#ShowHideAll").find('i');
+	arrowIcon.toggleClass('uiIconMiniArrowLeft').toggleClass('uiIconMiniArrowRight');
 	var layoutcookie = base.Browser.getCookie(this.layoutId) ;
 	var status = this.setValue(layout,layoutcookie);
 	if (!status) {

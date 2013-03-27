@@ -396,36 +396,101 @@ WeekMan.prototype.compareEventByWeek = function(event1, event2, weekIndex){
   }
 };
 
-function EventMan(){}
+function EventMan(){
+  this.originalHeightOfEventMonthContent = null;
+}
 
 /**
  *
  * @param {Object} rootNode
  */
 EventMan.prototype.initMonth = function(rootNode){
-  this.cleanUp();
-  rootNode = typeof(rootNode) == 'string' ? document.getElementById(rootNode) : rootNode;
-  this.rootNode = rootNode;
-  this.events = new Array();
-  this.weeks = new Array();
-  var DOMUtil = cs.DOMUtil;
-  // Parse all event node to event object
-  var allEvents = gj(rootNode).find('div.dayContentContainer'); 
-  // Create and init all event
-  for (var i = 0; i < allEvents.length; i++) {
-    if (allEvents[i].style.display == 'none') {
-      continue;
-    }
-    var eventObj = new EventObject();
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+    var UICalendarPortlet = _module.UICalendarPortlet,
+        rowContainerDay   = gj(rootNode).find(".rowContainerDay")[0],
+        EventMan          = _module.UICalendarMan.EventMan ;
 
-    gj(allEvents[i]).on({'mouseover':eXo.calendar.EventTooltip.show, 'mouseout':eXo.calendar.EventTooltip.hide});
-    eventObj.init(allEvents[i]);
-    this.events.push(eventObj);
-  }
-  this.UIMonthViewGrid = document.getElementById('UIMonthViewGrid');
-  this.groupByWeek();
-  this.sortByWeek();
+    this.cleanUp();
+    rootNode = typeof(rootNode) == 'string' ? document.getElementById(rootNode) : rootNode;
+    this.rootNode = rootNode;
+    this.events = new Array();
+    this.weeks = new Array();
+    var DOMUtil = cs.DOMUtil;
+    // Parse all event node to event object
+    var allEvents = gj(rootNode).find('div.dayContentContainer');
+    // Create and init all event
+    for (var i = 0; i < allEvents.length; i++) {
+        if (allEvents[i].style.display == 'none') {
+            continue;
+        }
+
+        var eventObj = new EventObject();
+        gj(allEvents[i]).on({'mouseover':eXo.calendar.EventTooltip.show, 'mouseout':eXo.calendar.EventTooltip.hide});
+        eventObj.init(allEvents[i]);
+        this.events.push(eventObj);
+    }
+
+    this.UIMonthViewGrid = document.getElementById('UIMonthViewGrid');
+
+    /* reset the scroll to put events in correct position */
+    rowContainerDay.scrollTop = 0;
+
+    this.groupByWeek();
+    this.sortByWeek();
+
+    /*=== resize width ===*/
+    this.increaseWidth(rowContainerDay);
+
+    /*=== resize height to stop at bottom of the page - for month view ===*/
+    if (this.originalHeightOfEventMonthContent === null) {
+        this.originalHeightOfEventMonthContent = gj(rowContainerDay).height();
+    }
+    UICalendarPortlet.resizeHeight(rowContainerDay, 6, this.originalHeightOfEventMonthContent);
+
+    /* resize content each time the window resizes */
+    var originalHeight = this.originalHeightOfEventMonthContent;
+    gj(window).resize(function() {
+        UICalendarPortlet.resizeHeight(rowContainerDay, 6, originalHeight);
+
+        EventMan.resizeWidth(rowContainerDay);
+    });
 };
+
+/**
+ * Increase the width to include the scrollbar
+ */
+EventMan.prototype.increaseWidth = function(contentContainer) {
+    var originalWidth       = gj(contentContainer).width(),
+        eventMonthContainer = gj(contentContainer).parents(".eventMonthContainer")[0],
+        widthOfTitleBar     = gj(eventMonthContainer).siblings(".dayTitleBar")[0].offsetWidth;
+
+    if (widthOfTitleBar !== originalWidth) {
+      gj(contentContainer).css("width", widthOfTitleBar);
+    }
+
+    gj(contentContainer).css("width", (widthOfTitleBar + 20));
+    if (this.UIMonthViewGrid) {
+        gj(this.UIMonthViewGrid).css("width", widthOfTitleBar);
+    }
+    else {
+        this.UIMonthViewGrid = document.getElementById('UIMonthViewGrid');
+    }
+};
+
+/**
+ * Resize width for month view to include the scrollbar
+ * @param {Object} contentContainer DOM element
+ */
+EventMan.prototype.resizeWidth = function(contentContainer) {
+  var eventMonthContainer = gj(contentContainer).parents(".eventMonthContainer")[0],
+      dayTitleBar         = gj(eventMonthContainer).siblings(".dayTitleBar")[0],
+      resizedWidth        = gj(dayTitleBar).width(),
+      eventTable          = gj(contentContainer).children("table#UIMonthViewGrid")[0];
+  
+  gj(eventTable).css("width", resizedWidth);
+  gj(contentContainer).css("width", (resizedWidth + 20));
+};
+
 
 EventMan.prototype.cleanUp = function() {
   if (!this.events ||
@@ -510,7 +575,7 @@ EventMan.prototype.initWeek = function(rootNode) {
 };
 
 EventMan.prototype.groupByWeek = function(){
-  var weekNodes = gj(this.UIMonthViewGrid).find('tr'); 
+  var weekNodes = gj(this.UIMonthViewGrid).find('tr');
   var startWeek = 0;
   var endWeek = 0;
   var startCell = null;
@@ -785,6 +850,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	    beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
 	    endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
     }
+
     // Draw visible events
     for (var i=0; i<dayObj.visibleGroup.length; i++) {
 	var eventObj = dayObj.visibleGroup[i];

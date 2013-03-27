@@ -294,7 +294,6 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
         return ;
       }
-      UIFormDateTimePicker fromField = uiForm.getChildById(FIELD_FROM);
       Date from = uiForm.getEventFromDate(uiPortlet.getCalendarSetting().getDateFormat() ,uiPortlet.getCalendarSetting().getTimeFormat()) ;
       Date to = uiForm.getEventToDate(uiPortlet.getCalendarSetting().getDateFormat(), uiPortlet.getCalendarSetting().getTimeFormat()) ;
       if(from == null) {
@@ -430,6 +429,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       if(uiForm.isEvent()) {
         uiPopupContainer.setId(UIPopupContainer.UIEVENTPOPUP) ;
         UIEventForm uiEventForm = uiPopupContainer.addChild(UIEventForm.class, null, null) ;
+        String calId = uiForm.getEventCalendar();
         uiEventForm.update(uiForm.calType_, uiForm.getUIFormSelectBoxGroup(FIELD_CALENDAR).getOptions()) ;
         uiEventForm.initForm(calendarSetting, null, null) ;
         uiEventForm.setEventSumary(uiForm.getEventSummary()) ;
@@ -454,10 +454,12 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         uiEventForm.setEmailRemindBefore(String.valueOf(5));
         uiEventForm.setEmailReminder(true) ;
         uiEventForm.setEmailRepeat(false) ;
-        if (uiForm.getEventCalendar() != null) uiEventForm.setSelectedCalendarId(uiForm.getEventCalendar());
+        uiEventForm.calType_ = uiForm.calType_ ;
+        if (calId != null) uiEventForm.setSelectedCalendarId(calId);
       } else {
         uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP) ;
         UITaskForm uiTaskForm = uiPopupContainer.addChild(UITaskForm.class, null, null) ;
+        String calId = uiForm.getEventCalendar();
         uiTaskForm.update(uiForm.calType_, uiForm.getUIFormSelectBoxGroup(FIELD_CALENDAR).getOptions()) ;
         uiTaskForm.initForm(calendarSetting, null, null) ;
         String username = CalendarUtils.getCurrentUser() ;
@@ -479,7 +481,8 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         uiTaskForm.setEmailRemindBefore(String.valueOf(5));
         uiTaskForm.setEmailReminder(true) ;
         uiTaskForm.setEmailRepeat(false) ;
-        if (uiForm.getEventCalendar() != null) uiTaskForm.setSelectedCalendarId(uiForm.getEventCalendar());
+        uiTaskForm.calType_ = uiForm.calType_ ;
+        if (calId != null) uiTaskForm.setSelectedCalendarId(calId);
       }
 
       UIPopupWindow popupWindow = uiForm.getAncestorOfType(UIPopupWindow.class);

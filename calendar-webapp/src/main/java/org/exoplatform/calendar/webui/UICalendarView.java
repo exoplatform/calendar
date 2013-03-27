@@ -1075,6 +1075,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           uiPreview.setEvent(eventCalendar);
           uiPreview.setId("UIPreviewPopup");
           uiPreview.setShowPopup(true);
+          uiPreview.setPreviewByUrl(false);
           event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
         }
       } else {
@@ -1179,6 +1180,11 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
                                                                          null);
             uiEventForm.update(calType, CalendarUtils.getCalendarOption());
             uiEventForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
+            if(!uiEventForm.isAddNew_ && !uiEventForm.isReminderByEmail(eventCalendar.getReminders())){
+              OrganizationService orgService = CalendarUtils.getOrganizationService() ;
+              String email = orgService.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()).getEmail();
+              uiEventForm.setEmailAddress(email);
+            } 
             uiEventForm.setSelectedCalendarId(calendarId);
             uiPopupContainer.addChild(uiEventForm);
             uiPopupAction.activate(uiPopupContainer, 750, 0);
@@ -1188,6 +1194,11 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             UITaskForm uiTaskForm = uiPopupContainer.createUIComponent(UITaskForm.class, null, null);
             uiTaskForm.update(calType, CalendarUtils.getCalendarOption());
             uiTaskForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
+            if(!uiTaskForm.isAddNew_ && !uiTaskForm.isReminderByEmail(eventCalendar.getReminders())){
+              OrganizationService orgService = CalendarUtils.getOrganizationService() ;
+              String email = orgService.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()).getEmail();
+              uiTaskForm.setEmailAddress(email);
+            } 
             uiTaskForm.setSelectedCalendarId(calendarId);
             uiPopupContainer.addChild(uiTaskForm);
             uiPopupAction.activate(uiPopupContainer, 750, 0);

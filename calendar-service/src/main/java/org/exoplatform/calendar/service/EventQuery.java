@@ -173,56 +173,56 @@ public class EventQuery {
   }
 
   public String getQueryStatement() throws Exception {
-    StringBuffer queryString = null;
+    StringBuilder queryString = null;
     if (queryType.equals(Query.SQL)) {
       if (!Utils.isEmpty(calendarPath))
-        queryString = new StringBuffer(" select * from " + nodeType + " where jcr:path like '" + calendarPath + "/%'");
+        queryString = new StringBuilder(" select * from ").append(nodeType).append(" where jcr:path like '").append(calendarPath).append("/%'");
       else
-        queryString = new StringBuffer(" select * from " + nodeType + " ");
+        queryString = new StringBuilder(" select * from ").append(nodeType).append(" ");
       if (!Utils.isEmpty(text)) {
         text.replaceAll("\"", "\\\"").replaceAll("-", Utils.EMPTY_STR);
-        queryString.append(" and (" + Utils.EXO_SUMMARY + " like '%" + text + "%'");
-        queryString.append(" or " + Utils.EXO_DESCRIPTION + " like '%" + text + "%'");
-        queryString.append(" or " + Utils.EXO_LOCATION + " like '%" + text + "%'");
-        queryString.append(" or " + Utils.EXO_PARTICIPANT + " like '%" + text + "%'");
-        queryString.append(" or " + Utils.EXO_INVITATION + " like '%" + text + "%'");
+        queryString.append(" and (").append(Utils.EXO_SUMMARY).append(" like '%").append(text).append("%'");
+        queryString.append(" or ").append(Utils.EXO_DESCRIPTION).append(" like '%").append(text).append("%'");
+        queryString.append(" or ").append(Utils.EXO_LOCATION).append(" like '%").append(text).append("%'");
+        queryString.append(" or ").append(Utils.EXO_PARTICIPANT).append(" like '%").append(text).append("%'");
+        queryString.append(" or ").append(Utils.EXO_INVITATION).append(" like '%").append(text).append("%'");
         // queryString.append(" and contains (.,'"+ text +"') ") ;
         queryString.append(")");
       }
       if (!Utils.isEmpty(eventType)) {
-        queryString.append(" and " + Utils.EXO_EVENT_TYPE + " = '" + eventType + "'");
+        queryString.append(" and ").append(Utils.EXO_EVENT_TYPE).append(" = '").append(eventType).append("'");
       }
       if (!Utils.isEmpty(priority)) {
-        queryString.append(" and " + Utils.EXO_PRIORITY + " = '" + priority + "'");
+        queryString.append(" and ").append(Utils.EXO_PRIORITY).append(" = '").append(priority).append("'");
       }
       if (!Utils.isEmpty(state)) {
-        queryString.append(" and " + Utils.EXO_EVENT_STATE + " = '" + state + "'");
+        queryString.append(" and ").append(Utils.EXO_EVENT_STATE).append(" = '").append(state).append("'");
       }
       if (categoryIds != null && categoryIds.length > 0) {
         for (String category : categoryIds) {
-          queryString.append(" and " + Utils.EXO_EVENT_CATEGORYID + " = '" + category + "'");
+          queryString.append(" and ").append(Utils.EXO_EVENT_CATEGORYID).append(" = '").append(category).append("'");
         }
       }
       if (calendarIds != null && calendarIds.length > 0) {
         for (String calendarId : calendarIds) {
-          queryString.append(" and " + Utils.EXO_CALENDAR_ID + " = '" + calendarId + "'");
+          queryString.append(" and ").append(Utils.EXO_CALENDAR_ID).append(" = '").append(calendarId).append("'");
         }
       }
       return queryString.toString();
     } else {
       if (calendarPath != null)
-        queryString = new StringBuffer("/jcr:root" + calendarPath + "//element(*," + nodeType + ")");
+        queryString = new StringBuilder("/jcr:root").append(calendarPath).append("//element(*,").append(nodeType).append(")");
       else
-        queryString = new StringBuffer("/jcr:root//element(*," + nodeType + ")");
+        queryString = new StringBuilder("/jcr:root//element(*,").append(nodeType).append(")");
       boolean hasConjuntion = false;
-      StringBuffer stringBuffer = new StringBuffer("[");
+      StringBuilder stringBuffer = new StringBuilder("[");
       // desclared full text query
       if (text != null && text.length() > 0) {
-        stringBuffer.append("(jcr:contains(@" + Utils.EXO_SUMMARY + ", '" + text + "')")
-              .append(" or jcr:contains(@" + Utils.EXO_DESCRIPTION + ", '" + text + "')")
-              .append(" or jcr:contains(@" + Utils.EXO_LOCATION + ", '" + text + "')")
-              .append(" or jcr:contains(@" + Utils.EXO_PARTICIPANT + ", '" + text + "')")
-              .append(" or jcr:contains(@" + Utils.EXO_INVITATION + ", '" + text + "'))");
+        stringBuffer.append("(jcr:contains(@").append(Utils.EXO_SUMMARY).append(", '").append(text).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_DESCRIPTION).append(", '").append(text).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_LOCATION).append(", '").append(text).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_PARTICIPANT).append(", '").append(text).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_INVITATION).append(", '").append(text).append("'))");
         hasConjuntion = true;
       }
       // desclared event type query
@@ -231,7 +231,7 @@ public class EventQuery {
           stringBuffer.append(" and (");
         else
           stringBuffer.append("(");
-        stringBuffer.append("@exo:eventType='" + eventType + "'");
+        stringBuffer.append("@exo:eventType='").append(eventType).append("'");
         stringBuffer.append(")");
         hasConjuntion = true;
       }
@@ -241,7 +241,7 @@ public class EventQuery {
           stringBuffer.append(" and (");
         else
           stringBuffer.append("(");
-        stringBuffer.append("@exo:priority='" + priority + "'");
+        stringBuffer.append("@exo:priority='").append(priority).append("'");
         stringBuffer.append(")");
         hasConjuntion = true;
       }
@@ -251,7 +251,7 @@ public class EventQuery {
           stringBuffer.append(" and (");
         else
           stringBuffer.append("(");
-        stringBuffer.append("@exo:eventState='" + state + "'");
+        stringBuffer.append("@exo:eventState='").append(state).append("'");
         stringBuffer.append(")");
         hasConjuntion = true;
       }
@@ -263,9 +263,9 @@ public class EventQuery {
           stringBuffer.append("(");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
-            stringBuffer.append("@exo:eventCategoryId='" + categoryIds[i] + "'");
+            stringBuffer.append("@exo:eventCategoryId='").append(categoryIds[i]).append("'");
           else
-            stringBuffer.append(" or @exo:eventCategoryId='" + categoryIds[i] + "'");
+            stringBuffer.append(" or @exo:eventCategoryId='").append(categoryIds[i]).append("'");
         }
         stringBuffer.append(")");
         hasConjuntion = true;
@@ -278,9 +278,9 @@ public class EventQuery {
           stringBuffer.append("(");
         for (int i = 0; i < calendarIds.length; i++) {
           if (i == 0)
-            stringBuffer.append("@exo:calendarId='" + calendarIds[i] + "'");
+            stringBuffer.append("@exo:calendarId='").append(calendarIds[i]).append("'");
           else
-            stringBuffer.append(" or @exo:calendarId='" + calendarIds[i] + "'");
+            stringBuffer.append(" or @exo:calendarId='").append(calendarIds[i]).append("'");
         }
         stringBuffer.append(")");
         hasConjuntion = true;
@@ -292,9 +292,9 @@ public class EventQuery {
           stringBuffer.append("(");
         for (int i = 0; i < filterCalendarIds.length; i++) {
           if (i == 0)
-            stringBuffer.append("@exo:calendarId !='" + filterCalendarIds[i] + "'");
+            stringBuffer.append("@exo:calendarId !='").append(filterCalendarIds[i]).append("'");
           else
-            stringBuffer.append(" and @exo:calendarId !='" + filterCalendarIds[i] + "'");
+            stringBuffer.append(" and @exo:calendarId !='").append(filterCalendarIds[i]).append("'");
         }
         stringBuffer.append(")");
         hasConjuntion = true;
@@ -307,9 +307,9 @@ public class EventQuery {
           stringBuffer.append("(");
         for (int i = 0; i < participants.length; i++) {
           if (i == 0)
-            stringBuffer.append("@exo:participant='" + participants[i] + "'");
+            stringBuffer.append("@exo:participant='").append(participants[i]).append("'");
           else
-            stringBuffer.append(" or @exo:participant='" + participants[i] + "'");
+            stringBuffer.append(" or @exo:participant='").append(participants[i]).append("'");
         }
         stringBuffer.append(")");
         hasConjuntion = true;
@@ -329,18 +329,18 @@ public class EventQuery {
          */
 
         // case where the event span fully the interval (starts before and ends after)
-        stringBuffer.append("@exo:fromDateTime <= xs:dateTime('" + ISO8601.format(fromDate) + "') and ");
-        stringBuffer.append("@exo:toDateTime >= xs:dateTime('" + ISO8601.format(toDate) + "')");
+        stringBuffer.append("@exo:fromDateTime <= xs:dateTime('").append(ISO8601.format(fromDate)).append("') and ");
+        stringBuffer.append("@exo:toDateTime >= xs:dateTime('").append(ISO8601.format(toDate)).append("')");
         stringBuffer.append(") or (");
 
         // case where the event starts in the interval
-        stringBuffer.append("@exo:fromDateTime >= xs:dateTime('" + ISO8601.format(fromDate) + "') and ");
-        stringBuffer.append("@exo:fromDateTime <= xs:dateTime('" + ISO8601.format(toDate) + "')");
+        stringBuffer.append("@exo:fromDateTime >= xs:dateTime('").append(ISO8601.format(fromDate)).append("') and ");
+        stringBuffer.append("@exo:fromDateTime <= xs:dateTime('").append(ISO8601.format(toDate)).append("')");
         stringBuffer.append(") or (");
 
         // case where the event ends in the interval
-        stringBuffer.append("@exo:toDateTime >= xs:dateTime('" + ISO8601.format(fromDate) + "') and ");
-        stringBuffer.append("@exo:toDateTime <= xs:dateTime('" + ISO8601.format(toDate) + "')");
+        stringBuffer.append("@exo:toDateTime >= xs:dateTime('").append(ISO8601.format(fromDate)).append("') and ");
+        stringBuffer.append("@exo:toDateTime <= xs:dateTime('").append(ISO8601.format(toDate)).append("')");
 
         stringBuffer.append(")");
         stringBuffer.append(")");
@@ -354,7 +354,7 @@ public class EventQuery {
         // stringBuffer.append("@exo:fromDateTime >= xs:dateTime('"+ISO8601.format(fromDate)+"')") ;
         // stringBuffer.append(") or (") ;
         // stringBuffer.append("@exo:fromDateTime < xs:dateTime('"+ISO8601.format(fromDate)+"') and ") ;
-        stringBuffer.append("@exo:fromDateTime >= xs:dateTime('" + ISO8601.format(fromDate) + "')");
+        stringBuffer.append("@exo:fromDateTime >= xs:dateTime('").append(ISO8601.format(fromDate)).append("')");
         // stringBuffer.append(")") ;
         stringBuffer.append(")");
         hasConjuntion = true;
@@ -369,22 +369,22 @@ public class EventQuery {
         // stringBuffer.append("@exo:fromDateTime < xs:dateTime('"+ISO8601.format(toDate)+"') and ") ;
         // stringBuffer.append("@exo:toDateTime > xs:dateTime('"+ISO8601.format(toDate)+"')") ;
         // stringBuffer.append(")") ;
-        stringBuffer.append("@exo:toDateTime <= xs:dateTime('" + ISO8601.format(toDate) + "')");
+        stringBuffer.append("@exo:toDateTime <= xs:dateTime('").append(ISO8601.format(toDate)).append("')");
         stringBuffer.append(")");
         hasConjuntion = true;
       }
 
       if (excludeRepeatEvent != null && excludeRepeatEvent) {
-        stringBuffer.append("and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='" + CalendarEvent.RP_NOREPEAT + "' and @exo:recurrenceId='')");
+        stringBuffer.append("and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='").append(CalendarEvent.RP_NOREPEAT).append("' and @exo:recurrenceId='')");
       }
       stringBuffer.append("]");
       // declared order by
       if (orderBy != null && orderBy.length > 0 && orderType != null && orderType.length() > 0) {
         for (int i = 0; i < orderBy.length; i++) {
           if (i == 0)
-            stringBuffer.append(" order by @" + orderBy[i].trim() + " " + orderType);
+            stringBuffer.append(" order by @").append(orderBy[i].trim()).append(" ").append(orderType);
           else
-            stringBuffer.append(", order by @" + orderBy[i].trim() + " " + orderType);
+            stringBuffer.append(", order by @").append(orderBy[i].trim()).append(" ").append(orderType);
         }
         hasConjuntion = true;
       }

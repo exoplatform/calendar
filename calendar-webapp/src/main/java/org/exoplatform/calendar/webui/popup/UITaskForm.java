@@ -122,11 +122,11 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   final public static String ACT_ADDCATEGORY = "AddCategory".intern() ;
   final public static String ACT_SELECTUSER = "SelectUser".intern() ;
 
-  private boolean isAddNew_ = true ;
+  public boolean isAddNew_ = true ;
   private CalendarEvent calendarEvent_ = null ;
   private String errorMsg_ = null ;
   private String errorValues = null ;
-  private String calType_ = "0" ;
+  protected String calType_ = "0" ;
   
   private String oldCalendarId_ = null ;
   private String newCalendarId_ = null ;
@@ -364,8 +364,8 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
   }
   public void setSelectedCalendarId(String value) {
     UITaskDetailTab taskDetailTab =  getChildById(TAB_TASKDETAIL) ;
-    value = calType_ + CalendarUtils.COLON + value ;
-    taskDetailTab.getUIFormSelectBoxGroup(UITaskDetailTab.FIELD_CALENDAR).setValue(value) ;
+    String selectedCal = new StringBuffer(calType_).append(CalendarUtils.COLON).append(value).toString();
+    taskDetailTab.getUIFormSelectBoxGroup(UITaskDetailTab.FIELD_CALENDAR).setValue(selectedCal) ;
   }
 
   protected String getTaskCategory() {
@@ -627,6 +627,13 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
     }
   }
 
+  public boolean isReminderByEmail(List<Reminder> reminders){
+    for(Reminder rm : reminders) {
+      return (Reminder.TYPE_EMAIL.equals(rm.getReminderType()));
+    }
+    return false;
+  }
+  
   protected List<Reminder>  getEventReminders(Date fromDateTime) throws Exception {
     List<Reminder> reminders = new ArrayList<Reminder>() ;
     if(getEmailReminder()) { 

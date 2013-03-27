@@ -175,7 +175,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   public final static String RP_END_AFTER = "endAfter";
   public final static String RP_END_NEVER = "neverEnd";
   
-  private boolean isAddNew_ = true ;
+  public boolean isAddNew_ = true ;
   private boolean isChangedSignificantly = false;
   private CalendarEvent calendarEvent_ = null ;
   protected String calType_ = "0" ;
@@ -348,6 +348,13 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       attenderTab.updateParticipants(pars.toString());
       setRepeatSummary(buildRepeatSummary(null));
     }
+  }
+  
+  public boolean isReminderByEmail(List<Reminder> reminders){
+    for(Reminder rm : reminders) {
+      return (Reminder.TYPE_EMAIL.equals(rm.getReminderType()));
+    }
+    return false;
   }
   
   public static java.util.Calendar getCalendar(UIForm uiForm,String formTime,CalendarSetting calSetting) {
@@ -549,9 +556,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   }
   public void setSelectedCalendarId(String value) {
     UIEventDetailTab eventDetailTab =  getChildById(TAB_EVENTDETAIL) ;
-    value = calType_ + CalendarUtils.COLON + value ;
-    eventDetailTab.getUIFormSelectBoxGroup(UIEventDetailTab.FIELD_CALENDAR).setValue(value) ;
-    oldCalendarId_ = value ;
+    String selectedCal = new StringBuffer(calType_).append(CalendarUtils.COLON).append(value).toString();
+    eventDetailTab.getUIFormSelectBoxGroup(UIEventDetailTab.FIELD_CALENDAR).setValue(selectedCal);
+    oldCalendarId_ = selectedCal ;
   }
 
   protected String getEventCategory() {
@@ -2186,7 +2193,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       this.participant = participant;
       User user = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(participant);
       if (user != null) {
-        this.name = user.getDisplayName();
+        this.name = UIEventAttenderTab.getFullname(participant);
         this.email = user.getEmail();
       } else if (participant.matches(CalendarUtils.contactRegex)) {
         this.name = participant.substring(0, participant.lastIndexOf(CalendarUtils.OPEN_PARENTHESIS));

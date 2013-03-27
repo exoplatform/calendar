@@ -25,13 +25,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
 import javax.jcr.PathNotFoundException;
 import javax.jcr.query.Query;
+
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -48,6 +51,7 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarSearchResult;
 import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
+import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.EventSearchConnector;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.NewGroupListener;
@@ -74,6 +78,9 @@ import org.exoplatform.web.controller.metadata.ControllerDescriptor;
 import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.router.Router;
 import org.exoplatform.web.controller.router.RouterConfigException;
+import org.hibernate.mapping.Array;
+
+import com.google.javascript.jscomp.mozilla.rhino.ast.FunctionNode.Form;
 
 /**
  * Created by The eXo Platform SARL
@@ -102,14 +109,13 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   public void setUp() throws Exception {
     super.setUp();
-    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) getService(NodeHierarchyCreator.class);
     repositoryService_ = getService(RepositoryService.class);
-    storage_ = new JCRDataStorage(nodeHierarchyCreator,repositoryService_);
-    organizationService_ = (OrganizationService) getService(OrganizationService.class);
     calendarService_ = getService(CalendarService.class);
+    organizationService_ = (OrganizationService) getService(OrganizationService.class);
     unifiedSearchService_ = getService(CalendarSearchServiceConnector.class);
     taskSearchConnector_ = getService(TaskSearchConnector.class);
     eventSearchConnector_ = getService(EventSearchConnector.class);
+    storage_ = ((CalendarServiceImpl)calendarService_).getDataStorage(); 
   }
 
   private void loginUser(String userId) {
@@ -140,6 +146,44 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(unifiedSearchService_);
 
   }
+
+  //mvn test -Dtest=TestCalendarService#testSearchCalendarById
+  public void testGetCalendarById() throws Exception{
+    Calendar cal = new Calendar();
+    cal.setName("myCalendar");
+    cal.setDescription("Desscription");
+    //cal.setCategoryId();
+    cal.setPublic(true);
+    calendarService_.saveUserCalendar(username, cal, true);
+    EventCategory eventCategory = new EventCategory();
+    String name = "eventCategoryName";
+    eventCategory.setName(name);
+
+    Calendar calSave = calendarService_.getCalendarById(cal.getId());
+    assertNotNull(calSave);
+    assertEquals(Calendar.TYPE_PRIVATE, calendarService_.getTypeOfCalendar(username, calSave.getId()));
+
+    calendarService_.saveEventCategory(username, eventCategory, true);
+    CalendarEvent calEvent = new CalendarEvent();
+    calEvent.setEventType(CalendarEvent.TYPE_EVENT);
+    calEvent.setEventCategoryId(eventCategory.getId());
+    calEvent.setSummary("Have a meeting");
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 1);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.HOUR, 1);
+    toCal.add(java.util.Calendar.MINUTE, 1);
+    calEvent.setFromDateTime(fromCal.getTime());
+    calEvent.setToDateTime(toCal.getTime());
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent, true);
+    CalendarEvent eventSave = calendarService_.getEventById(calEvent.getId());
+    assertNotNull(eventSave);
+
+    calendarService_.removeEventCategory(username, eventCategory.getId());
+    assertNotNull(calendarService_.removeUserCalendar(username, calSave.getId()));
+
+  }
+
   //mvn test -Dtest=TestCalendarService#testGroupData
   public void testGroupData() throws Exception{
     Collection<Group> rootGroups = organizationService_.getGroupHandler().findGroupsOfUser(username);
@@ -457,15 +501,15 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     //router page expected return /portal/intranet/calendar
     String spaceGroupId = null;
-    String url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    String url = unifiedSearchService_.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
     assertEquals("/"+portalName+"/"+siteName+"/" + Utils.PAGE_NAGVIGATION, url);
     spaceGroupId = "/spaces/space1";
     //router space expected return /portal/g/:spaces:space1/space1/calendar
-    url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    url = unifiedSearchService_.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
     assertEquals("/"+portalName+"/g/"+ spaceGroupId.replaceAll(Utils.SLASH, ":")+"/space1/" + Utils.PAGE_NAGVIGATION, url);
     result = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
-    url = CalendarSearchResult.getUrl(rt, portalName, siteName, null, Utils.PAGE_NAGVIGATION);
+    url = unifiedSearchService_.getUrl(rt, portalName, siteName, null, Utils.PAGE_NAGVIGATION);
     for( SearchResult sr : result){
       checkFields(sr);
       assertEquals(url + Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + sr.getUrl().split(Utils.SLASH)[sr.getUrl().split(Utils.SLASH).length-1], sr.getUrl());
@@ -475,15 +519,15 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), null);
     //siteName = Utils.DEFAULT_SITENAME;
     spaceGroupId = null;
-    url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    url = unifiedSearchService_.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
     assertEquals("/"+portalName+"/"+siteName+"/" + Utils.PAGE_NAGVIGATION, url);
     spaceGroupId = "/spaces/space1";
     //router space expected return /portal/g/:spaces:space1/space1/calendar
-    url = CalendarSearchResult.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
+    url = unifiedSearchService_.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
     assertEquals("/"+portalName+"/g/"+ spaceGroupId.replaceAll(Utils.SLASH, ":")+"/space1/" + Utils.PAGE_NAGVIGATION, url);
     result = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
-    url = CalendarSearchResult.getUrl(rt, portalName, siteName, null, Utils.PAGE_NAGVIGATION);
+    url = unifiedSearchService_.getUrl(rt, portalName, siteName, null, Utils.PAGE_NAGVIGATION);
     for( SearchResult sr : result){
       checkFields(sr);
       assertEquals(url + Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + sr.getUrl().split(Utils.SLASH)[sr.getUrl().split(Utils.SLASH).length-1], sr.getUrl());
@@ -811,10 +855,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     List<String> calendarIds = new ArrayList<String>();
     calendarIds.add(cal.getId());
     assertEquals(1, calendarService_.getSharedEventByCalendars("john", calendarIds).size());
-
+    assertNotNull(calendarService_.getSharedEvent("john", cal.getId(), calendarEvent.getId()));
     CalendarEvent event = calendarService_.getUserEventByCalendar(username, calendarIds).get(0);
     assertEquals("calendarEvent", event.getSummary());
-
 
     //Test search shared event 
     loginUser("john");
@@ -1144,7 +1187,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
       calendarService_.removeUserCalendar(username, calendar.getId());
     } catch (Exception e) {
-      e.printStackTrace() ;
       //fail();
     }
   }
@@ -1154,9 +1196,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     try {
       assertNotNull(calendarService_.getGroupCalendar(calendar.getId())) ;
+      assertEquals(calendar, calendarService_.getCalendarById(calendar.getId()));
       calendarService_.removePublicCalendar(calendar.getId()) ;
     } catch (Exception e) {
-      e.printStackTrace() ;
       fail();
     }
 
@@ -1400,6 +1442,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       assertEquals(Utils.SHARED_TYPE, calendarService_.getTypeOfCalendar("john", sharedCalendar.getId()));
       assertEquals(Utils.INVALID_TYPE, calendarService_.getTypeOfCalendar(username, "Not exist id"));
 
+      assertEquals(sharedCalendar, calendarService_.getCalendarById(sharedCalendar.getId()));
+
       calendarService_.removeUserCalendar(username, calendar.getId());
       calendarService_.removePublicCalendar(publicCalendar.getId());
       calendarService_.removeSharedCalendar(username, sharedCalendar.getId());
@@ -1490,7 +1534,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       SessionProvider sessionProvider = storage_.createSessionProvider();
       assertNotNull(sessionProvider);
     } catch (Exception e) {
-      e.printStackTrace();
       fail();
     }
   }
@@ -1594,7 +1637,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
     toCal.set(2013, 2, 7, 6, 30);
 
+    Calendar calendar = createCalendar(username, "unified search test");
     CalendarEvent recurEvent = new CalendarEvent();
+    recurEvent.setSummary("repeated past");
     recurEvent.setFromDateTime(fromCal.getTime());
     recurEvent.setToDateTime(toCal.getTime());
     recurEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
@@ -1605,6 +1650,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     java.util.Calendar to = java.util.Calendar.getInstance(tz);
     from.set(2013, 2, 1, 0, 0, 0);
     to.set(2013, 2, 12, 0, 0, 0);
+
+    calendarService_.saveUserCalendar(username, calendar, true);
+    calendarService_.saveUserEvent(username, calendar.getId(), recurEvent, true);
     Map<String, CalendarEvent> occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
 
     assertEquals(1, occMap.size());
@@ -1616,6 +1664,18 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(occCal.get(java.util.Calendar.DATE), 7);
     assertEquals(occCal.get(java.util.Calendar.MONTH), 2);
     assertEquals(occCal.get(java.util.Calendar.YEAR), 2013);
+
+    EventQuery query = new UnifiedQuery() ;
+    query.setQueryType(Query.SQL);
+    query.setText("past") ;
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertNotNull(result) ;
+    assertEquals(1, result.size());
+    calendarService_.removeUserEvent(username, calendar.getId(), recurEvent.getId());
+    calendarService_.removeUserCalendar(username, calendar.getId());
   }
 
   /**
@@ -1661,6 +1721,111 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     fromCal.add(java.util.Calendar.DATE, 7);
 
     assertNotNull(occMap.get(format.format(fromCal.getTime())));
+
+  }
+
+  /**
+   * test duplicate event issue in shared calendar when break occurrence series 
+   * @since CAL-358
+   * @throws Exception
+   */
+  public void testGetOccurrenceEvents3() throws Exception {
+    String timeZone = "Asia/Ho_Chi_Minh";
+    TimeZone tz = TimeZone.getTimeZone(timeZone);
+    java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
+    fromCal.set(2013, 2, 7, 5, 30);
+
+    java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
+    toCal.set(2013, 2, 7, 6, 30);
+
+    Calendar calendar = createCalendar(username, "unified search test");
+    CalendarEvent recurEvent = new CalendarEvent();
+    recurEvent.setSummary("repeated past");
+    recurEvent.setFromDateTime(fromCal.getTime());
+    recurEvent.setToDateTime(toCal.getTime());
+    recurEvent.setRepeatType(CalendarEvent.RP_DAILY);
+    recurEvent.setRepeatInterval(1);
+    recurEvent.setRepeatCount(6);
+    recurEvent.setRepeatUntilDate(null);
+    recurEvent.setRepeatByDay(null);
+    //recurEvent.setRepeatByMonthDay(new long[] { 2, 3, 4, 5, 7 });
+    //recurEvent.setRepeatInterval(2);
+    recurEvent.setRepeatUntilDate(null);
+    java.util.Calendar from = java.util.Calendar.getInstance(tz);
+    java.util.Calendar to = java.util.Calendar.getInstance(tz);
+    from.set(2013, 2, 1, 0, 0, 0);
+    to.set(2013, 2, 12, 0, 0, 0);
+
+    calendarService_.saveUserCalendar(username, calendar, true);
+    calendarService_.saveUserEvent(username, calendar.getId(), recurEvent, true);
+    List<CalendarEvent> original = calendarService_.getOriginalRecurrenceEvents(username, from, to, null);
+    assertEquals(1, original.size());
+
+    Map<String, CalendarEvent> occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+    assertEquals(5, occMap.size());
+
+    SimpleDateFormat sf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    sf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    String reocurenceId1 = sf.format(fromCal.getTime());
+    CalendarEvent occEvent1 = occMap.get(reocurenceId1);
+
+    java.util.Calendar occCal = java.util.Calendar.getInstance(tz);
+    occCal.setTime(occEvent1.getFromDateTime());
+
+    assertEquals(occCal.get(java.util.Calendar.DATE), 7);
+    assertEquals(occCal.get(java.util.Calendar.MONTH), 2);
+    assertEquals(occCal.get(java.util.Calendar.YEAR), 2013);
+
+    fromCal.add(java.util.Calendar.DATE, 1);
+    String reocurenceId2 = sf.format(fromCal.getTime());
+    CalendarEvent occEvent2 = occMap.get(reocurenceId2);
+    occCal = java.util.Calendar.getInstance(tz);
+    occCal.setTime(occEvent2.getFromDateTime());
+
+    assertEquals(occCal.get(java.util.Calendar.DATE), 8);
+    assertEquals(occCal.get(java.util.Calendar.MONTH), 2);
+    assertEquals(occCal.get(java.util.Calendar.YEAR), 2013);
+
+    //Break first event in series and save 
+    //set break ID
+    
+    
+    List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
+    occEvent1.setIsExceptionOccurrence(true);
+    occEvent1.setSummary("broken series event");
+    occEvent1.setRecurrenceId(reocurenceId1);
+    listEvent.add(occEvent1);
+    calendar.setEditPermission(new String[]{"john", username});
+    calendarService_.saveUserCalendar(username, calendar, false);
+    calendarService_.shareCalendar(username, calendar.getId(), Arrays.asList(new String[]{"john"})); 
+    loginUser("john");
+    calendarService_.updateOccurrenceEvent(calendar.getId(), calendar.getId(), String.valueOf(Calendar.TYPE_SHARED), String.valueOf(Calendar.TYPE_SHARED), listEvent, "john");
+    recurEvent.setExcludeId(new String[]{reocurenceId1});
+    calendarService_.saveEventToSharedCalendar("john", calendar.getId(), recurEvent, false); 
+   
+    //check occurrences
+    original = calendarService_.getOriginalRecurrenceEvents(username, from, to, null);
+    assertEquals(1, original.size());
+    occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+    assertEquals(4, occMap.size());
+    listEvent = new ArrayList<CalendarEvent>();
+    occEvent2.setSummary("broken series event 2");
+    occEvent2.setIsExceptionOccurrence(true);
+    occEvent2.setRecurrenceId(reocurenceId2);
+    listEvent.add(occEvent2);
+    calendarService_.updateOccurrenceEvent(calendar.getId(), calendar.getId(), String.valueOf(Calendar.TYPE_SHARED), String.valueOf(Calendar.TYPE_SHARED), listEvent, "john");
+    recurEvent.setExcludeId(new String[]{reocurenceId1, reocurenceId2});
+    calendarService_.saveEventToSharedCalendar("john", calendar.getId(), recurEvent, false); 
+    
+    original = calendarService_.getOriginalRecurrenceEvents(username, from, to, null);
+    assertEquals(1, original.size());
+    occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+    assertEquals(3, occMap.size());
+    
+    calendarService_.removeSharedEvent("john", calendar.getId(), recurEvent.getId());
+    calendarService_.removeSharedCalendar("john", calendar.getId());
+    calendarService_.removeUserEvent(username, calendar.getId(), recurEvent.getId());
+    calendarService_.removeUserCalendar(username, calendar.getId());
 
   }
 
@@ -1786,31 +1951,27 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   public void testShareCalendarWithEditPermission() throws Exception {
     Calendar cal = createCalendar("test share", "test sharing with edit permission");
-    
     List<String> sharedUsers = new ArrayList<String>();
-    
     // need to update these below values if test-portal-configuration.xml is changed
     String sharedUser = "mary";
     String sharedGroup = "/platform/guests/:*.*"; // demo is a member
     String sharedMemberShip = "/organization/management/executive-board/:*.manager"; // john is a member
-    
+
     String[] sharedList = new String[]{sharedUser, sharedGroup, sharedMemberShip};
-    
-    // test share for user with edit permission
     cal.setViewPermission(sharedList);
     cal.setEditPermission(sharedList);
-    
+
     sharedUsers.add(sharedUser);
     sharedUsers.addAll(Utils.getUsersCanEdit(sharedGroup));
     sharedUsers.addAll(Utils.getUsersCanEdit(sharedMemberShip));
-    
+
     calendarService_.saveUserCalendar(username, cal, false);
     calendarService_.shareCalendar(username, cal.getId(), sharedUsers);
-    
+
     CalendarEvent eventByMary = newEvent("mary");
     CalendarEvent eventByJohn = newEvent("john");
     CalendarEvent eventByDemo = newEvent("demo");
-    
+
     try{
       calendarService_.saveEventToSharedCalendar("john", cal.getId(), eventByJohn, true);
       calendarService_.saveEventToSharedCalendar("mary", cal.getId(), eventByMary, true);
@@ -1819,7 +1980,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       fail();
     }
   }
-  
+
   private Calendar createSharedCalendar(String name, String description) {
     try {
       Calendar sharedCalendar = new Calendar();
@@ -1971,7 +2132,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     icalInputStream.close();
     calendarService_.removeUserCalendar(username, calendarId);
   }
-  
+
   private CalendarEvent newEvent(String summary) {
     CalendarEvent event = new CalendarEvent();
     event.setSummary(summary);

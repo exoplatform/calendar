@@ -16,12 +16,17 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
@@ -29,6 +34,8 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
+
+import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -38,8 +45,20 @@ import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.portal.config.UserPortalConfig;
+import org.exoplatform.portal.config.UserPortalConfigService;
+import org.exoplatform.portal.mop.SiteKey;
+import org.exoplatform.portal.mop.SiteType;
+import org.exoplatform.portal.mop.navigation.NavigationContext;
+import org.exoplatform.portal.mop.navigation.NavigationService;
+import org.exoplatform.portal.mop.navigation.NodeContext;
+import org.exoplatform.portal.mop.navigation.NodeModel;
+import org.exoplatform.portal.mop.navigation.Scope;
+import org.exoplatform.portal.mop.user.UserNavigation;
+import org.exoplatform.portal.mop.user.UserPortalContext;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
@@ -48,6 +67,10 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
+import org.exoplatform.web.controller.QualifiedName;
+import org.exoplatform.web.controller.router.Router;
 
 /**
  * Created by The eXo Platform SAS
@@ -61,6 +84,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private NodeHierarchyCreator nodeHierarchyCreator_;
   private CalendarService calendarService_;
   private OrganizationService organizationService_;
+  private SpaceService spaceService_;
 
   private static final Log     log                 = ExoLogger.getLogger("cs.calendar.unified.search.service");
   private Map<String, Calendar> calendarMap = new HashMap<String,  Calendar>();
@@ -72,6 +96,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     nodeHierarchyCreator_  = (NodeHierarchyCreator) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(NodeHierarchyCreator.class);
     calendarService_  = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarServiceImpl.class);
     organizationService_ = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
+    spaceService_ = (SpaceService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SpaceService.class);
   }
 
 
@@ -191,7 +216,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           StringBuffer detail = new StringBuffer();
           String title = buildValue(Utils.EXO_SUMMARY, iter);
           detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
-          String url = CalendarSearchResult.buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
+          String url = buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
           String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
           String detailValue = Utils.EMPTY_STR;
           String imageUrl = buildImageUrl(iter);
@@ -374,5 +399,106 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     boolean isViewPublic = (!isPrivateCalendar && !isPrivateEvent);
     boolean isEditable = (!isTask && !isPrivateCalendar && isPrivateEvent && (cal.getEditPermission() != null) && Utils.canEdit(organizationService_, cal.getEditPermission(), uId)); 
     return (isTask || isPrivateCalendar || isViewPublic || isEditable); 
+  }
+
+  private String buildLink(SearchContext sc, Collection<String> siteKeys, String calendarId, String eventId) {
+    String url = Utils.NONE_NAGVIGATION;
+    if(sc != null)
+      try {
+        Router router = sc.getRouter();
+        ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
+            .getComponentInstanceOfType(ExoContainerContext.class);
+        String handler = context.getPortalContainerName();
+        SiteKey siteKey = null ;
+        String spaceGroupId = null;
+        if (calendarId.indexOf(Utils.SPACE_CALENDAR_ID_SUFFIX) > 0) {
+          spaceGroupId = calendarMap.get(calendarId).getCalendarOwner();
+          siteKey = SiteKey.group(spaceGroupId);
+        } else {
+          UserPortalConfig prc = getUserPortalConfig();
+          siteKey = SiteKey.portal(prc.getPortalConfig().getName());
+        }
+        if(siteKey != null) {
+          if(!Utils.isEmpty(siteKey.getName())) {
+            String pageName = getSiteName(siteKey);
+            if(Utils.isEmpty(pageName)) {
+              siteKey = SiteKey.portal(sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME);
+              pageName = getSiteName(siteKey);
+            }
+            url = new StringBuffer(getUrl(router, handler, siteKey.getName(), spaceGroupId, pageName)).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
+          }
+        }
+      } catch (Exception e) {
+      }
+    return url;
+  }
+
+  private static String getSiteName(SiteKey siteKey) {
+    try{
+      ExoContainer container = ExoContainerContext.getCurrentContainer();
+      NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
+      NavigationContext nav = navService.loadNavigation(siteKey);
+      NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
+      if (parentNodeCtx.getSize() >= 1) {
+        Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
+        if (siteKey.getType() == SiteType.GROUP) {
+          children = parentNodeCtx.get(0).getNodes();
+        }
+        Iterator<NodeContext<?>> it = children.iterator();
+        NodeContext<?> child = null;
+        while (it.hasNext()) {
+          child = it.next();
+          if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
+            return child.getName();
+          }
+        }
+      }
+    } catch (NullPointerException e) {
+      return Utils.EMPTY_STR;
+    }
+    return Utils.EMPTY_STR;
+  }
+  private static UserPortalConfig getUserPortalConfig() throws Exception {
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    UserPortalConfigService userPortalConfigSer = (UserPortalConfigService)
+        container.getComponentInstanceOfType(UserPortalConfigService.class);
+    UserPortalContext NULL_CONTEXT = new UserPortalContext() {
+      public ResourceBundle getBundle(UserNavigation navigation) {
+        return null;
+      }
+      public Locale getUserLocale() {
+        return Locale.ENGLISH;
+      }
+    };
+    String remoteId = ConversationState.getCurrent().getIdentity().getUserId() ;
+    UserPortalConfig userPortalCfg = userPortalConfigSer.
+        getUserPortalConfig(userPortalConfigSer.getDefaultPortal(), remoteId, NULL_CONTEXT);
+    return userPortalCfg;
+  }
+
+  public String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
+    try {
+      HashedMap qualifiedName = new HashedMap();
+      qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
+      qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
+      qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
+      if(Utils.isEmpty(spaceGroupId)) {
+        qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteName);
+        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.PORTAL.getName());
+      } else {
+        String groupId = spaceGroupId.split(Utils.SLASH)[2];
+        if(spaceService_ != null) {
+          Space sp = spaceService_.getSpaceByGroupId(spaceGroupId);
+          if(sp != null) groupId = sp.getPrettyName();
+        }
+        qualifiedName.put(QualifiedName.create("gtn", "sitename"), spaceGroupId.replaceAll("/", ":"));
+        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
+        qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
+      }
+      return "/" + handler + URLDecoder.decode(router.render(qualifiedName), "UTF-8");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 }

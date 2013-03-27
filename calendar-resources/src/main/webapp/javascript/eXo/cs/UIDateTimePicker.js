@@ -54,7 +54,7 @@ this.init = function(field, isDisplayTime) {
 
 this.show = function() {
   _module.UIDateTimePicker.getLang() ;
-  document.onmousedown = new Function('eXo.cs.UIDateTimePicker.hide()') ;
+  gj(document).on('mousedown.calendar', new Function('eXo.cs.UIDateTimePicker.hide()'));
   
   var str = this.dateField.getAttribute("format") ;
   str = str.replace(/d{2}/,"(\\d{1,2}\\") ;
@@ -259,7 +259,6 @@ var _pyear, _pmonth, _pday, _nyear, _nmonth, _nday, _weekend;
 
  
   table +=    '</div>' ;
-  //table +=    '</div>' ;
   return table ;
 } ;
 
@@ -268,7 +267,7 @@ this.hide = function() {
     document.getElementById(this.calendarId).firstChild.style.display = 'none';
     this.dateField = null;
   }
-  document.onclick = null;
+  gj(document).off('mousedown.calendar');
 }
 
 };

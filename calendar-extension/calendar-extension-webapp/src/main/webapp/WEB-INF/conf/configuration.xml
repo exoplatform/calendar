@@ -11,18 +11,8 @@
   <import>war:/cs-extension/jcr/jcr-component-plugins-configuration.xml</import> 
   <!-- new apps in registry  -->
   
-  <import>war:/cs-extension/common/common-configuration.xml</import>
-  
   <import>war:/cs-extension/cs/calendar/calendar-service-configuration.xml</import>
   <import>war:/cs-extension/cs/webservice/webservice-configuration.xml</import>
   <import>war:/cs-extension/cs/cs-configuration.xml</import>
-    
-       
-    
-      
-        
- 
-     
-  
   
 </configuration>

@@ -148,7 +148,16 @@ Highlighter.prototype.start = function(evt) {
 	var x = base.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) -  fixleftIE ;
 	var y = base.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) + gj('.uiMonthView').scrollTop();
 	Highlighter.reserveDirection(Highlighter.startCell, Highlighter.container,Highlighter.startBlock) ;
-	Highlighter.startBlock.style.top = y + "px" ;
+
+    var rowContainerDay = gj('div.rowContainerDay')[0];
+    /* if we have scrollbar then add scrollTop */
+    if (rowContainerDay.scrollTop) {
+        Highlighter.startBlock.style.top = (y + rowContainerDay.scrollTop) + "px" ;
+    }
+    else {
+        Highlighter.startBlock.style.top = y + "px" ;
+    }
+
 	Highlighter.startBlock.style.width = Highlighter.dimension.x + "px" ;
 	Highlighter.startBlock.style.height = Highlighter.dimension.y + "px" ;
 	gj(document).on({'mousemove':Highlighter.execute, 'mouseup':Highlighter.end});
@@ -181,7 +190,7 @@ Highlighter.prototype.execute = function(evt) {
 		if(len == 0) {
 			var diff = cPos.x - sPos.x ;
 			startBlock = Highlighter.startBlock ;
-			Highlighter.hideAll(startBlock) ;
+			//Highlighter.hideAll() ;
 			if (diff > 0) {
 				Highlighter.reserveDirection(Highlighter.startCell, Highlighter.container,startBlock) ;
 				startBlock.style.width = (diff + 1)*Highlighter.dimension.x + "px" ;
@@ -194,11 +203,11 @@ Highlighter.prototype.execute = function(evt) {
 				Highlighter.firstCell  = Highlighter.currentCell ;
 			}
 			
-		} else {		
+		} else {
 			if (len >= 0) {
 				startIndex = sPos.y ;
 				lastIndex = startIndex + len ;
-				startBlock = Highlighter.startBlock
+				startBlock = Highlighter.startBlock ;
 				endBlock = Highlighter.block[lastIndex] ;
 				startX = base.Browser.findPosXInContainer(Highlighter.startCell, Highlighter.container) ;
 				startY = base.Browser.findPosYInContainer(Highlighter.startCell, Highlighter.container) ;
@@ -238,7 +247,7 @@ Highlighter.prototype.execute = function(evt) {
 			Highlighter.reserveDirection(Highlighter.cell[0], Highlighter.container,endBlock) ;
 			endBlock.style.width = endX + "px" ;
 			endBlock.style.height = Highlighter.dimension.y + "px" ;
-			Highlighter.hideBlock(startIndex, lastIndex) ;
+            Highlighter.hideBlock(startIndex, lastIndex) ;
 		}
 	} catch(e){
 			window.status = e.message ;
@@ -252,7 +261,10 @@ Highlighter.prototype.execute = function(evt) {
 Highlighter.prototype.end = function(evt) {
 	var Highlighter = _module.Highlighter;
 	if (Highlighter.callback) eval(Highlighter.callback) ;
-	gj(document).off("mousemove mouseup")
+	gj(document).off("mousemove mouseup");
+    if (Highlighter.startBlock) {
+        Highlighter.startBlock.style.display = "none";
+    }
 } ;
 
 Highlighter.prototype.setCallback = function(str) {

@@ -31,6 +31,12 @@
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
     </dependency>
+    <!-- Log4J is required by wikbook to compile but we don't want to propagate it -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <optional>true</optional>
+    </dependency>
     <!-- This dependency is required to compile our main classes but is erroneously reported as useless by dependency:analyze -->
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
@@ -43,6 +49,12 @@
     <dependency>
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.security.core</artifactId>
+    </dependency>
+    <!-- doc-style is required by wikbook to compile but we don't want to propagate it -->
+    <dependency>
+      <groupId>org.exoplatform.doc</groupId>
+      <artifactId>doc-style</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.jcr</groupId>
@@ -72,12 +84,6 @@
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.common</artifactId>
     </dependency>
-     <dependency>
-       <groupId>org.exoplatform.doc</groupId>
-       <artifactId>doc-style</artifactId>
-       <classifier>templates</classifier>
-       <optional>true</optional>
-     </dependency> 
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
@@ -94,7 +100,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
@@ -159,10 +165,10 @@
         <executions>
           <execution>
             <id>default-compile</id>
+            <phase>compile</phase>
             <goals>
               <goal>compile</goal>
             </goals>
-            <phase>compile</phase>
             <configuration>
               <compilerArguments>
                 <sourcepath>${project.build.directory}/templates</sourcepath>
@@ -184,7 +190,6 @@
             <configuration>
               <includeGroupIds>org.exoplatform.doc</includeGroupIds>
               <includeArtifactIds>doc-style</includeArtifactIds>
-              <includeClassifiers>templates</includeClassifiers>
               <excludes>META-INF/**</excludes>
               <outputDirectory>${project.build.directory}/templates</outputDirectory>
             </configuration>
@@ -211,6 +216,5 @@
         </executions>
       </plugin>
     </plugins>
-
   </build>
 </project>

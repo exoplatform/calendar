@@ -726,4 +726,6 @@ public interface DataStorage {
   public void setCalDavResourceHref(String username, String calendarId, String eventId, String href) throws Exception;
 
   public void setCalDavResourceEtag(String username, String calendarId, String eventId, String etag) throws Exception;
+  
+  public Calendar getCalendarById(String calId) throws Exception;
 }

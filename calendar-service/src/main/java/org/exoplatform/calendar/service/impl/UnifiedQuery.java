@@ -67,9 +67,7 @@ public class UnifiedQuery extends EventQuery {
           queryString.append(") ");
         }
         if (getFromDate() != null && CalendarEvent.TYPE_EVENT.equals(getEventType())) {
-          queryString.append(" AND ");
-          queryString.append(Utils.EXO_FROM_DATE_TIME);
-          queryString.append(" >= TIMESTAMP '").append(ISO8601.format(getFromDate())).append("'");
+          queryString.append(" AND ").append(queryStringForFromTime(getFromDate()));
         }
         if (!Utils.isEmpty(getState())) {
           if(getState().indexOf(Utils.COLON) >0)
@@ -104,6 +102,22 @@ public class UnifiedQuery extends EventQuery {
       sb.append(delim).append(String.format(format, str));
       delim = delimiter;
     }
+    return sb.toString();
+  }
+  
+  /*
+   * builds query string to check if event is not end after a specified date
+   */
+  private String queryStringForFromTime(java.util.Calendar cal) {
+    StringBuilder sb = new StringBuilder("(");
+    sb.append(Utils.EXO_FROM_DATE_TIME).append(" >= TIMESTAMP '").append(ISO8601.format(cal)).append("'"); // from date is after cal
+    sb.append(" OR ").append("(");
+    sb.append(Utils.EXO_REPEAT).append(" <> '").append(CalendarEvent.RP_NOREPEAT).append("'"); // if event is repeated
+    sb.append(" AND ").append("(");
+    sb.append(Utils.EXO_REPEAT_FINISH_DATE).append(" >= TIMESTAMP '").append(ISO8601.format(cal)).append("'"); // having the repeat finish date after cal
+    sb.append(" OR ");
+    sb.append(Utils.EXO_REPEAT_FINISH_DATE).append(" IS ").append("NULL"); // having no property exo:repeatFinishDate (never end event)
+    sb.append(")))");
     return sb.toString();
   }
 }

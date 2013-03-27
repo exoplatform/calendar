@@ -16,32 +16,7 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import org.apache.commons.collections.map.HashedMap;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.portal.config.UserPortalConfig;
-import org.exoplatform.portal.config.UserPortalConfigService;
-import org.exoplatform.portal.mop.SiteKey;
-import org.exoplatform.portal.mop.SiteType;
-import org.exoplatform.portal.mop.navigation.NavigationContext;
-import org.exoplatform.portal.mop.navigation.NavigationService;
-import org.exoplatform.portal.mop.navigation.NodeContext;
-import org.exoplatform.portal.mop.navigation.NodeModel;
-import org.exoplatform.portal.mop.navigation.Scope;
-import org.exoplatform.portal.mop.user.UserNavigation;
-import org.exoplatform.portal.mop.user.UserPortalContext;
-import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.web.controller.QualifiedName;
-import org.exoplatform.web.controller.router.Router;
-import org.mortbay.log.Log;
 
 /**
  * Created by The eXo Platform SAS
@@ -105,100 +80,6 @@ public class CalendarSearchResult extends SearchResult {
     return zoneName;
   }
 
-  public static String buildLink(SearchContext sc, Collection<String> siteKeys, String calendarId, String eventId) {
-    String url = Utils.NONE_NAGVIGATION;
-    if(sc != null)
-      try {
-        Router router = sc.getRouter();
-        ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
-            .getComponentInstanceOfType(ExoContainerContext.class);
-        String handler = context.getPortalContainerName();
-        SiteKey siteKey = null ;
-        String spaceGroupId = null;
-        if (calendarId.indexOf(Utils.SPACE_ID_PREFIX) > 0) {
-          spaceGroupId = String.format("/%s/%s", Utils.SPACES_GROUP, calendarId.replaceFirst(Utils.SPACE_ID_PREFIX, ""));// /spaces/space1
-          siteKey = SiteKey.group(spaceGroupId);
-        } else {
-          UserPortalConfig prc = getUserPortalConfig();
-          siteKey = SiteKey.portal(prc.getPortalConfig().getName());
-        }
-        if(siteKey != null) {
-          if(!Utils.isEmpty(siteKey.getName())) {
-            String pageName = getSiteName(siteKey);
-            if(Utils.isEmpty(pageName)) {
-              siteKey = SiteKey.portal(sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME);
-              pageName = getSiteName(siteKey);
-            }
-            url = new StringBuffer(getUrl(router, handler, siteKey.getName(), spaceGroupId, pageName)).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
-          }
-        }
-      } catch (Exception e) {
-        Log.info("Could not build the link of event/task " + e.getMessage());
-        //e.printStackTrace();
-      }
-    return url;
-  }
-
-  private static UserPortalConfig getUserPortalConfig() throws Exception {
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    UserPortalConfigService userPortalConfigSer = (UserPortalConfigService)
-        container.getComponentInstanceOfType(UserPortalConfigService.class);
-    UserPortalContext NULL_CONTEXT = new UserPortalContext() {
-      public ResourceBundle getBundle(UserNavigation navigation) {
-        return null;
-      }
-      public Locale getUserLocale() {
-        return Locale.ENGLISH;
-      }
-    };
-    String remoteId = ConversationState.getCurrent().getIdentity().getUserId() ;
-    UserPortalConfig userPortalCfg = userPortalConfigSer.
-        getUserPortalConfig(userPortalConfigSer.getDefaultPortal(), remoteId, NULL_CONTEXT);
-    return userPortalCfg;
-  }
-
-  private static String getSiteName(SiteKey siteKey) {
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
-    NavigationContext nav = navService.loadNavigation(siteKey);
-    NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
-    if (parentNodeCtx.getSize() >= 1) {
-      Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
-      if (siteKey.getType() == SiteType.GROUP) {
-        children = parentNodeCtx.get(0).getNodes();
-      }
-      Iterator<NodeContext<?>> it = children.iterator();
-      NodeContext<?> child = null;
-      while (it.hasNext()) {
-        child = it.next();
-        if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
-          return child.getName();
-        }
-      }
-    }
-    return Utils.EMPTY_STR;
-  }
-
-  public static String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
-    try {
-      HashedMap qualifiedName = new HashedMap();
-      qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
-      qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
-      qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
-      if(Utils.isEmpty(spaceGroupId)) {
-        qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteName);
-        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.PORTAL.getName());
-      } else {
-        String groupId = spaceGroupId.split("/")[2];
-        qualifiedName.put(QualifiedName.create("gtn", "sitename"), spaceGroupId.replaceAll("/", ":"));
-        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
-        qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
-      }
-      return "/" + handler + URLDecoder.decode(router.render(qualifiedName), "UTF-8");
-    } catch (Exception e) {
-      return null;
-    }
-  }
 
   /**
    * @return value base on task status if data is task 

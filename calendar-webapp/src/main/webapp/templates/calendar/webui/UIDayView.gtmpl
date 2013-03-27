@@ -51,6 +51,8 @@
   rcontext.getJavascriptManager().addOnResizeJavascript('cal.UICalendarPortlet.browserResizeCallback') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIDayView\');');  
   requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
+  requirejs.addScripts('cal.UICalendarPortlet.setFocus();');
+
   cssClass = "Day" ;
   
   DateFormat tempFormat = new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;

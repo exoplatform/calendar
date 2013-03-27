@@ -11,8 +11,6 @@
   def requireJS = rcontext.getJavascriptManager().getRequireJS();
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.initCheck("' + uicomponent.id + '",' + userSettingTimezoneOffset + ') ;') ;
-
-  
   %>
 <div class="uiAddNewEvent $uicomponent.id resizable" id="$uicomponent.id">
   <div class="newEventAttendee">
@@ -153,3 +151,8 @@
     </div>
   </div>
 </div>
+
+<%
+// apply green period each time the tab is loaded
+requireJS.addScripts('cal.ScheduleSupport.applyPeriod();');
+%>

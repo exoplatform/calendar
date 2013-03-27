@@ -8,7 +8,7 @@
 
   uicomponent.renderChild(uicomponent.getChildById(uicomponent.POPUP_USER_SELECTOR));
 %>
-<div class="uiForm $uicomponent.id">
+<div class="uiForm $uicomponent.id uiCalendarSharedForm">
   <% uiform.begin() %>
     <div class="horizontalLayout">
       <div class="formContainer resizable">
@@ -18,7 +18,9 @@
          def shareNote    = _ctx.appRes(uicomponent.id + ".msg.share-calendar");
          def note         = share + " " + calendarName + shareNote;
       %>
-      <div class="control-label" style="margin: 5px;">$note</div>
+      <div class="control-label">
+		<div class="calendarName">$note</div>
+	  </div>
 
       <% uicomponent.renderChild(uicomponent.getChildById(uicomponent.PERMISSION_GRID)) ;
          uicomponent.renderChild(uicomponent.getChildById(uicomponent.POPUP_GROUP_MEMBERSHIP_SELECTOR));

@@ -4,7 +4,7 @@
   <parent>
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
-    <version>9-beta-1</version>
+    <version>9</version>
     <relativePath />
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
@@ -22,7 +22,7 @@
     <module>calendar-extension</module>
     <module>calendar-injector</module>
     <module>calendar-statistics</module>
-    <module>calendar-createcomponent</module>
+    <module>calendar-component-create</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
@@ -42,7 +42,7 @@
     <!-- **************************************** -->
     <!-- Project Dependencies                     -->
     <!-- **************************************** -->
-    <org.exoplatform.depmgt.version>3</org.exoplatform.depmgt.version>
+    <org.exoplatform.depmgt.version>4</org.exoplatform.depmgt.version>
     <!-- JCR Project Dependencies -->
     <org.exoplatform.kernel.version>2.4.2-GA</org.exoplatform.kernel.version>
     <org.exoplatform.core.version>2.5.2-GA</org.exoplatform.core.version>
@@ -56,9 +56,14 @@
     <org.exoplatform.social.version>4.0.0-SNAPSHOT</org.exoplatform.social.version>
     <org.exoplatform.platform-ui.version>4.0.0-SNAPSHOT</org.exoplatform.platform-ui.version>
     <!-- Platform Project 3rd party Dependencies -->
-    <org.exoplatform.doc-style.version>4.0.0-SNAPSHOT</org.exoplatform.doc-style.version>
+    <org.exoplatform.doc.doc-style.version>4.0.0-SNAPSHOT</org.exoplatform.doc.doc-style.version>
   </properties>
   <dependencyManagement>
+    <!-- ### NEVER CHANGE THIS ORDER OF DEPMGT ### -->
+    <!-- * From top level to bottom projects -->
+    <!-- * maven-depmgt-pom must be the first -->
+    <!-- * Your own modules -->
+    <!-- * And projects below you -->
     <dependencies>
       <!-- Import versions of external dependencies to use -->
       <dependency>
@@ -140,6 +145,14 @@
         <artifactId>calendar-webservice</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <!-- Import versions from social project -->
+      <dependency>
+        <groupId>org.exoplatform.social</groupId>
+        <artifactId>social</artifactId>
+        <version>${org.exoplatform.social.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>			
       <!-- Import versions from commons project -->
       <dependency>
         <groupId>org.exoplatform.commons</groupId>
@@ -148,326 +161,24 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- Import versions from platform-ui project -->
       <dependency>
         <groupId>org.exoplatform.platform-ui</groupId>
-        <artifactId>platform-ui-web-eXoResources</artifactId>
+        <artifactId>platform-ui</artifactId>
         <version>${org.exoplatform.platform-ui.version}</version>
-      </dependency>
-      <!-- CS dependencies -->
-      <!-- To be replaced by an import of core parent POM -->
-      <dependency>
-        <groupId>org.exoplatform.core</groupId>
-        <artifactId>exo.core.component.organization.api</artifactId>
-        <version>${org.exoplatform.core.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- From picocontainer -->
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.core</groupId>
-        <artifactId>exo.core.component.organization.jdbc</artifactId>
-        <version>${org.exoplatform.core.version}</version>
-        <exclusions>
-          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
-          <exclusion>
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.core</groupId>
-        <artifactId>exo.core.component.security.core</artifactId>
-        <version>${org.exoplatform.core.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <!-- To be replaced by an import of JCR parent POM -->
-      <dependency>
-        <groupId>org.exoplatform.jcr</groupId>
-        <artifactId>exo.jcr.component.core</artifactId>
-        <version>${org.exoplatform.jcr.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>junit</artifactId>
-            <groupId>junit</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.jcr</groupId>
-        <artifactId>exo.jcr.component.ext</artifactId>
-        <version>${org.exoplatform.jcr.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>slf4j-log4j12</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <!-- To be replaced by an import of kernel Parent POM -->
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.commons</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>slf4j-log4j12</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.component.command</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.component.common</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <!-- Required for tests purpose only. Provided for others usages. -->
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging-api</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>junit</artifactId>
-            <groupId>junit</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.container</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <!-- Import versions from social project -->
-      <dependency>
-        <groupId>org.exoplatform.social</groupId>
-        <artifactId>social</artifactId>
-        <version>${org.exoplatform.social.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <!-- To be replaced by an import of WS parent POM -->
-      <dependency>
-        <groupId>org.exoplatform.ws</groupId>
-        <artifactId>exo.ws.frameworks.json</artifactId>
-        <version>${org.exoplatform.ws.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.ws</groupId>
-        <artifactId>exo.ws.rest.core</artifactId>
-        <version>${org.exoplatform.ws.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <!-- To be replaced by an import of GateIn Portal parent POM -->
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.common</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.identity</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -491,38 +202,6 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.portal</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>log4j</artifactId>
-            <groupId>log4j</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -538,13 +217,6 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.test.jcr</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <!-- These old versions of xstream are in conflict with new ones under com.thoughtworks.xstream:xstream -->
-          <exclusion>
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -555,118 +227,31 @@
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.web.resources</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- From picocontainer -->
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>junit</artifactId>
-            <groupId>junit</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.component.web.server</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.core</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.eXo</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.framework</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
         <artifactId>exo.portal.webui.portal</artifactId>
         <version>${org.gatein.portal.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>javax.servlet-api</artifactId>
-            <groupId>javax.servlet</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jsp-api</artifactId>
-            <groupId>javax.servlet.jsp</groupId>
-          </exclusion>
-          <exclusion>
-            <!-- To be fixed in the original project -->
-            <artifactId>exo.tool.framework.junit</artifactId>
-            <groupId>org.exoplatform.tool</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>xstream</artifactId>
-            <groupId>xstream</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jmock</artifactId>
-            <groupId>jmock</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>junit</artifactId>
-            <groupId>junit</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.gatein.portal</groupId>
@@ -678,12 +263,44 @@
         <artifactId>wci-wci</artifactId>
         <version>${org.gatein.wci.version}</version>
       </dependency>
-       <dependency>
-       <groupId>org.exoplatform.doc</groupId>
-       <artifactId>doc-style</artifactId>
-        <version>${org.exoplatform.doc-style.version}</version>
-        <classifier>templates</classifier>
-       </dependency>
+      <!-- Import versions of jcr modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.jcr</groupId>
+        <artifactId>jcr-parent</artifactId>
+        <version>${org.exoplatform.jcr.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Import versions of ws modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.ws</groupId>
+        <artifactId>ws-parent</artifactId>
+        <version>${org.exoplatform.ws.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Import versions of core modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.core</groupId>
+        <artifactId>core-parent</artifactId>
+        <version>${org.exoplatform.core.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Import versions of kernel modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.kernel</groupId>
+        <artifactId>kernel-parent</artifactId>
+        <version>${org.exoplatform.kernel.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>			
+      <!-- Use to generate some documentation -->
+      <dependency>
+        <groupId>org.exoplatform.doc</groupId>
+        <artifactId>doc-style</artifactId>
+        <version>${org.exoplatform.doc.doc-style.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>

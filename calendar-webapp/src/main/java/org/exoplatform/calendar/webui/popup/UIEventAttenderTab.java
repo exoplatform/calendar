@@ -30,6 +30,7 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -66,6 +67,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     addUIFormInput(new UICheckBoxInput(FIELD_DATEALL, FIELD_DATEALL, false)) ;
     UICheckBoxInput checkFreeInput = new UICheckBoxInput(FIELD_CHECK_TIME, FIELD_CHECK_TIME, false) ;
     checkFreeInput.setOnChange("OnChange") ;
+    checkFreeInput.setChecked(true);
     addUIFormInput(checkFreeInput) ;
   }
   protected UIFormComboBox getUIFormComboBox(String id) {
@@ -110,8 +112,15 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     return parMap_ ;
   }
   
-  public String getFullname(String username) throws Exception {
-    return CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getDisplayName();
+  public static String getFullname(String username) throws Exception {
+    User u = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username);
+    String fullName = u.getDisplayName();
+    if(fullName == null) fullName = u.getFirstName();
+    if (u.getLastName() != null && fullName != null) {
+      fullName = fullName + " " + u.getLastName();
+    }
+    if (fullName == null) fullName = u.getUserName();
+    return fullName;
   }
   
   private DateFormat getSimpleFormatDate() throws Exception {

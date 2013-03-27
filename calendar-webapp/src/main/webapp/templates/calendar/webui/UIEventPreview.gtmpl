@@ -212,12 +212,13 @@ resizable = "resizable";
 </div>
 <!-- TRUE when the preview is in a popup -->
 <% if (uicomponent.isShowPopup()) {
-  String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP, uicomponent.id);
+  String actionLink   = uicomponent.event(uicomponent.CLOSE_POPUP);
+  if(uicomponent.isPreviewByUrl()){ actionLink = uicomponent.url(uicomponent.CLOSE_POPUP);}
   String actionLabel  = _ctx.appRes(uicomponent.id + ".action." + uicomponent.CLOSE_POPUP);
   String calendarHome = uicomponent.getCalendarPortletUrl();
 %>
    <div class="uiAction uiActionBorder" >
-    <button onclick="window.location.replace('$calendarHome'); $actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
+    <button onclick="$actionLink;" href="javascript:void(0);" class="btn btn-primary" type="button">$actionLabel</button>
   </div>
 <% } %>
 <%uiform.end();%>

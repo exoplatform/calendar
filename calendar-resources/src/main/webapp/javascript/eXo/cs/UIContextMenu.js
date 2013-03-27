@@ -222,6 +222,10 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
     this.menuElement.style.zIndex = 2000;
     this.menuElement.style.top = top + "px";
     this.menuElement.style.left = left + "px";
+
+    /* set display to block to be able to calculate offsetHeight */
+    gj(this.menuElement).css("display", "block");
+
     if ((this.menuElement.offsetHeight + mousePos.y) > browserHeight)
       this.menuElement.style.top = mousePos.y - this.menuElement.offsetHeight + 2 + "px";
     if ((this.menuElement.offsetWidth + mousePos.x) > browserWidth)
