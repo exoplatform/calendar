@@ -958,14 +958,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return storage_.getCalendarById(calId);
   }  
   /**
-   * @see org.exoplatform.calendar.service.CalendarService#autoShareCalendar(java.util.List, java.lang.String)
+   * {@inheritDoc}
    */
-  public void autoShareCalendar(List<String> groupsOfUser, String reciever) throws Exception {
-    storage_.autoShareCalendar(groupsOfUser, reciever);
+  public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception {
+    storage_.autoShareCalendar(groupsOfUser, receiver);
   }
 
   /**
-   * @see org.exoplatform.calendar.service.CalendarService#autoRemoveShareCalendar(java.lang.String, java.lang.String)
+   * {@inheritDoc}
    */
   public void autoRemoveShareCalendar(String groupId, String username) throws Exception {
     storage_.autoRemoveShareCalendar(groupId, username);

@@ -4037,7 +4037,7 @@ public class JCRDataStorage implements DataStorage {
     return Str;
   }
 
-  public void autoShareCalendar(List<String> groupsOfUser, String reciever) throws Exception {
+  public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception {
     Node sharedHome = getSharedCalendarHome();
     NodeIterator userNodes = sharedHome.getNodes();
     List<String> sharedCalendars = new ArrayList<String>();
@@ -4065,7 +4065,7 @@ public class JCRDataStorage implements DataStorage {
                     Value value = values[i];
                     valueList.add(value);
                   }
-                  valueList = calculateSharedCalendar(reciever,
+                  valueList = calculateSharedCalendar(receiver,
                                                       calendarNode,
                                                       values,
                                                       valueList,
