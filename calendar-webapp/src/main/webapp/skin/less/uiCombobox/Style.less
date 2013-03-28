@@ -1,0 +1,44 @@
+.UICalendarPortlet .UIComboboxComponent{
+  float:left;
+  .UIComboboxContainer {
+	  background: @white ;
+	  position:absolute;
+	  display:none;
+	  border: solid 1px @tableBorder ;
+	}
+	.UIComboboxItemContainer {
+	  overflow-y: auto ;
+	  height: 150px ;
+	}
+	.UIComboboxLabel {
+	  margin-left: 10px ;
+	}
+	.UIComboboxItem {
+	  display: block ;
+	  padding: 0px ;
+	  line-height: @baseLineHeight;
+	  color: black ;
+	  outline:none;
+	  &:hover{
+		  background: @blue;
+		  color: @white ;
+		}
+		&:visit{
+		  background: @white ;
+		  color: @black ;
+		}
+	}
+	iframe {
+	  position:absolute ;
+	  top : 0px ;
+	  left : 0px ;
+	  z-index : -1 ;
+	  height: 150px ;
+	}
+}
+
+
+.UICalendarPortlet .UIComboboxList .UIComboboxSelectedItem{
+  	background: @blue;
+		color: @white ;
+}
