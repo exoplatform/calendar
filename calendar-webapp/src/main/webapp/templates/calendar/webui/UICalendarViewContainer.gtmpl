@@ -19,3 +19,6 @@
     }
   %>
 </div>  
+<%
+requireJS.addScripts("gj('#ShowHideAll').find('i').css('display','block');");
+%>
