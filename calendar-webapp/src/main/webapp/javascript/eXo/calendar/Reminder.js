@@ -63,7 +63,13 @@
 	gj.getJSON(url, function(data) {
 	    popupReminder.find('.title').html(data.summary);
 	    popupReminder.find('p.time').html(_module.Reminder.getTimeString(data));
-	    if(data.location) popupReminder.find('p.location').html(data.location);
+	    if(data.location) {
+	    	popupReminder.find('p.location').html(data.location);
+	    	popupReminder.find('.uiIconCheckin').css('display','block');	
+	    } else {
+	    	popupReminder.find('p.location').html('');
+	    	popupReminder.find('.uiIconCheckin').css('display','none');	
+	    }
 	    if(data.description) popupReminder.find('p.description').html(_module.Reminder.truncateString(data.description));
 	    popupReminder.fadeIn().delay(5000).fadeOut('slow');
 	});
