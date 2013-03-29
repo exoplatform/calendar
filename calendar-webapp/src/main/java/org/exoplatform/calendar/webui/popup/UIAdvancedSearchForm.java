@@ -266,6 +266,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
           return ;
         }
       }
+
       String text = uiForm.getUIStringInput(UIAdvancedSearchForm.TEXT).getValue() ;
       if(!uiForm.isValidate()){
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UISearchForm.msg.no-text-to-search", null)) ;
@@ -273,11 +274,11 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
       }
       try {
         EventQuery query = new EventQuery() ;
-        if(! CalendarUtils.isEmpty(text)) query.setText(CalendarUtils.encodeJCRText(text)) ;
+        if(!CalendarUtils.isEmpty(text)) query.setText(CalendarUtils.encodeJCRText(text)) ;
         query.setEventType(uiForm.getUIFormSelectBox(UIAdvancedSearchForm.TYPE).getValue()) ;
         if(uiForm.isSearchTask()) query.setState(uiForm.getTaskState()) ; 
         String calendarId = uiForm.getUIFormSelectBox(UIAdvancedSearchForm.CALENDAR).getValue() ;
-        UICalendars uiCalendars = uiForm.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class); 
+        UICalendars uiCalendars = uiForm.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
         List<String> checkedCals = uiCalendars.getCheckedCalendars() ;
         if(calendarId != null && calendarId.trim().length() > 0){
           try {
@@ -288,6 +289,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
             }
           }
         }
+
         String categoryId = uiForm.getUIFormSelectBox(UIAdvancedSearchForm.CATEGORY).getValue() ;
         if(categoryId != null && categoryId.trim().length() > 0) query.setCategoryId(new String[]{categoryId}) ;
         java.util.Calendar cal = CalendarUtils.getInstanceOfCurrentCalendar() ;
@@ -315,26 +317,30 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         }
         calendarViewContainer.initView(UICalendarViewContainer.LIST_VIEW) ;
         UIListView uiListView = calendarViewContainer.findFirstComponentOfType(UIListView.class) ;
-        
         uiListView.setViewType(UICalendarView.TYPE_BOTH);
         uiListView.setSortedField(UIListView.EVENT_START);
         uiListView.setIsAscending(false);
         calendarPortlet.cancelAction();
         
-        if (query.getCalendarId() == null) { 
-          List<String> calendarIds = new ArrayList<String>() ; 
-            for (org.exoplatform.calendar.service.Calendar calendar : uiCalendars.getAllPrivateCalendars())
+        if (query.getCalendarId() == null) {
+          List<String> calendarIds = new ArrayList<String>() ;
+            for (org.exoplatform.calendar.service.Calendar calendar : uiCalendars.getAllPrivateCalendars()) {
               if (checkedCals.contains(calendar.getId())) calendarIds.add(calendar.getId());
-            for (org.exoplatform.calendar.service.Calendar  calendar : uiCalendars.getAllPublicCalendars())
+            }
+            for (org.exoplatform.calendar.service.Calendar  calendar : uiCalendars.getAllPublicCalendars()) {
               if (checkedCals.contains(calendar.getId())) calendarIds.add(calendar.getId());
+            }
+
           GroupCalendarData shareClas = uiCalendars.getSharedCalendars();
-          if (shareClas != null)
-            for (org.exoplatform.calendar.service.Calendar calendar : shareClas.getCalendars())
-              if (checkedCals.contains(calendar.getId())) {
-                calendarIds.add(calendar.getId());
-              }
-          if (calendarIds.size() > 0)
+          if (shareClas != null) {
+            for (org.exoplatform.calendar.service.Calendar calendar : shareClas.getCalendars()) {
+              if (checkedCals.contains(calendar.getId())) calendarIds.add(calendar.getId());
+            }
+          }
+
+          if (calendarIds.size() > 0) {
             query.setCalendarId(calendarIds.toArray(new String[] {}));
+          }
           else {
             query.setCalendarId(new String[] {"null"});
           }          

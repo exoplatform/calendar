@@ -56,169 +56,169 @@ import org.quartz.impl.JobDetailImpl;
  */
 public class Utils {
 
-  public static final String EXO_ID                     = "exo:id".intern();
+  public static final String EXO_ID                     = "exo:id";
 
-  public static final String EXO_LABEL                  = "exo:label".intern();
+  public static final String EXO_LABEL                  = "exo:label";
 
-  public static final String EXO_NAME                   = "exo:name".intern();
+  public static final String EXO_NAME                   = "exo:name";
 
-  public static final String EXO_DESCRIPTION            = "exo:description".intern();
+  public static final String EXO_DESCRIPTION            = "exo:description";
 
-  public static final String EXO_EVENT_ID               = "exo:eventId".intern();
+  public static final String EXO_EVENT_ID               = "exo:eventId";
 
-  public static final String EXO_EVENT_CATEGORYID       = "exo:eventCategoryId".intern();
+  public static final String EXO_EVENT_CATEGORYID       = "exo:eventCategoryId";
 
-  public static final String EXO_EVENT_CATEGORY_NAME    = "exo:eventCategoryName".intern();
+  public static final String EXO_EVENT_CATEGORY_NAME    = "exo:eventCategoryName";
 
-  public static final String EXO_TASK_DELEGATOR         = "exo:taskDelegator".intern();
+  public static final String EXO_TASK_DELEGATOR         = "exo:taskDelegator";
 
-  public static final String EXO_REPEAT                 = "exo:repeat".intern();
+  public static final String EXO_REPEAT                 = "exo:repeat";
 
-  public static final String EXO_EVENT_TYPE             = "exo:eventType".intern();
+  public static final String EXO_EVENT_TYPE             = "exo:eventType";
 
-  public static final String EXO_PRIORITY               = "exo:priority".intern();
+  public static final String EXO_PRIORITY               = "exo:priority";
 
-  public static final String EXO_IS_PRIVATE             = "exo:isPrivate".intern();
+  public static final String EXO_IS_PRIVATE             = "exo:isPrivate";
 
-  public static final String EXO_EVENT_STATE            = "exo:eventState".intern();
+  public static final String EXO_EVENT_STATE            = "exo:eventState";
 
-  public static final String EXO_INVITATION             = "exo:invitation".intern();
+  public static final String EXO_INVITATION             = "exo:invitation";
 
-  public static final String EXO_CALENDAR_EVENT         = "exo:calendarEvent".intern();
+  public static final String EXO_CALENDAR_EVENT         = "exo:calendarEvent";
 
-  public static final String EXO_REMINDER_TYPE          = "exo:reminderType".intern();
+  public static final String EXO_REMINDER_TYPE          = "exo:reminderType";
 
-  public static final String EXO_ALARM_BEFORE           = "exo:alarmBefore".intern();
+  public static final String EXO_ALARM_BEFORE           = "exo:alarmBefore";
 
-  public static final String EXO_EMAIL                  = "exo:email".intern();
+  public static final String EXO_EMAIL                  = "exo:email";
 
-  public static final String EXO_OWNER                  = "exo:creator".intern();
+  public static final String EXO_OWNER                  = "exo:creator";
 
-  public static final String EXO_REMINDER               = "exo:reminder".intern();
+  public static final String EXO_REMINDER               = "exo:reminder";
 
-  public static final String EXO_FROM_DATE_TIME         = "exo:fromDateTime".intern();
+  public static final String EXO_FROM_DATE_TIME         = "exo:fromDateTime";
 
-  public static final String EXO_TO_DATE_TIME           = "exo:toDateTime".intern();
+  public static final String EXO_TO_DATE_TIME           = "exo:toDateTime";
 
-  public static final String EXO_SUMMARY                = "exo:summary".intern();
+  public static final String EXO_SUMMARY                = "exo:summary";
 
-  public static final String EXO_IS_REPEAT              = "exo:isRepeat".intern();
+  public static final String EXO_IS_REPEAT              = "exo:isRepeat";
 
-  public static final String EXO_IS_OVER                = "exo:isOver".intern();
+  public static final String EXO_IS_OVER                = "exo:isOver";
 
-  public static final String EXO_CALENDAR_PUBLIC_EVENT  = "exo:calendarPublicEvent".intern();
+  public static final String EXO_CALENDAR_PUBLIC_EVENT  = "exo:calendarPublicEvent";
 
-  public static final String EXO_EVENT_CATEGORY         = "exo:eventCategory".intern();
+  public static final String EXO_EVENT_CATEGORY         = "exo:eventCategory";
 
-  public static final String EXO_PUBLIC_URL             = "exo:publicUrl".intern();
+  public static final String EXO_PUBLIC_URL             = "exo:publicUrl";
 
-  public static final String EXO_PRIVATE_URL            = "exo:privateUrl".intern();
+  public static final String EXO_PRIVATE_URL            = "exo:privateUrl";
 
-  public static final String EXO_DATA                   = "exo:data".intern();
+  public static final String EXO_DATA                   = "exo:data";
 
-  public static final String EXO_ICAL_DATA              = "exo:iCalData".intern();
+  public static final String EXO_ICAL_DATA              = "exo:iCalData";
 
-  public static final String EXO_TITLE                  = "exo:title".intern();
+  public static final String EXO_TITLE                  = "exo:title";
 
-  public static final String EXO_CONTENT                = "exo:content".intern();
+  public static final String EXO_CONTENT                = "exo:content";
 
-  public static final String EXO_CALENDAR_SETTING       = "exo:calendarSetting".intern();
+  public static final String EXO_CALENDAR_SETTING       = "exo:calendarSetting";
 
-  public static final String EXO_IS_SHOW_WORKING_TIME   = "exo:showWorkingTime".intern();
+  public static final String EXO_IS_SHOW_WORKING_TIME   = "exo:showWorkingTime";
 
-  public static final String EXO_WORKING_BEGIN          = "exo:workingTimeBegin".intern();
+  public static final String EXO_WORKING_BEGIN          = "exo:workingTimeBegin";
 
-  public static final String EXO_WORKING_END            = "exo:workingTimeEnd".intern();
+  public static final String EXO_WORKING_END            = "exo:workingTimeEnd";
 
-  public static final String EXO_PRIVATE_CALENDARS      = "exo:defaultPrivateCalendars".intern();
+  public static final String EXO_PRIVATE_CALENDARS      = "exo:defaultPrivateCalendars";
 
-  public static final String EXO_PUBLIC_CALENDARS       = "exo:defaultPublicCalendars".intern();
+  public static final String EXO_PUBLIC_CALENDARS       = "exo:defaultPublicCalendars";
 
-  public static final String EXO_SHARED_CALENDARS       = "exo:defaultSharedCalendars".intern();
+  public static final String EXO_SHARED_CALENDARS       = "exo:defaultSharedCalendars";
 
-  public static final String EXO_SHARED_CALENDAR_COLORS = "exo:sharedCalendarsColors".intern();
+  public static final String EXO_SHARED_CALENDAR_COLORS = "exo:sharedCalendarsColors";
 
-  public static final String EXO_EVEN_TATTACHMENT       = "exo:eventAttachment".intern();
+  public static final String EXO_EVEN_TATTACHMENT       = "exo:eventAttachment";
 
-  public static final String EXO_FILE_NAME              = "exo:fileName".intern();
+  public static final String EXO_FILE_NAME              = "exo:fileName";
 
-  public static final String EXO_CATEGORY_ID            = "exo:categoryId".intern();
+  public static final String EXO_CATEGORY_ID            = "exo:categoryId";
 
-  public static final String EXO_VIEW_PERMISSIONS       = "exo:viewPermissions".intern();
+  public static final String EXO_VIEW_PERMISSIONS       = "exo:viewPermissions";
 
-  public static final String EXO_EDIT_PERMISSIONS       = "exo:editPermissions".intern();
+  public static final String EXO_EDIT_PERMISSIONS       = "exo:editPermissions";
 
-  public static final String EXO_GROUPS                 = "exo:groups".intern();
+  public static final String EXO_GROUPS                 = "exo:groups";
 
-  public static final String EXO_LOCALE                 = "exo:locale".intern();
+  public static final String EXO_LOCALE                 = "exo:locale";
 
-  public static final String EXO_TIMEZONE               = "exo:timeZone".intern();
+  public static final String EXO_TIMEZONE               = "exo:timeZone";
 
-  public static final String EXO_CALENDAR_ID            = "exo:calendarId".intern();
+  public static final String EXO_CALENDAR_ID            = "exo:calendarId";
 
-  public static final String EXO_SHARED_MIXIN           = "exo:calendarShared".intern();
+  public static final String EXO_SHARED_MIXIN           = "exo:calendarShared";
 
-  public static final String EXO_SHARED_ID              = "exo:sharedId".intern();
+  public static final String EXO_SHARED_ID              = "exo:sharedId";
 
-  public static final String EXO_PARTICIPANT            = "exo:participant".intern();
+  public static final String EXO_PARTICIPANT            = "exo:participant";
 
-  public static final String EXO_CALENDAR               = "exo:calendar".intern();
+  public static final String EXO_CALENDAR               = "exo:calendar";
 
-  public static final String EXO_CALENDAR_COLOR         = "exo:calendarColor".intern();
+  public static final String EXO_CALENDAR_COLOR         = "exo:calendarColor";
 
-  public static final String EXO_CALENDAR_CATEGORY      = "exo:calendarCategory".intern();
+  public static final String EXO_CALENDAR_CATEGORY      = "exo:calendarCategory";
 
-  public static final String EXO_CALENDAR_OWNER         = "exo:calendarOwner".intern();
+  public static final String EXO_CALENDAR_OWNER         = "exo:calendarOwner";
 
-  public static final String EXO_SHARED_COLOR           = "exo:sharedColor".intern();
+  public static final String EXO_SHARED_COLOR           = "exo:sharedColor";
 
-  public static final String EXO_VIEW_TYPE              = "exo:viewType".intern();
+  public static final String EXO_VIEW_TYPE              = "exo:viewType";
 
-  public static final String EXO_TIME_INTERVAL          = "exo:timeInterval".intern();
+  public static final String EXO_TIME_INTERVAL          = "exo:timeInterval";
 
-  public static final String EXO_WEEK_START_ON          = "exo:weekStartOn".intern();
+  public static final String EXO_WEEK_START_ON          = "exo:weekStartOn";
 
-  public static final String EXO_DATE_FORMAT            = "exo:dateFormat".intern();
+  public static final String EXO_DATE_FORMAT            = "exo:dateFormat";
 
-  public static final String EXO_TIME_FORMAT            = "exo:timeFormat".intern();
+  public static final String EXO_TIME_FORMAT            = "exo:timeFormat";
 
-  public static final String EXO_LOCATION               = "exo:location".intern();
+  public static final String EXO_LOCATION               = "exo:location";
 
-  public static final String EXO_REMINDER_DATE          = "exo:remindDateTime".intern();
+  public static final String EXO_REMINDER_DATE          = "exo:remindDateTime";
 
-  public static final String EXO_ROOT_EVENT_ID          = "exo:rootEventId".intern();
+  public static final String EXO_ROOT_EVENT_ID          = "exo:rootEventId";
 
-  public static final String EXO_RSS_DATA               = "exo:rssData".intern();
+  public static final String EXO_RSS_DATA               = "exo:rssData";
 
-  public static final String EXO_BASE_URL               = "exo:baseUrl".intern();
+  public static final String EXO_BASE_URL               = "exo:baseUrl";
 
-  public static final String EXO_SEND_OPTION            = "exo:sendOption".intern();
+  public static final String EXO_SEND_OPTION            = "exo:sendOption";
 
-  public static final String EXO_MESSAGE                = "exo:message".intern();
+  public static final String EXO_MESSAGE                = "exo:message";
 
-  public static final String EXO_PARTICIPANT_STATUS     = "exo:participantStatus".intern();
+  public static final String EXO_PARTICIPANT_STATUS     = "exo:participantStatus";
 
-  public static final String EXO_DATE_MODIFIED          = "exo:dateModified".intern();
+  public static final String EXO_DATE_MODIFIED          = "exo:dateModified";
 
-  public static final String EXO_REMOTE_MIXIN           = "exo:remoteCalendar".intern();
+  public static final String EXO_REMOTE_MIXIN           = "exo:remoteCalendar";
 
-  public static final String EXO_REMOTE_URL             = "exo:remoteUrl".intern();
+  public static final String EXO_REMOTE_URL             = "exo:remoteUrl";
 
-  public static final String EXO_REMOTE_TYPE            = "exo:remoteType".intern();
+  public static final String EXO_REMOTE_TYPE            = "exo:remoteType";
 
-  public static final String EXO_REMOTE_USERNAME        = "exo:username".intern();
+  public static final String EXO_REMOTE_USERNAME        = "exo:username";
 
-  public static final String EXO_REMOTE_PASSWORD        = "exo:password".intern();
+  public static final String EXO_REMOTE_PASSWORD        = "exo:password";
 
-  public static final String EXO_REMOTE_SYNC_PERIOD     = "exo:syncPeriod".intern();
+  public static final String EXO_REMOTE_SYNC_PERIOD     = "exo:syncPeriod";
 
-  public static final String EXO_REMOTE_LAST_UPDATED    = "exo:lastUpdated".intern();
+  public static final String EXO_REMOTE_LAST_UPDATED    = "exo:lastUpdated";
 
-  public static final String EXO_REMOTE_BEFORE_DATE     = "exo:beforeDate".intern();
+  public static final String EXO_REMOTE_BEFORE_DATE     = "exo:beforeDate";
 
-  public static final String EXO_REMOTE_AFTER_DATE      = "exo:afterDate".intern();
+  public static final String EXO_REMOTE_AFTER_DATE      = "exo:afterDate";
 
-  public static final String EXO_REMOTE_EVENT_MIXIN     = "exo:caldavCalendarEvent".intern();
+  public static final String EXO_REMOTE_EVENT_MIXIN     = "exo:caldavCalendarEvent";
 
   public static final String EXO_CALDAV_HREF            = "exo:caldavHref";
 
@@ -248,61 +248,61 @@ public class Utils {
   
   public static final String EXO_DATE_CREATED           = "exo:dateCreated";
 
-  public static final String X_STATUS                   = "X-STATUS".intern();
+  public static final String X_STATUS                   = "X-STATUS";
 
-  public static final String ATTACHMENT_NODE            = "attachment".intern();                                                                              ;
+  public static final String ATTACHMENT_NODE            = "attachment";                                                                              ;
 
-  public static final String REMINDERS_NODE             = "reminders".intern();                                                                               ;
+  public static final String REMINDERS_NODE             = "reminders";                                                                               ;
 
-  public static final String NT_UNSTRUCTURED            = "nt:unstructured".intern();
+  public static final String NT_UNSTRUCTURED            = "nt:unstructured";
 
-  public static final String NT_FILE                    = "nt:file".intern();
+  public static final String NT_FILE                    = "nt:file";
 
-  public static final String NT_RESOURCE                = "nt:resource".intern();
+  public static final String NT_RESOURCE                = "nt:resource";
 
-  public static final String MIX_REFERENCEABLE          = "mix:referenceable".intern();
+  public static final String MIX_REFERENCEABLE          = "mix:referenceable";
 
-  public static final String JCR_LASTMODIFIED           = "jcr:lastModified".intern();
+  public static final String JCR_LASTMODIFIED           = "jcr:lastModified";
 
-  public static final String JCR_CONTENT                = "jcr:content".intern();
+  public static final String JCR_CONTENT                = "jcr:content";
 
-  public static final String JCR_MIMETYPE               = "jcr:mimeType".intern();
+  public static final String JCR_MIMETYPE               = "jcr:mimeType";
 
-  public static final String JCR_DATA                   = "jcr:data".intern();
+  public static final String JCR_DATA                   = "jcr:data";
 
   public static final String JCR_SCORE                  = "jcr:score";
   
-  public static final String MIMETYPE_TEXTPLAIN         = "text/plain".intern();
+  public static final String MIMETYPE_TEXTPLAIN         = "text/plain";
 
-  public static final String MIMETYPE_ICALENDAR         = "TEXT/CALENDAR".intern();
+  public static final String MIMETYPE_ICALENDAR         = "TEXT/CALENDAR";
 
-  public static final String ATTACHMENT                 = "ATTACHMENT".intern();
+  public static final String ATTACHMENT                 = "ATTACHMENT";
 
-  public static final String INLINE                     = "INLINE".intern();
+  public static final String INLINE                     = "INLINE";
 
-  public static final String COMMA                      = ",".intern();
+  public static final String COMMA                      = ",";
 
-  public static final String COLON                      = ":".intern();
+  public static final String COLON                      = ":";
 
-  public static final String SLASH                      = "/".intern();
+  public static final String SLASH                      = "/";
 
-  public static final String UNDERSCORE                 = "_".intern();
+  public static final String UNDERSCORE                 = "_";
 
-  public static final String SLASH_COLON                = "/:".intern();
+  public static final String SLASH_COLON                = "/:";
 
-  public static final String COLON_SLASH                = ":/".intern();
+  public static final String COLON_SLASH                = ":/";
 
-  public static final String ANY                        = "*.*".intern();
+  public static final String ANY                        = "*.*";
 
-  public static final String ANY_OF                     = "*.".intern();
+  public static final String ANY_OF                     = "*.";
 
-  public static final String SLASH_AST                  = "/*".intern();
+  public static final String SLASH_AST                  = "/*";
 
-  public static final String MINUS                      = "-".intern();
+  public static final String MINUS                      = "-";
 
-  final public static String CALENDAR_REMINDER          = "reminders".intern();
+  final public static String CALENDAR_REMINDER          = "reminders";
 
-  final public static String CALENDAR_APP               = "CalendarApplication".intern();
+  final public static String CALENDAR_APP               = "CalendarApplication";
 
   /**
    * These constants were used to indicate participant's answer or action in invitation mail  
@@ -317,21 +317,21 @@ public class Utils {
 
   public static final int    JUMP_TO_CALENDAR           = 4;
 
-  public static final String RSS_NODE                   = "iCalendars".intern();
+  public static final String RSS_NODE                   = "iCalendars";
 
-  public static final String CALDAV_NODE                = "WebDavCalendars".intern();
+  public static final String CALDAV_NODE                = "WebDavCalendars";
 
-  public static final String ICS_EXT                    = ".ics".intern();
+  public static final String ICS_EXT                    = ".ics";
 
-  public static final String RSS_EXT                    = ".rss".intern();
+  public static final String RSS_EXT                    = ".rss";
 
-  final public static String EMPTY_STR                  = "".intern();
+  final public static String EMPTY_STR                  = "";
 
-  final public static String STATUS_PENDING             = "pending".intern();
+  final public static String STATUS_PENDING             = "pending";
 
-  final public static String STATUS_YES                 = "yes".intern();
+  final public static String STATUS_YES                 = "yes";
 
-  final public static String STATUS_NO                  = "no".intern();
+  final public static String STATUS_NO                  = "no";
 
   public static final int    INVALID_TYPE               = -1;
 
@@ -372,7 +372,7 @@ public class Utils {
 
   public static final String SYNC_1YEAR                 = "1year";
 
-  public static final String MIMETYPE_TEXTHTML          = "text/html".intern();
+  public static final String MIMETYPE_TEXTHTML          = "text/html";
 
   public static String[]     SYNC_PERIOD                = { SYNC_AUTO, SYNC_5MINS, SYNC_10MINS, SYNC_15MINS, SYNC_1HOUR, SYNC_1DAY, SYNC_1WEEK, SYNC_1YEAR };
 

@@ -236,10 +236,25 @@ public class UIListView extends UICalendarView {
     String username = CalendarUtils.getCurrentUser() ;
     UICalendars uiCalendars = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
     String[] checkedPublicCalendars =  uiCalendars.getCheckedPublicCalendars();
+
     if (isDisplaySearchResult()) {
       eventQuery.setExcludeRepeatEvent(false);
-      return calendarService.getEvents(username, eventQuery, checkedPublicCalendars)  ;
+
+      if (eventQuery.getCalendarId().length == 1) {
+        if (Arrays.asList(checkedPublicCalendars).contains(eventQuery.getCalendarId()[0])) {
+          /* filter for public calendar, only include search results of this public calendar */
+          return calendarService.getEvents(username, eventQuery, eventQuery.getCalendarId());
+        }
+        else {
+          /* private or shared calendar, do not include any public calendar search results */
+          return calendarService.getEvents(username, eventQuery, null);
+        }
+      }
+      else {
+        return calendarService.getEvents(username, eventQuery, checkedPublicCalendars)  ;
+      }
     }
+
     List<CalendarEvent> allEvents =  calendarService.getEvents(username, eventQuery, checkedPublicCalendars)  ;
     List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), checkedPublicCalendars);
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
