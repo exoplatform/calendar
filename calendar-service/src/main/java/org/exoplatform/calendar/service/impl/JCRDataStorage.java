@@ -2805,8 +2805,10 @@ public class JCRDataStorage implements DataStorage {
     filterList.addAll(Arrays.asList(calSetting.getFilterSharedCalendars()));
     eventQuery.setFilterCalendarIds(filterList.toArray(new String[] {}));
     events.addAll(getUserEvents(username, eventQuery));
+
     try {
       events.addAll(getSharedEvents(username, eventQuery));
+
       if (publicCalendarIds != null && publicCalendarIds.length > 0) {
         eventQuery.setCalendarId(publicCalendarIds);
         events.addAll(getPublicEvents(eventQuery));
