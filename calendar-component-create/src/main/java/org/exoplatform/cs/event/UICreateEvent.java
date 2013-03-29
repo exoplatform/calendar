@@ -95,7 +95,7 @@ public class UICreateEvent extends UIForm {
 
   public static String END_EVENT = "EndEvent";
   public static String CALENDAR = "Calendar";
-  public static String Start_EVENT = "StartEvent";
+  public static String START_EVENT = "StartEvent";
   public static String START_TIME = "start_time";
   public static String END_TIME = "end_time";
   public static String ALL_DAY = "all-day";
@@ -107,7 +107,7 @@ public class UICreateEvent extends UIForm {
   public UICreateEvent() throws Exception {
     addUIFormInput(new UIFormRadioBoxInput(CHOIX, "Event", getTypeValue()));
     addUIFormInput(new UIFormStringInput(TITLE, TITLE, null));
-    addUIFormInput(new UIFormDateTimeInput(Start_EVENT, Start_EVENT, getInstanceOfCurrentCalendar().getTime(), false));
+    addUIFormInput(new UIFormDateTimeInput(START_EVENT, START_EVENT, getInstanceOfCurrentCalendar().getTime(), false));
     addUIFormInput(new UIFormDateTimeInput(END_EVENT, END_EVENT, getInstanceOfCurrentCalendar().getTime(), false));
     addUIFormInput(new UIFormSelectBoxWithGroups(CALENDAR, CALENDAR, getCalendarOption()));
     addUIFormInput(new UIFormSelectBox(START_TIME, START_TIME, getTimesSelectBoxOptions(DISPLAY_TIMEFORMAT)));
@@ -116,7 +116,7 @@ public class UICreateEvent extends UIForm {
 
 
   protected String getDateTimeFormat(){
-    UIFormDateTimeInput fromField = getChildById(Start_EVENT);
+    UIFormDateTimeInput fromField = getChildById(START_EVENT);
     return fromField.getDatePattern_();
   }
 
@@ -134,7 +134,7 @@ public class UICreateEvent extends UIForm {
       }
       summary = summary.trim();
       summary = enCodeTitle(summary);
-      UIFormDateTimeInput fromField = uiForm.getChildById(Start_EVENT);
+      UIFormDateTimeInput fromField = uiForm.getChildById(START_EVENT);
       UIFormDateTimeInput toField = uiForm.getChildById(END_EVENT);
       Date from = uiForm.getDateTime(fromField, UICreateEvent.START_TIME);
       Date to = uiForm.getDateTime(toField, UICreateEvent.END_TIME);
