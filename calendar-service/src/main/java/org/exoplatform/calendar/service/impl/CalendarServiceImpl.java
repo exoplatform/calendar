@@ -549,6 +549,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     cal.setName(fullName); // name the default calendar after the user's full name, cf CAL-86
     cal.setDataInit(true);
     cal.setCalendarOwner(userName);
+    cal.setCalendarColor(Calendar.COLORS[0]);
     if (defaultCalendarSetting_ != null) {
       if (defaultCalendarSetting_.getTimeZone() != null)
         cal.setTimeZone(defaultCalendarSetting_.getTimeZone());

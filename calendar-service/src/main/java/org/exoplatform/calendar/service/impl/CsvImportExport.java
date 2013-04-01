@@ -29,7 +29,6 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.jcr.ItemExistsException;
@@ -286,7 +285,7 @@ public class CsvImportExport implements CalendarImportExport {
     if (isNew) {
       org.exoplatform.calendar.service.Calendar exoCalendar = new org.exoplatform.calendar.service.Calendar();
       exoCalendar.setName(calendarName);
-      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[new Random().nextInt(org.exoplatform.calendar.service.Calendar.COLORS.length - 1)]);
+      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[0]);
       exoCalendar.setDescription(Utils.EMPTY_STR);
       exoCalendar.setPublic(true);
       exoCalendar.setCalendarOwner(username);

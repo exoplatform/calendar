@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TimeZone;
 import javax.jcr.Node;
 import org.exoplatform.calendar.service.Attachment;
@@ -451,7 +450,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     if (isNew) {
       Calendar exoCalendar = new Calendar();
       exoCalendar.setName(calendarName);
-      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[new Random().nextInt(org.exoplatform.calendar.service.Calendar.COLORS.length - 1)]);
+      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[0]);
       exoCalendar.setDescription(iCalendar.getProductId().getValue());
       exoCalendar.setPublic(false);
       exoCalendar.setCalendarOwner(username);
