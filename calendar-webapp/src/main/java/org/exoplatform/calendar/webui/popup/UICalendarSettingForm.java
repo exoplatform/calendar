@@ -32,6 +32,8 @@ import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarView;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UICalendars;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -63,9 +65,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
 )
 public class UICalendarSettingForm extends UIFormTabPane implements UIPopupComponent
 {
-  final private static String SETTING_CALENDAR_TAB = "setting".intern() ;
-  final private static String DEFAULT_CALENDAR_TAB = "defaultCalendarTab".intern() ;
-  final private static String FEED_TAB = "feedTab".intern();
+  final private static String SETTING_CALENDAR_TAB = "setting" ;
+  final private static String DEFAULT_CALENDAR_TAB = "defaultCalendarTab" ;
+  final private static String FEED_TAB = "feedTab";
 
   private Map<String, String> names_ = new HashMap<String, String>() ;
   public String[] sharedCalendarColors_  = null ;
@@ -223,7 +225,7 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
   static  public class SaveActionListener extends EventListener<UICalendarSettingForm> {
     @Override
     public void execute(Event<UICalendarSettingForm> event) throws Exception {
-      UICalendarSettingForm uiForm = event.getSource() ;      
+      UICalendarSettingForm uiForm = event.getSource() ;
       CalendarSetting calendarSetting = uiForm.calendarSetting_;
       UICalendarSettingTab settingTab = uiForm.getChildById(UICalendarSettingForm.SETTING_CALENDAR_TAB) ;
       calendarSetting.setSharedCalendarsColors(uiForm.sharedCalendarColors_) ;
@@ -234,6 +236,8 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       calendarSetting.setTimeZone(settingTab.getTimeZone()) ;
       calendarSetting.setBaseURL(CalendarUtils.getServerBaseUrl() + "calendar/iCalRss") ;
       calendarSetting.setSendOption(settingTab.getSendOption()) ;
+
+      calendarSetting.setShowWorkingTime(settingTab.getShowWorkingTimes()) ;
       if(settingTab.getShowWorkingTimes()) {
         if(settingTab.getWorkingBegin().equals(settingTab.getWorkingEnd()) || settingTab.getWorkingBeginTime().after(settingTab.getWorkingEndTime())) {
           event.getRequestContext()
@@ -243,7 +247,6 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
                                                   AbstractApplicationMessage.WARNING));
           return ;
         }
-        calendarSetting.setShowWorkingTime(settingTab.getShowWorkingTimes()) ;
         calendarSetting.setWorkingTimeBegin(settingTab.getWorkingBegin()) ;
         calendarSetting.setWorkingTimeEnd(settingTab.getWorkingEnd()) ;
       }
