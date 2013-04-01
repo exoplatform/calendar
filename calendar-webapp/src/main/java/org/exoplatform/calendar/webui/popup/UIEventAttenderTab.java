@@ -30,6 +30,8 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.RequestContext;
@@ -57,6 +59,9 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   final public static String FIELD_CURRENTATTENDER = "currentAttender".intern() ;
   protected Map<String, String> parMap_ = new HashMap<String, String>() ;
   public Calendar calendar_ ;
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIEventAttenderTab.class);
+
   public UIEventAttenderTab(String arg0) {
     super(arg0);
     setComponentConfig(getClass(), null) ;
@@ -99,6 +104,8 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
           CalendarUtils.getCalendarService().checkFreeBusy(eventQuery) ;
       parMap_.putAll(parsMap) ;
     }
+
+
   }
 
   public boolean isCheckFreeTime() {
