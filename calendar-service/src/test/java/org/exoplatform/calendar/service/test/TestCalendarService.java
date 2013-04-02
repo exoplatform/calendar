@@ -2135,6 +2135,24 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.removeUserCalendar(username, calendarId);
   }
 
+    //mvn test -Dtest=TestCalendarService#testImportCSVFile
+    public void testImportCSVFile() throws Exception{
+      CalendarImportExport calIE = calendarService_.getCalendarImportExports(CalendarService.EXPORTEDCSV);
+      String calendarId = "CSVCalendar";
+      Calendar cal = new Calendar();
+      cal.setId(calendarId);
+      cal.setName(calendarId);
+      cal.setPublic(true);
+      calendarService_.saveUserCalendar(username, cal, true);
+
+      InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("sunbird_calendar.csv");
+      calIE.importCalendar(username, in, calendarId, calendarId, null, null, false);
+      List<String> calendarIds = new ArrayList<String>();
+      calendarIds.add(calendarId);
+      List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username, calendarIds);
+      assertEquals(3, events.size());
+
+    }
   private CalendarEvent newEvent(String summary) {
     CalendarEvent event = new CalendarEvent();
     event.setSummary(summary);
