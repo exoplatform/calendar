@@ -166,9 +166,10 @@ UICalendarPortlet.prototype.getCheckedCalendar = function(calendarForm){
  * @param {obj, type} has action object, type of form : event 1 | task 2
  */
 UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type){
-  var startTime = (this.currentDate) ? new Date(this.currentDate).getTime() : new Date().getTime();
-  startTime = _module.UICalendarPortlet.ceil(startTime, 30 * 60 * 1000);
-  this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30*60*1000) ;
+	var d = new Date();
+	var startTime = d.getTime() + d.getTimezoneOffset() * 60 * 1000  + _module.UICalendarPortlet.settingTimezone * 60 * 1000;
+	startTime = _module.UICalendarPortlet.ceil(startTime, 30 * 60 * 1000);
+	this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * 60 * 1000) ;
 } ;
 
 /**
