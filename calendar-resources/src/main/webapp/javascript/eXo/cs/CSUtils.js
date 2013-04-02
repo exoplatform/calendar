@@ -321,6 +321,7 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
   // parent: UIListContainer 
   // obj : UIHeaderBar_3
   var	cont = gj(obj).parents('#' + parentId)[0];
+  var eventBoxClass = (gj(cont).find("form#UIListView").length > 0) ? ".uiListViewRow" : ".eventBoxes";
 	var checkboxes = gj(cont).find("input.checkbox");
 	var i = checkboxes.length;
 	var actionLink = obj.getAttribute("actionLink");
@@ -333,7 +334,7 @@ Utils.prototype.confirmAction = function(obj,msg,parentId){
   while (i>n) {
 		i--;
     if (checkboxes[i].checked) {
-      var eventBoxes = gj(checkboxes[i]).parents(".uiListViewRow")[0];
+      var eventBoxes = gj(checkboxes[i]).parents(eventBoxClass)[0];
       isEditable = eventBoxes.getAttribute("isEditable");
 
       /* check permission of user to event */
