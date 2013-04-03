@@ -69,7 +69,7 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   public UICalendarPortlet() throws Exception {
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
-    uiActionBar.setCurrentView(UICalendarViewContainer.TYPES[Integer.parseInt(getCalendarSetting().getViewType())]) ;
+    uiActionBar.setCurrentView(CalendarUtils.getViewInSetting()) ;
     addChild(UICalendarWorkingContainer.class, null, null) ;
     UIPopupAction uiPopup =  addChild(UIPopupAction.class, null, null) ;
     uiPopup.setId("UICalendarPopupAction") ;

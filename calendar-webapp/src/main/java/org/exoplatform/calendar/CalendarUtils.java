@@ -49,6 +49,7 @@ import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.popup.UIAddressForm.ContactData;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadService;
@@ -1023,6 +1024,37 @@ public class CalendarUtils {
           .append(calId).append(SLASH).append(calType).toString();
     } catch (Exception e) {
       return null;
+    }
+  }
+  /**
+   * Gets the default view in user setting
+   * If the saved view is not in view types any more (for example YearView is removed in PLF 4), 
+   * this method returns DayView as default view and save this view to the setting
+   * @return the view 
+   */
+  public static String getViewInSetting() {
+    CalendarSetting calendarSetting = getCurrentUserCalendarSetting();
+    try {
+      return UICalendarViewContainer.TYPES[Integer.parseInt(calendarSetting.getViewType())];
+    } catch (ArrayIndexOutOfBoundsException e) {
+      resetViewInSetting(calendarSetting);
+      return UICalendarViewContainer.TYPES[0];
+    } catch (NumberFormatException nfe) {
+      resetViewInSetting(calendarSetting);
+      return UICalendarViewContainer.TYPES[0];
+    }
+  }
+  
+  // save a default view type for Calendar Setting when cannot get the view type
+  private static void resetViewInSetting(CalendarSetting calendarSetting) {
+    try {
+      calendarSetting.setViewType(CalendarSetting.DAY_VIEW);
+      getCalendarService().saveCalendarSetting(getCurrentUser(), calendarSetting);
+      setCurrentCalendarSetting(calendarSetting);
+    } catch(Exception e) {
+      if(log.isDebugEnabled()) {
+        log.debug("Cant save Calendar Setting",e);
+      }
     }
   }
 }
