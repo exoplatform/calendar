@@ -166,9 +166,7 @@ UICalendarPortlet.prototype.getCheckedCalendar = function(calendarForm){
  * @param {obj, type} has action object, type of form : event 1 | task 2
  */
 UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type){
-	var d = new Date();
-	var startTime = d.getTime() + d.getTimezoneOffset() * 60 * 1000  + _module.UICalendarPortlet.settingTimezone * 60 * 1000;
-	startTime = _module.UICalendarPortlet.ceil(startTime, 30 * 60 * 1000);
+    var startTime = _module.UICalendarPortlet.getCurrenTimeWithTimeZone();
 	this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * 60 * 1000) ;
 } ;
 
@@ -177,7 +175,7 @@ UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type){
  * @param {obj, type} has action object, type of form : event 1 | task 2 | calendarId selected calendar
  */
 UICalendarPortlet.prototype.addQuickShowHiddenWithId = function(obj, type, id){
-    var startTime = new Date().getTime() ;
+    var startTime = _module.UICalendarPortlet.getCurrenTimeWithTimeZone();
     /**
      * @since relooking
      * for relooking, we change default calendar Id(calendar created when new user is created) to username 
@@ -188,10 +186,15 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithId = function(obj, type, id){
     var calType = id.split('&')[1].split('=')[1];
     var calId = id.split('&')[0].split('=')[1];
     var selectedCalId = calType + ":" + calId;
-    this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 15*60*1000, selectedCalId) ;
+    this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30*60*1000, selectedCalId) ;
 
 } ;
 
+UICalendarPortlet.prototype.getCurrenTimeWithTimeZone = function(){
+    var d = new Date();
+    var startTime = d.getTime() + d.getTimezoneOffset() * 60 * 1000  + _module.UICalendarPortlet.settingTimezone * 60 * 1000;
+    return _module.UICalendarPortlet.ceil(startTime, 30 * 60 * 1000);
+}
 
 /**
  * Show Quick add event and task form with selected time
@@ -1471,7 +1474,7 @@ UICalendarPortlet.prototype.dayViewCallback = function(evt){
     if (src.nodeName == "TD") {
 	    src = gj(src).parents("tr")[0];
 	    var startTime = parseInt(Date.parse(src.getAttribute('startfull')));
-	    var endTime = startTime + 15*60*1000 ;
+	    var endTime = startTime + 30*60*1000 ;
 	    var items = gj(cs.UIContextMenu.menuElement).find("a");
 
 	    for(var i = 0; i < items.length; i++){
@@ -1616,7 +1619,7 @@ UICalendarPortlet.prototype.weekViewCallback = function(evt){
 	    else {
 		items[i].href = String(items[i].href).replace(/startTime\s*=\s*.*(?=&|'|\")/, "startTime=" + map);
 		var fTime = parseInt(map);
-		var tTime = fTime + 15*60*1000 ;
+		var tTime = fTime + 30*60*1000 ;
 
 		if(gj(items[i]).hasClass("createEvent")){
 		    items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this, 1,"+fTime+","+tTime+");"
