@@ -271,6 +271,7 @@ public class UICalendarPortlet extends UIPortletApplication {
     uiPopupAction.deActivate();
     UIPopupContainer uiPopupContainer = uiPopupAction.activate(UIPopupContainer.class, 700);
     uiPopupContainer.setId("UIEventPreview");
+    uiPopupAction.getChild(UIPopupWindow.class).setShowCloseButton(false);
     UIPreview uiPreview = uiPopupContainer.addChild(UIPreview.class, null, null);
     uiPreview.setEvent(event);
     uiPreview.setId("UIPreviewPopup");
