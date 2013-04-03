@@ -634,6 +634,7 @@ GUIMan.prototype.initMonth = function(){
     var eventObj = events[i];
     var eventLabelNode = gj(eventObj.rootNode).find('div.EventLabel')[0];
     eventObj.rootNode.setAttribute('title', eventObj.name);
+    eventObj.rootNode.setAttribute('used', 'false');
   }
   this.rowContainerDay = gj(_module.UICalendarMan.EventMan.rootNode).find('div.rowContainerDay')[0];
   var rows = _module.UICalendarMan.EventMan.UIMonthViewGrid.getElementsByTagName('tr');
