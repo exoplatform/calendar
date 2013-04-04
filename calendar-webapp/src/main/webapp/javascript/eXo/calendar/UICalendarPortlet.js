@@ -946,15 +946,17 @@ UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeigh
       positionYofContentContainer = gj(contentContainer).offset().top,
       height,
       totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
-      originalTotalY    = gj(contentContainer).offset().top + originalHeight;
+      originalTotalY    = gj(contentContainer).offset().top + originalHeight,
+      leftNavigationY   = gj("#LeftNavigation").height() + gj("#LeftNavigation").offset().top,
+      maxHeight         = (leftNavigationY > viewPortHeight) ? leftNavigationY : viewPortHeight;
 
-  if (viewPortHeight > originalTotalY) {
+  if (maxHeight > originalTotalY) {
     /* keep the original height */
     gj(contentContainer).css("height", originalHeight);
   }
   else {
-    /* container out of viewport or container original height below viewport */
-    height = viewPortHeight - positionYofContentContainer - deltaHeight;
+    /* container out of max-height or container original height below max-height */
+    height = maxHeight - positionYofContentContainer - deltaHeight;
     gj(contentContainer).css("height", height);
     gj(contentContainer).css("overflow", "auto");
     
