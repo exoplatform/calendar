@@ -44,23 +44,24 @@ public interface CalendarService {
   final public static String CALDAV      = "CalDAV".intern();
 
   /**
-   * Gets private calendar of an user by Calendar Id
+   * Gets the given user's private calendar, identified by its ID.
    * @param username current user name(or user id)
    * @param calendarId Id of the calendar
-   * @return Calendar object
+   * @return The private Calendar of the given user identified by the given id
    * @throws Exception
    * @see Calendar
    */
   public Calendar getUserCalendar(String username, String calendarId) throws Exception;
 
   /**
-   * Gets private calendars of an user.
+   * Gets private calendars of the given user.
    * <p> The result depends on value of <code>isShowAll</code> parameter. If <code>isShowAll</code> <br>
    * is <b>true</b>, this method returns all private calendars of this user, otherwise it returns <br>
    * only calendars selected to be displayed in Calendar setting
    * 
    * @param username current user name(or user id)
-   * @param isShowAll boolean value to get all private calendars or just calendars in user setting
+   * @param isShowAll If <code>true</code>, returns all private calendars. If <code>false</code>, returns <br/>
+   * only calendars that are selected in Calendar Setting
    * @return List of Calendar objects
    * @throws Exception
    * @see Calendar
@@ -121,7 +122,7 @@ public interface CalendarService {
   /**
   * Saves a calendar to public area (group calendar)
   * @param calendar Calendar to be saved
-  * @param isNew Boolean value to specify adding new calendar or updating an existed calendar.
+  * @param isNew If <code>true</code>, a new calendar will be saved. If <code>false</code>, an existing calendar will be updated.
   * @throws Exception
   */
   public void savePublicCalendar(Calendar calendar, boolean isNew) throws Exception;
@@ -192,6 +193,15 @@ public interface CalendarService {
 
   /**
    * Gets events and tasks that match the conditions in the given EventQuery
+   * <p> Each property of the <code>EventQuery</code> contains a condition of the query. For example:
+   * <ul>
+   * <li><code>text</code>: to search events that have some fields containing this value.</li>
+   * <li><code>calendarIds</code>: array of calendar IDs in which to search events.</li>
+   * <li>...</li>
+   * </ul>
+   * After setting value for those properties, the conditions are built in a query statement by the <br/>
+   * method {@link EventQuery#getQueryStatement()} 
+   * 
    * @param username current user name(or user id)
    * @param eventQuery EventQuery object containing the conditions
    * @return List of <code>CalendarEvent</code> object (events and tasks)
@@ -213,9 +223,9 @@ public interface CalendarService {
   /**
    * Saves events/tasks to a personal calendar
    * @param username current user name(or user id)
-   * @param calendarId Calendar id that the saved event belongs to
+   * @param calendarId Id of the calendar to which the event will be saved
    * @param event <code>CalendarEvent</code> object to be saved
-   * @param isNew boolean value to specify adding a new event of updating an existed event
+   * @param isNew If <code>true</code>, a new event will be saved. If <code>false</code>, an existing event will be updated.
    * @throws Exception
    */
   public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception;
@@ -224,7 +234,7 @@ public interface CalendarService {
    * Removes an event from the personal calendar
    * <p>All attachments and reminders will be removed
    * @param username current user name(or user id)
-   * @param calendarId Id of the Calendar that the removed event belongs to.
+   * @param calendarId Id of the calendar from which the event will be removed.
    * @param eventId Id of the removed event.
    * @return the removed <code>CalendarEvent</code> object. Null if no event was removed.
    * @throws Exception
@@ -251,7 +261,7 @@ public interface CalendarService {
 
   /**
    * Gets all events and tasks from a list of public calendars  
-   * @param calendarIds given public calendar id
+   * @param calendarIds List of Calendar IDs
    * @return List of <code>CalendarEvent</code> objects
    * @throws Exception
    * @see CalendarEvent
@@ -270,9 +280,9 @@ public interface CalendarService {
 
   /**
    * Saves event or task to a public calendar
-   * @param calendarId Id of the public calendar that the saved event belongs to
+   * @param calendarId Id of the public calendar to which the event will be saved
    * @param event <code>CalendarEvent</code> object to be saved.
-   * @param isNew boolean value to specify adding a new event or updating an existed one.
+   * @param isNew If <code>true</code>, a new event will be saved. If <code>false</code>, an existing event will be updated.
    * @throws Exception
    */
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception;
@@ -331,7 +341,7 @@ public interface CalendarService {
    * Generates RSS Feed link for list of calendars following RSS standard and stores the feed in storage
    * <p> This method is called when user selects calendars to generate RSS link in UIEditFeed form.
    * @param username current user name(or user id)
-   * @param calendars List of calendars that are chosen to be generated RSS feed.
+   * @param calendars the RSS feed will contain events and tasks from the calendars given in this param
    * @param rssData object containing basic informations (url, title, description) of the feed
    * @return 1 if succeed, -1 if fail
    * @throws Exception
@@ -342,7 +352,7 @@ public interface CalendarService {
   /**
    * Generates RSS Feed data for list of calendars following RSS standard and stores the feed in storage
    * @param username current user name(or user id)
-   * @param calendarIds Id of calendars that are chosen to be generated RSS feed.
+   * @param calendarIds the RSS feed will contain events and tasks from the calendars given in this param
    * @param rssData object containing basic informations (url, title, description) of the feed
    * @return 1 if succeed, -1 if fail
    * @throws Exception
@@ -351,9 +361,8 @@ public interface CalendarService {
   public int generateRss(String username, List<String> calendarIds, RssData rssData) throws Exception;
 
   /**
-   * Gets feed data of an user.
-   * <p> This method can be seen as opposite direction with {@link CalendarService#generateRss(String, LinkedHashMap, RssData)}
-   * @param username current user name(or user id)
+   * Gets RSS Feed data created by the given user.
+   * @param username current user name (or user id)
    * @return List of FeedData
    * @throws Exception
    * @see FeedData
@@ -373,7 +382,7 @@ public interface CalendarService {
    * in the given <code>EvenQuery</code> object. 
    * @param username current user name(or user id)
    * @param eventQuery <code>EventQuery</code> object
-   * @param publicCalendarIds Array of public calendar id
+   * @param publicCalendarIds Array of public calendar IDs in which to search events
    * @return <code>EventPageList</code> object.
    * @throws Exception
    * @see EventPageList
@@ -385,11 +394,11 @@ public interface CalendarService {
    * <p> This method is used when UIMiniCalendar is loaded or updated. We need to know on which day there are events <br>
    * to add  class 'highlight' for that day in the template.
    * <p> The given <code>EventQuery</code> always has from date is the first day of the month, and end date is the last <br>
-   * day of the month
+   * day of the month. The returned result is a Map with key set is the days having events, the values are all "value".
    * @param username current user name(or user id)
    * @param eventQuery <code>EventQuery</code> object
-   * @param publicCalendarIds array of public calendar id
-   * @return a <code>Map</code> with key set is the days having events
+   * @param publicCalendarIds array of public calendar IDs of which to search events
+   * @return a <code>Map</code> with key set is the days having events. Ex: <code>{<14,"value">, <15,"value">}</code>
    * @throws Exception
    */
   public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
@@ -398,15 +407,16 @@ public interface CalendarService {
    * Shares the private calendar to other users
    * @param username current user name(or user id)
    * @param calendarId Id of the shared calendar
-   * @param sharedUsers List of shared users
+   * @param sharedUsers list of users with whom to share this calendar
    * @throws Exception
    */
   public void shareCalendar(String username, String calendarId, List<String> sharedUsers) throws Exception;
 
   /**
-   * Gets all shared calendars of the current user
-   * @param username current user name(or user id)
-   * @param isShowAll to specify getting all shared calendars or just calendars that are selected from User setting.
+   * Gets all calendars that are shared with the given user
+   * @param username given user name(or user id)
+   * @param isShowAll If <code>true</code>, returns all shared calendars, if <code>false</code>, returns only shared calendars
+   * that are selected in Calendar Setting.
    * @return <code>GroupCalendarData</code> object
    * @throws Exception
    * @see GroupCalendarData
@@ -420,7 +430,7 @@ public interface CalendarService {
    * public calendar.
    * @param username current user name(or user id)
    * @param eventQuery <code>EventQuery</code> object
-   * @param publicCalendarIds Optional array of public calendar id
+   * @param publicCalendarIds Optional array of public calendar IDs of which to get events
    * @return
    * @throws Exception
    * @see CalendarEvent
@@ -447,7 +457,7 @@ public interface CalendarService {
    * @param username current user name(or user id)
    * @param calendarId given calendar id
    * @param event <code>CalendarEvent</code> object
-   * @param isNew boolean value to specify adding a new event or updating an existed one.
+   * @param isNew If <code>true</code>, a new event will be saved. If <code>false</code>, an existing event will be updated.
    * @throws Exception
    */
   public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception;
@@ -501,6 +511,7 @@ public interface CalendarService {
    * @param calendarId Id of the invitation event's calendar
    * @param eventId Id of the invitation event
    * @param answer The answer of the invited user
+   * @deprecated
    */
   public void confirmInvitation(String fromUserId, String toUserId, int calType, String calendarId, String eventId, int answer);
 
@@ -527,11 +538,11 @@ public interface CalendarService {
    * <ul>
    * <li>Private calendar - returned value: 0</li>
    * <li>Shared calendar - returned value: 1</li>
-   * <li>Public calendar - returned value: 2</li>
+   * <li>Group/Public calendar - returned value: 2</li>
    * </ul>
    * @param userName
    * @param calendarId
-   * @return type of calendar
+   * @return 0 if the calendar is private, 1 if the calendar is shared, 2 if the calendar is public
    * @throws Exception
    * @see Calendar
    */
@@ -540,7 +551,7 @@ public interface CalendarService {
   /**
    * Gets events in shared calendars
    * @param username current user name
-   * @param calendarIds list of shared calendars
+   * @param calendarIds list of shared calendars from which to get events
    * @return list of <code>CalendarEvent</code> object
    * @throws Exception
    */
@@ -607,12 +618,12 @@ public interface CalendarService {
   public boolean isRemoteCalendar(String username, String calendarId) throws Exception;
 
   /**
-   * Checks if the remote url is valid, in 2 cases of iCalendar url or CalDav url, with authentication
-   * @param url the remote url
+   * Checks if the remote URL is valid, in 2 cases of iCalendar URL or CalDav URL, with authentication
+   * @param url the remote URL
    * @param type the type of remote calendar, iCalendar or CalDav
-   * @param remoteUser the remote username used to authenticate
+   * @param remoteUser the remote user name used to authenticate
    * @param remotePassword the remote password used to authenticate
-   * @return true if remote url is available in case of iCalendar and CalDav access support in case of CalDav
+   * @return true if remote URL is available in case of iCalendar or supports CalDav access in case of CalDav
    * @throws Exception
    */
   boolean isValidRemoteUrl(String url, String type, String remoteUser, String remotePassword) throws Exception;
@@ -627,7 +638,7 @@ public interface CalendarService {
   /**
    * Reloads data for a remote calendar
    * @param username owner of the calendar
-   * @param remoteCalendarId Id of the remote calendar that's needed to be refresh
+   * @param remoteCalendarId Id of the remote calendar to refresh
    * @return the <code>RemoteCalendar</code> object
    * @throws Exception
    */
@@ -638,12 +649,13 @@ public interface CalendarService {
    * @param remoteCalendar a <code>RemoteCalendar</code> object.
    * @return this calendar after updating
    * @throws Exception
+   * @see RemoteCalendar
    */
   public Calendar updateRemoteCalendarInfo(RemoteCalendar remoteCalendar) throws Exception;
 
   /**
-   * Gets a remote calendar by its owner and its id
-   * @param owner the owner of this calendar
+   * Gets an user's remote calendar, identified by its ID
+   * @param owner user name of the calendar's owner
    * @param calendarId the Id of calendar
    * @return <code>RemoteCalendar<code> object
    * @throws Exception
@@ -659,10 +671,10 @@ public interface CalendarService {
   public RemoteCalendarService getRemoteCalendarService() throws Exception;
 
   /**
-   * Gets remote calendar by its url
-   * @param owner
-   * @param remoteUrl
-   * @param remoteType
+   * Gets an user's remote calendar, identified by its URL
+   * @param owner user name of the calendar's owner
+   * @param remoteUrl URL of the remote calendar
+   * @param remoteType iCalendar or CalDav
    * @return a <code>Calendar</code> object
    * @throws Exception
    */
@@ -676,8 +688,31 @@ public interface CalendarService {
    */
   public int getRemoteCalendarCount(String username) throws Exception;
 
+  /**
+   * Gets the reference key to remote event of an event in a subscribed calendar.
+   * <p> Each event of a CalDav subscribed calendar has a reference key to its respective remote event. This key allows us to know if <br/>
+   * an event is deleted or created from remote calendar. 
+   * <p> The JCR property holding this value is <code>exo:caldavHref</code> of the node type <code>exo:caldavCalendarEvent</code>.
+   * 
+   * @param username current user name (or user ID)
+   * @param calendarId the subscribed calendar's ID
+   * @param eventId Id of the local event
+   * @return reference key to the remote event
+   * @throws Exception
+   */
   public String getCalDavResourceHref(String username, String calendarId, String eventId) throws Exception;
 
+  /**
+   * Gets the entity tag of an event in a subscribed calendar.
+   * <p> Each event of a CalDav subscribed calendar has an entity tag. This value allows us to know if the details content of a remote event <br/>
+   * were updated, so that we can update the respective local event properly.
+   * <p> The JCR property holding this value is <code>exo:caldavEtag</code> of the node type <code>exo:caldavCalendarEvent</code>.
+   * @param username current user name (or user ID)
+   * @param calendarId ID of the subscribed calendar
+   * @param eventId Id of the local event
+   * @return entity tag for the given event
+   * @throws Exception
+   */
   public String getCalDavResourceEtag(String username, String calendarId, String eventId) throws Exception;
 
   /**
@@ -704,9 +739,9 @@ public interface CalendarService {
   public void stopSynchronizeRemoteCalendarJob(String username) throws Exception;
 
   /**
-   * Gets all virtual occurrences from an original recurrence event  in a period of time <br/>
-   * The result will be depended on the recurrence rule, the start date of recurrence event and the period of time to view.
-   * @param recurEvent the original recurrence event
+   * Gets all occurrences of a repetitive event in a period of time. <br/>
+   * The result will be depended on the recurrence rule, the start date of recurrent event and the period of time to view.
+   * @param recurEvent the original recurrent event
    * @param from the from time
    * @param to the to time
    * @return the map of <code>CalendarEvent</code> object, each entry will contains an occurrence event object with recurrence-id as the key
@@ -715,8 +750,8 @@ public interface CalendarService {
   public Map<String, CalendarEvent> getOccurrenceEvents(CalendarEvent recurEvent, java.util.Calendar from, java.util.Calendar to, String timezone) throws Exception;
 
   /**
-   * Gets all original recurrence events of an user in period of time
-   * @param username the owner of recurrence event
+   * Gets all original repetitive events of an user in period of time
+   * @param username the owner of recurrent event
    * @param from from time
    * @param to to time
    * @return list of <code>CalendarEvent</code> objects
@@ -725,22 +760,26 @@ public interface CalendarService {
   public List<CalendarEvent> getOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
 
   /**
-   * Updates an occurrence event, there are two cases: if this occurrence is virtual occurrence, convert it to exception, <br />
-   * if this occurrence is exception, update it as a normal event
-   * @param fromCalendar
-   * @param toCalendar
-   * @param fromType
-   * @param toType
-   * @param calEvents
-   * @param username
+   * Updates an occurrence of a repetitive event
+   * <p> This method is called when:
+   * <ul>
+   * <li>User wants to update only one instance of the recurrent series. In this case, a new normal event will be created as an exception event of the series</li>
+   * <li>User wants to update an exception event of a recurrent series. In this case, this event will be updated as a normal one</li>
+   * </ul> 
+   * @param fromCalendar ID of the source calendar
+   * @param toCalendar ID of the destination calendar
+   * @param fromType type of the source Calendar
+   * @param toType type of the destination calendar
+   * @param calEvents list of events to be updated
+   * @param username current user name (or user ID)
    * @throws Exception
    */
   public void updateOccurrenceEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception;
 
   /**
-   * Gets all exception occurrences from a original recurrence event, the exception event always belong to same calendar with original recurrence event
-   * @param username the owner of this recurrence event
-   * @param recurEvent the original recurrence event
+   * Gets all exception occurrences from a original recurrent event, the exception event always belong to same calendar with original recurrent event
+   * @param username the owner of this recurrent event
+   * @param recurEvent the original recurrent event
    * @return the list of <code>CalendarEvent</code> objects
    * @throws Exception
    */
@@ -758,8 +797,8 @@ public interface CalendarService {
   /**
    * Removes all occurrence from an recurrence series. It will delete the original event of recurrence series. <br/>
    * All exception occurrences of this series still exist and will be treated as a normal event
-   * @param username owner of recurrence event, in case of private or shared calendar
-   * @param originalEvent the original recurrence event object
+   * @param username owner of recurrent event, in case of private or shared calendar
+   * @param originalEvent the original recurrent event object
    * @throws Exception
    */
   public void removeRecurrenceSeries(String username, CalendarEvent originalEvent) throws Exception;
@@ -767,19 +806,19 @@ public interface CalendarService {
   /**
    * Updates recurrence series from an occurrence, this function is only called if the occurrence event is not changed the from date property. <br/>
    * In other way, if the occurrence event move to another date, it will be updated as a 'exception' occurrence and not affects to series
-   * @param fromCalendar the calendarId of the calendar which the recurrence event belong to before updating
-   * @param toCalendar the new calendarId of the recurrence event
-   * @param fromType calendarType of recurrence event before updating
-   * @param toType calendarType of recurrence event after updating
+   * @param fromCalendar the calendarId of the calendar which the recurrent event belong to before updating
+   * @param toCalendar the new calendarId of the recurrent event
+   * @param fromType calendarType of recurrent event before updating
+   * @param toType calendarType of recurrent event after updating
    * @param occurrence the occurrence contains the new data about recurrence series
-   * @param username owner of recurrence event, in case of private and shared calendar
+   * @param username owner of recurrent event, in case of private and shared calendar
    * @throws Exception
    */
   public void updateRecurrenceSeries(String fromCalendar, String toCalendar, String fromType, String toType, CalendarEvent occurrence, String username) throws Exception;
 
   /**
    * Finds all days of month or year that have event/task to highlight from all personal, shared and public calendar of an user <br/>
-   * This function is much same like searchHightLightEvent() function but it only counts for recurrence event
+   * This function is much same like searchHightLightEvent() function but it only counts for recurrent event
    * @param username the username of user
    * @param eventQuery EventQuery object to limit time-range
    * @param publicCalendarIds list of public calendar
