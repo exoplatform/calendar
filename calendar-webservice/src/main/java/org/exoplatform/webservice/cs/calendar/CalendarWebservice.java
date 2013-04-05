@@ -81,7 +81,7 @@ import com.sun.syndication.io.XmlReader;
 /**
  * The CalendarWebservice class contains services to interact with the Calendar application and its data in a RESTFull manner. <br/> 
  * These services are accessible from within the Platform and outside. For example, Gadgets and Mobile applications can use them.
- * @anchor CSref.PublicRESTAPIs.CalendarApplication
+ * @anchor CalendarApplication
  */
 @Path("/cs/calendar")
 public class CalendarWebservice implements ResourceContainer{
@@ -124,7 +124,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return JSon data value will return
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.checkPermission
+   * @anchor CalendarApplication.checkPermission
    * @LevelAPI Experimental
    */
   @GET
@@ -180,7 +180,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return event details in XML format, including the link to the event's ICS file
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.event
+   * @anchor CalendarApplication.event
    * @LevelAPI Experimental
    */
   @GET
@@ -234,7 +234,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return : RSS feeds
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.feed
+   * @anchor CalendarApplication.feed
    * @LevelAPI Experimental
    */
   @SuppressWarnings("unchecked")
@@ -349,7 +349,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return ICalendar data in text/calendar MimeType
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.publicProcess
+   * @anchor CalendarApplication.publicProcess
    * @LevelAPI Experimental
    */
   @GET
@@ -402,7 +402,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @param type The calendar type, such as _private_, _shared_, _public_.
    * @return : text/calendar MimeType (ICalendar format) 
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.privateProcess
+   * @anchor CalendarApplication.privateProcess
    * @LevelAPI Experimental
    */
   @GET
@@ -445,7 +445,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @param limit The maximum number of returned events.
    * @return Response of a JSon object. The JSon object includes the list of events saved in "info" property.  
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEvents
+   * @anchor CalendarApplication.getEvents
    * @LevelAPI Experimental
    */
   @GET
@@ -497,7 +497,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @param limit The maximum number of events returned by the current date.
    * @throws Exception : HTTPStatus.INTERNAL_ERROR , HTTPStatus.UNAUTHORIZED , HTTPStatus.NO_CONTENT
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.upcomingEvent
+   * @anchor CalendarApplication.upcomingEvent
    * @LevelAPI Experimental
    */
   @GET
@@ -553,7 +553,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @param statusId The Id of the status. Possible values are 1 - _Need action_, 2 - _In Progress_, 3 - _Completed_, and 4 - _Cancelled_.
    * @return true/false
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.updateStatus
+   * @anchor CalendarApplication.updateStatus
    * @LevelAPI Experimental
    */
   @GET
@@ -593,7 +593,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return : json object 
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getCalendars
+   * @anchor CalendarApplication.getCalendars
    * @LevelAPI Experimental
    */
   @GET
@@ -641,7 +641,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return JSon data type 
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEvent
+   * @anchor CalendarApplication.getEvent
    * @LevelAPI Experimental
    */
   @GET
@@ -671,7 +671,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return JSon data type 
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEventById
+   * @anchor CalendarApplication.getEventById
    * @LevelAPI Experimental
    */
   @GET
@@ -701,7 +701,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return JSon data type
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getOccurrenceEvent
+   * @anchor CalendarApplication.getOccurrenceEvent
    * @LevelAPI Experimental
    */
   @GET
@@ -754,7 +754,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return will be HTML in response
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.processInvitationReply
+   * @anchor CalendarApplication.processInvitationReply
    * @LevelAPI Experimental
    */
   @GET
