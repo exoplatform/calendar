@@ -43,7 +43,7 @@ UICalendars.prototype.init = function(calendarsForm) {
     UICalendarPortlet.resizeHeight(contentContainer, 20, this.originalHeight);
 
     /* resize content each time the window is resized */
-    var originalHeight = this.originalHeight
+    var originalHeight = this.originalHeight;
     gj(window).resize(function() {
         UICalendarPortlet.resizeHeight(contentContainer, 20, originalHeight);
     });
