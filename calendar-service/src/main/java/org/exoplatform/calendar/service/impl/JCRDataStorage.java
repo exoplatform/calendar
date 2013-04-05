@@ -1445,7 +1445,11 @@ public class JCRDataStorage implements DataStorage {
       ActivityTypeUtils.attachActivityId(eventNode, event.getActivityId());
     }
     calendarNode.getSession().save();
-    addEvent(event);
+    
+    // only need for event, because we just get free/busy time of events in schedule tab.
+    if(CalendarEvent.TYPE_EVENT.equals(event.getEventType())) {
+      addEvent(event);
+    }
   }
 
   /**
@@ -1530,7 +1534,8 @@ public class JCRDataStorage implements DataStorage {
   }
 
   /**
-   * {@inheritDoc}
+   * creates a virtual event for a new event in a public folder of storage
+   * this virtual event is search-able (by XPATH query) and used to find the free/busy time in Schedule tab 
    */
   public void addEvent(CalendarEvent event) throws Exception {
     Node eventFolder = getEventFolder(event.getFromDateTime());
@@ -1676,6 +1681,9 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public Node getDateFolder(Node publicApp, Date date) throws Exception {
+    if (date instanceof DateTime) {
+      date = new Date(date.getTime());
+    }
     java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
     fromCalendar.setTime(date);
     Node yearNode;

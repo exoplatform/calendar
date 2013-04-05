@@ -92,10 +92,8 @@ public class PopupReminderJob extends MultiTenancyJob {
                 reminder.setProperty(Utils.EXO_IS_OVER, true);
               } else {
                 // the reminder is continued, set new time of reminder
-                java.util.Calendar nextReminderTime = java.util.Calendar.getInstance();
-                nextReminderTime.setTimeInMillis(remindTime + interval);
                 reminder.setProperty(Utils.EXO_IS_OVER, false);
-                reminder.setProperty(Utils.EXO_REMINDER_DATE, nextReminderTime);
+                reminder.setProperty(Utils.EXO_REMINDER_DATE, nextRemindTime);
               }
             }
           } else {
@@ -154,7 +152,7 @@ public class PopupReminderJob extends MultiTenancyJob {
    * Checks if current time is time to send the reminder, in case the reminder is not repeated (no interval)
    */
   private Boolean isTimeToRemind(long remindTime, long currentTime) {
-    long delta = 6000;
+    long delta = 15000;
     long diff = currentTime - remindTime;
     return diff <= delta && currentTime >= remindTime;
   }

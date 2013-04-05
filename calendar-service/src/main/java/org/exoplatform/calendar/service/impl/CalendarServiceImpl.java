@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -637,7 +639,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public String getCalDavResourceHref(String username, String calendarId, String eventId) throws Exception {
     Node eventNode = storage_.getUserCalendarHome(username).getNode(calendarId).getNode(eventId);
-    return eventNode.getProperty(Utils.EXO_CALDAV_HREF).getString();
+    try {
+      return eventNode.getProperty(Utils.EXO_CALDAV_HREF).getString();
+    } catch (PathNotFoundException e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("Exception when getting caldav resource",e);
+      }
+      return null;
+    }
   }
 
   public String getCalDavResourceEtag(String username, String calendarId, String eventId) throws Exception {
