@@ -79,7 +79,7 @@ import com.sun.syndication.io.XmlReader;
 
 
 /**
- * The CalendarWebservice class contains services to interact with the Calendar application and its data in a RESTFull manner. <br/> 
+ * The CalendarWebservice class contains services to interact with the Calendar application and its data in a RESTFull manner. 
  * These services are accessible from within the Platform and outside. For example, Gadgets and Mobile applications can use them.
  * @anchor CalendarApplication
  */
@@ -174,7 +174,7 @@ public class CalendarWebservice implements ResourceContainer{
 
   /**
    * Provides details of an event with the given username and event Id.
-   * <p>The returned data is in XML format containing details of the event, including the link to the event's ICS file
+   * The returned data is in XML format containing details of the event, including the link to the event's ICS file
    * @param username User name of requested user
    * @param eventFeedName Contain _eventId_ and _CalType_.
    * @return event details in XML format, including the link to the event's ICS file
