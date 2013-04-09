@@ -231,7 +231,6 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
             importCaldavEvent(remoteCalendar.getUsername(), eXoCalendar.getId(), null, iCalEvent, href, etag.getValue().toString(), true);
             storage_.setRemoteCalendarLastUpdated(remoteCalendar.getUsername(), eXoCalendar.getId(), Utils.getGreenwichMeanTime());
           } catch (Exception e) {
-            e.printStackTrace();
             if (logger.isDebugEnabled()) {
               logger.debug("Exception occurs when import calendar component " + href + ". Skip this component.", e);
             }

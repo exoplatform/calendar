@@ -1922,6 +1922,7 @@ UICalendarPortlet.prototype.filterByCalendar = function(){
     }
 
     _module.UICalendarPortlet.filterEvents();
+    _module.UICalendarPortlet.resortEvents();
 };
 
 /**
