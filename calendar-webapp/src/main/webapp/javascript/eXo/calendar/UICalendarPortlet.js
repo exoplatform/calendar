@@ -492,7 +492,7 @@ UICalendarPortlet.prototype.setting = function(){
     var workingStart = ((arguments.length > 1) && (isNaN(parseInt(arguments[1])) == false) && (arguments[1] != "null")) ? arguments[1] : "";
     workingStart = Date.parse("1/1/2007 " + workingStart);
     this.workingStart = UICalendarPortlet.timeToMin(workingStart);
-    this.timeFormat = (arguments.length > 2) ? (new String(arguments[2])).trim() : null;
+    this.timeFormat = (arguments.length > 2) ? gj.trim(new String(arguments[2])) : null;
     this.portletName = arguments[3];
 };
 
@@ -1849,12 +1849,12 @@ UICalendarPortlet.prototype.filterEvents = function () {
         calendarId    = events[i].getAttribute("calId");
 
         if (selectedCategory === "defaultEventCategoryIdAll") {
-            if (calendarsFiltered.indexOf(calendarId) > -1) {
+            if (gj.inArray(calendarId,  calendarsFiltered) > -1) {
                 events[i].style.display = "block";
             }
         }
         else {
-            if ((calendarsFiltered.indexOf(calendarId) > -1) && (eventCategory === selectedCategory)) {
+            if ((gj.inArray(calendarId, calendarsFiltered) > -1) && (eventCategory === selectedCategory)) {
                 events[i].style.display = "block";
             }
         }
