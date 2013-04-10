@@ -411,6 +411,8 @@ public class ICalendarImportExport implements CalendarImportExport {
 
   public boolean isValidate(InputStream icalInputStream) {
     try {
+      CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
+      CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
       CalendarBuilder calendarBuilder = new CalendarBuilder();
       calendarBuilder.build(icalInputStream);
       return true;
@@ -427,6 +429,7 @@ public class ICalendarImportExport implements CalendarImportExport {
   public void importCalendar(String username, InputStream icalInputStream, String calendarId, String calendarName, java.util.Calendar from, java.util.Calendar to, boolean isNew) throws Exception {
     CalendarBuilder calendarBuilder = new CalendarBuilder();
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
+    CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
     net.fortuna.ical4j.model.Calendar iCalendar;
     try {
       iCalendar = calendarBuilder.build(icalInputStream);
