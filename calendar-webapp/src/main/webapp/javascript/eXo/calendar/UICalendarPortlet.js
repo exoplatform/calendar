@@ -207,7 +207,6 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     var UIQuickAddEventPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddEventPopupWindow")[0];
     var UIQuickAddTaskPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddTaskPopupWindow")[0];
     var selectedCategory = (_module.UICalendarPortlet.filterSelect) ? _module.UICalendarPortlet.filterSelect : null;
-	// There is at least 1 event category to show event form
 	if((selectedCategory != null) && (selectedCategory.options.length < 1)) {
     	var divEventCategory = gj(_module.UICalendarPortlet.filterSelect).parents(".EventCategory")[0] ;
     	return;
@@ -324,7 +323,7 @@ UICalendarPortlet.prototype.minToTime = function(min, timeFormat){
     if (_module.UICalendarPortlet.timeFormat != "hh:mm a") 
         return hour + ":" + minutes;
     if(hour == 0) {
-        hour = 12; //00:00 AM -> 12:00 AM
+        hour = 12;
         return hour + ":" + minutes + timeFormat.am; 
     }
     var time = hour + ":" + minutes;
@@ -476,7 +475,6 @@ UICalendarPortlet.prototype.getWorkingdays = function(weekdays){
     this.weekdays = weekdays;
 };
 
-/* common method */
 /**
  * Apply common setting for portlet
  * @param param1 Time interval in minutes
@@ -485,7 +483,6 @@ UICalendarPortlet.prototype.getWorkingdays = function(weekdays){
  * @param param4 Portlet id
  */
 UICalendarPortlet.prototype.setting = function(){
-    // paras 1: time interval, paras 2: working time, paras 3: time format type, paras 4: portletid
     var UICalendarPortlet = _module.UICalendarPortlet;
     this.interval = ((arguments.length > 0) && (isNaN(parseInt(arguments[0])) == false)) ? parseInt(arguments[0]) : parseInt(15);
     this.interval = this.minsToPixels(this.interval);
@@ -646,7 +643,6 @@ UICalendarPortlet.prototype.switchLayout = function(layout){
 	layoutMan.switchLayout(layout);
 	_module.UICalendarPortlet.resortEvents();
 
-    /* resize the uiCalendars */
     if (layout === 1) {
         _module.UICalendars.init("UICalendars");
     }
@@ -908,12 +904,10 @@ UICalendarPortlet.prototype.showEvent = function(){
 
     this.items = el;
     this.adjustWidth(this.items);
-    // display events after positioning
     for(var i = 0; i < el.length; i++) {
 	    gj(el[i]).css('display','block');
     }
 
-    /*=== resize height to stop at bottom of the page - for dayview ===*/
     this.resizeHeightForDayView(EventDayContainer, this.originalHeightOfEventDayContent);
 
     this.items = null;
@@ -928,7 +922,6 @@ UICalendarPortlet.prototype.showEvent = function(){
 UICalendarPortlet.prototype.resizeHeightForDayView = function(contentContainer, originalHeight) {
     this.resizeHeight(contentContainer, 6, originalHeight);
 
-    /* resize content each time the window is resized */
     gj(window).resize(function() {
         _module.UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
     });
@@ -951,12 +944,9 @@ UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeigh
       maxHeight         = (leftNavigationY > viewPortHeight) ? leftNavigationY : viewPortHeight;
 
   if (maxHeight > originalTotalY) {
-    /* keep the original height */
     gj(contentContainer).css("height", originalHeight);
   }
   else {
-    /* container out of max-height or container original height below max-height */
-    height = maxHeight - positionYofContentContainer - deltaHeight;
     gj(contentContainer).css("height", height);
     gj(contentContainer).css("overflow", "auto");
 
@@ -1062,11 +1052,9 @@ UICalendarPortlet.prototype.scrollToActiveEventInListView = function(uiListConta
         }
   }
 
-  /* minus 145 to compensate the distance between uiListContainer and table contains event */
   uiListContainer.scrollTop = scrollTop - 145;
 };
 
-/* for resizing event box */
 /**
  * Class to control calendar event resizing
  * @constructor
@@ -1211,7 +1199,6 @@ UIResizeEvent.prototype.resizeCallback = function(evt){
     UIResizeEvent.uppermost = null;
 };
 
-/* for drag and drop */
 /**
  * Resets z-Index of DOM element when drag and drop calendar event
  * @param {Object} obj DOM element
@@ -1231,10 +1218,9 @@ UICalendarPortlet.prototype.resetZIndex = function(obj){
         obj.style.zIndex = maxZIndex + 1;
     } 
     catch (e) {
-        //alert(e.message) ;
     }
 };
-/*
+/**
  * Initializes drag and drop actions
  * @param {Object} evt Mouse event
  */
@@ -1280,7 +1266,6 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
   var min = this.pixelsToMins(posY);
   var timeFormat = events.getAttribute("timeFormat");
   var title = gj(events).find("div.eventTitle")[0];
-  // keeps string for icons for event type and event priority
   var html = gj(title).html();
   var arr = html.split("</i>");
   var str = "";
@@ -1296,14 +1281,11 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
 
   var timeValue;
   if (type == 1) {
-    // action resizing
     timeValue = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
     title.innerHTML = str + timeValue;
     events.setAttribute('titleHTML', timeValue);
   }
   else {
-    // action moving event  
-    // update string for start - end time
     if (delta > 30)	{
       timeValue = this.minToTime(min, timeFormat) + " - " + this.minToTime(min + delta, timeFormat);
       str += timeValue;
@@ -1334,7 +1316,6 @@ UICalendarPortlet.prototype.dragEnd = function(){
 };
 
 UICalendarPortlet.prototype.dayviewDropCallback = function(){
-    //this.onmousemove = null;
     var UICalendarPortlet = _module.UICalendarPortlet;
     var dragObject = UICalendarPortlet.dragObject;
     var calType = dragObject.getAttribute("calType");
@@ -1367,10 +1348,9 @@ UICalendarPortlet.prototype.dayviewDropCallback = function(){
 		_module.UICalendarPortlet.setTimeValue(dragObject,currentStart,currentEnd);
 		_module.UICalendarPortlet.showEvent();
 		gj.globalEval(actionLink);
-    //}
 };
 
-/* for showing context menu */
+
 /**
  * Sets up context menu for Calendar portlet
  * @param {Object} compid Portlet id
@@ -1441,7 +1421,6 @@ UICalendarPortlet.prototype.listViewCallback = function(evt){
         "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
     };
 
-    /* disable actions on contextual menu based on permission of event */
     var items = gj(cs.UIContextMenu.menuElement).find("a");
     for (var i = 0; i < items.length; i++) {
         if (gj(items[i]).hasClass("eventAction")) {
@@ -1517,7 +1496,6 @@ UICalendarPortlet.prototype.dayViewCallback = function(evt){
 	    }
     }
 
-    /* disable actions on contextual menu based on permission of event */
     var items = gj(cs.UIContextMenu.menuElement).find("a");
     for (var i = 0; i < items.length; i++) {
     	if (gj(items[i]).hasClass("eventAction")) {
@@ -1654,7 +1632,7 @@ UICalendarPortlet.prototype.monthViewCallback = function(evt){
 
   if (!gj(src).parents(".eventBoxes")[0]) {
     var eventCell = gj(src);
-    if (gj(src).hasClass('dayBox')) {  // click on div dayBox
+    if (gj(src).hasClass('dayBox')) {
         eventCell = gj(src).parent('td');
     }
 
@@ -1691,7 +1669,6 @@ UICalendarPortlet.prototype.monthViewCallback = function(evt){
     }
   }
 
-  /* disable actions on contextual menu based on permission of event */
   var items = gj(cs.UIContextMenu.menuElement).find("a");
   for (var i = 0; i < items.length; i++) {
     if (gj(items[i]).hasClass("eventAction")) {
@@ -1709,7 +1686,6 @@ UICalendarPortlet.prototype.monthViewCallback = function(evt){
     }
   }
 };
-/* BOF filter */
 
 /**
  * Gets all calendar events of a calendar by its id
@@ -1802,7 +1778,6 @@ UICalendarPortlet.prototype.getEvents = function() {
     var viewContainer = _module.UICalendarPortlet.getElementById("UICalendarViewContainer");
     if (!viewContainer) { return ; }
 
-    /* find events in the view */
     var eventClass = (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")) ? "weekViewEventBoxes" : "eventBoxes";
     return gj(viewContainer).find("div." + eventClass);
 };
@@ -1812,7 +1787,6 @@ UICalendarPortlet.prototype.getEvents = function() {
  * Filter events according to selected event category and calendar checkboxes
  */
 UICalendarPortlet.prototype.filterEvents = function () {
-    /* get calendar filter */
     var calendarsFiltered = new Array(),
         UICalendarPortlet = _module.UICalendarPortlet,
         uiCalendars       = UICalendarPortlet.filterForm,
@@ -1832,18 +1806,16 @@ UICalendarPortlet.prototype.filterEvents = function () {
 
     var selectedCategory,
         selectElement = UICalendarPortlet.filterSelect;
-    /* get category filter */
+     
     if (selectElement) {
         selectedCategory = selectElement.options[selectElement.selectedIndex].value;
     }
 
-    /* filtering events */
     var length = events.length,
         eventCategory,
         calendarId;
 
     for (var i = 0; i < length; i++) {
-        /* at first, make event disappear */
         events[i].style.display = "none";
         eventCategory = events[i].getAttribute("eventCat");
         calendarId    = events[i].getAttribute("calId");
@@ -1866,7 +1838,7 @@ UICalendarPortlet.prototype.filterEvents = function () {
  * Resort event after doing something
  */
 UICalendarPortlet.prototype.resortEvents = function(){
-    try { //TODO: review order javascript file
+    try {  
         if (_module.UICalendarPortlet.getElementById("UIMonthView")) 
             _module.UICalendarMan.initMonth();
         if (_module.UICalendarPortlet.getElementById("UIDayViewGrid")) 
@@ -1877,7 +1849,7 @@ UICalendarPortlet.prototype.resortEvents = function(){
         }
     } 
     catch (e) {
-    	//TODO
+    	
     };
 	
 };
@@ -2119,7 +2091,6 @@ UICalendarPortlet.prototype.checkCategoryFilter = function(){
         _module.UICalendarPortlet.runFilterByCategory();
 };
 
-/* EOF filter */
 /**
  * Change among task and event view in list view
  * @param {Object} obj DOM element
@@ -2194,7 +2165,6 @@ UICalendarPortlet.prototype.swapIeMenu = function(menu, clickobj){
  * @param {Object} clickobj clickobj Click DOM element
  */
 UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
-    // var uiDesktop = document.getElementById("UIPageDesktop");
     if (document.getElementById("tmpMenuElement")) 
 	gj("#tmpMenuElement").remove();  
     var tmpMenuElement = gj(oldmenu).clone(true,true);
@@ -2206,11 +2176,6 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
     gj('body').append(tmpMenuElement);
 
     this.menuElement = gj("#tmpMenuElement")[0];
-
-   //  if (uiDesktop) {
-	  // this.swapIeMenu(this.menuElement, clickobj);
-	  // return;
-   //  }
 
     gj(this.menuElement).addClass("UICalendarPortlet UIEmpty");
 
@@ -2229,7 +2194,6 @@ UICalendarPortlet.prototype.swapMenu = function(oldmenu, clickobj){
 
 };
 
-// init script for UIEventDetailTab
 UICalendarPortlet.prototype.initDetailTab = function(form,selecedCalendarID){
   try {
       if (typeof(form) == "string") 
@@ -2245,7 +2209,6 @@ UICalendarPortlet.prototype.initDetailTab = function(form,selecedCalendarID){
           }
       }
       
-      // assign event when user change time by typing
       var UIComboboxInputs = gj(form).find("input.UIComboboxInput");
       for(var i = 0; i < UIComboboxInputs.length; i++) {
     	  gj(UIComboboxInputs[i]).live('change', function() {
@@ -2287,10 +2250,8 @@ UICalendarPortlet.prototype.showHideTime = function(chk){
             fields.push(selectboxes[i]);
         }
     }
-    // show hide field in detail tab
     _module.UICalendarPortlet.showHideField(chk, fields);
 
-    // update schedule tab
     var dateAll = gj('#dateAll')[0];
     if(dateAll) {
 	dateAll.checked = chk.checked;
@@ -2302,7 +2263,6 @@ UICalendarPortlet.prototype.showHideTime = function(chk){
 	    timeField.style.display = "block";
 	}
     }
-    // apply green period in schedule tab
     _module.ScheduleSupport.applyPeriod();
 };
 
@@ -2373,7 +2333,6 @@ UICalendarPortlet.prototype.initSelection = function(){
     UISelection.viewType = "UIDayView";
 };
 
-/* for selection creation */
 /**
  * Class control dragging selection
  * @author <a href="mailto:dung14000@gmail.com">Hoang Manh Dung</a>
@@ -2459,7 +2418,6 @@ UISelection.prototype.clear = function(){
 	gj(document).off("mousemove mouseup");
 };
 
-// check free/busy time
 /**
  * Checks free/busy in day of an user
  * @param {Object} chk Checkbox element
@@ -2480,7 +2438,7 @@ UICalendarPortlet.prototype.checkAllInBusy = function(chk){
     }
 };
 
-/*
+/**
  * Init scripts for Schedule tab
  */
 UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone){
@@ -2888,13 +2846,12 @@ gtnav.ScrollManager.prototype.csCheckAvailableSpace = function(maxSpace) { // in
 	var length =  this.elements.length;
 	for (var i = 0; i < length; i++) {
 		elementsSpace += this.getElementSpace(this.elements[i]);
-		//dynamic margin;
 		if (i+1 < length) margin = this.getElementSpace(this.elements[i+1]) / 3;
 		else margin = this.margin;
-		if (elementsSpace + margin < maxSpace) { // If the tab fits in the available space
+		if (elementsSpace + margin < maxSpace) { 
 			this.elements[i].isVisible = true;
 			this.lastVisibleIndex = i;
-		} else { // If the available space is full
+		} else {  
 			this.elements[i].isVisible = false;
 		}
 	}
@@ -2993,10 +2950,6 @@ eXo.calendar.EventTooltip = {
 	    }
 	},
 
-	// returns the string for event time
-	// all day: Thu, December 05, 00:00 - 23:59
-	// 1 day: Thu, December 05, 09:00AM - 10:00AM
-	// > 2 days: Thu, December 05, 09:00AM - Fri, December 06, 10:00PM
 	getRealTime: function(data){
 	    var time = "";
 	    var type = _module.UICalendarPortlet.isAllday(data);
@@ -3038,7 +2991,6 @@ eXo.calendar.EventTooltip = {
 	    if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + data.location + '</div></div>';
 	    if(data.description) html += '<div class="description ">' + data.description + '</div>';
 	    self._container.style.display = "block";
-	    //self._container.innerHTML = '<div class="popover top"><span class="arrow"></span><div class="popover-content">' + html + '</div></div>';
 	    var popoverContent = gj(self._container).find('.popover-content');
 	    popoverContent.text('');
 	    popoverContent.append(html);
@@ -3064,7 +3016,6 @@ eXo.calendar.EventTooltip = {
 	    }
 	}	
 }
-// return 1 if event is all day, 2 if event happens in 1 day, 3 for other cases. 
 
 UICalendarPortlet.prototype.isAllday = function(eventObject) {
     var startDate = new Date(parseInt(eventObject.startDateTime) + parseInt(eventObject.startTimeOffset));
@@ -3076,7 +3027,6 @@ UICalendarPortlet.prototype.isAllday = function(eventObject) {
 	return 3;
     }
 };
-// get time string with AM or PM localized if needed, for ex: 08:00 AM 
 
 UICalendarPortlet.prototype.getFormattedHour = function(date) {
     var hours = date.getUTCHours();
@@ -3113,7 +3063,6 @@ UICalendarPortlet.prototype.getDateString = function(date) {
 };
 
 
-//eXo.calendar.CalendarScrollManager = new CalendarScrollManager();
 _module.CalendarScrollManager = new CalendarScrollManager();
 eXo.calendar.CalendarScrollManager = _module.CalendarScrollManager;
 
@@ -3247,12 +3196,11 @@ UICalendarPortlet.prototype.changeRepeatType = function(id) {
 
 };
 
-/*
+/**
  * Override Combobox
  * TODO : remove this method when portal fix it
  * REQUIREJS: UICombobox in webui-ext module : wx.UICombobox; dont use global variable eXo.webui
  */
-//eXo.webui.UICombobox.init = function() {
 wx.UICombobox.init = function() {
 	var uiWorkingWorkspace = gj("#UIWorkingWorkspace")[0];
 	var uiCombobox = wx.UICombobox ;
@@ -3286,7 +3234,6 @@ wx.UICombobox.getValue = function(obj){
    UICombobox.list.style.display = "none";
 };
 
-// assigns tooltip handler for all elements having property rel = tooltip
 UICalendarPortlet.prototype.loadTitle = function(id){
     try{
 	gj(document).ready(
@@ -3300,19 +3247,14 @@ UICalendarPortlet.prototype.loadTitle = function(id){
 		}
 	);
     } catch (e) {
-	// TODO: handle exception
     }
 };
 
-//close pop up window -> dont refresh portlet
 UICalendarPortlet.prototype.overidePopUpClose = function(){
     gj('.uiIconClose').attr('onclick','');
     gj('.uiIconClose').click(function(){gj(this).parents()[1].style.display = 'none';});
 }
 
-// Check whether the value of the name field in UIEventCategoryForm is empty or not
-// If yes, the Add/Update button is disabled
-// If no, the Add/Update button is enabled
 UICalendarPortlet.prototype.checkEventCategoryName = function(textFieldId){
     var txtField = gj("input#"+textFieldId);
     var val = txtField.attr("value");
