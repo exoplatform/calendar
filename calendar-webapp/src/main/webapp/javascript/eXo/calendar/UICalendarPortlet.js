@@ -3154,7 +3154,7 @@ UICalendarPortlet.prototype.editRepeat = function(id) {
     var eventForm = _module.UICalendarPortlet.getElementById(id);
     var portletFragment = gj(eventForm).parents(".PORTLET-FRAGMENT")[0];    
     var repeatCheck = gj('input[name="isRepeat"]')[0];
-    var editButton = gj(repeatCheck).parent().nextAll('a')[0];
+    var editButton = gj('.checkBoxArea').find('a')[0];
     if(repeatCheck) {
     var summary = gj('.repeatSummary')[0];
 	if (repeatCheck.checked) {
