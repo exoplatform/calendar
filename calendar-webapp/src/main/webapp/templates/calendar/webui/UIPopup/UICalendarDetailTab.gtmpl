@@ -76,21 +76,21 @@
 	</div> 
     <div class="control-group">
 		<label class="control-label " ><%=parent.getLabel(parent.SELECT_COLOR)%>:</label>
-	  <div class="controls pdT5">
+	  <div class="controls">
 			<%parent.renderField(parent.SELECT_COLOR)%>
 		</div>
 	</div> 
 	<% if (!parent.isAddNew()) { %>
 	<div class="control-group">
 		<label class="control-label" ><%=parent.getLabel(parent.PRIVATE_URL)%>:</label>
-		<div class="controls pdT5">
+		<div class="controls">
 			<%parent.renderField(parent.PRIVATE_URL)%>
 			<%renderActions(parent.PRIVATE_URL) ;%>
 		</div>
 	</div>       
 	<div class="control-group">
 		<label class="control-label" ><%=parent.getLabel(parent.PUBLIC_URL)%>:</label>
-		<div class="controls pdT5">
+		<div class="controls">
 			<% if (!CalendarUtils.isEmpty(parent.calendar_.getPublicUrl())) { %>
 			
 			<a rel="tooltip" data-placement="bottom" title="<%= parent.getLabel(parent.ACT_OPEN)%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">

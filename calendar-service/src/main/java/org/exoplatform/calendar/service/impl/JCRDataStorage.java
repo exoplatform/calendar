@@ -1445,7 +1445,11 @@ public class JCRDataStorage implements DataStorage {
       ActivityTypeUtils.attachActivityId(eventNode, event.getActivityId());
     }
     calendarNode.getSession().save();
-    addEvent(event);
+    
+    // only need for event, because we just get free/busy time of events in schedule tab.
+    if(CalendarEvent.TYPE_EVENT.equals(event.getEventType())) {
+      addEvent(event);
+    }
   }
 
   /**
@@ -1530,7 +1534,8 @@ public class JCRDataStorage implements DataStorage {
   }
 
   /**
-   * {@inheritDoc}
+   * creates a virtual event for a new event in a public folder of storage
+   * this virtual event is search-able (by XPATH query) and used to find the free/busy time in Schedule tab 
    */
   public void addEvent(CalendarEvent event) throws Exception {
     Node eventFolder = getEventFolder(event.getFromDateTime());
@@ -1676,6 +1681,9 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public Node getDateFolder(Node publicApp, Date date) throws Exception {
+    if (date instanceof DateTime) {
+      date = new Date(date.getTime());
+    }
     java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
     fromCalendar.setTime(date);
     Node yearNode;
@@ -2805,8 +2813,10 @@ public class JCRDataStorage implements DataStorage {
     filterList.addAll(Arrays.asList(calSetting.getFilterSharedCalendars()));
     eventQuery.setFilterCalendarIds(filterList.toArray(new String[] {}));
     events.addAll(getUserEvents(username, eventQuery));
+
     try {
       events.addAll(getSharedEvents(username, eventQuery));
+
       if (publicCalendarIds != null && publicCalendarIds.length > 0) {
         eventQuery.setCalendarId(publicCalendarIds);
         events.addAll(getPublicEvents(eventQuery));
@@ -4037,7 +4047,7 @@ public class JCRDataStorage implements DataStorage {
     return Str;
   }
 
-  public void autoShareCalendar(List<String> groupsOfUser, String reciever) throws Exception {
+  public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception {
     Node sharedHome = getSharedCalendarHome();
     NodeIterator userNodes = sharedHome.getNodes();
     List<String> sharedCalendars = new ArrayList<String>();
@@ -4065,7 +4075,7 @@ public class JCRDataStorage implements DataStorage {
                     Value value = values[i];
                     valueList.add(value);
                   }
-                  valueList = calculateSharedCalendar(reciever,
+                  valueList = calculateSharedCalendar(receiver,
                                                       calendarNode,
                                                       values,
                                                       valueList,

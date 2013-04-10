@@ -88,7 +88,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="control-group checkBoxArea">
+	<div class="control-group">
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_CHECKALL)%>:</div>
 		<div class="controls " id="UIEventDetailTab_FIELD_CHECKALL"  ><!-- check all -->
 			<%uiForm.renderField(uicomponent.FIELD_CHECKALL)%>
@@ -100,16 +100,20 @@
 			 <%uiForm.renderField(uicomponent.FIELD_PRIORITY)%>
 		</div>
 	</div>
-	<div class="control-group checkBoxArea">
+	<div class="control-group ">
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_ISREPEAT)%>:</div>
-		<div class="controls "  >
-			 <%
+		<div class="controls checkBoxArea"  >
+			 		<div class="pull-left checkboxContainer">
+			 		<%
             uiForm.renderField(uicomponent.FIELD_ISREPEAT);
           %>
-          <span class="repeatSummary"><%=uiForm.getRepeatSummary()%></span>
-          <%
+          </div>
+          <div class="textLabel">
+          	<span class="repeatSummary"><%=uiForm.getRepeatSummary()%></span>
+          	<%
             renderActions(uicomponent.FIELD_ISREPEAT) ;
           %>
+          </div>
 		</div>
 	</div>
 	<div class="control-group">

@@ -116,6 +116,8 @@ resizable = "resizable";
 	<div >
 		<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong>$event.summary</strong></div>
 		<table class="tableListEvent" id="RowContainerDay" cellspacing="0" borderspacing="0">
+			
+			<% if(!CalendarUtils.isEmpty(event.getLocation())) { %>
 			<tr>				
 				<td class="right">
 					<%
@@ -124,27 +126,30 @@ resizable = "resizable";
 					<i class="$prio"></i>&nbsp;<%=uiform.getLabel('Place')%>
 				</td>
 				<td>
-					<%=(CalendarUtils.isEmpty(event.getLocation()))? "" : event.getLocation()%>
+					<%= event.getLocation()%>
 				</td>
 			</tr>
+			<% } %>
+			
 			<tr>
 				<td class="right"><%=uiform.getLabel('RepeatEvent')%></td>
 				<td><%=(CalendarUtils.isEmpty(event.getRepeatType()))? "" : uicomponent.getLabel(event.getRepeatType())%></td>
 			</tr>
+			
+			<% if(!CalendarUtils.isEmpty(event.getDescription())) { %>
 			<tr>	
 				<td class="right"><%=uiform.getLabel('Description')%></td>
 				<td >
 					<div class="viewDescription">
 					<%
-					String des = "" ;
-					if(!CalendarUtils.isEmpty(event.getDescription())) {
-						des = event.getDescription().replaceAll("\n","<br/>") ; ;
-					}
+					String des = event.getDescription().replaceAll("\n","<br/>") ; ;
 					println des ;
 					%>
 					</div>
 				</td>
 			</tr>
+			<% } %>
+			
             <tr>
 			<td class="right"><%=uiform.getLabel('EventReminder')%></td>
             <td>
@@ -168,7 +173,8 @@ resizable = "resizable";
 			<td class="right"><%=uiform.getLabel('ShowAs')%></td>
 			<td ><%=(CalendarUtils.isEmpty(event.getEventState()))? "" : uicomponent.getLabel(event.getEventState())%></td>
 		</tr>
-        <tr>
+		<% if(event.getInvitation().length > 0) { %>
+		<tr>
 			<td class="right">
 			<%=uiform.getLabel('Invitation')%>
 			</td>
@@ -178,6 +184,8 @@ resizable = "resizable";
 				<%}%>
 			</td>
         </tr>
+		<% } %>
+        
 		<tr>
             <td class="right">
                 <%=uiform.getLabel('Participant')%>

@@ -20,7 +20,8 @@ UICalendars.prototype.init = function(calendarsForm) {
     var UICalendarPortlet = _module.UICalendarPortlet,
         contentContainer  = gj(calendarsForm).find(".contentContainer")[0];
 
-    if (this.originalHeight === null) {
+    if ((!this.originalHeight)
+    || (this.originalHeight && (this.originalHeight !== gj(contentContainer).height()))) {
         this.originalHeight = gj(contentContainer).height();
     }
 
@@ -43,7 +44,7 @@ UICalendars.prototype.init = function(calendarsForm) {
     UICalendarPortlet.resizeHeight(contentContainer, 20, this.originalHeight);
 
     /* resize content each time the window is resized */
-    var originalHeight = this.originalHeight
+    var originalHeight = this.originalHeight;
     gj(window).resize(function() {
         UICalendarPortlet.resizeHeight(contentContainer, 20, originalHeight);
     });

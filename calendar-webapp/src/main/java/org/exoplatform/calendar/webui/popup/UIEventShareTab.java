@@ -26,6 +26,8 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccessImpl;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIGrid;
@@ -61,7 +63,9 @@ public class UIEventShareTab extends UIFormInputWithActions {
   final public static String FIELD_INFO =  "info".intern() ;
   final public static String FIELD_ANSWER = "answer".intern() ;
   private Map<String, List<ActionData>> actionField_ = new HashMap<String, List<ActionData>>() ;
-  
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIEventShareTab.class);
+
   public UIEventShareTab(String id) throws Exception {
     super(id);
     setComponentConfig(getClass(), null) ;
@@ -98,8 +102,9 @@ public class UIEventShareTab extends UIFormInputWithActions {
   
   public void setParticipantStatusList(List<ParticipantStatus> participantStatusList) throws Exception {
     List<ParticipantStatus> newParStatus = new ArrayList<ParticipantStatus>() ;
-    for (ParticipantStatus participantStatus : participantStatusList)
-      if (!CalendarUtils.isEmpty(participantStatus.getParticipant())) newParStatus.add(participantStatus) ;
+    for (ParticipantStatus participantStatus : participantStatusList) {
+      if (!CalendarUtils.isEmpty(participantStatus.getParticipant())) { newParStatus.add(participantStatus) ; }
+    }
     //ObjectPageList objPageList = new ObjectPageList(newParStatus, 10) ;
     LazyPageList<ParticipantStatus> pageList = new LazyPageList<ParticipantStatus>(new ListAccessImpl<ParticipantStatus>(ParticipantStatus.class, newParStatus), 10);
     getChild(UIGrid.class).getUIPageIterator().setPageList(pageList) ;
@@ -137,7 +142,7 @@ public class UIEventShareTab extends UIFormInputWithActions {
           i.remove();
       }
       uiEventShareTab.setParticipantStatusList(uiEventForm.getParticipantStatusList());
-      if(currentPage <= uiEventShareTab.getAvailablePage()) 
+      if (currentPage <= uiEventShareTab.getAvailablePage())
         uiEventShareTab.updateCurrentPage(currentPage.intValue());
       else 
         uiEventShareTab.updateCurrentPage((int)uiEventShareTab.getAvailablePage());

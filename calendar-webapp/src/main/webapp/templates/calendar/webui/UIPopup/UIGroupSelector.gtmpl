@@ -1,8 +1,7 @@
-<div class="UIGroupMembershipSelector" id="$uicomponent.id">
-  <div class="Container">
-    <div class="MembershipSelector" style="margin-left:0px;">
-      <div class="ContentContainer">
-        <div class="MembershipTitle">
+<div class="uiGroupMembershipSelector uiGroupSelector" id="$uicomponent.id">
+	<div class="resizable">
+    <div class="uiBox noRounded childGoup" style="margin:10px;">
+        <h6 class="title">
           <%if(uicomponent.isSelectUser()){%>
             <%=_ctx.appRes(uicomponent.id+".label.selectUser")%>
           <%}%>
@@ -12,15 +11,13 @@
           <%if(uicomponent.isSelectGroup()){%>
             <%=_ctx.appRes(uicomponent.id+".label.selectGroup")%>
           <%}%>
-        </div>
-        <div class="OverflowContainer">
+        </h6>
+        <div class="uiContentBox" style="height: 155px;overflow: auto">
+        <ul>
           <%                
           boolean even = true ;
           if(uicomponent.getCurrentGroup() != null) {
-            for(user in uicomponent.getList()){
-              String rowCssClass = "OddRow" ;
-              if(even) rowCssClass = "EvenRow" ;  
-              even = !even ;
+            for(user in uicomponent.getList()){              
               if(uicomponent.getType() != null) {
                 key = uicomponent.getType() +  ":/" + uicomponent.getCurrentGroup().getId() +  ":/" + user ;
                 if(uicomponent.isSelectMemberShip()) {
@@ -31,9 +28,9 @@
               }
                   
           %>
-              <div class="$rowCssClass">
-                  <a class="ItemIcon" href="<%=uicomponent.event('SelectMembership',key)%>">$user</a>  
-              </div>
+              <li>
+                  <a class="itemIcon" href="<%=uicomponent.event('SelectMembership',key)%>"><i class="uiIconMiniArrowRight uiIconLightGray"></i> $user</a>  
+              </li>
           <%}
           }
 
@@ -46,13 +43,14 @@
               String groupName     = group.getGroupName();
               String selectGroupLink = uicomponent.event('SelectMembership', groupId);
           %>
-              <div class="$rowCssClass">
-                  <a rel="tooltip" data-placement="bottom" data-original-title="$groupId" class="ItemIcon" href="$selectGroupLink">$groupName</a>
-              </div>
+              <li>
+                  <a rel="tooltip" data-placement="bottom" data-original-title="$groupId" class="itemIcon" href="$selectGroupLink"><i class="uiIconMiniArrowRight uiIconLightGray"></i> $groupName</a>
+              </li>
           <%}
           } %>
+        </ul>
         </div>
       </div>
-    </div>
-  </div>
+      
+      </div>
 </div>     

@@ -154,29 +154,30 @@ resizable = "resizable";
 						String reminderLink = uicomponent.event("ViewReminder", reminder.getId()) ;
 					  %>
 						<div>
-							<a href="$reminderLink" class="controlButton"><%=reminder.getReminderType()%></a>
+							<%=reminder.getReminderType()%>
 						</div>
 					  <%          
 					   }                    
 				   %>
 				</td>
 			</tr>
-          <tr>
-            <td class="right">
+			
+			<% if(!CalendarUtils.isEmpty(task.getDescription())) { %>
+			<tr>
+              <td class="right">
 				<%=uiform.getLabel('Note')%>
-            </td>
-			<td >
+              </td>
+			  <td >
 				<div class="viewDescription">
 				<%
-				String des = "" ;
-				if(!CalendarUtils.isEmpty(task.getDescription())) {
-				  des = task.getDescription().replaceAll("\n","<br/>") ; ;
-				}
-				println des ;
+				  String des = task.getDescription().replaceAll("\n","<br/>") ; 
+				  println des ;
 				%>
 				</div>
-            </td>
-		</tr>
+              </td>
+		    </tr>
+			<% } %>
+          
     </table>
 	<% 
 	  def isEditable;

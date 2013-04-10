@@ -41,16 +41,24 @@
         <div class="control-group weeklyByDay" style="<%=weeklyStyle%>">			
 			<div class="control-label" ><%=uicomponent.getLabel(uicomponent.FIELD_WEEKLY_BYDAY)%>:</div>
 			<div class="controls">
-				<%
-                  for (int i = 0; i < 7; i++) {
-                    uicomponent.renderField(CalendarEvent.RP_WEEKLY_BYDAY[i]);
-                    field = uicomponent.getChildById(CalendarEvent.RP_WEEKLY_BYDAY[i]);
+							<div class="checkBoxArea">
+								<%
+                  for (int i = 0; i < 7; i++) { 
                 %>
-                <%=field.getLabel();%>
-                &nbsp;
-                <%
-                  }
-                %>
+                <div class="pull-left item$i">
+	                <div class="pull-left  checkboxContainer">
+	                 <%   uicomponent.renderField(CalendarEvent.RP_WEEKLY_BYDAY[i]);
+	                    field = uicomponent.getChildById(CalendarEvent.RP_WEEKLY_BYDAY[i]);
+	                %>
+	                </div>
+		                 <div class="textLabel">
+		                <%=field.getLabel();%>
+		                 </div>	                
+	                 </div>
+	                <%
+	                  }
+	                %>
+               </div>
 			</div>
 		</div>
         <div class="control-group monthlyType radioBoxArea" style="<%=monthlyStyle%>">			

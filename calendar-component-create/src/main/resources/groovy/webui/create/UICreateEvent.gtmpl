@@ -4,7 +4,7 @@
  requireJS.require("SHARED/uiForm");
  requireJS.require("SHARED/TimePicker", "picker");
  requireJS.addScripts('picker.datePattern="'+uicomponent.getDateTimeFormat()+'";');
- requireJS.addScripts('picker.initTime("'+ uicomponent.id +'");');
+ requireJS.addScripts('picker.init("'+ uicomponent.id +'");');
  
  %>
  <script>
@@ -28,9 +28,9 @@
 					</div>
 				</div>
 				<div class="control-group startTime" >
-					<label class="control-label"><%=uicomponent.getLabel(uicomponent.Start_EVENT )%></label>
+					<label class="control-label"><%=uicomponent.getLabel(uicomponent.START_EVENT )%></label>
 					<div class="controls selectboxMini inputSmall ">
-						<% uicomponent.renderField(uicomponent.Start_EVENT) %>
+						<% uicomponent.renderField(uicomponent.START_EVENT) %>
 						<% uicomponent.renderField(uicomponent.START_TIME) %>
 					</div>
 				</div>
@@ -50,7 +50,7 @@
 			</div>
 		</div>
 		<% if(uicomponent.getActions() != null) { %>
-			<div id="$uicomponent.id" class="uiAction uiActionBorder">
+			<div class="uiAction uiActionBorder">
 				<% for(action in uicomponent.getActions()) { %>
 				<a href="<%=uicomponent.event(action)%>" class="btn"><%=_ctx.appRes(uicomponent.getId() + ".action." + action)%></a>
 				<% } %>

@@ -78,28 +78,31 @@ public class PopupReminderJob extends MultiTenancyJob {
           
           Reminder rmdObj = new Reminder();
           rmdObj.setRepeate(isRepeat);
-          if (reminder.hasProperty(Utils.EXO_OWNER))
-            rmdObj.setReminderOwner(reminder.getProperty(Utils.EXO_OWNER).getString());
-          if (reminder.hasProperty(Utils.EXO_EVENT_ID))
-            rmdObj.setId(reminder.getProperty(Utils.EXO_EVENT_ID).getString());
+          rmdObj.setReminderOwner(reminder.getProperty(Utils.EXO_OWNER).getString());
+          rmdObj.setId(reminder.getProperty(Utils.EXO_EVENT_ID).getString());
           
-          if (isRepeat) {
-            if (fromCalendar.getTimeInMillis() >= fromTime) {
-              reminder.setProperty(Utils.EXO_IS_OVER, true);
-            } else {
-              if ((remindTime + interval) > fromTime) {
+          if(isRepeat) {
+            long currentTime1 = java.util.Calendar.getInstance().getTimeInMillis();
+            long nextRemindTime = getNextRemindTime(remindTime, currentTime1, interval);
+            // if it's time to send reminder, add the rmdObj to list of popup reminders
+            if(nextRemindTime > 0) {
+              popupReminders.add(rmdObj);
+              // if the next reminder time is greater than event from time, the reminder is over (exo:isOver = true)
+              if(nextRemindTime > fromTime) { 
                 reminder.setProperty(Utils.EXO_IS_OVER, true);
               } else {
-                java.util.Calendar cal = new GregorianCalendar();
-                cal.setTimeInMillis(remindTime + interval);
-                reminder.setProperty(Utils.EXO_REMINDER_DATE, cal);
+                // the reminder is continued, set new time of reminder
                 reminder.setProperty(Utils.EXO_IS_OVER, false);
+                reminder.setProperty(Utils.EXO_REMINDER_DATE, nextRemindTime);
               }
             }
           } else {
-            reminder.setProperty(Utils.EXO_IS_OVER, true);
+            long currentTime2 = java.util.Calendar.getInstance().getTimeInMillis();
+            if(isTimeToRemind(remindTime, currentTime2)) {
+              popupReminders.add(rmdObj);
+              reminder.setProperty(Utils.EXO_IS_OVER, true);
+            }
           }
-          popupReminders.add(rmdObj);
           reminder.save();
         }
         if (!popupReminders.isEmpty()) {
@@ -122,9 +125,38 @@ public class PopupReminderJob extends MultiTenancyJob {
       if (log_.isDebugEnabled())
         log_.debug("File plan job done");
     }
-    
   }
 
+  /*
+   * Gets next reminder time based on current reminder time, current time and the interval.
+   * Current time is time to send the reminder if it is greater than reminder time and 
+   * (current time - reminder time) % interval <= delta 
+   * (here we choose delta = 15 seconds, it's equals the period between jobs
+   * If current time is time to send the reminder, the method returns next reminder time
+   * otherwise, it return -1
+   */
+  private long getNextRemindTime(long remindTime, long currentTime, long interval) {
+    long delta = 15000; 
+    long diff = currentTime - remindTime;
+    long remaining =  diff % interval;
+    if(remaining <= delta && currentTime >= remindTime) {
+      // because the user can choose start time of reminder is very long before the from time of event, (refer to CAL-422)
+      // here we must get the most recent reminder time before adding the interval to avoid sending many unexpected reminders
+      return currentTime - remaining + interval; 
+    } else {
+      return -1;
+    }
+  }
+  
+  /*
+   * Checks if current time is time to send the reminder, in case the reminder is not repeated (no interval)
+   */
+  private Boolean isTimeToRemind(long remindTime, long currentTime) {
+    long delta = 15000;
+    long diff = currentTime - remindTime;
+    return diff <= delta && currentTime >= remindTime;
+  }
+  
   public static String getReminderPath(java.util.Calendar fromCalendar, SessionProvider provider) throws Exception {
     String year = "Y" + String.valueOf(fromCalendar.get(java.util.Calendar.YEAR));
     String month = "M" + String.valueOf(fromCalendar.get(java.util.Calendar.MONTH) + 1);

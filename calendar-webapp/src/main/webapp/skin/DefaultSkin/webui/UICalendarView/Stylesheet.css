@@ -172,6 +172,10 @@
    color:red ;
 }
 
+.uiDayView .WorkOffTime {
+  background-color: #f3f3f3;
+}
+
 .UIDayView .WorkOffTime {
   background-color: #f3f3f3;
 }

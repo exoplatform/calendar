@@ -58,6 +58,7 @@ import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.webservice.cs.bean.EventData;
 import org.exoplatform.webservice.cs.bean.SingleEvent;
+
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -78,10 +79,9 @@ import com.sun.syndication.io.XmlReader;
 
 
 /**
- * Calendar web service is the implementation of RESTFul service to provide information 
- * to all needed request from calendar application system or out side, such as some gadgets or other
- * request to interact with calendar application data 
- * @anchor CSref.PublicRESTAPIs.CalendarApplication
+ * The CalendarWebservice class contains services to interact with the Calendar application and its data in a RESTFull manner. 
+ * These services are accessible from within the Platform and outside. For example, Gadgets and Mobile applications can use them.
+ * @anchor CalendarApplication
  */
 @Path("/cs/calendar")
 public class CalendarWebservice implements ResourceContainer{
@@ -90,7 +90,7 @@ public class CalendarWebservice implements ResourceContainer{
   public final static String BASE_RSS_URL = BASE_URL + "/feed".intern();
   public final static String BASE_EVENT_URL = BASE_URL + "/event".intern();
   final public static String BASE_URL_PUBLIC = "/cs/calendar/subscribe/".intern();
-  final public static String BASE_URL_PRIVATE = BASE_URL + "/".intern();
+  final public static String BASE_URL_PRIVATE = PRIVATE + BASE_URL + "/".intern();
   private Log log = ExoLogger.getExoLogger("calendar.webservice");
 
   static CacheControl cc = new CacheControl();
@@ -116,7 +116,7 @@ public class CalendarWebservice implements ResourceContainer{
   }
   
   /**
-   * Check permission of the currently logged user on any calendar by the given calendar Id.
+   * Checks permission of the currently logged user on any calendar by the given calendar Id.
    * The input parameters will be in the URL of the calendar.
    * @param username The given user's Id, or the currently logged user.
    * @param calendarId The given calendar Id on which the permission is checked.
@@ -124,7 +124,8 @@ public class CalendarWebservice implements ResourceContainer{
    * @return JSon data value will return
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.checkPermission
+   * @anchor CalendarApplication.checkPermission
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -172,13 +173,15 @@ public class CalendarWebservice implements ResourceContainer{
   }
 
   /**
-   * Provide details of an event with the given username and event Id. The data returned will be in the _ics_ format.
-   * @param username The requested username.
+   * Provides details of an event with the given username and event Id.
+   * The returned data is in XML format containing details of the event, including the link to the event's ICS file
+   * @param username User name of requested user
    * @param eventFeedName Contain _eventId_ and _CalType_.
-   * @return : RSS feeds in the _XML_ format.
+   * @return event details in XML format, including the link to the event's ICS file
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.event
+   * @anchor CalendarApplication.event
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -224,14 +227,15 @@ public class CalendarWebservice implements ResourceContainer{
 
 
   /**
-   * Return the XML RSS feed data of one user's calendar.
+   * Returns the XML RSS feed data of one user's calendar.
    * @param username The requested username.
    * @param feedname The name of the RSS feed.
    * @param filename The file name.
    * @return : RSS feeds
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.feed
+   * @anchor CalendarApplication.feed
+   * @LevelAPI Experimental
    */
   @SuppressWarnings("unchecked")
   @GET
@@ -338,14 +342,15 @@ public class CalendarWebservice implements ResourceContainer{
   }
 
   /**
-   * Provide an end-point to subscribe calendars from the Calendar function of eXo Platform.
+   * Provides an end-point to subscribe a calendar of the platform.
    * @param username The given Id of the user who wants to get data.
-   * @param calendarId The given calendar Id.
-   * @param type The calendar type, such as _personal_, _shared_,  and _public_.
+   * @param calendarId The Calendar ID of the subscribed calendar.
+   * @param type Type of the subscribed calendar, such as _personal_, _shared_,  and _public_.
    * @return ICalendar data in text/calendar MimeType
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.publicProcess
+   * @anchor CalendarApplication.publicProcess
+   * @LevelAPI Experimental
    */
   @GET
   @Path("/subscribe/{username}/{calendarId}/{type}")
@@ -390,14 +395,15 @@ public class CalendarWebservice implements ResourceContainer{
   }
 
   /**
-   * Generate the ICalendar data from a given calendar Id. The data content will be all events inside.
+   * Generates the ICalendar data from a given calendar Id. The data content will be all events inside.
    * This service requires authentication and permission of the _Users_ group only.
    * @param username Require the user Id for authentication and look up the personal calendar.
    * @param calendarId The given calendar Id to look up.
    * @param type The calendar type, such as _private_, _shared_, _public_.
    * @return : text/calendar MimeType (ICalendar format) 
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.privateProcess
+   * @anchor CalendarApplication.privateProcess
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -430,7 +436,7 @@ public class CalendarWebservice implements ResourceContainer{
   }
   
   /**
-   * Get a list of personal events by their type, a list of calendar Ids, from time, to time and the size limitation.
+   * Gets a list of personal events by their type, a list of calendar Ids, from time, to time and the size limitation.
    * This service requires authentication and permission of the _Users_ group only.
    * @param type The type of the events. The possible values are "_Event_" and "_Task_".
    * @param calids A string of calendar Ids separated by commas (,).
@@ -439,7 +445,8 @@ public class CalendarWebservice implements ResourceContainer{
    * @param limit The maximum number of returned events.
    * @return Response of a JSon object. The JSon object includes the list of events saved in "info" property.  
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEvents
+   * @anchor CalendarApplication.getEvents
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -483,14 +490,15 @@ public class CalendarWebservice implements ResourceContainer{
   }
   
   /**
-   * List upcoming events or tasks by the current date.
+   * Lists upcoming events or tasks by the current date.
    * This service requires authentication and permission of the _Users_ group only.
    * @param currentdatetime The current date using the ISO 8601 format (_yyyyMMdd_).
    * @param type The event or task.
    * @param limit The maximum number of events returned by the current date.
    * @throws Exception : HTTPStatus.INTERNAL_ERROR , HTTPStatus.UNAUTHORIZED , HTTPStatus.NO_CONTENT
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.upcomingEvent
+   * @anchor CalendarApplication.upcomingEvent
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -539,13 +547,14 @@ public class CalendarWebservice implements ResourceContainer{
   }
   
   /**
-   * Allow users to update the status of a task.
+   * Allows users to update the status of a task.
    * This service requires authentication and permission of the _Users_ group only.
    * @param taskid The given task Id.
-   * @param statusId The Id of the status. Possible values are 1 - _Need action_, 2 - _In Progress_, 3 - _Completed_, and 4 - _Canceled_.
+   * @param statusId The Id of the status. Possible values are 1 - _Need action_, 2 - _In Progress_, 3 - _Completed_, and 4 - _Cancelled_.
    * @return true/false
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.updateStatus
+   * @anchor CalendarApplication.updateStatus
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -579,12 +588,13 @@ public class CalendarWebservice implements ResourceContainer{
   }
   
   /**
-   * Retrieve all data of a private (personal) calendar of a logged-in user.
+   * Retrieves all data of a private (personal) calendar of a logged-in user.
    * It requires authentication and permission of the _Users_ group only.
    * @return : json object 
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getCalendars
+   * @anchor CalendarApplication.getCalendars
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -625,13 +635,14 @@ public class CalendarWebservice implements ResourceContainer{
   }
   
   /**
-   * Produce the content of a given private event basing on its Id.
+   * Produces the content of a given private event basing on its Id.
    * It requires authentication and permission of the _Users_ group only.
    * @param eventid The event Id.
    * @return JSon data type 
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEvent
+   * @anchor CalendarApplication.getEvent
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -654,13 +665,14 @@ public class CalendarWebservice implements ResourceContainer{
   
   
   /**
-   * Produce the content of a given event basing on its Id.
+   * Returns the details of an event identified by its Id.
    * It requires authentication and permission of the _Users_ group only.
    * @param eventid The event Id.
    * @return JSon data type 
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getEventById
+   * @anchor CalendarApplication.getEventById
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -689,7 +701,8 @@ public class CalendarWebservice implements ResourceContainer{
    * @return JSon data type
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.getOccurrenceEvent
+   * @anchor CalendarApplication.getOccurrenceEvent
+   * @LevelAPI Experimental
    */
   @GET
   @RolesAllowed("users")
@@ -730,18 +743,19 @@ public class CalendarWebservice implements ResourceContainer{
     }
   }
   /**
-   * Provide the end-point to answer or reply an invitation to join any given event by its Id.
+   * Provides the end-point to answer or reply an invitation to join any given event by its Id.
    * @param calendarId The calendar Id to which the event belongs.
    * @param calType The calendar type, such as _public_, _private_, and _shared_.
    * @param eventId The Id which retrieves the event data.
    * @param inviter The user Id of the inviter (owner of invitation).
    * @param invitee The user Id of the receiver/participant.
    * @param eXoId  The user Id when being logged in.
-   * @param answer  The answer of invitation, such as _accept_, _refuse_, or _will join_.
+   * @param answer  The answer of invitation, such as _accept_, _refuse_, or _not sure_.
    * @return will be HTML in response
    * @throws Exception
    * 
-   * @anchor CSref.PublicRESTAPIs.CalendarApplication.processInvitationReply
+   * @anchor CalendarApplication.processInvitationReply
+   * @LevelAPI Experimental
    */
   @GET
   @Path("/invitation/{calendarId}/{calType}/{eventId}/{inviter}/{invitee}/{eXoId}/{answer}")

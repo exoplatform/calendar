@@ -414,7 +414,10 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
       CalendarEvent event = it.next();
       if (Utils.isExceptionOccurrence(event))
         continue;
-      events.put(calService.getCalDavResourceHref(username, remoteCalendarId, event.getId()), event.getId());
+      String calDavResourceHref = calService.getCalDavResourceHref(username, remoteCalendarId, event.getId());
+      if(calDavResourceHref != null) {
+        events.put(calDavResourceHref, event.getId());
+      }
     }
 
     // list of href of new events on the server
@@ -717,8 +720,10 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
           exoEvent.setEventState(event.getProperty(Utils.X_STATUS).getValue());
         }
         exoEvent = setTaskAttachment(event, exoEvent,username,calendarId,vFreeBusyData);
-        storage_.saveUserEvent(username, calendarId, exoEvent, isNew);
-        storage_.setRemoteEvent(username, calendarId, exoEvent.getId(), href, etag);
+        if(exoEvent != null) {
+          storage_.saveUserEvent(username, calendarId, exoEvent, isNew);
+          storage_.setRemoteEvent(username, calendarId, exoEvent.getId(), href, etag);
+        }
       }
     }
   }
@@ -794,6 +799,28 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
   public static CalendarEvent setTaskAttachment(VToDo task,CalendarEvent exoEvent,String username,String calendarId,Map<String,VFreeBusy> vFreeBusyData) throws Exception {
     CalendarService calService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
     exoEvent = new CalendarEvent();
+    
+    // there is no due date, no way to know start/end of the task
+    // this is a bit weird, because in eXo calendar we display task in time table, so that we need start/end time 
+    if(task.getDue() == null) {
+      return null;
+    }
+    
+    java.util.Calendar tmpCal = java.util.Calendar.getInstance();
+    tmpCal.setTime(task.getDue().getDate());
+    
+    exoEvent.setToDateTime(tmpCal.getTime());
+    
+    if (task.getStartDate() != null) {
+      exoEvent.setFromDateTime(task.getStartDate().getDate());
+    } else {
+      // there is no start time, set start time of event to begin of due date, end time to end of due date
+      // so that the task will be displayed at the header of the view of the time table. It can be improved later by having
+      // other zone to display task
+      exoEvent.setFromDateTime(Utils.getBeginDay(tmpCal).getTime());
+      exoEvent.setToDateTime(Utils.getEndDay(tmpCal).getTime());
+    }  
+    
     if (task.getProperty(Property.CATEGORIES) != null) {
       EventCategory evCate = new EventCategory();
       evCate.setName(task.getProperty(Property.CATEGORIES).getValue().trim());
@@ -821,10 +848,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
     if (task.getStatus() != null)
       exoEvent.setStatus(task.getStatus().getValue());
     exoEvent.setEventType(CalendarEvent.TYPE_TASK);
-    if (task.getStartDate() != null)
-      exoEvent.setFromDateTime(task.getStartDate().getDate());
-    if (task.getDue() != null)
-      exoEvent.setToDateTime(task.getDue().getDate());
+    
     if (task.getLocation() != null)
       exoEvent.setLocation(task.getLocation().getValue());
     ICalendarImportExport.setPriorityExoEvent(task.getPriority(), exoEvent);

@@ -6,7 +6,6 @@ package org.exoplatform.calendar.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.GroupCalendarData;
@@ -94,7 +93,7 @@ public class NewGroupListener extends GroupEventListener {
       calendar.setLocale(defaultLocale);
     if (defaultTimeZone != null)
       calendar.setTimeZone(defaultTimeZone);
-    calendar.setCalendarColor(Calendar.COLORS[new Random().nextInt(Calendar.COLORS.length)]);
+    calendar.setCalendarColor(Calendar.COLORS[0]);
     List<String> perms = new ArrayList<String>();
     if(viewPermission != null)
     for (String s : viewPermission) {

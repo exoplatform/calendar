@@ -964,8 +964,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   public void setParticipant(String values) throws Exception{
       OrganizationService orgService = CalendarUtils.getOrganizationService() ;
       StringBuffer sb = new StringBuffer() ;
-      for(String s : values.split(CalendarUtils.BREAK_LINE)) {
-        User user = orgService.getUserHandler().findUserByName(s) ; 
+
+      for(String s : values.split("[\\r\\n]+")) {
+        User user = orgService.getUserHandler().findUserByName(s) ;
         if(user != null) {
           participants_.put(s.trim(), user.getEmail()) ;
           if(!CalendarUtils.isEmpty(sb.toString())) sb.append(CalendarUtils.BREAK_LINE) ;

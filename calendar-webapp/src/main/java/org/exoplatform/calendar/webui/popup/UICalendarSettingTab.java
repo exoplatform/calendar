@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.TimeZone;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
@@ -48,17 +50,17 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                  template = "app:/templates/calendar/webui/UIPopup/UICalendarSettingTab.gtmpl"
     ) 
 public class UICalendarSettingTab extends UIFormInputWithActions {
-  final public static String VIEW_TYPE = "viewType".intern() ;
-  final public static String TIME_INTERVAL = "timeInterval".intern() ;
-  final public static String WEEK_START_ON = "weekStartOn".intern() ;
-  final public static String DATE_FORMAT = "dateFormat".intern() ;
-  final public static String TIME_FORMAT = "timeFormat".intern() ;
-  final public static String TIMEZONE = "timeZone".intern() ;
-  final public static String ISSHOWWORKINGTIME = "showWorkingTime".intern() ;
-  final public static String WORKINGTIME_BEGIN = "beginTime".intern() ;
-  final public static String WORKINGTIME_END = "endTime".intern() ;
-  final public static String BASE_URL = "baseURL".intern() ;
-  final public static String FIELD_SEND = "send".intern() ;
+  final public static String VIEW_TYPE = "viewType" ;
+  final public static String TIME_INTERVAL = "timeInterval" ;
+  final public static String WEEK_START_ON = "weekStartOn" ;
+  final public static String DATE_FORMAT = "dateFormat" ;
+  final public static String TIME_FORMAT = "timeFormat" ;
+  final public static String TIMEZONE = "timeZone" ;
+  final public static String ISSHOWWORKINGTIME = "showWorkingTime" ;
+  final public static String WORKINGTIME_BEGIN = "beginTime" ;
+  final public static String WORKINGTIME_END = "endTime" ;
+  final public static String BASE_URL = "baseURL" ;
+  final public static String FIELD_SEND = "send" ;
 
   private Map<String, List<ActionData>> actionField_  = new HashMap<String, List<ActionData>>() ;
 

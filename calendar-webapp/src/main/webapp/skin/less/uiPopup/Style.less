@@ -61,8 +61,14 @@
 			.allDay {
 				margin: 2px 0 15px 0;
 				.uiCheckbox {
-					margin-right: -5px;
+					margin-right:-5px;
+					margin-right: 15px e("\9"); //hackIE9
 				}
+				@media screen and (-webkit-min-device-pixel-ratio:0) {
+				   .uiCheckbox {
+						margin-right:15px;
+					}
+				}//hack chrome
 			}
 			> .timeField {
 				margin: 0 15px 0 0;

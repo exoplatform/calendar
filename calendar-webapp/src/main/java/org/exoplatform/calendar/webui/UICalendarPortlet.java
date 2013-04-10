@@ -19,8 +19,6 @@ package org.exoplatform.calendar.webui;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.exoplatform.calendar.CalendarUtils;
@@ -33,17 +31,18 @@ import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.application.RequestNavigationData;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.social.common.router.ExoRouter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
-import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
@@ -65,11 +64,9 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   private static Log log = ExoLogger.getLogger("org.exoplatform.calendar.webui.UICalendarPortlet");
 
-  private static String SPACE_ID_KEY = "UICalendarPortlet_Space_Id";
-
   public UICalendarPortlet() throws Exception {
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
-    uiActionBar.setCurrentView(UICalendarViewContainer.TYPES[Integer.parseInt(getCalendarSetting().getViewType())]) ;
+    uiActionBar.setCurrentView(CalendarUtils.getViewInSetting()) ;
     addChild(UICalendarWorkingContainer.class, null, null) ;
     UIPopupAction uiPopup =  addChild(UIPopupAction.class, null, null) ;
     uiPopup.setId("UICalendarPopupAction") ;
@@ -134,43 +131,31 @@ public class UICalendarPortlet extends UIPortletApplication {
    * @return 
    */
   public static String getSpaceId() {
-    PortletRequestContext pContext = RequestContext.getCurrentInstance();
-    String spaceIdStr = (String) pContext.getAttribute(SPACE_ID_KEY);
-    if (spaceIdStr == null) {
-      try {
-        PortletRequest portletRequest = pContext.getRequest();
-        PortletPreferences pref = portletRequest.getPreferences();
-        if (pref.getValue("SPACE_URL", null) != null) {
-          String url = pref.getValue("SPACE_URL", null);
-          SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
-          Space space = sService.getSpaceByUrl(url);
-          spaceIdStr = space.getId();
-          pContext.setAttribute(SPACE_ID_KEY, spaceIdStr);
-        }
-      } catch (Exception e) {
-        if (log.isDebugEnabled())
-          log.debug("Getting space id in the UICalendar portlet failed.", e);
-      }
-    }
+    String spaceIdStr = null;
+    PortalRequestContext pContext = Util.getPortalRequestContext();
+    String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+    ExoRouter.Route er = ExoRouter.route(requestPath);
+    if(er == null) return spaceIdStr;
+    String spacePrettyName = er.localArgs.get("spacePrettyName");
+    SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+    Space space = sService.getSpaceByPrettyName(spacePrettyName);
+    if(space == null) return spaceIdStr;
+    spaceIdStr = space.getId();
     return spaceIdStr;
   }
 
   public static String getGroupIdOfSpace(){
-    PortletRequestContext pContext = RequestContext.getCurrentInstance();
+    String spaceGroupId = null;
+    PortalRequestContext pContext = Util.getPortalRequestContext();
+    String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+    ExoRouter.Route er = ExoRouter.route(requestPath);
+    if(er == null) return spaceGroupId;
+    String spacePrettyName = er.localArgs.get("spacePrettyName");
     SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
-    try {
-      PortletRequest portletRequest = pContext.getRequest();
-      PortletPreferences pref = portletRequest.getPreferences();
-      if (pref.getValue("SPACE_URL", null) != null) {
-        String url = pref.getValue("SPACE_URL", null);
-        Space space = sService.getSpaceByUrl(url);
-        return space.getGroupId();
-      }
-    } catch (Exception e) {
-      if (log.isDebugEnabled())
-        log.debug("Getting space id in the UICalendar portlet failed.", e);
-    }
-    return null;
+    Space space = sService.getSpaceByPrettyName(spacePrettyName);
+    if(space == null) return spaceGroupId;
+    spaceGroupId = space.getGroupId();
+    return spaceGroupId;
   }
 
   public static boolean isInSpace() {
@@ -271,6 +256,7 @@ public class UICalendarPortlet extends UIPortletApplication {
     uiPopupAction.deActivate();
     UIPopupContainer uiPopupContainer = uiPopupAction.activate(UIPopupContainer.class, 700);
     uiPopupContainer.setId("UIEventPreview");
+    uiPopupAction.getChild(UIPopupWindow.class).setShowCloseButton(false);
     UIPreview uiPreview = uiPopupContainer.addChild(UIPreview.class, null, null);
     uiPreview.setEvent(event);
     uiPreview.setId("UIPreviewPopup");

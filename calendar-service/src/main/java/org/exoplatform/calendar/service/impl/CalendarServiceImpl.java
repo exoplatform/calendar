@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -549,6 +551,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     cal.setName(fullName); // name the default calendar after the user's full name, cf CAL-86
     cal.setDataInit(true);
     cal.setCalendarOwner(userName);
+    cal.setCalendarColor(Calendar.COLORS[0]);
     if (defaultCalendarSetting_ != null) {
       if (defaultCalendarSetting_.getTimeZone() != null)
         cal.setTimeZone(defaultCalendarSetting_.getTimeZone());
@@ -636,7 +639,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public String getCalDavResourceHref(String username, String calendarId, String eventId) throws Exception {
     Node eventNode = storage_.getUserCalendarHome(username).getNode(calendarId).getNode(eventId);
-    return eventNode.getProperty(Utils.EXO_CALDAV_HREF).getString();
+    try {
+      return eventNode.getProperty(Utils.EXO_CALDAV_HREF).getString();
+    } catch (PathNotFoundException e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("Exception when getting caldav resource",e);
+      }
+      return null;
+    }
   }
 
   public String getCalDavResourceEtag(String username, String calendarId, String eventId) throws Exception {
@@ -958,14 +968,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return storage_.getCalendarById(calId);
   }  
   /**
-   * @see org.exoplatform.calendar.service.CalendarService#autoShareCalendar(java.util.List, java.lang.String)
+   * {@inheritDoc}
    */
-  public void autoShareCalendar(List<String> groupsOfUser, String reciever) throws Exception {
-    storage_.autoShareCalendar(groupsOfUser, reciever);
+  public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception {
+    storage_.autoShareCalendar(groupsOfUser, receiver);
   }
 
   /**
-   * @see org.exoplatform.calendar.service.CalendarService#autoRemoveShareCalendar(java.lang.String, java.lang.String)
+   * {@inheritDoc}
    */
   public void autoRemoveShareCalendar(String groupId, String username) throws Exception {
     storage_.autoRemoveShareCalendar(groupId, username);

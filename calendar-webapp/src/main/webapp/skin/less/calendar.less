@@ -12,6 +12,8 @@
 @import "uiListView/Style.less";
 @import "uiMonthView/Style.less";
 @import "uiPopup/Style.less";
+@import "uiCombobox/Style.less";
+
 /*============== uiCalendars actionIcon ================*/
 
 .uiMiniCalendar,.uiCalendars,.uiHeaderBar {
@@ -78,15 +80,25 @@
 	}
 }
 
-
-.UICalendarPortlet ,.uiCalendarPortlet {
-	.uiBox {
-		.title {
-			.box-shadow(0px 1px 2px -1px rgba(13,13,13,0.20));
-		}
-	}
-}
-
 .UICalendarComponent {
 	z-index:1;
+}
+
+
+.checkBoxArea {
+		.checkboxContainer {
+			width: 18px;
+		}
+		.pull-left + .pull-left {
+			margin-left: 5px;
+		}
+		.pull-left.item3  + .pull-left {
+			margin-left: 0;
+		}
+		 .textLabel {
+			margin-left: 20px;
+			span {
+				margin-right: 5px;
+			}
+		}
 }

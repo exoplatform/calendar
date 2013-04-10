@@ -25,10 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.RequestContext;
@@ -56,6 +59,9 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   final public static String FIELD_CURRENTATTENDER = "currentAttender".intern() ;
   protected Map<String, String> parMap_ = new HashMap<String, String>() ;
   public Calendar calendar_ ;
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIEventAttenderTab.class);
+
   public UIEventAttenderTab(String arg0) {
     super(arg0);
     setComponentConfig(getClass(), null) ;
@@ -63,7 +69,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
     addUIFormInput(new UIFormComboBox(UIEventAttenderTab.FIELD_FROM_TIME, UIEventAttenderTab.FIELD_FROM_TIME, options)) ;
     addUIFormInput(new UIFormComboBox(UIEventAttenderTab.FIELD_TO_TIME, UIEventAttenderTab.FIELD_TO_TIME, options)) ;
-    
+
     addUIFormInput(new UICheckBoxInput(FIELD_DATEALL, FIELD_DATEALL, false)) ;
     UICheckBoxInput checkFreeInput = new UICheckBoxInput(FIELD_CHECK_TIME, FIELD_CHECK_TIME, false) ;
     checkFreeInput.setOnChange("OnChange") ;
@@ -95,23 +101,31 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
       eventQuery.setParticipants(newPars.toArray(new String[]{})) ;
       eventQuery.setNodeType("exo:calendarPublicEvent") ;
       Map<String, String> parsMap = 
-        CalendarUtils.getCalendarService().checkFreeBusy(eventQuery) ;
+          CalendarUtils.getCalendarService().checkFreeBusy(eventQuery) ;
       parMap_.putAll(parsMap) ;
     }
+
+
   }
-  
+
   public boolean isCheckFreeTime() {
     return getUICheckBoxInput(FIELD_CHECK_TIME).isChecked() ;
   }
-  protected Map<String, String> getMap() { 
+  protected Map<String, String> getMap() throws Exception{ 
     for(String id : parMap_.keySet()) {
-      if(getUICheckBoxInput(id) == null) {
-        addUIFormInput(new UICheckBoxInput(id, id, false)) ;
+      if(getCalUICheckBoxInput(id) == null) {
+        org.exoplatform.calendar.webui.popup.UICheckBoxInput input = new org.exoplatform.calendar.webui.popup.UICheckBoxInput(id, id, false);
+        input.setLabel(getFullname(id));
+        addUIFormInput(input) ;
       }
     }
     return parMap_ ;
   }
-  
+
+  protected org.exoplatform.calendar.webui.popup.UICheckBoxInput getCalUICheckBoxInput(String name) {
+    return (org.exoplatform.calendar.webui.popup.UICheckBoxInput) findComponentById(name);
+  }
+
   public static String getFullname(String username) throws Exception {
     User u = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username);
     String fullName = u.getDisplayName();
@@ -122,7 +136,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     if (fullName == null) fullName = u.getUserName();
     return fullName;
   }
-  
+
   private DateFormat getSimpleFormatDate() throws Exception {
     CalendarSetting calSetting = getAncestorOfType(UICalendarPortlet.class).getCalendarSetting() ;
     WebuiRequestContext context = RequestContext.getCurrentInstance() ;
@@ -192,7 +206,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   public void processRender(WebuiRequestContext arg0) throws Exception {
     super.processRender(arg0);
   }
-  
+
   public String getUserTimeZone() throws Exception {
     String timeZone = CalendarUtils.getCalendarService().getCalendarSetting(CalendarUtils.getCurrentUser()).getTimeZone() ;
     TimeZone tz = TimeZone.getTimeZone(timeZone) ;
