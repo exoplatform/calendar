@@ -141,7 +141,7 @@
                   <span class="$css"></span>
 		            </span>
               </a>
-		          <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendarName"><%=uicomponent.truncateLongName(calendarName)%></a>
+		          <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendarName">$calendarName</a>
               <span style="display:none;"><%uiform.renderField(calendarId)%></span>
 		        </div>
           </li>

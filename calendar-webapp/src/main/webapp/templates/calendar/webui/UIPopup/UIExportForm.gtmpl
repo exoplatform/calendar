@@ -12,7 +12,7 @@
 						            %>
 											<div class="control-label">
 												<% if ( (field.getName() != uicomponent.NAME) && (field.getName() != uicomponent.TYPE) ) { %>
-												<label  for="$field.id" rel="tooltip" data-placement="bottom"
+												<label class="calendarName" for="$field.id" rel="tooltip" data-placement="bottom"
 												title="<%=uicomponent.getCalendarName(field.getName()) %>">
 													<%=uicomponent.getLabel(field.getName())%>:
 											</label> <% } else { %> <label  for="$field.id"> <%=uicomponent.getLabel(field.getName())%>:

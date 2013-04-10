@@ -101,7 +101,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       if(eventId != null) checkBox.setDisabled(true) ;
       else checkBox.setDisabled(false) ;
       addUIFormInput(checkBox) ;
-      names_.put(calendar.getId(), truncateLongName(calendar.getName())) ;
+      names_.put(calendar.getId(), calendar.getName()) ;
       longNames_.put(calendar.getId(), calendar.getName()) ;
     }
   }
