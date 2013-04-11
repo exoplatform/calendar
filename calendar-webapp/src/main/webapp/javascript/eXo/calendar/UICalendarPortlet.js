@@ -947,6 +947,7 @@ UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeigh
     gj(contentContainer).css("height", originalHeight);
   }
   else {
+	height = maxHeight - positionYofContentContainer - deltaHeight;
     gj(contentContainer).css("height", height);
     gj(contentContainer).css("overflow", "auto");
 
