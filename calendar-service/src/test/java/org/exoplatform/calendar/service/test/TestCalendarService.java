@@ -2098,29 +2098,47 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     cal.setName(calendarId);
     cal.setPublic(true);
     calendarService_.saveUserCalendar(username, cal, true);
+    
     // event with high priority
     InputStream icalInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("ObmCalendar_isolated.ics");
     // event with medium priority
     InputStream icalInputStream2 = Thread.currentThread().getContextClassLoader().getResourceAsStream("ObmCalendar_isolated_p2.ics");
     // event with low priority
     InputStream icalInputStream3 = Thread.currentThread().getContextClassLoader().getResourceAsStream("ObmCalendar_isolated_p3.ics");
+    
+    // test non-standard ics file, cf CAL-514, CAL-524
+    InputStream icalInputStream4 = Thread.currentThread()
+        .getContextClassLoader()
+        .getResourceAsStream("nonstandard.ics");
+    InputStream icalInputStream5 = Thread.currentThread()
+        .getContextClassLoader()
+        .getResourceAsStream("png_attachment.ics");
+    
     calIE.importCalendar(username, icalInputStream, calendarId, calendarId, null, null, false);
     calIE.importCalendar(username, icalInputStream2, calendarId, calendarId, null, null, false);
     calIE.importCalendar(username, icalInputStream3, calendarId, calendarId, null, null, false);
+    calIE.importCalendar(username, icalInputStream4, calendarId, calendarId, null, null, false);
+    calIE.importCalendar(username, icalInputStream5, calendarId, calendarId, null, null, false);
+
     List<String> calendarIds = new ArrayList<String>();
     calendarIds.add(calendarId);
     List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username, calendarIds);
-    assertEquals(3, events.size());
+    
+    assertEquals(5, events.size());
+    
     CalendarEvent event = events.get(0) ;
     assertEquals(CalendarEvent.PRIORITY[CalendarEvent.PRI_HIGH], event.getPriority());
+    
     CalendarEvent event2 = events.get(1) ;
     assertEquals(CalendarEvent.PRIORITY[CalendarEvent.PRI_MEDIUM],  event2.getPriority());
+    
     CalendarEvent event3 = events.get(2) ;
     assertEquals(CalendarEvent.PRIORITY[CalendarEvent.PRI_LOW],  event3.getPriority());
 
     assertNotNull(event.getFromDateTime());
     assertNotNull(event.getToDateTime());
     assertNotNull(event.getSummary());
+   
     //export single event by id
     OutputStream icalOutputStream  =  calIE.exportEventCalendar(username, calendarId, CalendarImportExport.PRIVATE_TYPE, event.getId());
     assertNotNull(icalOutputStream);
@@ -2132,9 +2150,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     icalOutputStream.close();
     icalInputStream.close();
+    
     calendarService_.removeUserCalendar(username, calendarId);
   }
-
     //mvn test -Dtest=TestCalendarService#testImportCSVFile
     public void testImportCSVFile() throws Exception{
       CalendarImportExport calIE = calendarService_.getCalendarImportExports(CalendarService.EXPORTEDCSV);

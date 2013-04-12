@@ -1,0 +1,26 @@
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20120914T090000Z
+DTEND:20120914T100000Z
+DTSTAMP:20130405T094933Z
+ORGANIZER;CN=X:mailto:x@abc.com
+UID:jm5vhno2k10mr1aa45fjbk3akc@google.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=TENTATIVE;CN=X
+ x xx;X-NUM-GUESTS=0;X-RESPONSE-COMMENT="JUGSummerCamp.
+Si j'arrive ˆ trouver un coin tranquille, je viendrais.":mailto:
+ ijk@abc.com
+CREATED:20120906T081955Z
+ please join my meeting\, Sep 14\, 2012 at 11:00 PM GMT 02:00.\nhttps://www1.got
+ omeeting.com/join/269781232\n\n2.  Use your microphone and speakers (VoIP) 
+ - a headset is recommended. Or\, call in using your telephone.\n\nDial  1 (
+ 786) 358-5420\nAccess Code: 269-781-232\nAudio PIN: Shown after joining the
+  meeting\n\nMeeting ID: 269-781-232\n\nGoToMeeting¨\nOnline Meetings Made E
+ asy¨
+LAST-MODIFIED:20120914T085002Z
+LOCATION:GoTo Meeting
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Presentation Specs
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR

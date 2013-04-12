@@ -76,5 +76,5 @@ public interface RemoteCalendarService {
    * @throws Exception
    */
   RemoteCalendar getRemoteCalendar(String url, String type, String remoteUser, String remotePassword) throws Exception;
-
+  
 }

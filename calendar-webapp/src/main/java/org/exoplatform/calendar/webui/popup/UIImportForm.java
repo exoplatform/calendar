@@ -24,6 +24,7 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.impl.ICalendarImportExport;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UICalendars;
@@ -275,7 +276,14 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
             calendar.setCalendarOwner(username);
             calendar.setPublic(false);
             calendarService.saveUserCalendar(username, calendar, true);
-            calendarService.getCalendarImportExports(importFormat).importCalendar(username, input.getUploadDataAsStream(resource[0].getUploadId()), calendar.getId(), null, null, null, false);
+            
+            if(CalendarService.ICALENDAR.equals(importFormat)) {
+              //import ics by job
+              ICalendarImportExport iCalImEx = (ICalendarImportExport) calendarService.getCalendarImportExports(importFormat);
+              iCalImEx.importCalendarByJob(username, input.getUploadDataAsStream(resource[0].getUploadId()), calendar.getId(), calendar.getName(), null, null, false);
+            } else {
+              calendarService.getCalendarImportExports(importFormat).importCalendar(username, input.getUploadDataAsStream(resource[0].getUploadId()), calendar.getId(), null, null, null, false);
+            }
 
           } else {
             String calendarId = uiForm.getCalendarId();
@@ -283,21 +291,20 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, AbstractApplicationMessage.WARNING));
               return;
             }
-
             calendarService.getCalendarImportExports(importFormat).importCalendar(username, input.getUploadDataAsStream(resource[0].getUploadId()), calendarId, null, null, null, false);
           }
-          UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
-          UICalendars uiCalendars = calendarPortlet.findFirstComponentOfType(UICalendars.class);
-          UICalendarViewContainer uiCalendarViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class);
-          uiCalendarViewContainer.refresh();
-          
           CalendarUtils.removeCurrentCalendarSetting();
-
           uploadService.removeUpload(resource[0].getUploadId());
-          event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet.findFirstComponentOfType(UIMiniCalendar.class));
-          event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendars);
+          UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
           calendarPortlet.cancelAction();
-          event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet);
+          if(!CalendarService.ICALENDAR.equals(importFormat)) {
+            UICalendars uiCalendars = calendarPortlet.findFirstComponentOfType(UICalendars.class);
+            UICalendarViewContainer uiCalendarViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class);
+            uiCalendarViewContainer.refresh();
+            event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet.findFirstComponentOfType(UIMiniCalendar.class));
+            event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendars);
+            event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet);  
+          }
         } else {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIImportForm.msg.file-type-error", null));
         } 

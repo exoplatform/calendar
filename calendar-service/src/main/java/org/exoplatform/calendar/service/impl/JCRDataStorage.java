@@ -4387,6 +4387,8 @@ public class JCRDataStorage implements DataStorage {
     eXoCalendar.setName(remoteCalendar.getCalendarName());
     eXoCalendar.setPublic(false);
     eXoCalendar.setCalendarOwner(remoteCalendar.getUsername());
+    eXoCalendar.setDescription(remoteCalendar.getDescription());
+    eXoCalendar.setCalendarColor(remoteCalendar.getCalendarColor());
     saveUserCalendar(remoteCalendar.getUsername(), eXoCalendar, true);
 
     // add mixin type exo:remoteCalendar to this calendar

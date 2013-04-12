@@ -54,6 +54,16 @@ public class RemoteCalendar {
   private String   remotePassword;
 
   private Calendar lastUpdated;
+  
+  private String calendarColor;
+
+  public String getCalendarColor() {
+    return calendarColor;
+  }
+
+  public void setCalendarColor(String calendarColor) {
+    this.calendarColor = calendarColor;
+  }
 
   public RemoteCalendar() {
     description = syncPeriod = remoteUser = remotePassword = "";

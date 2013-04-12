@@ -611,4 +611,8 @@ public class MockCalendarService implements CalendarService{
   @Override
   public void autoRemoveShareCalendar(String groupId, String username) throws Exception {
   }
+
+  @Override
+  public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception {
+  }
 }

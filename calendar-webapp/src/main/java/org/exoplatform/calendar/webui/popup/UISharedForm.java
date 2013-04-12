@@ -794,7 +794,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
         JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)PortalContainer.getComponent(JobSchedulerService.class) ;
         CalendarService calService = (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
         if(calService.isGroupBeingShared(aPermission.getOwner().getGroupId(),schedulerService)) {
-          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("Unshare.beingshared.message",null)) ;
+          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarPortlet.label.unshare-being-shared",null)) ;
           return;
         }
       }

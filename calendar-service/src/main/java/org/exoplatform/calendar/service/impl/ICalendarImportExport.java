@@ -34,12 +34,23 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.DeleteShareJob;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.ImportCalendarJob;
+import org.exoplatform.calendar.service.ModifiedInputStream;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.scheduler.JobInfo;
+import org.exoplatform.services.scheduler.JobSchedulerService;
+import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
+import org.quartz.Job;
+import org.quartz.JobDetail;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
+
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.data.ParserException;
@@ -93,7 +104,7 @@ import net.fortuna.ical4j.util.CompatibilityHints;
  * Jul 2, 2007  
  */
 public class ICalendarImportExport implements CalendarImportExport {
-
+  
   private JCRDataStorage      storage_;
 
   private static final Log    logger       = ExoLogger.getLogger(ICalendarImportExport.class);
@@ -426,13 +437,20 @@ public class ICalendarImportExport implements CalendarImportExport {
     return false;
   }
 
-  public void importCalendar(String username, InputStream icalInputStream, String calendarId, String calendarName, java.util.Calendar from, java.util.Calendar to, boolean isNew) throws Exception {
+  public void importCalendar(String username,
+                              InputStream icalInputStream,
+                              String calendarId,
+                              String calendarName,
+                              java.util.Calendar from,
+                              java.util.Calendar to,
+                              boolean isNew) throws Exception {
     CalendarBuilder calendarBuilder = new CalendarBuilder();
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
     net.fortuna.ical4j.model.Calendar iCalendar;
     try {
-      iCalendar = calendarBuilder.build(icalInputStream);
+      InputStream modStream = ModifiedInputStream.getIcsModifiedStream(icalInputStream);
+      iCalendar = calendarBuilder.build(modStream);
     } catch (ParserException e) {
       if (logger.isDebugEnabled()) {
         logger.debug("ParserException occurs when building iCalendar object", e);
@@ -703,5 +721,37 @@ public class ICalendarImportExport implements CalendarImportExport {
         }
       }
     }
+  }
+  
+  public void importCalendarByJob(String username,
+                                  InputStream icalInputStream,
+                                  String calendarId, String calendarName,
+                                  java.util.Calendar from, java.util.Calendar to,
+                                  boolean isNew) throws Exception {
+    JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().
+        getComponentInstance(JobSchedulerService.class) ;
+
+    JobDetail job = findImportJob(schedulerService, calendarId);
+
+    if(job == null) {
+      job = ImportCalendarJob.getImportICSFileJobDetail(username, calendarId, calendarName, icalInputStream, from, to, isNew);
+    }
+
+    SimpleTriggerImpl trigger = new SimpleTriggerImpl();
+    trigger.setName(calendarId);
+    trigger.setGroup(ImportCalendarJob.IMPORT_CALENDAR_JOB_GROUP_NAME);
+    trigger.setStartTime(new Date());
+
+    schedulerService.addJob(job, trigger);  
+  }
+
+  public JobDetail findImportJob(JobSchedulerService schedulerService, String calendarId) throws Exception {
+    List<JobDetail> listJobs = schedulerService.getAllJobs();
+    for(JobDetail job : listJobs) {
+      if(job.getKey().getName().equals(calendarId)) {
+        return job;
+      }
+    }
+    return null;
   }
 }

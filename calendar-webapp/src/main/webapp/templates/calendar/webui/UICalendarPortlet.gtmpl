@@ -32,18 +32,30 @@
     
     <div id="restContext" value="<%= uicomponent.getRestContextName() %>"></div>
 
+    <div id="importCalendarNotification" class="alert uiNotification uiCalNotification" style = "display:none;">
+      <a data-dismiss="alert" href="#" class="close " data-placement="bottom" rel="tooltip"  data-original-title="close"><i class="uiIconClose uiIconLightGray"></i></a>
+      <div class="clearfix">
+        <div class="notificationBox"></div>
+      </div>
+      <div class="resourceBundle" style="display:none;">
+          <div class="startImport"><%=_ctx.appRes("UICalendarPortlet.label.start-importing")%></div>
+          <div class="finishImport"><%=_ctx.appRes("UICalendarPortlet.label.finish-importing")%></div>
+        </div>    
+    </div>
+    
     <div id="shareCalendarNotification" class="alert uiNotification uiCalNotification" style="display:none;">
       <a data-dismiss="alert" href="#" class="close " data-placement="bottom" rel="tooltip"  data-original-title="close"><i class="uiIconClose uiIconLightGray"></i></a>
-      <div class="clearfix ">
+      <div class="clearfix">
         <div class="text">
           <p><strong>Notification</strong></p>
         </div>
       </div>
-      <div class="notificationBox">
-        <div class="startShare" style="display:none;">Sharing <strong class="calendarName"></strong> calendar with group(s): <span class="group"><span></div>
-        <div class="finishShare" style="display:none;">Finish sharing <strong class="calendarName"></strong> calendar with group(s): <span class="group"><span></div>
-        <div class="startUnShare" style="display:none;">Un-sharing <strong class="calendarName"></strong> calendar with group(s): <span class="group"><span></div>
-        <div class="finishUnShare" style="display:none;">Finish un-sharing <strong class="calendarName"></strong> calendar with group(s): <span class="group"><span></div>
+      <div class="notificationBox"></div>
+      <div class="resourceBundle" style="display:none;">
+        <div class="startShare"><%=_ctx.appRes("UICalendarPortlet.label.start-sharing")%></div>
+        <div class="finishShare"><%=_ctx.appRes("UICalendarPortlet.label.finish-sharing")%></div>
+        <div class="startUnShare"><%=_ctx.appRes("UICalendarPortlet.label.start-unsharing")%></div>
+        <div class="finishUnShare"><%=_ctx.appRes("UICalendarPortlet.label.finish-unsharing")%></div>
       </div>
     </div>   
     
