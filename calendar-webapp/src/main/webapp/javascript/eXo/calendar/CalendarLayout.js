@@ -40,6 +40,8 @@ CalendarLayout.prototype.init = function() {
       }
   }
 
+  /* override table-layout: auto from plf */
+  gj('.UITableColumn')[0].style.cssText = 'table-layout: fixed !important; margin: 0px auto;';
 };
 
 
