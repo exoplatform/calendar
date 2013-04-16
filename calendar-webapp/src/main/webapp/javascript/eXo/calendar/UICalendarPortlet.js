@@ -2724,18 +2724,21 @@ UICalendarPortlet.prototype.autoShowHideSetting = function(){
 };
 
 UICalendarPortlet.prototype.removeEmailReminder = function(obj){
-	var uiEmailAddressItem = obj.parentNode;
-		var uiEmailAddressLabel = gj(obj).parent().prev()[0];
+	var uiEmailAddressLabel = gj(obj).parent().prev()[0];
 	var uiEmailInput = gj(obj).parents(".uiEmailInput")[0];
 	uiEmailInput = gj(uiEmailInput).children("input")[0];
 	uiEmailAddressLabel = uiEmailAddressLabel.innerHTML.toString().trim();
 	uiEmailInput.value = this.removeItem(uiEmailInput.value,uiEmailAddressLabel);
-	gj(uiEmailAddressItem).remove();
+	
 	if(gj(obj).parents(".UIEventForm")[0]) {
 		uiForm.submitForm('UIEventForm','RemoveEmail', true);		
 	} else if(_module.UICalendarPortlet.getElementById("UITaskForm")) { 
 		uiForm.submitForm('UITaskForm','RemoveEmail', true);	
 	}
+	
+	gj(obj).parent().prev().remove();
+    gj(obj).remove();
+    
 }
 
 UICalendarPortlet.prototype.removeItem = function(str,removeValue){
