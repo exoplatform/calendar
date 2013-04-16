@@ -674,6 +674,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         calendar.setCalendarColor(uiForm.getSelectedColor()) ;
         calendar.setCalendarOwner(username) ;
         calendar.setPrivateUrl(CalendarUtils.buildSubscribeUrl(calendar.getId() , uiForm.calType_, true));
+        calendar.setTimeZone(uiForm.getTimeZone());
         if(CalendarUtils.PRIVATE_TYPE.equals(uiForm.calType_))
         {
           List<Calendar> pCals = calendarService.getUserCalendars(username, true) ;
