@@ -129,19 +129,13 @@
 
 
 /*===================UIEventRemindersTab===========================*/
-
 .reminderByPopup ,.reminderByEmail{	
+	.selectboxSmall {
+		padding: 5px 0;
+	}
 	.mailReminder + div ,.popupReminder + div {
 		margin: 0 0 0 30px;
-	}
-	.uiSelectbox {
-		margin: 0 10px 0 0;
-		width: 100px;
-		vertical-align: middle;
-		select.selectbox {
-			width: 103px;
-		}
-	}
+	}	
 	a {
 		color: @grayDark;
 	}
@@ -150,12 +144,9 @@
 			margin-left: 0;
 		}
 	}
-	.repeatInterval,.UIEmailInput{
-		padding: 5px 0;
-	}
-	.UIEmailInput {
+	.uiEmailInput span {
 		font-weight: bold;
-		margin: 0 0 5px 0;
+		margin: 0 5px 0 0;
 	}
 }
 .reminderByEmail {

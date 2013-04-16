@@ -2725,8 +2725,8 @@ UICalendarPortlet.prototype.autoShowHideSetting = function(){
 
 UICalendarPortlet.prototype.removeEmailReminder = function(obj){
 	var uiEmailAddressItem = obj.parentNode;
-	var uiEmailAddressLabel = gj(obj).prevAll("div")[0];
-	var uiEmailInput = gj(obj).parents(".UIEmailInput")[0];
+		var uiEmailAddressLabel = gj(obj).parent().prev()[0];
+	var uiEmailInput = gj(obj).parents(".uiEmailInput")[0];
 	uiEmailInput = gj(uiEmailInput).children("input")[0];
 	uiEmailAddressLabel = uiEmailAddressLabel.innerHTML.toString().trim();
 	uiEmailInput.value = this.removeItem(uiEmailInput.value,uiEmailAddressLabel);
