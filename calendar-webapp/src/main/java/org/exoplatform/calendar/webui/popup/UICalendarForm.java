@@ -326,7 +326,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     {
       groupTab.setRendered(false) ;
     }
-    setTimeZone(calendar.getTimeZone()) ;
+    setTimeZone(setting.getTimeZone()) ;
     setSelectedColor(calendar.getCalendarColor()) ;
     if(calendar.getPrivateUrl() == null || calendar.getPrivateUrl().isEmpty()) {
       calendar_.setPrivateUrl(CalendarUtils.buildSubscribeUrl(calendar.getId(), calType_, true));
