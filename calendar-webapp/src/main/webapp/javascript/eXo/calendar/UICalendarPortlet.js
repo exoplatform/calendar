@@ -740,9 +740,9 @@ UICalendarPortlet.prototype.setSize = function(obj){
 		busyIcon = gj(obj).find("div.eventContainerBar")[0] ;
 	var extraHeight = busyIcon.offsetHeight + gj(obj).find("div.resizeEventContainer")[0].offsetHeight;
     height -= (extraHeight + 5);
-     
-    eventContainer.style.height = height + "px";
-      
+
+    // IE8 fix - does not allow negative height
+    eventContainer.style.height = Math.max(height, 0) + "px";
 };
 
 /**
@@ -947,6 +947,7 @@ UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeigh
     gj(contentContainer).css("height", originalHeight);
   }
   else {
+
 	height = maxHeight - positionYofContentContainer - deltaHeight;
     gj(contentContainer).css("height", height);
     gj(contentContainer).css("overflow", "auto");
@@ -1070,7 +1071,9 @@ function UIResizeEvent(){
  */
 UIResizeEvent.prototype.init = function(evt){
   var _e = window.event || evt;
-  _e.stopPropagation();
+  // IE8 fix
+  (_e.stopPropagation) ? _e.stopPropagation() : _e.returnValue = false;
+
   var UIResizeEvent = eXo.calendar.UIResizeEvent;
   var outerElement = gj(this).parents('.eventBoxes')[0];
   var innerElement = gj(this).prevAll("div")[0];
@@ -1168,6 +1171,9 @@ UIResizeEvent.prototype.resizeCallback = function(evt){
   var UICalendarPortlet = _module.UICalendarPortlet;
     var UIResizeEvent = eXo.calendar.UIResizeEvent;
     var eventBox = UIResizeEvent.outerElement;
+
+    if (!eventBox) { return ; }
+
     var start = parseInt(eventBox.getAttribute("startTime"));
     var calType = eventBox.getAttribute("calType");
     var isOccur = eventBox.getAttribute("isoccur");
@@ -1319,8 +1325,11 @@ UICalendarPortlet.prototype.dragEnd = function(){
 UICalendarPortlet.prototype.dayviewDropCallback = function(){
     var UICalendarPortlet = _module.UICalendarPortlet;
     var dragObject = UICalendarPortlet.dragObject;
-    var calType = dragObject.getAttribute("calType");
-    var start = parseInt(dragObject.getAttribute("startTime"));
+
+    if (!dragObject) { return; }
+
+    var calType = dragObject.getAttribute("caltype");
+    var start = parseInt(dragObject.getAttribute("starttime"));
     var end = parseInt(dragObject.getAttribute("endTime"));
     var isOccur = dragObject.getAttribute("isoccur");
     var eventId = dragObject.getAttribute("eventid");
