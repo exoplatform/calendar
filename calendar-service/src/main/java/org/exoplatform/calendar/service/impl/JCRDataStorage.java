@@ -152,7 +152,7 @@ public class JCRDataStorage implements DataStorage {
     repoService_ = repoService;
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     sessionProviderService_ = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);
-    groupCalendarCache_ = cservice.getCacheInstance("cs.calendar.service.GroupCalendarCache"); 
+    groupCalendarCache_ = cservice.getCacheInstance("calendar.GroupCalendar"); 
   }
 
     
