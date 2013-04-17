@@ -823,13 +823,16 @@ GUIMan.prototype.paintMonth = function(){
   // Remove old more node if exist
   for (var i=0; i<weeks.length; i++) {
     var curentWeek = weeks[i];
+    var eventLength = 0;
     if (curentWeek.events.length > 0) {
       for (var j=0; j<curentWeek.days.length; j++) {
         if (curentWeek.days[j].events.length > 0) {
+          var dayNode = (this.tableData[curentWeek.weekIndex])[j];
           this.drawDay(curentWeek, j);
         }
       }
     }
+    
   }
 
 };
@@ -848,6 +851,8 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	    width : gj(dayNode).width(),
 	    left : gj(dayNode).position().left,
 	    top : gj(dayNode).position().top + 20,
+      rindex : gj(dayNode).attr("rindex"),
+      cindex : gj(dayNode).attr("cindex"),
 	    beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
 	    endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
     }
@@ -1052,19 +1057,52 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
     }
     var topPos = dayInfo.eventTop ;
     var leftPos = dayInfo.left ;
-   
+    var  cellWidth = dayInfo.width;
+    var beginId = "r" + dayInfo.rindex + "c"+dayInfo.rindex;
     var delta = eXo.calendar.UICalendarPortlet.dateDiff(startTime, endTime);
     if (delta != 0) {
 	   delta ++ ;
     }
     if(delta <= 0) delta = 1;
-    var eventLen = delta * (dayInfo.width) + (delta - 1);
-   
+    
+    var eventLen = 0;
+    var cindex = 0;
+    for(var i = 0; i < delta; i++ ){
+     cindex = parseInt(dayInfo.cindex) + parseInt(i);
+     beginId = "r"+dayInfo.rindex + "c"+cindex;
+     var cellWidth = gj("td#"+beginId).width();
+     
+     if(gj.browser.mozilla) {
+       cellWidth = gj("td#"+beginId).outerWidth(true);
+     } else if (gj.browser.msie) {
+       cellWidth = gj("td#"+beginId).outerWidth(true);
+     }
+     eventLen = eventLen + cellWidth;
+    }
+    var boderWidth = (delta -1);
+    if( gj.browser.webkit) {
+      if(delta - parseInt(dayInfo.cindex) >= 3) 
+       eventLen = eventLen + delta  -2;
+      else  
+        eventLen = eventLen + delta -1;
+    } else 
+    if(gj.browser.mozilla){
+      if(delta - parseInt(dayInfo.cindex) >= 3) 
+       eventLen = eventLen  -2;
+      else  
+       eventLen = eventLen  -1;
+    } else 
+    if (gj.browser.msie) { 
+      if(delta - parseInt(dayInfo.cindex) >= 3) 
+       eventLen = eventLen  -3;
+      else  
+       eventLen = eventLen  -1;
+    }
     eventNode.style.top = topPos + 'px';
     eventNode.style.left = leftPos + 'px';
     eventNode.style.width = eventLen + 'px';
     if(eXo.core.I18n.isRT()){
-	eventNode.style.left = (leftPos - eventLen + (dayInfo.width)) + 'px';
+	   eventNode.style.left = (leftPos - eventLen + (cellWidth)) + 'px';
     }
     eventNode.setAttribute('used', 'true');
     eventNode.setAttribute('startTime',startTime);
