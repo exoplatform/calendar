@@ -132,10 +132,11 @@ EventObject.prototype.init = function(rootNode){
   this.eventCat = this.rootNode.getAttribute('eventcat');
   this.startTime = this.normalizeDate(this.rootNode.getAttribute('starttimefull'));//Date.parse(this.rootNode.getAttribute('starttimefull'));
   this.endTime = Date.parse(this.rootNode.getAttribute('endtimefull'));
+
   if (this.rootNode.innerText) {
-    this.name = (this.rootNode.innerText + '').trim();
+    this.name = gj.trim(this.rootNode.innerText + '');
   } else {
-    this.name = (this.rootNode.textContent + '').trim();
+    this.name = gj.trim(this.rootNode.textContent + '');
   }
 };
 
@@ -418,6 +419,7 @@ EventMan.prototype.initMonth = function(rootNode){
     var DOMUtil = cs.DOMUtil;
     // Parse all event node to event object
     var allEvents = gj(rootNode).find('div.dayContentContainer');
+
     // Create and init all event
     for (var i = 0; i < allEvents.length; i++) {
         if (allEvents[i].style.display == 'none') {
@@ -445,6 +447,7 @@ EventMan.prototype.initMonth = function(rootNode){
     if (this.originalHeightOfEventMonthContent === null) {
         this.originalHeightOfEventMonthContent = gj(rowContainerDay).height();
     }
+
     UICalendarPortlet.resizeHeight(rowContainerDay, 6, this.originalHeightOfEventMonthContent);
 
     /* resize content each time the window resizes */
