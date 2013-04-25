@@ -338,6 +338,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     return bout;
   }
 
+
   public List<CalendarEvent> getEventObjects(InputStream icalInputStream) throws Exception {
     CalendarBuilder calendarBuilder = new CalendarBuilder();
     net.fortuna.ical4j.model.Calendar iCalendar = calendarBuilder.build(icalInputStream);

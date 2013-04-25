@@ -37,11 +37,11 @@ import org.quartz.JobDetail;
 
 public interface CalendarService {
 
-  final public static String ICALENDAR   = "ICalendar(.ics)".intern();
+  final public static String ICALENDAR   = "ICalendar(.ics)";
 
-  final public static String EXPORTEDCSV = "ExportedCsv(.csv)".intern();
+  final public static String EXPORTEDCSV = "ExportedCsv(.csv)";
 
-  final public static String CALDAV      = "CalDAV".intern();
+  final public static String CALDAV      = "CalDAV";
 
   /**
    * Gets the given user's private calendar, identified by its ID.
