@@ -42,6 +42,8 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.JavascriptManager;
+import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -661,6 +663,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     public void execute(Event<UICalendarForm> event) throws Exception {
       try {
         UICalendarForm uiForm = event.getSource() ;
+        StringBuffer notFoundUser = new StringBuffer("");
         String displayName = uiForm.getUIStringInput(DISPLAY_NAME).getValue() ;
         displayName = CalendarUtils.reduceSpace(displayName) ;
         displayName = displayName.trim() ;
@@ -734,12 +737,12 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
                 String groupKey = groupId + CalendarUtils.SLASH_COLON ;
                 UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
                 String typedPerms = sharedTab.getUIStringInput(groupId + PERMISSION_SUB).getValue();
-                listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event);
+                listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event, notFoundUser);
               }
               /* else take the permission from current edit permission of calendar */
               else
               {
-                /* loop through all calendar group permissions if one matches then add it into new listf edit permission */
+                /* loop through all calendar group permissions if one matches then add it into new list of edit permission */
                 for (String editPermission : calendar.getEditPermission())
                 {
                   if (editPermission.startsWith(groupId)) listPermission.add(editPermission);
@@ -755,7 +758,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
               String groupKey = groupId + CalendarUtils.SLASH_COLON ;
               UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
               String typedPerms = sharedTab.getUIStringInput(groupId + PERMISSION_SUB).getValue();
-              listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event);
+              listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event, notFoundUser);
             }
           }
 
@@ -769,6 +772,14 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         calendarPortlet.cancelAction() ;
         UICalendarWorkingContainer uiWorkingContainer = calendarPortlet.getChild(UICalendarWorkingContainer.class) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;
+
+        if (!CalendarUtils.isEmpty(notFoundUser.toString())) {
+          JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
+          RequireJS requireJS = jsManager.getRequireJS();
+          requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+          String message = "User " + notFoundUser.substring(0, notFoundUser.lastIndexOf(",")) + " not found";
+          requireJS.addScripts("cal.UICalendarPortlet.showEditCalNotif('" + calendar.getName() + "', '" + message + "');");
+        }
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) {
           LOG.debug("Fail to save the calendar", e);
@@ -782,7 +793,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
                                             OrganizationService orgService,
                                             String groupIdSelected,
                                             String groupKey,
-                                            Event<?> event) throws Exception
+                                            Event<?> event,
+                                            StringBuffer notFoundUser) throws Exception
                                             {
     if (CalendarUtils.isEmpty(groupPermissions)) return new ArrayList<String>(0);
 
@@ -803,11 +815,14 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         }
       }
 
-
       if (isExisted) {
         /* user exists, add key to edit permission */
         listPermission.add(groupKey + s) ;
         continue;
+      }
+      else {
+        if (!s.equals(CalendarUtils.ANY))
+          notFoundUser.append(s + ", ");
       }
 
       /* users equals to anyone */
@@ -833,7 +848,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     }
 
     return listPermission;
-                                            }
+  }
 
   static  public class CancelActionListener extends EventListener<UICalendarForm> {
     @Override
