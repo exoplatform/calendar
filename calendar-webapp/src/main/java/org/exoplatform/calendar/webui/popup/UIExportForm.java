@@ -34,6 +34,8 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -64,8 +66,10 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
     }
 )
 public class UIExportForm extends UIForm implements UIPopupComponent{
-  final static private String NAME = "name".intern() ;
-  final static private String TYPE = "type".intern() ;
+  private static final Log LOG = ExoLogger.getExoLogger(UIExportForm.class);
+
+  final static private String NAME = "name";
+  final static private String TYPE = "type";
   private String calType = "0" ;
   private Map<String,String> names_ = new HashMap<String, String>() ;
 
@@ -101,7 +105,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       if(eventId != null) checkBox.setDisabled(true) ;
       else checkBox.setDisabled(false) ;
       addUIFormInput(checkBox) ;
-      names_.put(calendar.getId(), truncateLongName(calendar.getName())) ;
+      names_.put(calendar.getId(), calendar.getName()) ;
       longNames_.put(calendar.getId(), calendar.getName()) ;
     }
   }
@@ -191,8 +195,9 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       CalendarImportExport importExport = calendarService.getCalendarImportExports(type) ;
       OutputStream out = null ;
       try {
-        if(uiForm.eventId != null)
-           out = importExport.exportEventCalendar(CalendarUtils.getCurrentUser(), calendarIds.get(0), uiForm.calType, uiForm.eventId) ;
+        if(uiForm.eventId != null) {
+          out = importExport.exportEventCalendar(CalendarUtils.getCurrentUser(), calendarIds.get(0), uiForm.calType, uiForm.eventId) ;
+        }
         else out = importExport.exportCalendar(CalendarUtils.getCurrentUser(), calendarIds, uiForm.calType, -1) ;
         ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
         DownloadResource dresource = new InputStreamDownloadResource(is, "text/iCalendar") ;

@@ -27,11 +27,11 @@
 		</div>
 		
 		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>">
-			<i class="uiIconCalCreateEvent uiIconWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
+			<i class="uiIconCalCreateEvent uiIconCalWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
 		</button>
 		 
 		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>">
-			<i class="uiIconCalCreateTask uiIconWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
+			<i class="uiIconCalCreateTask uiIconCalWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
 		</button>
 
 		

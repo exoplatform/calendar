@@ -1112,7 +1112,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       }
     }
     
-    if(sbAddress.length() > 0 && sb.toString().trim().length() > 0 ) sbAddress.append(",") ;
+    if (sbAddress.length() > 0 && sb.toString().trim().length() > 0 ) sbAddress.append(",") ;
     sbAddress.append(sb.toString().trim()) ;
     
     StringBuffer values = new StringBuffer(fromId) ; 
@@ -1126,41 +1126,47 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     values.append(event.getCalendarId()) ;
     values.append(CalendarUtils.SEMICOLON + " ") ;
     values.append(event.getId()) ;
-      CalendarService calService = CalendarUtils.getCalendarService() ;
-      org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;
-      org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
-      try {            
-        OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR).exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
-        ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
-        attachmentCal.setInputStream(is) ;
-        attachmentCal.setName("icalendar.ics");
-        attachmentCal.setMimeType("text/calendar") ;
-      } catch (Exception e) {
-        attachmentCal = null;
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("Fail to create attachment", e);
-        }
-      for (String s : sbAddress.toString().split(CalendarUtils.COMMA)) {
-        if (CalendarUtils.isEmpty(s)) continue;
-        org.exoplatform.services.mail.Message  message = new org.exoplatform.services.mail.Message(); 
-        message.setSubject(sbSubject.toString()) ;
-        message.setBody(getBodyMail(sbBody.toString(), eXoIdMap, s, invitor, event)) ;
-        message.setTo(s) ;
-        message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
-        message.setFrom(user.getEmail()) ;
-        if (attachmentCal != null) {
-          message.addAttachment(attachmentCal) ;
-        }
-        if(!atts.isEmpty()){
-          for(Attachment att : atts) {
-            org.exoplatform.services.mail.Attachment attachment = new org.exoplatform.services.mail.Attachment() ;
-            attachment.setInputStream(att.getInputStream()) ;
-            attachment.setMimeType(att.getMimeType()) ;
-            message.addAttachment(attachment) ;
-          }
-        }               
-        mService.sendMessage(message) ;
+
+    CalendarService calService = CalendarUtils.getCalendarService() ;
+    org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;
+    org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
+
+    try {
+      OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
+        .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
+      ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
+      attachmentCal.setInputStream(is) ;
+      attachmentCal.setName("icalendar.ics");
+      attachmentCal.setMimeType("text/calendar") ;
+    }
+    catch (Exception e) {
+      attachmentCal = null;
+      if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
+    }
+
+    for (String s : sbAddress.toString().split(CalendarUtils.COMMA)) {
+      if (CalendarUtils.isEmpty(s)) continue;
+      org.exoplatform.services.mail.Message  message = new org.exoplatform.services.mail.Message();
+      message.setSubject(sbSubject.toString()) ;
+      message.setBody(getBodyMail(sbBody.toString(), eXoIdMap, s, invitor, event)) ;
+      message.setTo(s) ;
+      message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
+      message.setFrom(user.getEmail()) ;
+
+      if (attachmentCal != null) {
+        message.addAttachment(attachmentCal) ;
       }
+
+      if(!atts.isEmpty()){
+        for(Attachment att : atts) {
+          org.exoplatform.services.mail.Attachment attachment = new org.exoplatform.services.mail.Attachment() ;
+          attachment.setInputStream(att.getInputStream()) ;
+          attachment.setMimeType(att.getMimeType()) ;
+          attachment.setName(att.getName());
+          message.addAttachment(attachment) ;
+        }
+      }
+      mService.sendMessage(message) ;
     }
   }
 
@@ -1473,14 +1479,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     this.isChangedSignificantly = this.isSignificantChanged(calendarEvent, oldCalendarEvent);
     
     try {
-      if (calendarEvent != null && isSend) {
-        try {
-          CalendarEvent tempCal = sendInvitation(event, calSetting, calendarEvent);
-          calendarEvent = tempCal != null ? tempCal : calendarEvent;
-        } catch (Exception e) {
-          if (LOG.isWarnEnabled()) LOG.warn("Sending invitation failed!" , e);
-        }
-      }
+
       if(uiForm.isAddNew_){
         if(uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE)) {
           calService.saveUserEvent(username, calendarId, calendarEvent, uiForm.isAddNew_) ;
@@ -1517,6 +1516,15 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
           else calService.moveEvent(fromCal, toCal, fromType, toType, listEvent, username) ;
         }
         UITaskForm.updateListView(calendarView, calendarEvent, calService, username);
+      }
+
+      if (calendarEvent != null && isSend) {
+        try {
+          CalendarEvent tempCal = sendInvitation(event, calSetting, calendarEvent);
+          calendarEvent = tempCal != null ? tempCal : calendarEvent;
+        } catch (Exception e) {
+          if (LOG.isWarnEnabled()) LOG.warn("Sending invitation failed!" , e);
+        }
       }
 
       if(calendarView instanceof UIListContainer) {

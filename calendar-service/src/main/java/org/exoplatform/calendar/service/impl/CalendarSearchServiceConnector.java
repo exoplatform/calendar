@@ -120,10 +120,11 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
                                                 String sort,
                                                 String order) {
     List<SearchResult> events = new ArrayList<SearchResult>();
+    SessionProvider provider = SessionProvider.createSystemProvider();
     try {
       calendarMap.clear();
       String userId = ConversationState.getCurrent().getIdentity().getUserId() ;
-      Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(SessionProvider.createSystemProvider(), userId);
+      Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(provider, userId);
       List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
       for(Calendar cal : privateCalendars){
         calendarMap.put(cal.getId(), cal);
@@ -193,6 +194,8 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     }
     catch (Exception e) {
       log.info("Could not execute unified seach " + dataType , e) ; 
+    } finally {
+      provider.close();
     }
     return events;
   }

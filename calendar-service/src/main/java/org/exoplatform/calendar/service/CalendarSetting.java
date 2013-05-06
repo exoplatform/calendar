@@ -109,7 +109,7 @@ public class CalendarSetting {
     filterPublicCalendars = new String[] {};
     filterSharedCalendars = new String[] {};
     sharedCalendarsColors = new String[] {};
-    sendOption = ACTION_ASK;
+    sendOption = ACTION_NEVER;
   }
 
   public void setViewType(String viewType) {

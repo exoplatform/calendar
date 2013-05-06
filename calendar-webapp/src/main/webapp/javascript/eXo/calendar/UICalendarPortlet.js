@@ -1058,6 +1058,16 @@ UICalendarPortlet.prototype.scrollToActiveEventInListView = function(uiListConta
 };
 
 /**
+ * Show notification for Edit Calendar Popup
+ */
+UICalendarPortlet.prototype.showEditCalNotif = function (calendarName, message) {
+  var $notif = gj('#editCalendarNotification');
+  $notif.find('.calendarName')[0].innerHTML = calendarName;
+  $notif.find('.message')[0].innerHTML = message;
+  $notif.show().delay(5000).fadeOut();
+};
+
+/**
  * Class to control calendar event resizing
  * @constructor
  */
@@ -2733,18 +2743,21 @@ UICalendarPortlet.prototype.autoShowHideSetting = function(){
 };
 
 UICalendarPortlet.prototype.removeEmailReminder = function(obj){
-	var uiEmailAddressItem = obj.parentNode;
-	var uiEmailAddressLabel = gj(obj).prevAll("div")[0];
-	var uiEmailInput = gj(obj).parents(".UIEmailInput")[0];
+	var uiEmailAddressLabel = gj(obj).parent().prev()[0];
+	var uiEmailInput = gj(obj).parents(".uiEmailInput")[0];
 	uiEmailInput = gj(uiEmailInput).children("input")[0];
 	uiEmailAddressLabel = uiEmailAddressLabel.innerHTML.toString().trim();
 	uiEmailInput.value = this.removeItem(uiEmailInput.value,uiEmailAddressLabel);
-	gj(uiEmailAddressItem).remove();
+	
 	if(gj(obj).parents(".UIEventForm")[0]) {
 		uiForm.submitForm('UIEventForm','RemoveEmail', true);		
 	} else if(_module.UICalendarPortlet.getElementById("UITaskForm")) { 
 		uiForm.submitForm('UITaskForm','RemoveEmail', true);	
 	}
+	
+	gj(obj).parent().prev().remove();
+    gj(obj).remove();
+    
 }
 
 UICalendarPortlet.prototype.removeItem = function(str,removeValue){
@@ -3010,13 +3023,33 @@ eXo.calendar.EventTooltip = {
 	positioning: function(){
 	    var offsetTooltip = this._container.offsetParent;
 	    var offsetEvent = this.currentEvent.offsetParent;
-	    if(_module.UICalendarPortlet.viewType == "UIDayView") 
-		offsetEvent = gj(offsetEvent).parents(".eventDayContainer")[0];
+	    if(_module.UICalendarPortlet.viewType == "UIDayView") {
+		    offsetEvent = gj(offsetEvent).parents(".eventDayContainer")[0];
+        }
+
 	    var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2
 	    var extraY = 0;
 	    var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
 	    var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;		
 	    this._container.style.top = y + "px";
+
+        /* re-set top of popover in case of scroll hidden */
+        if(_module.UICalendarPortlet.viewType == "UIDayView") {
+            var eventDayTop = gj(offsetEvent).offset().top
+              , bottomPopup = (gj(this._container).offset().top + gj(this._container).height() + 14); // increases 14 for arrow and margins
+            if (eventDayTop > bottomPopup) {
+                this._container.style.top = (eventDayTop - (gj(this._container).height() + 6)) + 'px';
+            }
+        }
+
+        if(_module.UICalendarPortlet.viewType == "UIWeekView") {
+            var eventWeekTop = gj(offsetEvent).offset().top
+              , bottomPopup  = (gj(this._container).offset().top + gj(this._container).height() + 14);
+            if (eventWeekTop > bottomPopup) {
+                this._container.style.top = (eventWeekTop - (gj(this._container).height() + 6)) + 'px';
+            }
+        }
+
 	    this._container.style.left = x + "px";
 	    var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
 	    if(relativeX > document.documentElement.offsetWidth) {

@@ -4002,14 +4002,14 @@ public class JCRDataStorage implements DataStorage {
    */
   @SuppressWarnings("unused")
   public SessionProvider createUserProvider() {
-    return SessionProvider.createSystemProvider();
+    return  sessionProviderService_.getSessionProvider(null);
   }
 
   /**
    * {@inheritDoc}
    */
   public SessionProvider createSystemProvider() {
-    return SessionProvider.createSystemProvider();
+    return sessionProviderService_.getSystemSessionProvider(null);
   }
 
   /**
@@ -4018,6 +4018,7 @@ public class JCRDataStorage implements DataStorage {
   @SuppressWarnings("unused")
   public void closeSessionProvider(SessionProvider sessionProvider) {
     if (sessionProvider != null) {
+      sessionProvider.close();
     }
   }
 
