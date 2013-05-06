@@ -67,6 +67,18 @@
 
 			}
 			%>
+			<button class="btn dropdown-toggle " data-toggle="dropdown"> more 
+			<span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu dropdownMore">
+			<li>
+				 <a href="#" >work week</a>
+			 </li>
+			  <li>
+				 <a  href="#">work week</a>
+			 </li>
+			</ul>
+			
 		</div>
 	</div>
 	
