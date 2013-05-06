@@ -302,6 +302,8 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       remoteCalendar.setSyncPeriod(uiform.getSyncPeriod());
       remoteCalendar.setBeforeDateSave(uiform.getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX).getValue());
       remoteCalendar.setAfterDateSave(uiform.getUIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX).getValue());
+      remoteCalendar.setCalendarColor(uiform.getSelectColor());
+      remoteCalendar.setDescription(uiform.getDescription());
       Calendar eXoCalendar = null;
       try {       
         if (!uiform.getUseAuthentication()) {
@@ -345,7 +347,11 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       try {
         if (uiform.isAddNew_) {
           // access to remote calendar
-          eXoCalendar = calService.importRemoteCalendar(remoteCalendar);
+          if(CalendarService.ICALENDAR.equals(remoteCalendar.getType())) {
+            calService.importRemoteCalendarByJob(remoteCalendar);
+          } else {
+            eXoCalendar = calService.importRemoteCalendar(remoteCalendar);
+          }
         } else {
           remoteCalendar.setCalendarId(uiform.calendarId_) ;
           // update remote calendar info
@@ -353,10 +359,6 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
           // refresh calendar
           eXoCalendar = calService.refreshRemoteCalendar(remoteCalendar.getUsername(), uiform.calendarId_);
         }
-      
-        eXoCalendar.setCalendarColor(uiform.getSelectColor());
-        eXoCalendar.setDescription(uiform.getDescription());
-        calService.saveUserCalendar(remoteCalendar.getUsername(), eXoCalendar, false) ;
       }
       catch (Exception e) {
         logger.warn("Exception occurs when importing remote calendar", e);
@@ -365,10 +367,11 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       }
       
       calendarPortlet.cancelAction() ;
-      UICalendarWorkingContainer uiWorkingContainer = calendarPortlet.getChild(UICalendarWorkingContainer.class) ;
-      event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg-import-succesfully", null, AbstractApplicationMessage.INFO));
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;      
-      
+      if(!CalendarService.ICALENDAR.equals(remoteCalendar.getType())) {
+        UICalendarWorkingContainer uiWorkingContainer = calendarPortlet.getChild(UICalendarWorkingContainer.class) ;
+        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRemoteCalendar.msg-import-succesfully", null, AbstractApplicationMessage.INFO));
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;  
+      }
     }
   }
   

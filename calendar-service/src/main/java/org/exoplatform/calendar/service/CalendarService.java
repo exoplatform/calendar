@@ -897,6 +897,13 @@ public interface CalendarService {
    */
   public void autoRemoveShareCalendar(String groupId, String username) throws Exception;   
 
+  /**
+   * Imports given remote calendar in background <br/>
+   * <p> Users don't need to wait too long when importing a big calendar
+   * @param remoteCalendar
+   * @throws Exception
+   */
+  public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception;
 }
 
 

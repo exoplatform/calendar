@@ -44,6 +44,7 @@ import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.ImportCalendarJob;
 import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
@@ -979,5 +980,21 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public void autoRemoveShareCalendar(String groupId, String username) throws Exception {
     storage_.autoRemoveShareCalendar(groupId, username);
+  }
+
+  @Override
+  public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception {
+   
+    JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().
+        getComponentInstance(JobSchedulerService.class) ;
+
+    JobDetail job = ImportCalendarJob.getImportRemoteCalendarJobDetail(remoteCalendar);
+
+    SimpleTriggerImpl trigger = new SimpleTriggerImpl();
+    trigger.setName(remoteCalendar.getCalendarName());
+    trigger.setGroup(ImportCalendarJob.IMPORT_CALENDAR_JOB_GROUP_NAME);
+    trigger.setStartTime(new Date());
+
+    schedulerService.addJob(job, trigger);  
   }
 }

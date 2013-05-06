@@ -210,12 +210,14 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
   @Override
   public Calendar importRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception {
     Calendar eXoCalendar = storage_.createRemoteCalendar(remoteCalendar);
+    CalendarService calService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+
     if (CalendarService.ICALENDAR.equals(remoteCalendar.getType())) {
       remoteCalendar.setCalendarId(eXoCalendar.getId());
       remoteCalendar.setLastUpdated(Utils.getGreenwichMeanTime());
       InputStream icalInputStream = connectToRemoteServer(remoteCalendar);
-      CalendarService calService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
       calService.getCalendarImportExports(CalendarService.ICALENDAR).importCalendar(remoteCalendar.getUsername(), icalInputStream, remoteCalendar.getCalendarId(), null, remoteCalendar.getBeforeTime(), remoteCalendar.getAfterTime(), false);
+      calService.saveUserCalendar(remoteCalendar.getUsername(), eXoCalendar, false);
       return eXoCalendar;
     } else {
       if (CalendarService.CALDAV.equals(remoteCalendar.getType())) {
@@ -237,6 +239,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
             continue;
           }
         }
+        calService.saveUserCalendar(remoteCalendar.getUsername(), eXoCalendar, false);
         return eXoCalendar;
       }
       return null;

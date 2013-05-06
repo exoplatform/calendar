@@ -443,7 +443,6 @@ public class Utils {
   public static final String SPACES_GROUP = "spaces";
   public static final String SPACES_GROUP_ID_PREFIX = "/spaces/";
   public static final String SPACE_CALENDAR_ID_SUFFIX = "_space_calendar";
-  
 
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
