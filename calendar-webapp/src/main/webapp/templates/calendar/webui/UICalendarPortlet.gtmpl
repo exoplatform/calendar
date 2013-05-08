@@ -59,15 +59,15 @@
       </div>
     </div>   
 
-    <div id="editCalendarNotification" class="alert uiNotification uiCalNotification" style="display:none;">
+    <div id="editCalendarNotification" class="alert uiNotification uiCalNotification" style="display:none; width:200px;">
       <a data-dismiss="alert" href="#" class="close " data-placement="bottom" rel="tooltip"  data-original-title="close"><i class="uiIconClose uiIconLightGray"></i></a>
       <div class="clearfix ">
         <div class="text">
-          <p><strong>Notification</strong></p>
+          <p><strong><%=_ctx.appRes("UICalendarForm.label.editCalendarNotif")%></strong></p>
         </div>
       </div>
       <div class="notificationBox">
-        <div>Editing <strong class="calendarName"></strong> calendar: <span class="message"><span></div>
+        <div><%=_ctx.appRes("UICalendarForm.label.editCalendarNotif.editing")%> <strong class="calendarName"></strong> <%=_ctx.appRes("UICalendarForm.label.editCalendarNotif.calendar")%>: <span class="message"><span></div>
       </div>
     </div>
 
