@@ -88,7 +88,10 @@ public class UICalendarPortlet extends UIPortletApplication {
   }
 
   public String getSettingTimeZone() throws Exception {
-    return String.valueOf(TimeZone.getTimeZone(getCalendarSetting().getTimeZone()).getRawOffset()/1000/60) ;
+    TimeZone tz = TimeZone.getTimeZone(getCalendarSetting().getTimeZone());
+    //get time zone offset in a specified date to take day light saving into account
+    long timezoneOffset = tz.getOffset(Calendar.getInstance().getTimeInMillis());
+    return String.valueOf(timezoneOffset/1000/60) ;
   }
 
   /**
