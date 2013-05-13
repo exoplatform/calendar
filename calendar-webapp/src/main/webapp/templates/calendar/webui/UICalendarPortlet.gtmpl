@@ -104,6 +104,7 @@
       CalendarSetting calendarSetting = uicomponent.getCalendarSetting() ;
       String timeFormat = calendarSetting.getTimeFormat() ;
       String settingTimeZone = uicomponent.getSettingTimeZone() ;
+      String weekStartOn = uicomponent.getWeekStartOn();
       //String restContext = uicomponent.getRestContextName();
       def rcontext = _ctx.getRequestContext() ;
       def requireJS = rcontext.getJavascriptManager().getRequireJS();
@@ -120,7 +121,7 @@
       requireJS.addScripts('cal.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'") ;') ;
       requireJS.addScripts('cal.UICalendarPortlet.showContextMenu("'+ uicomponent.id +'") ;') ;            
       requireJS.addScripts('cal.Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;
-      
+      requireJS.addScripts('cal.UICalendarPortlet.weekStartOn = "' + weekStartOn + '";');
       requireJS.addScripts('cal.UICalendarPortlet.settingTimezone = "'+ settingTimeZone +'" ;') ;
       requireJS.addScripts('cal.UICalendarPortlet.isSpace = "'+ uicomponent.getSpaceId() +'" ;') ;
       requireJS.addScripts('cal.LayoutManager.layoutId = "calendarlayout-' + uicomponent.getRemoteUser() + '";');
