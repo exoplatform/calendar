@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.CalendarUtils;
@@ -926,7 +927,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     eventDetailTab.getUIFormTextAreaInput(FIELD_MEETING).setValue(sb.toString()) ;
   }
 
-  protected String  getParticipantValues() {
+  protected String getParticipantValues() {
     StringBuilder buider = new StringBuilder("") ;
     for (String par : participants_.keySet()) {
       if (buider.length() > 0) buider.append(CalendarUtils.BREAK_LINE) ;
@@ -1023,152 +1024,175 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
  
       setMessage(event.getMessage());
       setParticipantStatusValues(event.getParticipantStatus());
-      
     }
   }
 
-  protected void sendMail(MailService svr, OrganizationService orSvr,CalendarSetting setting, String fromId,  String toId, CalendarEvent event) throws Exception {
-    List<Attachment> atts = getAttachments(null, false);
-    DateFormat df = new SimpleDateFormat(setting.getDateFormat() + " " + setting.getTimeFormat()) ;
-    User invitor = orSvr.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()) ;
-    StringBuffer sbSubject = new StringBuffer("["+getLabel("invitation")+"] ") ;
-    sbSubject.append(event.getSummary()) ;
-    sbSubject.append(" ") ;
-    sbSubject.append(df.format(event.getFromDateTime())) ;
+   private String buildMailSubject(CalendarEvent event, DateFormat df) {
+     StringBuffer sbSubject = new StringBuffer("["+getLabel("invitation")+"] ") ;
+     sbSubject.append(event.getSummary()) ;
+     sbSubject.append(" ") ;
+     sbSubject.append(df.format(event.getFromDateTime())) ;
 
-    StringBuffer sbBody = new StringBuffer() ;
-    sbBody.append("<div style=\"margin: 20px auto; padding: 8px; background: rgb(224, 236, 255) none repeat scroll 0%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; width: 500px;\">") ;
-    sbBody.append("<table style=\"margin: 0px; padding: 0px; border-collapse: collapse; border-spacing: 0px; width: 100%; line-height: 16px;\">") ;
-    sbBody.append("<tbody>") ;
-    sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap; \">"+getLabel("fromWho")+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\"> " + invitor.getUserName() +"("+invitor.getEmail()+")" + " </td>") ;
-    sbBody.append("</tr>") ;
-    //
-    sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_MESSAGE)+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\">" + event.getMessage()+ "</td>") ;
-    sbBody.append("</tr>") ;
+     return sbSubject.toString();
+   }
+
+   private String buildMailBody(User invitor, CalendarEvent event, String toId, DateFormat df, String timezone) throws Exception {
+     List<Attachment> atts = getAttachments(null, false);
+
+     StringBuffer sbBody = new StringBuffer() ;
+     sbBody.append("<div style=\"margin: 20px auto; padding: 8px; background: rgb(224, 236, 255) none repeat scroll 0%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; width: 500px;\">") ;
+     sbBody.append("<table style=\"margin: 0px; padding: 0px; border-collapse: collapse; border-spacing: 0px; width: 100%; line-height: 16px;\">") ;
+     sbBody.append("<tbody>") ;
+     sbBody.append("<tr>") ;
+     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap; \">"+getLabel("fromWho")+":</td>") ;
+     sbBody.append("<td style=\"padding: 4px;\"> " + invitor.getUserName() +"("+invitor.getEmail()+")" + " </td>") ;
+     sbBody.append("</tr>") ;
+
+     sbBody.append("<tr>") ;
+     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_MESSAGE)+":</td>") ;
+     sbBody.append("<td style=\"padding: 4px;\">" + event.getMessage()+ "</td>") ;
+     sbBody.append("</tr>") ;
+
+     sbBody.append("<tr>") ;
+     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_EVENT)+":</td>") ;
+     sbBody.append("<td style=\"padding: 4px;\">" + event.getSummary()+ "</td>") ;
+     sbBody.append("</tr>") ;
+     sbBody.append("<tr>") ;
+     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_DESCRIPTION)+":</td>") ;
+     sbBody.append("<td style=\"padding: 4px;\">" + (event.getDescription() != null && event.getDescription().trim().length() > 0 ? event.getDescription() : " ") + "</td>") ;
+     sbBody.append("</tr>") ;
+     sbBody.append("<tr>") ;
+     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel("when")+":</td>") ;
+     sbBody.append("<td style=\"padding: 4px;\"> <div>"+getLabel(UIEventDetailTab.FIELD_FROM)+": " +df.format(event.getFromDateTime())+" " + timezone + "</div>");
+     sbBody.append("<div>"+getLabel(UIEventDetailTab.FIELD_TO)+": "+df.format(event.getToDateTime())+" " + timezone + "</div></td>") ;
+     sbBody.append("</tr>") ;
+     sbBody.append("<tr>") ;
+     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_PLACE)+":</td>") ;
+     sbBody.append("<td style=\"padding: 4px;\">" + (event.getLocation() != null && event.getLocation().trim().length() > 0 ? event.getLocation(): " ") + "</td>") ;
+     sbBody.append("</tr>") ;
+     sbBody.append("<tr>") ;
+     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(FIELD_MEETING)+"</td>") ;
+     toId = toId.replace(CalendarUtils.BREAK_LINE, CalendarUtils.COMMA);
+     if (CalendarUtils.isEmpty(getInvitationEmail())) {
+       sbBody.append("<td style=\"padding: 4px;\">" +toId + "</td>") ;
+     } else {
+       String newInvi = getInvitationEmail().replace(",", ", ") ;
+       sbBody.append("<td style=\"padding: 4px;\">" +toId + ", " + newInvi + "</td>") ;
+     }
+     sbBody.append("</tr>");
+     if(!atts.isEmpty()){
+       sbBody.append("<tr>");
+       sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_ATTACHMENTS)+":</td>");
+       StringBuffer sbf = new StringBuffer();
+       for(Attachment att : atts) {
+         if(sbf.length() > 0) sbf.append(",") ;
+         sbf.append(att.getName());
+       }
+       sbBody.append("<td style=\"padding: 4px;\"> ("+atts.size()+") " +sbf.toString()+" </td>");
+       sbBody.append("</tr>");
+     }
+
+     return sbBody.toString();
+   }
+
+   protected void sendMail(MailService svr, OrganizationService orSvr,CalendarSetting setting, String fromId,  String toId, CalendarEvent event) throws Exception {
+     User invitor = orSvr.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()) ;
+     List<Attachment> atts = getAttachments(null, false);
+
+     Map<String, String> eXoIdMap = new HashMap<String, String>();
+     Map<String, String> eXoMailMap = new HashMap<String, String>();
+
+     StringBuffer sbAddress = new StringBuffer() ;
+     if(event.getInvitation()!= null) {
+       for(String s : event.getInvitation()) {
+         s = s.trim() ;
+         if(sbAddress.length() > 0) sbAddress.append(",") ;
+         sbAddress.append(s) ;
+         eXoIdMap.put(s, null);
+       }
+     }
+
+     OrganizationService orgService = CalendarUtils.getOrganizationService() ;
+     StringBuffer sb = new StringBuffer() ;
+     for(String s : toId.split(CalendarUtils.COMMA)) {
+       User user = orgService.getUserHandler().findUserByName(s) ;
+       if(user != null) {
+         if(!CalendarUtils.isEmpty(sb.toString())) sb.append(CalendarUtils.COMMA) ;
+         sb.append(user.getEmail()) ;
+         eXoIdMap.put(user.getEmail(), s);
+         eXoMailMap.put(s, user.getEmail());
+       }
+     }
+
+     if (sbAddress.length() > 0 && sb.toString().trim().length() > 0 ) sbAddress.append(",") ;
+     sbAddress.append(sb.toString().trim()) ;
     
-    sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_EVENT)+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\">" + event.getSummary()+ "</td>") ;
-    sbBody.append("</tr>") ;
-    sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_DESCRIPTION)+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\">" + (event.getDescription() != null && event.getDescription().trim().length() > 0 ? event.getDescription() : " ") + "</td>") ;
-    sbBody.append("</tr>") ;
-    sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel("when")+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\"> <div>"+getLabel(UIEventDetailTab.FIELD_FROM)+": " +df.format(event.getFromDateTime())+"</div>");
-    sbBody.append("<div>"+getLabel(UIEventDetailTab.FIELD_TO)+": "+df.format(event.getToDateTime())+"</div></td>") ;
-    sbBody.append("</tr>") ;
-    sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_PLACE)+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\">" + (event.getLocation() != null && event.getLocation().trim().length() > 0 ? event.getLocation(): " ") + "</td>") ;
-    sbBody.append("</tr>") ;
-    sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(FIELD_MEETING)+"</td>") ;
-    toId = toId.replace(CalendarUtils.BREAK_LINE, CalendarUtils.COMMA);
-    if (CalendarUtils.isEmpty(getInvitationEmail())) {
-      sbBody.append("<td style=\"padding: 4px;\">" +toId + "</td>") ;
-    } else {
-      String newInvi = getInvitationEmail().replace(",", ", ") ;
-      sbBody.append("<td style=\"padding: 4px;\">" +toId + ", " + newInvi + "</td>") ;
-    }    
-    sbBody.append("</tr>");
-    if(!atts.isEmpty()){
-      sbBody.append("<tr>");
-      sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_ATTACHMENTS)+":</td>");  
-      StringBuffer sbf = new StringBuffer();
-      for(Attachment att : atts) {
-        if(sbf.length() > 0) sbf.append(",") ;
-        sbf.append(att.getName());
-      }
-      sbBody.append("<td style=\"padding: 4px;\"> ("+atts.size()+") " +sbf.toString()+" </td>");
-      sbBody.append("</tr>");
-    }    
-    
-    Map<String, String> eXoIdMap = new HashMap<String, String>();
-    
-    StringBuffer sbAddress = new StringBuffer() ;
-    if(event.getInvitation()!= null) {
-      for(String s : event.getInvitation()) {
-        s = s.trim() ; 
-        if(sbAddress.length() > 0) sbAddress.append(",") ;
-        sbAddress.append(s) ;
-        eXoIdMap.put(s, null);
-      }
-    }    
+     StringBuffer values = new StringBuffer(fromId) ;
+     User user = orSvr.getUserHandler().findUserByName(fromId) ;
 
-    OrganizationService orgService = CalendarUtils.getOrganizationService() ;
-    StringBuffer sb = new StringBuffer() ;
-    for(String s : toId.split(CalendarUtils.COMMA)) {
-      User user = orgService.getUserHandler().findUserByName(s) ; 
-      if(user != null) {
-        if(!CalendarUtils.isEmpty(sb.toString())) sb.append(CalendarUtils.COMMA) ;
-        sb.append(user.getEmail()) ;
-        eXoIdMap.put(user.getEmail(), s);
-      }
-    }
-    
-    if (sbAddress.length() > 0 && sb.toString().trim().length() > 0 ) sbAddress.append(",") ;
-    sbAddress.append(sb.toString().trim()) ;
-    
-    StringBuffer values = new StringBuffer(fromId) ; 
-    User user = orSvr.getUserHandler().findUserByName(fromId) ;
+     values.append(CalendarUtils.SEMICOLON + " ") ;
+     values.append(toId) ;
+     values.append(CalendarUtils.SEMICOLON + " ") ;
+     values.append(event.getCalType()) ;
+     values.append(CalendarUtils.SEMICOLON + " ") ;
+     values.append(event.getCalendarId()) ;
+     values.append(CalendarUtils.SEMICOLON + " ") ;
+     values.append(event.getId()) ;
 
-    values.append(CalendarUtils.SEMICOLON + " ") ; 
-    values.append(toId) ;
-    values.append(CalendarUtils.SEMICOLON + " ") ;
-    values.append(event.getCalType()) ;
-    values.append(CalendarUtils.SEMICOLON + " ") ;
-    values.append(event.getCalendarId()) ;
-    values.append(CalendarUtils.SEMICOLON + " ") ;
-    values.append(event.getId()) ;
+     CalendarService calService = CalendarUtils.getCalendarService() ;
+     org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;
+     org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
 
-    CalendarService calService = CalendarUtils.getCalendarService() ;
-    org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;
-    org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
+     try {
+       OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
+         .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
+       ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
+       attachmentCal.setInputStream(is) ;
+       attachmentCal.setName("icalendar.ics");
+       attachmentCal.setMimeType("text/calendar") ;
+     }
+     catch (Exception e) {
+       attachmentCal = null;
+       if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
+     }
 
-    try {
-      OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
-        .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
-      ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
-      attachmentCal.setInputStream(is) ;
-      attachmentCal.setName("icalendar.ics");
-      attachmentCal.setMimeType("text/calendar") ;
-    }
-    catch (Exception e) {
-      attachmentCal = null;
-      if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
-    }
+     CalendarSetting calendarSetting;
+     DateFormat _df;
 
-    for (String s : sbAddress.toString().split(CalendarUtils.COMMA)) {
-      if (CalendarUtils.isEmpty(s)) continue;
-      org.exoplatform.services.mail.Message  message = new org.exoplatform.services.mail.Message();
-      message.setSubject(sbSubject.toString()) ;
-      message.setBody(getBodyMail(sbBody.toString(), eXoIdMap, s, invitor, event)) ;
-      message.setTo(s) ;
-      message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
-      message.setFrom(user.getEmail()) ;
+     String userEmail;
+     for (String userId : toId.split(CalendarUtils.COMMA)) {
+       userEmail = eXoMailMap.get(userId);
 
-      if (attachmentCal != null) {
-        message.addAttachment(attachmentCal) ;
-      }
+       calendarSetting = (calService.getCalendarSetting(userId) != null) ?
+           calService.getCalendarSetting(userId) : CalendarUtils.getCurrentUserCalendarSetting();
+       _df = new SimpleDateFormat(calendarSetting.getDateFormat() + " " + calendarSetting.getTimeFormat());
+       _df.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
 
-      if(!atts.isEmpty()){
-        for(Attachment att : atts) {
-          org.exoplatform.services.mail.Attachment attachment = new org.exoplatform.services.mail.Attachment() ;
-          attachment.setInputStream(att.getInputStream()) ;
-          attachment.setMimeType(att.getMimeType()) ;
-          attachment.setName(att.getName());
-          message.addAttachment(attachment) ;
-        }
-      }
-      mService.sendMessage(message) ;
-    }
-  }
+       if (CalendarUtils.isEmpty(userEmail)) continue;
+       org.exoplatform.services.mail.Message  message = new org.exoplatform.services.mail.Message();
+       message.setSubject(buildMailSubject(event, _df)) ;
+       message.setBody(getBodyMail(buildMailBody(invitor, event, toId, _df, CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone())),
+           eXoIdMap, userEmail, invitor, event)) ;
+       message.setTo(userEmail);
+       message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
+       message.setFrom(user.getEmail()) ;
+
+       if (attachmentCal != null) {
+         message.addAttachment(attachmentCal) ;
+       }
+
+       if(!atts.isEmpty()){
+         for(Attachment att : atts) {
+           org.exoplatform.services.mail.Attachment attachment = new org.exoplatform.services.mail.Attachment() ;
+           attachment.setInputStream(att.getInputStream()) ;
+           attachment.setMimeType(att.getMimeType()) ;
+           attachment.setName(att.getName());
+           message.addAttachment(attachment) ;
+         }
+       }
+       mService.sendMessage(message) ;
+     }
+   }
 
   private String getBodyMail(String sbBody,Map<String, String> eXoIdMap,String s,User invitor,CalendarEvent event) throws Exception {
     StringBuilder body = new StringBuilder(sbBody.toString());
@@ -1259,12 +1283,19 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     String username = RequestContext.getCurrentInstance().getRemoteUser();
     String toId = null;
     if (this.isAddNew_ || this.isChangedSignificantly) {
-      toId = getParticipantValues();
-    } else {
+      StringBuilder participantsList = new StringBuilder("") ;
+      for (String par : participants_.keySet()) {
+        if (participantsList.length() > 0) participantsList.append(CalendarUtils.COMMA) ;
+        participantsList.append(par) ;
+      }
+      toId = participantsList.toString();
+    }
+    else {
       // select new Invitation email
       Map<String, String> invitations = new LinkedHashMap<String, String>();
-      for (String s : calendarEvent.getInvitation())
+      for (String s : calendarEvent.getInvitation()) {
         invitations.put(s, s);
+      }
       for (String parSt : calendarEvent.getParticipantStatus()) {
         String[] entry = parSt.split(":");
         // is old
@@ -1288,6 +1319,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         toId = builder.toString();
       }
     }
+
     try {
       if (toId != null) {
         sendMail(CalendarUtils.getMailService(), CalendarUtils.getOrganizationService(), calSetting, username, toId, calendarEvent);
