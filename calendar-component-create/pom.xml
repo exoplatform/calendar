@@ -23,9 +23,9 @@
       <artifactId>commons-webui-ext</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
-      <artifactId>exo.portal.webui.core</artifactId>
-    </dependency>
+      <groupId>org.exoplatform.platform-ui</groupId>
+      <artifactId>platform-ui-webui-core</artifactId>
+    </dependency> 
     <dependency>
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.portal</artifactId>
