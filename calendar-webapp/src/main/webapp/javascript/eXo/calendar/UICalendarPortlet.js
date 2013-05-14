@@ -939,23 +939,31 @@ UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeigh
       positionYofContentContainer = gj(contentContainer).offset().top,
       height,
       totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
-      originalTotalY    = gj(contentContainer).offset().top + originalHeight,
-      leftNavigationY   = gj("#LeftNavigation").height() + gj("#LeftNavigation").offset().top,
+      originalTotalY    = gj(contentContainer).offset().top + originalHeight;
+    var actionBarHeight = 70 ;
+    if(gj("#LeftNavigation") != null && gj("#LeftNavigation").offset() != null) {  
+      var leftNavigationY   = gj("#LeftNavigation").height() + gj("#LeftNavigation").offset().top,
       maxHeight         = (leftNavigationY > viewPortHeight) ? leftNavigationY : viewPortHeight;
+      if (maxHeight > originalTotalY) {
+        gj(contentContainer).css("height", originalHeight);
+      }
+      else {
+        height =  maxHeight - positionYofContentContainer - deltaHeight;
+        gj(contentContainer).css("height", height);
+        gj(contentContainer).css("overflow", "auto");
 
-  if (maxHeight > originalTotalY) {
-    gj(contentContainer).css("height", originalHeight);
-  }
-  else {
-
-	height = maxHeight - positionYofContentContainer - deltaHeight;
-    gj(contentContainer).css("height", height);
-    gj(contentContainer).css("overflow", "auto");
-
-    if (gj.browser.mozilla) {
-      gj(contentContainer).css("overflow-x", "hidden");
+        if (gj.browser.mozilla) {
+          gj(contentContainer).css("overflow-x", "hidden");
+        }
+      }
+    } else {
+        maxHeight = (gj("form#UIMiniCalendar").height() + gj("form#UICalendars").height()) - actionBarHeight;
+        gj(".eventWeekContent").css("height", maxHeight);
+        gj(contentContainer).css("overflow", "auto");
+        if (gj.browser.mozilla) {
+          gj(contentContainer).css("overflow-x", "hidden");
+        }
     }
-  }
 };
 
 
