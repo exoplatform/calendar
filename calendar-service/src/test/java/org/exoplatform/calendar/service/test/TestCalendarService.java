@@ -1709,8 +1709,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     assertEquals(3, occMap.size());
 
-    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-    format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    format.setTimeZone(tz);
 
     assertNotNull(occMap.get(format.format(fromCal.getTime())));
 
@@ -1765,7 +1765,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(5, occMap.size());
 
     SimpleDateFormat sf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
-    sf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    sf.setTimeZone(tz);
     String reocurenceId1 = sf.format(fromCal.getTime());
     CalendarEvent occEvent1 = occMap.get(reocurenceId1);
 

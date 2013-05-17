@@ -16,6 +16,8 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -30,6 +32,27 @@ import java.util.Set;
 import java.util.TimeZone;
 import javax.jcr.Node;
 import javax.jcr.Session;
+
+import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.NumberList;
+import net.fortuna.ical4j.model.ParameterList;
+import net.fortuna.ical4j.model.PropertyList;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.Time;
+import net.fortuna.ical4j.model.UtcOffset;
+import net.fortuna.ical4j.model.ValidationException;
+import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.WeekDayList;
+import net.fortuna.ical4j.model.component.Daylight;
+import net.fortuna.ical4j.model.component.Standard;
+import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.TzId;
+import net.fortuna.ical4j.model.property.TzName;
+import net.fortuna.ical4j.model.property.TzOffsetFrom;
+import net.fortuna.ical4j.model.property.TzOffsetTo;
+import net.fortuna.ical4j.util.TimeZones;
 
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
@@ -720,5 +743,136 @@ public class Utils {
     StringBuilder sb = new StringBuilder(SPACES_GROUP_ID_PREFIX);
     sb.append(calendarId.split(SPACE_CALENDAR_ID_SUFFIX)[0]);
     return sb.toString();
+  }
+  
+  /**
+   * Gets an ical4j TimeZone object from a java.util.TimeZone object
+   * @param jTz a java.util.TimeZone object
+   * @return an ical4j TimeZone object
+   * @throws ParseException
+   */
+  public static net.fortuna.ical4j.model.TimeZone getICalTimeZone(TimeZone jTz) throws ParseException {
+    
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+    Calendar calendar = Calendar.getInstance();
+    String dtStartValue = dateFormat.format(calendar.getTime());
+    //Properties for Standard component
+    PropertyList standardTzProps = new PropertyList();
+    
+    TzName standardTzName = new TzName(new ParameterList(), jTz.getDisplayName(false,TimeZone.SHORT));
+    
+    DtStart standardTzStart = new DtStart();
+    standardTzStart.setValue(dtStartValue);
+    
+    TzOffsetTo standardTzOffsetTo = new TzOffsetTo();
+    standardTzOffsetTo.setOffset(new UtcOffset(jTz.getRawOffset()));
+    
+    TzOffsetFrom standardTzOffsetFrom = new net.fortuna.ical4j.model.property.TzOffsetFrom();
+    standardTzOffsetFrom.setOffset(new UtcOffset(jTz.getRawOffset() +  jTz.getDSTSavings()));
+
+    standardTzProps.add(standardTzName);
+    standardTzProps.add(standardTzStart);
+    standardTzProps.add(standardTzOffsetTo);
+    standardTzProps.add(standardTzOffsetFrom);
+    
+    //Standard Component for VTimeZone
+    Standard standardTz = new Standard(standardTzProps);
+    
+    //Components for VTimeZone
+    ComponentList tzComponents = new ComponentList();
+    tzComponents.add(standardTz);
+    
+    if(jTz.useDaylightTime()) {
+      //Properties for DayLight component
+      PropertyList daylightTzProps = new PropertyList();
+      
+      TzName daylightTzName = new TzName(jTz.getDisplayName(true, TimeZone.SHORT));
+      
+      DtStart daylightDtStart = new DtStart();
+      daylightDtStart.setValue(dtStartValue);
+      
+      TzOffsetTo daylightTzOffsetTo = new TzOffsetTo();
+      daylightTzOffsetTo.setOffset(new UtcOffset(jTz.getRawOffset() +  jTz.getDSTSavings()));
+      
+      TzOffsetFrom daylightTzOffsetFrom = new TzOffsetFrom();
+      daylightTzOffsetFrom.setOffset(new UtcOffset(jTz.getRawOffset()));
+      
+      daylightTzProps.add(daylightTzOffsetFrom);
+      daylightTzProps.add(daylightTzOffsetTo);
+      daylightTzProps.add(daylightDtStart);
+      daylightTzProps.add(daylightTzName);
+
+      //Daylight Component for VTimeZone
+      Daylight daylightTz = new Daylight(daylightTzProps);
+      //add daylight component to VTimeZone
+      tzComponents.add(daylightTz);
+    }
+    
+    PropertyList tzProps = new PropertyList();
+    TzId tzId = new TzId(null, jTz.getID());
+    tzProps.add(tzId);
+    
+    //Construct the VTimeZone object
+    VTimeZone vTz = new VTimeZone(tzProps, tzComponents);
+    try {
+      vTz.validate();
+      return new net.fortuna.ical4j.model.TimeZone(vTz);
+    } catch (ValidationException e) {
+      return null;
+    }
+  }
+  
+  /**
+   * adapts the repeat rule
+   * because of different time zones, the repeated day of a repetitive event can be different 
+   * in each user's setting time zone. We need to take into account this one.
+   * @since CAL-572 
+   * @param recur Recur object that contains the repeat rule
+   * @param firstOccurDate The date time of the first occurrence of the series
+   * @param tz User time zone
+   */
+  @SuppressWarnings("unchecked")
+  public static void adaptRepeatRule(Recur recur, DateTime firstOccurDate, TimeZone tz) {
+    WeekDay[] weekdays = {WeekDay.SU, WeekDay.MO, WeekDay.TU, WeekDay.WE, WeekDay.TH, WeekDay.FR, WeekDay.SA};
+    int delta;
+    WeekDayList weekdayList = recur.getDayList();
+    
+    NumberList numberList = recur.getMonthDayList();
+    
+    Calendar calendar = Calendar.getInstance(tz);
+    calendar.setTimeInMillis(firstOccurDate.getTime());
+    
+    // repeated weekly/monthly, by day of week
+    if(weekdayList != null && weekdayList.size() > 0) {
+      WeekDay expectedFirstWeekday = WeekDay.getWeekDay(calendar);
+      WeekDay firstWeekDayOfRule = (WeekDay) weekdayList.get(0);
+      delta = WeekDay.getCalendarDay(expectedFirstWeekday) - WeekDay.getCalendarDay(firstWeekDayOfRule);
+      if(delta != 0) { //if there is a difference, adapt the week day list of the rule
+        WeekDayList newWeekDayList = new WeekDayList();
+        for(int i = 0; i < weekdayList.size(); i ++) {
+          WeekDay weekdayI = (WeekDay) weekdayList.get(i);
+          int index = (WeekDay.getCalendarDay(weekdayI) - 1 + delta) % 7;
+          newWeekDayList.add(weekdays[index]);
+        }
+        recur.getDayList().removeAll(weekdayList);
+        recur.getDayList().addAll(newWeekDayList);
+      }
+    }
+    
+    // repeated monthly, by day in month
+    if(numberList != null && numberList.size() > 0) {
+      Integer firstDayOfRule = (Integer)numberList.get(0);
+      int expectedFirstDay = calendar.get(Calendar.DAY_OF_MONTH);
+      delta = expectedFirstDay - firstDayOfRule.intValue();
+      if(delta != 0) {
+        NumberList newNumberList = new NumberList();
+        for(int j = 0; j < numberList.size(); j++) {
+          Integer numberI = (Integer)numberList.get(j);
+          newNumberList.add(new Integer(numberI.intValue() + delta));
+        }
+        recur.getMonthDayList().removeAll(numberList);
+        recur.getMonthDayList().addAll(newNumberList);
+      }
+    }
   }
 }

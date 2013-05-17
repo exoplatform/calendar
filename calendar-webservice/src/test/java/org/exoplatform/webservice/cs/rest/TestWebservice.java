@@ -21,6 +21,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.TimeZone;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.RuntimeDelegate;
 import org.exoplatform.calendar.service.Calendar;
@@ -249,6 +251,7 @@ public class TestWebservice extends AbstractResourceTest {
     calendarService.saveUserEvent(extURI, cal.getId(), event, true);
 
     SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    sdf.setTimeZone(TimeZone.getDefault());
     String recurId = sdf.format(fromTime.getTime());
 
     String eventURI = "/cs/calendar/getoccurrence/" + event.getId() + "/" + recurId;
