@@ -18,13 +18,15 @@ UIWeekView.prototype.init = function() {
 	var UICalendarPortlet = _module.UICalendarPortlet ;
 	var UIWeekView = _module.UIWeekView ;
 	var uiCalendarViewContainer = document.getElementById("UICalendarViewContainer") ;
-	var allEvents = gj(uiCalendarViewContainer).find('div.eventContainerBorder');
+	/* get all event div */
+    var allEvents = gj(uiCalendarViewContainer).find('div.eventContainerBorder');
 	this.container = document.getElementById("UIWeekViewGrid") ;
 	var EventWeekContent = gj(this.container).parents(".eventWeekContent")[0] ;
     if (this.originalHeightOfEventWeekContent === null) {
         this.originalHeightOfEventWeekContent = gj(EventWeekContent).height();
     }
 
+    /* store all events in instance variable 'items' */
 	this.items = new Array() ;
 	_module.UICalendarPortlet.viewType = "UIWeekView" ;
 	for(var i = 0 ; i < allEvents.length ; i ++) {
@@ -32,8 +34,8 @@ UIWeekView.prototype.init = function() {
 	}
 	var len = UIWeekView.items.length ;
 
-    /* no events in view */
-    if (len <= 0) {
+    /*=== RESIZE WIDTH AND HEIGHT WHEN NO EVENTS FOUND ===*/
+    if (len <= 0) {     /* no events in view */
 	    this.initAllday() ;
 
         this.increaseWidth(EventWeekContent);
@@ -50,6 +52,7 @@ UIWeekView.prototype.init = function() {
 	    return;
 	}
 
+    /*== REGISTER Tooltip and dbclick on event ==*/
 	var marker = null ;
 	for(var i = 0 ; i < len ; i ++){		
 		var height = parseInt(this.items[i].getAttribute("endTime")) - parseInt(this.items[i].getAttribute("startTime")) ;
@@ -105,6 +108,18 @@ UIWeekView.prototype.init = function() {
 
 	//UICalendarPortlet.setFocus() ;
 
+    /*== REGISTER onclick for allDay header ==*/
+    var $whiteTds = gj('#UIWeekViewGridAllDay').find('.whiteTd'),
+        container = 'UIWeekViewGridAllDay';
+    gj.each($whiteTds, function (index, whiteTd) {
+
+        gj(whiteTd).click(function () {
+            var start = parseInt(Date.parse(gj(this).attr("startTimeFull"))) ;
+            var end  = parseInt(Date.parse(gj(this).attr("startTimeFull")))  + 24*60*60*1000 - 1;
+            UICalendarPortlet.addQuickShowHiddenWithTime(container, 1, start, end) ;
+            });
+        }
+    );
 } ;
 
 /**
@@ -1007,13 +1022,16 @@ UIWeekView.prototype.cancelBubble = function(evt) {
 	_e.cancelBubble = true ;
 } ;
 
+/**
+ * Callback executed when click on cell table in WeekView, that opens the QuickAddEvent popup
+ */
 UIWeekView.prototype.callbackSelectionX = function() {
 	var UIHSelection = eXo.calendar.UIHSelection ;
 	var startTime = parseInt(Date.parse(UIHSelection.firstCell.getAttribute("startTimeFull"))) ;
 	var endTime = parseInt(Date.parse(UIHSelection.lastCell.getAttribute("startTimeFull"))) + 24*60*60*1000 - 1 ;
-	var porlet = _module.UICalendarPortlet;
+	var portlet = _module.UICalendarPortlet;
 	var container = document.getElementById("UICalendarViewContainer");	
-	porlet.addQuickShowHiddenWithTime(container, 1, startTime, endTime) ;
+	portlet.addQuickShowHiddenWithTime(container, 1, startTime, endTime) ;
 } ;
 eXo.calendar.UIHorizontalResize = new UIHorizontalResize() ;
 _module.UIWeekView = new UIWeekView() ;

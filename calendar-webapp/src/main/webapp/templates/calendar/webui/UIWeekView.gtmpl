@@ -106,12 +106,15 @@ def eventList = [];
       <tr>
         <td style="width: 55px;"></td>
         <%
+        cl = uicomponent.getBeginDateOfWeek() ;
         t = 0 ;
         while(t++ <numberOfDays) {
         %>
-        <td class="whiteTd" style="$styleWidth">
+        <td class="whiteTd" style="$styleWidth" startTimeFull="<%=tempFormat.format(cl.getTime())%>">
         </td>
-        <% } %>
+        <%
+          cl.add(Calendar.DATE,1);
+          } %>
       </tr>
     </table>
     

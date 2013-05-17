@@ -199,6 +199,8 @@ UICalendarPortlet.prototype.getCurrenTimeWithTimeZone = function(){
 /**
  * Show Quick add event and task form with selected time
  * @param {obj, type, from, to} has action object, type of form : event 1 | task 2, from in milliseconds, to in milliseconds
+ * @param {type} 1: event, 2:task
+ * @param {obj} HTML element of 'UIWeekViewGridAllDay' => create all day event
  */
 UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fromMilli, toMilli, id){
 	var CalendarWorkingWorkspace =  _module.UICalendarPortlet.getElementById("UICalendarWorkingContainer");
@@ -225,6 +227,9 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     		calendar:id,
     		category:(selectedCategory)? selectedCategory.value : null 
     };
+
+    if (obj === 'UIWeekViewGridAllDay') {  data.isAllday = true; }
+
     if(type == 1) {
     	var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
     	uiform.reset() ;
