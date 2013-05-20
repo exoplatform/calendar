@@ -94,6 +94,10 @@ public class UICalendarPortlet extends UIPortletApplication {
     return String.valueOf(timezoneOffset/1000/60) ;
   }
 
+  public String getWeekStartOn() throws Exception {
+    return getCalendarSetting().getWeekStartOn();
+  }
+  
   /**
    * close all popups
    *

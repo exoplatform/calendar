@@ -3116,8 +3116,8 @@ UICalendarPortlet.prototype.getFormattedHour = function(date) {
 UICalendarPortlet.prototype.getDateString = function(date) {
     var dateString = "";
     var type = _module.UICalendarPortlet.isAllday(date);
-
-    var dayName = gj(".ShortDayName").get(date.getUTCDay() - 1).getAttribute("name");
+    var dayNameIndex = (date.getUTCDay() - parseInt(_module.UICalendarPortlet.weekStartOn) + 1) % 7; //CAL-575
+    var dayName = gj(".ShortDayName").get(dayNameIndex).getAttribute("name");
     var monthName = gj(".LocalizedMonthName").get(date.getUTCMonth()).getAttribute("name");
     var dateInMonth = date.getUTCDate() < 10 ? '0' + date.getUTCDate() : date.getUTCDate();
 
