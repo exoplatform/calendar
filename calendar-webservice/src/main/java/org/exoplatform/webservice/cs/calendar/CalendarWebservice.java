@@ -722,6 +722,7 @@ public class CalendarWebservice implements ResourceContainer{
       CalendarEvent orgEvent = calendarService.getEventById(eventId); // the repetitive event of which we need to find the occurrence
       
       SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+      sdf.setTimeZone(timezone);
       Date occurDate = sdf.parse(recurId); // get the date that the occurrence appear in the time table
       
       java.util.Calendar cal = java.util.Calendar.getInstance(timezone);

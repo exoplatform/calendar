@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
+
 import javax.jcr.Node;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -487,6 +489,7 @@ public class MockCalendarService implements CalendarService{
     CalendarEvent event =  iter.next().get(0);
     Map<String, CalendarEvent> result = new HashMap<String, CalendarEvent>();
     SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    sdf.setTimeZone(TimeZone.getTimeZone(timezone));
     if(event.getRepeatType() != null) {
       String recurId = sdf.format(event.getFromDateTime());
       result.put(recurId, event);
