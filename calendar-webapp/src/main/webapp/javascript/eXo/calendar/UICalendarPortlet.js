@@ -1086,8 +1086,14 @@ function UIResizeEvent(){
  */
 UIResizeEvent.prototype.init = function(evt){
   var _e = window.event || evt;
-  // IE8 fix
-  (_e.stopPropagation) ? _e.stopPropagation() : _e.returnValue = false;
+  if (_e.stopPropagation) {
+    _e.stopPropagation();
+  }
+  else {
+    // IE8 fix
+    _e.returnValue = false;
+    _e.cancelBubble = true;
+  }
 
   var UIResizeEvent = eXo.calendar.UIResizeEvent;
   var outerElement = gj(this).parents('.eventBoxes')[0];
