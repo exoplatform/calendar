@@ -888,7 +888,8 @@ UICalendarPortlet.prototype.showEvent = function(){
         var isEditable = gj(el[i]).attr('isEditable');
 
         if (isEditable && (isEditable == "true")) {
-        gj(el[i]).on({'mouseover':eXo.calendar.EventTooltip.show,
+        	
+       gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
         	'mouseout':eXo.calendar.EventTooltip.hide,
         	'mousedown':_module.UICalendarPortlet.initDND,
         	'dblclick':_module.UICalendarPortlet.ondblclickCallback});
@@ -897,7 +898,7 @@ UICalendarPortlet.prototype.showEvent = function(){
         }
         
         if (isEditable && (isEditable == "false")) {
-            gj(el[i]).on({'mouseover':eXo.calendar.EventTooltip.show,
+        	gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
             'mouseout':eXo.calendar.EventTooltip.hide,
             'mousedown': false,
             'dblclick':_module.UICalendarPortlet.ondblclickCallback});
@@ -978,7 +979,7 @@ UICalendarPortlet.prototype.editAlldayEvent = function(cont){
 	var i = events.length ;
 	if(!events || (i <= 0)) return ;
 	while(i--){
-		events[i].ondblclick = this.ondblclickCallback;
+		gj(events[i]).off('dblclick').on('dblclick',_module.UICalendarPortlet.ondblclickCallback);
 	}
 }
 
