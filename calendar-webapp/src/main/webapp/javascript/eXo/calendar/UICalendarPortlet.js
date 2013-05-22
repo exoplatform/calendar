@@ -1826,50 +1826,54 @@ UICalendarPortlet.prototype.getEvents = function() {
  * Filter events according to selected event category and calendar checkboxes
  */
 UICalendarPortlet.prototype.filterEvents = function () {
-    var calendarsFiltered = new Array(),
-        UICalendarPortlet = _module.UICalendarPortlet,
-        uiCalendars       = UICalendarPortlet.filterForm,
-        events            = UICalendarPortlet.getEvents();
+	
+	selectBox = gj(_module.UICalendarPortlet.filterSelect);
+	_module.lastSelectedCategory = selectBox.val();    
 
-    if (!events) { return ; }
+	if(gj('#UIListContainer').size() == 0) { //except List View
+		var calendarsFiltered = new Array(),
+		UICalendarPortlet = _module.UICalendarPortlet,
+		uiCalendars       = UICalendarPortlet.filterForm,
+		events            = UICalendarPortlet.getEvents();
 
-    if (uiCalendars) {
-        var checkboxes = gj(uiCalendars).find("input.checkbox"),
-            len        = checkboxes.length;
-        for (var i = 0; i < len; i++) {
-            if (checkboxes[i].checked) {
-                calendarsFiltered.push(checkboxes[i].name);
-            }
-        }
-    }
+		if (!events) { return ; }
 
-    var selectedCategory,
-        selectElement = UICalendarPortlet.filterSelect;
-     
-    if (selectElement) {
-        selectedCategory = selectElement.options[selectElement.selectedIndex].value;
-    }
+		if (uiCalendars) {
+			var checkboxes = gj(uiCalendars).find("input.checkbox"),
+			len        = checkboxes.length;
+			for (var i = 0; i < len; i++) {
+				if (checkboxes[i].checked) {
+					calendarsFiltered.push(checkboxes[i].name);
+				}
+			}
+		}
 
-    var length = events.length,
-        eventCategory,
-        calendarId;
+		if (selectBox) {
+			selectedCategory = selectBox.val();
+		}
 
-    for (var i = 0; i < length; i++) {
-        events[i].style.display = "none";
-        eventCategory = events[i].getAttribute("eventCat");
-        calendarId    = events[i].getAttribute("calId");
+		var length = events.length,
+		eventCategory,
+		calendarId;
 
-        if (selectedCategory === "defaultEventCategoryIdAll") {
-            if (gj.inArray(calendarId,  calendarsFiltered) > -1) {
-                events[i].style.display = "block";
-            }
-        }
-        else {
-            if ((gj.inArray(calendarId, calendarsFiltered) > -1) && (eventCategory === selectedCategory)) {
-                events[i].style.display = "block";
-            }
-        }
-    }
+		for (var i = 0; i < length; i++) {
+			events[i].style.display = "none";
+			eventCategory = events[i].getAttribute("eventCat");
+			calendarId    = events[i].getAttribute("calId");
+
+			if (selectedCategory === "defaultEventCategoryIdAll") {
+				if (gj.inArray(calendarId,  calendarsFiltered) > -1) {
+					events[i].style.display = "block";
+				}
+			}
+			else {
+				if ((gj.inArray(calendarId, calendarsFiltered) > -1) && (eventCategory === selectedCategory)) {
+					events[i].style.display = "block";
+				}
+			}
+		}
+		_module.UICalendarPortlet.resortEvents();
+	}
 };
 
 
@@ -2016,29 +2020,9 @@ UICalendarPortlet.prototype.getFilterSelect = function(formId){
     if (!eventCategory) { return ; }
 
     var select = gj(eventCategory).find("select")[0];
-    if (!(select.getAttribute("onchange"))) {
-        gj(select).on('change', _module.UICalendarPortlet.filterEvents);
-    }
+    gj(select).on('change', _module.UICalendarPortlet.filterEvents);
 
     this.filterSelect = select;
-};
-
-
-/**
- * Sets selected event category
- * @param {Object} form Form id contains event category select element
- *
- * TODO: check if the method is used anywhere
- */
-UICalendarPortlet.prototype.setSelected = function(form){
-    try {
-      this.getFilterSelect(form);
-      this.selectedCategory = this.filterSelect.options[this.filterSelect.selectedIndex].value;
-    	this.listViewDblClick(form);
-		} 
-    catch (e) {
-			this.listViewDblClick(form);
-		}
 };
 
 UICalendarPortlet.prototype.listViewDblClick = function(form){
@@ -3325,6 +3309,21 @@ UICalendarPortlet.prototype.checkEventCategoryName = function(textFieldId){
         btn.attr("disabled", "disabled");
     } else {
         btn.removeAttr("disabled");
+    }
+}
+
+
+//CAL-516: show last selected category after creating a new event
+UICalendarPortlet.prototype.showLastSelectedCategory = function() {
+	if(_module.lastSelectedCategory) {
+        selectBox = gj(_module.UICalendarPortlet.filterSelect);
+        selectBox.val(_module.lastSelectedCategory);
+        //re-filter    
+        if(gj('#UIListContainer').size() > 0) {//list view
+            uiForm.submitEvent(_module.UICalendarPortlet.portletId +'#UIListView','Onchange','&objectId=eventCategories');
+        } else {//other views
+            _module.UICalendarPortlet.filterEvents();
+        }   
     }
 }
 

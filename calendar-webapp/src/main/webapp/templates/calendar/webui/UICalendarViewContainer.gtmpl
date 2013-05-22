@@ -21,4 +21,6 @@
 </div>  
 <%
 requireJS.addScripts("gj('#ShowHideAll').find('i').css('display','block');");
+requireJS.addScripts("cal.UICalendarPortlet.showLastSelectedCategory();");
+
 %>
