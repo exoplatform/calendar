@@ -58,7 +58,7 @@ UIWeekView.prototype.init = function() {
 		var height = parseInt(this.items[i].getAttribute("endTime")) - parseInt(this.items[i].getAttribute("startTime")) ;
         var isEditable = gj(this.items[i]).attr('isEditable');
 		if (isEditable && (isEditable == "true")) {  
-		gj(this.items[i]).on({'mousedown':UIWeekView.dragStart,
+		gj(this.items[i]).off('dblclick').on({'mousedown':UIWeekView.dragStart,
 			'mouseover':eXo.calendar.EventTooltip.show,
 			'mouseout':eXo.calendar.EventTooltip.hide,
 			'dblclick':_module.UICalendarPortlet.ondblclickCallback});
@@ -69,7 +69,7 @@ UIWeekView.prototype.init = function() {
         if (isEditable && (isEditable == "false")) {
           gj(this.items[i]).find('.eventContainerBar').css('cursor', 'default');
           marker = gj(this.items[i]).find('div.resizeEventContainer')[0];
-          gj(this.items[i]).on({'mousedown':false,
+          gj(this.items[i]).off('dblclick').on({'mousedown':false,
             'mouseover':eXo.calendar.EventTooltip.show,
 			'mouseout':eXo.calendar.EventTooltip.hide,
           	'dblclick':_module.UICalendarPortlet.ondblclickCallback});
@@ -770,7 +770,7 @@ UIWeekView.prototype.initAllday = function() {
 	if (gj(resizeMark[2]).hasClass("rightResizeEvent")) {
 	    gj(resizeMark[2]).on('mousedown',UIWeekView.initAllDayRightResize);
 	}
-	gj(eventAllday[i]).on({'mouseover':eXo.calendar.EventTooltip.show,
+	gj(eventAllday[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
 	    'mouseout':eXo.calendar.EventTooltip.hide,
 	    'mousedown':_module.UIWeekView.initAlldayDND,
 	    'dblclick':_module.UICalendarPortlet.ondblclickCallback});
