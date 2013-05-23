@@ -26,6 +26,31 @@
 	}
 	.alignBtnGroup{
 		text-align: center;
+		.btn a{
+			color: @grayDark;
+		}
+		.dropdown-menu {
+			text-align: left;
+			a {
+				text-shadow: 0 0 0 transparent;
+				&:hover {
+					color: @white;
+					
+				}
+			}
+			li.active a {
+				 background-color: darken(@white, 10%);
+    			background-color: darken(@white, 15%) e("\9");
+    			background-image: none;
+			    outline: 0;
+			    .box-shadow(~"0 0 6px rgba(0, 0, 0, 0.15) inset");
+			    &:hover {
+					color: @grayDark;
+					
+				}
+			}
+			
+		}
 	}
 	.dropdownMore {
 		text-align: left;
