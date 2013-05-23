@@ -184,7 +184,6 @@ public class UIMonthView extends UICalendarView {
   public java.util.Calendar getBeginDateOfWeek() throws Exception{
     java.util.Calendar temCal = getInstanceTempCalendar() ;
     temCal.setTime(calendar_.getTime()) ;
-    temCal.setFirstDayOfWeek(Calendar.MONDAY) ;    
     if(temCal.getFirstDayOfWeek() > temCal.get(Calendar.DAY_OF_WEEK)) {
       temCal.add(java.util.Calendar.WEEK_OF_YEAR, -1) ;
     }
