@@ -233,13 +233,20 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     if(type == 1) {
     	var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
     	uiform.reset() ;
-    	this.fillData(uiform, data) ;
+        if (data.isAllday == true) {
+            this.fillData(uiform, data, true) ;
+        }
+        else {  this.fillData(uiform, data) ;  }
     	uiPopupWindow.show("UIQuickAddEventPopupWindow");
     	uiPopup.hide("UIQuickAddTaskPopupWindow") ;
     } else if(type == 2) {
     	var uiform = gj(UIQuickAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
     	uiform.reset() ;
-    	this.fillData(uiform, data) ;
+        if (data.isAllday === true) {
+            this.fillData(uiform, data, true) ;
+        }
+        else {  this.fillData(uiform, data) ;  }
+    	//this.fillData(uiform, data) ;
     	uiPopupWindow.show("UIQuickAddTaskPopupWindow");
     	uiPopup.hide("UIQuickAddEventPopupWindow");
     }
@@ -248,18 +255,18 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
  * fill data to quick event/task form
  * @param {uiform, data} uifrom obj or id, data is array of value for each element of form
  */
-UICalendarPortlet.prototype.fillData = function(uiform, data) {
+UICalendarPortlet.prototype.fillData = function(uiform, data, isAllDayEvent) {
 	uiform = (typeof uiform == "string") ? _module.UICalendarPortlet.getElementById(uiform):uiform;
 	var fromField = uiform.elements["from"] ;
 	var fromFieldTime = uiform.elements["fromTime"] ;
 	var toField = uiform.elements["to"] ;
 	var toFieldTime = uiform.elements["toTime"] ;
 	var isAllday = uiform.elements["allDay"] ;
-	var calendar = uiform.elements["calendar"]; 
+	var calendar = uiform.elements["calendar"];
 	var category = uiform.elements["category"] ;
 	var eventName = uiform.elements["eventName"];
 	var description = uiform.elements["description"];
-	
+
 	var formater = cs.CSUtils.DateTimeFormater ;
 	var timeType = "HH:MM" ;
 	var dateType = fromField.getAttribute("format").replace("MM","mm") ;
@@ -267,11 +274,13 @@ UICalendarPortlet.prototype.fillData = function(uiform, data) {
 	eventName.value = "";
 	description.value = "";
 	fromField.value = formater.format(data.from, dateType);
-	fromFieldTime.style.visibility= "visible";
-	fromFieldTime.value = formater.format(data.fromTime, timeType);	
+    if (isAllDayEvent && (isAllDayEvent == true)) gj(fromFieldTime).parents('.UIComboboxComponent')[0].style.visibility= "hidden";
+    else fromFieldTime.style.visibility= "visible";
+	fromFieldTime.value = formater.format(data.fromTime, timeType);
 	gj(fromFieldTime).nextAll("input")[0].value = formater.format(data.fromTime, timeType);
 	toField.value = formater.format(data.to, dateType);
-	toFieldTime.style.visibility = "visible";
+    if (isAllDayEvent && (isAllDayEvent == true)) gj(toFieldTime).parents('.UIComboboxComponent')[0].style.visibility= "hidden";
+    else toFieldTime.style.visibility = "visible";
 	toFieldTime.value = formater.format(data.toTime, timeType);
 	gj(toFieldTime).nextAll("input")[0].value = formater.format(data.toTime, timeType);
 	isAllday.checked = data.isAllday ;
