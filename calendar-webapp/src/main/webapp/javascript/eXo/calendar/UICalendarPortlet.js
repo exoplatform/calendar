@@ -3337,6 +3337,29 @@ UICalendarPortlet.prototype.showLastSelectedCategory = function() {
     }
 }
 
+UICalendarPortlet.prototype.loadMenu = function(){
+    try {   
+        var uiActionBar = gj('#UIActionBar');
+        var label = uiActionBar.attr("morelabel");
+        uiActionBar.loadMoreItem({ 
+            loadMoreLabel : label,
+            liMoreClass : 'btn moreItem',
+            moreIsActionIcon : false, 
+            processContainerWidth : function() {
+             var pr = gj('#UIActionBar');
+             var btnRight = pr.find('.btnRight:first'); 
+              var btnLeft = pr.find('.btnLeft:first'); 
+              var w = pr.width() - btnRight.outerWidth() - btnLeft.outerWidth() - 20; 
+               return w; 
+            } 
+       });
+            
+    } catch(e) {
+        console.log(e);
+    }   
+};
+
+
 Highlighter = window.require("SHARED/Highlighter");
 _module.Highlighter = Highlighter.Highlighter;
 eXo.calendar.UIHSelection = Highlighter.UIHSelection;

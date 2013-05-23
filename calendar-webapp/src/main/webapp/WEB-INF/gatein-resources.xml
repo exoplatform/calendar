@@ -21,6 +21,9 @@
         <module>bts_tooltip</module>
       </depends>
     <depends>
+      <module>LoadMorePlugin</module>
+    </depends>  
+    <depends>
       <module>Highlighter</module>
     </depends>
     <depends>
@@ -249,6 +252,16 @@
     <name>UIColorPicker</name>
     <script>
       <path>/javascript/eXo/calendar/UIColorPicker.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
+  <module>
+    <name>LoadMorePlugin</name>
+    <script>
+      <path>/javascript/eXo/calendar/LoadMoreActionPlugin.js</path>
     </script>
     <depends>
       <module>jquery</module>
