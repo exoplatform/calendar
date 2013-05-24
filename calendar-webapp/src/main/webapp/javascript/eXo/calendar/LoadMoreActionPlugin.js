@@ -20,11 +20,11 @@
     
     var parentContainer, containerMoreItem = '', widthMoreAction = 0, moreClass = "moreItem";
     
-    var moreItemDefault = $('<li class="dropdown ' + settings.liMoreClass + ' "></li>');
+    var moreItemDefault = $('<li class="dropdown ' + settings.liMoreClass + ' " data-toggle="dropdown"></li>');
     var clazz = (settings.moreIsActionIcon) ? 'actionIcon' : '';
-    var div = $('<div data-toggle="dropdown" class="' + clazz + '"></div>').html(settings.loadMoreLabel);
-    div.append($('<i class="' + settings.loadMoreIcon + '"></i>'));
-    moreItemDefault.append(div);
+    //var div = $('<div data-toggle="dropdown" class="' + clazz + '"></div>').html(settings.loadMoreLabel);
+    var i = ($('<i class="' + settings.loadMoreIcon + '"></i>'));
+    moreItemDefault.html(settings.loadMoreLabel).append(i);
     
     function processResizeWindow () {
       if(parentContainer.length > 0) {
@@ -78,13 +78,13 @@
 
       var moreItem = containerMoreItem.find('li.' + moreClass + ':first');
       if(moreItem.length >0) {
-        var ulMore = $('<ul class="dropdown-menu menuMore"></ul>');
+        var ulMore = $('<ul class="dropdown-menu menuMore pull-right"></ul>');
         ulMore.css('min-width', minWidthMenu + 'px');
         for(var i = 0; i < itemMenu.length; ++i) {
           ulMore.append(itemMenu[i]);
         }
         ulMore.find('li').removeClass('btn');
-        moreItem.append(ulMore);
+        moreItem.after(ulMore);
       }
       
     }
@@ -96,7 +96,7 @@
         if(containerMoreItem.length > 0) {
           var fakeContainer = parentContainer.find('ul.fakeContainer:first');
           if(fakeContainer.length === 0) {
-						var allMoreClass = containerMoreItem.attr('class').replace(settings.ulContainerClass, '');
+            var allMoreClass = containerMoreItem.attr('class').replace(settings.ulContainerClass, '');
             fakeContainer = $('<ul class="fakeContainer ' + allMoreClass + '"></ul>');
             fakeContainer.insertAfter(containerMoreItem)
             fakeContainer = parentContainer.find('ul.fakeContainer:first');
