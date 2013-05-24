@@ -181,6 +181,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   private CalendarEvent calendarEvent_ = null ;
   protected String calType_ = "0" ;
   protected String invitationMsg_ = "" ;
+  /* participant list contains both eXo userId and email addresses */
   protected String participantList_ = "" ;
   private String errorMsg_ = null ;
   private String errorValues = null ;

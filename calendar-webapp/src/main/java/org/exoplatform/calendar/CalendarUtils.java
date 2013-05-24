@@ -165,6 +165,8 @@ public class CalendarUtils {
   final public static String ITEM_NERVER = "never".intern();
   final public static String ITEM_ASK = "ask".intern();
   final public static String emailRegex = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-.]+";
+  /* single email format regex */
+  public static final String emailFormat = "[_A-Za-z0-9-]+@[_A-Za-z0-9-.]+";
   final public static String contactRegex = ".\\("+ emailRegex + "\\)";
 
   public final static String INVITATION_URL = "/invitation/".intern();
@@ -746,6 +748,10 @@ public class CalendarUtils {
     return str ;
   }
 
+  public static boolean isAValidEmailAddress(String email) {
+    return email.matches(emailFormat);
+  }
+
   public static boolean isValidEmailAddresses(String addressList) {
     if (isEmpty(addressList)) return true ;
     addressList = addressList.replaceAll(SEMICOLON,COMMA) ;
@@ -754,7 +760,9 @@ public class CalendarUtils {
     try{
       for (String email : emails) {
         email = email.trim() ;
-        if(!email.matches(emailRegex)) return false ;
+        if(!email.matches(emailRegex)) {
+          return false ;
+        }
       }
     }catch (Exception e){
       if (log.isDebugEnabled()) {

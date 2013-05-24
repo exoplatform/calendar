@@ -268,7 +268,6 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   static  public class SaveActionListener extends EventListener<UIQuickAddEvent> {
     @Override
     public void execute(Event<UIQuickAddEvent> event) throws Exception {
-      
       UIQuickAddEvent uiForm = event.getSource() ;
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       

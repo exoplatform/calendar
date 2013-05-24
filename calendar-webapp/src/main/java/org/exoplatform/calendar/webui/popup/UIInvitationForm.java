@@ -16,10 +16,7 @@
  */
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.services.log.ExoLogger;
@@ -74,13 +71,15 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
 }
 )
 public class UIInvitationForm extends UIForm implements UIPopupComponent {
-  private static final Log log = ExoLogger.getExoLogger(UIInvitationForm.class);
+  private static final Log LOG = ExoLogger.getExoLogger(UIInvitationForm.class);
 
   public final static String FIELD_PARTICIPANT = "participant".intern() ;
   public final static String FIELD_INVITATION_MSG = "invitation-msg".intern() ;
   public final static String TOOLTIP_CONTACT = "contact-picker".intern() ;
   public final static String TOOLTIP_USER = "user-picker".intern() ;
   public final static String TOOLTIP_GROUP = "group-picker".intern() ;
+
+  public static final String NEW_LINE = "\r\n";
 
   protected CalendarEvent event_ ;
 
@@ -93,8 +92,8 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     try{
       defaul_msg = getLabel("default-invitation-msg") ;
     } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-        log.debug("Can not get the label: " + defaul_msg + " from resource bundle", e);
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("Can not get the label: " + defaul_msg + " from resource bundle", e);
       }
     }
 
@@ -155,34 +154,6 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     getUIFormTextAreaInput(FIELD_INVITATION_MSG).setValue(value) ; 
   }
 
-  public String getUserList(String parList){
-    StringBuilder builder = new StringBuilder("");
-    List<String> pars = new ArrayList<String>();
-    pars.addAll(Arrays.asList(parList.split(CalendarUtils.BREAK_LINE)));
-    for(String par : pars){
-      par = par.trim();
-      if(!par.contains("@")){
-        if(builder.length()>0) builder.append(", ");
-        builder.append(par);
-      }     
-    }
-    return builder.toString();
-  }
-  
-  public String getEmailList(String parList){
-    StringBuilder builder = new StringBuilder("");
-    List<String> pars = new ArrayList<String>();
-    pars.addAll(Arrays.asList(parList.split(CalendarUtils.BREAK_LINE)));
-    for(String par : pars){
-      par = par.trim().substring(par.lastIndexOf(CalendarUtils.OPEN_PARENTHESIS) + 1).replace(CalendarUtils.CLOSE_PARENTHESIS, "");
-      if(par.contains("@")){
-        if(builder.length()>0) builder.append(", ");
-        builder.append(par);
-      }     
-    }
-    return builder.toString(); 
-  }
-  
   public String escapeGroupReferences(String s){
     if(CalendarUtils.isEmpty(s)) return new String("");
     return s.replace("$", "\\$");
@@ -200,10 +171,23 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
       uiEventForm.invitationMsg_ = uiInvitationForm.getUIFormTextAreaInput(FIELD_INVITATION_MSG).getValue() ;
       uiEventForm.participantList_ = uiInvitationForm.getParticipantValue() ;
       uiEventForm.participantList_ = uiInvitationForm.appendValue(uiEventForm.participantList_,"");
-      String userList = uiInvitationForm.getUserList(uiEventForm.participantList_);
-      String emailList = uiInvitationForm.getEmailList(uiEventForm.participantList_);
-      String invalidUsers = CalendarUtils.invalidUsers(userList);
-      if(CalendarUtils.isValidEmailAddresses(emailList.trim())&& invalidUsers.length()==0){
+
+      // contains both invalid userId and email
+      StringBuilder invalidParticipants = new StringBuilder();
+      int invalidParticipantsNumber = 0;
+
+      // filter userId and userEmails to different list
+      for (String participant: uiEventForm.participantList_.split(NEW_LINE)) {
+        participant = participant.trim();
+        if (participant.length() == 0) continue;
+
+        if (CalendarUtils.isAValidEmailAddress(participant) || CalendarUtils.isUserExisted(CalendarUtils.getOrganizationService(), participant)) continue;
+        if (invalidParticipants.length() > 0) invalidParticipants.append(", ");
+        invalidParticipants.append(participant);
+        invalidParticipantsNumber ++;
+      }
+
+      if (invalidParticipantsNumber == 0) {
         if(uiEventForm.participantList_!= null){
           uiEventForm.setParticipant(uiEventForm.participantList_);
           uiEventForm.setParticipantStatus(uiEventForm.participantList_);
@@ -215,17 +199,12 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
           event.getRequestContext().addUIComponentToUpdateByAjax(uiPopup) ;
           event.getRequestContext().addUIComponentToUpdateByAjax(uiEventForm) ;
       }
-      else{
-        StringBuilder builder = new StringBuilder("");
-        
-        if(invalidUsers.length()>0)
-          builder.append(invalidUsers + "; ");
-        if(!CalendarUtils.isValidEmailAddresses(emailList.trim()))
-          builder.append(CalendarUtils.invalidEmailAddresses(emailList.trim()));
-        event.getRequestContext()
-             .getUIApplication()
-             .addMessage(new ApplicationMessage("UIEventForm.msg.event-participant-invalid",
-                                                new String[] { uiInvitationForm.escapeGroupReferences(builder.toString()) },
+      else {
+        String msg = "UIEventForm.msg.event-participant-invalid";
+        if (invalidParticipantsNumber > 1) msg = "UIEventForm.msg.events-participants-invalid";
+
+        event.getRequestContext().getUIApplication()
+             .addMessage(new ApplicationMessage(msg, new String[] { invalidParticipants.toString() },
                                                 AbstractApplicationMessage.WARNING));
       }      
     }
