@@ -29,6 +29,15 @@
 		.btn a{
 			color: @grayDark;
 		}
+		.moreItem {
+			.border-radius(0 @borderRadiusSmall @borderRadiusSmall 0);
+			.uiIconMiniArrowDown {
+				margin-left: 5px;
+			}
+			&:first-child {
+				.border-radius( @borderRadiusSmall);
+			}
+		}
 		.dropdown-menu {
 			text-align: left;
 			a {
