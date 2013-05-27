@@ -32,7 +32,19 @@ UIWeekView.prototype.init = function() {
 	for(var i = 0 ; i < allEvents.length ; i ++) {
 		if(allEvents[i].style.display != "none") this.items.push(allEvents[i]) ;
 	}
-	var len = UIWeekView.items.length ;
+
+  /*== REGISTER onclick for allDay header ==*/
+  var $whiteTds = gj('#UIWeekViewGridAllDay').find('.whiteTd'),
+      container = 'UIWeekViewGridAllDay';
+  gj.each($whiteTds, function (index, whiteTd) {
+    gj(whiteTd).click(function () {
+      var start = parseInt(Date.parse(gj(this).attr("startTimeFull"))) ;
+      var end  = parseInt(Date.parse(gj(this).attr("startTimeFull")))  + 24*60*60*1000 - 1;
+      UICalendarPortlet.addQuickShowHiddenWithTime(container, 1, start, end) ;
+    });
+  });
+
+  var len = UIWeekView.items.length ;
 
     /*=== RESIZE WIDTH AND HEIGHT WHEN NO EVENTS FOUND ===*/
     if (len <= 0) {     /* no events in view */
@@ -107,19 +119,6 @@ UIWeekView.prototype.init = function() {
 	this.initAllday() ;
 
 	//UICalendarPortlet.setFocus() ;
-
-    /*== REGISTER onclick for allDay header ==*/
-    var $whiteTds = gj('#UIWeekViewGridAllDay').find('.whiteTd'),
-        container = 'UIWeekViewGridAllDay';
-    gj.each($whiteTds, function (index, whiteTd) {
-
-        gj(whiteTd).click(function () {
-            var start = parseInt(Date.parse(gj(this).attr("startTimeFull"))) ;
-            var end  = parseInt(Date.parse(gj(this).attr("startTimeFull")))  + 24*60*60*1000 - 1;
-            UICalendarPortlet.addQuickShowHiddenWithTime(container, 1, start, end) ;
-            });
-        }
-    );
 } ;
 
 /**
