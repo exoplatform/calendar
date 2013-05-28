@@ -581,12 +581,24 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent.setFromDateTime(fromCal.getTime());
     calEvent.setToDateTime(toCal.getTime());
     calEvent.setSummary("how do you do root");
-    calEvent.setDescription("I am a search able event");
+    calEvent.setDescription("I am a search able event i am a cloud services, and I fixing the issue ");
     calEvent.setCalendarId(cal.getId());
     calEvent.setEventCategoryId(eventCategory.getId());
     calEvent.setPrivate(false);
     calendarService_.saveUserEvent(username, cal.getId(),calEvent, true);
-
+    
+    //CAL-602 fuzzy search 
+    Collection<SearchResult>  result = unifiedSearchService_.search(null, "clo~", params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+    
+    //CAL-602 condition process search
+    result = unifiedSearchService_.search(null, "c", params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+    result = unifiedSearchService_.search(null, "cl", params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+    result = unifiedSearchService_.search(null, "clo", params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, result.size());
+     
     CalendarEvent calEvent2 = new CalendarEvent() ;
     calEvent2.setFromDateTime(fromCal.getTime());
     calEvent2.setToDateTime(toCal.getTime());
@@ -615,7 +627,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     CalendarEvent johnEvent = new CalendarEvent() ;
     String[] ids = new String[]{cal.getId()};
-    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertNotNull(result) ;
     assertEquals(3, result.size());
 
@@ -628,8 +640,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(3, result.size());
-
-
+    
+   
     // Clean up data 
     calendarService_.removeUserEvent(username, ids[0], calEvent.getId());
     calendarService_.removeUserEvent(username, ids[0], calEvent2.getId());

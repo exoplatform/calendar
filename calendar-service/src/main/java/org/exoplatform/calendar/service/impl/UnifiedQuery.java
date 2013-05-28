@@ -36,6 +36,13 @@ import org.exoplatform.commons.utils.ISO8601;
  */
 public class UnifiedQuery extends EventQuery {
 
+  public static final String ASTERISK_STR = "*";
+  public static final String PERCENT_STR = "%";
+  public static final char   ASTERISK_CHAR = '*';
+  public static final String SPACE_STR = " ";
+  public static final String EMPTY_STR = "";
+  public static final String SLASH_STR = "/";
+  
   public String getQueryStatement() throws Exception {
     StringBuffer queryString = new StringBuffer("");
 
@@ -58,7 +65,7 @@ public class UnifiedQuery extends EventQuery {
           int filterCount = 0 ;
           for(String filter : Utils.SEARCH_FIELDS) {
             if(filterCount > 0) queryString.append(" OR ");
-            queryString.append("CONTAINS(").append(filter).append(",'").append(keyword).append("')");
+            queryString.append("CONTAINS(").append(filter).append(",'").append(processSearchCondition(keyword.replaceAll("~", ""))).append("')");
             filterCount ++ ;
           }
           inputCount ++ ;
@@ -119,5 +126,21 @@ public class UnifiedQuery extends EventQuery {
     sb.append(Utils.EXO_REPEAT_FINISH_DATE).append(" IS ").append("NULL"); // having no property exo:repeatFinishDate (never end event)
     sb.append(")))");
     return sb.toString();
+  }
+   
+  private String processSearchCondition(String searchCondition) {
+    StringBuffer searchConditionBuffer = new StringBuffer();
+    if (!searchCondition.contains(ASTERISK_STR) && !searchCondition.contains(PERCENT_STR)) {
+      if (searchCondition.charAt(0) != ASTERISK_CHAR) {
+        searchConditionBuffer.append(ASTERISK_STR).append(searchCondition);
+      }
+      if (searchCondition.charAt(searchCondition.length() - 1) != ASTERISK_CHAR) {
+        searchConditionBuffer.append(ASTERISK_STR);
+      }
+    } else {
+      searchCondition = searchCondition.replace(ASTERISK_STR, PERCENT_STR);
+      searchConditionBuffer.append(PERCENT_STR).append(searchCondition).append(PERCENT_STR);
+    }
+    return searchConditionBuffer.toString();
   }
 }
