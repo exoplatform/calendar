@@ -116,7 +116,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
 
     ActionData selectUser = new ActionData() ;
     selectUser.setActionType(ActionData.TYPE_ICON) ;
-    selectUser.setCssIconClass("uiIconUser uiIconLightGray");
+    selectUser.setCssIconClass("uiIconPlus uiIconLightGray");
     selectUser.setActionName(UITaskForm.ACT_SELECTUSER) ;
     selectUser.setActionListener(UITaskForm.ACT_SELECTUSER) ;
 
