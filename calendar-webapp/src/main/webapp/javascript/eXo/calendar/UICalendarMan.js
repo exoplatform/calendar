@@ -708,7 +708,6 @@ GUIMan.prototype.paintWeek = function() {
  * draws the event with given startTime and endTime
  * event starts from the column startCol
  */
-
 GUIMan.prototype.drawEventByMiliseconds = function(eventObj, startTime, endTime, dayInfo, startCol) {
     var eventNode = eventObj.rootNode;
     var topPos = dayInfo.eventTop ;
@@ -717,21 +716,22 @@ GUIMan.prototype.drawEventByMiliseconds = function(eventObj, startTime, endTime,
 
     // get number of days
     var delta = (new Date(endTime)) - (new Date(startTime));
-    delta /= (1000 * 60 * 60 * 24);
-    delta = Math.ceil(delta);
+    delta /= (1000 * 60 * 60 * 24); // in days
+    var rounded_delta = Math.floor(delta); // round downwards
+    var left_hours = Math.round((delta - rounded_delta) * 24); // number of hours different
 
     // calculate event's width (= sum of widths of cells from startCol to startCol + delta - 1)
-    for(var i = 0; i < delta; i++) { // can't multiply here, because the width of cells are not always equals.
-	eventWidth += gj(this.dayNodes[startCol++]).width();
+    for(var i = 0; i < rounded_delta; i++) { // can't multiply here, because the width of cells are not always equals.
+	  eventWidth += gj(this.dayNodes[startCol++]).width();
     }
 
-    eventWidth += delta - 1; // plus the separate lines between cells
-
+    // increase width by hours difference
+    eventWidth += (gj(this.dayNodes[startCol]).width() * (left_hours / 24));
     startCol -= delta; // reset startCol
-    
+
     // calculate event's left (= left of the startCol)
     for (var l = 0; l < startCol; l++) {
-	leftPos += gj(this.dayNodes[l]).width() + 1;
+	  leftPos += gj(this.dayNodes[l]).width() + 1;
     }  
 
     leftPos += parseFloat((dayInfo.eventShiftRightPercent * dayInfo.width) / 100);
