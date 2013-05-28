@@ -969,6 +969,9 @@ UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeigh
 
         if (gj.browser.mozilla) {
           gj(contentContainer).css("overflow-x", "hidden");
+          if(gj("#LeftNavigation").height() > viewPortHeight) { //CAL-541
+        	  gj(contentContainer).css('height', height - 15);
+          }
         }
       }
     } else {
