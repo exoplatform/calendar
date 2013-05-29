@@ -22,9 +22,12 @@
           }
     %>
       <tr class="$rowClass"><% uicomponent.renderChild(component); %></tr>
-    <% }
-    }
-  %>
+    <%   }
+       }
+
+       if (index == 0) { %>
+	       <tr><td colspan='3' class='empty' style='text-align: center;'><%=_ctx.appRes("UIPermissionGrid.label.empty-data")%></td></tr>
+	  <% } %>
 
     </tbody>
   </table>

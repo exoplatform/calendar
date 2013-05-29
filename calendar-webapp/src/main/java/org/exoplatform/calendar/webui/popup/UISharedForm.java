@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
@@ -41,6 +42,7 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -182,7 +184,9 @@ public class UISharedForm extends UIForm implements UIPopupComponent
     }
 
     /* a form containing button and input for selecting permission */
-    addUIFormInput(new UIFormStringInput(INPUT_PERMISSION_OWNER, null, INPUT_PERMISSION_OWNER_LABEL));
+    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+    ResourceBundle res = context.getApplicationResourceBundle();
+    addUIFormInput(new UIFormStringInput(INPUT_PERMISSION_OWNER, null, res.getString("UISharedForm.label.UIPermissionOwnerInput")));
     setActionField(INPUT_PERMISSION_OWNER, actions);
 
     addPopupWindow();

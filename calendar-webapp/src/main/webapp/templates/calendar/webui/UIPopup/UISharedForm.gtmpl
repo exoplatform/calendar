@@ -3,8 +3,9 @@
 
   def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('#PermissionOwnerInput').click(function() { if (gj('#PermissionOwnerInput').attr('value') === 'Select recipient') { gj('#PermissionOwnerInput').attr('value', ''); } });");
-  requirejs.addScripts("gj('#PermissionOwnerInput').blur(function() { var value = gj('#PermissionOwnerInput').attr('value'); if ((value == null) || (value === '')) { gj('#PermissionOwnerInput').attr('value', 'Select recipient'); } });");
+  def selectLabel = _ctx.appRes("UISharedForm.label.UIPermissionOwnerInput");
+  requirejs.addScripts("gj('#PermissionOwnerInput').click(function() { gj(this).css('color', 'black');  if (gj(this).attr('value') === '" + selectLabel + "') { gj(this).attr('value', ''); } });");
+  requirejs.addScripts("gj('#PermissionOwnerInput').blur(function() { var value = gj(this).attr('value'); if ((value == null) || (value === '')) { gj(this).attr('value', '" + selectLabel + "'); gj(this).css('color', '#999'); } });");
 
   uicomponent.renderChild(uicomponent.getChildById(uicomponent.POPUP_USER_SELECTOR));
 %>
