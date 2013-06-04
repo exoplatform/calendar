@@ -69,7 +69,9 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   private static final Log LOG = ExoLogger.getExoLogger(UIExportForm.class);
 
   final static private String NAME = "name";
-  final static private String TYPE = "type";
+
+  private static final String EXPORT_TYPE = "ICalendar(.ics)";
+
   private String calType = "0" ;
   private Map<String,String> names_ = new HashMap<String, String>() ;
 
@@ -78,8 +80,8 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   public String eventId = null ;
   public UIExportForm() throws Exception {
     addUIFormInput(new UIFormStringInput(NAME, NAME, null)) ;
-    addUIFormInput(new UIFormInputInfo(TYPE, TYPE, CalendarService.ICALENDAR));
   }
+
   public void setCalType(String type) {calType = type ; }
 
   public void update(String type, List<Calendar> calendars, String selectedCalendarId) throws Exception
@@ -94,13 +96,16 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       }
     }
     initCheckBox(calendars, selectedCalendarId) ;
+
+    // default value set to name of calendar
+    ((UIFormStringInput) getChildById(NAME)).setValue(calendars.get(0).getName());
   }
 
   public void initCheckBox(List<Calendar> calendars, String selectedCalendarId)
   {
-    for(Calendar calendar : calendars) {
+    for (Calendar calendar : calendars) {
       UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-      if(calendar.getId().equals(selectedCalendarId)) checkBox.setChecked(true) ; 
+      if(calendar.getId().equals(selectedCalendarId)) checkBox.setChecked(true) ;
       else checkBox.setChecked(false) ;
       if(eventId != null) checkBox.setDisabled(true) ;
       else checkBox.setDisabled(false) ;
@@ -113,42 +118,6 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   private String getCalendarName(String calendarId)
   {
     return longNames_.get(calendarId);
-  }
-
-  /**
-   * truncate a long name into a name with .. if length of name is larger than 20 characters
-   * or return a name from the starting position to the second white space position
-   *
-   * @param longName
-   * @return
-   */
-  private String truncateLongName(String longName)
-  {
-    if (longName.length() < 17) return longName;
-
-    int secondWhiteSpacePos = getPositionOfSecondWhiteSpaceFrom(longName);
-    if ( ( -1 < secondWhiteSpacePos) && (secondWhiteSpacePos < 20 ) )
-      return longName.substring(0,secondWhiteSpacePos);
-
-    if (longName.length() > 20) return longName.substring(0, 17) + "...";
-    return longName;
-  }
-
-  /**
-   * get index of second white space if the string has one
-   * return -1 if not
-   *
-   * @param name
-   * @return position
-   */
-  private int getPositionOfSecondWhiteSpaceFrom(String name)
-  {
-    int firstWhiteSpacePos = name.indexOf(" ");
-    if (firstWhiteSpacePos == -1)  return -1;
-
-    int secondWhiteSpacePos = name.indexOf(" ", firstWhiteSpacePos + 1);
-    if (secondWhiteSpacePos == -1) return -1;
-    return secondWhiteSpacePos;
   }
 
   @Override
@@ -190,11 +159,11 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
         return ;
       }
 
-      String type = uiForm.getUIFormInputInfo(TYPE).getValue();
       String name = uiForm.getUIStringInput(NAME).getValue() ;
-      CalendarImportExport importExport = calendarService.getCalendarImportExports(type) ;
+      CalendarImportExport importExport = calendarService.getCalendarImportExports(EXPORT_TYPE) ;
       OutputStream out = null ;
       try {
+        // export a single event
         if(uiForm.eventId != null) {
           out = importExport.exportEventCalendar(CalendarUtils.getCurrentUser(), calendarIds.get(0), uiForm.calType, uiForm.eventId) ;
         }
@@ -212,7 +181,7 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
         event.getRequestContext().getJavascriptManager().addJavascript("ajaxRedirect('" + downloadLink + "');") ;
         calendarPortlet.cancelAction() ;      
-      }catch(Exception e) {
+      } catch(Exception e) {
         event.getRequestContext()
              .getUIApplication()
              .addMessage(new ApplicationMessage("UIExportForm.msg.event-does-not-existing", null));
