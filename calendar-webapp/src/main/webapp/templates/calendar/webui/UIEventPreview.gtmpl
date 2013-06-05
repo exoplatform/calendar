@@ -52,8 +52,8 @@ resizable = "resizable";
 
 	<% if (event.getAttachment().size() != 0) { %>
 	<div class="text last">
-	<%=uiform.getLabel('AttachedFile')%>
-	</div>
+    <%=_ctx.appRes('UIPreview.label.AttachedFile')%>
+  </div>
 	<% } %>
 		<div id="imagePreviewContainer" class="imagePreviewContainer" style="display: none">
 		  <a id="downloadImage" class="downloadImage" href="#">
@@ -74,7 +74,7 @@ resizable = "resizable";
 			String rndString     = String.valueOf(new Date().getTime());
 			String View          = uiform.getLabel('View') ;
 			String Close         = uiform.getLabel('Close') ;
-			String viewText      = uiform.getLabel('ViewIcon');
+      String viewText      = _ctx.appRes('UIPreview.label.ViewIcon');
 			int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
 			%>
 
