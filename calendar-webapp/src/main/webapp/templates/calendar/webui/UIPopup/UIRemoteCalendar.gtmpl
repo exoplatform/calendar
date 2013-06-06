@@ -44,6 +44,7 @@
         <%uicomponent.renderField(uicomponent.FIELD_AFTER_DATE_SELECTBOX)%>
       </div>
     </div>
+    
     <%              
       field = uicomponent.getChildById(uicomponent.USE_AUTHENTICATION);
       label = _ctx.appRes(uicomponent.id + ".label." + field.getId());

@@ -114,11 +114,6 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     UIFormStringInput password = new UIFormStringInput(PASSWORD, PASSWORD, null);
     password.setType(UIFormStringInput.PASSWORD_TYPE);
     addUIFormInput(password);
-    List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
-    for (String s : Utils.SYNC_PERIOD) {
-      options.add(new SelectItemOption<String>(s, s));
-    }
-    addUIFormInput(new UIFormSelectBox(AUTO_REFRESH, AUTO_REFRESH, options));  
     addUIFormInput(new UIFormColorPicker(COLOR, COLOR)); 
   }
   
@@ -157,7 +152,6 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     this.remoteType = remoteType;
     setUrl(url);
     this.getUIStringInput(URL).setReadOnly(true);
-    setSyncPeriod(Utils.SYNC_AUTO);
     setSelectColor(Calendar.COLORS[0]);
     setUseAuthentication(true);
     
@@ -168,6 +162,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
         setCalendarName(rCalendar.getCalendarName());
         setDescription(rCalendar.getDescription());
         remoteCalendar = rCalendar;
+        setUseAuthentication(false);
       }
     } catch (Exception e) {
       if (logger.isDebugEnabled()) logger.debug(String.format("Loading the remote calendar information from %s failed", url), e);
@@ -191,8 +186,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     setCalendarName(calService.getUserCalendar(username, calendarId_).getName());
     setDescription(calendar.getDescription());
     setSelectColor(calendar.getCalendarColor());
-    setSyncPeriod(remoteCalendar.getSyncPeriod());
-    setUseAuthentication(remoteCalendar.getUsername() != null);
+    setUseAuthentication(remoteCalendar.getRemoteUser().length() > 0);
     setRemoteUser(remoteCalendar.getRemoteUser());
     setRemotePassword(remoteCalendar.getRemotePassword());
     getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX).setValue(remoteCalendar.getBeforeDateSave()) ;
@@ -237,15 +231,6 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
   protected String getDescription() {
     String s = this.getUIFormTextAreaInput(DESCRIPTION).getValue() ;
     return (Utils.isEmpty(s))?"":s;
-  }
-  
-  protected String getSyncPeriod() {
-    String s = this.getUIFormSelectBox(AUTO_REFRESH).getValue() ;
-    return (Utils.isEmpty(s))?"":s;
-  }
-  
-  protected void setSyncPeriod(String value) {
-    this.getUIFormSelectBox(AUTO_REFRESH).setValue(value);
   }
   
   protected String getSelectColor() {
@@ -299,7 +284,6 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       remoteCalendar.setRemoteUrl(uiform.getUrl());
       remoteCalendar.setCalendarName(uiform.getCalendarName());
       remoteCalendar.setDescription(uiform.getDescription());
-      remoteCalendar.setSyncPeriod(uiform.getSyncPeriod());
       remoteCalendar.setBeforeDateSave(uiform.getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX).getValue());
       remoteCalendar.setAfterDateSave(uiform.getUIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX).getValue());
       remoteCalendar.setCalendarColor(uiform.getSelectColor());

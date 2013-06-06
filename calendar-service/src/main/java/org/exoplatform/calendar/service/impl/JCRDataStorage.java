@@ -222,7 +222,7 @@ public class JCRDataStorage implements DataStorage {
    */
   public Node getUserCalendarServiceHome(String username) throws Exception {
     // SessionProvider sProvider = createSessionProvider();
-    SessionProvider sProvider = createSystemProvider();
+    SessionProvider sProvider = createSessionProvider();
     Node userApp = nodeHierarchyCreator_.getUserApplicationNode(sProvider, username); 
     Node calendarRoot;
     try {
@@ -1340,7 +1340,6 @@ public class JCRDataStorage implements DataStorage {
       startTime.setTime(event.getFromDateTime());
     }
     eventNode.setProperty(Utils.EXO_FROM_DATE_TIME, startTime);
-    eventNode.getSession().save();
     if (event.getToDateTime() != null) {
       endTime.setTime(event.getToDateTime());
     }
@@ -3960,10 +3959,12 @@ public class JCRDataStorage implements DataStorage {
   public SessionProvider createSessionProvider() {
     SessionProvider provider = sessionProviderService_.getSessionProvider(null);
     if (provider == null) {
-      log.info("No user session provider was available, trying to use a system session provider");
+      if(log.isDebugEnabled()) {
+        log.debug("No user session provider was available, trying to use a system session provider");  
+      }
       provider = sessionProviderService_.getSystemSessionProvider(null);
     }
-    return SessionProvider.createSystemProvider();
+    return provider;
   }
 
   /**

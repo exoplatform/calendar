@@ -60,6 +60,28 @@
       </init-params>
     </component-plugin>
     
+    <component-plugin>
+			<name>SynchronizeRemoteCalendarJob</name>
+			<set-method>addPeriodJob</set-method>
+			<type>org.exoplatform.calendar.service.SynchronizeRemoteCalendarPeriodJob
+			</type>
+			<description>add synchronize remote calendar job to the
+				JobSchedulerService</description>
+			<init-params>
+				<properties-param>
+					<name>job.info</name>
+					<description>reload remote calendar periodically</description>
+					<property name="jobName" value="SynchronizeRemoteCalendarJob" />
+					<property name="groupName" value="CollaborationSuite" />
+					<property name="job"
+						value="org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob" />
+					<property name="repeatCount" value="0" />
+					<property name="period" value="1800000" /> <!-- 30 minutes -->
+					<property name="startTime" value="+60000" />
+					<property name="endTime" value="" />
+				</properties-param>
+			</init-params>
+	</component-plugin>
     </external-component-plugins>
   <external-component-plugins>
     <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
