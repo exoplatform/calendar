@@ -10,8 +10,8 @@
   requireJS.addScripts('cal.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
   //requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
   requireJS.addScripts("cal.UICalendarPortlet.loadMenu();");
-  requireJS.addScripts("gj('button#"+_ctx.appRes(uicomponent.id + ".label.Event")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
-  requireJS.addScripts("gj('button#"+_ctx.appRes(uicomponent.id + ".label.Task")+"').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
+  requireJS.addScripts("gj('button#UIActionBarQuickAddEvent').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
+  requireJS.addScripts("gj('button#UIActionBarQuickAddTask').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
   %>
 <div id="$uicomponent.id" class="uiActionBar uiGrayLightBox clearfix" morelabel="<%=_ctx.appRes('UIActionBar.label.More')%>"> 
 	<div class="pull-right btnRight">
@@ -25,10 +25,10 @@
 		<div class="Title ControlButton ActionBarButton">
 		<span></span>
 		</div>
-		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Event")%>">
+		<button type="button" class="btn btn-primary" id="UIActionBarQuickAddEvent">
 			<i class="uiIconCalCreateEvent uiIconCalWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
 		</button>
-		<button type="button" class="btn btn-primary" id="<%=_ctx.appRes(uicomponent.id + ".label.Task")%>">
+		<button type="button" class="btn btn-primary" id="UIActionBarQuickAddTask">
 			<i class="uiIconCalCreateTask uiIconCalWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
 		</button>
 		<span class="separatorLine"></span> 
