@@ -71,9 +71,10 @@
 	for(int i = 0; i < 7; i++) {
 	  if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) cssStyle = "SundayTitle" ;
 	  String shortDayName = dayNames[calendar.get(Calendar.DAY_OF_WEEK)];
+	  shortDayName = shortDayName.length() < 4 ? shortDayName : shortDayName.substring(0,3);
 	%>
 	<div class="ShortDayName" style="dislay:none" name="$shortDayName"></div>
-	<td><%=shortDayName.substring(0,3).toUpperCase()%></td>
+	<td><%=shortDayName.toUpperCase()%></td>
 	<%
 	  calendar.add(Calendar.DAY_OF_WEEK, 1);
 	}
