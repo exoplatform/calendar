@@ -277,6 +277,14 @@ public class UIListView extends UICalendarView {
     updateCurrentPage(pageList_.getCurrentPage()) ;
   }
 
+  public EventPageList getPageList() {
+    return pageList_;
+  }
+
+  public void setPageList(EventPageList pageList) {
+    this.pageList_ = pageList;
+  }
+
   protected void updateCurrentPage(long page) throws Exception{
     getChildren().clear() ;
     update();

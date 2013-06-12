@@ -1309,8 +1309,19 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           if (uiContainer.getRenderedChild() instanceof UIListContainer) {
             UIListView uiListView = ((UIListContainer) uiContainer.getRenderedChild()).getChild(UIListView.class);
             if (uiListView.isDisplaySearchResult()) {
+              
               if (uiListView.getDataMap().containsKey(eventId)) {
-                uiListView.getDataMap().remove(eventId);
+                long currentPage = uiListView.getCurrentPage();
+                
+                List<CalendarEvent> events = uiListView.getPageList().getAll(); // get all events displayed in list
+                events.remove(uiListView.getDataMap().get(eventId)); // remove the deleted event from the list
+                uiListView.update(new EventPageList(events,10)); // update the page list
+                
+                if(currentPage <= uiListView.getAvailablePage()) { // stay at the current page
+                  uiListView.setCurrentPage((int)currentPage);
+                  uiListView.updateCurrentPage(currentPage);
+                }
+                
                 UIPreview preview = ((UIListContainer) uiContainer.getRenderedChild()).findFirstComponentOfType(UIPreview.class);
                 if (preview.getEvent() != null && preview.getEvent().getId().equals(eventId)) {
                   preview.setEvent(null);
