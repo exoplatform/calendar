@@ -3350,10 +3350,91 @@ UICalendarPortlet.prototype.loadMenu = function(){
        });
             
     } catch(e) {
-        console.log(e);
+        //console.log(e);
     }   
 };
 
+UICalendarPortlet.prototype.dateSuggestion = function(isEdit, compid, timeShift){
+    var form = gj("#"+compid); 
+    var eFromDate = form.find('input[name="from"]');
+    var eFromTime = form.find('input[name="fromTime"]');
+    var eToDate = form.find('input[name="to"]');
+    var eToTime = form.find('input[name="toTime"]');
+    timeShift = parseInt(timeShift);
+    var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
+    var arr = eval(values);
+    if(isEdit == "false"){ 
+        var fromIndex = arr.indexOf(eFromTime.val());
+        var toIndex = arr.indexOf(eToTime.val()) ;
+         if(fromIndex > 0 && toIndex > 0 && eFromDate.val() == eToDate.val()){
+            timeShift = toIndex - fromIndex ;
+         }
+    }
+    form.on('click','a[href="#SelectDate"]', function() {_module.UICalendarPortlet.suggestDate(eFromDate, eToDate)});
+    form.on('click','a.UIComboboxItem', function(){_module.UICalendarPortlet.suggestTime(isEdit, eFromDate, eToDate, eFromTime, eToTime, timeShift)});
+}
+
+UICalendarPortlet.prototype.suggestTime = function(isEdit, eFromDate, eToDate, eFromTime, eToTime, timeShift){
+    var format = gj(eFromDate).attr("format");
+    var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
+    var arr = eval(values);
+    var start = eFromTime.val(); 
+    var size = arr.length ;
+    var index = arr.indexOf(start); 
+    if((index + timeShift)>= size){
+         this.addDay(eFromDate, 1, eToDate, format);
+         value = arr[(index + timeShift) - (size -1)];
+    } else {
+        this.addDay(eFromDate, 0, eToDate, format);
+        value = arr[index+timeShift];
+    }
+    
+    eToTime.val(value);
+    gj(eToTime).next('input.UIComboboxInput').val(value);
+};
+
+UICalendarPortlet.prototype.suggestDate = function(eFromDate, eToDate){
+ var format = gj(eFromDate).attr("format");
+ this.addDay(eFromDate,0, eToDate, format);
+};
+
+UICalendarPortlet.prototype.addDay = function(eFromDate, dayNum, eToDate, datePattern) {
+        var dateValue = eFromDate.val();
+        cs.CalDateTimePicker.currentDate = this.dateParses(dateValue, datePattern);
+        cs.CalDateTimePicker.currentDate.setDate(cs.CalDateTimePicker.currentDate.getDate()+dayNum);
+        cs.CalDateTimePicker.datePattern = datePattern;
+        var value = cs.CalDateTimePicker.getDateTimeString();
+        eToDate.val(value);     
+}
+
+UICalendarPortlet.prototype.addHour = function(input, interval) {
+    var hourStr =  input.split(':')[0];
+    var hour;
+    if(hourStr[0] == '0')
+        hour = parseInt(hourStr[1]);
+    else 
+        hour = parseInt(hourStr);
+    if(hour >= 23) {
+        return "23:59";
+    }
+    hour += interval;
+    if(hour < 10) hour = "0" + hour;
+    return  hour+':'+input.split(':')[1];
+}  
+
+UICalendarPortlet.prototype.dateParses = function(dateFieldValue, pattern) {
+    var dateIndex =   pattern.indexOf("dd");
+    var dateValue = parseInt(dateFieldValue.substring(dateIndex,dateIndex + 2), 10);
+    var monthIndex =   pattern.indexOf("MM");
+    var monthValue = parseInt(dateFieldValue.substring(monthIndex,monthIndex + 2) - 1, 10);
+    var yearIndex =   pattern.indexOf("yyyy");
+    var yearValue = parseInt(dateFieldValue.substring(yearIndex,yearIndex + 4), 10);
+    var currentDate = new Date();
+    currentDate.setDate(dateValue);
+    currentDate.setMonth(monthValue);
+    currentDate.setYear(yearValue);
+    return currentDate;
+}
 
 Highlighter = window.require("SHARED/Highlighter");
 _module.Highlighter = Highlighter.Highlighter;
