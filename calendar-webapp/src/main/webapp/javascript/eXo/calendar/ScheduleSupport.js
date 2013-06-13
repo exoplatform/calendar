@@ -84,64 +84,67 @@ ScheduleSupport = {
 	//synchronize time of UIComboBox in Schedule Tab and Detail Tab
 	syncTimeBetweenEventTabs : function() {
 	   var scheduleTab = gj('#eventAttender-tab')[0];
-	   var detailsTab = gj('#eventDetail-tab')[0];
-	   var detailsCombos = gj(detailsTab).find('input.UIComboboxInput');
-	   var scheduleCombos = gj(scheduleTab).find('input.UIComboboxInput');
-	   var start = null;
-	   var end = null;
-	   var hiddenInput = null;
-	   // sync schedule tab to detail tab
-	   if(gj(scheduleTab).hasClass('active')) {
-	       hiddenInput = gj(scheduleCombos[0]).prevAll('input')[0];
-	       if(hiddenInput.name.toLowerCase().indexOf('from') > -1) {
-	           start = scheduleCombos[0].value;
-	           end = scheduleCombos[1].value;
-	       } else {
-	           start = scheduleCombos[1].value;
-	           end = scheduleCombos[0].value;
-	       }
+	   if(scheduleTab){
+		   var detailsTab = gj('#eventDetail-tab')[0];
+		   var detailsCombos = gj(detailsTab).find('input.UIComboboxInput');
+		   var scheduleCombos = gj(scheduleTab).find('input.UIComboboxInput');
+		   var start = null;
+		   var end = null;
+		   var hiddenInput = null;
 
-	       hiddenInput0 = gj(detailsCombos[0]).prevAll('input')[0];
-	       hiddenInput1 = gj(detailsCombos[1]).prevAll('input')[0];
-	       if(hiddenInput0.name.toLowerCase().indexOf('from') > -1) {
-	           gj(detailsCombos[0]).attr("value",start);
-	           gj(hiddenInput0).attr("value",start);
-	           gj(detailsCombos[1]).attr("value",end);
-	           gj(hiddenInput1).attr("value",end);
+		   // sync schedule tab to detail tab
+		   if(gj(scheduleTab).hasClass('active')) {
+		       hiddenInput = gj(scheduleCombos[0]).prevAll('input')[0];
+		       if(hiddenInput.name.toLowerCase().indexOf('from') > -1) {
+		           start = scheduleCombos[0].value;
+		           end = scheduleCombos[1].value;
+		       } else {
+		           start = scheduleCombos[1].value;
+		           end = scheduleCombos[0].value;
+		       }
 
-	       } else {
-	           gj(detailsCombos[1]).attr("value",start);
-	           gj(hiddenInput1).attr("value",start);
-	           gj(detailsCombos[0]).attr("value",end);
-	           gj(hiddenInput0).attr("value",start);
-	       }
-	   }
-	   // sync detail tab to schedule tab
-	   if(gj(detailsTab).hasClass('active')) {
-	   hiddenInput = gj(detailsCombos[0]).prevAll('input')[0];
-	       if(hiddenInput.name.toLowerCase().indexOf('from') > -1) {
-	           start = detailsCombos[0].value;
-	           end = detailsCombos[1].value;
-	       } else {
-	           start = detailsCombos[1].value;
-	           end = detailsCombos[0].value;
-	       }
+		       hiddenInput0 = gj(detailsCombos[0]).prevAll('input')[0];
+		       hiddenInput1 = gj(detailsCombos[1]).prevAll('input')[0];
+		       if(hiddenInput0.name.toLowerCase().indexOf('from') > -1) {
+		           gj(detailsCombos[0]).attr("value",start);
+		           gj(hiddenInput0).attr("value",start);
+		           gj(detailsCombos[1]).attr("value",end);
+		           gj(hiddenInput1).attr("value",end);
 
-	       hiddenInput0 = gj(scheduleCombos[0]).prevAll('input')[0];
-	       hiddenInput1 = gj(scheduleCombos[1]).prevAll('input')[0];
-	       if(hiddenInput0.name.toLowerCase().indexOf('from') > -1) {
-	           gj(scheduleCombos[0]).attr("value",start);
-	           gj(hiddenInput0).attr("value",start);
-	           gj(scheduleCombos[1]).attr("value",end);
-	           gj(hiddenInput1).attr("value",end);
+		       } else {
+		           gj(detailsCombos[1]).attr("value",start);
+		           gj(hiddenInput1).attr("value",start);
+		           gj(detailsCombos[0]).attr("value",end);
+		           gj(hiddenInput0).attr("value",start);
+		       }
+		   }
+		   // sync detail tab to schedule tab
+		   if(gj(detailsTab).hasClass('active')) {
+		   hiddenInput = gj(detailsCombos[0]).prevAll('input')[0];
+		       if(hiddenInput.name.toLowerCase().indexOf('from') > -1) {
+		           start = detailsCombos[0].value;
+		           end = detailsCombos[1].value;
+		       } else {
+		           start = detailsCombos[1].value;
+		           end = detailsCombos[0].value;
+		       }
 
-	       } else {
-	           gj(scheduleCombos[1]).attr("value",start);
-	           gj(hiddenInput1).attr("value",start);
-	           gj(scheduleCombos[0]).attr("value",end);
-	           gj(hiddenInput0).attr("value",start);
-	       }
-	   }
+		       hiddenInput0 = gj(scheduleCombos[0]).prevAll('input')[0];
+		       hiddenInput1 = gj(scheduleCombos[1]).prevAll('input')[0];
+		       if(hiddenInput0.name.toLowerCase().indexOf('from') > -1) {
+		           gj(scheduleCombos[0]).attr("value",start);
+		           gj(hiddenInput0).attr("value",start);
+		           gj(scheduleCombos[1]).attr("value",end);
+		           gj(hiddenInput1).attr("value",end);
+
+		       } else {
+		           gj(scheduleCombos[1]).attr("value",start);
+		           gj(hiddenInput1).attr("value",start);
+		           gj(scheduleCombos[0]).attr("value",end);
+		           gj(hiddenInput0).attr("value",start);
+		       }
+		   }
+		}
 	}
 	
 }
