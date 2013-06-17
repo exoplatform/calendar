@@ -29,8 +29,18 @@
 	}
 	.alignBtnGroup{
 		text-align: center;
-		.btn a{
-			color: @grayDark;
+		.btn {
+			a {
+				color: @grayDark;
+				&:active {
+					color: @linkColor;
+				}
+			}
+			&.active {
+				a {
+					color: @linkColor;
+				}
+			}
 		}
 		.moreItem {
 			.border-radius(0 @borderRadiusSmall @borderRadiusSmall 0);
