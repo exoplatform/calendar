@@ -9,7 +9,7 @@ requireJS.addScripts("gj('input#"+uicomponent.FIELD_ALLDAY+"').click(function() 
 def timeShift = uicomponent.getTimeShift();
 requireJS.addScripts("cal.UICalendarPortlet.dateSuggestion('true','"+uicomponent.id+"','"+timeShift+"');");
 %>
-<div class="uiQuickAddEvent" id="QuickAddEventContainer">
+<div class="uiQuickAddEvent" id="QuickAddEventContainer" timeShift="$timeShift">
     <div class="form-horizontal quickAddEventContainer">	
     <%uiform.begin()%>
 	<div class="control-group">
