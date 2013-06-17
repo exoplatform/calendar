@@ -16,7 +16,10 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -97,7 +100,7 @@ public class UICalendarPortlet extends UIPortletApplication {
   public String getWeekStartOn() throws Exception {
     return getCalendarSetting().getWeekStartOn();
   }
-  
+
   /**
    * close all popups
    *
@@ -236,19 +239,41 @@ public class UICalendarPortlet extends UIPortletApplication {
    * @param eventId
    * @throws Exception
    */
-  private void processEventDetailsURL(WebuiRequestContext webuiRequestContext, String eventId) throws Exception
+  private void processEventDetailsURL(WebuiRequestContext webuiRequestContext, String eventId, String recurId) throws Exception
   {
     CalendarService calService = CalendarUtils.getCalendarService();
-    /* find event from username and event id */
-    CalendarEvent event = calService.getEventById(eventId) ;
+    CalendarEvent event = null ;
+    String username = CalendarUtils.getCurrentUser();
+    if(recurId != null && !recurId.isEmpty()) {
+      CalendarSetting calSetting = calService.getCalendarSetting(username);
+      String timezoneId = calSetting.getTimeZone();
+      TimeZone timezone = TimeZone.getTimeZone(timezoneId);
+      CalendarEvent orgEvent = calService.getEventById(eventId); // the repetitive event of which we need to find the occurrence
+      if(orgEvent != null) {
+        SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+        sdf.setTimeZone(timezone);
+        Date occurDate = sdf.parse(recurId); // get the date that the occurrence appear in the time table
+        java.util.Calendar cal = java.util.Calendar.getInstance(timezone);
+        cal.setTime(occurDate);
+        java.util.Calendar from = Utils.getBeginDay(cal);
+        java.util.Calendar to = Utils.getEndDay(cal);
+        /* Here we get occurrences of the repetitive event in the occurDate 
+         * so that the result must be <recurId, occurrence> (occurrence: the occurrence event that we are searching for)
+         */
+        Map<String, CalendarEvent> occMap = calService.getOccurrenceEvents(orgEvent, from, to, timezoneId);
+        event = occMap.get(recurId);
+      }
+    } else {
+      /* find event from username and event id */
+      event = calService.getEventById(eventId) ;
+    }
     if (event == null){
       webuiRequestContext.getUIApplication().addMessage(new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
     } else {
-      event.setCalType(String.valueOf(calService.getTypeOfCalendar(CalendarUtils.getCurrentUser(), event.getCalendarId())));
+      event.setCalType(String.valueOf(calService.getTypeOfCalendar(username, event.getCalendarId())));
       openEventPreviewPopup(event, webuiRequestContext);
     }
   }
-
 
   /**
    * open an popup to display event or task details
@@ -299,7 +324,14 @@ public class UICalendarPortlet extends UIPortletApplication {
     {
       String eventId = requestedURL.substring(requestedURL.indexOf(CalendarUtils.DETAILS_URL) + CalendarUtils.DETAILS_URL.length());
       if (!eventId.startsWith("Event")) return;
-      processEventDetailsURL(webuiRequestContext, eventId);
+      else if(eventId.endsWith("/")) eventId = eventId.substring(0, eventId.lastIndexOf("/"));
+      String occurenceId = "";
+      String[] array = eventId.split("/");
+      if(array.length >=2) {
+        eventId = array[0];
+        occurenceId = array[1];
+      }
+      processEventDetailsURL(webuiRequestContext, eventId, occurenceId);
     }
   }
 
