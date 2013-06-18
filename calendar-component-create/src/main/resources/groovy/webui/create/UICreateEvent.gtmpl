@@ -22,20 +22,20 @@
 					</div>
 				</div>
 				 <div class="control-group title">
-					<label class="control-label"><%=uicomponent.getLabel(uicomponent.TITLE )%></label>
+					<label class="control-label"><%=uicomponent.getLabel(uicomponent.TITLE )%>:</label>
 					<div class="controls">
 						<% uicomponent.renderField(uicomponent.TITLE ) %>
 					</div>
 				</div>
 				<div class="control-group startTime" >
-					<label class="control-label"><%=uicomponent.getLabel(uicomponent.START_EVENT )%></label>
+					<label class="control-label"><%=uicomponent.getLabel(uicomponent.START_EVENT )%>:</label>
 					<div class="controls selectboxMini inputSmall ">
 						<% uicomponent.renderField(uicomponent.START_EVENT) %>
 						<% uicomponent.renderField(uicomponent.START_TIME) %>
 					</div>
 				</div>
 				<div class="control-group endTime ">
-					<label class="control-label"><%=uicomponent.getLabel(uicomponent.END_EVENT )%></label>
+					<label class="control-label"><%=uicomponent.getLabel(uicomponent.END_EVENT )%>:</label>
 					<div class="controls selectboxMini inputSmall">
 						<% uicomponent.renderField(uicomponent.END_EVENT) %>
 						<% uicomponent.renderField(uicomponent.END_TIME) %>
