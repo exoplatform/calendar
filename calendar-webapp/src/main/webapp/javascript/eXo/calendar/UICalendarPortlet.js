@@ -214,10 +214,9 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     	return;
     }
 		
-		var tmpMenuElement = document.getElementById("tmpMenuElement");
-		if (tmpMenuElement) uiPopup.hide(tmpMenuElement) ;
-    
-		var formater = cs.CSUtils.DateTimeFormater ;
+	var tmpMenuElement = document.getElementById("tmpMenuElement");
+	if (tmpMenuElement) uiPopup.hide(tmpMenuElement) ;
+	var formater = cs.CSUtils.DateTimeFormater ;
     var data = {
     		from:parseInt(fromMilli),
     		fromTime:parseInt(fromMilli),
@@ -228,25 +227,20 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     		category:(selectedCategory)? selectedCategory.value : null 
     };
 
-    if (obj === 'UIWeekViewGridAllDay') {  data.isAllday = true; }
+    var fromD = new Date(fromMilli);
+    var toD = new Date(toMilli);
+    data.isAllday = ((fromD.getHours() == 0 && fromD.getMinutes() == 0) && ( toD.getHours() == 23 && toD.getMinutes() == 59));
 
     if(type == 1) {
     	var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
-    	uiform.reset() ;
-        if (data.isAllday == true) {
-            this.fillData(uiform, data, true) ;
-        }
-        else {  this.fillData(uiform, data) ;  }
+    	uiform.reset();
+        this.fillData(uiform, data, data.isAllday) ;
     	uiPopupWindow.show("UIQuickAddEventPopupWindow");
     	uiPopup.hide("UIQuickAddTaskPopupWindow") ;
     } else if(type == 2) {
     	var uiform = gj(UIQuickAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
     	uiform.reset() ;
-        if (data.isAllday === true) {
-            this.fillData(uiform, data, true) ;
-        }
-        else {  this.fillData(uiform, data) ;  }
-    	//this.fillData(uiform, data) ;
+        this.fillData(uiform, data, data.isAllday);
     	uiPopupWindow.show("UIQuickAddTaskPopupWindow");
     	uiPopup.hide("UIQuickAddEventPopupWindow");
     }
@@ -274,16 +268,13 @@ UICalendarPortlet.prototype.fillData = function(uiform, data, isAllDayEvent) {
 	eventName.value = "";
 	description.value = "";
 	fromField.value = formater.format(data.from, dateType);
-    if (isAllDayEvent && (isAllDayEvent == true)) gj(fromFieldTime).parents('.UIComboboxComponent')[0].style.visibility= "hidden";
-    else fromFieldTime.style.visibility= "visible";
 	fromFieldTime.value = formater.format(data.fromTime, timeType);
 	gj(fromFieldTime).nextAll("input")[0].value = formater.format(data.fromTime, timeType);
 	toField.value = formater.format(data.to, dateType);
-    if (isAllDayEvent && (isAllDayEvent == true)) gj(toFieldTime).parents('.UIComboboxComponent')[0].style.visibility= "hidden";
-    else toFieldTime.style.visibility = "visible";
 	toFieldTime.value = formater.format(data.toTime, timeType);
 	gj(toFieldTime).nextAll("input")[0].value = formater.format(data.toTime, timeType);
-	isAllday.checked = data.isAllday ;
+	isAllday.checked = isAllDayEvent;
+    if(isAllDayEvent) this.showHideTime(isAllday);
 	if(data.calendar)
 		for(i=0; i < calendar.options.length;  i++) {
 			var value = calendar.options[i].value ;
