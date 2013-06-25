@@ -515,7 +515,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       return false ;
     }
     if(from.after(to) || from.equals(to)){
-      errorMsg_ = "UIEventForm.msg.event-date-time-LOGic" ;
+      errorMsg_ = "UIEventForm.msg.event-date-time-logic" ;
       return false ;
     }
     errorMsg_ = null ;
