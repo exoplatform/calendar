@@ -266,15 +266,17 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     return CalendarUtils.canEdit(CalendarUtils.getOrganizationService(), savePerms, CalendarUtils.getCurrentUser()) ;
   }
   protected int getTimeShift(){
+    int defaultTime = 2;
 	  try {
 		  if("UIQuickAddEvent".equals(this.getId())) {
-			  return Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.event.suggest")); 
+		    defaultTime = Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.event.suggest")); 
 		  }else if("UIQuickAddTask".equals(this.getId())) {
-			  return Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.task.suggest"));   
+		    defaultTime = Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.task.suggest"));   
 		  }
 	  } catch (Exception e) {
+	    if("UIQuickAddTask".equals(this.getId())) defaultTime = 1;
 	  }
-	  return 2;
+	  return defaultTime;
   }
   static  public class SaveActionListener extends EventListener<UIQuickAddEvent> {
     @Override
