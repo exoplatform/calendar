@@ -3394,6 +3394,7 @@ UICalendarPortlet.prototype.dateSuggestion = function(isEdit, compid, timeShift)
     }
     form.on('click','a[href="#SelectDate"]', function() {_module.UICalendarPortlet.suggestDate(eFromDate, eToDate)});
     gj(eFromTime).prev().on('click','a.UIComboboxItem', function(){_module.UICalendarPortlet.suggestTime(isEdit, eFromDate, eToDate, eFromTime, eToTime, timeShift)});
+    gj(eToTime).prev().on('click','a.UIComboboxItem', function(){_module.UICalendarPortlet.updateShifTime(isEdit, eFromDate, eToDate, eFromTime, eToTime, timeShift)});
 }
 
 UICalendarPortlet.prototype.suggestTime = function(isEdit, eFromDate, eToDate, eFromTime, eToTime, timeShift){
@@ -3415,6 +3416,20 @@ UICalendarPortlet.prototype.suggestTime = function(isEdit, eFromDate, eToDate, e
     gj(eToTime).next('input.UIComboboxInput').val(value);
     _module.ScheduleSupport.syncTimeBetweenEventTabs();
     _module.ScheduleSupport.applyPeriod();
+};
+
+UICalendarPortlet.prototype.updateShifTime = function(isEdit, eFromDate, eToDate, eFromTime, eToTime, timeShift){
+    var format = gj(eFromDate).attr("format");
+    var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
+    var arr = eval(values);
+    var start = eFromTime.val(); 
+    var size = arr.length ;
+    var indexs = arr.indexOf(start); 
+    var end = eToTime.val();
+    var indexe = arr.indexOf(end); 
+    if(!isEdit && ((indexe - indexs) > timeShift)) {
+        this.timeShift = indexe - indexs;
+    }  
 };
 
 UICalendarPortlet.prototype.suggestDate = function(eFromDate, eToDate){
