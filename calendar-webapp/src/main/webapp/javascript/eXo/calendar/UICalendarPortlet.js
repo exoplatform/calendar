@@ -11,6 +11,7 @@ function UICalendarPortlet(){
     this.MINUTES_PER_PIXEL = this.MINUTE_PER_CELL / this.CELL_HEIGHT;
     this.originalHeightOfEventDayContent = null;
     this.timeShift = 0;
+    this.dayDiff = 0;
 }
 
 UICalendarPortlet.prototype.onLoad = function(param){
@@ -272,6 +273,7 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
  * @param {uiform, data} uifrom obj or id, data is array of value for each element of form
  */
 UICalendarPortlet.prototype.fillData = function(uiform, data, isAllDayEvent) {
+    this.dayDiff = this.dateDiff(data.from, data.to);
     uiform = (typeof uiform == "string") ? _module.UICalendarPortlet.getElementById(uiform):uiform;
     var fromField = uiform.elements["from"] ;
     var fromFieldTime = uiform.elements["fromTime"] ;
@@ -3404,12 +3406,11 @@ UICalendarPortlet.prototype.suggestTime = function(isEdit, eFromDate, eToDate, e
     var start = eFromTime.val(); 
     var size = arr.length ;
     var index = arr.indexOf(start); 
-    if(this.timeShift > 0) timeShift = this.timeShift;
     if((index + timeShift)>= size){
-         this.addDay(eFromDate, 1, eToDate, format);
+         this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
          value = arr[(index + timeShift) - (size -1)];
     } else {
-        this.addDay(eFromDate, 0, eToDate, format);
+        this.addDay(eFromDate, this.dayDiff, eToDate, format);
         value = arr[index+timeShift];
     }
     eToTime.val(value);
@@ -3436,7 +3437,7 @@ UICalendarPortlet.prototype.suggestDate = function(eFromDate, eToDate){
  var divCal = gj('div.uiCalendarComponent[relId="'+gj(eFromDate).attr('name')+'"]');
  if(divCal.length > 0){
      var format = gj(eFromDate).attr("format");
-     this.addDay(eFromDate,0, eToDate, format);
+     this.addDay(eFromDate,this.dayDiff, eToDate, format);
  }
 };
 
