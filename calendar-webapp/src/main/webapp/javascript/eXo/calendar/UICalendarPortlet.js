@@ -3404,23 +3404,14 @@ UICalendarPortlet.prototype.dateSuggestion = function(isNew, compid, timeShift){
     var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
     var arr = eval(values);
     if(isNew == "false") this.dayDiff = this.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
-
     if(compid == "UIEventForm"){
-        if( parseInt(timeShift) > 0)
-        this.timeShiftE = parseInt(timeShift);
-        else if(isNew == "false"){ 
         var fromIndex = arr.indexOf(eFromTime.val());
         var toIndex = arr.indexOf(eToTime.val()) ;
         this.timeShiftE = toIndex - fromIndex ;
-        }
     } else if(compid == "UITaskForm") {
-        if( parseInt(timeShift) > 0)
-        this.timeShiftT = parseInt(timeShift);
-        else if(isNew == "false"){ 
         var fromIndex = arr.indexOf(eFromTime.val());
         var toIndex = arr.indexOf(eToTime.val()) ;
-        this.timeShiftT = toIndex - fromIndex ;
-        }
+        this.timeShiftE = toIndex - fromIndex ;
     } else if(compid == "UIQuickAddEvent" ) {
         this.timeShiftE = parseInt(timeShift);
     } else if(compid == "UIQuickAddTask" ) {
@@ -3447,35 +3438,35 @@ UICalendarPortlet.prototype.suggestTime = function(compid, isNew, eFromDate, eTo
     var index = arr.indexOf(start); 
     if(compid == "UIEventForm"){
         if((index + this.timeShiftE)>= size){
-         this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
-         value = arr[(index + this.timeShiftE) - (size -1)];
+          this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
+          value = arr[(index + this.timeShiftE) - (size -1)];
         } else {
-        this.addDay(eFromDate, this.dayDiff, eToDate, format);
-        value = arr[index+this.timeShiftE];
+          this.addDay(eFromDate, this.dayDiff, eToDate, format);
+          value = arr[index+this.timeShiftE];
         }
     } else if(compid == "UITaskForm"){
         if((index + this.timeShiftT)>= size){
-         this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
-         value = arr[(index + this.timeShiftT) - (size -1)];
+          this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
+          value = arr[(index + this.timeShiftT) - (size -1)];
         } else {
-        this.addDay(eFromDate, this.dayDiff, eToDate, format);
-        value = arr[index+this.timeShiftT];
+          this.addDay(eFromDate, this.dayDiff, eToDate, format);
+          value = arr[index+this.timeShiftT];
         }
     } else if(compid == "UIQuickAddEvent"){ 
         if((index + this.timeShiftE)>= size){
-         this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
-         value = arr[(index + this.timeShiftE) - (size -1)];
+          this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
+          value = arr[(index + this.timeShiftE) - (size -1)];
         } else {
-        this.addDay(eFromDate, this.dayDiff, eToDate, format);
-        value = arr[index+this.timeShiftE];
+          this.addDay(eFromDate, this.dayDiff, eToDate, format);
+          value = arr[index+this.timeShiftE];
         }
     } else if(compid == "UIQuickAddTask") {
         if((index + this.timeShiftT)>= size){
-         this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
-         value = arr[(index + this.timeShiftT) - (size -1)];
+          this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
+          value = arr[(index + this.timeShiftT) - (size -1)];
         } else {
-        this.addDay(eFromDate, this.dayDiff, eToDate, format);
-        value = arr[index+this.timeShiftT];
+          this.addDay(eFromDate, this.dayDiff, eToDate, format);
+          value = arr[index+this.timeShiftT];
         }
     }
     eToTime.val(value);
@@ -3497,20 +3488,20 @@ UICalendarPortlet.prototype.updateShifTime = function(compid, isNew, eFromDate, 
     var end = eToTime.val();
     var indexe = arr.indexOf(end); 
     if(compid == "UIEventForm"){
-       if(isNew && ((indexe - indexs) > this.timeShiftE)) {
-        this.timeShiftE = indexe - indexs;
+       if((indexe - indexs) > 0) {
+         this.timeShiftE = indexe - indexs;
         }
     } else if(compid == "UITaskForm"){
-       if(isNew && ((indexe - indexs) > this.timeShiftT)) {
-        this.timeShiftT = indexe - indexs;
+       if((indexe - indexs) > 0) {
+         this.timeShiftT = indexe - indexs;
         }
     } else if(compid == "UIQuickAddEvent"){ 
-       if(isNew && ((indexe - indexs) > this.timeShiftE)) {
-        this.timeShiftE = indexe - indexs;
+       if((indexe - indexs) > 0) {
+         this.timeShiftE = indexe - indexs;
         }
     } else if(compid == "UIQuickAddTask") {
-        if(isNew && ((indexe - indexs) > this.timeShiftT)) {
-        this.timeShiftT = indexe - indexs;
+        if((indexe - indexs) > 0) {
+         this.timeShiftT = indexe - indexs;
         }
     }
 };
