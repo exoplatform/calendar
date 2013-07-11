@@ -1077,9 +1077,10 @@ UICalendarPortlet.prototype.scrollToActiveEventInListView = function(uiListConta
 /**
  * Show notification for Edit Calendar Popup
  */
-UICalendarPortlet.prototype.showEditCalNotif = function (calendarName, message) {
+UICalendarPortlet.prototype.showEditCalNotif = function (calendarName,userName,keyMsg1,keyMsg2) {
   var $notif = gj('#editCalendarNotification');
   $notif.find('.calendarName')[0].innerHTML = calendarName;
+  var message = $notif.find('div#msg1')[0].innerHTML +" <strong>" + userName + "</strong> " + $notif.find('div#msg2')[0].innerHTML;
   $notif.find('.message')[0].innerHTML = message;
   $notif.show().delay(5000).fadeOut();
 };
