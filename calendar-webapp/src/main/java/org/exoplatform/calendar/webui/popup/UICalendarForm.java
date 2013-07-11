@@ -761,10 +761,16 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
               listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event, notFoundUser);
             }
           }
-
           calendar.setGroups(groupsCalendarSet.toArray(new String[]{}));
-          calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
-          calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
+          if(listPermission.size() >0){
+            calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
+            calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
+          } else {
+            if(!CalendarUtils.isEmpty(notFoundUser.toString()))
+            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.can-not-delete-permission", null, AbstractApplicationMessage.WARNING)) ;
+            return ;
+          }
+          
         }
 
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
