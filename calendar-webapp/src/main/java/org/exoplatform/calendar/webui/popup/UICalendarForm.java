@@ -777,11 +777,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
           JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
           RequireJS requireJS = jsManager.getRequireJS();
           requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-          String message = CalendarUtils.getResourceBundle("UICalendarForm.label.editCalendarNotif.1", "You cannot set write permission to user(s)")
-              + " " + notFoundUser.substring(0, notFoundUser.lastIndexOf(","))
-              + " " + CalendarUtils.getResourceBundle("UICalendarForm.label.editCalendarNotif.2", "because they don't exist.");
-
-          requireJS.addScripts("cal.UICalendarPortlet.showEditCalNotif('" + calendar.getName() + "', '" + message + "');");
+          requireJS.addScripts("cal.UICalendarPortlet.showEditCalNotif('" + calendar.getName() + "','"+notFoundUser.substring(0, notFoundUser.lastIndexOf(","))+"');");
         }
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) {
