@@ -3411,7 +3411,7 @@ UICalendarPortlet.prototype.dateSuggestion = function(isNew, compid, timeShift){
     } else if(compid == "UITaskForm") {
         var fromIndex = arr.indexOf(eFromTime.val());
         var toIndex = arr.indexOf(eToTime.val()) ;
-        this.timeShiftE = toIndex - fromIndex ;
+        this.timeShiftT = toIndex - fromIndex ;
     } else if(compid == "UIQuickAddEvent" ) {
         this.timeShiftE = parseInt(timeShift);
     } else if(compid == "UIQuickAddTask" ) {
