@@ -432,6 +432,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           }
         }
       } catch (Exception e) {
+        log.info("build link error !");
       }
     return url;
   }
@@ -500,7 +501,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       }
       return "/" + handler + URLDecoder.decode(router.render(qualifiedName), "UTF-8");
     } catch (Exception e) {
-      e.printStackTrace();
       return null;
     }
   }
