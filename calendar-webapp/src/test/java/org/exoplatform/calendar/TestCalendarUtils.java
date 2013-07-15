@@ -1,18 +1,19 @@
 package org.exoplatform.calendar;
 
 
+import java.util.Locale;
+
 import junit.framework.TestCase;
 
 public class TestCalendarUtils extends TestCase {
   
+  //mvn test -Dtest=TestCalendarUtils#testGetLocationDisplayString
   public void testGetLocationDisplayString() {
     assertEquals("", CalendarUtils.getLocationDisplayString(""));
-    
     assertEquals("Viet nam", CalendarUtils.getLocationDisplayString("Viet nam"));
-    
-    String vietnamLocation = "Vietnam(Vietnamese)";
-    String countryname = "VNM";
-    
+    Locale locale = Locale.FRANCE;
+    String vietnamLocation = locale.getDisplayCountry() + "(" + locale.getDisplayLanguage() + ")";
+    String countryname = locale.getISO3Country();
     assertEquals(vietnamLocation, CalendarUtils.getLocationDisplayString(countryname));
   }
   
