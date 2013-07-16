@@ -763,14 +763,22 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
           }
           calendar.setGroups(groupsCalendarSet.toArray(new String[]{}));
           if(listPermission.size() >0){
-          calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
-          calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
+            calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
+            calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
           } else {
-            if(!CalendarUtils.isEmpty(notFoundUser.toString()))
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.can-not-delete-permission", null, AbstractApplicationMessage.WARNING)) ;
-            return ;
+            UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
+            if(!CalendarUtils.isEmpty(notFoundUser.toString())) {
+              for(String groupId : groupsCalendarSet) {
+                String groupName = orgService.getGroupHandler().findGroupById(groupId).getLabel();
+                if(groupName == null) orgService.getGroupHandler().findGroupById(groupId).getGroupName();
+                String typedPerms = sharedTab.getUIStringInput(groupId + PERMISSION_SUB).getValue();
+                if(!typedPerms.isEmpty())
+                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.users-not-on-group", new Object[]{typedPerms.trim(), groupName}, AbstractApplicationMessage.WARNING)) ;
+              }
+              return ;
+            }
           }
-          
+
         }
 
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -853,7 +861,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     }
 
     return listPermission;
-  }
+                                            }
 
   static  public class CancelActionListener extends EventListener<UICalendarForm> {
     @Override
