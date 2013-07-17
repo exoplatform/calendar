@@ -3419,7 +3419,7 @@ UICalendarPortlet.prototype.dateSuggestion = function(isNew, compid, timeShift){
     }
     form.on('click','a[href="#SelectDate"]', function() {_module.UICalendarPortlet.suggestDate(eFromDate, eToDate)});
     eFromDate.on('blur', function() {_module.UICalendarPortlet.suggestDate(eFromDate, eToDate)});
-
+    eToDate.on('blur', function() {_module.UICalendarPortlet.suggestDate(eFromDate, eToDate)});
     gj(eFromTime).prev().on('click','a.UIComboboxItem', function(){_module.UICalendarPortlet.suggestTime(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift)});
     gj(eFromTime).next().on('keydown', function(event){_module.UICalendarPortlet.suggestTime(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift, event)});
     gj(eToTime).prev().on('click','a.UIComboboxItem', function(){_module.UICalendarPortlet.updateShifTime(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift)});
@@ -3512,6 +3512,11 @@ UICalendarPortlet.prototype.suggestDate = function(eFromDate, eToDate){
      var format = gj(eFromDate).attr("format");
      this.addDay(eFromDate,this.dayDiff, eToDate, format);
  }
+ var endDivCal = gj('div.uiCalendarComponent[relId="'+gj(eToDate).attr('name')+'"]');
+ if (endDivCal.length > 0) {
+    var dayDiff = this.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
+    if(dayDiff >= 0) this.dayDiff = dayDiff;
+ };
 };
 
 UICalendarPortlet.prototype.addDay = function(eFromDate, dayNum, eToDate, datePattern) {
