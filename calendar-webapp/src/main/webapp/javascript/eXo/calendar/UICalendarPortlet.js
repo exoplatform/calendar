@@ -315,7 +315,7 @@ UICalendarPortlet.prototype.fillData = function(uiform, data, isAllDayEvent) {
     toFieldTime.value = formater.format(data.toTime, timeType);
     gj(toFieldTime).nextAll("input")[0].value = formater.format(data.toTime, timeType);
     isAllday.checked = isAllDayEvent;
-    if(isAllDayEvent) this.showHideTime(isAllday);
+    this.showHideTime(isAllday);
     if(data.calendar)
         for(i=0; i < calendar.options.length;  i++) {
             var value = calendar.options[i].value ;
