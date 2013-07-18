@@ -76,7 +76,7 @@
 					<property name="job"
 						value="org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob" />
 					<property name="repeatCount" value="0" />
-					<property name="period" value="${calendar.remote.synchronization.period:1800000}" /> <!-- default 30 minutes -->
+					<property name="period" value="${calendar.remote.synchronization.period:7200000}" /> <!-- default 120 minutes -->
 					<property name="startTime" value="+60000" />
 					<property name="endTime" value="" />
 				</properties-param>
