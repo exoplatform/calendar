@@ -999,6 +999,8 @@ GUIMan.prototype.showMore = function(evt) {
     var GUIMan = _module.UICalendarMan.GUIMan;
 
     var moreEventContainer = gj(moreNode).nextAll('div')[0];
+    gj(moreEventContainer).find('div.dayContentContainer').on('mouseover', eXo.calendar.EventTooltip.show)
+    .on('mouseout', eXo.calendar.EventTooltip.hide);
     if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
     cs.CSUtils.EventManager.cancelBubble(evt);
     GUIMan.hideMore(evt);
