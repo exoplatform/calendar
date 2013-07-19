@@ -52,7 +52,7 @@
 	                %>
 	                </div>
 		                 <div class="textLabel">
-		                <%=field.getLabel();%>
+		                <%=_ctx.appRes("UIRepeatEventForm.label." + CalendarEvent.RP_WEEKLY_BYDAY[i])%>
 		                 </div>	                
 	                 </div>
 	                <%
