@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -264,7 +265,19 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   public boolean canEdit(String[] savePerms) throws Exception{
     return CalendarUtils.canEdit(CalendarUtils.getOrganizationService(), savePerms, CalendarUtils.getCurrentUser()) ;
   }
-  
+  protected int getTimeShift(){
+    int defaultTime = 2;
+	  try {
+		  if("UIQuickAddEvent".equals(this.getId())) {
+		    defaultTime = Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.event.suggest")); 
+		  }else if("UIQuickAddTask".equals(this.getId())) {
+		    defaultTime = Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.task.suggest"));   
+		  }
+	  } catch (Exception e) {
+	    if("UIQuickAddTask".equals(this.getId())) defaultTime = 1;
+	  }
+	  return defaultTime;
+  }
   static  public class SaveActionListener extends EventListener<UIQuickAddEvent> {
     @Override
     public void execute(Event<UIQuickAddEvent> event) throws Exception {

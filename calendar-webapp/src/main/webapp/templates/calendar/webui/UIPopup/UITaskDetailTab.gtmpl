@@ -1,5 +1,5 @@
 <%
-  uiForm = uicomponent.getParentFrom() ;
+  uiForm = uicomponent.getParentFrom();
   private void renderActions(String fieldKey) {
     def actions = uicomponent.getActionField(fieldKey) ;
     if(actions != null) {
@@ -41,9 +41,9 @@
   def requireJS = rcontext.getJavascriptManager().getRequireJS();
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.require("SHARED/jquery","gj");
-  requireJS.addScripts('cal.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
+  requireJS.addScripts('cal.UICalendarPortlet.initDetailTab("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
   requireJS.addScripts("gj('#UITaskDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
-//  rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
+  requireJS.addScripts("cal.UICalendarPortlet.dateSuggestion('"+uiForm.isAddNew_+"','"+uiForm.id+"','0');");
   %>
 <div id="$uicomponent.id" class="uiAddNewEvent taskDetailTab">
   <div class="form-horizontal">

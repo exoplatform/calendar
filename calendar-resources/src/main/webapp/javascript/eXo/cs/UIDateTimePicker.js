@@ -180,7 +180,8 @@ this.renderCalendar = function() {
   var daysInMonth = this.getDaysInMonth(this.currentDate.getFullYear(), this.currentDate.getMonth()) ;
   var clazz = null;
   var table = '<div id="blockCaledar"><span></span></div>' ;
-  table +=    '<div class="uiCalendarComponent uiBox" onmousedown="event.cancelBubble = true">';
+  table += '<div ' + 'relId=' + gj(this.dateField).attr('name');
+  table += ' class="uiCalendarComponent uiBox" onmousedown="event.cancelBubble = true">';
   table += '<h5 class="title clearfix">';
   table += '<a data-placement="right" rel="tooltip" onclick="eXo.cs.UIDateTimePicker.changeMonth(-1);" class="actionIcon pull-left" data-original-title="'+ this.tooltip[1]+ '"><i class="uiIconMiniArrowLeft uiIconLightGray"></i></a>';
   table += '<span>'+ this.months[this.currentDate.getMonth()] +', '+ this.currentDate.getFullYear() + '</span>';
