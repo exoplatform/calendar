@@ -425,12 +425,12 @@ EventMan.prototype.initMonth = function(rootNode){
         if (allEvents[i].style.display == 'none') {
             continue;
         }
-
         var eventObj = new EventObject();
-        gj(allEvents[i]).on({'mouseover':eXo.calendar.EventTooltip.show, 'mouseout':eXo.calendar.EventTooltip.hide});
         eventObj.init(allEvents[i]);
         this.events.push(eventObj);
     }
+    gj(allEvents).on('mouseover',eXo.calendar.EventTooltip.show).on('mouseout',eXo.calendar.EventTooltip.hide);
+    gj(allEvents).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
 
     this.UIMonthViewGrid = document.getElementById('UIMonthViewGrid');
 
@@ -457,6 +457,7 @@ EventMan.prototype.initMonth = function(rootNode){
 
         EventMan.resizeWidth(rowContainerDay);
     });
+
 };
 
 /**
@@ -561,6 +562,7 @@ EventMan.prototype.initWeek = function(rootNode) {
     }
     var eventObj = new EventObject();
     eventObj.init(allEvents[i]);
+    gj(allEvents[i]).on({'mouseover':eXo.calendar.EventTooltip.show, 'mouseout':eXo.calendar.EventTooltip.hide});
     this.events.push(eventObj);
   }
   var table = gj(this.rootNode).prevAll('table')[0]; 
@@ -636,7 +638,7 @@ GUIMan.prototype.initMonth = function(){
   for (var i=0; i<events.length; i++) {
     var eventObj = events[i];
     var eventLabelNode = gj(eventObj.rootNode).find('div.EventLabel')[0];
-    eventObj.rootNode.setAttribute('title', eventObj.name);
+    //eventObj.rootNode.setAttribute('title', eventObj.name);
     eventObj.rootNode.setAttribute('used', 'false');
   }
   this.rowContainerDay = gj(_module.UICalendarMan.EventMan.rootNode).find('div.rowContainerDay')[0];
@@ -799,9 +801,10 @@ GUIMan.prototype.initDND = function() {
     var eventNode = events[i].rootNode;
     var checkbox = gj(eventNode).find('input.checkbox')[0]; 
     if (checkbox) {
-    	gj(checkbox).on({'mousedown':this.cancelEvent,'click':cs.CSUtils.EventManager.cancelBubble});
+    	gj(checkbox).on('mousedown',this.cancelEvent).on('click',cs.CSUtils.EventManager.cancelBubble);
     }
-    eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
+    gj(eventNode).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
+    gj(eventNode).on('mouseover',eXo.calendar.EventTooltip.show).on('mouseout',eXo.calendar.EventTooltip.hide);
   }
   eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
   eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
@@ -1114,6 +1117,11 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
     eventNode.setAttribute('endTime',endTime);
     eventObj.init(eventNode);
     this.setOverMonth(eventObj,dayInfo.beginMonth,dayInfo.endMonth);
+    eXo.calendar.UICalendarPortlet.viewType = "UIMonthView" ;
+  
+   
+  eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
+  eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
 };
 
 GUIMan.prototype.setOverMonth = function(eventObj,beginMonth,endMonth){
@@ -1181,7 +1189,6 @@ GUIMan.prototype.initHighlighter = function() {
   for(var i=0 ; i<this.tableData.length; i++) {
     var row = this.tableData[i];
     for (var j=0; j<row.length; j++) {
-//      row[j].onmousedown = eXo.calendar.Highlighter.start ;
     	gj(row[j]).on('mousedown',eXo.calendar.Highlighter.start);
     }
   }
