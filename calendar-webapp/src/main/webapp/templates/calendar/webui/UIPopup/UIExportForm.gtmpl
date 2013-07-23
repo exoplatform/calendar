@@ -1,4 +1,9 @@
-<% String fieldName; %>
+<% String fieldName; 
+  def rcontext = _ctx.getRequestContext() ;  
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+uicomponent.id+"');");
+%>
 <div class="uiExportForm ">
   <%uiform.begin()%>
   <div class="form-horizontal resizable">
