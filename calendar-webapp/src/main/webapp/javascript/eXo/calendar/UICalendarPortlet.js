@@ -244,6 +244,7 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     	uiPopupWindow.show("UIQuickAddTaskPopupWindow");
     	uiPopup.hide("UIQuickAddEventPopupWindow");
     }
+    gj('input#eventName').focus(); //autofocus the event summary input field
 } ;
 /**
  * fill data to quick event/task form
@@ -3354,6 +3355,21 @@ UICalendarPortlet.prototype.loadMenu = function(){
     }   
 };
 
+//CAL-626 : autofocus the first input
+//because 'autofocus' attribute is not supported in IE9, we must use js to do this
+UICalendarPortlet.prototype.autoFocusFirstInput = function(formId) {
+	inputs = gj('#'+formId).find('input[type="text"]');
+	textareas = gj('#'+formId).find('textarea');
+	//get the first input
+	input = (inputs.length > 0 ) ? inputs.eq(0) : textareas.eq(0); //input text has higher priority than text area
+
+	if(input.length > 0) {
+		input.focus();//focus
+		tmp = input.val();
+		input.val('');
+		input.val(tmp); //move the cursor to the end 
+	}     
+}
 
 Highlighter = window.require("SHARED/Highlighter");
 _module.Highlighter = Highlighter.Highlighter;

@@ -5,10 +5,11 @@
   import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 
   def rcontext = _ctx.getRequestContext() ;
-  def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   requirejs.require("SHARED/jquery","gj");
-
+  requirejs.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+uicomponent.id+"');");
+  
   parent = uicomponent.getParent();
 
   private void renderActions(String fieldKey) {

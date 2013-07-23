@@ -10,7 +10,8 @@
   requireJS.addScripts("gj('input#"+uicomponent.EVENT_CATEGORY_NAME+"').keyup(function() {cal.UICalendarPortlet.checkEventCategoryName('"+uicomponent.EVENT_CATEGORY_NAME+"');});");
   // calls the function UICalendarPortlet.checkEventCategoryName for initial check
   requireJS.addScripts("cal.UICalendarPortlet.checkEventCategoryName('"+uicomponent.EVENT_CATEGORY_NAME+"');");
-
+  requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+uicomponent.id+"');");
+  
   String updateLabel = _ctx.appRes(uicomponent.getName() + ".action.Update");
   String addLabel = _ctx.appRes(uicomponent.getName() + ".action.Add");
   String closeLabel = _ctx.appRes(uicomponent.getName() + ".action.Cancel");
