@@ -891,7 +891,11 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	}
 	dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * i);
 	this.drawEventByDay(eventObj, startTime, endTime, dayInfo);
-    }
+    gj(eventObj.rootNode).on('mouseover', eXo.calendar.EventTooltip.show).on('mouseout', eXo.calendar.EventTooltip.hide);
+    gj(eventObj.rootNode).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
+    eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
+    eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
+ }
     // Draw invisible events (put all into more)
     if (dayObj.invisibleGroup.length > 0) {
 	var moreNode = document.createElement('div');
@@ -1054,7 +1058,7 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
     if (eventNode.getAttribute('used') == 'true') {
 	eventNode = eventNode.cloneNode(true);
 	eventNode.setAttribute('eventclone', 'true');
-	eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
+	
 	// Remove checkbox on clone event
 	try {
 	    var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
@@ -1118,10 +1122,6 @@ GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo
     eventObj.init(eventNode);
     this.setOverMonth(eventObj,dayInfo.beginMonth,dayInfo.endMonth);
     eXo.calendar.UICalendarPortlet.viewType = "UIMonthView" ;
-  
-   
-  eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
-  eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
 };
 
 GUIMan.prototype.setOverMonth = function(eventObj,beginMonth,endMonth){
