@@ -134,7 +134,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
   public static final String INPUT_PERMISSION_OWNER = "PermissionOwnerInput";
 
-  public static final String INPUT_PERMISSION_OWNER_LABEL = "Select recipient";
+  public static String INPUT_PERMISSION_OWNER_LABEL = "Select recipient";
 
   /* define a button type for action data */
   public static final int    TYPE_BUTTON = 5;
@@ -186,7 +186,8 @@ public class UISharedForm extends UIForm implements UIPopupComponent
     /* a form containing button and input for selecting permission */
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
     ResourceBundle res = context.getApplicationResourceBundle();
-    addUIFormInput(new UIFormStringInput(INPUT_PERMISSION_OWNER, null, res.getString("UISharedForm.label.UIPermissionOwnerInput")));
+    INPUT_PERMISSION_OWNER_LABEL = res.getString("UISharedForm.label.UIPermissionOwnerInput");
+    addUIFormInput(new UIFormStringInput(INPUT_PERMISSION_OWNER, null, INPUT_PERMISSION_OWNER_LABEL));
     setActionField(INPUT_PERMISSION_OWNER, actions);
 
     addPopupWindow();
