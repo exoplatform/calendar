@@ -190,7 +190,6 @@ Highlighter.prototype.execute = function(evt) {
 		if(len == 0) {
 			var diff = cPos.x - sPos.x ;
 			startBlock = Highlighter.startBlock ;
-			//Highlighter.hideAll() ;
 			if (diff > 0) {
 				Highlighter.reserveDirection(Highlighter.startCell, Highlighter.container,startBlock) ;
 				startBlock.style.width = (diff + 1)*Highlighter.dimension.x + "px" ;
@@ -204,7 +203,7 @@ Highlighter.prototype.execute = function(evt) {
 			}
 			
 		} else {
-			if (len >= 0) {
+			if (len > 0) {
 				startIndex = sPos.y ;
 				lastIndex = startIndex + len ;
 				startBlock = Highlighter.startBlock ;
@@ -230,7 +229,7 @@ Highlighter.prototype.execute = function(evt) {
 				Highlighter.reserveDirection(Highlighter.currentCell, Highlighter.container,startBlock) ;
 			}
 			startBlock.style.display = "block" ;
-			startBlock.style.top = startY  + gj('.uiMonthView').scrollTop() + "px" ;
+			startBlock.style.top = startY + gj('.rowContainerDay').scrollTop() + "px" ;
 			startBlock.style.width = startWidth + "px" ;
 			startBlock.style.height = Highlighter.dimension.y + "px" ;
 			if(Math.abs(len) >= 1) {
@@ -260,7 +259,10 @@ Highlighter.prototype.execute = function(evt) {
  */
 Highlighter.prototype.end = function(evt) {
 	var Highlighter = _module.Highlighter;
-	if (Highlighter.callback) eval(Highlighter.callback) ;
+	if (Highlighter.callback) {
+		eval(Highlighter.callback) ;
+		_module.Highlighter.hideAll();		
+	}
 	gj(document).off("mousemove mouseup");
     if (Highlighter.startBlock) {
         Highlighter.startBlock.style.display = "none";
