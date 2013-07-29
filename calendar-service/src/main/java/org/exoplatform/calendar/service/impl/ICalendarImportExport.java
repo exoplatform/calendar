@@ -302,7 +302,6 @@ public class ICalendarImportExport implements CalendarImportExport {
       output.output(calendar, bout);
     } catch (ValidationException e) {
       if (logger.isDebugEnabled()) {
-        e.printStackTrace();
         logger.debug("Validate error", e);
       }
       return null;

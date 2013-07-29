@@ -761,10 +761,16 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
               listPermission = getPermissions(listPermission, typedPerms, orgService, groupId, groupKey, event, notFoundUser);
             }
           }
-
           calendar.setGroups(groupsCalendarSet.toArray(new String[]{}));
+          if(listPermission.size() >0){
           calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
           calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
+          } else {
+            if(!CalendarUtils.isEmpty(notFoundUser.toString()))
+            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.can-not-delete-permission", null, AbstractApplicationMessage.WARNING)) ;
+            return ;
+          }
+          
         }
 
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -777,11 +783,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
           JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
           RequireJS requireJS = jsManager.getRequireJS();
           requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-          String message = CalendarUtils.getResourceBundle("UICalendarForm.label.editCalendarNotif.1", "You cannot set write permission to user(s)")
-              + " " + notFoundUser.substring(0, notFoundUser.lastIndexOf(","))
-              + " " + CalendarUtils.getResourceBundle("UICalendarForm.label.editCalendarNotif.2", "because they don't exist.");
-
-          requireJS.addScripts("cal.UICalendarPortlet.showEditCalNotif('" + calendar.getName() + "', '" + message + "');");
+          requireJS.addScripts("cal.UICalendarPortlet.showEditCalNotif('" + calendar.getName() + "','"+notFoundUser.substring(0, notFoundUser.lastIndexOf(","))+"');");
         }
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) {
