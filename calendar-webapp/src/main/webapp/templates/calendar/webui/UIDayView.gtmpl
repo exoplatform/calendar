@@ -92,7 +92,7 @@
 						  <%if(!uicomponent.isSameDate(ce.getToDateTime(), uicomponent.calendar_.getTime())){%>
 							<div class="rightContinueEvent pull-right $color"><i class="uiIconMiniArrowRight uiIconWhite"></i></div>
 						  <%}%>
-						  <div class="eventContainer $color" rel="tooltip" data-placement="bottom" title="<%=dtf.format(ce.getFromDateTime())%>:-><%=dtf.format(ce.getToDateTime())%>">
+						  <div class="eventContainer $color">
 							<%=ce.getSummary()%>
 						  </div>
 						</div>
@@ -179,7 +179,7 @@
 							</div>
 							<!---- DISPLAYING EVENT SUMMARY ---->
 							<% if ( (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (ce.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
-							<!-- if the element is of type TASK check whether it's completed -->
+							<!-- if the element is of type TASK check whether its completed -->
 							<div class="eventContainer " style="text-decoration:line-through;">
 							  <%=ce.getSummary()%>
 							</div>
@@ -205,7 +205,7 @@
 							</div>
 							<!---- DISPLAYING EVENT SUMMARY ---->
 							<% if ( (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (ce.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
-							<!-- if the element is of type TASK check whether it's completed -->
+							<!-- if the element is of type TASK check whether its completed -->
 							<div class="eventContainer" style=" text-decoration:line-through; ">
 							  <%=ce.getSummary()%>
 							</div>
