@@ -175,11 +175,19 @@
 	.uiGrid.table tr td {					
 		font-size: 12px;
 	}
-	.resizeButton  [class^="uiIcon"]{
-		position: absolute;
-		top: 50%;
-		right: -3px;
-		cursor: pointer;
+	.uiBox {
+		&.uiWeekView,&.uiDayView,&.uiMonthView ,&.uiListContainer {
+		    margin-bottom:0;
+		}
+	}
+
+	.resizeButton {
+	 	height: 16px;
+	 	top:50%;
+	 	margin-top: -8px;
+	 	left: -18px;
+	 	position: absolute;
+	 	cursor: pointer;
 	}
 }
 
