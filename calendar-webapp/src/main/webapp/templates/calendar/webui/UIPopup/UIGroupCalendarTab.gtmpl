@@ -7,9 +7,9 @@
   def addGroupInput  = uicomponent.getChildById(uiCalendarForm.ADD_GROUP_INPUT);
   def calendarGroups = uicomponent.groupsList.toArray();
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  def placeHolder = _ctx.appRes("UICalendarForm.label.AddGroupInput");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('#AddGroupInput').click(function() { if (gj('#AddGroupInput').attr('value') === 'Select Group') { gj('#AddGroupInput').attr('value', ''); } });");
-  requirejs.addScripts("gj('#AddGroupInput').blur(function() { var value = gj('#AddGroupInput').attr('value'); if ((value == null) || (value === '')) { gj('#AddGroupInput').attr('value', 'Select Group'); } });");
+  requirejs.addScripts("gj('#AddGroupInput').attr('placeholder','" + placeHolder +"');");
 
   private void renderActions(String fieldKey) {
 	  def uiCalendarForm = uicomponent.getParentFrom() ;
@@ -90,23 +90,28 @@
 	    </tr>
       </thead>
 	  <tbody>
-
-      <% for (String groupId : calendarGroups) { %>
-        <tr>
-          <td><%=uicomponent.truncateGroupId(groupId) %></td>
-	      <td class="inputLarge vertical-align">
-	      <% if(uicomponent.getChildById(groupId+uiCalendarForm.PERMISSION_SUB) != null) {
-             uiCalendarForm.renderField(groupId+uiCalendarForm.PERMISSION_SUB) ;
-          } else { %>
-            &nbsp;
-          <% } %>
-          </td>
-          <td class="center actionContainer">
-            <% renderActions(groupId+uiCalendarForm.PERMISSION_SUB); %>
-          </td>
-        </tr>
-      <% } %>
-    </tbody>
+      <% if(calendarGroups.length == 0) {
+      %> <tr>
+          <td class='empty center' colspan='3'><%= _ctx.appRes("UICalendarForm.label.noGroupSelected") %></td>
+          </tr> 
+      <% } else {
+            for (String groupId : calendarGroups) { %>
+              <tr>
+              <td><%=uicomponent.truncateGroupId(groupId) %></td>
+	          <td class="inputLarge vertical-align">
+	          <% if(uicomponent.getChildById(groupId+uiCalendarForm.PERMISSION_SUB) != null) {
+                   uiCalendarForm.renderField(groupId+uiCalendarForm.PERMISSION_SUB) ;
+                 } else { %>
+              &nbsp;
+                <% } %>
+              </td>
+              <td class="center actionContainer">
+              <% renderActions(groupId+uiCalendarForm.PERMISSION_SUB); %>
+              </td>
+              </tr>
+        <% } 
+       } %>
+      </tbody>
   </table>
 	<div class="addGroup">
 		<span class="inputMedium"><% uiCalendarForm.renderField(addGroupInput); %></span>
