@@ -103,7 +103,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   public static final String ADD_GROUP_INPUT = "AddGroupInput";
 
-  public static final String ADD_GROUP_INPUT_LABEL = "Select Group";
+  public static final String ADD_GROUP_INPUT_LABEL = "";
 
   public static final String OPEN_SELECT_GROUP_FORM = "OpenSelectGroupForm";
 
@@ -536,7 +536,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
       UIGroupSelector uiGroupSelector = uiForm.createUIComponent(UIGroupSelector.class, null, null);
       uiGroupSelector.setType(permType) ;
-
       String groupId = value.split(CalendarUtils.COLON)[1].split(PERMISSION_SUB)[0] ;
       uiGroupSelector.setSelectedGroups(uiForm.getSelectedGroups(groupId)) ;
       uiGroupSelector.changeGroup(groupId) ;
