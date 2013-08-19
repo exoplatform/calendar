@@ -258,7 +258,7 @@ eXoEventGadget.prototype.swapClass = function(obj){
 }
 eXoEventGadget.prototype.notify = function(){
 	var msg = gadgets.Prefs().getMsg("noevent");
-	document.getElementById("ItemContainer").innerHTML = '<div class="Warning">' + msg + '</div>';
+	document.getElementById("ItemContainer").innerHTML = '<div class="light_message">' + msg + '</div>';
 	eXoEventGadget.setLink();
 }
 
