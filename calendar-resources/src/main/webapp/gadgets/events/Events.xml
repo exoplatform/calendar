@@ -17,6 +17,9 @@
   <UserPref name="setting" default_value="/calendar;/rest/cs/calendar/getissues;10;AM/PM;Default" datatype="hidden" />
   <Content type="html">
     <![CDATA[
+      <link rel="stylesheet" type="text/css" href="/eXoResources/skin/bootstrap/css/bootstrap.css" />    
+      <link rel="stylesheet" type="text/css" href="/eXoResources/skin/css/Core.css" />
+      <link type="text/css" rel="stylesheet" href="/exo-gadget-resources/skin/exo-gadget/gadget-common.css" />
       <link rel="stylesheet" href="skin/events.css" type="text/css"/>
       <script type="text/javascript" src="skin/events.js"></script>
       <form id="Setting" onSubmit="return eXoEventGadget.saveSetting();" action="#" style="display:none;">
@@ -58,17 +61,17 @@
         </tr>
       </table>
       </form>
-      <div class="UIGadgetThemes UIYellowThemes">
-        <div class="TitGad ClearFix">
-          <a href="#demo" class="IconDropDown" id="ShowAll" target="_blank">__MSG_showall__</a>
-          <div class="SettingButton" id="SettingButton" title="__MSG_setting__">
-            <a href="javascript:eXoEventGadget.showHideSetting(true);"><span></span></a>
+      <div class="UIGadgetThemes uiBox">
+        <h6 class="title left">
+          __MSG_title__
+          <div class="actionIcon pull-right setting" id="SettingButton" title="__MSG_setting__">
+            <a class="uiIconSetting uiIconLightGray" href="javascript:eXoEventGadget.showHideSetting(true);"><span></span></a>
           </div>
-          <div class="ContTit">__MSG_title__</div>
-        </div>
-        <div class="GadCont UpcomingEvents" id="ItemContainer">
+          <a href="#demo" class="btn btn-primary btn-mini pull-right" id="ShowAll" target="_blank">__MSG_showall__</a>
+        </h6>
+        <div class="uiContentBox UpcomingEvents" id="ItemContainer">
           <!--
-          <a href="#demo" class="IconLink">09:00<span>Daily Meeting</span></a>
+          <a href="#demo" class="IconLink"><i class="uiIconMiniArrowRight uiIconLightGray caretIcon"></i>09:00<span>Daily Meeting</span></a>
           -->
         </div>
       </div>
