@@ -70,7 +70,6 @@
 			else groups += params[i] + ',';
 		}
 		var label = popup.find('.resourceBundle').find('.' + type).text();
-		console.log(label);
 		label = label.replace("{0}","<strong>" + calendarName + "</strong>");
 		label += "<br/>" + groups;
 		popup.find('.notificationBox').html(label);

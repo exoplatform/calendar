@@ -39,7 +39,6 @@ CalendarLayout.prototype.init = function() {
 
     if ((leftNavHeight !== null) && (leftNavContHeight !== null)) {
         if (leftNavContHeight > leftNavHeight) {
-            console.log("container height > left nav");
             if (gj.browser.mozilla) resizedHeight += 12;
             gj(leftNavCont).css('height', resizedHeight + 'px');
         }

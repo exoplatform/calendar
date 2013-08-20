@@ -3637,7 +3637,7 @@ UICalendarPortlet.prototype.dateParses = function(dateFieldValue, pattern) {
     currentDate.setMonth(monthValue);
     currentDate.setYear(yearValue);
     return currentDate;
-
+}
 //CAL-626 : autofocus the first input
 //because 'autofocus' attribute is not supported in IE9, we must use js to do this
 UICalendarPortlet.prototype.autoFocusFirstInput = function(formId) {
