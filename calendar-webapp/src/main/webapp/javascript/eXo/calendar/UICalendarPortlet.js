@@ -3187,6 +3187,11 @@ eXo.calendar.EventTooltip = {
         x += extraX;
         this._container.style.left = x + "px";
         }
+        if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
+             gj(this._container).removeClass("top").addClass("left");
+             this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
+             this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
+        }
     }   
 }
 
@@ -3641,17 +3646,17 @@ UICalendarPortlet.prototype.dateParses = function(dateFieldValue, pattern) {
 //CAL-626 : autofocus the first input
 //because 'autofocus' attribute is not supported in IE9, we must use js to do this
 UICalendarPortlet.prototype.autoFocusFirstInput = function(formId) {
-	inputs = gj('#'+formId).find('input[type="text"]');
-	textareas = gj('#'+formId).find('textarea');
-	//get the first input
-	input = (inputs.length > 0 ) ? inputs.eq(0) : textareas.eq(0); //input text has higher priority than text area
+    inputs = gj('#'+formId).find('input[type="text"]');
+    textareas = gj('#'+formId).find('textarea');
+    //get the first input
+    input = (inputs.length > 0 ) ? inputs.eq(0) : textareas.eq(0); //input text has higher priority than text area
 
-	if(input.length > 0) {
-		input.focus();//focus
-		tmp = input.val();
-		input.val('');
-		input.val(tmp); //move the cursor to the end 
-	}
+    if(input.length > 0) {
+        input.focus();//focus
+        tmp = input.val();
+        input.val('');
+        input.val(tmp); //move the cursor to the end 
+    }
 }
 
 Highlighter = window.require("SHARED/Highlighter");
