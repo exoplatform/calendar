@@ -1735,7 +1735,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       String theDay = ""; // in monthly by day, it's Monday, Tuesday, ... (day of week), in monthly by monthday, it's 1-31 (day of month)
       if (monthlyType.equals(UIRepeatEventForm.RP_MONTHLY_BYDAY)) {
         java.util.Calendar temp = CalendarUtils.getInstanceOfCurrentCalendar();
-        temp.setTime(repeatEvent.getFromDateTime());
+        temp.setFirstDayOfWeek(1);
+        temp.setTime(repeatEvent.getFromDateTime());        
         int weekOfMonth = temp.get(java.util.Calendar.WEEK_OF_MONTH);
         java.util.Calendar temp2 = CalendarUtils.getInstanceOfCurrentCalendar();
         temp2.setTime(temp.getTime());
