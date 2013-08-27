@@ -16,6 +16,7 @@
  */
 package org.exoplatform.calendar.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -728,4 +729,9 @@ public interface DataStorage {
   public void setCalDavResourceEtag(String username, String calendarId, String eventId, String etag) throws Exception;
   
   public Calendar getCalendarById(String calId) throws Exception;
+  
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,java.util.Calendar from, java.util.Calendar to, String userId);
+  
+  public Collection<CalendarEvent> buildSeriesByTime(CalendarEvent originEvent,java.util.Calendar from, java.util.Calendar to, String userId);
+  
 }

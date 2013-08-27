@@ -16,8 +16,11 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -83,7 +86,7 @@ import org.quartz.impl.triggers.SimpleTriggerImpl;
 public class CalendarServiceImpl implements CalendarService, Startable {
 
   private final AtomicBoolean                 isRBLoaded_           = new AtomicBoolean(); 
-  
+
   private ResourceBundle                      rb_;
 
   private ResourceBundleService               rbs_;
@@ -114,7 +117,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public JCRDataStorage getDataStorage() {
     return storage_;
   } 
-  
+
   /**
    * {@inheritDoc}
    */
@@ -443,7 +446,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         }
       }
     }
-    
+
     if (!fromType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) ) {
       for(CalendarEventListener cel : eventListeners_) {
         for (CalendarEvent event : calEvents) {
@@ -562,7 +565,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     if (defaultCalendarSetting_ != null) {
       saveCalendarSetting(userName, defaultCalendarSetting_);
     }
-    
+
     Object[] groupsOfUser = organizationService.getGroupHandler().findGroupsOfUser(userName).toArray();
     List<String> groups = new ArrayList<String>();
     for (Object object : groupsOfUser) {
@@ -793,7 +796,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         }
       }
     }
-    
+
   }
 
   /*
@@ -846,7 +849,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         cel.updatePublicEvent(occurrence, repetitiveEvent, repetitiveEvent.getCalendarId());
       }
     }
-    
+
   }
 
   /**
@@ -896,13 +899,13 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         newSharedGroups.add(group);
       }
     }
-    
+
     if(newSharedGroups.size() > 0) {
       JobDetailImpl job = new JobDetailImpl();
       job.setName(jobInfo.getJobName());
       job.setGroup(jobInfo.getGroupName());
       job.setJobClass(jobInfo.getJob());
-      
+
       job.setDescription(jobInfo.getDescription());
       job.getJobDataMap().put(Utils.SHARED_GROUPS, newSharedGroups);
       job.getJobDataMap().put(Utils.USER_NAME, username);
@@ -923,12 +926,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception {
     JobSchedulerServiceImpl  schedulerService_ = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().getComponentInstance(JobSchedulerService.class) ;
     JobInfo jobInfo = new JobInfo(unsharedGroups.toString(), Utils.DELETE_SHARED_GROUP, DeleteShareJob.class);
-    
+
     JobDetailImpl job = new JobDetailImpl();
     job.setName(jobInfo.getJobName());
     job.setGroup(jobInfo.getGroupName());
     job.setJobClass(jobInfo.getJob());    
-    
+
     job.setDescription(jobInfo.getDescription());
     job.getJobDataMap().put(Utils.USER_NAME, username);
     job.getJobDataMap().put(Utils.REMOVED_USERS,unsharedGroups);
@@ -938,11 +941,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     trigger.setName(jobInfo.getJobName());
     trigger.setGroup(jobInfo.getGroupName());
     trigger.setStartTime(new Date());
-    
+
     schedulerService_.addJob(job, trigger);
   }  
 
-  
+
   public boolean isGroupBeingShared(String group, JobSchedulerServiceImpl schedulerService_) throws Exception {
     List<?> list = schedulerService_.getAllExcutingJobs();
 
@@ -984,7 +987,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   @Override
   public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception {
-   
+
     JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().
         getComponentInstance(JobSchedulerService.class) ;
 
@@ -996,5 +999,311 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     trigger.setStartTime(new Date());
 
     schedulerService.addJob(job, trigger);  
+  }
+
+  @Override
+  public void saveOneOccurrenceEvent(CalendarEvent originEvent,
+                                     CalendarEvent exceptionEvent,
+                                     String username) {
+    String recurrenceId = buildRecurrenceId(exceptionEvent.getFromDateTime(), username);
+    originEvent.addExceptionId(recurrenceId);
+    String calendarId = originEvent.getCalendarId();
+    exceptionEvent.setIsExceptionOccurrence(true);
+    exceptionEvent.setRecurrenceId(recurrenceId);
+    exceptionEvent.setOriginalReference(originEvent.getId());
+   
+    switch (Integer.parseInt(originEvent.getCalType())) {
+    case 0:
+      try {
+        storage_.saveUserEvent(username, calendarId, originEvent, false);
+        storage_.saveUserEvent(username, calendarId, exceptionEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 1: 
+      try {
+        storage_.savePublicEvent(calendarId, originEvent, false);
+        storage_.savePublicEvent(calendarId, exceptionEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 2: 
+      try {
+        storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+        storage_.saveEventToSharedCalendar(username, calendarId, exceptionEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;  
+    default:
+      break;
+    }
+
+  }
+
+  @Override
+  public void saveAllSeriesEvents(CalendarEvent originEvent,
+                                  Collection<String> exceptionEventIds,
+                                  String username) {
+    String calendarId = originEvent.getCalendarId(); 
+
+    switch (Integer.parseInt(originEvent.getCalType())) {
+    case 0:
+      try {
+        storage_.saveUserEvent(username, calendarId, originEvent, false);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 1: 
+      try {
+        storage_.savePublicEvent(calendarId, originEvent, false);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 2: 
+      try {
+        storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;  
+    default:
+      break;
+    }
+
+
+  }
+
+  @Override
+  public void saveFollowingSeriesEvents(CalendarEvent originEvent,
+                                        CalendarEvent newEvent,
+                                        Collection<String> exceptionEventIds,
+                                        String username) {
+
+    String calendarId = originEvent.getCalendarId(); 
+    originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
+    switch (Integer.parseInt(originEvent.getCalType())) {
+    case 0:
+      try {
+        storage_.saveUserEvent(username, calendarId, originEvent, false);
+        storage_.saveUserEvent(username, calendarId, newEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 1: 
+      try {
+        storage_.savePublicEvent(calendarId, originEvent, false);
+        storage_.savePublicEvent(calendarId, newEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 2: 
+      try {
+        storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+        storage_.saveEventToSharedCalendar(username, calendarId, newEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;  
+    default:
+      break;
+    }
+
+  }
+
+  @Override
+  public void removeOneOccurrenceEvent(CalendarEvent originEvent,
+                                       String eventId, String recurrenceId,
+                                       String username) {
+
+
+    String calendarId = originEvent.getCalendarId(); 
+    boolean isException = false;
+    if(originEvent.getExceptionIds() != null ){
+     if(originEvent.getExceptionIds().contains(recurrenceId))
+       isException = true;
+     else
+      originEvent.addExceptionId(recurrenceId);
+      
+    }
+    switch (Integer.parseInt(originEvent.getCalType())) {
+    case 0:
+      try {
+        if(isException) storage_.removeUserEvent(username, calendarId, eventId);
+        else storage_.saveUserEvent(username, calendarId, originEvent, false);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 1: 
+      try {
+
+        if(isException) storage_.removePublicEvent(calendarId, eventId);
+        else storage_.savePublicEvent(calendarId, originEvent, false);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 2: 
+      try {
+
+        if(isException) storage_.removeSharedEvent(username, calendarId, eventId);
+        else storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;  
+    default:
+      break;
+    }
+
+  }
+
+  @Override
+  public void removeAllSeriesEvents(CalendarEvent originEvent,
+                                    Collection<String> exceptionEventIds,
+                                    String username) {
+    String calendarId = originEvent.getCalendarId();
+    exceptionEventIds.add(originEvent.getId());
+    for(String eventId: exceptionEventIds)
+      switch (Integer.parseInt(originEvent.getCalType())) {
+      case 0:
+        try {
+          storage_.removeUserEvent(username, calendarId, eventId);
+        } catch (Exception e) {
+          if (LOG.isDebugEnabled()) LOG.debug(e);
+        }
+        break;
+
+      case 1: 
+        try {
+          storage_.removePublicEvent(calendarId, eventId);
+        } catch (Exception e) {
+          if (LOG.isDebugEnabled()) LOG.debug(e);
+        }
+        break;
+
+      case 2: 
+        try {
+          storage_.removeSharedEvent(username, calendarId, eventId);
+        } catch (Exception e) {
+          if (LOG.isDebugEnabled()) LOG.debug(e);
+        }
+        break;  
+      default:
+        break;
+      }
+  }
+
+  @Override
+  public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent,
+                                          Collection<String> exceptionEventIds,
+                                          String username) {
+    String calendarId = originEvent.getCalendarId(); 
+    originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
+    for(String eventId: exceptionEventIds)
+      switch (Integer.parseInt(originEvent.getCalType())) {
+      case 0:
+        try {
+          storage_.removeUserEvent(username, calendarId, eventId);
+        } catch (Exception e) {
+          if (LOG.isDebugEnabled()) LOG.debug(e);
+        }
+        break;
+
+      case 1: 
+        try {
+          storage_.savePublicEvent(calendarId, originEvent, false);
+        } catch (Exception e) {
+          if (LOG.isDebugEnabled()) LOG.debug(e);
+        }
+        break;
+
+      case 2: 
+        try {
+          storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+        } catch (Exception e) {
+          if (LOG.isDebugEnabled()) LOG.debug(e);
+        }
+        break;  
+      default:
+        break;
+      }
+
+    switch (Integer.parseInt(originEvent.getCalType())) {
+    case 0:
+      try {
+        storage_.saveUserEvent(username, calendarId, newEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 1: 
+      try {
+        storage_.savePublicEvent(calendarId, newEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;
+
+    case 2: 
+      try {
+        storage_.saveEventToSharedCalendar(username, calendarId, newEvent, true);
+      } catch (Exception e) {
+        if (LOG.isDebugEnabled()) LOG.debug(e);
+      }
+      break;  
+    default:
+      break;
+    }
+
+
+  }
+
+  @Override
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,Date from, Date to, String userId) {
+    java.util.Calendar f = new GregorianCalendar();
+    f.setTime(from);
+    java.util.Calendar t = new GregorianCalendar();
+    t.setTime(to);
+    return storage_.getAllExcludedEvent(originEvent,f ,t , userId);
+  }
+
+  @Override
+  public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,Date from, Date to, String userId) {
+    java.util.Calendar f = new GregorianCalendar();
+    f.setTime(from);
+    java.util.Calendar t = new GregorianCalendar();
+    t.setTime(to);
+    return storage_.buildSeriesByTime(originEvent,f ,t , userId) ;
+  }
+  
+  @Override
+  public String buildRecurrenceId(Date formTime, String username) {
+    String timezone = TimeZone.getDefault().getID();
+    try {
+      timezone = getCalendarSetting(username).getTimeZone();
+    } catch (Exception e) {
+      if (LOG.isDebugEnabled()) LOG.debug(e);
+    }
+    TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+    SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    format.setTimeZone(userTimeZone);
+    return format.format(formTime);
   }
 }
