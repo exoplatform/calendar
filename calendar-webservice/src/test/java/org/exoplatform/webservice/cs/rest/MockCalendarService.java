@@ -18,6 +18,8 @@ package org.exoplatform.webservice.cs.rest;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -617,5 +619,80 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception {
+  }
+
+  @Override
+  public void saveOneOccurrenceEvent(CalendarEvent originEvent,
+                                     CalendarEvent newEvent,
+                                     String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void saveAllSeriesEvents(CalendarEvent originEvent,
+                                  Collection<String> exceptionEventIds,
+                                  String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void saveFollowingSeriesEvents(CalendarEvent originEvent,
+                                        CalendarEvent newEvent,
+                                        Collection<String> exceptionEventIds,
+                                        String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void removeOneOccurrenceEvent(CalendarEvent originEvent,
+                                       String eventId,
+                                       String recurrenceId,
+                                       String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void removeFollowingSeriesEvents(CalendarEvent originEvent,
+                                          CalendarEvent newEvent,
+                                          Collection<String> exceptionEventIds,
+                                          String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,
+                                                       Date from,
+                                                       Date to,
+                                                       String userId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,
+                                               Date from,
+                                               Date to,
+                                               String userId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String buildRecurrenceId(Date formTime, String username) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void removeAllSeriesEvents(CalendarEvent originEvent,
+                                    Collection<String> exceptionEventIds,
+                                    String username) {
+    // TODO Auto-generated method stub
+    
   }
 }

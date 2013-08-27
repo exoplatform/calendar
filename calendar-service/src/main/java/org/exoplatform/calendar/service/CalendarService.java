@@ -16,6 +16,8 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -777,6 +779,80 @@ public interface CalendarService {
   public void updateOccurrenceEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception;
 
   /**
+   * Updates an occurrence of a recurrent event
+   * <p> This method is called when:
+   * <ul>
+   * <li>User wants to update only one instance of the recurrent series. In this case, a single event will be created as an exception event of the series</li>
+   * <li>User wants to update an exception event of a recurrent series. In this case, this event will be updated as a normal one</li>
+   * </ul> 
+   * @param originEvent the original event with occurrence rule will be updated 
+   * @param newEvent the new event will be separated from that series
+   * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
+   */
+  public void saveOneOccurrenceEvent(CalendarEvent originEvent, CalendarEvent newEvent, String username);
+  
+  /**
+   * Updates all occurrence of a recurrent event
+   * <p> This method is called when:
+   * <ul>
+   * <li>User wants to update all occurrence event with all properties except from time and to time of all exception event </li>
+   * </ul> 
+   * @param originEvent the original event with occurrence rule  
+   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for updating 
+   * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
+   */
+  public void saveAllSeriesEvents(CalendarEvent originEvent, Collection<String> exceptionEventIds, String username);
+  
+  /**
+   * <p> This method is called when:
+   * <ul>
+   * <li>User wants to update the following occurences also, then it will break to 2 new series from time of editing event reset all exception event properties</li>
+   * </ul> 
+   * @param originEvent Original event with the old rule have to update
+   * @param newEvent new break event with new rule
+   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for updating
+   * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
+   */
+  public void saveFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent, Collection<String> exceptionEventIds, String username);
+  
+
+  /**
+   * Remove an occurrence of a recurrent event
+   * <p> This method is called when:
+   * <ul>
+   * <li>User wants to remove only one instance of the recurrent series</li>
+   * </ul> 
+   * @param originEvent the original event with occurrence rule will be updated 
+   * @param newEvent the individual event will be removed from that series
+   * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
+   */
+  public void removeOneOccurrenceEvent(CalendarEvent originEvent, String eventId, String recurrenceId, String username);
+  
+  /**
+   * Remove all occurrence of a recurrent event
+   * <p>This method is called when:
+   * <ul>
+   * <li>User wants to remove all occurrence event and all exception event relative in that series</li>
+   * </ul> 
+   * @param originEvent the original event with occurrence rule will be removed
+   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for deleting 
+   * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
+   */
+  public void removeAllSeriesEvents(CalendarEvent originEvent, Collection<String> exceptionEventIds, String username);
+  
+  /**
+   * <p> This method is called when:
+   * <ul>
+   * <li>User wants to remove only following event in the series, then it will stop the series from time of editing event and remove all exception following event</li>
+   * </ul> 
+   * @param originEvent Original event with the old rule have to update
+   * @param newEvent new break will be removed
+   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for deleting
+   * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
+   */
+  public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent, Collection<String> exceptionEventIds, String username);
+  
+  /**
    * Gets all exception occurrences from a original recurrent event, the exception event always belong to same calendar with original recurrent event
    * @param username the owner of this recurrent event
    * @param recurEvent the original recurrent event
@@ -904,6 +980,12 @@ public interface CalendarService {
    * @throws Exception
    */
   public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception;
+  
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,Date from, Date to, String userId);
+  
+  public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,Date from, Date to, String userId);
+  
+  public String buildRecurrenceId(Date formTime, String username);
 }
 
 
