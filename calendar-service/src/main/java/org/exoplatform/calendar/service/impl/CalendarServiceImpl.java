@@ -1050,7 +1050,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
                                   Collection<String> exceptionEventIds,
                                   String username) {
     String calendarId = originEvent.getCalendarId(); 
-
+    Collection<CalendarEvent> exceptions = getAllExcludedEvent(originEvent, originEvent.getFromDateTime(), originEvent.getToDateTime(), username);
+    for(CalendarEvent e : exceptions){
+      removeOneOccurrenceEvent(originEvent, e.getId(), e.getRecurrenceId(), username);
+    }
+    originEvent.setExceptionIds(null);
     switch (Integer.parseInt(originEvent.getCalType())) {
     case 0:
       try {
@@ -1178,8 +1182,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
                                     Collection<String> exceptionEventIds,
                                     String username) {
     String calendarId = originEvent.getCalendarId();
-    exceptionEventIds.add(originEvent.getId());
-    for(String eventId: exceptionEventIds)
+    List<String> l = new ArrayList<String>(exceptionEventIds);
+    l.add(originEvent.getId());
+    for(String eventId: l)
       switch (Integer.parseInt(originEvent.getCalType())) {
       case 0:
         try {
@@ -1214,7 +1219,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
                                           Collection<String> exceptionEventIds,
                                           String username) {
     String calendarId = originEvent.getCalendarId(); 
-    originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
     for(String eventId: exceptionEventIds)
       switch (Integer.parseInt(originEvent.getCalType())) {
       case 0:
@@ -1227,7 +1231,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       case 1: 
         try {
-          storage_.savePublicEvent(calendarId, originEvent, false);
+          storage_.removePublicEvent(calendarId, eventId);
         } catch (Exception e) {
           if (LOG.isDebugEnabled()) LOG.debug(e);
         }
@@ -1235,7 +1239,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       case 2: 
         try {
-          storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+          storage_.removeSharedEvent(username, calendarId, eventId);
         } catch (Exception e) {
           if (LOG.isDebugEnabled()) LOG.debug(e);
         }
@@ -1243,11 +1247,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       default:
         break;
       }
-
+    originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
+    originEvent.setExceptionIds(null);
     switch (Integer.parseInt(originEvent.getCalType())) {
     case 0:
       try {
-        storage_.saveUserEvent(username, calendarId, newEvent, true);
+        storage_.saveUserEvent(username, calendarId, newEvent, false);
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
       }
@@ -1255,7 +1260,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
     case 1: 
       try {
-        storage_.savePublicEvent(calendarId, newEvent, true);
+        storage_.savePublicEvent(calendarId, newEvent, false);
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
       }
@@ -1263,7 +1268,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
     case 2: 
       try {
-        storage_.saveEventToSharedCalendar(username, calendarId, newEvent, true);
+        storage_.saveEventToSharedCalendar(username, calendarId, newEvent, false);
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
       }

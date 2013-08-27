@@ -505,14 +505,16 @@ public class CalendarEvent {
    * @param ids a collection of id with string type
    */
   public void setExceptionIds(Collection<String> ids){
+    if(ids != null)
     this.excludeId = ids.toArray(this.excludeId);
+    else this.excludeId = null;
   }
   /**
    * This method will return all id excluded event id
    * @return collection of excluded event's id
    */
   public Collection<String> getExceptionIds(){
-    return Arrays.asList(this.excludeId);
+    return new HashSet<String>(Arrays.asList(this.excludeId));
   }
   
   /**
