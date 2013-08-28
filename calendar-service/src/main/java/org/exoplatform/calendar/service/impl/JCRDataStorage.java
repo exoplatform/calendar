@@ -16,64 +16,21 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.jcr.AccessDeniedException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
+import com.sun.syndication.feed.synd.*;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.XmlReader;
+import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.DataStorage;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventPageListQuery;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.FeedData;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Reminder;
-import org.exoplatform.calendar.service.RemoteCalendar;
-import org.exoplatform.calendar.service.RssData;
-import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
-import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.jcr.RepositoryService;
@@ -90,29 +47,27 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.IdentityConstants;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.NumberList;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
-import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.WeekDay;
-import net.fortuna.ical4j.model.WeekDayList;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.RRule;
+
+import javax.jcr.*;
+import javax.jcr.Property;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
+import java.util.Map.Entry;
+import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang
@@ -4545,8 +4500,6 @@ public class JCRDataStorage implements DataStorage {
     Collection<String> filterCalendarIds = Arrays.asList(st.getFilterPrivateCalendars());
     filterCalendarIds.addAll(Arrays.asList(st.getFilterPublicCalendars()));
     filterCalendarIds.addAll(Arrays.asList(st.getFilterSharedCalendars()));
-
-
 
     StringBuffer queryString =  new StringBuffer("SELECT * FROM exo:calendarEvent WHERE ");
     //TODO need to implement query with limited date/time
