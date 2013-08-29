@@ -1050,7 +1050,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     switch (Integer.parseInt(originEvent.getCalType())) {
     case Calendar.TYPE_PRIVATE:
       try {
-        storage_.saveUserEvent(username, calendarId, originEvent, false);
+        saveUserEvent(username, calendarId, originEvent, false);
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
       }
@@ -1058,7 +1058,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
     case Calendar.TYPE_PUBLIC:
       try {
-        storage_.savePublicEvent(calendarId, originEvent, false);
+        savePublicEvent(calendarId, originEvent, false);
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
       }
@@ -1066,7 +1066,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
     case Calendar.TYPE_SHARED:
       try {
-        storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+        saveEventToSharedCalendar(username, calendarId, originEvent, false);
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
       }
@@ -1074,47 +1074,49 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     default:
       break;
     }
-
-
   }
 
   @Override
   public void saveFollowingSeriesEvents(CalendarEvent originEvent,
                                         CalendarEvent newEvent,
-                                        Collection<String> exceptionEventIds,
                                         String username) {
+    try {
 
-    String calendarId = originEvent.getCalendarId(); 
-    originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
-    switch (Integer.parseInt(originEvent.getCalType())) {
-    case Calendar.TYPE_PRIVATE:
-      try {
-        storage_.saveUserEvent(username, calendarId, originEvent, false);
-        storage_.saveUserEvent(username, calendarId, newEvent, true);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
-      }
-      break;
+      String calendarId = originEvent.getCalendarId();
+      originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
+      originEvent.addExceptionId(newEvent.getRecurrenceId());
 
-    case Calendar.TYPE_PUBLIC:
-      try {
-        storage_.savePublicEvent(calendarId, originEvent, false);
-        storage_.savePublicEvent(calendarId, newEvent, true);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
-      }
-      break;
+      switch (Integer.parseInt(originEvent.getCalType())) {
+        case Calendar.TYPE_PRIVATE:
+          saveUserEvent(username, calendarId, originEvent, false);
+          saveUserEvent(username, calendarId, newEvent, true);
+          break;
 
-    case Calendar.TYPE_SHARED:
-      try {
-        storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
-        storage_.saveEventToSharedCalendar(username, calendarId, newEvent, true);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
+        case Calendar.TYPE_PUBLIC:
+          //we don't want to add old-content comment to origin event's activity, so we call the method from storage
+          storage_.savePublicEvent(calendarId, originEvent, false);
+          for(CalendarEventListener listener : eventListeners_) {
+            //add comment (with new content format) to the activity of the origin repetitive event
+            listener.updateFollowingOccurrences(originEvent, newEvent, false);
+          }
+          savePublicEvent(calendarId, newEvent, true);//publish event to create activity
+          break;
+
+        case Calendar.TYPE_SHARED:
+          saveEventToSharedCalendar(username, calendarId, originEvent, false);
+          saveEventToSharedCalendar(username, calendarId, newEvent, true);
+          break;
+        default:
+          break;
       }
-      break;  
-    default:
-      break;
+      //get all exception events in the future and remove them
+      List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, newEvent.getFromDateTime());
+      removeEvents(username, exceptionEvents);
+
+    } catch (Exception e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("Exception while save following events of a repetitive series",e);
+      }
     }
 
   }
@@ -1138,9 +1140,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     case Calendar.TYPE_PRIVATE:
       try {
         if(isException) {
-          storage_.removeUserEvent(username, calendarId, eventId);
+          removeUserEvent(username, calendarId, eventId);
         } else {
-          storage_.saveUserEvent(username, calendarId, originEvent, false);
+          saveUserEvent(username, calendarId, originEvent, false);
         }
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
@@ -1150,9 +1152,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     case Calendar.TYPE_PUBLIC:
       try {
         if(isException) {
-          storage_.removePublicEvent(calendarId, eventId);
+          removePublicEvent(calendarId, eventId);
         } else {
-          storage_.savePublicEvent(calendarId, originEvent, false);
+          savePublicEvent(calendarId, originEvent, false);
         }
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
@@ -1162,9 +1164,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     case Calendar.TYPE_SHARED:
       try {
         if(isException) {
-          storage_.removeSharedEvent(username, calendarId, eventId);
+          removeSharedEvent(username, calendarId, eventId);
         } else {
-          storage_.saveEventToSharedCalendar(username, calendarId, originEvent, false);
+          saveEventToSharedCalendar(username, calendarId, originEvent, false);
         }
       } catch (Exception e) {
         if (LOG.isDebugEnabled()) LOG.debug(e);
@@ -1177,103 +1179,72 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   @Override
   public void removeAllSeriesEvents(CalendarEvent originEvent,
-                                    Collection<String> exceptionEventIds,
                                     String username) {
-    String calendarId = originEvent.getCalendarId();
-    List<String> l = new ArrayList<String>(exceptionEventIds);
-    l.add(originEvent.getId());
-    for(String eventId: l)
-      switch (Integer.parseInt(originEvent.getCalType())) {
-      case Calendar.TYPE_PRIVATE:
-        try {
-          storage_.removeUserEvent(username, calendarId, eventId);
-        } catch (Exception e) {
-          if (LOG.isDebugEnabled()) LOG.debug(e);
-        }
-        break;
-
-      case Calendar.TYPE_PUBLIC:
-        try {
-          storage_.removePublicEvent(calendarId, eventId);
-        } catch (Exception e) {
-          if (LOG.isDebugEnabled()) LOG.debug(e);
-        }
-        break;
-
-      case Calendar.TYPE_SHARED:
-        try {
-          storage_.removeSharedEvent(username, calendarId, eventId);
-        } catch (Exception e) {
-          if (LOG.isDebugEnabled()) LOG.debug(e);
-        }
-        break;  
-      default:
-        break;
+    try {
+      List<CalendarEvent> events = getExceptionEvents(username, originEvent);
+      events.add(originEvent);
+      removeEvents(username, events);
+    } catch (Exception e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("exception when removing all event in series", e);
       }
+    }
+
   }
 
   @Override
   public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent,
-                                          Collection<String> exceptionEventIds,
                                           String username) {
-    String calendarId = originEvent.getCalendarId(); 
-    for(String eventId: exceptionEventIds)
+    try {
+      String calendarId = originEvent.getCalendarId();
+
+      originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
+      originEvent.addExceptionId(newEvent.getRecurrenceId());
+
       switch (Integer.parseInt(originEvent.getCalType())) {
-      case Calendar.TYPE_PRIVATE:
-        try {
-          storage_.removeUserEvent(username, calendarId, eventId);
-        } catch (Exception e) {
-          if (LOG.isDebugEnabled()) LOG.debug(e);
-        }
-        break;
+        case Calendar.TYPE_PRIVATE:
+          saveUserEvent(username, calendarId, newEvent, false);
+          break;
 
-      case Calendar.TYPE_PUBLIC:
-        try {
-          storage_.removePublicEvent(calendarId, eventId);
-        } catch (Exception e) {
-          if (LOG.isDebugEnabled()) LOG.debug(e);
-        }
-        break;
+        case Calendar.TYPE_PUBLIC:
+          //we don't want to add old-content comment for origin event's activity
+          storage_.savePublicEvent(calendarId, newEvent, false);
+          for(CalendarEventListener listener : eventListeners_) {
+            //add new comment to the origin event's activity (with new content format)
+            listener.updateFollowingOccurrences(originEvent, newEvent, true);
+          }
+          break;
 
-      case Calendar.TYPE_SHARED:
-        try {
-          storage_.removeSharedEvent(username, calendarId, eventId);
-        } catch (Exception e) {
-          if (LOG.isDebugEnabled()) LOG.debug(e);
-        }
-        break;  
-      default:
-        break;
+        case Calendar.TYPE_SHARED:
+          saveEventToSharedCalendar(username, calendarId, newEvent, false);
+          break;
+        default:
+          break;
       }
-    originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
-    originEvent.setExceptionIds(null);
-    switch (Integer.parseInt(originEvent.getCalType())) {
-    case Calendar.TYPE_PRIVATE:
-      try {
-        storage_.saveUserEvent(username, calendarId, newEvent, false);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
-      }
-      break;
 
-    case Calendar.TYPE_PUBLIC:
-      try {
-        storage_.savePublicEvent(calendarId, newEvent, false);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
+      List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, newEvent.getFromDateTime());
+      removeEvents(username, exceptionEvents);
+    } catch(Exception e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("Exception when removing following events of a repetitive event",e);
       }
-      break;
-
-    case Calendar.TYPE_SHARED:
-      try {
-        storage_.saveEventToSharedCalendar(username, calendarId, newEvent, false);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
-      }
-      break;  
-    default:
-      break;
     }
+
+  }
+
+  @Override
+  public List<CalendarEvent> getExceptionEventsFromDate(String username, CalendarEvent event, Date fromDate) throws Exception {
+    List<CalendarEvent> exceptions = getExceptionEvents(username, event);
+    List<CalendarEvent> result = new ArrayList<CalendarEvent>();
+    if(fromDate != null) {
+      for(CalendarEvent exceptionEvent : exceptions) {
+        if(exceptionEvent.getFromDateTime().after(fromDate)) {
+          result.add(exceptionEvent);
+        }
+      }
+      return result;
+    }
+    return exceptions;
   }
 
   @Override
@@ -1306,5 +1277,26 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
     format.setTimeZone(userTimeZone);
     return format.format(formTime);
+  }
+
+  private void removeEvents(String username, List<CalendarEvent> events)  {
+    try {
+      for(CalendarEvent event : events) {
+        switch(Integer.parseInt(event.getCalType())) {
+          case Calendar.TYPE_PRIVATE :
+            removeUserEvent(username,event.getCalendarId(),event.getId());
+            break;
+          case Calendar.TYPE_PUBLIC :
+            removePublicEvent(event.getCalendarId(), event.getId());
+            break;
+          case Calendar.TYPE_SHARED :
+            removeSharedEvent(username, event.getCalendarId(), event.getId());
+        }
+      }
+    } catch (Exception e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("Exception when removing events",e);
+      }
+    }
   }
 }

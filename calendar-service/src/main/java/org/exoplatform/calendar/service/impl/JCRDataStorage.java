@@ -3072,7 +3072,6 @@ public class JCRDataStorage implements DataStorage {
       occurrences.put(recurId, occurrence);
     }
     return occurrences;
-
   }
 
   // here we need to edit the occurrence to have correct time 
