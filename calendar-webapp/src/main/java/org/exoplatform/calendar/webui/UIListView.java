@@ -135,9 +135,9 @@ public class UIListView extends UICalendarView {
       query.setCategoryId(new String[] { categoryId_ });
     }
 
-    java.util.Calendar fromcalendar = getBeginDay(new GregorianCalendar(getCurrentYear(),  getCurrentMonth(),  getCurrentDay())) ;
+    Calendar fromcalendar = getBeginDay(getCurrentCalendar());
     query.setFromDate(fromcalendar) ;
-    java.util.Calendar tocalendar = getEndDay(new GregorianCalendar(getCurrentYear(), getCurrentMonth(), getCurrentDay())) ;
+    Calendar tocalendar = getEndDay(getCurrentCalendar()); 
     if(tocalendar.get(Calendar.MILLISECOND) == 0) tocalendar.add(Calendar.MILLISECOND, -1);
     query.setToDate(tocalendar) ;
     if(!getViewType().equals(TYPE_BOTH)) {
