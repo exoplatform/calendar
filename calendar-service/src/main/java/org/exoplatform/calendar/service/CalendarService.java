@@ -802,56 +802,63 @@ public interface CalendarService {
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
   public void saveAllSeriesEvents(CalendarEvent originEvent, Collection<String> exceptionEventIds, String username);
-  
+
   /**
    * <p> This method is called when:
    * <ul>
    * <li>User wants to update the following occurences also, then it will break to 2 new series from time of editing event reset all exception event properties</li>
-   * </ul> 
+   * </ul>
    * @param originEvent Original event with the old rule have to update
    * @param newEvent new break event with new rule
-   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for updating
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
-  public void saveFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent, Collection<String> exceptionEventIds, String username);
-  
+  public void saveFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent, String username);
+
 
   /**
    * Remove an occurrence of a recurrent event
    * <p> This method is called when:
    * <ul>
    * <li>User wants to remove only one instance of the recurrent series</li>
-   * </ul> 
-   * @param originEvent the original event with occurrence rule will be updated 
-   * @param newEvent the individual event will be removed from that series
+   * </ul>
+   * @param originEvent the original event with occurrence rule will be updated
+   * @param eventId id of the removed occurrence
+   * @param recurrenceId recurrence id of the occurence
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
   public void removeOneOccurrenceEvent(CalendarEvent originEvent, String eventId, String recurrenceId, String username);
-  
+
   /**
    * Remove all occurrence of a recurrent event
    * <p>This method is called when:
    * <ul>
    * <li>User wants to remove all occurrence event and all exception event relative in that series</li>
-   * </ul> 
+   * </ul>
    * @param originEvent the original event with occurrence rule will be removed
-   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for deleting 
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
-  public void removeAllSeriesEvents(CalendarEvent originEvent, Collection<String> exceptionEventIds, String username);
-  
+  public void removeAllSeriesEvents(CalendarEvent originEvent, String username);
+
   /**
    * <p> This method is called when:
    * <ul>
    * <li>User wants to remove only following event in the series, then it will stop the series from time of editing event and remove all exception following event</li>
-   * </ul> 
+   * </ul>
    * @param originEvent Original event with the old rule have to update
    * @param newEvent new break will be removed
-   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for deleting
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
-  public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent, Collection<String> exceptionEventIds, String username);
-  
+  public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent, String username);
+
+  /**
+   * Gets all exception events of a repetitive event that happen after a specified date
+   * @param username owner of the repetitive event
+   * @param event    a repetitive event
+   * @param fromDate a date after which we need to find exception events
+   * @return list of exception events that happen after the specified date
+   * @throws Exception
+   */
+  public List<CalendarEvent> getExceptionEventsFromDate(String username, CalendarEvent event, Date fromDate) throws Exception;
   /**
    * Gets all exception occurrences from a original recurrent event, the exception event always belong to same calendar with original recurrent event
    * @param username the owner of this recurrent event

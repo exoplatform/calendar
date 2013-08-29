@@ -52,4 +52,19 @@ public interface EventLifeCycle {
    * @param calendarId: given id of calendar object
    */
   public  void deletePublicEvent(CalendarEvent event, String calendarId);
+
+  /**
+   * Posts event about updating occurrences of a repetitive series that start from a selected occurrence
+   * @param originEvent the origin repetitive event
+   * @param selectedOccurrence the selected event from which the new series will be created
+   * @param isDelete true if removing all occurrences from the selected event, false if just editing
+   */
+  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence, boolean isDelete);
+
+  /**
+   * Posts event about removing one exception event of a repetitive event
+   * @param originEvent  origin repetitive event
+   * @param removedEvent  removed exception event
+   */
+  public void removeOneOccurrence(CalendarEvent originEvent, CalendarEvent removedEvent);
 }
