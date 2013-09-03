@@ -1252,12 +1252,13 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
               .get(eventId)
               .get(recurId);
           uiCalendarView.setCurrentOccurrence(currentOccurrence);
-          UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 600);
-          confirmForm.setConfirmMessage(uiCalendarView.getLabel("delete-recurrence-event-confirm-msg"));
+          UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 480);
+          confirmForm.setConfirmMessage("delete-recurrence-event-confirm-msg");
           confirmForm.setConfig_id(uiCalendarView.getId());
-          String[] actions = new String[] { "ConfirmDeleteOnlyInstance", "ConfirmDeleteAllSeries",
-          "ConfirmDeleteCancel" };
-          confirmForm.setActions(actions);
+          confirmForm.setDelete(true);
+          //String[] actions = new String[] { "ConfirmDeleteOnlyInstance", "ConfirmDeleteAllSeries",
+          //"ConfirmDeleteCancel" };
+          //confirmForm.setActions(actions);
           event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
           return;
         }

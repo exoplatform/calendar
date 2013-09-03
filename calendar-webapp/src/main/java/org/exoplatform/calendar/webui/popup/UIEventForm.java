@@ -2026,15 +2026,17 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       if(CalendarSetting.ACTION_ASK.equalsIgnoreCase(sendOption)){
           // Show Confirm
         UIPopupAction pAction = uiPopupContainer.getChild(UIPopupAction.class) ;
-        UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 425);
+        UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
         if(lstPart.isEmpty()){
           confirmForm.setConfirmMessage(uiForm.saveEventNoInvitation);
         }else{
           confirmForm.setConfirmMessage(uiForm.saveEventInvitation);
         }
+        confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+        confirmForm.setDelete(false);
         confirmForm.setConfig_id(uiForm.getId()) ;
         
-        String[] actions;
+       /* String[] actions;
         if (CalendarUtils.isEmpty(uiForm.getParticipantValues()) && CalendarUtils.isEmpty(uiForm.getInvitationEmail())) {
           actions = new String[] {"ConfirmCancel"};
         } else {
@@ -2042,6 +2044,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         }
         
         confirmForm.setActions(actions);
+        */
         event.getRequestContext().addUIComponentToUpdateByAjax(pAction) ;
       }
       else {
@@ -2223,12 +2226,12 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     if (occurrence != null && !CalendarEvent.RP_NOREPEAT.equals(occurrence.getRepeatType()) 
         && !CalendarUtils.isEmpty(occurrence.getRecurrenceId()) && CalendarUtils.isSameDate(fromDate, occurrence.getFromDateTime()) ) {
       // popup confirm form
-      UIConfirmForm confirmForm =  uiPopupAction.activate(UIConfirmForm.class, 600);
-      confirmForm.setConfirmMessage(uiEventForm.getLabel("update-recurrence-event-confirm-msg"));
+      UIConfirmForm confirmForm =  uiPopupAction.activate(UIConfirmForm.class, 480);
+      confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
       confirmForm.setConfig_id(uiEventForm.getId()) ;
-      
-      String[] actions = new String[] {"ConfirmUpdateOnlyInstance", "ConfirmUpdateAllSeries", "ConfirmUpdateCancel"};
-      confirmForm.setActions(actions);
+      confirmForm.setDelete(false);
+      //String[] actions = new String[] {"ConfirmUpdateOnlyInstance", "ConfirmUpdateAllSeries", "ConfirmUpdateCancel"};
+      //confirmForm.setActions(actions);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     } else { 
       uiEventForm.saveAndNoAsk(event, isSend, false);

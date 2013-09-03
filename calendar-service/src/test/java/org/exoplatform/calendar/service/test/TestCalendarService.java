@@ -41,6 +41,7 @@ import org.exoplatform.calendar.service.impl.TaskSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -362,6 +363,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 //    list = calendarService_.getAllExcludedEvent(recurEvent, fromCal.getTime(), toCal.getTime(), username);
     occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
     list = calendarService_.getExceptionEvents(username,recurEvent);
+    assertNotNull(list);
     assertEquals(1,list.size());
     assertEquals(4, occMap.size());  //5 - 1
 

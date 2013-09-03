@@ -16,9 +16,14 @@
  */
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
+import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.form.UIForm;
+import org.exoplatform.webui.form.UIFormRadioBoxInput;
 
 /**
  * Created by The eXo Platform SAS
@@ -29,25 +34,88 @@ import org.exoplatform.webui.form.UIForm;
 @ComponentConfig (
                   lifecycle  = UIFormLifecycle.class,
                   template =  "app:/templates/calendar/webui/UIPopup/UIConfirmForm.gtmpl"
-)
+    )
 
 public class UIConfirmForm extends UIForm implements UIPopupComponent{
 
-  public static String CONFIRM_TRUE = "true".intern();
-  public static String CONFIRM_FALSE = "false".intern();
+  public static String CONFIRM_TRUE = "true";
+  public static String CONFIRM_FALSE = "false";
   private String config_id = "";
   private String confirmMessage;
+  private boolean isDelete;
+  private static String SAVE_CONFIRM = "confirm";
+  private static String SAVE_ALL = "save_all";
+  private static String SAVE_ONE = "save_one";
+  private static String SAVE_FOLLOW = "save_follow";
+  private static String CANCEL = "Cancel";
+  private static String SAVE = "Save";
+  private static String DELETE = "Delete";
 
-  public UIConfirmForm() {}
+  public UIConfirmForm() {
+    UIFormRadioBoxInput input = new UIFormRadioBoxInput(SAVE_CONFIRM, SAVE_CONFIRM, getValue());
+    input.setAlign(UIFormRadioBoxInput.VERTICAL_ALIGN);
+    addUIFormInput(input);
+  }
+
+  private List<SelectItemOption<String>> getValue() {
+    List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
+    options.add(new SelectItemOption<String>(SAVE_ONE, SAVE_ONE));
+    options.add(new SelectItemOption<String>(SAVE_FOLLOW, SAVE_FOLLOW));
+    options.add(new SelectItemOption<String>(SAVE_ALL, SAVE_ALL));
+    return options ;
+  }
+
+  public boolean isSaveOne(){
+    try {
+      return getUIInput(SAVE_CONFIRM).getValue() == SAVE_ONE;
+    } catch (Exception e) {
+      return false;      
+    }
+  }
+  public boolean isSaveAll(){
+    try {
+      return getUIInput(SAVE_CONFIRM).getValue() == SAVE_ALL;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+  public boolean isSaveFollow(){
+    try {
+      return getUIInput(SAVE_CONFIRM).getValue() == SAVE_FOLLOW;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 
   public void setConfirmMessage(String confirmMessage) {
     this.confirmMessage = confirmMessage;
   }
 
+  public String getConfirmMessage() {
+    try {
+      return getLabel(this.confirmMessage);
+    } catch (Exception e) {
+      return this.confirmMessage;
+    }
+  }
+
   @Override
-   public String event(String name) throws Exception {
+  public String event(String name) throws Exception {
     StringBuilder b = new StringBuilder() ;
     b.append("javascript:eXo.webui.UIForm.submitForm('").append(getConfig_id()).append("','");
+    if(isDelete()) {
+      if(DELETE.equals(name)) {
+        if(isSaveOne()) name = "ConfirmDeleteOnlyInstance";
+        else if(isSaveAll()) name = "ConfirmDeleteAllSeries";
+        else if(isSaveFollow()) name = "ConfirmDeleteFollowSeries";
+      } else if(CANCEL.equals(name)) name = "ConfirmDeleteCancel";
+    } else {
+      if(SAVE.equals(name)) {
+        if(isSaveOne()) name = "ConfirmUpdateOnlyInstance";
+        else if(isSaveAll()) name = "ConfirmUpdateAllSeries";
+        else if(isSaveFollow()) name = "ConfirmUpdateFollowSeries";
+      } else if(CANCEL.equals(name)) name = "ConfirmUpdateCancel";
+    } 
     b.append(name).append("',true)");
     return b.toString() ;
   } 
@@ -60,17 +128,31 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
     return config_id;
   }
 
-  
-  
+
+
   @Override
   public void activate() throws Exception {
-    
+
   }
 
 
   @Override
   public void deActivate() throws Exception {
-    
+
+  }
+
+  @Override
+  public String[] getActions() {
+    if(isDelete()) return new String[]{"Delete", "Cancel"} ;
+    else return new String[]{"Save", "Cancel"} ;
+  }
+
+  public boolean isDelete() {
+    return isDelete;
+  }
+
+  public void setDelete(boolean isDelete) {
+    this.isDelete = isDelete;
   }
 
 }

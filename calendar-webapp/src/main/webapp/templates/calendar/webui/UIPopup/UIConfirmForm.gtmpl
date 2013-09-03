@@ -2,15 +2,19 @@
 <div id="$uicomponent.id" class="uiConfirmForm">
 <% uiform.begin() %>
 <div class="form-horizontal resizable">
-
   <div class="control-group">
-    <div class="controls-full center">
-      <div id="confirm" class="confirm">
+    <div class="controls-full">
+      <div id="confirm" class="confirm media">
+        <i class="uiIconQuestion uiIconBlue pull-left"></i>
+        <div class="media-body">
         <%=uicomponent.confirmMessage %>
+        </div>
       </div>
     </div>
   </div>
-
+  <div class="confirmRadio">
+  <%uicomponent.renderChildren();%>
+  </div>
 </div>
 <div class="uiAction uiActionBorder">
   <% for (action in uicomponent.getActions())
