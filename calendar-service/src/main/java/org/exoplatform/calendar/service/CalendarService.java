@@ -993,6 +993,8 @@ public interface CalendarService {
   public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,Date from, Date to, String userId);
   
   public String buildRecurrenceId(Date formTime, String username);
+
+  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception;
 }
 
 

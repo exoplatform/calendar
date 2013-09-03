@@ -25,6 +25,7 @@ import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
@@ -973,8 +974,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   @Override
-  public void saveOneOccurrenceEvent(CalendarEvent originEvent,
-                                     CalendarEvent exceptionEvent,
+  public void saveOneOccurrenceEvent(CalendarEvent originEvent, CalendarEvent exceptionEvent,
                                      String username) {
     try {
       //calendar types of origin event and exception event
@@ -1041,55 +1041,47 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void saveAllSeriesEvents(CalendarEvent originEvent,
                                   Collection<String> exceptionEventIds,
                                   String username) {
-    String calendarId = originEvent.getCalendarId();
-    Collection<CalendarEvent> exceptions = getAllExcludedEvent(originEvent, originEvent.getFromDateTime(), originEvent.getToDateTime(), username);
-    for(CalendarEvent e : exceptions){
-      removeOneOccurrenceEvent(originEvent, e.getId(), e.getRecurrenceId(), username);
-    }
-    originEvent.setExceptionIds(null);
-    switch (Integer.parseInt(originEvent.getCalType())) {
-    case Calendar.TYPE_PRIVATE:
-      try {
-        saveUserEvent(username, calendarId, originEvent, false);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
+    try {
+      String calendarId = originEvent.getCalendarId();
+      Collection<CalendarEvent> exceptions = getAllExcludedEvent(originEvent, originEvent.getFromDateTime(), originEvent.getToDateTime(), username);
+      for(CalendarEvent exception : exceptions){
+        removeOneOccurrenceEvent(originEvent, exception.getId(), exception.getRecurrenceId(), username);
       }
-      break;
+      originEvent.setExceptionIds(null);
+      switch (Integer.parseInt(originEvent.getCalType())) {
+        case Calendar.TYPE_PRIVATE:
+          saveUserEvent(username, calendarId, originEvent, false);
+          break;
 
-    case Calendar.TYPE_PUBLIC:
-      try {
-        savePublicEvent(calendarId, originEvent, false);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
-      }
-      break;
+        case Calendar.TYPE_PUBLIC:
+          savePublicEvent(calendarId, originEvent, false);
+          break;
 
-    case Calendar.TYPE_SHARED:
-      try {
-        saveEventToSharedCalendar(username, calendarId, originEvent, false);
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
+        case Calendar.TYPE_SHARED:
+          saveEventToSharedCalendar(username, calendarId, originEvent, false);
+          break;
+        default:
+          break;
       }
-      break;
-    default:
-      break;
+    } catch(Exception e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("exception occurs when save all series",e);
+      }
     }
   }
 
   @Override
-  public void saveFollowingSeriesEvents(CalendarEvent originEvent,
-                                        CalendarEvent newEvent,
+  public void saveFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent selectedOccurrence,
                                         String username) {
     try {
-
       String calendarId = originEvent.getCalendarId();
-      originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
-      originEvent.addExceptionId(newEvent.getRecurrenceId());
-
+      originEvent.setRepeatUntilDate(selectedOccurrence.getFromDateTime());
+      originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
+      selectedOccurrence.setId("Event" + IdGenerator.generate());//set new id
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
           saveUserEvent(username, calendarId, originEvent, false);
-          saveUserEvent(username, calendarId, newEvent, true);
+          saveUserEvent(username, calendarId, selectedOccurrence, true);
           break;
 
         case Calendar.TYPE_PUBLIC:
@@ -1097,20 +1089,20 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           storage_.savePublicEvent(calendarId, originEvent, false);
           for(CalendarEventListener listener : eventListeners_) {
             //add comment (with new content format) to the activity of the origin repetitive event
-            listener.updateFollowingOccurrences(originEvent, newEvent, false);
+            listener.updateFollowingOccurrences(originEvent, selectedOccurrence);
           }
-          savePublicEvent(calendarId, newEvent, true);//publish event to create activity
+          savePublicEvent(calendarId, selectedOccurrence, true);//publish event to create activity
           break;
 
         case Calendar.TYPE_SHARED:
           saveEventToSharedCalendar(username, calendarId, originEvent, false);
-          saveEventToSharedCalendar(username, calendarId, newEvent, true);
+          saveEventToSharedCalendar(username, calendarId, selectedOccurrence, true);
           break;
         default:
           break;
       }
       //get all exception events in the future and remove them
-      List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, newEvent.getFromDateTime());
+      List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
       removeEvents(username, exceptionEvents);
 
     } catch (Exception e) {
@@ -1125,55 +1117,47 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void removeOneOccurrenceEvent(CalendarEvent originEvent,
                                        String eventId, String recurrenceId,
                                        String username) {
-
-    String calendarId = originEvent.getCalendarId(); 
-    boolean isException = false;
-    if(originEvent.getExceptionIds() != null ){
-     if(originEvent.getExceptionIds().contains(recurrenceId)) {
-       isException = true;
-     }
-     else {
-       originEvent.addExceptionId(recurrenceId);
-     }
-    }
-    switch (Integer.parseInt(originEvent.getCalType())) {
-    case Calendar.TYPE_PRIVATE:
-      try {
-        if(isException) {
-          removeUserEvent(username, calendarId, eventId);
-        } else {
-          saveUserEvent(username, calendarId, originEvent, false);
+    try {
+      String calendarId = originEvent.getCalendarId();
+      boolean isException = false;
+      if(originEvent.getExceptionIds() != null ){
+        if(originEvent.getExceptionIds().contains(recurrenceId)) {
+          isException = true;
         }
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
-      }
-      break;
-
-    case Calendar.TYPE_PUBLIC:
-      try {
-        if(isException) {
-          removePublicEvent(calendarId, eventId);
-        } else {
-          savePublicEvent(calendarId, originEvent, false);
+        else {
+          originEvent.addExceptionId(recurrenceId);
         }
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
       }
-      break;
+      switch (Integer.parseInt(originEvent.getCalType())) {
+        case Calendar.TYPE_PRIVATE:
+          if(isException) {
+            removeUserEvent(username, calendarId, eventId);
+          } else {
+            saveUserEvent(username, calendarId, originEvent, false);
+          }
+          break;
 
-    case Calendar.TYPE_SHARED:
-      try {
-        if(isException) {
-          removeSharedEvent(username, calendarId, eventId);
-        } else {
-          saveEventToSharedCalendar(username, calendarId, originEvent, false);
-        }
-      } catch (Exception e) {
-        if (LOG.isDebugEnabled()) LOG.debug(e);
+        case Calendar.TYPE_PUBLIC:
+          if(isException) {
+            removePublicEvent(calendarId, eventId);
+          } else {
+            savePublicEvent(calendarId, originEvent, false);
+          }
+          break;
+
+        case Calendar.TYPE_SHARED:
+          if(isException) {
+            removeSharedEvent(username, calendarId, eventId);
+            saveEventToSharedCalendar(username, calendarId, originEvent, false);
+          }
+          break;
+        default:
+          break;
       }
-      break;  
-    default:
-      break;
+    } catch(Exception e) {
+      if(LOG.isDebugEnabled()) {
+        LOG.debug("exception occurs when removing one occurrence",e);
+      }
     }
   }
 
@@ -1193,36 +1177,36 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   @Override
-  public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent newEvent,
+  public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent selectedOccurrence,
                                           String username) {
     try {
       String calendarId = originEvent.getCalendarId();
 
-      originEvent.setRepeatUntilDate(newEvent.getFromDateTime());
-      originEvent.addExceptionId(newEvent.getRecurrenceId());
+      originEvent.setRepeatUntilDate(selectedOccurrence.getFromDateTime());
+      originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
 
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
-          saveUserEvent(username, calendarId, newEvent, false);
+          saveUserEvent(username, calendarId, selectedOccurrence, false);
           break;
 
         case Calendar.TYPE_PUBLIC:
           //we don't want to add old-content comment for origin event's activity
-          storage_.savePublicEvent(calendarId, newEvent, false);
+          storage_.savePublicEvent(calendarId, selectedOccurrence, false);
           for(CalendarEventListener listener : eventListeners_) {
             //add new comment to the origin event's activity (with new content format)
-            listener.updateFollowingOccurrences(originEvent, newEvent, true);
+            listener.updateFollowingOccurrences(originEvent, selectedOccurrence);
           }
           break;
 
         case Calendar.TYPE_SHARED:
-          saveEventToSharedCalendar(username, calendarId, newEvent, false);
+          saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
           break;
         default:
           break;
       }
 
-      List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, newEvent.getFromDateTime());
+      List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
       removeEvents(username, exceptionEvents);
     } catch(Exception e) {
       if(LOG.isDebugEnabled()) {
@@ -1245,6 +1229,18 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       return result;
     }
     return exceptions;
+  }
+
+  @Override
+  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception {
+    if(occurence.getIsExceptionOccurrence() != null) {
+      Node eventNode = storage_.getSystemSession().getNodeByUUID(occurence.getOriginalReference());
+      return storage_.getEvent(eventNode);
+    }
+
+    //if occurrence is not an exception event, the id of the origin is the id of the occurrence
+    //(because the occurrence is clone from origin event
+    return getEventById(occurence.getId());
   }
 
   @Override

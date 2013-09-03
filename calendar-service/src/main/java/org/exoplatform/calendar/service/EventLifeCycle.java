@@ -57,9 +57,8 @@ public interface EventLifeCycle {
    * Posts event about updating occurrences of a repetitive series that start from a selected occurrence
    * @param originEvent the origin repetitive event
    * @param selectedOccurrence the selected event from which the new series will be created
-   * @param isDelete true if removing all occurrences from the selected event, false if just editing
    */
-  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence, boolean isDelete);
+  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence);
 
   /**
    * Posts event about removing one exception event of a repetitive event

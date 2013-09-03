@@ -48,7 +48,7 @@ public class CalendarUpdateEventListener extends BaseComponentPlugin implements 
   }
 
   @Override
-  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence, boolean isDelete) {
+  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence) {
   }
 
   @Override
