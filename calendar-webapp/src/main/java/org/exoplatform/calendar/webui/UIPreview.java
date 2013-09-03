@@ -55,8 +55,12 @@ import org.exoplatform.webui.event.EventListener;
                  events = {
                    @EventConfig(listeners = UIPreview.DownloadActionListener.class),
                    @EventConfig(listeners = UICalendarView.EditActionListener.class),  
-                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-                   @EventConfig(listeners = UIPreview.CloseWindowActionListener.class)
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
+                   @EventConfig(listeners = UIPreview.CloseWindowActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
                  }
     )
 public class UIPreview extends UICalendarView implements UIPopupComponent

@@ -2192,8 +2192,14 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
   }
   
+  public static class ConfirmUpdateFollowingSeries extends EventListener<UIEventForm> {
+    @Override
+    public void execute(Event<UIEventForm> event) throws Exception {
+      
+    }
+  }
+  
   public static class ConfirmUpdateCancel extends EventListener<UIEventForm> {
-
     @Override
     public void execute(Event<UIEventForm> event) throws Exception {
       UIEventForm uiEventForm = event.getSource();

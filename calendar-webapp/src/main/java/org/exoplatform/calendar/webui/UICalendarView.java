@@ -1227,6 +1227,18 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
+      UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
+      UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
+      UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 480);
+      confirmForm.setConfirmMessage("delete-recurrence-event-confirm-msg");
+      confirmForm.setConfig_id(uiCalendarView.getId());
+      confirmForm.setDelete(true);
+      //String[] actions = new String[] { "ConfirmDeleteOnlyInstance", "ConfirmDeleteAllSeries",
+      //"ConfirmDeleteCancel" };
+      //confirmForm.setActions(actions);
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+      return;
+      /*
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
       String calType = event.getRequestContext().getRequestParameter(CALTYPE);
@@ -1366,6 +1378,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       uiViewContainer.refresh();
       uiPortlet.setCalendarSetting(setting);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiViewContainer);
+      */
     }
   }
 
@@ -1804,8 +1817,27 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
     }
   }
+  
+  public static class ConfirmDeleteFollowingSeries extends EventListener<UICalendarView> {
+    @Override
+    public void execute(Event<UICalendarView> event) throws Exception {
+      
+    }
+  }
 
   public static class ConfirmDeleteCancel extends EventListener<UICalendarView> {
+    @Override
+    public void execute(Event<UICalendarView> event) throws Exception {
+      UICalendarView uiCalendarView = event.getSource();
+      uiCalendarView.setCurrentOccurrence(null);
+      UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
+      UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
+      uiPortlet.cancelAction();
+      uiPopupAction.deActivate();
+    }
+  }
+  
+  public static class ConfirmUpdateCancel extends EventListener<UICalendarView> {
     @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
