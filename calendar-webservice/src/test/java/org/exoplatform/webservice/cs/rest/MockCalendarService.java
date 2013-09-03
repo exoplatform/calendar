@@ -637,14 +637,7 @@ public class MockCalendarService implements CalendarService{
     
   }
 
-  @Override
-  public void saveFollowingSeriesEvents(CalendarEvent originEvent,
-                                        CalendarEvent newEvent,
-                                        Collection<String> exceptionEventIds,
-                                        String username) {
-    // TODO Auto-generated method stub
-    
-  }
+  
 
   @Override
   public void removeOneOccurrenceEvent(CalendarEvent originEvent,
@@ -655,14 +648,7 @@ public class MockCalendarService implements CalendarService{
     
   }
 
-  @Override
-  public void removeFollowingSeriesEvents(CalendarEvent originEvent,
-                                          CalendarEvent newEvent,
-                                          Collection<String> exceptionEventIds,
-                                          String username) {
-    // TODO Auto-generated method stub
-    
-  }
+   
 
   @Override
   public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,
@@ -688,11 +674,40 @@ public class MockCalendarService implements CalendarService{
     return null;
   }
 
+  
   @Override
-  public void removeAllSeriesEvents(CalendarEvent originEvent,
-                                    Collection<String> exceptionEventIds,
-                                    String username) {
+  public void saveFollowingSeriesEvents(CalendarEvent originEvent,
+                                        CalendarEvent newEvent,
+                                        String username) {
     // TODO Auto-generated method stub
     
+  }
+
+  @Override
+  public void removeAllSeriesEvents(CalendarEvent originEvent, String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void removeFollowingSeriesEvents(CalendarEvent originEvent,
+                                          CalendarEvent newEvent,
+                                          String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public List<CalendarEvent> getExceptionEventsFromDate(String username,
+                                                        CalendarEvent event,
+                                                        Date fromDate) throws Exception {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
