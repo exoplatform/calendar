@@ -28,24 +28,25 @@ import org.exoplatform.container.component.BaseComponentPlugin;
  */
 public class CalendarEventListener extends BaseComponentPlugin implements EventLifeCycle {
 
-  @Override
   public void savePublicEvent(CalendarEvent event, String calendarId) {
 
   }
 
-  @Override
   public void updatePublicEvent(CalendarEvent event, String calendarId) {
 
   }
 
-  @Override
   public void deletePublicEvent(CalendarEvent event, String calendarId) {
     
   }
 
-  @Override
   public void updatePublicEvent(CalendarEvent oldEvent, CalendarEvent event, String calendarId) {
     
   }
 
+  public void removeOneOccurrence(CalendarEvent originEvent, CalendarEvent removedEvent) {
+  }
+
+  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence) {
+  }
 }

@@ -3072,7 +3072,6 @@ public class JCRDataStorage implements DataStorage {
       occurrences.put(recurId, occurrence);
     }
     return occurrences;
-
   }
 
   // here we need to edit the occurrence to have correct time 
@@ -3965,6 +3964,9 @@ public class JCRDataStorage implements DataStorage {
                                 currentRepo);
   }
 
+  public Session getSystemSession() throws Exception {
+    return getSession(createSystemProvider());
+  }
   private String[] ValuesToStrings(Value[] Val) throws Exception {
     if (Val.length == 1)
       return new String[] { Val[0].getString() };
