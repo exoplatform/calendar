@@ -17,7 +17,13 @@
 package org.exoplatform.calendar.webui.popup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -43,16 +49,22 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   private String config_id = "";
   private String confirmMessage;
   private boolean isDelete;
-  private static String SAVE_CONFIRM = "confirm";
-  private static String SAVE_ALL = "save_all";
-  private static String SAVE_ONE = "save_one";
-  private static String SAVE_FOLLOW = "save_follow";
-  private static String CANCEL = "Cancel";
-  private static String SAVE = "Save";
-  private static String DELETE = "Delete";
-
+  final private static String SAVE_CONFIRM = "confirm";
+  final private static String SAVE_ALL = "save_all";
+  final private static String SAVE_ONE = "save_one";
+  final private static String SAVE_FOLLOW = "save_follow";
+  final private static String CANCEL = "Cancel";
+  final private static String SAVE = "Save";
+  final private static String DELETE = "Delete";
+  final private static Collection<String> DELETE_ACTIONS = Arrays.asList("ConfirmDeleteOnlyInstance",
+                                                                         "ConfirmDeleteFollowSeries",
+                                                                         "ConfirmDeleteAllSeries") ;
+  final private static Collection<String> UPDATE_ACTIONS = Arrays.asList("ConfirmUpdateOnlyInstance", 
+                                                                         "ConfirmUpdateFollowSeries", 
+                                                                         "ConfirmUpdateAllSeries");
   public UIConfirmForm() {
     UIFormRadioBoxInput input = new UIFormRadioBoxInput(SAVE_CONFIRM, SAVE_CONFIRM, getValue());
+    input.setValue(SAVE_ONE);
     input.setAlign(UIFormRadioBoxInput.VERTICAL_ALIGN);
     addUIFormInput(input);
   }
@@ -93,10 +105,11 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
 
   public String getConfirmMessage() {
     try {
-      return getLabel(this.confirmMessage);
+      return getLabel(confirmMessage);
     } catch (Exception e) {
-      return this.confirmMessage;
+
     }
+    return confirmMessage;
   }
 
   @Override
@@ -128,6 +141,26 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
     return config_id;
   }
 
+
+  Collection<String> getAllActions(){
+    Stack<String> s = new Stack<String>() ;
+    if(isDelete()) {
+      for(String name : DELETE_ACTIONS){
+        StringBuilder b = new StringBuilder() ;
+        b.append("javascript:eXo.webui.UIForm.submitForm('").append(getConfig_id()).append("','");
+        b.append(name).append("',true);");
+        s.add(b.toString()) ;
+      }
+    } else {
+      for(String name : UPDATE_ACTIONS) {
+        StringBuilder b = new StringBuilder() ;
+        b.append("javascript:eXo.webui.UIForm.submitForm('").append(getConfig_id()).append("','");
+        b.append(name).append("',true);");
+        s.add(b.toString()) ;
+      }
+    } 
+    return s;
+  }
 
 
   @Override

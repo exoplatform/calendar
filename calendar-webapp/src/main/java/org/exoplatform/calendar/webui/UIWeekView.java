@@ -61,7 +61,7 @@ import org.exoplatform.webui.event.EventListener;
                    @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
                    @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
                    @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
                    @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),
                    @EventConfig(listeners = UIWeekView.UpdateEventActionListener.class),
@@ -69,7 +69,9 @@ import org.exoplatform.webui.event.EventListener;
                    @EventConfig(listeners = UIWeekView.UpdateAllDayEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateCancel.class)
                  }
     )
 public class UIWeekView extends UICalendarView {

@@ -29,6 +29,8 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.popup.UIConfirmForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -53,7 +55,7 @@ import org.exoplatform.webui.event.EventListener;
       @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
       @EventConfig(listeners = UICalendarView.ViewActionListener.class),
       @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+      @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
       @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
       @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
       @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
@@ -63,7 +65,9 @@ import org.exoplatform.webui.event.EventListener;
       @EventConfig(listeners = UIDayView.UpdateEventActionListener.class),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
+      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+      @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
+      @EventConfig(listeners = UICalendarView.ConfirmUpdateCancel.class)
     }
 )
 public class UIDayView extends UICalendarView {
@@ -144,6 +148,13 @@ public class UIDayView extends UICalendarView {
     public void execute(Event<UIDayView> event) throws Exception {
       UIDayView calendarview = event.getSource();
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
+      UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+      UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
+      confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+      confirmForm.setDelete(false);
+      confirmForm.setConfig_id(calendarview.getId()) ;
+      return;
+      /*
       calendarview.refresh();
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(eventId + CALENDARID);
@@ -257,6 +268,7 @@ public class UIDayView extends UICalendarView {
         
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarView.msg.event-not-found", null)) ;
         }
+        */
     }
   }
 
