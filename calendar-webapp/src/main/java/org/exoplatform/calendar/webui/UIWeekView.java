@@ -30,6 +30,8 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.popup.UIConfirmForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -199,8 +201,14 @@ public class UIWeekView extends UICalendarView {
     @Override
     public void execute(Event<UIWeekView> event) throws Exception {
       UIWeekView calendarview = event.getSource() ;
-
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
+      UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+      UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
+      confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+      confirmForm.setDelete(false);
+      confirmForm.setConfig_id(calendarview.getId()) ;
+      return;
+      /*
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(eventId + CALENDARID);
       String calType = event.getRequestContext().getRequestParameter(eventId + CALTYPE);
@@ -301,6 +309,7 @@ public class UIWeekView extends UICalendarView {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         }
       }
+      */
     }
   }
 
