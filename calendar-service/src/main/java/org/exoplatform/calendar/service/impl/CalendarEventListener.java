@@ -47,6 +47,6 @@ public class CalendarEventListener extends BaseComponentPlugin implements EventL
   public void removeOneOccurrence(CalendarEvent originEvent, CalendarEvent removedEvent) {
   }
 
-  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence, boolean isDelete) {
+  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence) {
   }
 }

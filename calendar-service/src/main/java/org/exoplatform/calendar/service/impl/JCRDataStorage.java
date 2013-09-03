@@ -3964,6 +3964,9 @@ public class JCRDataStorage implements DataStorage {
                                 currentRepo);
   }
 
+  public Session getSystemSession() throws Exception {
+    return getSession(createSystemProvider());
+  }
   private String[] ValuesToStrings(Value[] Val) throws Exception {
     if (Val.length == 1)
       return new String[] { Val[0].getString() };
