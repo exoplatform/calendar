@@ -1187,12 +1187,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
-          saveUserEvent(username, calendarId, selectedOccurrence, false);
+          saveUserEvent(username, calendarId, originEvent, false);
           break;
 
         case Calendar.TYPE_PUBLIC:
           //we don't want to add old-content comment for origin event's activity
-          storage_.savePublicEvent(calendarId, selectedOccurrence, false);
+          storage_.savePublicEvent(calendarId, originEvent, false);
           for(CalendarEventListener listener : eventListeners_) {
             //add new comment to the origin event's activity (with new content format)
             listener.updateFollowingOccurrences(originEvent, selectedOccurrence);
