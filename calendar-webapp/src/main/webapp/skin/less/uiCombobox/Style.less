@@ -8,7 +8,7 @@
 			  background: @white ;
 			  position:absolute;
 			  display:none;
-			  border: solid 1px @tableBorder ;
+			  border: solid 1px @borderColor ;
 			}
 			.UIComboboxItemContainer {
 			  overflow-y: auto ;
@@ -18,7 +18,7 @@
 			  margin-left: 10px ;
 			}
 			.UIComboboxList .UIComboboxSelectedItem{
-			  	 .buttonBackground(#6389f8,#3d54ec);
+			  	 .buttonBackground(@blueLighter, @blue);
 					  color: @white;
 			}
 			.UIComboboxItem {
@@ -27,7 +27,7 @@
 			   color: @textColor;
 			  outline:none;
 			  &:hover{
-				  .buttonBackground(#6389f8,#3d54ec);
+				  .buttonBackground(@blueLighter, @blue);
 				  color: @white ;
 				}
 				&:visit{
