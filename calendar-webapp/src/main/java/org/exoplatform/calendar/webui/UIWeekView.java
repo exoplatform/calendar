@@ -68,9 +68,12 @@ import org.exoplatform.webui.event.EventListener;
                    @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
                    @EventConfig(listeners = UIWeekView.UpdateAllDayEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
-                   @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateFollowSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateAllSeries.class),
                    @EventConfig(listeners = UICalendarView.ConfirmUpdateCancel.class)
                  }
     )
@@ -204,13 +207,6 @@ public class UIWeekView extends UICalendarView {
     public void execute(Event<UIWeekView> event) throws Exception {
       UIWeekView calendarview = event.getSource() ;
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
-      UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
-      UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
-      confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
-      confirmForm.setDelete(false);
-      confirmForm.setConfig_id(calendarview.getId()) ;
-      return;
-      /*
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(eventId + CALENDARID);
       String calType = event.getRequestContext().getRequestParameter(eventId + CALTYPE);
@@ -282,9 +278,17 @@ public class UIWeekView extends UICalendarView {
             }
             // if it's a 'virtual' occurrence
             if (isOccur && !Utils.isEmpty(recurId)) {
-              List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
-              listEvent.add(eventCalendar);
-              calendarService.updateOccurrenceEvent(calendarId, calendarId, calType, calType, listEvent, username);
+              UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+              UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
+              confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+              confirmForm.setDelete(false);
+              confirmForm.setConfig_id(calendarview.getId()) ;
+              calendarview.setCurrentOccurrence(eventCalendar);
+              event.getRequestContext().addUIComponentToUpdateByAjax(pAction);
+             // return;
+              //List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
+              //listEvent.add(eventCalendar);
+              //calendarService.updateOccurrenceEvent(calendarId, calendarId, calType, calType, listEvent, username);
             } else {
               if(calType.equals(CalendarUtils.PRIVATE_TYPE)) {
                 calendarService.saveUserEvent(username, calendarId, eventCalendar, false) ;  
@@ -311,7 +315,7 @@ public class UIWeekView extends UICalendarView {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         }
       }
-      */
+
     }
   }
 

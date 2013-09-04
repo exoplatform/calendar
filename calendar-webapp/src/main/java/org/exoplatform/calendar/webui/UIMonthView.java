@@ -257,17 +257,8 @@ public class UIMonthView extends UICalendarView {
     public void execute(Event<UIMonthView> event) throws Exception {
       UIMonthView calendarview = event.getSource() ;
       UICalendarPortlet uiPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class) ;
-      
-      UIPopupAction pAction = uiPortlet.getChild(UIPopupAction.class) ;
-      UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
-      confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
-      confirmForm.setDelete(false);
-      confirmForm.setConfig_id(calendarview.getId()) ;
-      return;
-      /*
       String username = CalendarUtils.getCurrentUser() ;
       String value = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      
       CalendarService calService = CalendarUtils.getCalendarService() ;
       try {
         List<CalendarEvent> list = calendarview.getSelectedEvents() ;
@@ -333,7 +324,7 @@ public class UIMonthView extends UICalendarView {
       uiViewContainer.refresh() ;
       uiPortlet.setCalendarSetting(setting) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;
-      */
+      
     }
   }
   

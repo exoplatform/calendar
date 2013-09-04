@@ -57,7 +57,7 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   final private static String SAVE = "Save";
   final private static String DELETE = "Delete";
   final private static Collection<String> DELETE_ACTIONS = Arrays.asList("ConfirmDeleteOnlyInstance",
-                                                                         "ConfirmDeleteFollowSeries",
+                                                                         "ConfirmDeleteFollowingSeries",
                                                                          "ConfirmDeleteAllSeries") ;
   final private static Collection<String> UPDATE_ACTIONS = Arrays.asList("ConfirmUpdateOnlyInstance", 
                                                                          "ConfirmUpdateFollowSeries", 
@@ -120,7 +120,7 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
       if(DELETE.equals(name)) {
         if(isSaveOne()) name = "ConfirmDeleteOnlyInstance";
         else if(isSaveAll()) name = "ConfirmDeleteAllSeries";
-        else if(isSaveFollow()) name = "ConfirmDeleteFollowSeries";
+        else if(isSaveFollow()) name = "ConfirmDeleteFollowingSeries";
       } else if(CANCEL.equals(name)) name = "ConfirmDeleteCancel";
     } else {
       if(SAVE.equals(name)) {
