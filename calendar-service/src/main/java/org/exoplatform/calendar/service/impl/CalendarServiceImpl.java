@@ -1078,6 +1078,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       originEvent.setRepeatUntilDate(selectedOccurrence.getFromDateTime());
       originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
       selectedOccurrence.setId("Event" + IdGenerator.generate());//set new id
+      selectedOccurrence.setRecurrenceId(null);
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
           saveUserEvent(username, calendarId, originEvent, false);
@@ -1233,14 +1234,21 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   @Override
   public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception {
+    CalendarEvent originEvent = null;
     if(occurence.getIsExceptionOccurrence() != null) {
+      //if occurence is an exception that was broken from series, get the origin by UUID
       Node eventNode = storage_.getSystemSession().getNodeByUUID(occurence.getOriginalReference());
-      return storage_.getEvent(eventNode);
+      originEvent =  storage_.getEvent(eventNode);
+    } else if(occurence.getRecurrenceId() != null) {
+      //if occurrence is not an exception event, the id of the origin is the id of the occurrence
+      //(because the occurrence is clone from origin event
+      originEvent = getEventById(occurence.getId());
+    }
+    if(originEvent != null) {
+      originEvent.setCalType(occurence.getCalType());
     }
 
-    //if occurrence is not an exception event, the id of the origin is the id of the occurrence
-    //(because the occurrence is clone from origin event
-    return getEventById(occurence.getId());
+    return originEvent;
   }
 
   @Override
