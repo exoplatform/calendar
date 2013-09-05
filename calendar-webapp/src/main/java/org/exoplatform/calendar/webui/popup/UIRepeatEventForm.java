@@ -151,7 +151,7 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
       if (repeatType != null && !repeatType.equals(CalendarEvent.RP_NOREPEAT)) {
         setRepeatType(repeatType);
       } else {
-        setRepeatType(CalendarEvent.RP_DAILY);
+        setRepeatType(CalendarEvent.RP_WEEKLY);
       }
       
       long interval = event.getRepeatInterval();
