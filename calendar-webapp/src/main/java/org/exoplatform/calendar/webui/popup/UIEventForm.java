@@ -119,6 +119,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
                      @EventConfig(listeners = UIEventForm.ConfirmOKActionListener.class, name = "ConfirmOK", phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.ConfirmCancelActionListener.class, name = "ConfirmCancel", phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.ConfirmUpdateOnlyInstance.class, phase = Phase.DECODE),
+                     @EventConfig(listeners = UIEventForm.ConfirmUpdateFollowSeries.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.ConfirmUpdateAllSeries.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.ConfirmUpdateCancel.class, phase = Phase.DECODE),
                      @EventConfig(listeners = UIEventForm.EditRepeatActionListener.class, phase = Phase.DECODE)
@@ -1344,7 +1345,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     return null;
   }
   
-  public void saveAndNoAsk(Event<UIEventForm> event, boolean isSend, boolean updateSeries)throws Exception {
+  public void saveAndNoAsk(Event<UIEventForm> event, boolean isSend, Boolean updateSeries)throws Exception {
     UIEventForm uiForm = event.getSource() ;
     UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
     UIPopupAction uiPopupAction = uiForm.getAncestorOfType(UIPopupAction.class) ;
@@ -1531,16 +1532,23 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         
         // if the event (before change) is a virtual occurrence
         if (!uiForm.calendarEvent_.getRepeatType().equals(CalendarEvent.RP_NOREPEAT) && !CalendarUtils.isEmpty(uiForm.calendarEvent_.getRecurrenceId())) {
-          if (!updateSeries) {
-            calService.updateOccurrenceEvent(fromCal, toCal, fromType, toType, listEvent, username);
+          // save following
+          CalendarEvent originEvent = calService.getRepetitiveEvent(uiForm.calendarEvent_);
+          if(updateSeries == null) {
+            calService.saveFollowingSeriesEvents(originEvent, uiForm.calendarEvent_, username);
+          } else if (!updateSeries) {
+            calService.saveOneOccurrenceEvent(originEvent, uiForm.calendarEvent_, username);
+            //calService.updateOccurrenceEvent(fromCal, toCal, fromType, toType, listEvent, username);
           } else {
             // update series:
 
             if (CalendarUtils.isSameDate(oldCalendarEvent.getFromDateTime(), calendarEvent.getFromDateTime())) {
-              calService.updateRecurrenceSeries(fromCal, toCal, fromType, toType, calendarEvent, username);
+              calService.saveAllSeriesEvents(originEvent, Arrays.asList(uiForm.calendarEvent_.getId()), username);
+              //calService.updateRecurrenceSeries(fromCal, toCal, fromType, toType, calendarEvent, username);
             }
             else {
-              calService.updateOccurrenceEvent(fromCal, toCal, fromType, toType, listEvent, username);
+              calService.saveOneOccurrenceEvent(originEvent, uiForm.calendarEvent_, username);
+              //calService.updateOccurrenceEvent(fromCal, toCal, fromType, toType, listEvent, username);
             }
           }
         } 
@@ -2173,6 +2181,12 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         // update only this occurrence instance
         uiForm.saveAndNoAsk(event, false, false);
       }
+      UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
+      UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class);
+      UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class);
+      uiPortlet.cancelAction();
+      uiPopupAction.deActivate();
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
     }
   }
   
@@ -2189,13 +2203,27 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       else {
         uiForm.saveAndNoAsk(event, false, true);
       }
+      UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
+      UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class);
+      UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class);
+      uiPortlet.cancelAction();
+      uiPopupAction.deActivate();
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
     }
   }
   
-  public static class ConfirmUpdateFollowingSeries extends EventListener<UIEventForm> {
+  public static class ConfirmUpdateFollowSeries extends EventListener<UIEventForm> {
     @Override
     public void execute(Event<UIEventForm> event) throws Exception {
-      
+      UIEventForm uiForm = event.getSource();
+      String sendOption = uiForm.getSendOption();
+      uiForm.saveAndNoAsk(event, CalendarSetting.ACTION_ALWAYS.equals(sendOption), null);
+      UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
+      UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class);
+      UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class);
+      uiPortlet.cancelAction();
+      uiPopupAction.deActivate();
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
     }
   }
   
@@ -2203,11 +2231,10 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     @Override
     public void execute(Event<UIEventForm> event) throws Exception {
       UIEventForm uiEventForm = event.getSource();
-      UICalendarPortlet uiPortlet = uiEventForm.getAncestorOfType(UICalendarPortlet.class) ;
       UIPopupContainer uiPopupContainer = uiEventForm.getAncestorOfType(UIPopupContainer.class);
       UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class);
-      uiPortlet.cancelAction();
       uiPopupAction.deActivate();
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
     }
   }
   
