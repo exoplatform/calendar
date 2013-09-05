@@ -1043,7 +1043,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
                                   String username) {
     try {
       String calendarId = originEvent.getCalendarId();
-      Collection<CalendarEvent> exceptions = getAllExcludedEvent(originEvent, originEvent.getFromDateTime(), originEvent.getToDateTime(), username);
+      Collection<CalendarEvent> exceptions = getExceptionEvents(username, originEvent);
       for(CalendarEvent exception : exceptions){
         removeOneOccurrenceEvent(originEvent, exception.getId(), exception.getRecurrenceId(), username);
       }
