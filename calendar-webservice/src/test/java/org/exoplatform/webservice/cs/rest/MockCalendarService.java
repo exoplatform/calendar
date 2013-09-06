@@ -16,19 +16,6 @@
  */
 package org.exoplatform.webservice.cs.rest;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
-
-import javax.jcr.Node;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -55,6 +42,19 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.quartz.JobDetail;
+
+import javax.jcr.Node;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SAS
@@ -631,7 +631,6 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public void saveAllSeriesEvents(CalendarEvent originEvent,
-                                  Collection<String> exceptionEventIds,
                                   String username) {
     // TODO Auto-generated method stub
     
@@ -641,8 +640,7 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public void removeOneOccurrenceEvent(CalendarEvent originEvent,
-                                       String eventId,
-                                       String recurrenceId,
+                                       CalendarEvent removedOccurence,
                                        String username) {
     // TODO Auto-generated method stub
     
