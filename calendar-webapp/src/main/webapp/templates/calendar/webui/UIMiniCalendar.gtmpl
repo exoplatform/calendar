@@ -68,9 +68,15 @@
 				 <%
 	Calendar calendar = uicomponent.getInstanceTempCalendar();	
 	calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-	for(int i = 0; i < 7; i++) {	    
+	int weekstartday = calendar.getFirstDayOfWeek();
+	for(int i = 0; i < 7; i++) {
+		    
+	  /* weekstartday's values is (SUNDAY=1,MONDAY=2,...,SAT=7)
+	     the index of short day names in resource bundle is ('MO=0,'TU'=1,...,'SU=6)
+	     so given the weekstartday, the index to get the short day name in resource bundle is (weekstartday - 2) % 7 */
+	    
 	%>
-	<td><%=_ctx.appRes("UIRepeatEventForm.label." + CalendarEvent.RP_WEEKLY_BYDAY[i])%></td>
+	<td><%=_ctx.appRes("UIRepeatEventForm.label." + CalendarEvent.RP_WEEKLY_BYDAY[(weekstartday++ - 2) % 7])%></td>
 	<%
 	  calendar.add(Calendar.DAY_OF_WEEK, 1);
 	}
