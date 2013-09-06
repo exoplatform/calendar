@@ -16,23 +16,6 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-import javax.jcr.PathNotFoundException;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -64,7 +47,23 @@ import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormSelectBox;
 
-import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+import javax.jcr.PathNotFoundException;
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen
@@ -1729,7 +1728,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           return;
         }
         CalendarEvent originEvent = calService.getRepetitiveEvent(occurrence);
-        calService.removeOneOccurrenceEvent(originEvent, occurrence.getId(), occurrence.getRecurrenceId(), username);
+        calService.removeOneOccurrenceEvent(originEvent, occurrence, username);
         //calService.removeOccurrenceInstance(username, occurrence);
         if (uiCalendarView instanceof UIListView) {
           uiCalendarView.refresh();
@@ -1885,7 +1884,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       CalendarService calService = CalendarUtils.getCalendarService() ;
       CalendarEvent originEvent = calService.getRepetitiveEvent(newEvent);
       String username = CalendarUtils.getCurrentUser();
-      calService.saveAllSeriesEvents(originEvent, Arrays.asList(newEvent.getId()), username);
+      calService.saveAllSeriesEvents(originEvent,  username);
       uiCalendarView.refresh();
       uiCalendarView.setCurrentOccurrence(null);
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);

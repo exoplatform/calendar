@@ -16,23 +16,6 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.CalendarUtils;
@@ -88,6 +71,24 @@ import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.organization.account.UIUserSelector;
+
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL
@@ -1543,7 +1544,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
             // update series:
 
             if (CalendarUtils.isSameDate(oldCalendarEvent.getFromDateTime(), calendarEvent.getFromDateTime())) {
-              calService.saveAllSeriesEvents(originEvent, Arrays.asList(uiForm.calendarEvent_.getId()), username);
+              calService.saveAllSeriesEvents(originEvent, username);
               //calService.updateRecurrenceSeries(fromCal, toCal, fromType, toType, calendarEvent, username);
             }
             else {
