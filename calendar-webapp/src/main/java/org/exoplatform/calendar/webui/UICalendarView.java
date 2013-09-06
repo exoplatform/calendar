@@ -1882,9 +1882,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       UICalendarView uiCalendarView = event.getSource();
       CalendarEvent newEvent = uiCalendarView.getcurrentOccurrence();
       CalendarService calService = CalendarUtils.getCalendarService() ;
-      CalendarEvent originEvent = calService.getRepetitiveEvent(newEvent);
+      //CalendarEvent originEvent = calService.getRepetitiveEvent(newEvent);
       String username = CalendarUtils.getCurrentUser();
-      calService.saveAllSeriesEvents(originEvent,  username);
+      calService.saveAllSeriesEvents(newEvent,  username);
       uiCalendarView.refresh();
       uiCalendarView.setCurrentOccurrence(null);
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
