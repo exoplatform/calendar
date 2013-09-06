@@ -17,7 +17,24 @@
 package org.exoplatform.calendar.service.impl;
 
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarImportExport;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.CalendarUpdateEventListener;
+import org.exoplatform.calendar.service.DeleteShareJob;
+import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.EventPageList;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.ImportCalendarJob;
+import org.exoplatform.calendar.service.RemoteCalendar;
+import org.exoplatform.calendar.service.RemoteCalendarService;
+import org.exoplatform.calendar.service.RssData;
+import org.exoplatform.calendar.service.ShareCalendarJob;
+import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -47,7 +64,18 @@ import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -1325,5 +1353,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         LOG.debug("Exception when removing events",e);
       }
     }
+  }
+
+  /*
+   * Returns last occurrences of repetitive event
+   * Note: This function works with only event that has until date
+   */
+  private CalendarEvent getLastOccurrenceDate(CalendarEvent recurEvent) {
+
+    return null;
   }
 }

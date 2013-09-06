@@ -3157,7 +3157,8 @@ public class JCRDataStorage implements DataStorage {
     java.util.Calendar until = null;
     if (recurEvent.getRepeatUntilDate() != null) {
       until = Utils.getInstanceTempCalendar();
-      until.setTime(recurEvent.getRepeatUntilDate());
+      //set until to the end of the day, to include the until date in the occurrence instances list
+      until.setTimeInMillis(recurEvent.getRepeatUntilDate().getTime() + 24 * 60 * 60 * 1000 - 1);
     }
 
     int interval = (int) recurEvent.getRepeatInterval();
