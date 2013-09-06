@@ -41,7 +41,6 @@ import org.exoplatform.calendar.service.impl.TaskSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -256,7 +255,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(4, occMap.size());
     
     recurEvent.setSummary("change and update all");
-    calendarService_.saveAllSeriesEvents(recurEvent, recurEvent.getExceptionIds(), username);
+    calendarService_.saveAllSeriesEvents(recurEvent, username);
     occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
     assertEquals(5, occMap.size());
 
@@ -372,12 +371,12 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(4, occMap.size());  //5 - 1
 
     //remove 1 occurrence from the series
-    calendarService_.removeOneOccurrenceEvent(recurEvent, occEvent2.getId(), occEvent2.getRecurrenceId(), username);
+    calendarService_.removeOneOccurrenceEvent(recurEvent, occEvent2, username);
     occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
     assertEquals(3, occMap.size());  //5 - 1 - 1
 
     //remove the exception event
-    calendarService_.removeOneOccurrenceEvent(recurEvent, occEvent1.getId(), occEvent1.getRecurrenceId(), username);
+    calendarService_.removeOneOccurrenceEvent(recurEvent, occEvent1, username);
     occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
     list = calendarService_.getExceptionEvents(username,recurEvent);
     assertEquals(3, occMap.size());
