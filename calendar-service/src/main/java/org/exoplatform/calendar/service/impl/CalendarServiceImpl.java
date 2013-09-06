@@ -260,9 +260,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public CalendarEvent removePublicEvent(String calendarId, String eventId) throws Exception {
     CalendarEvent event = storage_.removePublicEvent(calendarId, eventId);
+    //remove the event's activity
     for (CalendarEventListener cel : eventListeners_) {
       cel.deletePublicEvent(event, calendarId);
     }
+
     return event ;
   }
 
@@ -974,21 +976,21 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   @Override
-  public void saveOneOccurrenceEvent(CalendarEvent originEvent, CalendarEvent exceptionEvent,
+  public void saveOneOccurrenceEvent(CalendarEvent originEvent, CalendarEvent selectedOccurrence,
                                      String username) {
     try {
       //calendar types of origin event and exception event
       int fromType = Integer.parseInt(originEvent.getCalType());
-      int toType = Integer.parseInt(exceptionEvent.getCalType());
+      int toType = Integer.parseInt(selectedOccurrence.getCalType());
       //calendar id of origin event and exception event
       String fromCalendar = originEvent.getCalendarId();
-      String toCalendar = exceptionEvent.getCalendarId();
+      String toCalendar = selectedOccurrence.getCalendarId();
 
-      //if exceptionEvent is a new event that is broken from the series
-      if (!Utils.isExceptionOccurrence(exceptionEvent)) {
+      //if selectedOccurrence is a new event that is broken from the series
+      if (!Utils.isExceptionOccurrence(selectedOccurrence)) {
         if (originEvent != null) {
           //add the recurrence id of the exception event to the excluded list of the origin event
-          originEvent.addExceptionId(exceptionEvent.getRecurrenceId());
+          originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
           //and then save the updates to the origin event
           if (fromType == Calendar.TYPE_PRIVATE) {
             saveUserEvent(username, fromCalendar, originEvent, false);
@@ -1002,34 +1004,34 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       //the edited exception event is not moved to another calendar
       if (fromCalendar.equals(toCalendar)) {
-        if (Utils.isExceptionOccurrence(exceptionEvent)) {
-          storage_.saveOccurrenceEvent(username, toCalendar, exceptionEvent, false);
+        if (Utils.isExceptionOccurrence(selectedOccurrence)) {
+          storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, false);
         } else {
-          storage_.saveOccurrenceEvent(username, toCalendar, exceptionEvent, true);
+          storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, true);
         }
       } else { //this case is when the exception event is moved to another calendar
 
         //if it is already an exception event, remove it first
-        if (Utils.isExceptionOccurrence(exceptionEvent)) {
+        if (Utils.isExceptionOccurrence(selectedOccurrence)) {
           if (fromType == Calendar.TYPE_PRIVATE) {
-            removeUserEvent(username, fromCalendar, exceptionEvent.getId());
+            removeUserEvent(username, fromCalendar, selectedOccurrence.getId());
           } else if (fromType == Calendar.TYPE_SHARED) {
-            removeSharedEvent(username, fromCalendar, exceptionEvent.getId());
+            removeSharedEvent(username, fromCalendar, selectedOccurrence.getId());
           } else if (fromType == Calendar.TYPE_PUBLIC) {
-            removePublicEvent(fromCalendar, exceptionEvent.getId());
+            removePublicEvent(fromCalendar, selectedOccurrence.getId());
           }
         }
         //then  save it to the new calendar
-        exceptionEvent.setCalendarId(toCalendar);
-        exceptionEvent.setRepeatType(CalendarEvent.RP_NOREPEAT);
-        exceptionEvent.setIsExceptionOccurrence(false);
+        selectedOccurrence.setCalendarId(toCalendar);
+        selectedOccurrence.setRepeatType(CalendarEvent.RP_NOREPEAT);
+        selectedOccurrence.setIsExceptionOccurrence(false);
 
         if (toType == Calendar.TYPE_PRIVATE) {
-          saveUserEvent(username, toCalendar, exceptionEvent, true);
+          saveUserEvent(username, toCalendar, selectedOccurrence, true);
         } else if (toType == Calendar.TYPE_SHARED) {
-          saveEventToSharedCalendar(username, toCalendar, exceptionEvent, true);
+          saveEventToSharedCalendar(username, toCalendar, selectedOccurrence, true);
         } else if (toType == Calendar.TYPE_PUBLIC) {
-          savePublicEvent(toCalendar, exceptionEvent, true);
+          savePublicEvent(toCalendar, selectedOccurrence, true);
         }
       }
     } catch (Exception e) {
@@ -1039,14 +1041,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   @Override
   public void saveAllSeriesEvents(CalendarEvent originEvent,
-                                  Collection<String> exceptionEventIds,
                                   String username) {
     try {
       String calendarId = originEvent.getCalendarId();
-      Collection<CalendarEvent> exceptions = getExceptionEvents(username, originEvent);
-      for(CalendarEvent exception : exceptions){
-        removeOneOccurrenceEvent(originEvent, exception.getId(), exception.getRecurrenceId(), username);
-      }
+      List<CalendarEvent> exceptions = getExceptionEvents(username, originEvent);
+      removeEvents(username, exceptions);
       originEvent.setExceptionIds(null);
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
@@ -1116,23 +1115,29 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   @Override
   public void removeOneOccurrenceEvent(CalendarEvent originEvent,
-                                       String eventId, String recurrenceId,
+                                       CalendarEvent removedOccurence,
                                        String username) {
     try {
+
+      if(isEventSeriesGettingToLastItem(originEvent, username)) {
+        removeRecurrenceSeries(username, originEvent);
+        return;
+      }
+
       String calendarId = originEvent.getCalendarId();
       boolean isException = false;
       if(originEvent.getExceptionIds() != null ){
-        if(originEvent.getExceptionIds().contains(recurrenceId)) {
+        if(originEvent.getExceptionIds().contains(removedOccurence.getRecurrenceId())) {
           isException = true;
         }
         else {
-          originEvent.addExceptionId(recurrenceId);
+          originEvent.addExceptionId(removedOccurence.getRecurrenceId());
         }
       }
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
           if(isException) {
-            removeUserEvent(username, calendarId, eventId);
+            removeUserEvent(username, calendarId, removedOccurence.getId());
           } else {
             saveUserEvent(username, calendarId, originEvent, false);
           }
@@ -1140,15 +1145,18 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
         case Calendar.TYPE_PUBLIC:
           if(isException) {
-            removePublicEvent(calendarId, eventId);
+            removePublicEvent(calendarId, removedOccurence.getId());
           } else {
             savePublicEvent(calendarId, originEvent, false);
+          }
+          for(CalendarEventListener cel : eventListeners_) {
+            cel.removeOneOccurrence(originEvent, removedOccurence );
           }
           break;
 
         case Calendar.TYPE_SHARED:
           if(isException) {
-            removeSharedEvent(username, calendarId, eventId);
+            removeSharedEvent(username, calendarId, removedOccurence.getId());
             saveEventToSharedCalendar(username, calendarId, originEvent, false);
           }
           break;

@@ -798,10 +798,9 @@ public interface CalendarService {
    * <li>User wants to update all occurrence event with all properties except from time and to time of all exception event </li>
    * </ul> 
    * @param originEvent the original event with occurrence rule  
-   * @param exceptionEventIds a collection of event's id that can use to retrieve the exception event for updating 
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
-  public void saveAllSeriesEvents(CalendarEvent originEvent, Collection<String> exceptionEventIds, String username);
+  public void saveAllSeriesEvents(CalendarEvent originEvent, String username);
 
   /**
    * <p> This method is called when:
@@ -822,11 +821,10 @@ public interface CalendarService {
    * <li>User wants to remove only one instance of the recurrent series</li>
    * </ul>
    * @param originEvent the original event with occurrence rule will be updated
-   * @param eventId id of the removed occurrence
-   * @param recurrenceId recurrence id of the occurence
+   * @param removedOccurrence the occurrence selected to be removed
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
-  public void removeOneOccurrenceEvent(CalendarEvent originEvent, String eventId, String recurrenceId, String username);
+  public void removeOneOccurrenceEvent(CalendarEvent originEvent, CalendarEvent removedOccurrence, String username);
 
   /**
    * Remove all occurrence of a recurrent event
