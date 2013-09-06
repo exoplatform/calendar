@@ -16,30 +16,12 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-import javax.jcr.Node;
-import javax.jcr.Session;
-
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.NumberList;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.Time;
 import net.fortuna.ical4j.model.UtcOffset;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.WeekDay;
@@ -52,8 +34,6 @@ import net.fortuna.ical4j.model.property.TzId;
 import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
-import net.fortuna.ical4j.util.TimeZones;
-
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -70,6 +50,23 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
+
+import javax.jcr.Node;
+import javax.jcr.Session;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL
@@ -473,8 +470,6 @@ public class Utils {
    */
   public static GregorianCalendar getInstanceTempCalendar() {
     GregorianCalendar calendar = new GregorianCalendar();
-    // int gmtoffset = calendar.get(Calendar.DST_OFFSET) + calendar.get(Calendar.ZONE_OFFSET);
-    // calendar.setTimeInMillis(System.currentTimeMillis() - gmtoffset) ;
     calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
     return calendar;
   }
