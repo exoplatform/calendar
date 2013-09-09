@@ -3643,6 +3643,19 @@ UICalendarPortlet.prototype.dateParses = function(dateFieldValue, pattern) {
     currentDate.setYear(yearValue);
     return currentDate;
 }
+UICalendarPortlet.prototype.confirmOption = function(compid){
+    var list = gj('#'+compid).find('div.confirmRadio').find('div.actionLinks').find('a') ;
+    var btn = gj('#'+compid).find('div.uiAction').find('button')[0];
+    gj('#'+compid).find('div.confirmRadio').find('input.radio').off('click').on('click', function(){
+        if(this.value === 'save_one') {
+            gj(btn).attr('onclick',gj(list[0]).attr('href'));
+        } else if (this.value === 'save_follow') {
+             gj(btn).attr('onclick',gj(list[1]).attr('href'));
+        } else if(this.value === 'save_all') {
+             gj(btn).attr('onclick',gj(list[2]).attr('href'));
+        }
+    });
+}
 
 //CAL-626 : autofocus the first input
 //because 'autofocus' attribute is not supported in IE9, we must use js to do this
