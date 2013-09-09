@@ -16,9 +16,14 @@
     <UserPref name="setting" default_value="/calendar;/rest/cs/calendar/getissues;10;AM/PM;Default" datatype="hidden" />
   </ModulePrefs>
   <Content type="html">
-    <![CDATA[
-      <link type="text/css" href="skin/tasks.css" rel="stylesheet">
-      <script type="text/javascript" src="skin/tasks.js"></script>
+    <![CDATA[   
+  <link rel="stylesheet" type="text/css" href="/eXoResources/skin/bootstrap/css/bootstrap.css" />    
+  <link rel="stylesheet" type="text/css" href="/eXoResources/skin/css/Core.css" />
+  <link type="text/css" rel="stylesheet" href="/exo-gadget-resources/skin/exo-gadget/gadget-common.css" />
+  <link type="text/css" href="skin/tasks.css" rel="stylesheet">
+  <script type="text/javascript" src="skin/tasks.js"></script>
+    <script language="javascript" type="text/javascript" src="/eXoResources/javascript/jquery-1.7.1.js"></script>
+    
       <form id="Setting" onSubmit="return eXoEventGadget.saveSetting();" action="#" style="display:none;">
       <table>
         <tr>
@@ -58,20 +63,20 @@
         </tr>
       </table>
       </form>
-      <div class="UIGadgetThemes UIYellowThemes">
-        <div class="TitGad ClearFix">
-          <a href="#demo" class="IconDropDown" id="ShowAll" target="_blank">__MSG_showall__</a>
-          <div class="SettingButton" id="SettingButton" title="__MSG_setting__">
-            <a href="javascript:eXoEventGadget.showHideSetting(true);"><span></span></a>
-          </div>
-          <div class="ContTit">__MSG_title__</div>
-        </div>
-        <div class="GadCont MyTasks" id="ItemContainer">
+      <div class="UIGadgetThemes uiBox" id="gadgetTasks">
+        <h6 class="title left">
+			     __MSG_title__
+    			<div class="actionIcon pull-right setting" id="SettingButton" title="__MSG_setting__">
+    				<a href="javascript:eXoEventGadget.showHideSetting(true);"><span></span></a>
+    			</div>
+          <a href="#demo" class="btn btn-primary btn-mini pull-right" id="ShowAll" target="_blank">__MSG_showall__</a>
+        </h6>
+        <div class="uiContentBox MyTasks" id="ItemContainer">
           <!--
-          <div class="CheckBox">
+          <label class="uiCheckbox">
             <input type="checkbox" name="checkbox" id="abc"></input>
-            <label id="abc">09:00<span>Joint PR CS + KS</span></label>
-          </div>
+            <span id="abc">09:00<span>Joint PR CS + KS</span></span>
+          </label>
           -->
         </div>
       </div>
