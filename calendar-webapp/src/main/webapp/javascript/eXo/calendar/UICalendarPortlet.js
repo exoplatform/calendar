@@ -177,6 +177,7 @@ UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type){
         this.timeShiftT = parseInt(gj("#UIQuickAddTask").parents("#QuickAddEventContainer").attr("timeShift"));
         this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * this.timeShiftT * 60 * 1000) ;
     }
+    this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * 60 * 1000) ;
 } ;
 
 /**
@@ -225,10 +226,6 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
     } else if(parseInt(type) == 2) {
         if(tempTimeShift > 2 && tempTimeShift < 47) this.timeShiftT = tempTimeShift;
     }
-    
-    //if(tempTimeShift > 2 && tempTimeShift < 47) this.timeShift = tempTimeShift;
-    //else if((parseInt(type) == 2) && (tempTimeShift == 1)) this.timeShift = 1 ;
-    //else this.timeShift = 0 ;
     var CalendarWorkingWorkspace =  _module.UICalendarPortlet.getElementById("UICalendarWorkingContainer");
     var id = (id)?id:this.getCheckedCalendar(this.filterForm);
     cs.DOMUtil.cleanUpHiddenElements();
@@ -239,18 +236,18 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
         var divEventCategory = gj(_module.UICalendarPortlet.filterSelect).parents(".EventCategory")[0] ;
         return;
     }
- 
+
     var tmpMenuElement = document.getElementById("tmpMenuElement");
     if (tmpMenuElement) uiPopup.hide(tmpMenuElement) ;
     var formater = cs.CSUtils.DateTimeFormater ;
     var data = {
-        from:parseInt(fromMilli),
-        fromTime:parseInt(fromMilli),
-        to:parseInt(toMilli),
-        toTime:parseInt(toMilli),
-        isAllday:false,
-        calendar:id,
-        category:(selectedCategory)? selectedCategory.value : null 
+            from:parseInt(fromMilli),
+            fromTime:parseInt(fromMilli),
+            to:parseInt(toMilli),
+            toTime:parseInt(toMilli),
+            isAllday:false,
+            calendar:id,
+            category:(selectedCategory)? selectedCategory.value : null 
     };
 
  
@@ -284,6 +281,7 @@ UICalendarPortlet.prototype.addQuickShowHiddenWithTime = function(obj, type, fro
         uiPopupWindow.show("UIQuickAddTaskPopupWindow");
         uiPopup.hide("UIQuickAddEventPopupWindow");
     }
+    gj('input#eventName').focus(); //autofocus the event summary input field
 } ;
 /**
  * fill data to quick event/task form
@@ -315,7 +313,7 @@ UICalendarPortlet.prototype.fillData = function(uiform, data, isAllDayEvent) {
     toFieldTime.value = formater.format(data.toTime, timeType);
     gj(toFieldTime).nextAll("input")[0].value = formater.format(data.toTime, timeType);
     isAllday.checked = isAllDayEvent;
-    this.showHideTime(isAllday);
+    if(isAllDayEvent) this.showHideTime(isAllday);
     if(data.calendar)
         for(i=0; i < calendar.options.length;  i++) {
             var value = calendar.options[i].value ;
@@ -1023,7 +1021,8 @@ UICalendarPortlet.prototype.editAlldayEvent = function(cont){
     var i = events.length ;
     if(!events || (i <= 0)) return ;
     while(i--){
-        gj(events[i]).off('dblclick').on('dblclick',_module.UICalendarPortlet.ondblclickCallback);
+        gj(events[i]).off('dblclick').off('mouseover').off('mouseout').on('dblclick',_module.UICalendarPortlet.ondblclickCallback)
+        .on('mouseover',eXo.calendar.EventTooltip.show).on('mouseout',eXo.calendar.EventTooltip.hide);
     }
 }
 
@@ -3090,21 +3089,108 @@ eXo.calendar.EventTooltip = {
                 this._container.style.top = (eventDayTop - (gj(this._container).height() + 6)) + 'px';
             }
         }
+    },
 
-        if(_module.UICalendarPortlet.viewType == "UIWeekView") {
-            var eventWeekTop = gj(offsetEvent).offset().top
-              , bottomPopup  = (gj(this._container).offset().top + gj(this._container).height() + 14);
-            if (eventWeekTop > bottomPopup) {
-                this._container.style.top = (eventWeekTop - (gj(this._container).height() + 6)) + 'px';
-            }
+    getRealTime: function(data){
+        var time = "";
+        var type = _module.UICalendarPortlet.isAllday(data);
+        var startDate = new Date(parseInt(data.startDateTime) + parseInt(data.startTimeOffset));
+        var endDate = new Date(parseInt(data.endDateTime) + parseInt(data.endTimeOffset));
+
+        if(type == 1 ) {
+        return _module.UICalendarPortlet.getDateString(startDate);
         }
+        if(type == 2) {
+        time = _module.UICalendarPortlet.getDateString(startDate);
+        time += ', ' + _module.UICalendarPortlet.getFormattedHour(startDate) + ' - ' + _module.UICalendarPortlet.getFormattedHour(endDate);
+        return time;
+        }
+        else {
+        time = _module.UICalendarPortlet.getDateString(startDate) + ', ' + _module.UICalendarPortlet.getFormattedHour(startDate);
+        time += ' - ' + _module.UICalendarPortlet.getDateString(endDate) + ', ' + _module.UICalendarPortlet.getFormattedHour(endDate);
+        return time;
+        }
+    },
 
+    convertTimezone: function(datetime){
+        var time = parseInt(datetime.time);
+        var eventTimezone = parseInt(datetime.timezoneOffset);
+        var settingTimezone = parseInt(_module.UICalendarPortlet.settingTimezone);
+        time += (eventTimezone + settingTimezone)*60*1000;
+        return time;
+    },
+    render: function(req){      
+        var self = eXo.calendar.EventTooltip;
+        var data = self.parseData(req);
+        if(!data) return ;
+        var color = gj(self.currentEvent).attr('class').split(' ')[2];
+        if(!color) {
+        color = gj(self.currentEvent).find('.eventOnDayBorder').attr('class').split(' ')[1];
+        }
+        var html = '<div class="title clearfix"><div class="pull-left"><span class="colorBox ' + color + '"></span></div><div class="text">'  + data.title + '</div></div>';
+        html += '<div class="time clearfix"><div class="pull-left"><i class="uiIconCalClockMini"></i></div><div class="text">' + data.time + '</div></div>';
+        if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + data.location + '</div></div>';
+        if(data.description) html += '<div class="description ">' + data.description + '</div>';
+        self._container.style.display = "block";
+        var popoverContent = gj(self._container).find('.popover-content');
+        popoverContent.text('');
+        popoverContent.append(html);
+        self._container.style.zIndex = 1000;
+        self.positioning();
+    },
+    positioning: function(){
+        var offsetTooltip = this._container.offsetParent;
+        var offsetEvent = this.currentEvent.offsetParent;
+        if(_module.UICalendarPortlet.viewType == "UIDayView") {
+            offsetEvent = gj(offsetEvent).parents(".eventDayContainer")[0];
+        }
+            gj(this._container).removeClass("left").addClass("top");
+            var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2
+            var extraY = 0;
+            var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
+            var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;     
+            this._container.style.top = y + "px";
+    
+            /* re-set top of popover in case of scroll hidden */
+            if(_module.UICalendarPortlet.viewType == "UIDayView") {
+                var eventDayTop = gj(offsetEvent).offset().top
+                  , bottomPopup = (gj(this._container).offset().top + gj(this._container).height() + 14); // increases 14 for arrow and margins
+                if (eventDayTop > bottomPopup) {
+                    this._container.style.top = (eventDayTop - (gj(this._container).height() + 6)) + 'px';
+                }
+            }
+    
+            if(_module.UICalendarPortlet.viewType == "UIWeekView") {
+                var eventWeekTop = gj(offsetEvent).offset().top
+                  , bottomPopup  = (gj(this._container).offset().top + gj(this._container).height() + 14);
+                if (eventWeekTop > bottomPopup) {
+                    this._container.style.top = (eventWeekTop - (gj(this._container).height() + 6)) + 'px';
+                }
+            }
+    
+            this._container.style.left = x + "px";
+            var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
+            if(relativeX > document.documentElement.offsetWidth) {
+                extraX = document.documentElement.offsetWidth - relativeX;
+                x += extraX;
+                this._container.style.left = x + "px";
+            }
+            if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
+             gj(this._container).removeClass("top").addClass("left");
+             this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
+             this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
+            }
         this._container.style.left = x + "px";
         var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
         if(relativeX > document.documentElement.offsetWidth) {
         extraX = document.documentElement.offsetWidth - relativeX;
         x += extraX;
         this._container.style.left = x + "px";
+        }
+        if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
+             gj(this._container).removeClass("top").addClass("left");
+             this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
+             this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
         }
     }   
 }
@@ -3395,6 +3481,7 @@ UICalendarPortlet.prototype.loadMenu = function(){
     }   
 };
 
+
 UICalendarPortlet.prototype.dateSuggestion = function(isNew, compid, timeShift){
     var form = gj("#"+compid); 
     var eFromDate = form.find('input[name="from"]');
@@ -3555,6 +3642,21 @@ UICalendarPortlet.prototype.dateParses = function(dateFieldValue, pattern) {
     currentDate.setMonth(monthValue);
     currentDate.setYear(yearValue);
     return currentDate;
+}
+//CAL-626 : autofocus the first input
+//because 'autofocus' attribute is not supported in IE9, we must use js to do this
+UICalendarPortlet.prototype.autoFocusFirstInput = function(formId) {
+    inputs = gj('#'+formId).find('input[type="text"]');
+    textareas = gj('#'+formId).find('textarea');
+    //get the first input
+    input = (inputs.length > 0 ) ? inputs.eq(0) : textareas.eq(0); //input text has higher priority than text area
+
+    if(input.length > 0) {
+        input.focus();//focus
+        tmp = input.val();
+        input.val('');
+        input.val(tmp); //move the cursor to the end 
+    }
 }
 
 Highlighter = window.require("SHARED/Highlighter");

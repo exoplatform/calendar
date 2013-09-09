@@ -1,17 +1,26 @@
+<%
+  def rcontext = _ctx.getRequestContext() ;
+  def requirejs = rcontext.getJavascriptManager().getRequireJS();
+  
+  requirejs.require("SHARED/jquery","gj");
+  def popupTitle;
+
+  if(uicomponent.isSelectUser()){
+    popupTitle = _ctx.appRes(uicomponent.id+".label.selectUser");
+  }
+  if(uicomponent.isSelectMemberShip()) {
+    popupTitle =_ctx.appRes(uicomponent.id+".label.selectMemberShip");
+  }
+  if(uicomponent.isSelectGroup()){
+    popupTitle =_ctx.appRes(uicomponent.id+".label.selectGroup");
+  }
+  //change popup title following selected type
+  requirejs.addScripts("gj('#" + uicomponent.id + "').parent().prev().find('span.popupTitle').text('" + popupTitle + "') ;");
+%>
+
 <div class="uiGroupMembershipSelector uiGroupSelector" id="$uicomponent.id">
 	<div class="resizable">
     <div class="uiBox noRounded childGoup" style="margin:10px;">
-        <h6 class="title">
-          <%if(uicomponent.isSelectUser()){%>
-            <%=_ctx.appRes(uicomponent.id+".label.selectUser")%>
-          <%}%>
-          <%if(uicomponent.isSelectMemberShip()){%>
-             <%=_ctx.appRes(uicomponent.id+".label.selectMemberShip")%>
-          <%}%>
-          <%if(uicomponent.isSelectGroup()){%>
-            <%=_ctx.appRes(uicomponent.id+".label.selectGroup")%>
-          <%}%>
-        </h6>
         <div class="uiContentBox" style="height: 155px;overflow: auto">
         <ul>
           <%                

@@ -13,35 +13,39 @@ function CalendarLayout() {
 }
 
 CalendarLayout.prototype.init = function() {
-  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-  this.loadDOMElements();
-  var uiWorkingWorkspace = document.getElementById(this.UI_WORKING_WORKSPACE);
-  var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
-  var UICalendarWorkingContainer = gj(UICalendarPortlet).find('div.UICalendarWorkingContainer')[0];
-  this.uiCalendarWorkingContainerHeight = UICalendarWorkingContainer.offsetHeight;
-  if (uiWorkingWorkspace) {
-    var browserHeight = gj(window).height();
-    var workingWorkspaceHeight = uiWorkingWorkspace.offsetHeight;
-    if (workingWorkspaceHeight < browserHeight) {
-      this.uiCalendarWorkingContainerHeight += (browserHeight - workingWorkspaceHeight);
-      UICalendarWorkingContainer.style.height = this.uiCalendarWorkingContainerHeight + 'px';
+    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+    this.loadDOMElements();
+    var uiWorkingWorkspace = document.getElementById(this.UI_WORKING_WORKSPACE);
+    var UICalendarPortlet = document.getElementById(_module.UICalendarPortlet.portletId);
+    var UICalendarWorkingContainer = gj(UICalendarPortlet).find('div.UICalendarWorkingContainer')[0];
+    this.uiCalendarWorkingContainerHeight = UICalendarWorkingContainer.offsetHeight;
+    if (uiWorkingWorkspace) {
+        var browserHeight = gj(window).height();
+        var workingWorkspaceHeight = uiWorkingWorkspace.offsetHeight;
+        if (workingWorkspaceHeight < browserHeight) {
+            this.uiCalendarWorkingContainerHeight += (browserHeight - workingWorkspaceHeight);
+            UICalendarWorkingContainer.style.height = this.uiCalendarWorkingContainerHeight + 'px';
+        }
     }
-  }
 
-  /*=== reduce height of left navigation container to left navigation ===*/
-  var leftNavigationContainer = gj(".LeftNavigationTDContainer")[0],
-      leftNavigation = gj(leftNavigationContainer).children("#LeftNavigation")[0],
-      leftNavigationContainerHeight = gj(leftNavigationContainer).height(),
-      leftNavigationHeight = gj(leftNavigation).height();
+    /*=== reduce height of left navigation container to left navigation ===*/
+    var leftNavCont       = gj(".LeftNavigationTDContainer")[0],
+        leftNav           = gj(leftNavCont).children("#LeftNavigation")[0],
+        leftNavContHeight = gj(leftNavCont).height(),
+        leftNavHeight     = gj(leftNav).height(),
+        viewPortHeight    = gj(window).height(),
+        actionBarHeight   = 40,
+        resizedHeight     = viewPortHeight - actionBarHeight;
 
-  if ((leftNavigationHeight !== null) && (leftNavigationContainerHeight !== null)) {
-      if (leftNavigationContainerHeight > leftNavigationHeight) {
-          gj(leftNavigationContainer).height(leftNavigationHeight);
-      }
-  }
+    if ((leftNavHeight !== null) && (leftNavContHeight !== null)) {
+        if (leftNavContHeight > leftNavHeight) {
+            if (gj.browser.mozilla) resizedHeight += 12;
+            gj(leftNavCont).css('height', resizedHeight + 'px');
+        }
+    }
 
-  /* override table-layout: auto from plf */
-  gj('.UITableColumn')[0].style.cssText = 'table-layout: fixed !important; margin: 0px auto;';
+    /* override table-layout: auto from plf */
+    gj('.UITableColumn')[0].style.cssText = 'table-layout: fixed !important; margin: 0px auto;';
 };
 
 

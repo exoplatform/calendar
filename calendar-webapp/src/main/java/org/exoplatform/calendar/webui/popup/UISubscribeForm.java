@@ -26,6 +26,7 @@ import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
+import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -109,7 +110,14 @@ public class UISubscribeForm extends UIForm implements UIPopupComponent {
       return id ;
     }
   } 
-  
+  @Override
+  public void processRender(WebuiRequestContext context) throws Exception {
+    super.processRender(context);
+    //autofocus the input
+    RequireJS requireJS = context.getJavascriptManager().getRequireJS();
+    requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+    requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+getId()+"');");
+  }
   public static class CancelActionListener extends EventListener<UISubscribeForm> {
     @Override
     public void execute(Event<UISubscribeForm> event) throws Exception {

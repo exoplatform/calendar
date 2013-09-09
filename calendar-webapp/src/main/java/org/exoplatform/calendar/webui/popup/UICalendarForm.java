@@ -103,7 +103,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   public static final String ADD_GROUP_INPUT = "AddGroupInput";
 
-  public static final String ADD_GROUP_INPUT_LABEL = "Select Group";
+  public static final String ADD_GROUP_INPUT_LABEL = "";
 
   public static final String OPEN_SELECT_GROUP_FORM = "OpenSelectGroupForm";
 
@@ -536,7 +536,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
       UIGroupSelector uiGroupSelector = uiForm.createUIComponent(UIGroupSelector.class, null, null);
       uiGroupSelector.setType(permType) ;
-
       String groupId = value.split(CalendarUtils.COLON)[1].split(PERMISSION_SUB)[0] ;
       uiGroupSelector.setSelectedGroups(uiForm.getSelectedGroups(groupId)) ;
       uiGroupSelector.changeGroup(groupId) ;
@@ -763,14 +762,22 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
           }
           calendar.setGroups(groupsCalendarSet.toArray(new String[]{}));
           if(listPermission.size() >0){
-          calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
-          calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
+            calendar.setEditPermission(listPermission.toArray(new String[listPermission.size()])) ;
+            calendarService.savePublicCalendar(calendar, uiForm.isAddNew_) ;
           } else {
-            if(!CalendarUtils.isEmpty(notFoundUser.toString()))
-            event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.can-not-delete-permission", null, AbstractApplicationMessage.WARNING)) ;
-            return ;
+            UIFormInputWithActions sharedTab = uiForm.getChildById(UICalendarForm.INPUT_SHARE) ;
+            if(!CalendarUtils.isEmpty(notFoundUser.toString())) {
+              for(String groupId : groupsCalendarSet) {
+                String groupName = orgService.getGroupHandler().findGroupById(groupId).getLabel();
+                if(groupName == null) orgService.getGroupHandler().findGroupById(groupId).getGroupName();
+                String typedPerms = sharedTab.getUIStringInput(groupId + PERMISSION_SUB).getValue();
+                if(!typedPerms.isEmpty())
+                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.users-not-on-group", new Object[]{typedPerms.trim(), groupName}, AbstractApplicationMessage.WARNING)) ;
+              }
+              return ;
+            }
           }
-          
+
         }
 
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
@@ -853,7 +860,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     }
 
     return listPermission;
-  }
+                                            }
 
   static  public class CancelActionListener extends EventListener<UICalendarForm> {
     @Override

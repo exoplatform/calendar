@@ -7,7 +7,7 @@
     <application-name>calendar</application-name>
     <portlet-name>CalendarPortlet</portlet-name>
     <skin-name>Default</skin-name>
-    <css-path>/skin/DefaultSkin/webui/Stylesheet.css</css-path>
+    <css-path>/skin/css/calendar.css</css-path>
     <css-priority>1</css-priority>
   </portlet-skin>
 

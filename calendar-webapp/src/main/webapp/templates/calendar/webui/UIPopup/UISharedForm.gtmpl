@@ -51,7 +51,7 @@
            else if (action.getActionType() == uicomponent.TYPE_BUTTON)
            {
              %>
-               <button type="button" class="btn" onclick="$actionLink" href="javascript:void(0);" style="$style" title="$actionLabel">$actionLabel</button>
+               <button type="button" class="btn" onclick="$actionLink" href="javascript:void(0);" style="$style">$actionLabel</button>
              <%
            }
          }

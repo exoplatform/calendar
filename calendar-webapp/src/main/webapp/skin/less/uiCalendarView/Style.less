@@ -22,6 +22,13 @@
 }
 
 /*============== uiCalendarView ================*/
+
+.DummyDNDClass {
+	position :absolute;
+	padding : 0px;
+	margin : 0px;
+} 
+
 .uiCalendarViewContainer {
 		 .uiBox .uiGrid.table tr td:first-child{
 			border-left: none;
@@ -134,7 +141,7 @@
 
 .uiWeekView {
 	.today {
-		background: #fbfbfb;
+		background: @grayWhiteSmoke;
 		a{
 			line-height: 32px;
 			font-size: @baseFontSize - 1;
@@ -151,11 +158,11 @@
 
 .eventWeekBar{
 	> table {
-		background: #f8f8f8;
+		background: @grayLighter;
 		tr td{ 
-			border-bottom: solid 1px #e6e6e6;
+			border-bottom: solid 1px @grayMediumWhiteSmoke;
 			&.today{
-			background: #f4f4f4;
+			background: @grayWhiteSmoke;
 				}
 				a{
 					color: @textColor;
@@ -175,11 +182,19 @@
 	.uiGrid.table tr td {					
 		font-size: 12px;
 	}
-	.resizeButton  [class^="uiIcon"]{
-		position: absolute;
-		top: 50%;
-		right: -3px;
-		cursor: pointer;
+	.uiBox {
+		&.uiWeekView,&.uiDayView,&.uiMonthView ,&.uiListContainer {
+		    margin-bottom:0;
+		}
+	}
+
+	.resizeButton {
+	 	height: 16px;
+	 	top:50%;
+	 	margin-top: -8px;
+	 	left: -18px;
+	 	position: absolute;
+	 	cursor: pointer;
 	}
 }
 
@@ -203,22 +218,3 @@
 		height: 19px;		/*fix bug for javasript weekview */
 	}
 }
-/*
-.eventWeekBar {
-	padding: 0 16px 0  0;
-	.uiGrid {
-		border-right: 1px solid @tableBorder;
-	}
-}
-.uiCalendarViewContainer  {
-	.eventWeekBar  .uiGrid {
-		border-right: 1px solid @tableBorder;
-	}
-
-}
-.eventWeekContent   {
-	 height: 400px;
-    overflow-x: hidden;
-    overflow-y: auto;
-	
-}*/
