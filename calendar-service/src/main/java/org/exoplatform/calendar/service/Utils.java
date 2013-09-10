@@ -870,4 +870,131 @@ public class Utils {
       }
     }
   }
+
+  public static Date getPreviousOccurrenceDate(CalendarEvent recurEvent, Date aDate) throws Exception {
+    Recur recur = getICalendarRecur(recurEvent);
+
+    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_DAILY)) {
+
+    }
+
+    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_WEEKLY)) {
+
+    }
+
+    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_MONTHLY)) {
+
+    }
+
+    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_YEARLY)) {
+
+    }
+    return null;
+  }
+  public static Recur getICalendarRecur(CalendarEvent recurEvent) throws Exception {
+    String repeatType = recurEvent.getRepeatType();
+    // get the repeat count property of recurrence event
+    int count = (int) recurEvent.getRepeatCount();
+
+    java.util.Calendar until = null;
+    if (recurEvent.getRepeatUntilDate() != null) {
+      until = Utils.getInstanceTempCalendar();
+      //set until to the end of the day, to include the until date in the occurrence instances list
+      until.setTimeInMillis(recurEvent.getRepeatUntilDate().getTime() + 24 * 60 * 60 * 1000 - 1);
+    }
+
+    int interval = (int) recurEvent.getRepeatInterval();
+    if (interval <= 1)
+      interval = 1;
+
+    Recur recur = null;
+
+    // daily recurrence
+    if (repeatType.equals(CalendarEvent.RP_DAILY)) {
+      if (until != null) {
+        recur = new Recur(Recur.DAILY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.DAILY, count);
+        } else
+          recur = new Recur("FREQ=DAILY");
+      }
+      recur.setInterval(interval);
+      return recur;
+    }
+
+    // weekly recurrence
+    if (repeatType.equals(CalendarEvent.RP_WEEKLY)) {
+      if (until != null) {
+        recur = new Recur(Recur.WEEKLY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.WEEKLY, count);
+        } else
+          recur = new Recur("FREQ=WEEKLY");
+      }
+      recur.setInterval(interval);
+
+      // byday property
+      String[] repeatByDay = recurEvent.getRepeatByDay();
+      if (repeatByDay == null || repeatByDay.length == 0)
+        return null;
+      WeekDayList weekDayList = new WeekDayList();
+      for (String s : repeatByDay) {
+        weekDayList.add(new WeekDay(s));
+      }
+      recur.getDayList().addAll(weekDayList);
+      return recur;
+    }
+
+    // monthly recurrence
+    if (repeatType.equals(CalendarEvent.RP_MONTHLY)) {
+      if (until != null) {
+        recur = new Recur(Recur.MONTHLY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.MONTHLY, count);
+        } else
+          recur = new Recur("FREQ=MONTHLY");
+      }
+      recur.setInterval(interval);
+
+      long[] repeatByMonthDay = recurEvent.getRepeatByMonthDay();
+      // case 1: byMonthDay: day 1, 15, 26 of month
+      if (repeatByMonthDay != null && repeatByMonthDay.length > 0) {
+        NumberList numberList = new NumberList();
+        for (long monthDay : repeatByMonthDay) {
+          numberList.add(new Integer((int) monthDay));
+        }
+        recur.getMonthDayList().addAll(numberList);
+      } else {
+        // case 2: byDay: 1SU: first Sunday of month, -1TU: last Tuesday of
+        // month
+        String[] repeatByDay = recurEvent.getRepeatByDay();
+        if (repeatByDay != null && repeatByDay.length > 0) {
+          WeekDayList weekDayList = new WeekDayList();
+          for (String s : repeatByDay) {
+            weekDayList.add(new WeekDay(s));
+          }
+          recur.getDayList().addAll(weekDayList);
+        }
+      }
+      return recur;
+    }
+
+    // yearly recurrence
+    if (repeatType.equals(CalendarEvent.RP_YEARLY)) {
+      if (until != null) {
+        recur = new Recur(Recur.YEARLY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.YEARLY, count);
+        } else
+          recur = new Recur("FREQ=YEARLY");
+      }
+      recur.setInterval(interval);
+      return recur;
+    }
+    return recur;
+  }
 }
