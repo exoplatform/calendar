@@ -176,7 +176,7 @@ eXoEventGadget.prototype.render =  function(data){
     var item = data[i];
 		var time = parseInt(item.fromDateTime.time) + parseInt(userTimezoneOffset) + (new Date()).getTimezoneOffset()*60*1000;					
 		time = DateTimeFormater.format(new Date(time),timemask);
-		html += '<a href="javascript:void(0);" class="IconLink" onclick="eXoEventGadget.showDetail(this);">' + time + '<span>'+ item.summary +'</span></a>';
+		html += '<a href="javascript:void(0);" class="IconLink" onclick="eXoEventGadget.showDetail(this);"><i class="uiIconMiniArrowRight uiIconLightGray caretIcon"></i>' + time + '<span>'+ item.summary +'</span></a>';
 		if(item.description) html += '<div class="EventDetail">' + item.description + '</div>';
   }
   html += '';
@@ -230,7 +230,7 @@ eXoEventGadget.prototype.ajaxAsyncGetRequest = function(url, callback) {
 }
 eXoEventGadget.prototype.notify = function(){
 	var msg = gadgets.Prefs().getMsg("noevent");
-	document.getElementById("ItemContainer").innerHTML = '<div class="Warning">' + msg + '</div>';
+	document.getElementById("ItemContainer").innerHTML = '<div class="light_message">' + msg + '</div>';
 	eXoEventGadget.setLink();
 }
 
@@ -238,7 +238,7 @@ eXoEventGadget.prototype.adjustHeight = function(){
 	setTimeout(function(){
 		var frmSetting = document.getElementById("Setting");
 		var gadgetCont = document.getElementById("ItemContainer").parentNode;
-		var height = frmSetting.offsetHeight + gadgetCont.offsetHeight + 10;
+		var height = frmSetting.offsetHeight + gadgetCont.offsetHeight;
 		gadgets.window.adjustHeight(height);		
 	},500);
 }

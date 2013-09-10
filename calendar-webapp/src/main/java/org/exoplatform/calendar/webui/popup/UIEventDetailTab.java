@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
@@ -194,5 +195,12 @@ public class UIEventDetailTab extends UIFormInputWithActions {
   }
   public UIFormSelectBoxWithGroups getUIFormSelectBoxGroup(String id) {
     return findComponentById(id) ;
+  }
+  protected int getTimeShift(){
+	  try {
+	    return Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.event.suggest")); 
+	  } catch (Exception e) {
+		return 2;
+	}
   }
 }

@@ -5,9 +5,11 @@ requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
 requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts("cal.UICalendarPortlet.isAllday('QuickAddEventContainer','');");
 requireJS.addScripts("gj('input#"+uicomponent.FIELD_ALLDAY+"').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
-//rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ;  
+//rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ; 
+def timeShift = uicomponent.getTimeShift();
+requireJS.addScripts("cal.UICalendarPortlet.dateSuggestion('true','"+uicomponent.id+"','"+timeShift+"');");
 %>
-<div class="uiQuickAddEvent" id="QuickAddEventContainer">
+<div class="uiQuickAddEvent" id="QuickAddEventContainer" timeShift="$timeShift">
     <div class="form-horizontal quickAddEventContainer">	
     <%uiform.begin()%>
 	<div class="control-group">

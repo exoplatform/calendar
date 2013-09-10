@@ -42,6 +42,9 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
     }
   }
   def rcontext = _ctx.getRequestContext() ;  
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('" + uicomponent.id + "');");
 %>
 <div id="$uicomponent.id" class="$uicomponent.id">
   <div class="form-horizontal resizable">

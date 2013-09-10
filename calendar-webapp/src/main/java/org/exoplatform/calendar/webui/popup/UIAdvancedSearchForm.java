@@ -45,6 +45,8 @@ import org.exoplatform.calendar.webui.UIWeekView;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -157,6 +159,16 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
   public void deActivate() throws Exception {
 
   }
+  
+  @Override
+  public void processRender(WebuiRequestContext context) throws Exception {
+    super.processRender(context);
+    //autofocus the input
+    RequireJS requireJS = context.getJavascriptManager().getRequireJS();
+    requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+    requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+getId()+"');");
+  }
+  
   public void setSearchValue(String searchValue) {
     getUIStringInput(TEXT).setValue(searchValue) ;
   }  

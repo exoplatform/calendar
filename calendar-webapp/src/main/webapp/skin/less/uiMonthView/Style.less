@@ -3,7 +3,7 @@
 /*============== uiMonthView ================*/
 .uiMonthView{	
 	.dayTitleBar{
-		background: @tableBackgroundAccent;
+		background: @grayLighter;
 		.uiGrid.table tr td{
 			line-height: 32px;
 			text-align: center;		
@@ -16,12 +16,11 @@
    			text-align: right;
 			margin-top: -8px;
    			a{
-   				color: #999;
+   				color: @grayLight;
    				padding-right: 10px;
    			}
 		}
 		.disableDay{
-		   	color: #909090;
     		text-align: right;
     		padding-top: 10px;
 		}
@@ -59,7 +58,7 @@
 		}
 		.rowContainerDay{
 			.calendarContentDisable{
-			    background: none repeat scroll 0 0 #F5F5F5;
+			    background: none repeat scroll 0 0 @grayWhiteSmoke;
    				padding: 0;
 			}
 			
@@ -75,7 +74,7 @@
 		}
 		
 		.table tr{
-			border-top: 1px solid #E6E6E6;
+			border-top: 1px solid @grayMediumWhiteSmoke;
 			td{
 				vertical-align: top;
 				height: 96px;		

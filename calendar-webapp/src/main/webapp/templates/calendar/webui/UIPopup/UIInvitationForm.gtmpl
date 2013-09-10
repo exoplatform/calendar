@@ -2,6 +2,10 @@
 <%
  import org.exoplatform.webui.core.UIPopupWindow;
  uiForm = uicomponent.getParentFrom() ;
+ def rcontext = _ctx.getRequestContext() ;  
+ def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+ requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('" + uicomponent.id + "');");
 %>
 <%uiForm.begin();%>
 <div id="$uicomponent.id" class="uiInvitationForm resizable">

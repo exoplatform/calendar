@@ -1,5 +1,5 @@
 <%
-  uiForm = uicomponent.getParentFrom() ;
+  uiForm = uicomponent.getParentFrom();
   private void renderActions(String fieldKey) {
     def actions = uicomponent.getActionField(fieldKey) ;
     if(actions != null) {
@@ -44,7 +44,8 @@
   requireJS.addScripts('cal.UICalendarPortlet.initDetailTab("UIEventForm","' + uiForm.getCalendarId() + '") ;') ;
   requireJS.addScripts("cal.UICalendarPortlet.editRepeat('" + uicomponent.id + "') ;");
   requireJS.addScripts("gj('#UIEventDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this);});");
-
+  requireJS.addScripts("cal.UICalendarPortlet.dateSuggestion('"+uiForm.isAddNew_+"','"+uiForm.id+"','0');");
+  requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+uicomponent.id+"');");
 %>
 <div id="$uicomponent.id" class="uiAddNewEvent eventDetail resizable">
   <div class="form-horizontal">

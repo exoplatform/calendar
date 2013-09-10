@@ -3,6 +3,7 @@
   def requireJS=jsMan.getRequireJS();
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.addScripts("cal.UICalendarPortlet.useAuthenticationForRemoteCalendar('" + uicomponent.id + "');");
+  requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+uicomponent.id+"');");
   uiform.setLocale();
 %>
 <div class="uiForm uiRemoteCalendar">

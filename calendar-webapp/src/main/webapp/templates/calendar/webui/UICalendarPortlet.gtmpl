@@ -60,6 +60,10 @@
     </div>   
 
     <div id="editCalendarNotification" class="alert uiNotification uiCalNotification" style="display:none; width:200px;">
+    	
+    	<div id="msg1" style="display:none;" ><%=_ctx.appRes("UICalendarForm.label.editCalendarNotif.1")%></div>
+    	<div id="msg2" style="display:none;" ><%=_ctx.appRes("UICalendarForm.label.editCalendarNotif.2")%></div>
+    	
       <a data-dismiss="alert" href="#" class="close " data-placement="bottom" rel="tooltip"  data-original-title="close"><i class="uiIconClose uiIconLightGray"></i></a>
       <div class="clearfix ">
         <div class="text">
