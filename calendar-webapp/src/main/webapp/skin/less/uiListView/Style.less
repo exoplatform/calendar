@@ -4,7 +4,7 @@
 .uiListView,.uiTaskView{
 	padding: 11px;
 	.uiGrid.table{
-		border: solid 1px #cfcfcf;
+		border: solid 1px @borderColor;
 		th{
 			padding: 5px 10px;
 			.uiIconMiniArrowDown,.uiIconMiniArrowUp {
@@ -66,6 +66,7 @@
 	}
 	.imagePreviewContainer {		
 		position: relative;
+		display: inline-block;
 		margin: 7px 0;
 		.closeButton {
 			position: absolute; 
@@ -76,7 +77,7 @@
 			line-height: 10px;				
 			.box-shadow(0 0 0 transparent);	
 			&:hover {
-				border: 1px solid #767e81;
+				border: 1px solid @gray;
 			}		
 		}
 		
@@ -94,7 +95,7 @@
 		}
 		.columnLeft {
 			.border-radius(@borderRadiusSmall);
-			background: #fafafa;
+			background: @grayLighter;
 			width: 190px;
 			
 		}
@@ -110,12 +111,12 @@
 			}
 		}
 		.uiActionContainer {
-			border-top: 1px dotted @tableBorder;
+			border-top: 1px dotted @borderColor;
 			padding: 10px 0 0  0;
 			margin: 40px  0 0 0;
 		}
 		.titleList {
-			border-bottom: 1px dotted @tableBorder;
+			border-bottom: 1px dotted @borderColor;
 			padding: 0 0 10px 0;
 			margin: 0 0 20px 0;
 		}

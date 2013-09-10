@@ -433,17 +433,16 @@ public class UICalendars extends UIForm  {
     GroupCalendarData groupCalendars = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(), filterFromSetting) ;
     if (groupCalendars == null) return new GroupCalendarData("", "", new ArrayList<Calendar>(0));
 
+    /** does not get color from map */
     CalendarSetting setting = calendarService.getCalendarSetting(CalendarUtils.getCurrentUser()) ;
     Map<String, String> map = new HashMap<String, String>() ;
     for(String key : setting.getSharedCalendarsColors()) {
-      map.put(key.split(CalendarUtils.COLON)[0], key.split(CalendarUtils.COLON)[1]) ;
+        map.put(key.split(CalendarUtils.COLON)[0], key.split(CalendarUtils.COLON)[1]) ;
     }
 
     List<Calendar> calendars = groupCalendars.getCalendars() ;
     for(Calendar calendar : calendars) {
-      String color = map.get(calendar.getId()) ;
-      if(color == null) color = calendar.getCalendarColor() ;
-      colorMap_.put(buildId(Calendar.TYPE_SHARED, calendar.getId()), color) ;
+      colorMap_.put(buildId(Calendar.TYPE_SHARED, calendar.getId()), calendar.getCalendarColor()) ;
       UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
       if (checkbox == null) {
         checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
@@ -951,6 +950,7 @@ public class UICalendars extends UIForm  {
       String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String username = CalendarUtils.getCurrentUser() ;
+
       try{
         Calendar calendar = null ;
         if(CalendarUtils.PRIVATE_TYPE.equals(calType)) {

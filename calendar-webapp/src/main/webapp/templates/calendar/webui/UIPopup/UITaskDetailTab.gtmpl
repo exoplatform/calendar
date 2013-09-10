@@ -44,6 +44,7 @@
   requireJS.addScripts('cal.UICalendarPortlet.initDetailTab("UITaskForm","' + uiForm.getCalendarId() + '") ;') ;
   requireJS.addScripts("gj('#UITaskDetailTab_FIELD_CHECKALL').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
   requireJS.addScripts("cal.UICalendarPortlet.dateSuggestion('"+uiForm.isAddNew_+"','"+uiForm.id+"','0');");
+  requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+uicomponent.id+"');");
   %>
 <div id="$uicomponent.id" class="uiAddNewEvent taskDetailTab">
   <div class="form-horizontal">

@@ -22,7 +22,7 @@
 		}
 
 	.calendarTitle{
-		background-color: #f2f2f2;
+		background-color: @grayWhiteSmoke;
 		.border-radius(@borderRadiusSmall - 1);
 		line-height: 26px;
 		padding: 0 14px;
@@ -43,8 +43,8 @@
 				}
 				
 			&:hover{
-				background-color: #fafafa;
-				border:solid 1px #f1f1f1;
+				background-color: @grayLighter;
+				border:solid 1px @grayWhiteSmoke;
 				.border-radius(@borderRadiusSmall);
 				.uiIconCalSettingMini{
 					display: inline-block;
@@ -82,7 +82,7 @@
 	padding: 10px 5px;
 }
 .calendarWorkingWorkspace {
-	padding: 20px;	
+	padding: 20px 20px 0 20px;
 	.uiActionBar {
 		margin: 0 0 15px 0;
 	}
@@ -112,7 +112,7 @@
 		}
 	}
 	.description {
-		color: #808080;
+		color: @gray;
 	}
 }
 

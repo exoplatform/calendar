@@ -34,7 +34,9 @@ table {
 .TxtGray {
   color: #484848;
 }
-
+.uiCheckbox {
+	margin: 0 0 5px;
+}
 .UIGadgetThemes .TitGad {
     background: none repeat scroll 0 0 #F8F8F8;
     border: 1px solid #E1E1E1;
@@ -62,21 +64,12 @@ table {
   font-size: 12px;
 }
 
-
 /** MyTasks **/
 
 .UIGadgetThemes .MyTasks .CheckBox {
   margin-bottom: 5px;
 }
 
-.UIGadgetThemes .MyTasks .CheckBox input {
-  margin: 0px 3px 0px 0px;
-}
-
-.UIGadgetThemes .MyTasks .CheckBox span {
-  color: #231a67;
-  padding-left: 10px;
-}
 .UIGadgetThemes .MyTasks .TaskDone {
   color:#cccccc;
 }
