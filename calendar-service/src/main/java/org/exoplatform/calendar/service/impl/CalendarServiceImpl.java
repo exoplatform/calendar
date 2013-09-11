@@ -1117,33 +1117,53 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       String timezone = getCalendarSetting(username).getTimeZone();
       Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),
               TimeZone.getTimeZone(timezone));
+      Boolean isFirstOccurrence = (stopDate == null);
+
       String calendarId = originEvent.getCalendarId();
-      originEvent.setRepeatUntilDate(stopDate);
-      originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
-      selectedOccurrence.setId("Event" + IdGenerator.generate());//set new id
+      if(!isFirstOccurrence) {
+        //if selected occurrence is not the first occurrence, update the origin event and set new id for
+        //the selected occurrence
+        originEvent.setRepeatUntilDate(stopDate);
+        selectedOccurrence.setId("Event" + IdGenerator.generate());//set new id
+      }
       selectedOccurrence.setRecurrenceId(null);
       selectedOccurrence.setExceptionIds(null);
       selectedOccurrence.setExcludeId(null);
+
+      //if the selected occurrence is the first occurrence, save the selected occurrence as if
+      //it is the origin event, otherwise update the origin and save new series from the selected occurrence
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
-          saveUserEvent(username, calendarId, originEvent, false);
-          saveUserEvent(username, calendarId, selectedOccurrence, true);
+          if(isFirstOccurrence) {
+            saveUserEvent(username, calendarId, selectedOccurrence, false);
+          } else {
+            saveUserEvent(username, calendarId, selectedOccurrence, true);
+            saveUserEvent(username, calendarId, originEvent, false);
+          }
           break;
 
         case Calendar.TYPE_PUBLIC:
-          //we don't want to add old-content comment to origin event's activity, so we call the method from storage
-          storage_.savePublicEvent(calendarId, originEvent, false);
-          for(CalendarEventListener listener : eventListeners_) {
-            //add comment (with new content format) to the activity of the origin repetitive event
+          if(isFirstOccurrence) {
+            savePublicEvent(calendarId, selectedOccurrence, false);
+          } else {
+            //we don't want to add old-content comment to origin event's activity, so we call the method from storage
+            storage_.savePublicEvent(calendarId, originEvent, false);
+            for(CalendarEventListener listener : eventListeners_) {
+              //add comment (with new content format) to the activity of the origin repetitive event
 
-            listener.updateFollowingOccurrences(originEvent, stopDate);
+              listener.updateFollowingOccurrences(originEvent, stopDate);
+            }
+            savePublicEvent(calendarId, selectedOccurrence, true);//publish event to create activity
           }
-          savePublicEvent(calendarId, selectedOccurrence, true);//publish event to create activity
           break;
 
         case Calendar.TYPE_SHARED:
-          saveEventToSharedCalendar(username, calendarId, originEvent, false);
-          saveEventToSharedCalendar(username, calendarId, selectedOccurrence, true);
+          if(isFirstOccurrence) {
+            saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
+          } else {
+            saveEventToSharedCalendar(username, calendarId, originEvent, false);
+            saveEventToSharedCalendar(username, calendarId, selectedOccurrence, true);
+          }
           break;
         default:
           break;
@@ -1237,36 +1257,42 @@ public class CalendarServiceImpl implements CalendarService, Startable {
                                           String username) {
     try {
       String timezone = getCalendarSetting(username).getTimeZone();
-      Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),
-              TimeZone.getTimeZone(timezone));
+      TimeZone tz = TimeZone.getTimeZone(timezone);
+      Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),tz);
       String calendarId = originEvent.getCalendarId();
 
-      originEvent.setRepeatUntilDate(stopDate);
-      originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
+      Boolean isFirstOccurrence = (stopDate == null);
+      if(isFirstOccurrence) {
+        //if the selected occurrence is the first occurrence, remove all the series
+        removeRecurrenceSeries(username, originEvent);
+      } else {
+        //otherwise, update the origin event and remove all the following
+        originEvent.setRepeatUntilDate(stopDate);
+        switch (Integer.parseInt(originEvent.getCalType())) {
+          case Calendar.TYPE_PRIVATE:
+            saveUserEvent(username, calendarId, originEvent, false);
+            break;
 
-      switch (Integer.parseInt(originEvent.getCalType())) {
-        case Calendar.TYPE_PRIVATE:
-          saveUserEvent(username, calendarId, originEvent, false);
-          break;
+          case Calendar.TYPE_PUBLIC:
+            //we don't want to add old-content comment for origin event's activity
+            storage_.savePublicEvent(calendarId, originEvent, false);
+            for(CalendarEventListener listener : eventListeners_) {
+              //add new comment to the origin event's activity (with new content format)
+              listener.updateFollowingOccurrences(originEvent, stopDate);
+            }
+            break;
 
-        case Calendar.TYPE_PUBLIC:
-          //we don't want to add old-content comment for origin event's activity
-          storage_.savePublicEvent(calendarId, originEvent, false);
-          for(CalendarEventListener listener : eventListeners_) {
-            //add new comment to the origin event's activity (with new content format)
-            listener.updateFollowingOccurrences(originEvent, stopDate);
-          }
-          break;
+          case Calendar.TYPE_SHARED:
+            saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
+            break;
+          default:
+            break;
+        }
 
-        case Calendar.TYPE_SHARED:
-          saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
-          break;
-        default:
-          break;
+        List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
+        removeEvents(username, exceptionEvents);
       }
 
-      List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
-      removeEvents(username, exceptionEvents);
     } catch(Exception e) {
       if(LOG.isDebugEnabled()) {
         LOG.debug("Exception when removing following events of a repetitive event",e);

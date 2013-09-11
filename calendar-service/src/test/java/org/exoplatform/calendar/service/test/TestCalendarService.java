@@ -2366,8 +2366,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendar.setTime(expectedDate);
     assertEquals(9,calendar.get(java.util.Calendar.DATE));
 
-    fromCal.set(2013, java.util.Calendar.SEPTEMBER, 10, 5, 30);
-    toCal.set(2013,java.util.Calendar.SEPTEMBER, 10, 6, 30);
+    fromCal.set(2013, java.util.Calendar.SEPTEMBER, 10, 22, 30);
+    toCal.set(2013,java.util.Calendar.SEPTEMBER, 10, 23, 30);
     recurEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
     recurEvent.setFromDateTime(fromCal.getTime());
     recurEvent.setToDateTime(toCal.getTime());
@@ -2375,11 +2375,37 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     recurEvent.setRepeatInterval(1);
     recurEvent.setRepeatByDay(new String[]{"TU"});
 
-    calendar.set(2013, java.util.Calendar.SEPTEMBER, 24, 5, 30);
+    calendar.set(2013, java.util.Calendar.SEPTEMBER, 24, 22, 30);
     expectedDate = Utils.getPreviousOccurrenceDate(recurEvent, calendar.getTime(), tz);
     calendar.setTime(expectedDate);
     assertEquals(17, calendar.get(java.util.Calendar.DATE));
 
+  }
+
+  public void testGetPreviousOccurrence2() throws Exception {
+    TimeZone tz = TimeZone.getTimeZone("Europe/Paris");
+
+    java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
+    fromCal.set(2013, java.util.Calendar.SEPTEMBER, 11, 19, 0);
+
+    java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
+    toCal.set(2013, java.util.Calendar.SEPTEMBER, 11, 22, 30);
+
+    CalendarEvent recurEvent = new CalendarEvent();
+    recurEvent.setSummary("test previous");
+    recurEvent.setFromDateTime(fromCal.getTime());
+    recurEvent.setToDateTime(toCal.getTime());
+    recurEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
+    recurEvent.setRepeatInterval(1);
+    recurEvent.setRepeatCount(-1);
+    recurEvent.setRepeatByDay(new String[]{"WE"});
+    recurEvent.setRepeatUntilDate(null);
+
+    java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
+    calendar.set(2013, java.util.Calendar.SEPTEMBER, 25, 19, 0);
+    Date expectedDate = Utils.getPreviousOccurrenceDate(recurEvent, calendar.getTime(), tz);
+    calendar.setTime(expectedDate);
+    assertEquals(18, calendar.get(java.util.Calendar.DATE));
   }
   /*
    * Utils for test
