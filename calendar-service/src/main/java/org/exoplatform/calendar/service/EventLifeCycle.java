@@ -16,6 +16,8 @@
  */
 package org.exoplatform.calendar.service;
 
+import java.util.Date;
+
 /**
  * Created by The eXo Platform SAS
  * Author : eXoPlatform
@@ -56,9 +58,9 @@ public interface EventLifeCycle {
   /**
    * Posts event about updating occurrences of a repetitive series that start from a selected occurrence
    * @param originEvent the origin repetitive event
-   * @param selectedOccurrence the selected event from which the new series will be created
+   * @param stopDate last occurrence date of the repetitive event
    */
-  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence);
+  public void updateFollowingOccurrences(CalendarEvent originEvent, Date stopDate);
 
   /**
    * Posts event about removing one exception event of a repetitive event

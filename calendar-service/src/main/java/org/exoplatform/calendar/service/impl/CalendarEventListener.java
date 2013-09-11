@@ -20,6 +20,8 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventLifeCycle;
 import org.exoplatform.container.component.BaseComponentPlugin;
 
+import java.util.Date;
+
 /**
  * Created by The eXo Platform SAS
  * Author : eXoPlatform
@@ -47,6 +49,6 @@ public class CalendarEventListener extends BaseComponentPlugin implements EventL
   public void removeOneOccurrence(CalendarEvent originEvent, CalendarEvent removedEvent) {
   }
 
-  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence) {
+  public void updateFollowingOccurrences(CalendarEvent originEvent, Date stopDate) {
   }
 }

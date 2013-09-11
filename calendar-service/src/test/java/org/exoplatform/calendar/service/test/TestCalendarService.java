@@ -2341,6 +2341,46 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   }
 
+  public void testGetPreviousOccurence() throws  Exception {
+    TimeZone tz = TimeZone.getTimeZone("Asia/Saigon");
+
+    java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
+    fromCal.set(2013, java.util.Calendar.MARCH, 7, 22, 30);
+
+    java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
+    toCal.set(2013, java.util.Calendar.MARCH, 7, 23, 30);
+
+    CalendarEvent recurEvent = new CalendarEvent();
+    recurEvent.setSummary("test previous");
+    recurEvent.setFromDateTime(fromCal.getTime());
+    recurEvent.setToDateTime(toCal.getTime());
+    recurEvent.setRepeatType(CalendarEvent.RP_DAILY);
+    recurEvent.setRepeatInterval(1);
+    recurEvent.setRepeatCount(6);
+    recurEvent.setRepeatUntilDate(null);
+
+    java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
+    calendar.set(2013, java.util.Calendar.MARCH, 10, 22, 30);
+    //get occurrence right before 09 Feb
+    Date expectedDate = Utils.getPreviousOccurrenceDate(recurEvent, calendar.getTime(), tz);
+    calendar.setTime(expectedDate);
+    assertEquals(9,calendar.get(java.util.Calendar.DATE));
+
+    fromCal.set(2013, java.util.Calendar.SEPTEMBER, 10, 5, 30);
+    toCal.set(2013,java.util.Calendar.SEPTEMBER, 10, 6, 30);
+    recurEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
+    recurEvent.setFromDateTime(fromCal.getTime());
+    recurEvent.setToDateTime(toCal.getTime());
+    recurEvent.setRepeatCount(-1);
+    recurEvent.setRepeatInterval(1);
+    recurEvent.setRepeatByDay(new String[]{"TU"});
+
+    calendar.set(2013, java.util.Calendar.SEPTEMBER, 24, 5, 30);
+    expectedDate = Utils.getPreviousOccurrenceDate(recurEvent, calendar.getTime(), tz);
+    calendar.setTime(expectedDate);
+    assertEquals(17, calendar.get(java.util.Calendar.DATE));
+
+  }
   /*
    * Utils for test
    */

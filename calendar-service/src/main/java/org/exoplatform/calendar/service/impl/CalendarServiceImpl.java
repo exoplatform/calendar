@@ -1114,8 +1114,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void saveFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent selectedOccurrence,
                                         String username) {
     try {
+      String timezone = getCalendarSetting(username).getTimeZone();
+      Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),
+              TimeZone.getTimeZone(timezone));
       String calendarId = originEvent.getCalendarId();
-      originEvent.setRepeatUntilDate(selectedOccurrence.getFromDateTime());
+      originEvent.setRepeatUntilDate(stopDate);
       originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
       selectedOccurrence.setId("Event" + IdGenerator.generate());//set new id
       selectedOccurrence.setRecurrenceId(null);
@@ -1132,7 +1135,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           storage_.savePublicEvent(calendarId, originEvent, false);
           for(CalendarEventListener listener : eventListeners_) {
             //add comment (with new content format) to the activity of the origin repetitive event
-            listener.updateFollowingOccurrences(originEvent, selectedOccurrence);
+
+            listener.updateFollowingOccurrences(originEvent, stopDate);
           }
           savePublicEvent(calendarId, selectedOccurrence, true);//publish event to create activity
           break;
@@ -1232,9 +1236,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void removeFollowingSeriesEvents(CalendarEvent originEvent, CalendarEvent selectedOccurrence,
                                           String username) {
     try {
+      String timezone = getCalendarSetting(username).getTimeZone();
+      Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),
+              TimeZone.getTimeZone(timezone));
       String calendarId = originEvent.getCalendarId();
 
-      originEvent.setRepeatUntilDate(selectedOccurrence.getFromDateTime());
+      originEvent.setRepeatUntilDate(stopDate);
       originEvent.addExceptionId(selectedOccurrence.getRecurrenceId());
 
       switch (Integer.parseInt(originEvent.getCalType())) {
@@ -1247,7 +1254,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           storage_.savePublicEvent(calendarId, originEvent, false);
           for(CalendarEventListener listener : eventListeners_) {
             //add new comment to the origin event's activity (with new content format)
-            listener.updateFollowingOccurrences(originEvent, selectedOccurrence);
+            listener.updateFollowingOccurrences(originEvent, stopDate);
           }
           break;
 
@@ -1353,14 +1360,5 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         LOG.debug("Exception when removing events",e);
       }
     }
-  }
-
-  /*
-   * Returns last occurrences of repetitive event
-   * Note: This function works with only event that has until date
-   */
-  private CalendarEvent getLastOccurrenceDate(CalendarEvent recurEvent) {
-
-    return null;
   }
 }

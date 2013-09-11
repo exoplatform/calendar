@@ -18,6 +18,8 @@ package org.exoplatform.calendar.service;
 
 import org.exoplatform.container.component.BaseComponentPlugin;
 
+import java.util.Date;
+
 /**
  * Created by The eXo Platform SAS
  * Author : eXoPlatform
@@ -48,7 +50,7 @@ public class CalendarUpdateEventListener extends BaseComponentPlugin implements 
   }
 
   @Override
-  public void updateFollowingOccurrences(CalendarEvent originEvent, CalendarEvent selectedOccurrence) {
+  public void updateFollowingOccurrences(CalendarEvent originEvent, Date stopDate) {
   }
 
   @Override

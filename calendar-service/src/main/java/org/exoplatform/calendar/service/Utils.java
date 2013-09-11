@@ -20,6 +20,8 @@ import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.NumberList;
 import net.fortuna.ical4j.model.ParameterList;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.UtcOffset;
@@ -28,8 +30,10 @@ import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.WeekDayList;
 import net.fortuna.ical4j.model.component.Daylight;
 import net.fortuna.ical4j.model.component.Standard;
+import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.TzId;
 import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
@@ -871,25 +875,52 @@ public class Utils {
     }
   }
 
-  public static Date getPreviousOccurrenceDate(CalendarEvent recurEvent, Date aDate) throws Exception {
+  /**
+   * Gets a repetitive event's occurrence date right before a given date
+   * @param recurEvent The repetitive event
+   * @param aDate  The date before which we find the occurrence date
+   * @param tz User timezone
+   * @return the occurrence date right before the given aDate
+   * @throws Exception
+   */
+  public static Date getPreviousOccurrenceDate(CalendarEvent recurEvent, Date aDate, TimeZone tz) throws Exception {
+
+    DateTime ical4jEventFrom = new DateTime(recurEvent.getFromDateTime());
+    VEvent vevent = new VEvent(ical4jEventFrom, Utils.EMPTY_STR);
+
     Recur recur = getICalendarRecur(recurEvent);
 
-    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_DAILY)) {
+    vevent.getProperties().add(new RRule(recur));
+    Calendar calendar = new GregorianCalendar();
+    //timezone used in ical4j period
+    calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 
+    calendar.set(Calendar.YEAR, calendar.getMinimum(Calendar.YEAR));
+    DateTime ical4jFrom = new DateTime(calendar.getTime());
+    calendar.setTime(aDate);
+
+    //if after applying timezone, the date become different, compensate the difference
+    int delta = aDate.getDate() - calendar.get(Calendar.DATE);
+    if(delta > 0) {
+      calendar.add(Calendar.DATE,delta);
     }
 
-    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_WEEKLY)) {
+    DateTime ical4jTo = new DateTime(calendar.getTime());
 
-    }
+    Period period = new Period(ical4jFrom, ical4jTo);
+    PeriodList list = vevent.calculateRecurrenceSet(period);
+    if (list == null || list.size() == 0)
+      return null;
+    Period last = (Period) list.last();
+    list.remove(last);
+    last = (Period) list.last();
 
-    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_MONTHLY)) {
+    //reset the timezone to be user setting timezone
+    calendar.setTimeZone(tz);
+    //plus the user timezone offset because returned period has timezone GMT
+    calendar.setTimeInMillis(last.getStart().getTime() + tz.getRawOffset());
 
-    }
-
-    if(recurEvent.getRepeatType().equals(CalendarEvent.RP_YEARLY)) {
-
-    }
-    return null;
+    return calendar.getTime();
   }
   public static Recur getICalendarRecur(CalendarEvent recurEvent) throws Exception {
     String repeatType = recurEvent.getRepeatType();
