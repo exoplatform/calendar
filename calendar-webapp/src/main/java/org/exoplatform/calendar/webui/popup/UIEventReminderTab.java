@@ -73,6 +73,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
   final public static String EMAIL_REPEAT_INTERVAL = "emailRepeatInterval".intern() ;
   final public static String EMAIL_IS_REPEAT = "emailIsRepeat".intern() ;
   final public static String REPEAT = "repeat".intern() ;
+  final public static String MINUTES = "minutes".intern() ;
   
   final public static String REMIND_BY_POPUP = "popupReminder".intern() ;
   final public static String POPUP_REMIND_BEFORE = "popupReminderTime".intern() ;
@@ -116,7 +117,7 @@ public class UIEventReminderTab extends UIFormInputWithActions {
   public List<SelectItemOption<String>> getReminderTimes(int steps, int maxValue) {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
     for(int i = 1; i <= maxValue/steps ; i++) {
-      options.add(new SelectItemOption<String>(String.valueOf(i*steps)+" minutes", String.valueOf(i*steps))) ;      
+      options.add(new SelectItemOption<String>(String.valueOf(i*steps)+" "+CalendarUtils.getResourceBundle("UIEventForm.label.minutes",MINUTES), String.valueOf(i*steps))) ;      
     }
     return options ;
   }
