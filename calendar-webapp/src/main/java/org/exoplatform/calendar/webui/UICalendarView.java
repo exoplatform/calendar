@@ -1250,17 +1250,24 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       try {
         // if event is occurrence event (instance of repetitive event)
         if (isOccur && !Utils.isEmpty(recurId)) {
-          CalendarEvent currentOccurrence = uiCalendarView.getRecurrenceMap()
-              .get(eventId)
-              .get(recurId);
-          uiCalendarView.setCurrentOccurrence(currentOccurrence);
-          UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 480);
-          confirmForm.setConfirmMessage("delete-recurrence-event-confirm-msg");
-          confirmForm.setConfig_id(uiCalendarView.getId());
-          confirmForm.setDelete(true);
-          event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
-          return;
-           
+          CalendarEvent currentOccurrence = null;
+          if(uiCalendarView.getRecurrenceMap() != null && uiCalendarView.getRecurrenceMap().size() > 0) {
+            currentOccurrence = uiCalendarView.getRecurrenceMap()
+                    .get(eventId)
+                    .get(recurId);
+          } else if(uiCalendarView instanceof UIPreview) {
+            currentOccurrence = ((UIPreview) uiCalendarView).getEvent();
+          }
+          if(currentOccurrence != null) {
+            uiCalendarView.setCurrentOccurrence(currentOccurrence);
+            UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 480);
+            confirmForm.setConfirmMessage("delete-recurrence-event-confirm-msg");
+            confirmForm.setConfig_id(uiCalendarView.getId());
+            confirmForm.setDelete(true);
+            event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+            return;
+          }
+
         }
         calendar = CalendarUtils.getCalendar(calType, calendarId);
         if (calendar == null) {

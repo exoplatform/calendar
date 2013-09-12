@@ -1193,13 +1193,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       String calendarId = originEvent.getCalendarId();
       boolean isException = false;
-      if(originEvent.getExceptionIds() != null ){
-        if(originEvent.getExceptionIds().contains(removedOccurence.getRecurrenceId())) {
-          isException = true;
-        }
-        else {
-          originEvent.addExceptionId(removedOccurence.getRecurrenceId());
-        }
+      if(originEvent.getExceptionIds() != null &&
+              originEvent.getExceptionIds().contains(removedOccurence.getRecurrenceId())){
+        isException = true;
+      } else {
+        originEvent.addExceptionId(removedOccurence.getRecurrenceId());
       }
       switch (Integer.parseInt(originEvent.getCalType())) {
         case Calendar.TYPE_PRIVATE:
