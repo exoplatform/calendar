@@ -1811,17 +1811,16 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   public void testUpdateRecurrenceSeries() {
     try {
-      TimeZone timezone = TimeZone.getTimeZone("GMT+7:00");
 
       Calendar calendar = createCalendar("myCalendar", "Description");
       Calendar publicCalendar = createPublicCalendar("publicCalendar", "publicDescription");
 
       EventCategory eventCategory = createEventCategory("eventCategoryName0", "description");
 
-      java.util.Calendar fromCal = java.util.Calendar.getInstance(timezone);
-      java.util.Calendar toCal = java.util.Calendar.getInstance(timezone);
+      java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
+      java.util.Calendar toCal = java.util.Calendar.getInstance(tz);
       toCal.add(java.util.Calendar.HOUR, 1);
-      java.util.Calendar repeatUntilDate = java.util.Calendar.getInstance(timezone);
+      java.util.Calendar repeatUntilDate = java.util.Calendar.getInstance(tz);
       repeatUntilDate.add(java.util.Calendar.DATE, 5);
 
       CalendarEvent userEvent = new CalendarEvent();
@@ -1838,7 +1837,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       userEvent.setRepeatByMonthDay(new long[] { 2, 3, 4, 5, 7 });
       storage_.saveOccurrenceEvent(username, calendar.getId(), userEvent, true);
 
-      storage_.getOccurrenceEvents(userEvent, fromCal, toCal, timezone.toString());
+      storage_.getOccurrenceEvents(userEvent, fromCal, toCal, timeZone);
 
       List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
       listEvent.add(userEvent);
@@ -1900,8 +1899,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
    * @throws Exception
    */
   public void testGetOccurrenceEvents1() throws Exception {
-    String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getDefault();
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, 2, 7, 5, 30);
 
@@ -1956,7 +1953,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
    * @throws Exception
    */
   public void testGetOccurrenceEvents2() throws Exception {
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, 2, 7, 22, 30);
 
@@ -2333,8 +2329,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   }
 
   public void testGetPreviousOccurence() throws  Exception {
-    TimeZone tz = TimeZone.getTimeZone("Asia/Saigon");
-
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, java.util.Calendar.MARCH, 7, 22, 30);
 
@@ -2374,7 +2368,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   }
 
   public void testGetPreviousOccurrence2() throws Exception {
-    TimeZone tz = TimeZone.getTimeZone("Europe/Paris");
 
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, java.util.Calendar.SEPTEMBER, 11, 19, 0);
@@ -2527,8 +2520,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   }
 
   private CalendarEvent createRepetitiveEventForTest() throws  Exception{
-    String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, 2, 7, 5, 30);
 
