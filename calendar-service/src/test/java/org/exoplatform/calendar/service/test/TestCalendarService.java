@@ -16,6 +16,23 @@
  */
 package org.exoplatform.calendar.service.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import javax.jcr.PathNotFoundException;
+import javax.jcr.query.Query;
+
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -59,22 +76,6 @@ import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.router.Router;
 import org.exoplatform.web.controller.router.RouterConfigException;
 
-import javax.jcr.PathNotFoundException;
-import javax.jcr.query.Query;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
 /**
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen
@@ -87,6 +88,9 @@ import java.util.TimeZone;
 public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   public static final String COMA     = ",".intern();
+  private TimeZone tz = java.util.Calendar.getInstance().getTimeZone();
+  private String timeZone = tz.getID();
+  
 
   private OrganizationService organizationService_;
 
@@ -143,8 +147,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 //mvn test -Dtest=TestCalendarService#testRemoveOccurrenceEvent
  public void testRemoveOccurrenceEvent() throws Exception{
 
-   String timeZone = "Asia/Ho_Chi_Minh";
-   TimeZone tz = TimeZone.getTimeZone(timeZone);
    java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
    fromCal.set(2013, 2, 7, 5, 30);
 
@@ -211,8 +213,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 //mvn test -Dtest=TestCalendarService#testSaveAllOccurrenceEvent
  public void tetSaveAllOccurrenceEvent() throws Exception{
     
-    String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, 2, 7, 5, 30);
 
@@ -266,9 +266,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   //mvn test -Dtest=TestCalendarService#testSaveFollowingOccurrenceEvent
   public void testSaveFollowingOccurrenceEvent() throws Exception{
-
-    String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
 
     CalendarEvent recurEvent = createRepetitiveEventForTest();
 
@@ -325,9 +322,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   //mvn test -Dtest=TestCalendarService#testSaveOneOccurrenceEvent
   public void tetSaveOneOccurrenceEvent() throws Exception{
-
-    String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
 
     CalendarEvent recurEvent = createRepetitiveEventForTest();
 
@@ -387,9 +381,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   }
 
   public void testGetRepetitiveEvent() throws Exception {
-    String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
+    
     SimpleDateFormat sf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    sf.setTimeZone(tz);
 
     CalendarEvent recurEvent = createRepetitiveEventForTest();
 
@@ -1907,7 +1901,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
    */
   public void testGetOccurrenceEvents1() throws Exception {
     String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
+    TimeZone tz = TimeZone.getDefault();
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, 2, 7, 5, 30);
 
@@ -1962,8 +1956,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
    * @throws Exception
    */
   public void testGetOccurrenceEvents2() throws Exception {
-    String timeZone = "Pacific/Midway";
-    TimeZone tz = TimeZone.getTimeZone("Pacific/Midway");
+    TimeZone tz = TimeZone.getTimeZone(timeZone);
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, 2, 7, 22, 30);
 
@@ -2007,8 +2000,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
    * @throws Exception
    */
   public void testGetOccurrenceEvents3() throws Exception {
-    String timeZone = "Asia/Ho_Chi_Minh";
-    TimeZone tz = TimeZone.getTimeZone(timeZone);
     java.util.Calendar fromCal = java.util.Calendar.getInstance(tz);
     fromCal.set(2013, 2, 7, 5, 30);
 
