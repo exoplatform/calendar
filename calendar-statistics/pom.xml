@@ -24,7 +24,27 @@
         <exclusion>
           <groupId>xml-apis</groupId>
           <artifactId>xml-apis-ext</artifactId>          
-        </exclusion>        
+        </exclusion>
+        <exclusion>          
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </exclusion> 
+        <exclusion>          
+          <groupId>org.jboss.javaee</groupId>
+          <artifactId>jboss-transaction-api</artifactId>
+        </exclusion>  
+         <exclusion>          
+          <groupId>org.ow2.spec.ee</groupId>
+          <artifactId>ow2-jta-1.1-spec</artifactId>
+        </exclusion>  
+        <exclusion>          
+          <groupId>javax.xml.stream</groupId>
+          <artifactId>stax-api</artifactId>
+        </exclusion>
+        <exclusion>          
+          <groupId>xpp3</groupId>
+          <artifactId>xpp3_min</artifactId>
+        </exclusion>      
       </exclusions>
     </dependency>
     <dependency>
@@ -34,6 +54,12 @@
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
+      <exclusions>
+        <exclusion>          
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>  
     </dependency>
   </dependencies>
   <build>
