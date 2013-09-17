@@ -2861,6 +2861,30 @@ UICalendarPortlet.prototype.fixForMaximize = function(){
   }
 };
 
+UICalendarPortlet.prototype.getHighlightEvents = function(fromDate, toDate) {
+    console.log("getHighlightEvents");
+    var url = eXo.env.portal.context + "/" + _module.restContext + "/cs/calendar/events/highlight/"
+        + fromDate + "/" + toDate;
+
+    console.log("url: " + url);
+
+    var makeRequest = function(method, url, queryString){
+        var request = new eXo.portal.AjaxRequest(method, url, queryString) ;
+        request.onSuccess = function(response) {
+            console.log("response text: " + response.responseText);
+            var data = gj.parseJSON(response.responseText);
+
+            console.log("data: " + data);
+        } ;
+        //request.onLoading = function(){} ;
+        eXo.portal.CurrentRequest = request ;
+        request.process() ;
+    } ;
+
+    makeRequest("GET", url);
+
+};
+
 /**
  * 
  * Scroll Manager for Action bar

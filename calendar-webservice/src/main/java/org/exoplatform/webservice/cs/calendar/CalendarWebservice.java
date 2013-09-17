@@ -21,13 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,22 +34,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.FeedData;
-import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.PortalContainer;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.application.RequestNavigationData;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.social.common.router.ExoRouter;
+import org.exoplatform.social.core.space.model.Space;
+import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.webservice.cs.bean.EventData;
 import org.exoplatform.webservice.cs.bean.SingleEvent;
 
@@ -301,7 +296,7 @@ public class CalendarWebservice implements ResourceContainer{
 
   /**
    * 
-   * @param auhtor : the feed create
+   * @param author : the feed create
    * @param events : list of event from data
    * @return
    * @throws Exception
@@ -488,7 +483,221 @@ public class CalendarWebservice implements ResourceContainer{
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
     }
   }
-  
+
+
+  @GET
+  @RolesAllowed("users")
+  @Path("/events/highlight/{from}/{to}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getHighLightEvents(@PathParam("from") long from, @PathParam("to") long to) {
+    log.info("___getHighLightEvents___");
+
+    /** get calendar service */
+    CalendarService calendarService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+    if (calendarService == null) {
+      return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(cc).build();
+    }
+
+    /**
+    List<String> calList = new LinkedList<String>();
+    for (String s : calids.split(",")) {
+      if (s.trim().length() > 0)
+        calList.add(s);
+    }
+     **/
+
+    String username = ConversationState.getCurrent().getIdentity().getUserId();
+
+    CalendarSetting setting;
+    String timezone;
+
+    Map<Integer, String> dataMap = new HashMap<Integer, String>() ;
+
+    try {
+      setting = calendarService.getCalendarSetting(username);
+      timezone = setting.getTimeZone();
+
+      EventQuery eventQuery = new EventQuery() ;
+
+      java.util.Calendar calendar = java.util.Calendar.getInstance();
+      calendar.setTimeInMillis(from);
+      eventQuery.setFromDate(calendar);
+
+      calendar = java.util.Calendar.getInstance();
+      calendar.setTimeInMillis(to);
+
+      //eventQuery.setFromDate(getBeginDateOfMonth(setting)) ;
+      //java.util.Calendar cal = getEndDateOfMonth(setting) ;
+      //cal.add(java.util.Calendar.MILLISECOND, -1) ;
+      eventQuery.setToDate(calendar) ;
+      eventQuery.setExcludeRepeatEvent(true);
+
+      String[] publicCalendars = getPublicCalendars(username);
+      dataMap = calendarService.searchHightLightEvent(username, eventQuery, publicCalendars);
+      //LOG.info("highlight event count: " + dataMap.size());
+
+      dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(username, eventQuery, publicCalendars, timezone));
+      //LOG.info("total event count: " + dataMap.size());
+
+      for (Integer i : dataMap.keySet()) {
+        log.info("data map - " + i + " - value: " + dataMap.get(i));
+      }
+
+      int size = dataMap.size();
+      log.info("size of data: " + size);
+
+      String highlightEvents = "";
+      for (Integer i : dataMap.keySet()) {
+        highlightEvents += (i != size - 1) ? String.valueOf(i) + "," : String.valueOf(i);
+      }
+
+      log.info("highlightEvents: " + highlightEvents);
+
+
+      /**
+    EventQuery eventQuery = new EventQuery();
+    java.util.Calendar calendar = java.util.Calendar.getInstance();
+    calendar.setTimeInMillis(from);
+    eventQuery.setFromDate(calendar);
+    calendar = java.util.Calendar.getInstance();
+    calendar.setTimeInMillis(to);
+    eventQuery.setToDate(calendar);
+    eventQuery.setEventType(type);
+    eventQuery.setLimitedItems(limit);
+    eventQuery.setOrderBy(new String[]{Utils.EXO_FROM_DATE_TIME});
+
+      if (calList.size() > 0)
+      eventQuery.setCalendarId(calList.toArray(new String[calList.size()]));
+       **/
+
+      //List<CalendarEvent> events = calendarService.getUserEvents(username, eventQuery);
+      ///EventData data = new EventData();
+      //data.setInfo(events);
+
+      return Response.ok(highlightEvents, MediaType.APPLICATION_JSON_TYPE).cacheControl(cc).build();
+    } catch (Exception e) {
+      if (log.isWarnEnabled()) log.warn(String.format("Getting highlight events for user %s from %s to %s failed", username, from, to), e);
+      return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
+    }
+  }
+
+
+  public String[] getPublicCalendars(String username) throws Exception {
+    Set<String> map = new HashSet<String>();
+    for (GroupCalendarData group : getGroupCalendarData(username)) {
+      for (org.exoplatform.calendar.service.Calendar calendar : group.getCalendars()) {
+        map.add(calendar.getId());
+      }
+    }
+
+    return map.toArray(new String[] {});
+  }
+
+
+  public List<GroupCalendarData> getGroupCalendarData(String username) throws Exception {
+    String[] groups = getUserGroups();
+
+    //if(isInSpace()) groups = new String[]{getGroupIdOfSpace()};
+    CalendarService service = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+
+    List<GroupCalendarData> groupCalendars = service.getGroupCalendars(groups, false, username);
+    return groupCalendars;
+  }
+
+  private String[] getUserGroups() throws Exception {
+    ConversationState conversationState = ConversationState.getCurrent();
+    Identity identity = conversationState.getIdentity();
+    Set<String> objs = identity.getGroups();
+    String[] groups = new String[objs.size()];
+    int i = 0;
+    for (String obj : objs) {
+      groups[i++] = obj;
+    }
+    return groups;
+  }
+
+  public java.util.Calendar getCalendarInstanceBySetting(final CalendarSetting setting) {
+    java.util.Calendar calendar = java.util.Calendar.getInstance() ;
+    calendar.setLenient(false);
+    calendar.setTimeZone(TimeZone.getTimeZone(setting.getTimeZone()));
+    calendar.setFirstDayOfWeek(Integer.parseInt(setting.getWeekStartOn()));
+    calendar.setMinimalDaysInFirstWeek(4);
+    return calendar;
+  }
+
+  public java.util.Calendar getBeginDateOfMonth(CalendarSetting setting) throws Exception{
+    java.util.Calendar currentCalendar = getInstanceOfCurrentCalendar(setting);
+
+    java.util.Calendar temCal = getCalendarInstanceBySetting(setting) ;
+    temCal.setTime(currentCalendar.getTime()) ;
+    temCal.set(java.util.Calendar.DATE, 1) ;
+    return getBeginDay(temCal) ;
+  }
+
+  public java.util.Calendar getInstanceOfCurrentCalendar(CalendarSetting setting) {
+    return getCalendarInstanceBySetting(setting);
+  }
+
+  public java.util.Calendar getEndDateOfMonth(CalendarSetting setting) throws Exception{
+    java.util.Calendar currentCalendar = getCalendarInstanceBySetting(setting);
+
+    java.util.Calendar temCal = getCalendarInstanceBySetting(setting) ;
+    temCal.setTime(currentCalendar.getTime()) ;
+    temCal.set(java.util.Calendar.DATE, currentCalendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)) ;
+    return getEndDay(temCal) ;
+  }
+
+  public java.util.Calendar getBeginDay(java.util.Calendar cal) {
+    java.util.Calendar newCal = (java.util.Calendar) cal.clone();
+
+    newCal.set(java.util.Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(java.util.Calendar.MINUTE, 0) ;
+    newCal.set(java.util.Calendar.SECOND, 0) ;
+    newCal.set(java.util.Calendar.MILLISECOND, 0) ;
+    return newCal ;
+  }
+  public java.util.Calendar getEndDay(java.util.Calendar cal)  {
+    java.util.Calendar newCal = (java.util.Calendar) cal.clone();
+    newCal.set(java.util.Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(java.util.Calendar.MINUTE, 0) ;
+    newCal.set(java.util.Calendar.SECOND, 0) ;
+    newCal.set(java.util.Calendar.MILLISECOND, 0) ;
+    newCal.add(java.util.Calendar.HOUR_OF_DAY, 24) ;
+    return newCal ;
+  }
+
+  public static String getSpaceId() {
+    String spaceIdStr = null;
+    PortalRequestContext pContext = Util.getPortalRequestContext();
+    String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+    ExoRouter.Route er = ExoRouter.route(requestPath);
+    if(er == null) return spaceIdStr;
+    String spacePrettyName = er.localArgs.get("spacePrettyName");
+    SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+    Space space = sService.getSpaceByPrettyName(spacePrettyName);
+    if(space == null) return spaceIdStr;
+    spaceIdStr = space.getId();
+    return spaceIdStr;
+  }
+
+  public static String getGroupIdOfSpace(){
+    String spaceGroupId = null;
+    PortalRequestContext pContext = Util.getPortalRequestContext();
+    String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+    ExoRouter.Route er = ExoRouter.route(requestPath);
+    if(er == null) return spaceGroupId;
+    String spacePrettyName = er.localArgs.get("spacePrettyName");
+    SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+    Space space = sService.getSpaceByPrettyName(spacePrettyName);
+    if(space == null) return spaceGroupId;
+    spaceGroupId = space.getGroupId();
+    return spaceGroupId;
+  }
+
+  public static boolean isInSpace() {
+    return getSpaceId() != null;
+  }
+
   /**
    * Lists upcoming events or tasks by the current date.
    * This service requires authentication and permission of the _Users_ group only.

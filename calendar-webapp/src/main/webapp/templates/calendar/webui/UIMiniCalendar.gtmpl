@@ -12,7 +12,8 @@
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   requirejs.require("SHARED/jquery","gj");
   requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
-  
+  requirejs.addScripts("cal.UICalendarPortlet.getHighlightEvents(" + uicomponent.fromDate + "," + uicomponent.toDate + ");");
+
   int currentYear = uicomponent.getCurrentYear() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
   int currentDay = uicomponent.getCurrentCalendar().get(Calendar.DAY_OF_YEAR) ;

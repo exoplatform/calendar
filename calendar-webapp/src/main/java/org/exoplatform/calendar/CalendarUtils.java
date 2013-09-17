@@ -189,6 +189,7 @@ public class CalendarUtils {
     }
     return groups;
   }
+
   static public String[] getAllGroups() throws Exception {
     Object[] objs = getOrganizationService().getGroupHandler().getAllGroups().toArray() ;
     String[] groups = new String[objs.length] ;

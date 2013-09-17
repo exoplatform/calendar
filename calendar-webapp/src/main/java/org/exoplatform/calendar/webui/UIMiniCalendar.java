@@ -16,14 +16,14 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -50,20 +50,40 @@ import org.exoplatform.webui.event.EventListener;
 public class UIMiniCalendar extends UICalendarView  {
   private Map<Integer, String> dataMap = new HashMap<Integer, String>() ;
   private String categoryId_ = null ;
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIMiniCalendar.class);
+
+
   public UIMiniCalendar() throws Exception {
-    updateMiniCal() ;
+    //updateMiniCal() ;
   }  
 
   public void updateMiniCal() throws Exception {
+    LOG.info("___updateMiniCal___");
+    long start = System.nanoTime(); // new Date().getTime();
+    double diff;
     dataMap.clear() ;
     EventQuery eventQuery = new EventQuery() ;
     eventQuery.setFromDate(getBeginDateOfMonth()) ;
     eventQuery.setToDate(getEndDateOfMonth()) ;
     eventQuery.setExcludeRepeatEvent(true);
+    LOG.info("from date: " + eventQuery.getFromDate().getTime()
+        + " - to date: " + eventQuery.getToDate().getTime());
+
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
+
     dataMap = calendarService.searchHightLightEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars());
+    //diff = (System.nanoTime() - start)/1e6;
+    //LOG.info("___updateMiniCal___ - searchHightLightEvent time: " +  diff);
+
     dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars(), timezone));
+    //diff = (System.nanoTime() - start)/1e6;
+    //LOG.info("___updateMiniCal___ - searchHighlightRecurrenceEvent time: " +  diff);
+
+    diff = (System.nanoTime() - start)/1e6;
+    LOG.info("___updateMiniCal___ - total time: " +  diff);
+        // + (new Date().getTime() - start));
   }
   protected int getWeeksOfTheMonth(int year, int month, int day) {
     Calendar cal = getInstanceTempCalendar() ;
@@ -74,6 +94,7 @@ public class UIMiniCalendar extends UICalendarView  {
   }
   
   protected Map<Integer, String> getData(){ return dataMap ; }
+
   @Override
   public LinkedHashMap<String, CalendarEvent> getDataMap(){ return null ; }
 
@@ -112,8 +133,18 @@ public class UIMiniCalendar extends UICalendarView  {
   public String getSelectedCategory() {
     return categoryId_  ;
   }
+
+  public long fromDate;
+
+  public long toDate;
+
   @Override
   public void refresh() throws Exception {
+    LOG.info("\n\n\n___refresh___");
+
+    long start = System.nanoTime(); // new Date().getTime();
+    double diff;
+
     dataMap.clear() ;
     EventQuery eventQuery = new EventQuery() ;
     eventQuery.setFromDate(getBeginDateOfMonth()) ;
@@ -121,11 +152,35 @@ public class UIMiniCalendar extends UICalendarView  {
     cal.add(java.util.Calendar.MILLISECOND, -1) ;
     eventQuery.setToDate(cal) ;
     eventQuery.setExcludeRepeatEvent(true);
+
+    fromDate = eventQuery.getFromDate().getTimeInMillis();
+    toDate   = eventQuery.getToDate().getTimeInMillis();
+    LOG.info("from date: " + fromDate
+        + " - to date: " + toDate);
+
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    dataMap = calendarService.searchHightLightEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars());
-    dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars(), timezone));
+
+    String[] publicCalendars = getPublicCalendars();
+    dataMap = calendarService.searchHightLightEvent(CalendarUtils.getCurrentUser(), eventQuery, publicCalendars);
+    LOG.info("highlight event count: " + dataMap.size());
+
+    dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, publicCalendars, timezone));
+    LOG.info("total event count: " + dataMap.size());
+
+    for (Integer i : dataMap.keySet()) {
+      LOG.info("data map - " + i + " - value: " + dataMap.get(i));
+    }
+
+    LOG.info("size of data: " + dataMap.size());
+
+
+    diff = (System.nanoTime() - start)/1e6;
+    LOG.info("___refresh___ - total time: " +  diff);
+    LOG.info("\n\n\n");
   }
+
+
   static  public class MoveNextActionListener extends EventListener<UIMiniCalendar> {
     @Override
     public void execute(Event<UIMiniCalendar> event) throws Exception {

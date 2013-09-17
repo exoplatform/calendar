@@ -284,6 +284,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         map.add(calendar.getId());
       }
     }
+
     return map.toArray(new String[] {});
   }
 
@@ -329,8 +330,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected List<GroupCalendarData> getPublicCalendars(String username) throws Exception {
     String[] groups = CalendarUtils.getUserGroups(username);
+
     if(isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
     CalendarService calendarService = CalendarUtils.getCalendarService();
+
     List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups,
                                                                                false,
                                                                                username);
