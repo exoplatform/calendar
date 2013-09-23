@@ -16,6 +16,11 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import net.fortuna.ical4j.model.NumberList;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.WeekDayList;
+import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -1081,28 +1086,84 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   @Override
-  public void saveAllSeriesEvents(CalendarEvent originEvent,
+  public void saveAllSeriesEvents(CalendarEvent occurrence,
                                   String username) {
     try {
-      String calendarId = originEvent.getCalendarId();
+      String timezone = getCalendarSetting(username).getTimeZone();
+      TimeZone tz = TimeZone.getTimeZone(timezone);
+      CalendarEvent originEvent = getRepetitiveEvent(occurrence);
+
+      updateOriginFromToTime(originEvent, occurrence);
+      fillOriginFromOccurrence(originEvent, occurrence);
+      updateOriginDate(originEvent, tz);
+
+      int fromType = Integer.parseInt(originEvent.getCalType());
+      int toType = Integer.parseInt(occurrence.getCalType());
+
+
       List<CalendarEvent> exceptions = getExceptionEvents(username, originEvent);
       removeEvents(username, exceptions);
-      originEvent.setExceptionIds(null);
-      switch (Integer.parseInt(originEvent.getCalType())) {
-        case Calendar.TYPE_PRIVATE:
-          saveUserEvent(username, calendarId, originEvent, false);
-          break;
 
-        case Calendar.TYPE_PUBLIC:
-          savePublicEvent(calendarId, originEvent, false);
-          break;
+      String fromCalendar = originEvent.getCalendarId();
+      String toCalendar = occurrence.getCalendarId();
 
-        case Calendar.TYPE_SHARED:
-          saveEventToSharedCalendar(username, calendarId, originEvent, false);
-          break;
-        default:
-          break;
+      // if move occurrence to another calendar, same date
+      if (!fromCalendar.equals(toCalendar)) {
+        // remove original event from old calendar
+        switch (fromType) {
+          case Calendar.TYPE_PRIVATE:
+            removeUserEvent(username, fromCalendar, originEvent.getId());
+            break;
+
+          case Calendar.TYPE_PUBLIC:
+            removePublicEvent(fromCalendar, originEvent.getId());
+            break;
+
+          case Calendar.TYPE_SHARED:
+            removeSharedEvent(username, fromCalendar, originEvent.getId());
+            break;
+          default:
+            break;
+        }
+        // save new original event to new calendar
+        CalendarEvent newEvent = new CalendarEvent(originEvent);
+        newEvent.setCalendarId(toCalendar);
+        newEvent.setExceptionIds(originEvent.getExceptionIds());
+
+        switch (toType) {
+          case Calendar.TYPE_PRIVATE:
+            saveUserEvent(username, toCalendar, newEvent, false);
+            break;
+
+          case Calendar.TYPE_PUBLIC:
+            savePublicEvent(toCalendar, newEvent, false);
+            break;
+
+          case Calendar.TYPE_SHARED:
+            saveEventToSharedCalendar(username, toCalendar, newEvent, false);
+            break;
+          default:
+            break;
+        }
+      } else {
+        // save original event
+        switch (fromType) {
+          case Calendar.TYPE_PRIVATE:
+            saveUserEvent(username, fromCalendar, originEvent, false);
+            break;
+
+          case Calendar.TYPE_PUBLIC:
+            savePublicEvent(fromCalendar, originEvent, false);
+            break;
+
+          case Calendar.TYPE_SHARED:
+            saveEventToSharedCalendar(username, fromCalendar, originEvent, false);
+            break;
+          default:
+            break;
+        }
       }
+
     } catch(Exception e) {
       if(LOG.isDebugEnabled()) {
         LOG.debug("exception occurs when save all series",e);
@@ -1364,6 +1425,99 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     format.setTimeZone(userTimeZone);
     return format.format(formTime);
   }
+
+  /* Utils for repetitive event */
+
+  /*
+   * updates the from time & to time of the origin event, no change to the origin date
+   */
+  private void updateOriginFromToTime(CalendarEvent originEvent, CalendarEvent occurrence) {
+    // update original event from occurrence
+    java.util.Calendar fromDate = Utils.getInstanceTempCalendar();
+    fromDate.setTime(originEvent.getFromDateTime());
+    java.util.Calendar newFromDate = Utils.getInstanceTempCalendar();
+    newFromDate.setTime(occurrence.getFromDateTime());
+    fromDate.set(java.util.Calendar.HOUR_OF_DAY, newFromDate.get(java.util.Calendar.HOUR_OF_DAY));
+    fromDate.set(java.util.Calendar.MINUTE, newFromDate.get(java.util.Calendar.MINUTE));
+    originEvent.setFromDateTime(fromDate.getTime());
+
+    // calculate time amount
+    java.util.Calendar newToDate = Utils.getInstanceTempCalendar();
+    newToDate.setTime(occurrence.getToDateTime());
+    int diffMinutes = (int) (newToDate.getTimeInMillis() - newFromDate.getTimeInMillis())
+        / (60 * 1000);
+
+    newToDate.setTime(fromDate.getTime());
+    newToDate.add(java.util.Calendar.MINUTE, diffMinutes);
+    originEvent.setToDateTime(newToDate.getTime());
+  }
+
+  /*
+   * updates the origin date in case the repeat rule is changed
+   * for ex: Every Tuesday -> Every Wednesday, the origin date
+   * should be updated (+1 in this case).
+   */
+  private void updateOriginDate(CalendarEvent event, TimeZone tz) throws Exception {
+    //distance between from-end of event
+    long diff = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
+
+    java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
+    calendar.setTime(event.getFromDateTime());
+
+    Recur recur = Utils.getICalendarRecur(event);
+
+    WeekDayList weekDayList = recur.getDayList();
+
+    if("WEEKLY".equals(recur.getFrequency())) {
+      if(weekDayList.size() > 0) {
+        calendar.set(java.util.Calendar.DAY_OF_WEEK, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
+      }
+    }
+
+    if("MONTHLY".equals(recur.getFrequency())) {
+      if(weekDayList.size() > 0) {
+        if(weekDayList.size() > 0) {
+          calendar.set(java.util.Calendar.DAY_OF_WEEK_IN_MONTH, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
+        }
+
+        NumberList monthDayList = recur.getMonthDayList();
+
+        if(monthDayList.size() > 0) {
+          calendar.set(java.util.Calendar.DAY_OF_MONTH, ((Integer) monthDayList.get(0)).intValue());
+        }
+      }
+    }
+    event.setFromDateTime(calendar.getTime());
+
+    calendar.setTimeInMillis(calendar.getTimeInMillis() + diff);
+    event.setToDateTime(calendar.getTime());
+  }
+
+  private void fillOriginFromOccurrence(CalendarEvent originEvent, CalendarEvent occurrence) {
+    originEvent.setSummary(occurrence.getSummary());
+    originEvent.setDescription(occurrence.getDescription());
+    originEvent.setEventCategoryId(occurrence.getEventCategoryId());
+    originEvent.setEventCategoryName(occurrence.getEventCategoryName());
+    originEvent.setMessage(occurrence.getMessage());
+    originEvent.setLocation(occurrence.getLocation());
+    List<Attachment> attachments = occurrence.getAttachment();
+    originEvent.setAttachment(attachments);
+    originEvent.setInvitation(occurrence.getInvitation());
+    originEvent.setParticipant(occurrence.getParticipant());
+    originEvent.setParticipantStatus(occurrence.getParticipantStatus());
+    originEvent.setReminders(occurrence.getReminders());
+    originEvent.setSendOption(occurrence.getSendOption());
+    originEvent.setStatus(occurrence.getStatus());
+    originEvent.setPriority(occurrence.getPriority());
+    originEvent.setRepeatType(occurrence.getRepeatType());
+    originEvent.setRepeatUntilDate(occurrence.getRepeatUntilDate());
+    originEvent.setRepeatCount(occurrence.getRepeatCount());
+    originEvent.setRepeatInterval(occurrence.getRepeatInterval());
+    originEvent.setRepeatByDay(occurrence.getRepeatByDay());
+    originEvent.setRepeatByMonthDay(occurrence.getRepeatByMonthDay());
+    originEvent.setExceptionIds(null);
+  }
+
 
   private void removeEvents(String username, List<CalendarEvent> events)  {
     try {

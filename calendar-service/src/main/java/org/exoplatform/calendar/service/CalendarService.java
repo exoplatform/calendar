@@ -16,19 +16,20 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import javax.jcr.Node;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
 import org.exoplatform.calendar.service.impl.NewMembershipListener;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.quartz.JobDetail;
+
+import javax.jcr.Node;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Created by The eXo Platform SARL
@@ -320,7 +321,7 @@ public interface CalendarService {
    * Gets the object performing import/export by type of import/export.
    * <p> There are 2 classes that implements the interface CalendarImportExport:
    * <ul>
-   * <li> {@link ICalendarImportExport} </li>
+   * <li> {@link org.exoplatform.calendar.service.impl.ICalendarImportExport} </li>
    * <li> {@link CsvImportExport} </li>
    * </ul>
    * @param type ICS or CSV 
@@ -796,11 +797,11 @@ public interface CalendarService {
    * <p> This method is called when:
    * <ul>
    * <li>User wants to update all occurrence event with all properties except from time and to time of all exception event </li>
-   * </ul> 
-   * @param originEvent the original event with occurrence rule  
+   * </ul>
+   * @param occurrence the original event with occurrence rule
    * @param username current user name (or user ID) using to retrieve the user calendar in case modify event of personal calendar
    */
-  public void saveAllSeriesEvents(CalendarEvent originEvent, String username);
+  public void saveAllSeriesEvents(CalendarEvent occurrence, String username);
 
   /**
    * <p> This method is called when:

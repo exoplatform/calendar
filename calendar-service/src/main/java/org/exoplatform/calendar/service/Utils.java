@@ -600,7 +600,7 @@ public class Utils {
   }
 
   public static boolean isRepeatEvent(CalendarEvent event) throws Exception {
-    return (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && isEmpty(event.getRecurrenceId()));
+    return (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()));
   }
 
   public static boolean isExceptionOccurrence(CalendarEvent event) throws Exception {
@@ -874,6 +874,7 @@ public class Utils {
       }
     }
   }
+
 
   /**
    * Gets a repetitive event's occurrence date right before a given date
