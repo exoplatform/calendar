@@ -64,7 +64,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
 
   public void init()
   {
-    addUIFormInput(new UIUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, maxField, CalendarUtils.getLimitUploadSize()));
+    addUIFormInput(new UIFileUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, maxField, CalendarUtils.getLimitUploadSize()));
   }
 
   public void setLimitNumberOfFiles(int limitFile)
@@ -83,12 +83,12 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     int sizeLimit = CalendarUtils.getLimitUploadSize();
     if (sizeLimit == CalendarUtils.DEFAULT_VALUE_UPLOAD_PORTAL)
     {
-      addUIFormInput(new UIUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
+      addUIFormInput(new UIFileUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
                                        FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), maxField, numberOfUploadInputField));
     }
     else
     {
-      addUIFormInput(new UIUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
+      addUIFormInput(new UIFileUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
                                        FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), maxField, numberOfUploadInputField));
     }
   }
@@ -116,7 +116,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
       UIAttachFileForm uiForm = event.getSource();
       List<Attachment> files = new ArrayList<Attachment>() ;
       long size = uiForm.attSize ;
-      UIUploadInput input = (UIUploadInput)uiForm.getUIInput(FIELD_UPLOAD);
+      UIFileUploadInput input = (UIFileUploadInput) uiForm.getUIInput(FIELD_UPLOAD);
       UploadResource[] uploadResource = input.getUploadResources() ;
       for(UploadResource upl : uploadResource) {
         if(upl != null) {
@@ -139,36 +139,42 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
           files.add(attachfile) ;
         }
       }
-      if(files.isEmpty()){
+
+      /** check attachment is empty */
+      if (files.isEmpty()){
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIAttachFileForm.msg.fileName-error",
                                                                                        null,
                                                                                        AbstractApplicationMessage.WARNING));
         return ;
-      } else {
-        UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
-        UIEventForm uiEventForm = uiPopupContainer.getChild(UIEventForm.class) ;
-        UITaskForm uiTaskForm = uiPopupContainer.getChild(UITaskForm.class) ;
-        if(uiEventForm != null) {
-          uiEventForm.setSelectedTab(UIEventForm.TAB_EVENTDETAIL) ;
-          UIEventDetailTab uiEventDetailTab = uiEventForm.getChild(UIEventDetailTab.class) ;
-          for(Attachment file :  files){
-            uiEventDetailTab.addToUploadFileList(file) ;
-          }
-          uiEventDetailTab.refreshUploadFileList() ;
-          event.getRequestContext().addUIComponentToUpdateByAjax(uiEventDetailTab) ;
-        } else if(uiTaskForm != null) {
-          uiTaskForm.setSelectedTab(UITaskForm.TAB_TASKDETAIL) ;
-          UITaskDetailTab uiTaskDetailTab = uiTaskForm.getChild(UITaskDetailTab.class) ;
-          for(Attachment file :  files){
-            uiTaskDetailTab.addToUploadFileList(file) ;  
-          }
-          uiTaskDetailTab.refreshUploadFileList() ;
-          event.getRequestContext().addUIComponentToUpdateByAjax(uiTaskDetailTab) ;
-        }
-        UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class) ;
-        uiPopupAction.deActivate() ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
       }
+
+      UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
+      UIEventForm uiEventForm = uiPopupContainer.getChild(UIEventForm.class) ;
+      UITaskForm uiTaskForm = uiPopupContainer.getChild(UITaskForm.class) ;
+
+      if (uiEventForm != null) {
+        uiEventForm.setSelectedTab(UIEventForm.TAB_EVENTDETAIL) ;
+        UIEventDetailTab uiEventDetailTab = uiEventForm.getChild(UIEventDetailTab.class) ;
+        for(Attachment file :  files){
+          uiEventDetailTab.addToUploadFileList(file) ;
+        }
+        uiEventDetailTab.refreshUploadFileList() ;
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiEventDetailTab) ;
+      } else if (uiTaskForm != null) {
+        uiTaskForm.setSelectedTab(UITaskForm.TAB_TASKDETAIL) ;
+        UITaskDetailTab uiTaskDetailTab = uiTaskForm.getChild(UITaskDetailTab.class) ;
+
+        for(Attachment file :  files){
+          uiTaskDetailTab.addToUploadFileList(file) ;
+        }
+
+        uiTaskDetailTab.refreshUploadFileList() ;
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiTaskDetailTab) ;
+      }
+
+      UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class) ;
+      uiPopupAction.deActivate() ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }
   }
 
@@ -176,7 +182,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     @Override
     public void execute(Event<UIAttachFileForm> event) throws Exception {
       UIAttachFileForm uiFileForm = event.getSource() ;
-      UIUploadInput input = (UIUploadInput)uiFileForm.getUIInput(FIELD_UPLOAD);
+      UIFileUploadInput input = (UIFileUploadInput) uiFileForm.getUIInput(FIELD_UPLOAD);
       UploadResource[] uploadResource = input.getUploadResources() ;
       for( UploadResource upl : uploadResource) {
         if(upl != null)
@@ -185,6 +191,38 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
       UIPopupAction uiPopupAction = uiFileForm.getAncestorOfType(UIPopupAction.class) ;
       uiPopupAction.deActivate() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
+    }
+  }
+
+  @org.exoplatform.webui.config.annotation.ComponentConfig(
+      template = "app:/templates/calendar/webui/UIPopup/UIFileUploadInput.gtmpl",
+      events = {
+          @org.exoplatform.webui.config.annotation.EventConfig(
+              listeners = {org.exoplatform.webui.form.input.UIUploadInput.CreateUploadIdActionListener.class}),
+          @org.exoplatform.webui.config.annotation.EventConfig(
+              listeners = {org.exoplatform.webui.form.input.UIUploadInput.RemoveUploadIdActionListener.class})
+      }
+  )
+  public class UIFileUploadInput extends UIUploadInput {
+
+    public UIFileUploadInput(String name, String bindingExpression) {
+      super(name, bindingExpression);
+      setComponentConfig(getClass(), null);
+    }
+
+    public UIFileUploadInput(String name, String bindingExpression, int limitFile) {
+      super(name, bindingExpression, limitFile);
+      setComponentConfig(getClass(), null);
+    }
+
+    public UIFileUploadInput(String name, String bindingExpression, int limitFile, int limitSize) {
+      super(name, bindingExpression, limitFile, limitSize);
+      setComponentConfig(getClass(), null);
+    }
+
+    public UIFileUploadInput(String name, String bindingExpression, int limitFile, int limitSize, org.exoplatform.upload.UploadService.UploadUnit unit) {
+      super(name, bindingExpression, limitFile, limitSize, unit);
+      setComponentConfig(getClass(), null);
     }
   }
 }
