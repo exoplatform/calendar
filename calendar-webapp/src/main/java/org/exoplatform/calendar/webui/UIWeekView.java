@@ -111,14 +111,22 @@ public class UIWeekView extends UICalendarView {
     endDateOfWeek.setTime(toDate);
     eventQuery.setToDate(endDateOfWeek) ; 
     eventQuery.setExcludeRepeatEvent(true);
-    // get normal events and exception occurrences, exclude original recurrence events
-    List<CalendarEvent> allEvents ;
-    if(isInSpace()) {  
-      eventQuery.setCalendarId(getPublicCalendars());
-      allEvents = calendarService.getPublicEvents(eventQuery);
-    } else allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
 
-    List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
+    /** get all norepeat events */
+    List<CalendarEvent> allEvents;
+    String[] publicCalendars = getPublicCalendars();
+    if(isInSpace()) {  
+      eventQuery.setCalendarId(publicCalendars);
+      allEvents = calendarService.getPublicEvents(eventQuery);
+    }
+    else
+      allEvents = calendarService.getAllNoRepeatEvents(username, eventQuery, publicCalendars);
+
+
+    /** get exception occurrences, exclude original recurrence events */
+    List<CalendarEvent> originalRecurEvents = calendarService.
+        getHighLightOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), publicCalendars);
+
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();

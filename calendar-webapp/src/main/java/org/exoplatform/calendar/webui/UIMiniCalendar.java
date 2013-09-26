@@ -50,21 +50,9 @@ import org.exoplatform.webui.event.EventListener;
 public class UIMiniCalendar extends UICalendarView  {
   private Map<Integer, String> dataMap = new HashMap<Integer, String>() ;
   private String categoryId_ = null ;
-  public UIMiniCalendar() throws Exception {
-    updateMiniCal() ;
-  }  
 
-  public void updateMiniCal() throws Exception {
-    dataMap.clear() ;
-    EventQuery eventQuery = new EventQuery() ;
-    eventQuery.setFromDate(getBeginDateOfMonth()) ;
-    eventQuery.setToDate(getEndDateOfMonth()) ;
-    eventQuery.setExcludeRepeatEvent(true);
-    CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    dataMap = calendarService.searchHightLightEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars());
-    dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars(), timezone));
-  }
+  public UIMiniCalendar() throws Exception { }
+
   protected int getWeeksOfTheMonth(int year, int month, int day) {
     Calendar cal = getInstanceTempCalendar() ;
     cal.set(Calendar.YEAR, year);
@@ -123,8 +111,10 @@ public class UIMiniCalendar extends UICalendarView  {
     eventQuery.setExcludeRepeatEvent(true);
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    dataMap = calendarService.searchHightLightEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars());
-    dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, getPublicCalendars(), timezone));
+
+    String[] publicCalendars = getPublicCalendars();
+    dataMap = calendarService.searchHightLightEvent(CalendarUtils.getCurrentUser(), eventQuery, publicCalendars);
+    dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, publicCalendars, timezone));
   }
   static  public class MoveNextActionListener extends EventListener<UIMiniCalendar> {
     @Override
