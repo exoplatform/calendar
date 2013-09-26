@@ -105,10 +105,6 @@ public class UIMiniCalendar extends UICalendarView  {
     return categoryId_  ;
   }
 
-  public long fromDate;
-
-  public long toDate;
-
   @Override
   public void refresh() throws Exception {
     dataMap.clear() ;
@@ -118,9 +114,6 @@ public class UIMiniCalendar extends UICalendarView  {
     cal.add(java.util.Calendar.MILLISECOND, -1) ;
     eventQuery.setToDate(cal) ;
     eventQuery.setExcludeRepeatEvent(true);
-
-    fromDate = eventQuery.getFromDate().getTimeInMillis();
-    toDate   = eventQuery.getToDate().getTimeInMillis();
 
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
