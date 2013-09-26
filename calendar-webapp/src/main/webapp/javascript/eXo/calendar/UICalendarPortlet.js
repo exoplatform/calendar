@@ -3659,6 +3659,11 @@ UICalendarPortlet.prototype.autoFocusFirstInput = function(formId) {
     }
 }
 
+UICalendarPortlet.prototype.resizeSubscribeForm = function(formId) {
+    gj('.' + formId + ' .control-label').css('width', '15%');
+    gj('.' + formId + ' .controls').css('margin-left', '20%');
+}
+
 Highlighter = window.require("SHARED/Highlighter");
 _module.Highlighter = Highlighter.Highlighter;
 eXo.calendar.UIHSelection = Highlighter.UIHSelection;
