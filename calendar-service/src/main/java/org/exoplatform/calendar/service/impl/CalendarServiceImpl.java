@@ -385,6 +385,13 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
+  public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
+    return storage_.getAllNoRepeatEvents(username, eventQuery, publicCalendarIds);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   public void removeSharedCalendar(String username, String calendarId) throws Exception {
     storage_.removeSharedCalendar(username, calendarId);
   }
@@ -881,6 +888,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception {
     return storage_.searchHighlightRecurrenceEvent(username, eventQuery, publicCalendarIds, timezone);
+  }
+
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception {
+    return storage_.getHighLightOriginalRecurrenceEvents(username, from, to, publicCalendarIds);
   }
 
   /**
