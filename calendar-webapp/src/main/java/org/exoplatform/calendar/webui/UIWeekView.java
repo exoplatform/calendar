@@ -127,6 +127,7 @@ public class UIWeekView extends UICalendarView {
     /** get exception occurrences, exclude original recurrence events */
     List<CalendarEvent> originalRecurEvents = calendarService.
         getHighLightOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), publicCalendars);
+
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();

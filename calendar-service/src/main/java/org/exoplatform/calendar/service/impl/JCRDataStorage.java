@@ -3126,7 +3126,7 @@ public class JCRDataStorage implements DataStorage {
             fromDate, toDate, calendarIds, filteredCalendars) ;
         latch.countDown();
       } catch (Exception e) {
-        log.debug("Exception: " + e.getLocalizedMessage());
+        // log.debug("Exception: " + e.getLocalizedMessage());
       }
     }
   }
@@ -3282,9 +3282,9 @@ public class JCRDataStorage implements DataStorage {
 
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
     StringBuilder queryString = new StringBuilder("/jcr:root").append(calendar.getPath())
-        .append("//element(*,exo:repeatCalendarEvent) [@exo:recurrenceId=''")
-        .append(" and (@exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "')")
-        .append(" or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "') )");
+        .append("//element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
+        .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
+        .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))");
 
     /** search within calendars */
     if (calendarIds != null && calendarIds.length > 0) {
