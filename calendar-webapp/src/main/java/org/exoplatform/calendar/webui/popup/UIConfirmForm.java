@@ -69,6 +69,13 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
     addUIFormInput(input);
   }
 
+  @Override
+  public String getId() {
+    if(isDelete)
+    return super.getId() + "Delete" ;
+    else return super.getId() + "Update";
+  }
+
   private List<SelectItemOption<String>> getValue() {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
     options.add(new SelectItemOption<String>(SAVE_ONE, SAVE_ONE));
