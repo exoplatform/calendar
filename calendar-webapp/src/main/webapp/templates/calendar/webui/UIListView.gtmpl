@@ -175,16 +175,16 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
 </tr>
             <%
             }
+
+            if(uicomponent.getEvents().size() <= 0) { %>
+              <tr><td colspan="4" class="empty" style="font-size: 13px;"><%=uiform.getLabel('noData')%></td></tr>
+            <% }
           %>
         </tbody>
 </table>
 
   <div class="clearfix actionBottom" >
-    <% if(uicomponent.getEvents().size() <= 0) { %>
-    <div class="control-label center" style="padding: 5px;">
-      <%=uiform.getLabel('noData')%>
-    </div>
-    <%} else if(uicomponent.pageList_.getAvailablePage() > 1){ %>
+    <% if(uicomponent.pageList_.getAvailablePage() > 1){ %>
     <div class="pull-right">
       <% _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl"); %>
     </div>
