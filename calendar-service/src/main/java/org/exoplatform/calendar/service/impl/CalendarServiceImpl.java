@@ -1101,8 +1101,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       int toType = Integer.parseInt(occurrence.getCalType());
 
 
-      List<CalendarEvent> exceptions = getExceptionEvents(username, originEvent);
-      removeEvents(username, exceptions);
+      //List<CalendarEvent> exceptions = getExceptionEvents(username, originEvent);
+      //removeEvents(username, exceptions);
 
       String fromCalendar = originEvent.getCalendarId();
       String toCalendar = occurrence.getCalendarId();
