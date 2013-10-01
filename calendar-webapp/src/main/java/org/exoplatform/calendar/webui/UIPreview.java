@@ -60,7 +60,7 @@ import org.exoplatform.webui.event.EventListener;
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
-                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
                  }
     )
 public class UIPreview extends UICalendarView implements UIPopupComponent
