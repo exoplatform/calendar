@@ -54,6 +54,10 @@
   %>
   <div class="uiMonthView uiBox">
     <div class="title"><% _ctx.include("app:/templates/calendar/webui/UIHeaderBar.gtmpl");%></div>
+    <div id="bts_alert" class="alert fade in" style="display: none;">
+      <button type="button" id="bts_close" class="close" style="padding-right: 15px;">x</button>
+      <strong></strong>
+    </div>
     <div class="dayTitleBar">
     <table class="uiGrid table" exocallback="eXo.calendar.UIWeekView.callbackSelectionX();">
       <tr>
