@@ -609,6 +609,15 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     UIFormComboBox timeField = eventDetailTab.getUIFormComboBox(UIEventDetailTab.FIELD_TO_TIME) ;
     return UITaskForm.getToDate(getEventAllDate(), dateFormat, toField.getValue(), timeFormat, timeField.getValue());
   }
+
+  protected Date getEventToDate() throws Exception {
+    CalendarSetting calendarSetting = CalendarUtils.getCurrentUserCalendarSetting();
+    UIEventDetailTab eventDetailTab =  getChildById(TAB_EVENTDETAIL) ;
+    UIFormDateTimePicker toField = eventDetailTab.getChildById(UIEventDetailTab.FIELD_TO) ;
+    UIFormComboBox timeField = eventDetailTab.getUIFormComboBox(UIEventDetailTab.FIELD_TO_TIME) ;
+    return UITaskForm.getToDate(getEventAllDate(), calendarSetting.getDateFormat(), toField.getValue(), calendarSetting.getTimeFormat(), timeField.getValue());
+  }
+
   protected void setEventToDate(Date date,String dateFormat, String timeFormat) {
     UIEventDetailTab eventDetailTab =  getChildById(TAB_EVENTDETAIL) ;
     UIEventAttenderTab eventAttenderTab = getChildById(TAB_EVENTATTENDER) ;
