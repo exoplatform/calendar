@@ -83,7 +83,7 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
 	else classCss = "uiIconMiniArrowDown uiIconLightGray";
 }
 %>
-	<th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
+	<th><a href="$sortLink"><%=_ctx.appRes("UIListView.label.Summary")%><i class="$classCss pull-right"></i></a></th>
         <% } else {
          /* Search result displaying enabled, replace Event by Title */
             sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
@@ -93,7 +93,7 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_SUMMARY)) {
               else classCss = "uiIconMiniArrowDown uiIconLightGray";
             }
           %>
-	<th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
+	<th><a href="$sortLink"><%=_ctx.appRes("UIListView.label.Task")%><i class="$classCss pull-right"></i></a></th>
 <% } %>
 
 <%
