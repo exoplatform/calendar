@@ -19,7 +19,7 @@ def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
 requirejs.require("SHARED/csResources","cs");
 requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 requirejs.require("SHARED/jquery","gj");
-requirejs.addScripts("gj('div#UIEventPreview_fullSize').click(function() { cs.CSUtils.Utils.showHidePane(this,gj('#UIListUsers').parent(),'$uicomponent.id');  });");
+requirejs.addScripts("gj('#UIEventPreview_fullSize').click(function() { cal.UICalendarPortlet.toggleEventPreview(this);  });");
 requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
 requirejs.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
 requirejs.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");

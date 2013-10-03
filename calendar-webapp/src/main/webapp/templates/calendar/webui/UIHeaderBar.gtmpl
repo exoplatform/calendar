@@ -165,7 +165,7 @@ int currentDay = uicomponent.getCurrentDay() ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
 %>
-		<a class="pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
+		<a class="actionIcon pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
       <i class="uiIconDelete uiIconLightGray"></i>
     </a> 
 		<div id="UIHeaderBar_1" class="dropdown pull-left">
