@@ -13,7 +13,7 @@
       }
       String actionLink = (action.actionParameter != null) ? uiForm.event(action.actionListener, action.actionParameter) : uiForm.event(action.actionListener);
       %>
-        <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
+        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
       <% if (action.actionType == action.TYPE_ICON) { %>
         <i class="$action.cssIconClass"></i>
         <% if (action.isShowLabel) { println  actionLabel; }
@@ -38,14 +38,14 @@
       String fileSize   = action.getFileSize();
 
       if (action.actionName.equals(UIEventForm.ACT_REMOVE)) { %>
-        <a class="pull-right" rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink"
-           style="margin-right: 63px;">
+        <a class="actionIcon pull-right" rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink"
+           style="margin-right: 55px;">
           <i class="$action.cssIconClass"></i>
         </a>
       <% } else { %>
         <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink"
           style="width: 200px; display: inline-block; text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap;">
-          <i style="margin-right: 5px;" class="$action.cssIconClass"></i>$actionLabel</a><span>($fileSize)</span>
+          <i style="margin-right: 5px; margin-left:5px;" class="$action.cssIconClass"></i>$actionLabel</a><span>($fileSize)</span>
       <% }
     }
   }

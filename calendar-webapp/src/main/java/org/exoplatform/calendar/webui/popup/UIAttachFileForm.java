@@ -26,6 +26,9 @@ import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.JavascriptManager;
+import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -64,7 +67,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
 
   public void init()
   {
-    addUIFormInput(new UIFileUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, maxField, CalendarUtils.getLimitUploadSize()));
+    addUIFormInput(new UIUploadInput(FIELD_UPLOAD, FIELD_UPLOAD, maxField, CalendarUtils.getLimitUploadSize()));
   }
 
   public void setLimitNumberOfFiles(int limitFile)
@@ -83,12 +86,12 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     int sizeLimit = CalendarUtils.getLimitUploadSize();
     if (sizeLimit == CalendarUtils.DEFAULT_VALUE_UPLOAD_PORTAL)
     {
-      addUIFormInput(new UIFileUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
+      addUIFormInput(new UIUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
                                        FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), maxField, numberOfUploadInputField));
     }
     else
     {
-      addUIFormInput(new UIFileUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
+      addUIFormInput(new UIUploadInput(FIELD_UPLOAD + String.valueOf(numberOfUploadInputField),
                                        FIELD_UPLOAD + String.valueOf(numberOfUploadInputField), maxField, numberOfUploadInputField));
     }
   }
@@ -116,7 +119,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
       UIAttachFileForm uiForm = event.getSource();
       List<Attachment> files = new ArrayList<Attachment>() ;
       long size = uiForm.attSize ;
-      UIFileUploadInput input = (UIFileUploadInput) uiForm.getUIInput(FIELD_UPLOAD);
+      UIUploadInput input = (UIUploadInput) uiForm.getUIInput(FIELD_UPLOAD);
       UploadResource[] uploadResource = input.getUploadResources() ;
       for(UploadResource upl : uploadResource) {
         if(upl != null) {
@@ -175,6 +178,9 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
       UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class) ;
       uiPopupAction.deActivate() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
+      RequireJS requireJS = event.getRequestContext().getJavascriptManager().getRequireJS();
+      requireJS.require("SHARED/jquery","gj");
+      requireJS.addScripts("gj('#eventDetail-tab [rel=tooltip]').tooltip();");
     }
   }
 
@@ -182,7 +188,7 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
     @Override
     public void execute(Event<UIAttachFileForm> event) throws Exception {
       UIAttachFileForm uiFileForm = event.getSource() ;
-      UIFileUploadInput input = (UIFileUploadInput) uiFileForm.getUIInput(FIELD_UPLOAD);
+      UIUploadInput input = (UIUploadInput) uiFileForm.getUIInput(FIELD_UPLOAD);
       UploadResource[] uploadResource = input.getUploadResources() ;
       for( UploadResource upl : uploadResource) {
         if(upl != null)
@@ -191,38 +197,6 @@ public class UIAttachFileForm extends UIForm implements UIPopupComponent {
       UIPopupAction uiPopupAction = uiFileForm.getAncestorOfType(UIPopupAction.class) ;
       uiPopupAction.deActivate() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
-    }
-  }
-
-  @org.exoplatform.webui.config.annotation.ComponentConfig(
-      template = "app:/templates/calendar/webui/UIPopup/UIFileUploadInput.gtmpl",
-      events = {
-          @org.exoplatform.webui.config.annotation.EventConfig(
-              listeners = {org.exoplatform.webui.form.input.UIUploadInput.CreateUploadIdActionListener.class}),
-          @org.exoplatform.webui.config.annotation.EventConfig(
-              listeners = {org.exoplatform.webui.form.input.UIUploadInput.RemoveUploadIdActionListener.class})
-      }
-  )
-  public class UIFileUploadInput extends UIUploadInput {
-
-    public UIFileUploadInput(String name, String bindingExpression) {
-      super(name, bindingExpression);
-      setComponentConfig(getClass(), null);
-    }
-
-    public UIFileUploadInput(String name, String bindingExpression, int limitFile) {
-      super(name, bindingExpression, limitFile);
-      setComponentConfig(getClass(), null);
-    }
-
-    public UIFileUploadInput(String name, String bindingExpression, int limitFile, int limitSize) {
-      super(name, bindingExpression, limitFile, limitSize);
-      setComponentConfig(getClass(), null);
-    }
-
-    public UIFileUploadInput(String name, String bindingExpression, int limitFile, int limitSize, org.exoplatform.upload.UploadService.UploadUnit unit) {
-      super(name, bindingExpression, limitFile, limitSize, unit);
-      setComponentConfig(getClass(), null);
     }
   }
 }
