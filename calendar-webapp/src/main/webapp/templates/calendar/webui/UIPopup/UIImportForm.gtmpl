@@ -7,25 +7,25 @@
       if (field.isRendered()) { %>
 
         <div class="control-group">
-		<% fieldName = uicomponent.getLabel(field.getName());
-           if (fieldName != null && fieldName.length() > 0 && !fieldName.equals(uicomponent.getId())) { %>
+          <% fieldName = uicomponent.getLabel(field.getName());
+          if (fieldName != null && fieldName.length() > 0 && !fieldName.equals(uicomponent.getId())) { %>
 
-             <label class="control-label"><%=fieldName%>:</label>
-			 <div class="controls">
-			 <% uiform.renderField(field);
-			    if (uicomponent.FIELD_TO_CALENDAR.equals(field.getName())) { %>
-			    <a class="actionIcon" href="<%= uicomponent.event("Add") %>" rel="tooltip"
-				   data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
-				   <i class="uiIconPlus uiIconLightGray"></i>
-				</a>
-                <% }
+            <label class="control-label"><%=fieldName%>:</label>
+            <div class="controls">
+            <% uiform.renderField(field);
+              if (uicomponent.FIELD_TO_CALENDAR.equals(field.getName())) { %>
+              <a class="actionIcon" href="<%= uicomponent.event("Add") %>" rel="tooltip"
+                 data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
+                <i class="uiIconPlus uiIconLightGray"></i>
+              </a>
+              <% }
 
-                if (uicomponent.DISPLAY_NAME.equals(field.getName())) { %>
-                <a class="actionIcon" href="<%= uicomponent.event("Import") %>" rel="tooltip"
-				   data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
-				   <i class="uiIconPLFCalendar uiIconPLFLightGray"></i>
-                </a>
-                <% } %>
+              if (uicomponent.DISPLAY_NAME.equals(field.getName())) { %>
+              <a id="uiImportCalendarName" class="actionIcon" href="<%= uicomponent.event("Import") %>" rel="tooltip"
+                 data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
+                <i class="uiIconPLFCalendar uiIconPLFLightGray"></i>
+              </a>
+             <% } %>
 			 </div>
 		   <%} else { %>
 		     <div class="fieldComponent" >

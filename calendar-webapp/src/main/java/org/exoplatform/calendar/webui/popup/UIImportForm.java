@@ -39,6 +39,9 @@ import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.JavascriptManager;
+import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -192,6 +195,12 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       getUIFormTextAreaInput(DESCRIPTION).setRendered(true);
       getChild(UIFormColorPicker.class).setRendered(true);
       getUIStringInput(TIMEZONE).setRendered(true);
+
+      JavascriptManager jsManager = ((WebuiRequestContext) WebuiRequestContext.getCurrentInstance())
+          .getJavascriptManager();
+      RequireJS requireJS = jsManager.getRequireJS();
+      requireJS.require("SHARED/jquery","gj");
+      requireJS.addScripts("gj('#uiImportCalendarName').tooltip('show');");
     } else {
       log.warn("Wrong flag(" +flag+ ") only UPDATE_EXIST(1) or ADD_NEW(0) accept ");
     }
