@@ -25,6 +25,8 @@ import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
@@ -70,6 +72,8 @@ public class UIEventDetailTab extends UIFormInputWithActions {
   final static public String FIELD_ATTACHMENTS = "attachments".intern() ;
 
   final static public String LABEL_ADD_ATTACHMENTS = "addfiles";
+
+  private static final Log LOG = ExoLogger.getLogger(UIEventDetailTab.class);
 
   protected List<Attachment> attachments_ = new ArrayList<Attachment>() ;
   private Map<String, List<ActionData>> actionField_ ;
@@ -223,10 +227,12 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     actionField_.put(fieldName, actions) ;
   }
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}
+
   @Override
   public void processRender(WebuiRequestContext arg0) throws Exception {
     super.processRender(arg0);
   }
+
   public UIFormComboBox getUIFormComboBox (String id) {
     return findComponentById(id);
   }

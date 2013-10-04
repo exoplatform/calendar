@@ -13,9 +13,9 @@
 		<div class="control-group">
 			<div class="control-label" >
 				<%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
-				<a href="<%=uiForm.event("AddUserParticipant")%>"> <i
-					rel="tooltip" data-placement="bottom"
-					title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>" class="uiIconUser uiIconLightGray"></i>
+				<a class="actionIcon" id="uiInvitationUser" href="<%=uiForm.event("AddUserParticipant")%>"
+				   rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>">
+                  <i class="uiIconUser uiIconLightGray"></i>
 				</a>:
 			</div>
 			<div class="controls participant descriptionArea">
