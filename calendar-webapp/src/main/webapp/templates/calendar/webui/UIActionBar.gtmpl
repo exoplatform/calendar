@@ -16,7 +16,7 @@
 <div id="$uicomponent.id" class="uiActionBar uiGrayLightBox clearfix" morelabel="<%=_ctx.appRes('UIActionBar.label.More')%>"> 
 	<div class="pull-right btnRight">
 		<%uicomponent.renderChild(UISearchForm.class)%>
-		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar  pull-right"  rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>">
+		<a href="#" onclick="<%=uicomponent.event("Setting")%>" class="settingActionBar actionIcon  pull-right"  rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes(uicomponent.id + ".label.CalendarSettings")%>">
 			<i class="uiIconSetting uiIconLightGray"></i>
 		</a>
 		<span class="separatorLine pull-right"></span>
