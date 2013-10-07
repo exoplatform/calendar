@@ -5,6 +5,6 @@ requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
 requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts("cal.UICalendarPortlet.overidePopUpClose();");
 %>
-<div class="UICalendarWorkingContainer ClearFix" id="$uicomponent.id" msg="<%=_ctx.appRes("UICalendars.msg.have-no-permission-to-edit-event")%>">
+<div class="UICalendarWorkingContainer clearfix" id="$uicomponent.id" msg="<%=_ctx.appRes("UICalendars.msg.have-no-permission-to-edit-event")%>">
  <%uicomponent.renderChildren()%>
 </div>

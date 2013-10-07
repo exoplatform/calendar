@@ -31,6 +31,8 @@ import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.web.application.AbstractApplicationMessage;
+import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -127,19 +129,21 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
         
         startDate = uiEventForm.getEventFromDate(calSetting.getDateFormat(), calSetting.getTimeFormat());
         if (startDate == null) startDate = CalendarUtils.getInstanceOfCurrentCalendar().getTime();
-        
+        Date endDate =  uiEventForm.getEventToDate(calSetting.getDateFormat(), calSetting.getTimeFormat());
+
         java.util.Calendar start = CalendarUtils.getInstanceOfCurrentCalendar();
-        start.setTime(this.startDate);
+
         int dayOfWeek = start.get(java.util.Calendar.DAY_OF_WEEK);
         setWeeklyByDay(convertToDayOfWeek(dayOfWeek));
-        
+
         setMonthlyType(RP_MONTHLY_BYMONTHDAY);
         setEndAfter("5");
+
+        start.setTime(endDate);
+        //java.util.Calendar until = (java.util.Calendar)endDate.clone();
+        start.add(java.util.Calendar.DATE, 5);
         
-        java.util.Calendar until = (java.util.Calendar)start.clone();
-        until.add(java.util.Calendar.DATE, 5);
-        
-        setEndDate(until.getTime(), calSetting.getDateFormat());
+        setEndDate(start.getTime(), calSetting.getDateFormat());
         return;
       }
       UIPopupContainer uiContainer = this.getAncestorOfType(UIPopupContainer.class) ;
@@ -253,8 +257,16 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
         }
       } else {
         if (uiForm.getEndType().equals(UIRepeatEventForm.RP_END_BYDATE)) {
+
           try {
-            if (uiForm.getEndDate() != null) until = uiForm.getEndDate(calSetting.getDateFormat());
+            if (uiForm.getEndDate() != null) {
+
+              until = uiForm.getEndDate(calSetting.getDateFormat());
+              if(until.before(uiEventForm.getEventToDate())){
+                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIRepeatEventForm.msg.until-time-logic-error", null, AbstractApplicationMessage.WARNING));
+                return ;
+              }
+            }
             else { 
               java.util.Calendar temp = CalendarUtils.getInstanceOfCurrentCalendar();
               temp.setTime(uiForm.startDate);
