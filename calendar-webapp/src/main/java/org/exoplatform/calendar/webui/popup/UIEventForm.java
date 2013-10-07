@@ -2185,7 +2185,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class);
       UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class);
-      uiPortlet.cancelAction();
+      if(uiPortlet != null) uiPortlet.cancelAction();
       uiPopupAction.deActivate();
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
     }
@@ -2210,7 +2210,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class);
       UIPopupAction uiPopupAction = uiPopupContainer.getChild(UIPopupAction.class);
-      uiPortlet.cancelAction();
+      if(uiPortlet != null) uiPortlet.cancelAction();
       uiPopupAction.deActivate();
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
     }

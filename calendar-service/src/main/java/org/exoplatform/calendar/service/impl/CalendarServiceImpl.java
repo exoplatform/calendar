@@ -1231,7 +1231,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       }
       //get all exception events in the future and remove them
       List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
-      removeEvents(username, exceptionEvents);
+      removeEvents(username, exceptionEvents, true);
 
     } catch (Exception e) {
       if(LOG.isDebugEnabled()) {
@@ -1302,7 +1302,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     try {
       List<CalendarEvent> events = getExceptionEvents(username, originEvent);
       events.add(originEvent);
-      removeEvents(username, events);
+      removeEvents(username, events, true);
     } catch (Exception e) {
       if(LOG.isDebugEnabled()) {
         LOG.debug("exception when removing all event in series", e);
@@ -1349,7 +1349,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         }
 
         List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
-        removeEvents(username, exceptionEvents);
+        removeEvents(username, exceptionEvents, false);
       }
 
     } catch(Exception e) {
@@ -1519,7 +1519,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
 
-  private void removeEvents(String username, List<CalendarEvent> events)  {
+  private void removeEvents(String username, List<CalendarEvent> events, boolean isBroadcast)  {
     try {
       for(CalendarEvent event : events) {
         switch(Integer.parseInt(event.getCalType())) {
@@ -1527,7 +1527,13 @@ public class CalendarServiceImpl implements CalendarService, Startable {
             removeUserEvent(username,event.getCalendarId(),event.getId());
             break;
           case Calendar.TYPE_PUBLIC :
-            removePublicEvent(event.getCalendarId(), event.getId());
+            if(isBroadcast) removePublicEvent(event.getCalendarId(), event.getId());
+            else {
+              for (CalendarEventListener cel : eventListeners_) {
+                cel.deletePublicEvent(event, event.getCalendarId());
+              }
+              storage_.removePublicEvent(event.getCalendarId(), event.getId());
+            }
             break;
           case Calendar.TYPE_SHARED :
             removeSharedEvent(username, event.getCalendarId(), event.getId());
