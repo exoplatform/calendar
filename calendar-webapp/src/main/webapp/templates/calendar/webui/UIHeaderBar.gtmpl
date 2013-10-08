@@ -129,7 +129,7 @@ int currentDay = uicomponent.getCurrentDay() ;
   Calendar calendar = uicomponent.getCurrentCalendar() ;
 
 %>
-      <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="pull-left controlButton">
+      <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="pull-left actionIcon">
         <i class="uiIconDelete uiIconLightGray"></i>
       </div>
 
