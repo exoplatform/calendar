@@ -169,8 +169,13 @@
 								<%if(CalendarEvent.TYPE_TASK.equals(ce.getEventType())){%>
 								<i class="uiIconCalTaskMini"></i>
 								<%} else {%>
-								<i class="uiIconCalClockMini"></i>
-								<%}%>
+								    <i class="uiIconCalClockMini"></i>
+                                    <%if(isOccur){%>
+                                    <i class="uiIconCalRecurring"></i>
+                                    <%} else if(!isOccur && ce.getIsExceptionOccurrence()){%>
+                                    <i class="uiIconCalEditRecurring"></i>
+                                    <%}%>
+                                <%}%>
 								<i class="uiIconCal<%=ce.getPriority()%>Priority"></i>
 								
 								<span>
@@ -196,6 +201,11 @@
 									<i class="uiIconCalTaskMini"></i>
 									<%} else {%>
 									<i class="uiIconCalClockMini"></i>
+									<%if(isOccur){%>
+                                    <i class="uiIconCalRecurring"></i>
+                                    <%} else if(!isOccur && ce.getIsExceptionOccurrence()){%>
+                                    <i class="uiIconCalEditRecurring"></i>
+                                    <%}%>
 								<%}%>
 								<i class="uiIconCal<%=ce.getPriority()%>Priority"></i>
 							<!-- event time -->

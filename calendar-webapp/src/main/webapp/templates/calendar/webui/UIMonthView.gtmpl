@@ -183,10 +183,15 @@
             <div class="eventSummary">
             <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
               <i class="uiIconCalTaskMini"></i>
-              <%} else {%>
+            <%} else {%>
               <i class="uiIconCalClockMini"></i>
+              <%if(isOccur){%>
+                  <i class="uiIconCalRecurring"></i>
+              <%} else if(!isOccur && event.getIsExceptionOccurrence()){%>
+                  <i class="uiIconCalEditRecurring"></i>
               <%}%>
-              <i class="uiIconCal<%=event.getPriority()%>Priority"></i>
+            <%}%>
+            <i class="uiIconCal<%=event.getPriority()%>Priority"></i>
             <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType()) && event.eventState.equals(CalendarEvent.COMPLETED)){%>
               <span style="text-decoration:line-through;">
               <%} else {%>

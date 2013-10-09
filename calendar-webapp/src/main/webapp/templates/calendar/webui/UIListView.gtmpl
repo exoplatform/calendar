@@ -141,6 +141,7 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
           else isEditable = "true";
           UICheckBoxInput checkbox = uicomponent.getChildById(event.getId());
     if (isEditable == false) checkbox.setDisabled(true);
+    Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
           %>
 			  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
               <%if(!searchDisplay) {%>
@@ -160,6 +161,11 @@ if (uicomponent.getSortedField().equals(uicomponent.EVENT_DESCRIPTION)) {
 			<i class="uiIconCalTaskMini uiIconLightGray"></i>
 			<%} else {%>
 			<i class="uiIconCalClockMini uiIconLightGray"></i>
+      <%if(isOccur){%>
+          <i class="uiIconCalRecurring"></i>
+      <%} else if(!isOccur && event.getIsExceptionOccurrence()){%>
+          <i class="uiIconCalEditRecurring"></i>
+      <%}%>
 			<%}
       if(CalendarEvent.TYPE_TASK.equals(event.getEventType()) && event.eventState.equals(CalendarEvent.COMPLETED)){%> 
 		  <span style="text-decoration:line-through;">
