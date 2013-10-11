@@ -195,12 +195,6 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       getUIFormTextAreaInput(DESCRIPTION).setRendered(true);
       getChild(UIFormColorPicker.class).setRendered(true);
       getUIStringInput(TIMEZONE).setRendered(true);
-
-      JavascriptManager jsManager = ((WebuiRequestContext) WebuiRequestContext.getCurrentInstance())
-          .getJavascriptManager();
-      RequireJS requireJS = jsManager.getRequireJS();
-      requireJS.require("SHARED/jquery","gj");
-      requireJS.addScripts("gj('#uiImportCalendarName').tooltip('show');");
     } else {
       log.warn("Wrong flag(" +flag+ ") only UPDATE_EXIST(1) or ADD_NEW(0) accept ");
     }
