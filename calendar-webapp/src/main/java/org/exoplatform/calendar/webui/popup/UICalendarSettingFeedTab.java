@@ -51,14 +51,14 @@ import org.exoplatform.webui.form.UIFormRadioBoxInput;
         @EventConfig(listeners = UICalendarSettingFeedTab.ShowPageActionListener.class, phase = Phase.DECODE),
         @EventConfig(listeners = UICalendarSettingFeedTab.DeleteActionListener.class, phase = Phase.DECODE
                      , confirm = "UICalendarSettingFeedTab.msg.confirm-delete"),
-        @EventConfig(listeners = UICalendarSettingFeedTab.CalendarFeedActionListener.class, phase = Phase.DECODE),
+        @EventConfig(listeners = UICalendarSettingFeedTab.RssActionListener.class, phase = Phase.DECODE),
         @EventConfig(listeners = UICalendarSettingFeedTab.EditActionListener.class, phase = Phase.DECODE)
     }
 ) 
 public class UICalendarSettingFeedTab extends UIFormInputWithActions {
   private Map<String, List<ActionData>> actionField_  = new HashMap<String, List<ActionData>>() ;
   public static String[] BEAN_FIELD = {"feed"};
-  private static String[] ACTION = {"CalendarFeed", "Edit", "Delete"} ;  
+  private static String[] ACTION = {"Rss", "Edit", "Delete"} ;
   
   public UICalendarSettingFeedTab(String compId) throws Exception {
     super(compId);
@@ -146,7 +146,7 @@ public class UICalendarSettingFeedTab extends UIFormInputWithActions {
     }
   }
   
-  static  public class CalendarFeedActionListener extends EventListener<UICalendarSettingFeedTab> {
+  static  public class RssActionListener extends EventListener<UICalendarSettingFeedTab> {
     @Override
     public void execute(Event<UICalendarSettingFeedTab> event) throws Exception {
       UICalendarSettingFeedTab uiform = event.getSource() ;

@@ -23,6 +23,9 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.JavascriptManager;
+import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -248,6 +251,11 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
       uiPopupWindow.setRendered(true);
       uiPopupWindow.setWindowSize(740, 400) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupContainer) ;
+      JavascriptManager jsManager = ((WebuiRequestContext) WebuiRequestContext.getCurrentInstance())
+          .getJavascriptManager();
+      RequireJS requireJS = jsManager.getRequireJS();
+      requireJS.require("SHARED/jquery","gj");
+      requireJS.addScripts("gj('#uiInvitationUser').tooltip('show');");
     }
   }
 

@@ -116,7 +116,8 @@ public class UISubscribeForm extends UIForm implements UIPopupComponent {
     //autofocus the input
     RequireJS requireJS = context.getJavascriptManager().getRequireJS();
     requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-    requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('"+getId()+"');");
+    requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('" + getId() + "');");
+    requireJS.addScripts("cal.UICalendarPortlet.resizeSubscribeForm('" + getId() + "');");
   }
   public static class CancelActionListener extends EventListener<UISubscribeForm> {
     @Override

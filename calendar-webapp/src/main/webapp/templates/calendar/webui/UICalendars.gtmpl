@@ -209,7 +209,7 @@
 <div class="uiBox uiCalendars">
   <h5 class="title">
     <div id="UICalendars_calendarActions" class="pull-right">
-      <div class="actionIconSmall " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel("calendarActions")%>">
+      <div class="actionIconSmall " rel="tooltip" data-placement="left" title="<%=uiform.getLabel("calendarActions")%>">
         <i class="uiIconCalSimplePlus uiIconLightGray"></i>
 		  </div>
     </div>

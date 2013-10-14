@@ -17,7 +17,7 @@
          def share        = _ctx.appRes(uicomponent.id + ".label.Share");
          def calendarName = "<strong>" + uicomponent.calendarName + "</strong>";
          def shareNote    = _ctx.appRes(uicomponent.id + ".msg.share-calendar");
-         def note         = share + " " + calendarName + shareNote;
+         def note         = share + " " + calendarName + " " + shareNote;
       %>
       <div class="control-label">
 		<div class="calendarName">$note</div>
@@ -38,7 +38,7 @@
            String actionLabel = _ctx.appRes(uicomponent.id + ".action." + action.getActionName());
            String actionLink  = uicomponent.event(action.getActionListener());
            String cssClass    = action.getCssIconClass();
-	         String style       = "position: relative; top: -5px; margin: 2px;";
+           String style       = "position: relative; top: -5px; margin: 2px;";
 
            if (action.getActionType() == action.TYPE_ICON)
            {
