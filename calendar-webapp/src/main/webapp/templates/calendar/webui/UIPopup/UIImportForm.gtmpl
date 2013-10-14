@@ -1,51 +1,47 @@
-
-<% import org.exoplatform.calendar.webui.popup.UISelectComponent;%>
-<% String fieldName ; %>
 <div class="uiImportForm">
-	<%uiform.begin()%>
-			<div class="form-horizontal resizable">
-				<% 
-          for(field in uiform.getChildren()) { 
-            if(field.isRendered()) {
-        %>
-				<div class="control-group">
-					<%
-				      fieldName = uicomponent.getLabel(field.getName());
-              if(fieldName != null && fieldName.length() > 0 && !fieldName.equals(uicomponent.getId())) {
-           %>
-					<label class="control-label"><%=fieldName%>:</label>
-					<div class="controls">
-						<% uiform.renderField(field) %> <% if(uicomponent.FIELD_TO_CALENDAR.equals(field.getName())) { %>
-						<a class="actionIcon" href="<%= uicomponent.event("Add") %>" rel="tooltip"
-						data-placement="bottom"
-						title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
-							<i class="uiIconPlus uiIconLightGray"></i>
-					</a> <% } %> <% if(uicomponent.DISPLAY_NAME.equals(field.getName())) { %> <a
-						href="<%= uicomponent.event("Import") %>" rel="tooltip"
-						data-placement="bottom"
-						title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
-							<i class="uiIconPLFCalendar uiIconPLFLightGray"></i>
-					</a> <% } %>
-					</div>
-					<%} else {%>
-					<div class="fieldComponent" >
-						<% uiform.renderField(field) %>
-					</div>
-					<%}%>
-				</div>
-				<%
-            }
-          }
-        %>
-			</div>
+<% uiform.begin() %>
+  <div class="form-horizontal resizable">
+  <%
+    String fieldName ;
+    for (field in uiform.getChildren()) {
+      if (field.isRendered()) { %>
 
-			<div class="uiAction uiActionBorder">
-				<% for(action in uicomponent.getActions()) { 
-               String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
-               String link = uicomponent.event(action) ;
-      %>
-				<button onclick="$link" type="button" class="btn">$actionLabel</button>
-				<%}%>
-			</div>
-	<%uiform.end()%>
+        <div class="control-group">
+          <% fieldName = uicomponent.getLabel(field.getName());
+          if (fieldName != null && fieldName.length() > 0 && !fieldName.equals(uicomponent.getId())) { %>
+
+            <label class="control-label"><%=fieldName%>:</label>
+            <div class="controls">
+            <% uiform.renderField(field);
+              if (uicomponent.FIELD_TO_CALENDAR.equals(field.getName())) { %>
+              <a class="actionIcon" href="<%= uicomponent.event("Add") %>" rel="tooltip"
+                 data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.AddCalendar")%>">
+                <i class="uiIconPlus uiIconLightGray"></i>
+              </a>
+              <% }
+
+              if (uicomponent.DISPLAY_NAME.equals(field.getName())) { %>
+              <a id="uiImportCalendarName" class="actionIcon" href="<%= uicomponent.event("Import") %>" rel="tooltip"
+                 data-placement="bottom" title="<%=_ctx.appRes(uicomponent.getName() + ".label.isAddTo")%>">
+                <i class="uiIconPLFCalendar uiIconPLFLightGray"></i>
+              </a>
+             <% } %>
+			 </div>
+		   <%} else { %>
+		     <div class="fieldComponent" >
+		       <% uiform.renderField(field) %>
+			 </div>
+		   <% } %>
+		</div>
+	  <% }
+    } %>
+  </div>
+  <div class="uiAction uiActionBorder">
+  <% for(action in uicomponent.getActions()) {
+      String actionLabel = _ctx.appRes(uicomponent.getName() + ".action." + action) ;
+      String link = uicomponent.event(action) ; %>
+      <button onclick="$link" type="button" class="btn">$actionLabel</button>
+  <% } %>
+  </div>
+  <% uiform.end() %>
 </div>

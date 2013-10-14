@@ -150,7 +150,7 @@ public class UIActionBar extends UIContainer  {
       UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
       popupAction.deActivate() ;
       // 311px + borders, header and footer heights equals 450px which is the max height authorized for this popup
-      UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, null, 600, 311) ;
+      UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, null, 600, 475) ;
       uiPopupContainer.setId(UIPopupContainer.UICALENDAR_SETTING_POPUP);
       UICalendarSettingForm uiCalendarSettingForm = uiPopupContainer.addChild(UICalendarSettingForm.class, null, null) ;
       CalendarService cservice = CalendarUtils.getCalendarService() ;

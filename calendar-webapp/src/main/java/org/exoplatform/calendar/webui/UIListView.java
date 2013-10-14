@@ -16,14 +16,8 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -55,7 +49,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                  lifecycle = UIFormLifecycle.class,
                  events = {
                    @EventConfig(listeners = UICalendarView.AddEventActionListener.class),      
-                   @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteEvent.class),
+                   @EventConfig(listeners = UICalendarView.CancelDeleteEvent.class),
                    @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
                    @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
@@ -463,13 +459,14 @@ public class UIListView extends UICalendarView {
     return keyWords_;
   }
 
-  static  public class SortActionListener extends EventListener<UIListView> {
+  public static class SortActionListener extends EventListener<UIListView> {
+
     @Override
     public void execute(Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
-      long currentPage = uiListView.getCurrentPage();
-      String fieldId =  event.getRequestContext().getRequestParameter(OBJECTID) ;
-      EventQuery query = uiListView.query ;
+      long currentPage      = uiListView.getCurrentPage() ;
+      String fieldId        = event.getRequestContext().getRequestParameter(OBJECTID) ;
+      EventQuery query      = uiListView.query ;
 
       List<String> calendarIds = uiListView.findCalendarIds();
       if (calendarIds.size() > 0)
@@ -482,12 +479,46 @@ public class UIListView extends UICalendarView {
       uiListView.setSortedField(fieldId);
       if (uiListView.isAscending()) query.setOrderType(Utils.ASCENDING);
       else query.setOrderType(Utils.DESCENDING);
+
       List<CalendarEvent> allEvents = uiListView.getAllEvents(query);
-      uiListView.update(new EventPageList(allEvents,10));
+
+      /** re-sorting priority */
+      if (fieldId.equals(UIListView.EVENT_PRIORITY)) {
+        List<CalendarEvent> sortedEvents         = new LinkedList<CalendarEvent>();
+        List<CalendarEvent> nonePriorityEvents   = new ArrayList<CalendarEvent>();
+        List<CalendarEvent> lowPriorityEvents    = new ArrayList<CalendarEvent>();
+        List<CalendarEvent> normalPriorityEvents = new ArrayList<CalendarEvent>();
+        List<CalendarEvent> highPriorityEvents   = new ArrayList<CalendarEvent>();
+
+        for (CalendarEvent calendarEvent : allEvents) {
+          if (calendarEvent.getPriority().equals("none"))        nonePriorityEvents.add(calendarEvent);
+          else if (calendarEvent.getPriority().equals("low"))    lowPriorityEvents.add(calendarEvent);
+          else if (calendarEvent.getPriority().equals("normal")) normalPriorityEvents.add(calendarEvent);
+          else if (calendarEvent.getPriority().equals("high"))   highPriorityEvents.add(calendarEvent);
+        }
+
+        if (uiListView.isAscending()) {
+          sortedEvents.addAll(nonePriorityEvents);
+          sortedEvents.addAll(lowPriorityEvents);
+          sortedEvents.addAll(normalPriorityEvents);
+          sortedEvents.addAll(highPriorityEvents);
+        }
+        else {
+          sortedEvents.addAll(highPriorityEvents);
+          sortedEvents.addAll(normalPriorityEvents);
+          sortedEvents.addAll(lowPriorityEvents);
+          sortedEvents.addAll(nonePriorityEvents);
+        }
+
+        allEvents = sortedEvents;
+      }
+
+      uiListView.update(new EventPageList(allEvents, 10));
       uiListView.updateCurrentPage(currentPage);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiListView); 
     }
   }
+
   @Override
   public String getDefaultStartTimeOfEvent() {
     return String.valueOf(calendar_.getTimeInMillis());

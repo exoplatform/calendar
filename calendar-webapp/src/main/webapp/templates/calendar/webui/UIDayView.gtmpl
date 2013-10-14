@@ -92,7 +92,9 @@
 						  <%if(!uicomponent.isSameDate(ce.getToDateTime(), uicomponent.calendar_.getTime())){%>
 							<div class="rightContinueEvent pull-right $color"><i class="uiIconMiniArrowRight uiIconWhite"></i></div>
 						  <%}%>
+
 						  <div class="eventContainer $color">
+                            <i class="uiIconCal<%=ce.getPriority()%>Priority" style="margin-right: 5px;"></i>
 							<%=ce.getSummary()%>
 						  </div>
 						</div>

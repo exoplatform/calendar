@@ -3659,6 +3659,23 @@ UICalendarPortlet.prototype.autoFocusFirstInput = function(formId) {
     }
 }
 
+UICalendarPortlet.prototype.resizeSubscribeForm = function(formId) {
+    gj('.' + formId + ' .control-label').css('width', '15%');
+    gj('.' + formId + ' .controls').css('margin-left', '20%');
+}
+
+UICalendarPortlet.prototype.toggleEventPreview = function(arrowObj) {
+    var arrowIcon       = gj(arrowObj).children('i')[0]
+      , collapsePreview = (arrowIcon.className.indexOf('uiIconArrowUp') != -1)
+      , uiPreview       = gj(arrowObj).parents('form#UIPreview')[0]
+      , uiListView      = gj(uiPreview).siblings('form#UIListView')[0]
+      , workingPanel    = gj(uiListView).children('.mainWorkingPanel')[0];
+
+    if (collapsePreview) gj(workingPanel).hide();
+    else gj(workingPanel).show();
+    gj(arrowIcon).toggleClass('uiIconArrowUp uiIconArrowDown');
+}
+
 Highlighter = window.require("SHARED/Highlighter");
 _module.Highlighter = Highlighter.Highlighter;
 eXo.calendar.UIHSelection = Highlighter.UIHSelection;

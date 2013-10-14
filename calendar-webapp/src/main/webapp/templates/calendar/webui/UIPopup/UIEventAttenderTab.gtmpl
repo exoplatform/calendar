@@ -90,11 +90,11 @@
 					<span class="title">
                       &nbsp;<%=uiForm.getLabel('Participants')%>&nbsp;&nbsp;
                     </span>					
-                    <a href="<%=uiForm.event('AddUser',uicomponent.id)%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
+                    <a class="actionIcon" href="<%=uiForm.event('AddUser',uicomponent.id)%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('AddUsername')%>">
                       <i class="uiIconCalInviteUser uiIconLightGray" >
                       </i>
                     </a> &nbsp;
-                    <a href="<%=uiForm.event('DeleteUser')%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
+                    <a class="actionIcon" href="<%=uiForm.event('DeleteUser')%>;" rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel('DeleteUsername')%>">
                       <i class="uiIconCalRejectUser uiIconLightGray" >
                       </i>
                     </a>                 

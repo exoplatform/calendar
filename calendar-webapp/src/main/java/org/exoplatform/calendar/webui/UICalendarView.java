@@ -19,19 +19,7 @@ package org.exoplatform.calendar.webui;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import javax.jcr.PathNotFoundException;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -43,14 +31,7 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.popup.UIConfirmForm;
-import org.exoplatform.calendar.webui.popup.UIEventForm;
-import org.exoplatform.calendar.webui.popup.UIEventShareTab;
-import org.exoplatform.calendar.webui.popup.UIExportForm;
-import org.exoplatform.calendar.webui.popup.UIPopupAction;
-import org.exoplatform.calendar.webui.popup.UIPopupContainer;
-import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
-import org.exoplatform.calendar.webui.popup.UITaskForm;
+import org.exoplatform.calendar.webui.popup.*;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -918,56 +899,91 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
   }
 
-  static public class DeleteEventActionListener extends EventListener<UICalendarView> {
+  public static class DeleteEventActionListener extends EventListener<UICalendarView> {
+
+    @Override
+    public void execute(Event<UICalendarView> event) throws Exception {
+      UICalendarView uiCalendarView     = event.getSource();
+      UICalendarPortlet calendarPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
+
+      /** check no event selected */
+      List<CalendarEvent> selectedEvents = uiCalendarView instanceof UIListView ?
+          ((UIListView) uiCalendarView).getSelectedEvents() : ((UIMonthView) uiCalendarView).getSelectedEvents();
+      if (selectedEvents.isEmpty()) {
+        event.getRequestContext().getUIApplication()
+            .addMessage(new ApplicationMessage("UICalendarView.msg.check-box-required", null));
+        return;
+      }
+
+      UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class);
+      calendarPortlet.cancelAction();
+      UIConfirmForm confirmForm = popupAction.activate(UIConfirmForm.class, 400);
+      ResourceBundle bundle     = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
+      confirmForm.setConfirmMessage(bundle.getString("UICalendarView.msg.confirm-delete"));
+      confirmForm.setConfig_id(uiCalendarView.getId());
+      confirmForm.setActions(new String[] {"ConfirmDeleteEvent", "CancelDeleteEvent"});
+
+      event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
+    }
+  }
+
+  public static class CancelDeleteEvent extends EventListener<UICalendarView> {
+
     @Override
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
+      UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
+      UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
+      uiPortlet.cancelAction();
+      uiPopupAction.deActivate();
+    }
+  }
 
-      uiCalendarView.allDelete_ = true;
-      UICalendarPortlet calPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
+  public static class ConfirmDeleteEvent extends EventListener<UICalendarView> {
+
+    @Override
+    public void execute(Event<UICalendarView> event) throws Exception {
+      UICalendarView uiCalendarView = event.getSource();
+      uiCalendarView.allDelete_     = true;
+      UICalendarPortlet calPortlet  = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       calPortlet.cancelAction();
-      if (uiCalendarView instanceof UIMonthView) {
+
+      if (uiCalendarView instanceof UIMonthView)
+      {
         List<CalendarEvent> list = ((UIMonthView) uiCalendarView).getSelectedEvents();
-        if (list.isEmpty()) {
-          event.getRequestContext()
-          .getUIApplication()
-          .addMessage(new ApplicationMessage("UICalendarView.msg.check-box-required", null));
-        } else {
-          try {
+
+        try {
             uiCalendarView.removeEvents(list);
             ((UIMonthView) uiCalendarView).refresh();
             if (uiCalendarView.allDelete_) {
               event.getRequestContext()
-              .getUIApplication()
-              .addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-successfully",
-                                                 null));
+                  .getUIApplication()
+                  .addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-successfully",
+                      null));
             } else {
               event.getRequestContext()
-              .getUIApplication()
-              .addMessage(new ApplicationMessage("UICalendarView.msg.can-not-delete-all-event",
-                                                 null));
+                  .getUIApplication()
+                  .addMessage(new ApplicationMessage("UICalendarView.msg.can-not-delete-all-event",
+                      null));
             }
           } catch (Exception e) {
             if (log.isDebugEnabled()) {
               log.debug("Fail to delete the events", e);
             }
             event.getRequestContext()
-            .getUIApplication()
-            .addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error",
-                                               null,
-                                               AbstractApplicationMessage.WARNING));
+                .getUIApplication()
+                .addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error",
+                    null,
+                    AbstractApplicationMessage.WARNING));
             return;
           }
-        }
-      } else if (uiCalendarView instanceof UIListView) {
+
+      }
+      else if (uiCalendarView instanceof UIListView)
+      {
         UIListView uiListView = (UIListView) uiCalendarView;
         List<CalendarEvent> list = ((UIListView) uiCalendarView).getSelectedEvents();
-        if (uiListView.getSelectedEvents().isEmpty()) {
-          event.getRequestContext()
-          .getUIApplication()
-          .addMessage(new ApplicationMessage("UICalendarView.msg.check-box-required", null));
-          return;
-        }
+
         try {
           UIListContainer uiListContainer = uiCalendarView.getParent();
           long currentPage = uiListView.getCurrentPage();
@@ -977,34 +993,32 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           uiListContainer.refresh();
           if (currentPage <= uiListView.getAvailablePage())
             uiListView.updateCurrentPage(currentPage);
-          if (uiCalendarView.allDelete_) {
-            event.getRequestContext()
-            .getUIApplication()
-            .addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-successfully",
-                                               null));
-          } else {
-            event.getRequestContext()
-            .getUIApplication()
-            .addMessage(new ApplicationMessage("UICalendarView.msg.can-not-delete-all-event",
-                                               null));
+
+          if (!uiCalendarView.allDelete_) {
+            event.getRequestContext().getUIApplication()
+                 .addMessage(new ApplicationMessage("UICalendarView.msg.can-not-delete-all-event", null));
           }
+
         } catch (Exception e) {
           if (log.isDebugEnabled()) {
             log.debug("Fail to delete the events", e);
           }
           event.getRequestContext()
-          .getUIApplication()
-          .addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error",
-                                             null,
-                                             AbstractApplicationMessage.WARNING));
+              .getUIApplication()
+              .addMessage(new ApplicationMessage("UICalendarView.msg.delete-event-error",
+                  null,
+                  AbstractApplicationMessage.WARNING));
           return;
         }
-      } else {
+      }
+      else
+      {
         event.getRequestContext()
-        .getUIApplication()
-        .addMessage(new ApplicationMessage("UICalendarView.msg.function-not-supported", null));
+            .getUIApplication()
+            .addMessage(new ApplicationMessage("UICalendarView.msg.function-not-supported", null));
         return;
       }
+
       UIMiniCalendar uiMiniCalendar = uiCalendarView.getAncestorOfType(UICalendarPortlet.class)
           .findFirstComponentOfType(UIMiniCalendar.class);
       uiCalendarView.setLastUpdatedEventId(null);
@@ -1012,6 +1026,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
     }
   }
+
 
   static public class ChangeCategoryActionListener extends EventListener<UICalendarView> {
     @Override
@@ -1252,7 +1267,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
               .get(eventId)
               .get(recurId);
           uiCalendarView.setCurrentOccurrence(currentOccurrence);
-          UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 600);
+          UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 400);
           confirmForm.setConfirmMessage(uiCalendarView.getLabel("delete-recurrence-event-confirm-msg"));
           confirmForm.setConfig_id(uiCalendarView.getId());
           String[] actions = new String[] { "ConfirmDeleteOnlyInstance", "ConfirmDeleteAllSeries",

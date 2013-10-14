@@ -13,10 +13,10 @@
 		<div class="control-group">
 			<div class="control-label" >
 				<%=uiForm.getLabel(uicomponent.FIELD_PARTICIPANT)%>
-				<a href="<%=uiForm.event("AddUserParticipant")%>"> <i
-					rel="tooltip" data-placement="bottom"
-					title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>" class="uiIconUser uiIconLightGray"></i>
-				</a>
+				<a class="actionIcon" id="uiInvitationUser" href="<%=uiForm.event("AddUserParticipant")%>"
+				   rel="tooltip" data-placement="bottom" title="<%=uiForm.getLabel(uicomponent.TOOLTIP_USER)%>">
+                  <i class="uiIconUser uiIconLightGray"></i>
+				</a>:
 			</div>
 			<div class="controls participant descriptionArea">
 				<% uiFormTextAreaInput = uiForm.getChildById(uicomponent.FIELD_PARTICIPANT);
@@ -27,7 +27,7 @@
 		</div>
 		<div class="control-group invitationGroup">
 			<div class="control-label" >
-				<%=uiForm.getLabel(uicomponent.FIELD_INVITATION_MSG)%>
+				<%=uiForm.getLabel(uicomponent.FIELD_INVITATION_MSG)%>:
 			</div>
 			<div class="controls invitation descriptionArea">
 				<%uiForm.renderField(uicomponent.FIELD_INVITATION_MSG)%>

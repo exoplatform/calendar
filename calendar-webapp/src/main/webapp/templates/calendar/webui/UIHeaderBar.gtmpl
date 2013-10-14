@@ -129,7 +129,7 @@ int currentDay = uicomponent.getCurrentDay() ;
   Calendar calendar = uicomponent.getCurrentCalendar() ;
 
 %>
-      <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="pull-left controlButton">
+      <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="pull-left actionIcon">
         <i class="uiIconDelete uiIconLightGray"></i>
       </div>
 
@@ -165,14 +165,14 @@ int currentDay = uicomponent.getCurrentDay() ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
 %>
-		<a class="pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
+		<a class="actionIcon pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
       <i class="uiIconDelete uiIconLightGray"></i>
     </a> 
 		<div id="UIHeaderBar_1" class="dropdown pull-left">
 		  <% /*Begin ViewTypeSelect Popup Menu*/ %>
-      <a class="dropdown-toggle uiActionWithLabel" data-toggle="dropdown" href="#">
+      <div class="dropdown-toggle uiActionWithLabel" data-toggle="dropdown" >
 			  <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%><i class="uiIconMiniArrowDown uiIconLightGray"></i>
-      </a>
+      </div>
 			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 			   <%for(type in uicomponent.getViews()){
 				   if(!type.equals(uicomponent.getViewType())){
