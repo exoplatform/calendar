@@ -178,8 +178,7 @@
                                     <i class="uiIconCalEditRecurring"></i>
                                     <%}%>
                                 <%}%>
-								<i class="uiIconCal<%=ce.getPriority()%>Priority"></i>
-								
+								<i class="uiIconCal<%=ce.getPriority()%>Priority"></i>								
 								<span>
 								  <%=tf.format(ce.getFromDateTime())%>
 								</span>

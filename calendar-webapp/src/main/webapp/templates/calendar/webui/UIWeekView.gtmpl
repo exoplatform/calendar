@@ -249,8 +249,7 @@ def eventList = [];
                   <i class="uiIconCalEditRecurring"></i>
               <%}%>
           <%}%>
-          <i class="uiIconCal<%=event.getPriority()%>Priority"></i>
-          $begin
+          <i class="uiIconCal<%=event.getPriority()%>Priority"></i><span>$begin</span>
         </div>
 
         <!---- DISPLAYING EVENT SUMMARY ---->
@@ -279,9 +278,7 @@ def eventList = [];
                   <i class="uiIconCalEditRecurring"></i>
               <%}%>
               <%}%>
-              <i class="uiIconCal<%=event.getPriority()%>Priority"></i>
-      
-            $begin - $end
+              <i class="uiIconCal<%=event.getPriority()%>Priority"></i><span>$begin - $end</span>
           
         </div>
         <!---- DISPLAYING EVENT SUMMARY ---->
