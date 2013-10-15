@@ -1515,7 +1515,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     originEvent.setRepeatInterval(occurrence.getRepeatInterval());
     originEvent.setRepeatByDay(occurrence.getRepeatByDay());
     originEvent.setRepeatByMonthDay(occurrence.getRepeatByMonthDay());
-    originEvent.setExceptionIds(null);
+    //originEvent.setExceptionIds(null);
   }
 
 

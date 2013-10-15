@@ -3065,8 +3065,15 @@ public class JCRDataStorage implements DataStorage {
       String recurId = format.format(occurrence.getFromDateTime());
 
       // if this occurrence was listed in the exclude list, skip
-      if (excludeIds != null && excludeIds.contains(recurId))
-        continue;
+      boolean isException = false ;
+      if(recurEvent.getExceptionIds() != null)
+        for(String s : recurEvent.getExcludeId()){
+          if(s.split("T")[0].equals(recurId.split("T")[0])) {
+            isException = true;
+            break ;
+          }
+        }
+      if(isException)continue;
 
       occurrence.setRecurrenceId(recurId);
       occurrences.put(recurId, occurrence);
