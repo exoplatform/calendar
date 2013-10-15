@@ -56,7 +56,7 @@
 			<span> $currentYear </span>
 		</span>
 		
-        <a class="actionIconSmall  pull-right" onclick="$linkDayNext" rel="tooltip" data-placement="right" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>">
+        <a class="actionIconSmall  pull-right" onclick="$linkDayNext" rel="tooltip" data-placement="left" title="<%=_ctx.appRes('UIMonthView.label.nextMonth')%>">
           <i class="uiIconMiniArrowRight uiIconLightGray"></i>
         </a>
    

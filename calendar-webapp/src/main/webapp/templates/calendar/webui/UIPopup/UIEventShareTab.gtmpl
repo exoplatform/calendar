@@ -27,7 +27,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
         }
         
         %>
-        <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
+        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
         <%
         if(action.actionType == action.TYPE_ICON) {
         %>
@@ -81,7 +81,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
         </td>
       </tr>
        <tr>
-        <td class="fieldLabel">
+        <td class="fieldLabel right">
           <%=uiForm.getLabel(uicomponent.FIELD_SEND)%>:
         </td>
         <td class="fieldComponent">

@@ -1874,7 +1874,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       uiInvitationContainer.getChild(UIPopupAction.class).getChild(UIPopupWindow.class).setId("UIPopupWindow");
       UIInvitationForm uiInvitationForm = uiInvitationContainer.addChild(UIInvitationForm.class, null, null);
       uiInvitationForm.setInvitationMsg(uiForm.invitationMsg_) ;
-      uiForm.participantList_ = new String("");
+      uiForm.participantList_ = "";
       uiInvitationForm.setParticipantValue(uiForm.participantList_) ;
       uiPopupAction.activate(uiInvitationContainer, 500, 0, true);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;

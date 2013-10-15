@@ -12,7 +12,7 @@ def rcontext = _ctx.getRequestContext();
 def requireJS = rcontext.getJavascriptManager().getRequireJS();
 requireJS.require("SHARED/jquery","gj").require("SHARED/csResource","cs");
 requireJS.require("PORTLET/CalendarPortlet","cal");
-requireJS.addScripts("gj('div.MaximizeButton').click(function() {cs.Utils.showHidePane(this,document.getElementById('UIListUsers').parentNode,'uicomponent.id');});");
+requireJS.addScripts("gj('#maximizeDetails').click(function() { cal.UICalendarPortlet.toggleEventPreview(this); });");
 requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 requireJS.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
 requireJS.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");

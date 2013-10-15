@@ -26,7 +26,7 @@ import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
           actionLabel = temp.substring(0, 21) + "..." + sizeLabel ;}
         }
         %>
-        <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
+        <a class="actionIcon" rel="tooltip" data-placement="left" title="$actionLabel" href="$actionLink">
         <%
         if(action.actionType == action.TYPE_ICON) {
         %>

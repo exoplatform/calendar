@@ -173,6 +173,7 @@ def eventList = [];
     <% } %>
     
     <div class="eventAlldayContent $color">
+      <i class="uiIconCal<%=event.getPriority()%>Priority" style="margin-right: 5px;"></i>
       <%=event.summary%>
     </div>
     </div>
