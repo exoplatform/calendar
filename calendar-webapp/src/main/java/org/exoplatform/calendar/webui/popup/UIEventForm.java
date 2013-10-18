@@ -71,6 +71,7 @@ import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.organization.account.UIUserSelector;
+import sun.util.calendar.Gregorian;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
@@ -80,6 +81,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -584,6 +586,18 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       return null;
     }
   }
+  protected Date getEventFromDate() throws Exception {
+    try {
+      UIEventDetailTab eventDetailTab =  getChildById(TAB_EVENTDETAIL) ;
+      UIFormDateTimePicker fromField = eventDetailTab.getChildById(UIEventDetailTab.FIELD_FROM) ;
+      UIFormComboBox timeField = eventDetailTab.getUIFormComboBox(UIEventDetailTab.FIELD_FROM_TIME) ;
+      CalendarSetting calendarSetting = CalendarUtils.getCurrentUserCalendarSetting();
+      return UITaskForm.getBeginDate(getEventAllDate(), calendarSetting.getDateFormat(), fromField.getValue(), calendarSetting.getTimeFormat(), timeField.getValue());
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   protected String getEventFormDateValue () {
     UIFormInputWithActions eventDetailTab =  getChildById(TAB_EVENTDETAIL) ;
     UIFormDateTimePicker fromField = eventDetailTab.getChildById(UIEventDetailTab.FIELD_FROM) ;
@@ -2071,7 +2085,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
 
           // if it's a virtual recurrence
           CalendarEvent occurrence = uiForm.calendarEvent_;
-          if (occurrence != null && !occurrence.getRepeatType().equals(CalendarEvent.RP_NOREPEAT) 
+          if (occurrence != null && !CalendarEvent.RP_NOREPEAT.equals(occurrence.getRepeatType())
               && !CalendarUtils.isEmpty(occurrence.getRecurrenceId()) && CalendarUtils.isSameDate(fromDate, occurrence.getFromDateTime()) ) {
             // popup confirm form
             UIConfirmForm confirmForm =  uiPopupAction.activate(UIConfirmForm.class, 600);
@@ -2174,6 +2188,11 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       UIPopupAction uiChildPopup = uiContainer.getChild(UIPopupAction.class) ;
       UIRepeatEventForm repeatEventForm =  uiChildPopup.activate(UIRepeatEventForm.class, 480) ;
       repeatEventForm.init(uiForm.repeatEvent);
+      if(uiForm.isAddNew_) {
+        java.util.Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(uiForm.getEventFromDate());
+        repeatEventForm.setWeeklyByDay(repeatEventForm.convertToDayOfWeek(cal.get(java.util.Calendar.DAY_OF_WEEK)));
+      }
       event.getRequestContext().addUIComponentToUpdateByAjax(uiChildPopup) ;
     }
   }
