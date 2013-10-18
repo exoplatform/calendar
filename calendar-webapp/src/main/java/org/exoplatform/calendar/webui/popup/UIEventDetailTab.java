@@ -220,7 +220,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
   }
 
 
-  public class FileActionData extends ActionData {
+  public static class FileActionData extends ActionData {
     private static final long serialVersionUID = 1L;
 
     private String fileSize;
