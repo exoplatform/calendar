@@ -3669,8 +3669,14 @@ UICalendarPortlet.prototype.toggleEventPreview = function(arrowObj) {
       , uiListView      = gj(uiPreview).siblings('form#UIListView')[0]
       , workingPanel    = gj(uiListView).children('.mainWorkingPanel')[0];
 
-    if (collapsePreview) gj(workingPanel).hide();
-    else gj(workingPanel).show();
+    if (collapsePreview) {
+        gj(workingPanel).hide();
+        gj(arrowObj).attr('data-original-title', gj(arrowObj).attr('viewTitle'));
+    }
+    else {
+        gj(workingPanel).show();
+        gj(arrowObj).attr('data-original-title', gj(arrowObj).attr('hideTitle'));
+    }
     gj(arrowIcon).toggleClass('uiIconArrowUp uiIconArrowDown');
 }
 
