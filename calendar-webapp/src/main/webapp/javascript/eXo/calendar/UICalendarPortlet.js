@@ -3141,56 +3141,54 @@ eXo.calendar.EventTooltip = {
     positioning: function(){
         var offsetTooltip = this._container.offsetParent;
         var offsetEvent = this.currentEvent.offsetParent;
+
+        gj(this._container).removeClass("left").addClass("top");
+        var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2;
+        var extraY = 0;
+        var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
+        var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;
+        this._container.style.top = y + "px";
+
+        /* re-set top of popover in case of scroll hidden */
         if(_module.UICalendarPortlet.viewType == "UIDayView") {
-            offsetEvent = gj(offsetEvent).parents(".eventDayContainer")[0];
+            var eventDayTop = gj(offsetEvent).offset().top
+                , bottomPopup = (gj(this._container).offset().top + gj(this._container).height() + 14); // increases 14 for arrow and margins
+            if (eventDayTop > bottomPopup) {
+                this._container.style.top = (eventDayTop - (gj(this._container).height() + 6)) + 'px';
+            }
         }
-            gj(this._container).removeClass("left").addClass("top");
-            var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2
-            var extraY = 0;
-            var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
-            var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;     
-            this._container.style.top = y + "px";
-    
-            /* re-set top of popover in case of scroll hidden */
-            if(_module.UICalendarPortlet.viewType == "UIDayView") {
-                var eventDayTop = gj(offsetEvent).offset().top
-                  , bottomPopup = (gj(this._container).offset().top + gj(this._container).height() + 14); // increases 14 for arrow and margins
-                if (eventDayTop > bottomPopup) {
-                    this._container.style.top = (eventDayTop - (gj(this._container).height() + 6)) + 'px';
-                }
+
+        if(_module.UICalendarPortlet.viewType == "UIWeekView") {
+            var eventWeekTop = gj(offsetEvent).offset().top
+                , bottomPopup  = (gj(this._container).offset().top + gj(this._container).height() + 14);
+            if (eventWeekTop > bottomPopup) {
+                this._container.style.top = (eventWeekTop - (gj(this._container).height() + 6)) + 'px';
             }
-    
-            if(_module.UICalendarPortlet.viewType == "UIWeekView") {
-                var eventWeekTop = gj(offsetEvent).offset().top
-                  , bottomPopup  = (gj(this._container).offset().top + gj(this._container).height() + 14);
-                if (eventWeekTop > bottomPopup) {
-                    this._container.style.top = (eventWeekTop - (gj(this._container).height() + 6)) + 'px';
-                }
-            }
-    
-            this._container.style.left = x + "px";
-            var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
-            if(relativeX > document.documentElement.offsetWidth) {
-                extraX = document.documentElement.offsetWidth - relativeX;
-                x += extraX;
-                this._container.style.left = x + "px";
-            }
-            if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
-             gj(this._container).removeClass("top").addClass("left");
-             this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
-             this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
-            }
+        }
+
         this._container.style.left = x + "px";
         var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
         if(relativeX > document.documentElement.offsetWidth) {
-        extraX = document.documentElement.offsetWidth - relativeX;
-        x += extraX;
-        this._container.style.left = x + "px";
+            extraX = document.documentElement.offsetWidth - relativeX;
+            x += extraX;
+            this._container.style.left = x + "px";
         }
         if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
-             gj(this._container).removeClass("top").addClass("left");
-             this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
-             this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
+            gj(this._container).removeClass("top").addClass("left");
+            this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
+            this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
+        }
+        this._container.style.left = x + "px";
+        var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
+        if(relativeX > document.documentElement.offsetWidth) {
+            extraX = document.documentElement.offsetWidth - relativeX;
+            x += extraX;
+            this._container.style.left = x + "px";
+        }
+        if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
+            gj(this._container).removeClass("top").addClass("left");
+            this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
+            this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
         }
     }   
 }
