@@ -1,43 +1,56 @@
 <%
+  import org.exoplatform.calendar.webui.popup.UIEventForm;
+
   uiForm = uicomponent.getParentFrom();
   private void renderActions(String fieldKey) {
     def actions = uicomponent.getActionField(fieldKey) ;
-    if(actions != null) {
-      for(action in actions) {
-        String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
-        if(actionLabel.equals("action." + action.actionName)) {
-          actionLabel = action.actionName ;
-        }
-        String actionLink ="";
-        if(action.actionParameter != null) {
-          actionLink = (uiForm.event(action.actionListener, action.actionParameter)) ;
-        }else {
-          actionLink = (uiForm.event(action.actionListener)) ;
-        }
-        if(actionLabel.lastIndexOf("-(") > 0)
-        {
-          String temp = actionLabel.substring(0, actionLabel.lastIndexOf("-(")) ;
-          String sizeLabel = actionLabel.substring(actionLabel.lastIndexOf("-(")) ;
-          if(temp.length() > 21) {
-          actionLabel = temp.substring(0, 21) + "..." + sizeLabel ;}
-        }
-        %>
+    if (actions == null) return;
+
+    for (action in actions) {
+      String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
+      if(actionLabel.equals("action." + action.actionName)) {
+        actionLabel = action.actionName ;
+      }
+      String actionLink = (action.actionParameter != null) ? uiForm.event(action.actionListener, action.actionParameter) : uiForm.event(action.actionListener);
+      %>
         <a class="actionIcon" rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink">
-        <%
-        if(action.actionType == action.TYPE_ICON) {
-        %>
-          <i class="$action.cssIconClass"></i>
-        <%  
-          if(action.isShowLabel) { println  actionLabel  ;}
-        }else if(action.actionType == action.TYPE_LINK){
-         println actionLabel ;
-        }
-        println  "</a>";
-        if(action.isBreakLine) { println "<br/>" ;} 
+      <% if (action.actionType == action.TYPE_ICON) { %>
+        <i class="$action.cssIconClass"></i>
+        <% if (action.isShowLabel) { println  actionLabel; }
+           else if (action.actionType == action.TYPE_LINK) { println actionLabel; }
+           println "</a>";
+           if (action.isBreakLine) { println "</br>"; }
       }
     }
   }
-  def rcontext = _ctx.getRequestContext() ;  
+
+  private void renderAttachments(String fieldKey) {
+    def actions = uicomponent.getAttachmentData() ;
+    if (actions == null) return ;
+
+    for (action in actions) {
+      String actionLabel = uiForm.getLabel("action." + action.actionName)  ;
+      if (actionLabel.equals("action." + action.actionName)) {
+        actionLabel = action.actionName ;
+      }
+
+      String actionLink = (action.actionParameter != null) ? uiForm.event(action.actionListener, action.actionParameter) : uiForm.event(action.actionListener);
+      String fileSize   = action.getFileSize();
+
+      if (action.actionName.equals(UIEventForm.ACT_REMOVE)) { %>
+        <a class="actionIcon pull-right" rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink"
+           style="margin-right: 55px;">
+          <i class="$action.cssIconClass"></i>
+        </a>
+      <% } else { %>
+        <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink"
+          style="width: 180px; margin-right: 5px; text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap; vertical-align: middle; display: inline-block;">
+          <i style="margin-right: 5px; margin-left:5px;" class="$action.cssIconClass"></i>$actionLabel</a><span>($fileSize)</span>
+      <% }
+    }
+  }
+
+  def rcontext = _ctx.getRequestContext() ;
   def requireJS = rcontext.getJavascriptManager().getRequireJS();
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.require("SHARED/jquery","gj");
@@ -127,11 +140,11 @@
           %>
 		</div>
 	</div>
-	<div class="control-group">
-		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>:</div>
-		<div class="controls">
-			<%renderActions(uicomponent.FIELD_ATTACHMENTS) ;%>
-       <% if (uicomponent.attachments_.size() < 10) { %>
+    <div class="control-group">
+      <div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_ATTACHMENTS)%>:</div>
+      <div class="controls">
+        <% renderAttachments(uicomponent.FIELD_ATTACHMENTS); %>
+        <% if (uicomponent.attachments_.size() < 10) { %>
           <button onclick="<%= uicomponent.getParent().event("AddAttachment") %>" type="button" class="btn">
             <i class="uiIconAttach uiIconLightGray"></i> <%=uiForm.getLabel(uicomponent.LABEL_ADD_ATTACHMENTS)%>
           </button>

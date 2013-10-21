@@ -1,43 +1,39 @@
 <%
-import org.exoplatform.calendar.service.CalendarEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import org.exoplatform.calendar.CalendarUtils;
-import java.util.Locale;
-import org.exoplatform.webui.application.WebuiRequestContext;
+	import org.exoplatform.calendar.service.CalendarEvent;
+	import java.text.DateFormat;
+	import java.text.SimpleDateFormat;
+	import org.exoplatform.calendar.CalendarUtils;
 
-WebuiRequestContext context = WebuiRequestContext.getCurrentInstance() ;
-Locale locale = context.getParentAppRequestContext().getLocale() ;
-
-dateTimeFormat = uicomponent.getDateTimeFormat() ;
-DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
-df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
-CalendarEvent event = uicomponent.getEvent() ;
-color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
-uiform.begin()
-def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
-requirejs.require("SHARED/csResources","cs");
-requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
-requirejs.require("SHARED/jquery","gj");
-requirejs.addScripts("gj('#UIEventPreview_fullSize').click(function() { cal.UICalendarPortlet.toggleEventPreview(this);  });");
-requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
-requirejs.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
-requirejs.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");
-requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
-def resizable = "";
-%>
-<% if (uicomponent.isShowPopup()) { 
-resizable = "resizable";
-%>
+	java.util.Locale locale = _ctx.getRequestContext().getParentAppRequestContext().getLocale() ;
 	
-<% } %>
-<div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox $resizable " >
-<% if (!uicomponent.isShowPopup()) { %><!-- TRUE when the preview is part of the calendar List View -->
-<div class="title">
- <a href="#" id="UIEventPreview_fullSize" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
- <strong><%=uiform.getLabel('eventDetail')%></strong>
-</div>
-<% } %>
+	dateTimeFormat = uicomponent.getDateTimeFormat() ;
+	DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
+	df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
+	CalendarEvent event = uicomponent.getEvent() ;
+	color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+	def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
+	requirejs.require("SHARED/csResources","cs");
+	requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+	requirejs.require("SHARED/jquery","gj");
+	requirejs.addScripts("gj('#UIEventPreview_fullSize').click(function() { cal.UICalendarPortlet.toggleEventPreview(this);  });");
+	requirejs.addScripts("gj('a#UIEventPreview_1').click(function() {cal.UICalendarPortlet.showImagePreview(this); });");
+	requirejs.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
+	requirejs.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");
+	requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
+	def resizable = "";
+	if (uicomponent.isShowPopup()) { 
+		resizable = "resizable";
+	} 
+%>
+
+<%uiform.begin();%>
+<div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox $resizable ">
+	<% if (!uicomponent.isShowPopup()) { %><!-- TRUE when the preview is part of the calendar List View -->
+		<div class="title">
+		 <a href="#" id="UIEventPreview_fullSize" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
+		 <strong><%=uiform.getLabel('eventDetail')%></strong>
+		</div>
+	<% } %>
 <div class="viewContainer ">
 <table border="0" cellpadding="0" cellspacing="0" >
 <tr>
@@ -96,15 +92,11 @@ resizable = "resizable";
 	<%
 
 	for (attachFile in nonImageAttachments) {  
-			def icon = uicomponent.getFileExtension(attachFile.name);
-			def fist = icon.substring(0,1);
-			def last = icon.substring(1);
-			def full = "uiIcon16x16File"+fist.toUpperCase() + last.toLowerCase() ;
-			
+			String classIcon = uicomponent.getIconStyleForAttachment(attachFile);
 	%>	 
 		<div class="attachmentIcon" >
-		<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name + '(' + CalendarUtils.convertSize(attachFile.size)+ ')'%> ">
-			<i class="uiIcon16x16File  $full uiIconLightGray"></i>&nbsp;$attachFile.name
+		<a href="<%=uicomponent.event("Download",attachFile.getId())%>" rel="tooltip" data-placement="bottom" title="<%=attachFile.name%>">
+			<i class="$classIcon"></i>&nbsp;$attachFile.name
 		</a>
 		(<%=CalendarUtils.convertSize(attachFile.size)%>)
 		</div>
