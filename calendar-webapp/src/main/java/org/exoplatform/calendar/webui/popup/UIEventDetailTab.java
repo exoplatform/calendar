@@ -21,15 +21,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.exoplatform.commons.utils.PropertyManager;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
+import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;
+import org.exoplatform.webui.cssfile.CssClassUtils;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputInfo;
 import org.exoplatform.webui.form.UIFormInputWithActions;
@@ -73,8 +73,6 @@ public class UIEventDetailTab extends UIFormInputWithActions {
 
   final static public String LABEL_ADD_ATTACHMENTS = "addfiles";
 
-  private static final Log LOG = ExoLogger.getLogger(UIEventDetailTab.class);
-
   protected List<Attachment> attachments_ = new ArrayList<Attachment>() ;
   private Map<String, List<ActionData>> actionField_ ;
   
@@ -97,7 +95,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     setActionField(FIELD_CATEGORY, addCategoryActions) ;
     
     addUIFormInput(new UIFormInputInfo(FIELD_ATTACHMENTS, FIELD_ATTACHMENTS, null)) ;
-    setActionField(FIELD_ATTACHMENTS, getUploadFileList()) ;
+    setActionField(FIELD_ATTACHMENTS, getAttachmentData()) ;
     addUIFormInput(new UIFormComboBox(FIELD_FROM_TIME, FIELD_FROM_TIME, options));
     addUIFormInput(new UIFormComboBox(FIELD_TO_TIME, FIELD_TO_TIME,  options));
     addUIFormInput(new UIFormDateTimePicker(FIELD_FROM, FIELD_FROM, new Date(), false));
@@ -127,44 +125,20 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     return (UIForm)getParent() ;
   }
   
-  public List<ActionData> getUploadFileList() throws Exception {
-    List<ActionData> uploadedFiles = new ArrayList<ActionData>() ;
-    for (Attachment attachmentData : attachments_) {
-      ActionData fileUpload = new ActionData() ;
-      fileUpload.setActionListener(UIEventForm.ACT_DOWNLOAD) ;
-      fileUpload.setActionParameter(attachmentData.getId()) ;
-      fileUpload.setActionType(ActionData.TYPE_LINK) ;
-      fileUpload.setCssIconClass("uiIcon16x16File  uiIcon16x16File" + getFileExtension(attachmentData.getName()) + " uiIconLightGray") ;
-      fileUpload.setActionName(attachmentData.getName()) ;
-      fileUpload.setShowLabel(true) ;
-      uploadedFiles.add(fileUpload) ;
-
-      ActionData removeAction = new ActionData() ;
-      removeAction.setActionListener(UIEventForm.ACT_REMOVE) ;
-      removeAction.setActionName(UIEventForm.ACT_REMOVE);
-      removeAction.setActionParameter(attachmentData.getId());
-      removeAction.setActionType(ActionData.TYPE_ICON) ;
-      removeAction.setCssIconClass("uiIconDelete uiIconLightGray");
-      removeAction.setBreakLine(true) ;
-      uploadedFiles.add(removeAction) ;
-    }
-    return uploadedFiles ;
-  }
-
   /**
    * used in groovy template
    *
    * @return
    * @throws Exception
    */
-  public List<FileActionData> getAttachmentData() throws Exception {
-    List<FileActionData> attachmentData = new ArrayList<FileActionData>() ;
+  public List<ActionData> getAttachmentData() throws Exception {
+    List<ActionData> attachmentData = new ArrayList<ActionData>() ;
     for (Attachment attachment : attachments_) {
       FileActionData fileUpload = new FileActionData() ;
       fileUpload.setActionListener(UIEventForm.ACT_DOWNLOAD) ;
       fileUpload.setActionParameter(attachment.getId()) ;
       fileUpload.setActionType(ActionData.TYPE_LINK) ;
-      fileUpload.setCssIconClass("uiIcon16x16File  uiIcon16x16File" + getFileExtension(attachment.getName()) + " uiIconLightGray") ;
+      fileUpload.setCssIconClass(CssClassUtils.getCSSClassByFileNameAndFileType(attachment.getName(), attachment.getMimeType(), null)) ;
       fileUpload.setActionName(attachment.getName()) ;
       fileUpload.setFileSize(CalendarUtils.convertSize(attachment.getSize()));
       fileUpload.setShowLabel(true) ;
@@ -185,11 +159,6 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     return attachmentData;
   }
 
-  private String getFileExtension(String fileName) {
-    String extension = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
-    return  extension.substring(0,1).toUpperCase() + extension.substring(1).toLowerCase();
-  }
-
   public void addToUploadFileList(Attachment attachfile) {
     attachments_.add(attachfile) ;
   }
@@ -197,7 +166,7 @@ public class UIEventDetailTab extends UIFormInputWithActions {
     attachments_.remove(attachfile);
   }  
   public void refreshUploadFileList() throws Exception {
-    setActionField(FIELD_ATTACHMENTS, getUploadFileList()) ;
+    setActionField(FIELD_ATTACHMENTS, getAttachmentData()) ;
   }
   protected List<Attachment> getAttachments() { 
     return attachments_ ;
@@ -251,7 +220,8 @@ public class UIEventDetailTab extends UIFormInputWithActions {
   }
 
 
-  public class FileActionData extends ActionData {
+  public static class FileActionData extends ActionData {
+    private static final long serialVersionUID = 1L;
 
     private String fileSize;
 
