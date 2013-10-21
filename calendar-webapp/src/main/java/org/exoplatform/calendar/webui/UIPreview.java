@@ -16,9 +16,7 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +34,6 @@ import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.webui.application.WebuiRequestContext;
-import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -65,34 +62,9 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
   public static final int DEFAULT_PREVIEW_DIMENSION   = 170;
   private CalendarEvent event_ = null;
   private boolean isShowPopup_ = false;
-  private Map<String, String> iconMap;
   private boolean isPreviewByUrl = false;
   
   public UIPreview() throws Exception {
-    initIconMap();
-  }
-  private void initIconMap() {
-    iconMap = new HashMap<String, String>();
-    iconMap.put("pdf", "uiFileTypeIconPdf uiFileTypeIcon");
-    iconMap.put("doc", "uiFileTypeIconDoc uiFileTypeIcon");
-    iconMap.put("all", "uiFileTypeIconAll uiFileTypeIcon");
-    iconMap.put("ppt", "uiFileTypeIconPpt uiFileTypeIcon");
-    iconMap.put("ttf", "uiFileTypeIconTtf uiFileTypeIcon");
-    iconMap.put("txt", "uiFileTypeIconTxt uiFileTypeIcon");
-    iconMap.put("xls", "uiFileTypeIconXls uiFileTypeIcon");
-    iconMap.put("xml", "uiFileTypeIconXml uiFileTypeIcon");
-  }
-
-  private String getFileExtension(String fileName)
-  {
-    return fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
-  }
-
-  protected String getIconStyleForAttachment(Attachment attachment)
-  {
-    if (iconMap.keySet().contains(getFileExtension(attachment.getName())))
-      return iconMap.get(getFileExtension(attachment.getName()));
-    return iconMap.get("all");
   }
 
   /**

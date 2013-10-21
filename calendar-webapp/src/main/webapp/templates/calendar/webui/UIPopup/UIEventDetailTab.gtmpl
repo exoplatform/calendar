@@ -44,7 +44,7 @@
         </a>
       <% } else { %>
         <a rel="tooltip" data-placement="bottom" title="$actionLabel" href="$actionLink"
-          style="width: 200px; margin-right: 5px; text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap;">
+          style="width: 180px; margin-right: 5px; text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap; vertical-align: middle; display: inline-block;">
           <i style="margin-right: 5px; margin-left:5px;" class="$action.cssIconClass"></i>$actionLabel</a><span>($fileSize)</span>
       <% }
     }

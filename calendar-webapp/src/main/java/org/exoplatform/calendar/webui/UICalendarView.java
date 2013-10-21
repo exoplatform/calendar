@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.jcr.PathNotFoundException;
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -40,6 +41,7 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.core.model.SelectItemOption;
+import org.exoplatform.webui.cssfile.CssClassUtils;
 import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
@@ -246,6 +248,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected String[] getViews() {
     return views;
+  }
+
+  protected String getIconStyleForAttachment(Attachment attachment) {
+    return CssClassUtils.getCSSClassByFileNameAndFileType(attachment.getName(), attachment.getMimeType(), null);
   }
 
   @Override
