@@ -184,10 +184,12 @@ public class UIDayView extends UICalendarView {
           } else if(ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE)) {
             calendar = calService.getGroupCalendar(calendarId) ;
           }
+          boolean isMove = false;
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
             if((ce.getCalType().equals(CalendarUtils.SHARED_TYPE) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(
+
                                                                                                                                  OrganizationService.class), Utils.getEditPerUsers(calendar), CalendarUtils.getCurrentUser())) ||
                                                                                                                                  (ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(
                                                                                                                                                                                                                                                    OrganizationService.class), calendar.getEditPermission(), CalendarUtils.getCurrentUser()))) 
@@ -210,7 +212,8 @@ public class UIDayView extends UICalendarView {
                 minutesBg = 0 ;
               }
               cal.set(Calendar.HOUR_OF_DAY, hoursBg) ;
-              cal.set(Calendar.MINUTE, minutesBg) ; 
+              cal.set(Calendar.MINUTE, minutesBg) ;
+              isMove = (ce.getFromDateTime().getTime() != cal.getTimeInMillis()) ;
               ce.setFromDateTime(cal.getTime());
               if(hoursEnd >= 24) {
                 hoursEnd = 23 ;
@@ -230,13 +233,19 @@ public class UIDayView extends UICalendarView {
             }
             // if it's a 'virtual' occurrence
             if (isOccur && !Utils.isEmpty(recurId)) {
-              UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
-              UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
-              confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
-              confirmForm.setDelete(false);
-              confirmForm.setConfig_id(calendarview.getId()) ;
-              calendarview.setCurrentOccurrence(ce);
-              event.getRequestContext().addUIComponentToUpdateByAjax(pAction);
+              if(!isMove) {
+                UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+                UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
+                confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+                confirmForm.setDelete(false);
+                confirmForm.setConfig_id(calendarview.getId()) ;
+                calendarview.setCurrentOccurrence(ce);
+                event.getRequestContext().addUIComponentToUpdateByAjax(pAction);
+              } else {
+                calService = CalendarUtils.getCalendarService() ;
+                CalendarEvent originEvent = calService.getRepetitiveEvent(ce);
+                calService.saveOneOccurrenceEvent(originEvent, ce, username);
+              }
               //return;
               //List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
               //listEvent.add(ce);

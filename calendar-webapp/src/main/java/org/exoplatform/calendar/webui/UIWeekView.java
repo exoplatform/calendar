@@ -205,6 +205,7 @@ public class UIWeekView extends UICalendarView {
   static  public class UpdateEventActionListener extends EventListener<UIWeekView> {
     @Override
     public void execute(Event<UIWeekView> event) throws Exception {
+
       UIWeekView calendarview = event.getSource() ;
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -232,6 +233,7 @@ public class UIWeekView extends UICalendarView {
 
       if(eventCalendar != null) {
         CalendarService calService = CalendarUtils.getCalendarService() ;
+        boolean isMove = false;
         try {
           org.exoplatform.calendar.service.Calendar calendar = null ;
           if(eventCalendar.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) {
@@ -259,6 +261,7 @@ public class UIWeekView extends UICalendarView {
               }
               cal.set(Calendar.HOUR_OF_DAY, hoursBg) ;
               cal.set(Calendar.MINUTE, minutesBg) ;
+              isMove = (eventCalendar.getFromDateTime().getTime() != cal.getTimeInMillis()) ;
               eventCalendar.setFromDateTime(cal.getTime()) ;
               if(hoursEnd >= 24) {
                 hoursEnd = 23 ;
@@ -278,13 +281,19 @@ public class UIWeekView extends UICalendarView {
             }
             // if it's a 'virtual' occurrence
             if (isOccur && !Utils.isEmpty(recurId)) {
-              UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
-              UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
-              confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
-              confirmForm.setDelete(false);
-              confirmForm.setConfig_id(calendarview.getId()) ;
-              calendarview.setCurrentOccurrence(eventCalendar);
-              event.getRequestContext().addUIComponentToUpdateByAjax(pAction);
+              if(!isMove) {
+                UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+                UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
+                confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+                confirmForm.setDelete(false);
+                confirmForm.setConfig_id(calendarview.getId()) ;
+                calendarview.setCurrentOccurrence(eventCalendar);
+                event.getRequestContext().addUIComponentToUpdateByAjax(pAction);
+              } else {
+                calService = CalendarUtils.getCalendarService() ;
+                CalendarEvent originEvent = calService.getRepetitiveEvent(eventCalendar);
+                calService.saveOneOccurrenceEvent(originEvent, eventCalendar, username);
+              }
              // return;
               //List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
               //listEvent.add(eventCalendar);
