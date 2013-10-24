@@ -397,7 +397,11 @@ UIWeekView.prototype.drop = function(evt) {
 	var _e = window.event || evt ;
 	var UIWeekView = _module.UIWeekView ;
 	var isEventbox = UIWeekView.dragElement;
-	if (!UIWeekView.isCol(_e) || !isEventbox) return ;
+    var repeatIcon = gj(isEventbox).find("i.uiIconCalRecurring") ;
+    if(repeatIcon.length != 0){
+        gj(repeatIcon).removeClass("uiIconCalRecurring").addClass("uiIconCalEditRecurring");
+    }
+    if (!UIWeekView.isCol(_e) || !isEventbox) return ;
 	var currentCol = UIWeekView.currentCol ;
 	var sourceCol = UIWeekView.dragElement.parentNode ;
 	var eventY = UIWeekView.eventY ;
