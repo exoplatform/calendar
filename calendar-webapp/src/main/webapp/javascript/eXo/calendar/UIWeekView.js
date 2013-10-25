@@ -495,21 +495,28 @@ UIWeekView.prototype.removeTooltip = function(){
  * minimum height is 15px
  */
 UIWeekView.prototype.initResize = function(evt) {
-	eXo.calendar.EventTooltip.disable(evt);
-	var _e = evt ;
-	_e.stopPropagation();
-	//_e.cancelBubble = true ;
-	if(_e.button == 2) return ;
-	var UIResizeEvent = eXo.calendar.UIResizeEvent ;
-	// this : the marker - div tag with class resizeEventContainer
-	var eventContainer = gj(this).parents('.eventContainerBorder')[0]; 
-	var siblingOfMarker = gj(this).prevAll('div')[0];
-	var container = gj("#UIWeekViewGrid").parents('.eventWeekContent')[0];
-	var minHeight = 15 ; // minimum height is 15 px
-	var interval = _module.UICalendarPortlet.interval ;
-	UIResizeEvent.start(_e, siblingOfMarker, eventContainer, container, minHeight, interval) ;
-	_module.UICalendarPortlet.dropCallback = _module.UIWeekView.resizeCallback;
-	_module.UICalendarPortlet.setPosition(eventContainer);
+    eXo.calendar.EventTooltip.disable(evt);
+    var _e = evt ;
+    _e.stopPropagation();
+    //_e.cancelBubble = true ;
+    if(_e.button == 2) return ;
+    var UIResizeEvent = eXo.calendar.UIResizeEvent ;
+    // this : the marker - div tag with class resizeEventContainer
+    var eventContainer = gj(this).parents('.eventContainerBorder')[0];
+    var siblingOfMarker = gj(this).prevAll('div')[0];
+    var container = gj("#UIWeekViewGrid").parents('.eventWeekContent')[0];
+    gj(container).css({
+        '-moz-user-select'   :'none',
+        '-o-user-select'     :'none',
+        '-khtml-user-select' :'none', /* you could also put this in a class */
+        '-webkit-user-select':'none', /* and add the CSS class here instead */
+        '-ms-user-select'    :'none',
+        'user-select'        :'none'}).bind('selectstart', function(){ return false; });
+    var minHeight = 15 ; // minimum height is 15 px
+    var interval = _module.UICalendarPortlet.interval ;
+    UIResizeEvent.start(_e, siblingOfMarker, eventContainer, container, minHeight, interval) ;
+    _module.UICalendarPortlet.dropCallback = _module.UIWeekView.resizeCallback;
+    _module.UICalendarPortlet.setPosition(eventContainer);
 } ;
 
 /**
