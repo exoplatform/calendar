@@ -900,7 +900,7 @@ UICalendarPortlet.prototype.adjustWidth = function(el, totalWidth){
 };
 
 /**
- * Sort event elements in time table
+ * Sort event elements in time table - day view
  */
 UICalendarPortlet.prototype.showEvent = function(){
     this.init();
@@ -927,13 +927,12 @@ UICalendarPortlet.prototype.showEvent = function(){
         var isEditable = gj(el[i]).attr('isEditable');
 
         if (isEditable && (isEditable == "true")) {
-            
-       gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
-            'mouseout':eXo.calendar.EventTooltip.hide,
-            'mousedown':_module.UICalendarPortlet.initDND,
-            'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-        marker = gj(el[i]).children("div.resizeEventContainer")[0];
-        gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
+            gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
+                'mouseout':eXo.calendar.EventTooltip.hide,
+                'mousedown':_module.UICalendarPortlet.initDND,
+                'dblclick':_module.UICalendarPortlet.ondblclickCallback});
+            marker = gj(el[i]).children("div.resizeEventContainer")[0];
+            gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
         }
         
         if (isEditable && (isEditable == "false")) {
@@ -1138,23 +1137,30 @@ function UIResizeEvent(){
  * @param {Object} evt Mouse event
  */
 UIResizeEvent.prototype.init = function(evt){
-  var _e = window.event || evt;
-  if (_e.stopPropagation) {
-    _e.stopPropagation();
-  }
-  else {
-    // IE8 fix
-    _e.returnValue = false;
-    _e.cancelBubble = true;
-  }
+    var _e = window.event || evt;
+    if (_e.stopPropagation) {
+        _e.stopPropagation();
+    }
+    else {
+        // IE8 fix
+        _e.returnValue = false;
+        _e.cancelBubble = true;
+    }
 
-  var UIResizeEvent = eXo.calendar.UIResizeEvent;
-  var outerElement = gj(this).parents('.eventBoxes')[0];
-  var innerElement = gj(this).prevAll("div")[0];
-  var container = gj(outerElement).parents('.eventDayContainer')[0];
-  var minHeight = 15;
-  var interval = _module.UICalendarPortlet.interval;
-  UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval);
+    var UIResizeEvent = eXo.calendar.UIResizeEvent;
+    var outerElement = gj(this).parents('.eventBoxes')[0];
+    var innerElement = gj(this).prevAll("div")[0];
+    var container = gj(outerElement).parents('.eventDayContainer')[0];
+    gj(container).css({
+        '-moz-user-select'   :'none',
+        '-o-user-select'     :'none',
+        '-khtml-user-select' :'none', /* you could also put this in a class */
+        '-webkit-user-select':'none', /* and add the CSS class here instead */
+        '-ms-user-select'    :'none',
+        'user-select'        :'none'}).bind('selectstart', function(){ return false; });
+    var minHeight = 15;
+    var interval = _module.UICalendarPortlet.interval;
+    UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval);
     //UIResizeEvent.callback = UIResizeEvent.resizeCallback;
     _module.UICalendarPortlet.dropCallback = UIResizeEvent.resizeCallback;
     _module.UICalendarPortlet.setPosition(outerElement);
@@ -1301,11 +1307,11 @@ UICalendarPortlet.prototype.resetZIndex = function(obj){
     catch (e) {
     }
 };
+
 /**
  * Initializes drag and drop actions
  * @param {Object} evt Mouse event
  */
-
 UICalendarPortlet.prototype.initDND = function(evt){
   eXo.calendar.EventTooltip.disable(evt);
   var _e = window.event || evt;
@@ -1325,6 +1331,7 @@ UICalendarPortlet.prototype.initDND = function(evt){
   UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
   return false; // prevent default drag event of browser.
 };
+
 /**
  * Processes when dragging object
  * @param {Object} evt Mouse event
@@ -1338,6 +1345,7 @@ UICalendarPortlet.prototype.dragStart = function(evt){
   var delta = parseInt((mouseY - posY) - (mouseY - posY) % UICalendarPortlet.interval);
   UICalendarPortlet.dragObject.style.top = posY + delta  + "px";
 };
+
 /**
  * Updates title of event when dragging calendar event
  * @param {Object} events DOM element contains a calendar event
@@ -1384,7 +1392,6 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
 /**
  * End calendar event dragging, this method clean up some unused properties and execute callback function
  */
-
 UICalendarPortlet.prototype.dragEnd = function(){
     gj(this).off('mousemove');
     var me = _module.UICalendarPortlet;

@@ -505,6 +505,13 @@ UIWeekView.prototype.initResize = function(evt) {
 	var eventContainer = gj(this).parents('.eventContainerBorder')[0]; 
 	var siblingOfMarker = gj(this).prevAll('div')[0];
 	var container = gj("#UIWeekViewGrid").parents('.eventWeekContent')[0];
+    gj(container).css({
+        '-moz-user-select'   :'none',
+        '-o-user-select'     :'none',
+        '-khtml-user-select' :'none', /* you could also put this in a class */
+        '-webkit-user-select':'none', /* and add the CSS class here instead */
+        '-ms-user-select'    :'none',
+        'user-select'        :'none'}).bind('selectstart', function(){ return false; });
 	var minHeight = 15 ; // minimum height is 15 px
 	var interval = _module.UICalendarPortlet.interval ;
 	UIResizeEvent.start(_e, siblingOfMarker, eventContainer, container, minHeight, interval) ;
