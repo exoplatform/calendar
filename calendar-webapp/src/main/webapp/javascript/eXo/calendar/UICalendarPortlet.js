@@ -1107,27 +1107,34 @@ function UIResizeEvent(){
  * @param {Object} evt Mouse event
  */
 UIResizeEvent.prototype.init = function(evt){
-  var _e = window.event || evt;
-  if (_e.stopPropagation) {
-    _e.stopPropagation();
-  }
-  else {
-    // IE8 fix
-    _e.returnValue = false;
-    _e.cancelBubble = true;
-  }
+    var _e = window.event || evt;
+    if (_e.stopPropagation) {
+        _e.stopPropagation();
+    }
+    else {
+        // IE8 fix
+        _e.returnValue = false;
+        _e.cancelBubble = true;
+    }
 
-  var UIResizeEvent = eXo.calendar.UIResizeEvent;
-  var outerElement = gj(this).parents('.eventBoxes')[0];
-  var innerElement = gj(this).prevAll("div")[0];
-  var container = gj(outerElement).parents('.eventDayContainer')[0];
-  var minHeight = 15;
-  var interval = _module.UICalendarPortlet.interval;
-  UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval);
+    var UIResizeEvent = eXo.calendar.UIResizeEvent;
+    var outerElement = gj(this).parents('.eventBoxes')[0];
+    var innerElement = gj(this).prevAll("div")[0];
+    var container = gj(outerElement).parents('.eventDayContainer')[0];
+    gj(container).css({
+        '-moz-user-select'   :'none',
+        '-o-user-select'     :'none',
+        '-khtml-user-select' :'none', /* you could also put this in a class */
+        '-webkit-user-select':'none', /* and add the CSS class here instead */
+        '-ms-user-select'    :'none',
+        'user-select'        :'none'}).bind('selectstart', function(){ return false; });
+    var minHeight = 15;
+    var interval = _module.UICalendarPortlet.interval;
+    UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval);
     //UIResizeEvent.callback = UIResizeEvent.resizeCallback;
-	_module.UICalendarPortlet.dropCallback = UIResizeEvent.resizeCallback;
-	_module.UICalendarPortlet.setPosition(outerElement);
-	eXo.calendar.EventTooltip.disable(evt);
+    _module.UICalendarPortlet.dropCallback = UIResizeEvent.resizeCallback;
+    _module.UICalendarPortlet.setPosition(outerElement);
+    eXo.calendar.EventTooltip.disable(evt);
 };
 
 UIResizeEvent.prototype.getOriginalHeight = function(obj){
