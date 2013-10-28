@@ -30,8 +30,11 @@
 <div id="<%uicomponent.getId()%>" class="uiPreview noRounded uiBox $resizable " >
 <%if(!uicomponent.isShowPopup()){%><!-- TRUE when the preview is part of the calendar List View -->
 <div class="title">
-<a href="#" id="maximizeDetails" class="pull-right " rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('fullSize')%>" ><i class="uiIconArrowUp uiIconLightGray" ></i></a>
-<strong><%=uiform.getLabel('taskDetail')%></strong>
+  <a href="#" id="maximizeDetails" class="pull-right " rel="tooltip" data-placement="left" data-original-title="<%=uiform.getLabel('hideList')%>"
+     hideTitle="<%=uiform.getLabel('hideList')%>" viewTitle="<%=uiform.getLabel('viewList')%>">
+    <i class="uiIconArrowUp uiIconLightGray" ></i>
+  </a>
+  <strong><%=uiform.getLabel('taskDetail')%></strong>
 </div>
 
 <%}%>    

@@ -254,27 +254,30 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
 } ;
 
 UICalendarDragDrop.prototype.getCheckedObject = function(clickObj){
-  var eventContainer = gj(clickObj).parents('.rowContainerDay')[0];
-  var evenObj = gj(eventContainer).find('div.eventBoxes'); 
-  var checkedObj = [];
-  var i = evenObj.length ;
-  var tmpNode = null ;
-  var top = 0 ;
-  this.selectedEvent = new Array();
-	tmpNode = gj(clickObj).find('input.checkbox')[0]; 
-	tmpNode.checked = true ;
-  while(i--){
-    if(!this.isCheckedObject(evenObj[i])) continue ;
-    tmpNode = evenObj[i].cloneNode(true) ;
-    gj(tmpNode).css({opacity:0.5});
-    tmpNode.style.top = top + "px";		
-    top += 20 ;
-    this.selectedEvent.push(evenObj[i]);
-    checkedObj.push(tmpNode);
-  }
-  this.highlight(true);
-  return checkedObj ;
-} ;
+    var eventContainer = gj(clickObj).parents('.rowContainerDay')[0];
+    var evenObj = gj(eventContainer).find('div.eventBoxes');
+    var checkedObj = [];
+    var i = evenObj.length ;
+    var tmpNode = null ;
+    var top = 0 ;
+    this.selectedEvent = new Array();
+
+    /** Check the checkbox */
+    //tmpNode = gj(clickObj).find('input.checkbox')[0];
+    //tmpNode.checked = true ;
+
+    while(i--){
+        if(!this.isCheckedObject(evenObj[i])) continue ;
+        tmpNode = evenObj[i].cloneNode(true) ;
+        gj(tmpNode).css({opacity:0.5});
+        tmpNode.style.top = top + "px";
+        top += 20 ;
+        this.selectedEvent.push(evenObj[i]);
+        checkedObj.push(tmpNode);
+    }
+    this.highlight(true);
+    return checkedObj ;
+};
 
 UICalendarDragDrop.prototype.highlight = function(isHighlight){
 	var me = _module.UICalendarDragDrop;

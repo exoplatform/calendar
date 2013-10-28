@@ -97,7 +97,9 @@ QuickSortObject.prototype.partitionProcess = function(begin, end, pivotIndex){
 _module.QuickSortObject = new QuickSortObject();
 eXo.core.QuickSortObject = _module.QuickSortObject;
 
-
+/**
+ * Contains information about an event
+ */
 function EventObject(){
   this.LABEL_MAX_LEN = 10;
   this.calId = false;
@@ -117,6 +119,10 @@ function EventObject(){
   }
 }
 
+/**
+ * Parse information from the HTML element to initialize attributes of EventObject
+ * @param rootNode
+ */
 EventObject.prototype.init = function(rootNode){
   if (!rootNode) {
     return;
@@ -403,7 +409,7 @@ function EventMan(){
 
 /**
  *
- * @param {Object} rootNode
+ * @param {Object} rootNode <form> element with id UIMonthView
  */
 EventMan.prototype.initMonth = function(rootNode){
     _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
@@ -413,10 +419,13 @@ EventMan.prototype.initMonth = function(rootNode){
 
     this.cleanUp();
     rootNode = typeof(rootNode) == 'string' ? document.getElementById(rootNode) : rootNode;
+
+    /** <form> element with id UIMonthView */
     this.rootNode = rootNode;
+
+    /** contains all event objects */
     this.events = new Array();
     this.weeks = new Array();
-    var DOMUtil = cs.DOMUtil;
     // Parse all event node to event object
     var allEvents = gj(rootNode).find('div.dayContentContainer');
 
@@ -628,29 +637,32 @@ function GUIMan(){
  * @param {EventMan} eventMan
  */
 GUIMan.prototype.initMonth = function(){
-  gj('div.moreEvent').css('display','none');//reset more event label to avoid overlap after resizing
-  var events = _module.UICalendarMan.EventMan.events;
-  if (events.length > 0) {
-    if (events[0]) {
-      this.EVENT_BAR_HEIGH = events[0].rootNode.offsetHeight - 1;
+    /** Reset 'more event' label to avoid overlap after resizing */
+    gj('div.moreEvent').css('display','none');
+
+    var events = _module.UICalendarMan.EventMan.events;
+    if (events.length > 0) {
+        if (events[0]) {
+            this.EVENT_BAR_HEIGH = events[0].rootNode.offsetHeight - 1;
+        }
     }
-  }
-  for (var i=0; i<events.length; i++) {
-    var eventObj = events[i];
-    var eventLabelNode = gj(eventObj.rootNode).find('div.EventLabel')[0];
-    //eventObj.rootNode.setAttribute('title', eventObj.name);
-    eventObj.rootNode.setAttribute('used', 'false');
-  }
-  this.rowContainerDay = gj(_module.UICalendarMan.EventMan.rootNode).find('div.rowContainerDay')[0];
-  var rows = _module.UICalendarMan.EventMan.UIMonthViewGrid.getElementsByTagName('tr');
-  this.tableData = new Array();
-  for (var i = 0; i < rows.length; i++) {
-    var rowData = gj(rows[i]).find('td.uiCellBlock'); 
-    this.tableData[i] = rowData;
-  }
-  this.paintMonth();
-  this.scrollTo();
-  this.initDND();
+
+    /** Initially set 'used' to false */
+    for (var i=0; i < events.length; i++) {
+        //eventObj.rootNode.setAttribute('title', eventObj.name);
+        events[i].rootNode.setAttribute('used', 'false');
+    }
+
+    this.rowContainerDay = gj(_module.UICalendarMan.EventMan.rootNode).find('div.rowContainerDay')[0];
+    var rows = _module.UICalendarMan.EventMan.UIMonthViewGrid.getElementsByTagName('tr');
+    this.tableData = new Array();
+    for (var i = 0; i < rows.length; i++) {
+        var rowData = gj(rows[i]).find('td.uiCellBlock');
+        this.tableData[i] = rowData;
+    }
+    this.paintMonth();
+    this.scrollTo();
+    this.initDND();
 };
 
 GUIMan.prototype.initWeek = function() {
@@ -794,20 +806,23 @@ GUIMan.prototype.scrollTo = function() {
   }
 } ;
 
+/**
+ * Init drag and drop
+ */
 GUIMan.prototype.initDND = function() {
-  eXo.calendar.UICalendarPortlet.viewType = "UIMonthView" ;
-  var events = _module.UICalendarMan.EventMan.events;
-  for(var i=0 ; i<events.length ; i++) {
-    var eventNode = events[i].rootNode;
-    var checkbox = gj(eventNode).find('input.checkbox')[0]; 
-    if (checkbox) {
-    	gj(checkbox).on('mousedown',this.cancelEvent).on('click',cs.CSUtils.EventManager.cancelBubble);
+    eXo.calendar.UICalendarPortlet.viewType = "UIMonthView" ;
+    var events = _module.UICalendarMan.EventMan.events;
+    for (var i=0 ; i < events.length ; i++) {
+        var eventNode = events[i].rootNode;
+        var checkbox = gj(eventNode).find('input.checkbox')[0];
+        if (checkbox) {
+            gj(checkbox).on('mousedown',this.cancelEvent).on('click',cs.CSUtils.EventManager.cancelBubble);
+        }
+        gj(eventNode).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
+        gj(eventNode).on('mouseover',eXo.calendar.EventTooltip.show).on('mouseout',eXo.calendar.EventTooltip.hide);
     }
-    gj(eventNode).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
-    gj(eventNode).on('mouseover',eXo.calendar.EventTooltip.show).on('mouseout',eXo.calendar.EventTooltip.hide);
-  }
-  eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
-  eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
+    eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
+    eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
 };
 
 /**
@@ -818,7 +833,7 @@ GUIMan.prototype.cancelEvent = function(event) {
   event = window.event || event ;
   event.cancelBubble = true ;
   //Fix bug for click checkbox event
-  cs.CSUtils.EventManager.cancelBubble(event)
+  cs.CSUtils.EventManager.cancelBubble(event);
   if (event.preventDefault) {
     event.preventDefault();
   }
@@ -853,117 +868,119 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
     // Pre-calculate event position
     var dayNode = (this.tableData[weekObj.weekIndex])[dayIndex];
     var dayInfo = {
-	    startCol : dayIndex,
-	    width : gj(dayNode).width(),
-	    left : gj(dayNode).position().left,
-	    top : gj(dayNode).position().top + 20,
-      rindex : gj(dayNode).attr("rindex"),
-      cindex : gj(dayNode).attr("cindex"),
-	    beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
-	    endMonth : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
+        startCol   : dayIndex,
+        width      : gj(dayNode).width(),
+        left       : gj(dayNode).position().left,
+        top        : gj(dayNode).position().top + 20,
+        rindex     : gj(dayNode).attr("rindex"),
+        cindex     : gj(dayNode).attr("cindex"),
+        beginMonth : Date.parse(this.tableData[0][0].getAttribute("startTimeFull")),
+        endMonth   : Date.parse((this.tableData[this.tableData.length - 1][this.tableData[0].length -1]).getAttribute("startTimeFull")) + 24*60*60*1000
     }
 
     // Draw visible events
     for (var i=0; i<dayObj.visibleGroup.length; i++) {
-	var eventObj = dayObj.visibleGroup[i];
-	if (!eventObj || 
-		(dayObj.previousDay && 
-			dayObj.previousDay.isVisibleEventExist(eventObj) >= 0)) {
-	    continue;
-	}
-	var startTime = eventObj.weekStartTimeIndex[weekObj.weekIndex];
-	var endTime = eventObj.endTime > weekObj.endWeek ? weekObj.endWeek : eventObj.endTime;
-	var delta = (new Date(endTime)) - (new Date(startTime));
-	delta /= (1000 * 60 * 60 *24 - 1000);
-	if (delta > 1 && 
-		dayObj.nextDay && 
-		i == (dayObj.MAX_EVENT_VISIBLE)) {
-	    var tmp = dayObj.nextDay;
-	    var cnt = 1;
-	    while (tmp.nextDay && cnt<=delta) {
-		if (tmp.isInvisibleEventExist(eventObj) >= 0) {
-		    break;
-		}
-		cnt++;
-		tmp = tmp.nextDay;
-	    }
-	    endTime = startTime + ((1000 * 60 * 60 * 24) * cnt) - 1000;
-	}
-	dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * i);
-	this.drawEventByDay(eventObj, startTime, endTime, dayInfo);
-    gj(eventObj.rootNode).on('mouseover', eXo.calendar.EventTooltip.show).on('mouseout', eXo.calendar.EventTooltip.hide);
-    gj(eventObj.rootNode).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
-    eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
-    eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
- }
+        var eventObj = dayObj.visibleGroup[i];
+        if (!eventObj || (dayObj.previousDay && dayObj.previousDay.isVisibleEventExist(eventObj) >= 0)) {
+            continue;
+        }
+        var startTime = eventObj.weekStartTimeIndex[weekObj.weekIndex];
+        var endTime = eventObj.endTime > weekObj.endWeek ? weekObj.endWeek : eventObj.endTime;
+        var delta = (new Date(endTime)) - (new Date(startTime));
+        delta /= (1000 * 60 * 60 *24 - 1000);
+        if (delta > 1 &&
+            dayObj.nextDay &&
+            i == (dayObj.MAX_EVENT_VISIBLE)) {
+            var tmp = dayObj.nextDay;
+            var cnt = 1;
+            while (tmp.nextDay && cnt<=delta) {
+                if (tmp.isInvisibleEventExist(eventObj) >= 0) {
+                    break;
+                }
+                cnt++;
+                tmp = tmp.nextDay;
+            }
+            endTime = startTime + ((1000 * 60 * 60 * 24) * cnt) - 1000;
+        }
+        dayInfo.eventTop = dayInfo.top + ((this.EVENT_BAR_HEIGH) * i);
+
+        this.drawEventByDay(eventObj, startTime, endTime, dayInfo);
+
+        gj(eventObj.rootNode).on('mouseover', eXo.calendar.EventTooltip.show).on('mouseout', eXo.calendar.EventTooltip.hide);
+        gj(eventObj.rootNode).on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
+        eXo.calendar.UICalendarDragDrop = window.require("SHARED/UICalendarDragDrop");
+        eXo.calendar.UICalendarDragDrop.init(this.tableData, _module.UICalendarMan.EventMan.events);
+    }
+
     // Draw invisible events (put all into more)
     if (dayObj.invisibleGroup.length > 0) {
-	var moreNode = document.createElement('div');
-	moreNode.className = 'moreEvent';
-	this.rowContainerDay.appendChild(moreNode);
-	moreNode.style.position = 'absolute';
-	moreNode.style.width = dayInfo.width + 'px';
-	moreNode.style.left = dayInfo.left + 'px';
-	moreNode.style.top = dayInfo.top + ((dayObj.MAX_EVENT_VISIBLE) * this.EVENT_BAR_HEIGH) + 5  + 'px';
-	var moreContainerNode = document.createElement('div');
-	var moreEventBar = moreContainerNode.cloneNode(true);
-	var moreEventList = moreContainerNode.cloneNode(true);
-	var moreEventTitleBar = moreContainerNode.cloneNode(true);
-	moreEventBar.className = "moreEventBar" ;
-	moreEventBar.innerHTML = "<center><a href=javascript:void(0)><i class='uiIconArrowUp uiIconLightGray'></i></a></center>" ;
-	gj(moreEventBar).find('a').on('click',this.hideMore);
-	moreContainerNode.className = 'moreEventContainer' ;
-	// Create invisible event
-	var cnt = 0
-	for (var i=0; i<dayObj.invisibleGroup.length; i++) {
-	    var eventObj = dayObj.invisibleGroup[i];
-	    if (!eventObj) {
-		continue;
-	    }
-	    cnt ++;
-	    var eventNode = eventObj.rootNode;
-	    var checkboxState = 'none';
-	    if (eventNode.getAttribute('used') == 'true') {
-		eventNode = eventNode.cloneNode(true);
-		eventNode.setAttribute('eventclone', 'true');
-		eventObj.cloneNodes.push(eventNode);
-		var hasBefore = true;
-		var hasAfter = true;
-		if (i >= (dayObj.invisibleGroup.length - 1)) {
-		    hasAfter = false;
-		}
-		if (cnt == 0) {
-		    hasBefore = false;
-		}
-		eventObj.updateIndicator(eventObj.cloneNodes[eventObj.cloneNodes.length - 1], hasBefore, hasAfter);
-	    } else {
-		eventNode = eventNode.cloneNode(true);
-		gj(eventObj.rootNode).remove();
-		eventNode.setAttribute('moremaster', 'true');
-		eventObj.rootNode = eventNode;
-		checkboxState = "";
-	    }
-	    // Remove checkbox on clone event
+        var moreNode = document.createElement('div');
+        moreNode.className = 'moreEvent';
+        this.rowContainerDay.appendChild(moreNode);
+        moreNode.style.position = 'absolute';
+        moreNode.style.width = dayInfo.width + 'px';
+        moreNode.style.left = dayInfo.left + 'px';
+        moreNode.style.top = dayInfo.top + ((dayObj.MAX_EVENT_VISIBLE) * this.EVENT_BAR_HEIGH) + 5  + 'px';
+        var moreContainerNode = document.createElement('div');
+        var moreEventBar = moreContainerNode.cloneNode(true);
+        var moreEventList = moreContainerNode.cloneNode(true);
+        var moreEventTitleBar = moreContainerNode.cloneNode(true);
+        moreEventBar.className = "moreEventBar" ;
+        moreEventBar.innerHTML = "<center><a href=javascript:void(0)><i class='uiIconArrowUp uiIconLightGray'></i></a></center>" ;
+        gj(moreEventBar).find('a').on('click',this.hideMore);
+        moreContainerNode.className = 'moreEventContainer' ;
 
-	    var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
-	    checkBoxTmp.style.display = checkboxState;
-	    eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
-	    moreEventList.appendChild(eventNode);
-	    var topPos = this.EVENT_BAR_HEIGH * i;
-	    eventNode.style.top = topPos + 16 + 'px';
-	    eventNode.setAttribute('used', 'true');
-	}
-	this.setWidthForMoreEvent(moreEventList,i,dayNode);
-	var moreLabel = document.createElement('div');
-	moreLabel.className = "moreEventLabel";
-	moreLabel.innerHTML = 'more ' + cnt + '+';
-	gj(moreLabel).on('click',this.showMore);
-	moreNode.appendChild(moreLabel);
-	moreEventList.appendChild(moreEventBar);
-	moreContainerNode.appendChild(moreEventList);
-	moreNode.appendChild(moreContainerNode);
-	dayObj.moreNode = moreNode;
-    }    
+        // Create invisible event
+        var cnt = 0
+        for (var i=0; i<dayObj.invisibleGroup.length; i++) {
+            var eventObj = dayObj.invisibleGroup[i];
+            if (!eventObj) {
+                continue;
+            }
+            cnt ++;
+            var eventNode = eventObj.rootNode;
+            var checkboxState = 'none';
+            if (eventNode.getAttribute('used') == 'true') {
+                eventNode = eventNode.cloneNode(true);
+                eventNode.setAttribute('eventclone', 'true');
+                eventObj.cloneNodes.push(eventNode);
+                var hasBefore = true;
+                var hasAfter = true;
+                if (i >= (dayObj.invisibleGroup.length - 1)) {
+                    hasAfter = false;
+                }
+                if (cnt == 0) {
+                    hasBefore = false;
+                }
+                eventObj.updateIndicator(eventObj.cloneNodes[eventObj.cloneNodes.length - 1], hasBefore, hasAfter);
+            } else {
+                eventNode = eventNode.cloneNode(true);
+                gj(eventObj.rootNode).remove();
+                eventNode.setAttribute('moremaster', 'true');
+                eventObj.rootNode = eventNode;
+                checkboxState = "";
+            }
+
+            var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
+            checkBoxTmp.style.display = checkboxState;
+            eventNode.ondblclick = eXo.calendar.UICalendarPortlet.ondblclickCallback ;
+            moreEventList.appendChild(eventNode);
+            var topPos = this.EVENT_BAR_HEIGH * i;
+            eventNode.style.top = topPos + 16 + 'px';
+            eventNode.setAttribute('used', 'true');
+        }
+
+        this.setWidthForMoreEvent(moreEventList,i,dayNode);
+        var moreLabel = document.createElement('div');
+        moreLabel.className = "moreEventLabel";
+        moreLabel.innerHTML = 'more ' + cnt + '+';
+        gj(moreLabel).on('click',this.showMore);
+        moreNode.appendChild(moreLabel);
+        moreEventList.appendChild(moreEventBar);
+        moreContainerNode.appendChild(moreEventList);
+        moreNode.appendChild(moreContainerNode);
+        dayObj.moreNode = moreNode;
+    }
 };
 
 GUIMan.prototype.setWidthForMoreEvent = function(moreEventList,len,dayNode){
@@ -1053,73 +1070,74 @@ GUIMan.prototype.showMore = function(evt) {
  * @param {Integer} weekIndex
  * @param {Object} dayInfo
  */
-GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo){
+GUIMan.prototype.drawEventByDay = function(eventObj, startTime, endTime, dayInfo) {
     var eventNode = eventObj.rootNode;
+
+    // The event is a cloned event
     if (eventNode.getAttribute('used') == 'true') {
-	eventNode = eventNode.cloneNode(true);
-	eventNode.setAttribute('eventclone', 'true');
-	
-	// Remove checkbox on clone event
-	try {
-	    var checkBoxTmp = eventNode.getElementsByTagName('input')[0];
-	    checkBoxTmp.style.display = 'none';
-	} catch(e) {}
-	this.rowContainerDay.appendChild(eventNode);
-	eventObj.cloneNodes.push(eventNode);
+        eventNode = eventNode.cloneNode(true);
+        eventNode.setAttribute('eventclone', 'true');
+        // Remove checkbox
+        gj(eventNode).find('.uiCheckbox')[0].style.display='none';
+        // Add left margin
+        gj(eventNode).find('.eventSummary')[0].style.marginLeft='5px';
+        this.rowContainerDay.appendChild(eventNode);
+        eventObj.cloneNodes.push(eventNode);
     }
+
     var topPos = dayInfo.eventTop ;
     var leftPos = dayInfo.left ;
-    var  cellWidth = dayInfo.width;
+    var cellWidth = dayInfo.width;
     var beginId = "r" + dayInfo.rindex + "c"+dayInfo.rindex;
     var delta = eXo.calendar.UICalendarPortlet.dateDiff(startTime, endTime);
     if (delta != 0) {
-	   delta ++ ;
+        delta ++ ;
     }
     if(delta <= 0) delta = 1;
-    
+
     var eventLen = 0;
     var cindex = 0;
-    for(var i = 0; i < delta; i++ ){
-     cindex = parseInt(dayInfo.cindex) + parseInt(i);
-     beginId = "r"+dayInfo.rindex + "c"+cindex;
-     var cellWidth = gj("td#"+beginId).width();
-     
-     if(gj.browser.mozilla) {
-       cellWidth = gj("td#"+beginId).outerWidth(true);
-     } else if (gj.browser.msie) {
-       cellWidth = gj("td#"+beginId).outerWidth(true);
-     }
-     eventLen = eventLen + cellWidth;
+    for (var i = 0; i < delta; i++ ){
+        cindex = parseInt(dayInfo.cindex) + parseInt(i);
+        beginId = "r"+dayInfo.rindex + "c"+cindex;
+        var cellWidth = gj("td#"+beginId).width();
+
+        if(gj.browser.mozilla) {
+            cellWidth = gj("td#"+beginId).outerWidth(true);
+        } else if (gj.browser.msie) {
+            cellWidth = gj("td#"+beginId).outerWidth(true);
+        }
+        eventLen = eventLen + cellWidth;
     }
     var boderWidth = (delta -1);
     if( gj.browser.webkit) {
-      if(delta - parseInt(dayInfo.cindex) >= 3) 
-       eventLen = eventLen + delta  -2;
-      else  
-        eventLen = eventLen + delta -1;
-    } else 
+        if(delta - parseInt(dayInfo.cindex) >= 3)
+            eventLen = eventLen + delta  -2;
+        else
+            eventLen = eventLen + delta -1;
+    } else
     if(gj.browser.mozilla){
-      if(delta - parseInt(dayInfo.cindex) >= 3) 
-       eventLen = eventLen  -2;
-      else  
-       eventLen = eventLen  -1;
-    } else 
-    if (gj.browser.msie) { 
-      if(delta - parseInt(dayInfo.cindex) >= 3) 
-       eventLen = eventLen  -3;
-      else  
-       eventLen = eventLen  -1;
+        if(delta - parseInt(dayInfo.cindex) >= 3)
+            eventLen = eventLen  -2;
+        else
+            eventLen = eventLen  -1;
+    } else
+    if (gj.browser.msie) {
+        if(delta - parseInt(dayInfo.cindex) >= 3)
+            eventLen = eventLen  -3;
+        else
+            eventLen = eventLen  -1;
     }
     eventNode.style.top = topPos + 'px';
     eventNode.style.left = leftPos + 'px';
     eventNode.style.width = eventLen + 'px';
     if(eXo.core.I18n.isRT()){
-	   eventNode.style.left = (leftPos - eventLen + (cellWidth)) + 'px';
+        eventNode.style.left = (leftPos - eventLen + (cellWidth)) + 'px';
     }
     eventNode.setAttribute('used', 'true');
     eventNode.setAttribute('startTime',startTime);
     eventNode.setAttribute('endTime',endTime);
-    eventObj.init(eventNode);
+    //eventObj.init(eventNode);
     this.setOverMonth(eventObj,dayInfo.beginMonth,dayInfo.endMonth);
     eXo.calendar.UICalendarPortlet.viewType = "UIMonthView" ;
 };
