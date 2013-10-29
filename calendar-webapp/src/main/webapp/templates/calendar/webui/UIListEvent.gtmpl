@@ -176,16 +176,16 @@
 	  <td ><%=uicomponent.getDateTimeString(event.getToDateTime())%></td>
 	  <td ><%=(event.getDescription() == null)? "": event.getDescription()%></td>
   </tr>
-  <% } %>
+  <% }
+  if (uicomponent.getEvents().size() <= 0) {
+    def column = !displaySearchResult ? 7 : 4; %>
+    <tr><td colspan="$column" class="empty" style="font-size: 13px;"><%=uiform.getLabel('noData')%></td></tr>
+    <% } %>
   </tbody>
 </table>
    
 <div class="clearfix actionBottom" >
-  <% if(uicomponent.getEvents().size() <= 0) { %>
-  <div class="control-label center" style="padding: 5px;">
-    <%=uiform.getLabel('noData')%>
-  </div>
-  <%} else if(uicomponent.pageList_.getAvailablePage() > 1){ %>
+  <% if (uicomponent.pageList_.getAvailablePage() > 1){ %>
   <div class="pull-right">
     <% _ctx.include("app:/templates/calendar/webui/UIPageIterator.gtmpl"); %>
   </div>

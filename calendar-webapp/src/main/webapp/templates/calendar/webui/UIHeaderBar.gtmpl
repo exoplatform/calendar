@@ -177,8 +177,8 @@ int currentDay = uicomponent.getCurrentDay() ;
 			   <%for(type in uicomponent.getViews()){
 				   if(!type.equals(uicomponent.getViewType())){
 				%>
-				<li onclick="<%=uicomponent.event("SwitchView",type)%>">
-					<a href=""><%=_ctx.appRes("UIHeaderBar.label."+type)%></a>
+				<li>
+					<a href="javascript:void(0)" onclick="<%=uicomponent.event("SwitchView",type)%>"><%=_ctx.appRes("UIHeaderBar.label."+type)%></a>
 				</li>
 			   <%}
 				}

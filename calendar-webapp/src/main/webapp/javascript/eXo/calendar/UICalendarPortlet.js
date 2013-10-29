@@ -900,7 +900,7 @@ UICalendarPortlet.prototype.adjustWidth = function(el, totalWidth){
 };
 
 /**
- * Sort event elements in time table
+ * Sort event elements in time table - day view
  */
 UICalendarPortlet.prototype.showEvent = function(){
     this.init();
@@ -927,13 +927,12 @@ UICalendarPortlet.prototype.showEvent = function(){
         var isEditable = gj(el[i]).attr('isEditable');
 
         if (isEditable && (isEditable == "true")) {
-            
-       gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
-            'mouseout':eXo.calendar.EventTooltip.hide,
-            'mousedown':_module.UICalendarPortlet.initDND,
-            'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-        marker = gj(el[i]).children("div.resizeEventContainer")[0];
-        gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
+            gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
+                'mouseout':eXo.calendar.EventTooltip.hide,
+                'mousedown':_module.UICalendarPortlet.initDND,
+                'dblclick':_module.UICalendarPortlet.ondblclickCallback});
+            marker = gj(el[i]).children("div.resizeEventContainer")[0];
+            gj(marker).on('mousedown',eXo.calendar.UIResizeEvent.init);
         }
         
         if (isEditable && (isEditable == "false")) {
@@ -1138,23 +1137,30 @@ function UIResizeEvent(){
  * @param {Object} evt Mouse event
  */
 UIResizeEvent.prototype.init = function(evt){
-  var _e = window.event || evt;
-  if (_e.stopPropagation) {
-    _e.stopPropagation();
-  }
-  else {
-    // IE8 fix
-    _e.returnValue = false;
-    _e.cancelBubble = true;
-  }
+    var _e = window.event || evt;
+    if (_e.stopPropagation) {
+        _e.stopPropagation();
+    }
+    else {
+        // IE8 fix
+        _e.returnValue = false;
+        _e.cancelBubble = true;
+    }
 
-  var UIResizeEvent = eXo.calendar.UIResizeEvent;
-  var outerElement = gj(this).parents('.eventBoxes')[0];
-  var innerElement = gj(this).prevAll("div")[0];
-  var container = gj(outerElement).parents('.eventDayContainer')[0];
-  var minHeight = 15;
-  var interval = _module.UICalendarPortlet.interval;
-  UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval);
+    var UIResizeEvent = eXo.calendar.UIResizeEvent;
+    var outerElement = gj(this).parents('.eventBoxes')[0];
+    var innerElement = gj(this).prevAll("div")[0];
+    var container = gj(outerElement).parents('.eventDayContainer')[0];
+    gj(container).css({
+        '-moz-user-select'   :'none',
+        '-o-user-select'     :'none',
+        '-khtml-user-select' :'none', /* you could also put this in a class */
+        '-webkit-user-select':'none', /* and add the CSS class here instead */
+        '-ms-user-select'    :'none',
+        'user-select'        :'none'}).bind('selectstart', function(){ return false; });
+    var minHeight = 15;
+    var interval = _module.UICalendarPortlet.interval;
+    UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval);
     //UIResizeEvent.callback = UIResizeEvent.resizeCallback;
     _module.UICalendarPortlet.dropCallback = UIResizeEvent.resizeCallback;
     _module.UICalendarPortlet.setPosition(outerElement);
@@ -1301,11 +1307,11 @@ UICalendarPortlet.prototype.resetZIndex = function(obj){
     catch (e) {
     }
 };
+
 /**
  * Initializes drag and drop actions
  * @param {Object} evt Mouse event
  */
-
 UICalendarPortlet.prototype.initDND = function(evt){
   eXo.calendar.EventTooltip.disable(evt);
   var _e = window.event || evt;
@@ -1325,6 +1331,7 @@ UICalendarPortlet.prototype.initDND = function(evt){
   UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
   return false; // prevent default drag event of browser.
 };
+
 /**
  * Processes when dragging object
  * @param {Object} evt Mouse event
@@ -1338,6 +1345,7 @@ UICalendarPortlet.prototype.dragStart = function(evt){
   var delta = parseInt((mouseY - posY) - (mouseY - posY) % UICalendarPortlet.interval);
   UICalendarPortlet.dragObject.style.top = posY + delta  + "px";
 };
+
 /**
  * Updates title of event when dragging calendar event
  * @param {Object} events DOM element contains a calendar event
@@ -1384,7 +1392,6 @@ UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
 /**
  * End calendar event dragging, this method clean up some unused properties and execute callback function
  */
-
 UICalendarPortlet.prototype.dragEnd = function(){
     gj(this).off('mousemove');
     var me = _module.UICalendarPortlet;
@@ -3141,56 +3148,54 @@ eXo.calendar.EventTooltip = {
     positioning: function(){
         var offsetTooltip = this._container.offsetParent;
         var offsetEvent = this.currentEvent.offsetParent;
+
+        gj(this._container).removeClass("left").addClass("top");
+        var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2;
+        var extraY = 0;
+        var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
+        var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;
+        this._container.style.top = y + "px";
+
+        /* re-set top of popover in case of scroll hidden */
         if(_module.UICalendarPortlet.viewType == "UIDayView") {
-            offsetEvent = gj(offsetEvent).parents(".eventDayContainer")[0];
+            var eventDayTop = gj(offsetEvent).offset().top
+                , bottomPopup = (gj(this._container).offset().top + gj(this._container).height() + 14); // increases 14 for arrow and margins
+            if (eventDayTop > bottomPopup) {
+                this._container.style.top = (eventDayTop - (gj(this._container).height() + 6)) + 'px';
+            }
         }
-            gj(this._container).removeClass("left").addClass("top");
-            var extraX = (this.currentEvent.offsetWidth - this._container.offsetWidth)/2
-            var extraY = 0;
-            var y = base.Browser.findPosYInContainer(this.currentEvent,offsetTooltip) - this._container.offsetHeight;
-            var x = base.Browser.findPosXInContainer(this.currentEvent,offsetTooltip) + extraX;     
-            this._container.style.top = y + "px";
-    
-            /* re-set top of popover in case of scroll hidden */
-            if(_module.UICalendarPortlet.viewType == "UIDayView") {
-                var eventDayTop = gj(offsetEvent).offset().top
-                  , bottomPopup = (gj(this._container).offset().top + gj(this._container).height() + 14); // increases 14 for arrow and margins
-                if (eventDayTop > bottomPopup) {
-                    this._container.style.top = (eventDayTop - (gj(this._container).height() + 6)) + 'px';
-                }
+
+        if(_module.UICalendarPortlet.viewType == "UIWeekView") {
+            var eventWeekTop = gj(offsetEvent).offset().top
+                , bottomPopup  = (gj(this._container).offset().top + gj(this._container).height() + 14);
+            if (eventWeekTop > bottomPopup) {
+                this._container.style.top = (eventWeekTop - (gj(this._container).height() + 6)) + 'px';
             }
-    
-            if(_module.UICalendarPortlet.viewType == "UIWeekView") {
-                var eventWeekTop = gj(offsetEvent).offset().top
-                  , bottomPopup  = (gj(this._container).offset().top + gj(this._container).height() + 14);
-                if (eventWeekTop > bottomPopup) {
-                    this._container.style.top = (eventWeekTop - (gj(this._container).height() + 6)) + 'px';
-                }
-            }
-    
-            this._container.style.left = x + "px";
-            var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
-            if(relativeX > document.documentElement.offsetWidth) {
-                extraX = document.documentElement.offsetWidth - relativeX;
-                x += extraX;
-                this._container.style.left = x + "px";
-            }
-            if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
-             gj(this._container).removeClass("top").addClass("left");
-             this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
-             this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
-            }
+        }
+
         this._container.style.left = x + "px";
         var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
         if(relativeX > document.documentElement.offsetWidth) {
-        extraX = document.documentElement.offsetWidth - relativeX;
-        x += extraX;
-        this._container.style.left = x + "px";
+            extraX = document.documentElement.offsetWidth - relativeX;
+            x += extraX;
+            this._container.style.left = x + "px";
         }
         if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
-             gj(this._container).removeClass("top").addClass("left");
-             this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
-             this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
+            gj(this._container).removeClass("top").addClass("left");
+            this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
+            this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
+        }
+        this._container.style.left = x + "px";
+        var relativeX = base.Browser.findPosX(this._container) + this._container.offsetWidth;
+        if(relativeX > document.documentElement.offsetWidth) {
+            extraX = document.documentElement.offsetWidth - relativeX;
+            x += extraX;
+            this._container.style.left = x + "px";
+        }
+        if(document.body.offsetWidth - Math.round(gj(this.currentEvent).offset().left + gj(this._container).width()) < 0 ) {
+            gj(this._container).removeClass("top").addClass("left");
+            this._container.style.top = gj(this.currentEvent).offset().top  - (gj(this._container).height() /2 ) + (gj(this.currentEvent).height()/2) + 'px';
+            this._container.style.left = gj(this.currentEvent).offset().left - (gj(this._container).width() + 5) + 'px';
         }
     }   
 }
@@ -3671,8 +3676,14 @@ UICalendarPortlet.prototype.toggleEventPreview = function(arrowObj) {
       , uiListView      = gj(uiPreview).siblings('form#UIListView')[0]
       , workingPanel    = gj(uiListView).children('.mainWorkingPanel')[0];
 
-    if (collapsePreview) gj(workingPanel).hide();
-    else gj(workingPanel).show();
+    if (collapsePreview) {
+        gj(workingPanel).hide();
+        gj(arrowObj).attr('data-original-title', gj(arrowObj).attr('viewTitle'));
+    }
+    else {
+        gj(workingPanel).show();
+        gj(arrowObj).attr('data-original-title', gj(arrowObj).attr('hideTitle'));
+    }
     gj(arrowIcon).toggleClass('uiIconArrowUp uiIconArrowDown');
 }
 
