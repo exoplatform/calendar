@@ -52,7 +52,7 @@
 	                %>
 	                </div>
 		                 <div class="textLabel">
-		                <%=field.getLabel();%>
+                             <%=uicomponent.getLabel(field.getLabel());%>
 		                 </div>	                
 	                 </div>
 	                <%
