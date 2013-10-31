@@ -189,13 +189,19 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
    CalendarEvent occEvent1 = occMap.get(recurenceId1);
    CalendarEvent occEvent2 = occMap.get(recurrenceId2);
-
+   occEvent2.setDescription("newException");
    calendarService_.saveOneOccurrenceEvent(recurEvent, occEvent2, username);
+   calendarService_.saveOneOccurrenceEvent(recurEvent, occEvent2, username); List<CalendarEvent> exceptionEvents = calendarService_.getExceptionEvents(username, recurEvent);
+   assertEquals(1,exceptionEvents.size());
    occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
-   List<CalendarEvent> exceptionEvents = calendarService_.getExceptionEvents(username, recurEvent);
+   assertEquals(4,occMap.size());
+
+   calendarService_.removeOneOccurrenceEvent(recurEvent, occEvent2, username);
+   occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
+   exceptionEvents = calendarService_.getExceptionEvents(username, recurEvent);
 
    assertEquals(4,occMap.size());
-   assertEquals(1,exceptionEvents.size());
+   assertEquals(0,exceptionEvents.size());
 
    calendarService_.removeFollowingSeriesEvents(recurEvent, occEvent1, username);
    occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);

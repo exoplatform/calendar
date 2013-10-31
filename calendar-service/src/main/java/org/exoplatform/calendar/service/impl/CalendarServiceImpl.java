@@ -893,7 +893,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
     /* event with repeat_count set*/
     int numberOfOccurrences = (int) repetitiveEvent.getRepeatCount();
-    return (repetitiveEvent.getExcludeId().length == numberOfOccurrences);
+    return (repetitiveEvent.getExceptionIds() != null && repetitiveEvent.getExceptionIds().size() == numberOfOccurrences);
   }
 
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception {
@@ -1264,17 +1264,15 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         case Calendar.TYPE_PRIVATE:
           if(isException) {
             removeUserEvent(username, calendarId, removedOccurence.getId());
-          } else {
-            saveUserEvent(username, calendarId, originEvent, false);
           }
+          saveUserEvent(username, calendarId, originEvent, false);
           break;
 
         case Calendar.TYPE_PUBLIC:
           if(isException) {
             removePublicEvent(calendarId, removedOccurence.getId());
-          } else {
-            savePublicEvent(calendarId, originEvent, false);
-          }
+          } else
+          savePublicEvent(calendarId, originEvent, false);
           for(CalendarEventListener cel : eventListeners_) {
             cel.removeOneOccurrence(originEvent, removedOccurence );
           }
@@ -1283,9 +1281,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         case Calendar.TYPE_SHARED:
           if(isException) {
             removeSharedEvent(username, calendarId, removedOccurence.getId());
-            saveEventToSharedCalendar(username, calendarId, originEvent, false);
           }
+          saveEventToSharedCalendar(username, calendarId, originEvent, false);
           break;
+
         default:
           break;
       }

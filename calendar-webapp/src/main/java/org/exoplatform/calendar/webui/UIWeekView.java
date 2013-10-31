@@ -311,6 +311,7 @@ public class UIWeekView extends UICalendarView {
             calendarview.refresh() ;
             UIMiniCalendar uiMiniCalendar = uiCalendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
+            event.getRequestContext().addUIComponentToUpdateByAjax(calendarview) ;
 
             JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
             RequireJS requireJS = jsManager.getRequireJS();
