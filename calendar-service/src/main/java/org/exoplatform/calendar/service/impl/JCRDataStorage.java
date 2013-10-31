@@ -2298,7 +2298,8 @@ public class JCRDataStorage implements DataStorage {
         queryStatement = new StringBuilder("/jcr:root").append(calendarHome.getPath())
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
-            .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "')) and @exo:repeat='norepeat']")
+            .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+            .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')]")
             .append(" /(@exo:calendarId, @exo:toDateTime, @exo:fromDateTime)");
 
         query = qm.createQuery(queryStatement.toString(), Query.XPATH);
@@ -2311,7 +2312,8 @@ public class JCRDataStorage implements DataStorage {
       queryStatement = new StringBuilder("/jcr:root").append(publicCalHome.getPath())
           .append("//element(*,exo:calendarEvent)")
           .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
-          .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "')) and @exo:repeat='norepeat'");
+          .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+          .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')");
 
       /** query within specific calendar ids */
       if (publicCalendarIds != null && publicCalendarIds.length > 0) {
@@ -2343,7 +2345,7 @@ public class JCRDataStorage implements DataStorage {
                 .append("//element(*,exo:calendarEvent)")
                 .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
                 .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
-                .append(" and @exo:repeat='norepeat']")
+                .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')]")
                 .append(" /(@exo:calendarId, @exo:toDateTime, @exo:fromDateTime)");
             query = qm.createQuery(queryStatement.toString(), Query.XPATH);
 
@@ -2957,7 +2959,8 @@ public class JCRDataStorage implements DataStorage {
     StringBuilder queryStatement = new StringBuilder("/jcr:root").append(calendarHome.getPath())
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
-            .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "')) and @exo:repeat='norepeat'");
+            .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+            .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')");
 
     if (filteredCalendars != null && filteredCalendars.length > 0) {
         queryStatement.append(" and (");
@@ -2983,7 +2986,8 @@ public class JCRDataStorage implements DataStorage {
     queryStatement = new StringBuilder("/jcr:root").append(publicCalHome.getPath())
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
-            .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "')) and @exo:repeat='norepeat'");
+            .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+            .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')");
 
     if (publicCalendarIds != null && publicCalendarIds.length > 0) {
       queryStatement.append(" and (");
@@ -3025,7 +3029,7 @@ public class JCRDataStorage implements DataStorage {
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
             .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
-            .append(" and @exo:repeat='norepeat'");
+            .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')");
 
         if (filteredCalendars != null && filteredCalendars.length > 0) {
           queryStatement.append(" and (");
