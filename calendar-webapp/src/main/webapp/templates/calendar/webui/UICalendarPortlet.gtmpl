@@ -26,6 +26,10 @@
       </span>
       <div class="popover-content">
       </div>
+        <div class="resourceInfo" style="display:none;">
+            <i id="repeating"><%=_ctx.appRes("UICalendarPortlet.label.repeating-occurrence")%></i>
+            <i id="edited"><%=_ctx.appRes("UICalendarPortlet.label.edited-occurrence")%></i>
+        </div>
     </div>
       
     <div class="UICalendarEventTooltip" ><span></span></div>

@@ -631,6 +631,13 @@ public class CalendarWebservice implements ResourceContainer{
     event.setEndDateTime(cEvent.getToDateTime().getTime());
     event.setEndTimeOffset(timeZone.getOffset(cEvent.getToDateTime().getTime()));
     event.setDateFormat(calSetting.getDateFormat());
+    event.setOccurrence(cEvent.getIsExceptionOccurrence() != null);
+    try {
+      event.setVirtual(Utils.isExceptionOccurrence(cEvent));
+    }  catch (Exception e){
+        if(log.isDebugEnabled()) log.info(e);
+    }
+    event.setEvent(CalendarEvent.TYPE_EVENT.equals(cEvent.getEventType()));
     return event;
   }
   
@@ -736,8 +743,9 @@ public class CalendarWebservice implements ResourceContainer{
        */
       Map<String, CalendarEvent> occMap = calendarService.getOccurrenceEvents(orgEvent, from, to, timezoneId);
       CalendarEvent occEvent = occMap.get(recurId);
+      occEvent.setIsExceptionOccurrence(false);
       SingleEvent data = makeSingleEvent(calSetting, occEvent);
-      
+      data.setOccurrence(true);
       return Response.ok(data, MediaType.APPLICATION_JSON).cacheControl(cc).build();
     } catch (Exception e) {
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();

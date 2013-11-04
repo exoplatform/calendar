@@ -1279,7 +1279,6 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.debug(e);
-        e.printStackTrace();
       } finally {
       }
     }

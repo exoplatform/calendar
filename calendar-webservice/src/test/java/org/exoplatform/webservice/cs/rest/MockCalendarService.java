@@ -305,7 +305,7 @@ public class MockCalendarService implements CalendarService{
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
     data_ = new HashMap<String, List<CalendarEvent>>();
     data_.put(cal_.getId(), events);
-    log.info("\n\n calendar Saved");
+
 
   }
 
