@@ -263,8 +263,8 @@ UICalendarDragDrop.prototype.getCheckedObject = function(clickObj){
     this.selectedEvent = new Array();
 
     /** Check the checkbox */
-    //tmpNode = gj(clickObj).find('input.checkbox')[0];
-    //tmpNode.checked = true ;
+    tmpNode = gj(clickObj).find('input.checkbox')[0];
+    tmpNode.checked = true ;
 
     while(i--){
         if(!this.isCheckedObject(evenObj[i])) continue ;
