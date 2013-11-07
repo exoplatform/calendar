@@ -90,14 +90,14 @@
                   </label>
 				  <span class="inputMini"><%uicomponent.renderField(uicomponent.FIELD_END_AFTER)%></span> &nbsp; <%=uicomponent.getLabel(uicomponent.OCCURRENCES)%>
                 </div>
-                <div class="radioBoxArea" id="endByDateContainer"> 
-                  <label class="uiRadio">
+                <div class="radioBoxArea clearfix" id="endByDateContainer"> 
+                  <label class="uiRadio pull-left">
                     <input id="endByDate" type="radio" value="$uicomponent.RP_END_BYDATE" name="$uicomponent.FIELD_END_REPEAT" <%if(isEndByDate){%>checked<%}%> >
                     <span ><%=uicomponent.getLabel(uicomponent.RP_END_BYDATE)%></span>                    
                   </label>
-				  <span id="endDate" class="inputSmall">
+				  <div id="endDate" class="inputSmall pull-left">
                       <%uicomponent.renderField(uicomponent.FIELD_END_BYDATE)%>
-                    </span>
+                    </div>
                 </div>
 			</div>
 		</div>   

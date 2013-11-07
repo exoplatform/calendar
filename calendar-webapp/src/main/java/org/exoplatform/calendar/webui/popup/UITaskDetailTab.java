@@ -141,29 +141,6 @@ public class UITaskDetailTab extends UIFormInputWithActions {
     return (UIForm)getParent() ;
   }
 
-  public List<ActionData> getUploadFileList() throws Exception { 
-    List<ActionData> uploadedFiles = new ArrayList<ActionData>() ;
-    for(Attachment attachdata : attachments_) {
-      ActionData fileUpload = new ActionData() ;
-      fileUpload.setActionListener(UIEventForm.ACT_DOWNLOAD) ;
-      fileUpload.setActionParameter(attachdata.getId()) ;
-      fileUpload.setActionType(ActionData.TYPE_LINK) ;
-      fileUpload.setCssIconClass("uiIconPlus uiIconLightGray") ;
-      fileUpload.setActionName(attachdata.getName() + "-(" + CalendarUtils.convertSize(attachdata.getSize()) + ")" ) ;
-      fileUpload.setShowLabel(true) ;
-      uploadedFiles.add(fileUpload) ;
-      ActionData removeAction = new ActionData() ;
-      removeAction.setActionListener(UIEventForm.ACT_REMOVE) ;
-      removeAction.setActionName(UIEventForm.ACT_REMOVE);
-      removeAction.setActionParameter(attachdata.getId());
-      removeAction.setActionType(ActionData.TYPE_ICON) ;
-      removeAction.setCssIconClass("uiIconDelete uiIconLightGray");
-      removeAction.setBreakLine(true) ;
-      uploadedFiles.add(removeAction) ;
-    }
-    return uploadedFiles ;
-  }
-
   /**
    * used in groovy template
    *
