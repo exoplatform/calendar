@@ -607,6 +607,10 @@ public class Utils {
     return ((event.getIsExceptionOccurrence() != null && event.getIsExceptionOccurrence() == true));
   }
 
+  public static boolean isOccurrence(CalendarEvent event){
+    return (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+  }
+
   public static Node getPublicServiceHome(SessionProvider provider) throws Exception {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) container.getComponentInstanceOfType(NodeHierarchyCreator.class);

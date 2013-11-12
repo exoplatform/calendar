@@ -49,7 +49,7 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   private String config_id = "";
   private String confirmMessage;
   private boolean isDelete;
-  final private static String SAVE_CONFIRM = "confirm";
+  final public static String SAVE_CONFIRM = "confirm";
   final private static String SAVE_ALL = "save_all";
   final private static String SAVE_ONE = "save_one";
   final private static String SAVE_FOLLOW = "save_follow";
