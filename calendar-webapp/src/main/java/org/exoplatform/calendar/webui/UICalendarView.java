@@ -939,7 +939,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     public void execute(Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet calendarPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
-
       /** check no event selected */
       List<CalendarEvent> selectedEvents = uiCalendarView instanceof UIListView ?
               ((UIListView) uiCalendarView).getSelectedEvents() : ((UIMonthView) uiCalendarView).getSelectedEvents();
@@ -952,13 +951,17 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       calendarPortlet.cancelAction();
       UIConfirmForm confirmForm = popupAction.activate(UIConfirmForm.class, 400);
       ResourceBundle bundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
-      confirmForm.setConfirmMessage(bundle.getString("UICalendarView.msg.confirm-delete"));
       confirmForm.setConfig_id(uiCalendarView.getId());
       confirmForm.setActions(new String[]{"ConfirmDeleteEvent", "CancelDeleteEvent"});
-      confirmForm.setDelete(true);
       UIFormRadioBoxInput input = confirmForm.getChildById(UIConfirmForm.SAVE_CONFIRM);
-      if (uiCalendarView instanceof UIListView || uiCalendarView instanceof UIMonthView)
-        input.setRendered(false);
+      if (uiCalendarView instanceof UIListView || uiCalendarView instanceof UIMonthView) {
+          if(selectedEvents.size() == 1){
+            confirmForm.setConfirmMessage(bundle.getString("UICalendarView.msg.confirm-delete"));
+          } else {
+            confirmForm.setConfirmMessage(bundle.getString("UICalendarView.msg.confirm-delete-events"));
+          }
+          input.setRendered(false);
+      } else confirmForm.setDelete(true);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }
