@@ -438,6 +438,18 @@ public interface CalendarService {
   public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
   /**
+   * A faster version of getEvents used for UIWeekview
+   *
+   * @param username
+   * @param eventQuery
+   * @param publicCalendarIds
+   * @return
+   * @throws Exception
+   */
+  public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
+
+
+  /**
    * Removes shared calendars of an user
    * @param username current user name(or user id)
    * @param calendarId given calendar id
@@ -827,7 +839,10 @@ public interface CalendarService {
    * @throws Exception
    */
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception;
-  
+
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from,
+                                                                  java.util.Calendar to, String[] publicCalendarIds) throws Exception;
+
   /**
    * Shares Calendar with groups
    * <p> When a calendar is selected to share with a group, the sharing process will run as job 

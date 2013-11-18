@@ -133,6 +133,11 @@
           <groupId>javax.servlet</groupId>
           <artifactId>servlet-api</artifactId>
         </exclusion>
+          <!-- Remove transitive dep-->
+          <exclusion>
+              <groupId>javax.servlet</groupId>
+              <artifactId>javax.servlet-api</artifactId>
+          </exclusion>
       </exclusions>  
     </dependency>
     <dependency>

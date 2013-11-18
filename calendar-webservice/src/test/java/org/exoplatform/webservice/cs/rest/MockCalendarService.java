@@ -151,6 +151,11 @@ public class MockCalendarService implements CalendarService{
   }
 
   @Override
+  public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
+    return null;
+  }
+
+  @Override
   public String[] getExportImportType() throws Exception {
     return null;
   }
@@ -566,6 +571,11 @@ public class MockCalendarService implements CalendarService{
                                                              EventQuery eventQuery,
                                                              String[] publicCalendarIds,
                                                              String timezone) throws Exception {
+    return null;
+  }
+
+  @Override
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception {
     return null;
   }
 
