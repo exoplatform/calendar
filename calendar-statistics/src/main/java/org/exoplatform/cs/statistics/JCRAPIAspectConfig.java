@@ -57,7 +57,7 @@ public class JCRAPIAspectConfig
     */
    private Class<?>[] loadTargetInterfaces(ValuesParam params)
    {
-      List<?> values = params.getValues();
+      ArrayList<?> values = params.getValues();
       List<Class<?>> lTargetInterfaces = new ArrayList<Class<?>>();
       if (values != null)
       {

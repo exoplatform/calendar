@@ -196,7 +196,13 @@
     </dependency>
     <dependency>
       <groupId>rome</groupId>
-      <artifactId>rome</artifactId> 
+      <artifactId>rome</artifactId>
+        <exclusions>
+            <exclusion>
+                <groupId>jdom</groupId>
+                <artifactId>jdom</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
