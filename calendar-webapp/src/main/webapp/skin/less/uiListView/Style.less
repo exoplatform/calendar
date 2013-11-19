@@ -29,10 +29,12 @@
 	.thumbnail {
 		border-radius: 0;
 		padding: 0;
+		display: inline;
 		.box-shadow(0 0 0 transparent);border:none;
 	}
 	.thumbnailContainer {
 		float: left;
+		text-align: center;
 		margin: 0 10px 10px 0;
 		position: relative;
 		vertical-align: top;
@@ -41,6 +43,9 @@
 			display: none;
 			overflow: hidden;
 			line-height: 16px;
+			& > div:hover .view{
+				font-weight: bold;
+			}
 		}		
 		&:hover .viewIconContainer {
 			background: rgba(0, 0, 0, 0.2);
