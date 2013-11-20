@@ -35,7 +35,7 @@
         }
         
         %>
-        <a rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
+        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
         <%
         if(action.actionType == action.TYPE_ICON) {
         %>
@@ -94,20 +94,20 @@
 		<div class="controls">
 			<% if (!CalendarUtils.isEmpty(parent.calendar_.getPublicUrl())) { %>
 			
-			<a rel="tooltip" data-placement="bottom" title="<%= parent.getLabel(parent.ACT_OPEN)%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">
+			<a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%= parent.getLabel(parent.ACT_OPEN)%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">
 			  <i class="uiIconCalICal uiIconLightGray"></i>
 			</a>
 			<span>
 			   <i><%= parent.getLabel(parent.PUBLIC_URL_MSG)%></i>
 			</span>
-			<a href="javascript:void(0)" style="text-decoration: underline" onclick="<%=parent.event("Deactive")%>">
+			<a href="javascript:void(0)" onclick="<%=parent.event("Deactive")%>">
 			 <i><%= parent.getLabel(parent.ACT_DEACTIVE)%></i>
 			</a>
 			<% } else { %>
 				<span>
 				 <i><%= parent.getLabel(parent.PUBLIC_URL_MSG_D)%></i>			
 				</span>
-				<a  href="javascript:void(0)" style="text-decoration: underline"   onclick="<%=parent.event("Active")%>">
+				<a href="javascript:void(0)" onclick="<%=parent.event("Active")%>">
 				 <i><%= parent.getLabel(parent.ACT_ACTIVE)%></i>
 				</a>
 			<% } %>
