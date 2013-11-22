@@ -19,10 +19,7 @@ package org.exoplatform.calendar.webui.popup;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -49,6 +46,7 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   private String config_id = "";
   private String confirmMessage;
   private boolean isDelete;
+  private boolean isDeleteMultiple;
   final public static String SAVE_CONFIRM = "confirm";
   final private static String SAVE_ALL = "save_all";
   final private static String SAVE_ONE = "save_one";
@@ -71,9 +69,12 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
 
   @Override
   public String getId() {
-    if(isDelete)
-    return super.getId() + "Delete" ;
-    else return super.getId() + "Update";
+    if(isDeleteMultiple())  {
+      return super.getId();
+    } else {
+      if(isDelete) return super.getId() + "Delete" ;
+      else return super.getId() + "Update";
+    }
   }
 
   private List<SelectItemOption<String>> getValue() {
@@ -183,8 +184,8 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
 
   @Override
   public String[] getActions() {
-    if(isDelete()) return new String[]{"Delete", "Cancel"} ;
-    else return new String[]{"Save", "Cancel"} ;
+    if(isDelete() || isDeleteMultiple) return new String[]{"Delete", "Cancel"} ;
+    else return new String[]{"Save", "Cancel"};
   }
 
   public boolean isDelete() {
@@ -195,4 +196,11 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
     this.isDelete = isDelete;
   }
 
+  public boolean isDeleteMultiple() {
+    return isDeleteMultiple;
+  }
+
+  public void setDeleteMultiple(boolean deleteMultiple) {
+    isDeleteMultiple = deleteMultiple;
+  }
 }

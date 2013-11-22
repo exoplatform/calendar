@@ -1757,11 +1757,34 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
+      CalendarService calService = CalendarUtils.getCalendarService();
       try {
         if (uiCalendarView instanceof UIListView || uiCalendarView instanceof UIMonthView) {
           List<CalendarEvent> selectedEvents = uiCalendarView instanceof UIListView ?
                   ((UIListView) uiCalendarView).getSelectedEvents() : ((UIMonthView) uiCalendarView).getSelectedEvents();
+          if(selectedEvents.size() > 0)
           uiCalendarView.removeEvents(selectedEvents);
+          else {
+            CalendarEvent occurrence = uiCalendarView.getcurrentOccurrence();
+
+            String calendarId = occurrence.getCalendarId();
+            String calType = occurrence.getCalType();
+            String username = CalendarUtils.getCurrentUser();
+            org.exoplatform.calendar.service.Calendar calendar = CalendarUtils.getCalendar(calType,
+                    calendarId);
+            if (uiCalendarView.isHaveNotPermission(calendar, calType)) {
+              event.getRequestContext()
+                      .getUIApplication()
+                      .addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit-event",
+                              null,
+                              1));
+              uiCalendarView.refresh();
+              event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
+              return;
+            }
+            CalendarEvent originEvent = calService.getRepetitiveEvent(occurrence);
+            calService.removeOneOccurrenceEvent(originEvent, occurrence, username);
+          }
           if (uiCalendarView instanceof UIListView) {
             uiCalendarView.refresh();
           }
@@ -1782,7 +1805,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           String calendarId = occurrence.getCalendarId();
           String calType = occurrence.getCalType();
           String username = CalendarUtils.getCurrentUser();
-          CalendarService calService = CalendarUtils.getCalendarService();
+
 
           org.exoplatform.calendar.service.Calendar calendar = CalendarUtils.getCalendar(calType,
                   calendarId);
