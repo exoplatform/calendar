@@ -201,10 +201,10 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
-        <exclusion>          
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-        </exclusion> 
+          <exclusion>
+              <groupId>jdom</groupId>
+              <artifactId>jdom</artifactId>
+          </exclusion>
         <exclusion>          
           <groupId>xpp3</groupId>
           <artifactId>xpp3_min</artifactId>
@@ -267,12 +267,12 @@
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
-      <exclusions> 
-        <exclusion>          
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-        </exclusion>
-      </exclusions>    
+        <exclusions>
+            <exclusion>
+                <groupId>jdom</groupId>
+                <artifactId>jdom</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
