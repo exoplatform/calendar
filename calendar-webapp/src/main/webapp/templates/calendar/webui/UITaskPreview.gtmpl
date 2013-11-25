@@ -144,7 +144,7 @@
 			  else subDelegators = delegators ;
 			}
 			%>
-			<td><div  rel="tooltip" data-placement="bottom" title="$delegators"><%=subDelegators%></div></td>
+			<td><%=subDelegators%></td>
           </tr>
 			<tr>
 				<td class="right">
