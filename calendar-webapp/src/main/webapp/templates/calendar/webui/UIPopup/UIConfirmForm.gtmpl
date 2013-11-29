@@ -13,7 +13,7 @@
       <div id="confirm" class="confirm media">
         <i class="uiIconQuestion uiIconBlue pull-left"></i>
         <div class="media-body">
-        <%=uicomponent.confirmMessage %>
+        <%=uicomponent.getConfirmMessage()%>
         </div>
       </div>
     </div>

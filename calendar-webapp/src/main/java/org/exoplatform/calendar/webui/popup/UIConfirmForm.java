@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
 
+import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.core.model.SelectItemOption;
@@ -59,7 +60,8 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
                                                                          "ConfirmDeleteAllSeries") ;
   final private static Collection<String> UPDATE_ACTIONS = Arrays.asList("ConfirmUpdateOnlyInstance", 
                                                                          "ConfirmUpdateFollowSeries", 
-                                                                         "ConfirmUpdateAllSeries");
+                                                                          "ConfirmUpdateAllSeries");
+  private Collection<CalendarEvent> events ;
   public UIConfirmForm() {
     UIFormRadioBoxInput input = new UIFormRadioBoxInput(SAVE_CONFIRM, SAVE_CONFIRM, getValue());
     input.setValue(SAVE_ONE);
@@ -70,7 +72,10 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   @Override
   public String getId() {
     if(isDeleteMultiple())  {
-      return super.getId();
+      if(isMutipleTask()) return super.getId() + "Tasks";
+      else
+      if(isMutipleEvent()) return super.getId() + "Events";
+      else return super.getId();
     } else {
       if(isDelete) return super.getId() + "Delete" ;
       else return super.getId() + "Update";
@@ -113,13 +118,35 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
 
   public String getConfirmMessage() {
     try {
+      if(isMutipleEvent()) return getLabel("confirm-delete-events");
+      else if(isMutipleTask()) return getLabel("confirm-delete-tasks");
+      else if(isMutipleEvent() || confirmMessage == null) return  getLabel("confirm-delete-multiple");
+      else
       return getLabel(confirmMessage);
     } catch (Exception e) {
-
+       return confirmMessage;
     }
-    return confirmMessage;
   }
-
+  boolean isMutipleTask(){
+    boolean isAllTask = true;
+    for(CalendarEvent ce : this.events){
+      if(ce != null && CalendarEvent.TYPE_EVENT.equals(ce.getEventType())) {
+        isAllTask = false;
+        break;
+      }
+    }
+    return isAllTask;
+  }
+  boolean isMutipleEvent(){
+    boolean isAllEvent = true;
+    for(CalendarEvent ce : this.events){
+      if(ce != null && CalendarEvent.TYPE_TASK.equals(ce.getEventType())) {
+        isAllEvent = false;
+        break;
+      }
+    }
+    return isAllEvent;
+  }
   @Override
   public String event(String name) throws Exception {
     StringBuilder b = new StringBuilder() ;
@@ -197,10 +224,23 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
   }
 
   public boolean isDeleteMultiple() {
-    return isDeleteMultiple;
+    return (events != null && events.size() >0);
   }
 
   public void setDeleteMultiple(boolean deleteMultiple) {
     isDeleteMultiple = deleteMultiple;
+  }
+
+  public Collection<CalendarEvent> getEvents() {
+    return events;
+  }
+
+  public void setEvents(Collection<CalendarEvent> events) {
+    this.events = events;
+  }
+
+  public void setEvent(CalendarEvent ev) {
+    if(this.events == null) this.events = new ArrayList<CalendarEvent>();
+    this.events.add(ev);
   }
 }

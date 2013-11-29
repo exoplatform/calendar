@@ -955,13 +955,17 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       confirmForm.setActions(new String[]{"ConfirmDeleteEvent", "CancelDeleteEvent"});
       UIFormRadioBoxInput input = confirmForm.getChildById(UIConfirmForm.SAVE_CONFIRM);
       if (uiCalendarView instanceof UIListView || uiCalendarView instanceof UIMonthView) {
+          confirmForm.setEvents(selectedEvents);
+          /*
           if(selectedEvents.size() == 1){
             confirmForm.setConfirmMessage(bundle.getString("UICalendarView.msg.confirm-delete"));
           } else {
             confirmForm.setConfirmMessage(bundle.getString("UICalendarView.msg.confirm-delete-events"));
           }
+          */
           input.setRendered(false);
-      } else confirmForm.setDelete(true);
+      }
+      confirmForm.setDelete(true);
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction);
     }
   }
