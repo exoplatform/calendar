@@ -120,7 +120,7 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
     try {
       if(isMutipleEvent()) return getLabel("confirm-delete-events");
       else if(isMutipleTask()) return getLabel("confirm-delete-tasks");
-      else if(isMutipleEvent() || confirmMessage == null) return  getLabel("confirm-delete-multiple");
+      else if(isDeleteMultiple() || confirmMessage == null) return  getLabel("confirm-delete-multiple");
       else
       return getLabel(confirmMessage);
     } catch (Exception e) {
@@ -128,7 +128,8 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
     }
   }
   boolean isMutipleTask(){
-    boolean isAllTask = true;
+    boolean isAllTask = (this.events != null);
+    if(this.events != null)
     for(CalendarEvent ce : this.events){
       if(ce != null && CalendarEvent.TYPE_EVENT.equals(ce.getEventType())) {
         isAllTask = false;
@@ -138,7 +139,8 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
     return isAllTask;
   }
   boolean isMutipleEvent(){
-    boolean isAllEvent = true;
+    boolean isAllEvent = (this.events != null);
+    if(this.events != null)
     for(CalendarEvent ce : this.events){
       if(ce != null && CalendarEvent.TYPE_TASK.equals(ce.getEventType())) {
         isAllEvent = false;
