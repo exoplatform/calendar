@@ -1308,7 +1308,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
                   .get(eventId)
                   .get(recurId));
           UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 400);
-          confirmForm.setConfirmMessage(uiCalendarView.getLabel("delete-recurrence-event-confirm-msg"));
+          confirmForm.setConfirmMessage("delete-recurrence-event-confirm-msg");
           confirmForm.setConfig_id(uiCalendarView.getId());
           confirmForm.setDelete(true);
           String[] actions = new String[]{"ConfirmDeleteOnlyInstance", "ConfirmDeleteAllSeries",
