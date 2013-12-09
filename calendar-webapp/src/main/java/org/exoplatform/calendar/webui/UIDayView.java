@@ -206,14 +206,17 @@ public class UIDayView extends UICalendarView {
             int minutesEnd = (Integer.parseInt(endTime)%60) ;
             Calendar cal = calendarview.getInstanceTempCalendar()  ; 
             cal.setTime(calendarview.getCurrentDate()) ;
+
             try {
+              //cal.setTimeInMillis(Long.parseLong(currentDate)) ;
               if(hoursBg < cal.getMinimum(Calendar.HOUR_OF_DAY)) {
-                hoursBg = 0 ;
-                minutesBg = 0 ;
+               hoursBg = 0 ;
+               minutesBg = 0 ;
               }
               cal.set(Calendar.HOUR_OF_DAY, hoursBg) ;
               cal.set(Calendar.MINUTE, minutesBg) ;
-              isMove = (ce.getFromDateTime().getTime() != cal.getTimeInMillis()) ;
+              cal.set(Calendar.SECOND, 0) ;
+              isMove = (ce.getFromDateTime().getHours() != cal.get(Calendar.HOUR) && ce.getFromDateTime().getMinutes() != cal.get(Calendar.MINUTE)) ;
               ce.setFromDateTime(cal.getTime());
               if(hoursEnd >= 24) {
                 hoursEnd = 23 ;
