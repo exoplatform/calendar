@@ -138,7 +138,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   }
 
   private DateFormat getSimpleFormatDate() throws Exception {
-    CalendarSetting calSetting = getAncestorOfType(UICalendarPortlet.class).getCalendarSetting() ;
+    CalendarSetting calSetting = CalendarUtils.getCurrentUserCalendarSetting() ;
     WebuiRequestContext context = RequestContext.getCurrentInstance() ;
     return new SimpleDateFormat(calSetting.getDateFormat(),context.getParentAppRequestContext().getLocale());
   }
