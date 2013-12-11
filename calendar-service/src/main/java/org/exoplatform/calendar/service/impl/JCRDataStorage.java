@@ -1307,13 +1307,14 @@ public class JCRDataStorage implements DataStorage {
           isRepeatNode = true;
         }
 
-      } catch (Exception e) {
+      } catch (PathNotFoundException e) {
         eventNode = calendarNode.addNode(event.getId(), Utils.EXO_CALENDAR_EVENT);
         eventNode.setProperty(Utils.EXO_ID, event.getId());
       }
       try {
         removeReminder(eventNode);
       } catch (Exception e) {
+        e.printStackTrace();
         if (log.isDebugEnabled())
           log.debug(e);
       } finally {
