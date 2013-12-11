@@ -764,7 +764,7 @@ GUIMan.prototype.initSelectionDayEvent = function() {
   UISelection.block.className = "userSelectionBlock" ;
   UISelection.container = container ;
   gj(container).prevAll('div')[0].appendChild(UISelection.block) ;
-  gj(UISelection.container).on('mousedown',UISelection.start);
+  gj(UISelection.container).off('mousedown').on('mousedown',UISelection.start);
 //  UISelection.container.onmousedown = UISelection.start ;
   UISelection.relativeObject = gj(UISelection.container).parents('.eventWeekContent')[0]; 
   UISelection.viewType = "UIWeekView" ;
@@ -774,9 +774,9 @@ GUIMan.prototype.initSelectionDaysEvent = function() {
   for(var i=0; i<this.dayNodes.length; i++) {
     var link = gj(this.dayNodes[i]).children("a")[0] ;    
     if (link)
-    	gj(link).on('mousedown',this.cancelEvent);
+    	gj(link).off('mousedown').on('mousedown',this.cancelEvent);
 //    	link.onmousedown = this.cancelEvent ;
-    gj(this.dayNodes[i]).on('mousedown',eXo.calendar.UIHSelection.start);
+    gj(this.dayNodes[i]).off('mousedown').on('mousedown',eXo.calendar.UIHSelection.start);
 //    this.dayNodes[i].onmousedown = eXo.calendar.UIHSelection.start ;
   }
 } ;
@@ -904,7 +904,7 @@ GUIMan.prototype.drawDay = function(weekObj, dayIndex) {
 	var moreEventTitleBar = moreContainerNode.cloneNode(true);
 	moreEventBar.className = "moreEventBar" ;
 	moreEventBar.innerHTML = "<center><a href=javascript:void(0)><i class='uiIconArrowUp uiIconLightGray'></i></a></center>" ;
-	gj(moreEventBar).find('a').on('click',this.hideMore);
+	gj(moreEventBar).find('a').off('click').on('click',this.hideMore);
 	moreContainerNode.className = 'moreEventContainer' ;
 	// Create invisible event
 	var cnt = 0
@@ -1013,7 +1013,7 @@ GUIMan.prototype.showMore = function(evt) {
 	    moreLeft += 1;
 	}
 	gj(moreEventContainer).css('left', moreLeft);	cs.DOMUtil.listHideElements(moreEventContainer);
-	gj(moreEventContainer).on({'click':cs.CSUtils.EventManager.cancelBubble,
+	gj(moreEventContainer).off('click mousedown contextmenu').on({'click':cs.CSUtils.EventManager.cancelBubble,
 	    'mousedown':function(evt){
 		cs.CSUtils.EventManager.cancelEvent(evt);
 		if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) {
@@ -1121,7 +1121,7 @@ GUIMan.prototype.setOverMonth = function(eventObj,beginMonth,endMonth){
     if(realStart < parseInt(beginMonth)){
 	var EventOnDayContent = gj(eventObj.rootNode).find('div.eventOnDayContent')[0];
 	if(!gj(EventOnDayContent).find('.leftContinueEvent')[0]) {
-	    var leftNode = gj('<div></div').addClass('leftContinueEvent  pull-left');
+	    var leftNode = gj('<div></div>').addClass('leftContinueEvent  pull-left');
 	    var icon = gj('<i></i>').addClass('uiIconMiniArrowLeft uiIconWhite');
 	    leftNode.append(icon);
 	    gj(EventOnDayContent).prepend(leftNode);
@@ -1165,7 +1165,7 @@ GUIMan.prototype.addContinueClass = function(){
 	    var EventOnDayContent = gj(eventNode).find('div.eventOnDayContent')[0];
 
 	    if(!gj(EventOnDayContent).find('.rightContinueEvent')[0]) {
-		var rightNode = gj('<div></div').addClass('rightContinueEvent  pull-right');
+		var rightNode = gj('<div></div>').addClass('rightContinueEvent  pull-right');
 		var icon = gj('<i></i>').addClass('uiIconMiniArrowRight uiIconWhite');
 		rightNode.append(icon);
 		gj(EventOnDayContent).prepend(rightNode);
