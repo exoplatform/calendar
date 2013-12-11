@@ -1314,7 +1314,6 @@ public class JCRDataStorage implements DataStorage {
       try {
         removeReminder(eventNode);
       } catch (Exception e) {
-        e.printStackTrace();
         if (log.isDebugEnabled())
           log.debug(e);
       } finally {
