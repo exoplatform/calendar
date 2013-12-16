@@ -1663,11 +1663,10 @@ public class JCRDataStorage implements DataStorage {
     Node dateFolder = getDateFolder(publicApp, fromDate);
     try {
       return dateFolder.getNode(CALENDAR_EVENT);
-    } catch (Exception e) {
+    } catch (PathNotFoundException e) {
       dateFolder.addNode(CALENDAR_EVENT, Utils.NT_UNSTRUCTURED);
       getPublicRoot().getSession().save();
       return dateFolder.getNode(CALENDAR_EVENT);
-
     }
   }
 
@@ -1687,17 +1686,17 @@ public class JCRDataStorage implements DataStorage {
     String day = "D" + String.valueOf(fromCalendar.get(java.util.Calendar.DATE));
     try {
       yearNode = publicApp.getNode(year);
-    } catch (Exception e) {
+    } catch (PathNotFoundException e) {
       yearNode = publicApp.addNode(year, Utils.NT_UNSTRUCTURED);
     }
     try {
       monthNode = yearNode.getNode(month);
-    } catch (Exception e) {
+    } catch (PathNotFoundException e) {
       monthNode = yearNode.addNode(month, Utils.NT_UNSTRUCTURED);
     }
     try {
       return monthNode.getNode(day);
-    } catch (Exception e) {
+    } catch (PathNotFoundException e) {
       return monthNode.addNode(day, Utils.NT_UNSTRUCTURED);
     }
   }
