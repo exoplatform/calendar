@@ -32,7 +32,7 @@
 			<i class="uiIconCalCreateTask uiIconCalWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
 		</button>
 		<span class="separatorLine"></span> 
-		<a href="<%=uicomponent.event("Today")%>" class="todayActionBar">
+		<a href="javascript:void(0);" onclick="<%=uicomponent.event("Today")%>" class="todayActionBar">
 			<%=_ctx.appRes(uicomponent.id + ".label.Today")%>
 		</a>
 		<span class="separatorLine"></span>  
@@ -50,7 +50,7 @@
 					}
 					%>
 					<li class="$style">
-					  <a href="$actionLink">$label</a>
+					  <a onclick="$actionLink" href="javascript:void(0);">$label</a>
 					</li>
 					  
 					<%  
