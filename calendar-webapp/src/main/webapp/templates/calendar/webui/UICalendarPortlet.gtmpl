@@ -13,8 +13,8 @@
 <style type="text/css">
 #CalendarApplicationMinWidth
 {
-  min-width: 790px;
-  width:expression(document.getElementById("CalendarApplicationMinWidth").clientWidth < 790? "790px": "auto" );
+  min-width: 875px;
+  width:expression(document.getElementById("CalendarApplicationMinWidth").clientWidth < 875? "875px": "auto" );
 }
 </style>
 
