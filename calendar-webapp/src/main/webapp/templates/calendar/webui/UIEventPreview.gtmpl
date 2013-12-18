@@ -43,10 +43,10 @@
 <td valign="top" class="columnLeft">
 	<div >
 	<div class="text">
-		<%=uiform.getLabel('From')%><span><%=df.format(event.getFromDateTime())%></span>
+		<%=uiform.getLabel('From')%> <span> <%=df.format(event.getFromDateTime())%></span>
 	</div>
 	<div class="text ">
-		<%=uiform.getLabel('To')%><span><%=df.format(event.getToDateTime())%></span>
+		<%=uiform.getLabel('To')%> <span> <%=df.format(event.getToDateTime())%></span>
 	 </div>
 
 	<% if (event.getAttachment().size() != 0) { %>
@@ -198,11 +198,13 @@
       else isEditable = "true";
 	  if ((!uicomponent.isShowPopup()) && isEditable) {
 	  	// TRUE when the preview is part of the calendar List View
+	  	Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+	  	String recurId = event.getRecurrenceId();
     %>
 	<div class="uiActionContainer">
 		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
 		<i class="uiIconEdit uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('EditEvent')%></a>
-		<a class="btn " href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
+		<a class="btn " href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType()+"&isOccur=$isOccur"+"&recurId=$recurId")%>">
 		<i class="uiIconDelete uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('DeleteEvent')%></a>
 	</div>
 	<%}%>

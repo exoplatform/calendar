@@ -70,18 +70,18 @@ UIWeekView.prototype.init = function() {
 		var height = parseInt(this.items[i].getAttribute("endTime")) - parseInt(this.items[i].getAttribute("startTime")) ;
         var isEditable = gj(this.items[i]).attr('isEditable');
 		if (isEditable && (isEditable == "true")) {  
-		gj(this.items[i]).off('dblclick').on({'mousedown':UIWeekView.dragStart,
+		gj(this.items[i]).off('mousedown mouseover mouseout dblclick').on({'mousedown':UIWeekView.dragStart,
 			'mouseover':eXo.calendar.EventTooltip.show,
 			'mouseout':eXo.calendar.EventTooltip.hide,
 			'dblclick':_module.UICalendarPortlet.ondblclickCallback});
 		marker = gj(this.items[i]).find('div.resizeEventContainer')[0];
-		gj(marker).on('mousedown',UIWeekView.initResize);
+		gj(marker).off('mousedown').on('mousedown',UIWeekView.initResize);
 	    }
 
         if (isEditable && (isEditable == "false")) {
           gj(this.items[i]).find('.eventContainerBar').css('cursor', 'default');
           marker = gj(this.items[i]).find('div.resizeEventContainer')[0];
-          gj(this.items[i]).off('dblclick').on({'mousedown':false,
+          gj(this.items[i]).off('mousedown mouseover mouseout dblclick').on({'mousedown':false,
             'mouseover':eXo.calendar.EventTooltip.show,
 			'mouseout':eXo.calendar.EventTooltip.hide,
           	'dblclick':_module.UICalendarPortlet.ondblclickCallback});
@@ -327,7 +327,7 @@ UIWeekView.prototype.dragStart = function(evt) {
 		"y" : cs.Browser.Browser.findPosY(UIWeekView.container.parentNode)
 	}
 	UIWeekView.title = gj(UIWeekView.dragElement).find('div.eventTitle')[0].innerHTML;
-	gj(document).on({'mousemove':UIWeekView.drag,'mouseup':UIWeekView.drop});
+	gj(document).off('mousemove mouseup').on({'mousemove':UIWeekView.drag,'mouseup':UIWeekView.drop});
 
 	_module.UICalendarPortlet.dropCallback = UIWeekView.dropCallback ;
 	_module.UICalendarPortlet.setPosition(UIWeekView.dragElement);
@@ -772,11 +772,11 @@ UIWeekView.prototype.initAllday = function() {
     for(var i = 0 ; i < len ; i ++) {
 	resizeMark = gj(eventAllday[i]).children("div") ;
 	if (gj(resizeMark[0]).hasClass("leftResizeEvent"))
-	    gj(resizeMark[0]).on('mousedown',UIWeekView.initAllDayLeftResize);
+	    gj(resizeMark[0]).off('mousedown').on('mousedown',UIWeekView.initAllDayLeftResize);
 	if (gj(resizeMark[2]).hasClass("rightResizeEvent")) {
-	    gj(resizeMark[2]).on('mousedown',UIWeekView.initAllDayRightResize);
+	    gj(resizeMark[2]).off('mousedown').on('mousedown',UIWeekView.initAllDayRightResize);
 	}
-	gj(eventAllday[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
+	gj(eventAllday[i]).off('mouseover mouseout mousedown dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
 	    'mouseout':eXo.calendar.EventTooltip.hide,
 	    'mousedown':_module.UIWeekView.initAlldayDND,
 	    'dblclick':_module.UICalendarPortlet.ondblclickCallback});
@@ -922,7 +922,7 @@ UIWeekView.prototype.setWidth = function(events) {
 		if (end > (endWeek + 24*60*60*1000)) end = endWeek + 24*60*60*1000 ;
 		diff = end - start ;
 		events[i].style.width = parseFloat(diff/(24*7*60*60*1000))*100*totalWidth - 0.2 + "%" ;
-		gj(events[i]).on('mousedown',this.initAlldayDND);
+		gj(events[i]).off('mousedown').on('mousedown',this.initAlldayDND);
 //		events[i].onmousedown = this.initAlldayDND;
 	}
 	return events ;
@@ -948,7 +948,7 @@ UIHorizontalResize.prototype.start = function(evt, outer, inner) {
 	this.outerBeforeWidth = this.outerElement.offsetWidth - 2 ;
 	this.innerBeforeWidth = this.innerElement.offsetWidth - 2 ;
 	this.beforeWidth = this.outerElement.offsetWidth ;
-	gj(document).on({'mousemove':eXo.calendar.UIHorizontalResize.execute,
+	gj(document).off('mousemove mouseup').on({'mousemove':eXo.calendar.UIHorizontalResize.execute,
 		'mouseup':eXo.calendar.UIHorizontalResize.end});
 //	document.onmousemove = eXo.calendar.UIHorizontalResize.execute ;
 //	document.onmouseup = eXo.calendar.UIHorizontalResize.end ;
@@ -1001,7 +1001,7 @@ UIWeekView.prototype.initSelection = function() {
 	UISelection.block.className = "userSelectionBlock" ;
 	UISelection.container = container ;
 	gj(container).prevAll('div')[0].appendChild(UISelection.block) ;
-	gj(UISelection.container).on('mousedown',UISelection.start);
+	gj(UISelection.container).off('mousedown').on('mousedown',UISelection.start);
 //	UISelection.container.onmousedown = UISelection.start ;
 	UISelection.relativeObject = gj(UISelection.container).parents('.eventWeekContent')[0]; 
 	UISelection.viewType = "UIWeekView" ;
@@ -1016,9 +1016,9 @@ UIWeekView.prototype.initSelectionX = function() {
 	for(var i = 0 ; i < len ; i ++) {
 		link = gj(cell[i]).children('a')[0]
 		if (link) 
-			gj(link).on('mousedown',_module.UIWeekView.cancelBubble);
+			gj(link).off('mousedown').on('mousedown',_module.UIWeekView.cancelBubble);
 //			link.onmousedown = eXo.calendar.UIWeekView.cancelBubble ;
-		gj(cell[i]).on('mousedown',_module.Highlighter.start);
+		gj(cell[i]).off('mousedown').on('mousedown',_module.Highlighter.start);
 //		cell[i].onmousedown = Highlighter.start ;
 	}
 } ;
