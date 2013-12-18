@@ -131,13 +131,28 @@ public class JCRDataStorage implements DataStorage {
 
   private final SessionProviderService sessionProviderService_;
   
-  private final ExoCache<String, List<Calendar>> groupCalendarCache_;
+  private final ExoCache<String, List<Calendar>>      groupCalendarCache_;
+
+  /** cache for private calendars of users - store username as key */
+  private final ExoCache<String, List<Calendar>>      userCalendarCache;
+
+  /** cache for calendar setting of users - store username as key */
+  private final ExoCache<String, CalendarSetting>     userCalendarSetting;
+
+  /** cache for calendar events in a particular group calendar - store query as key */
+  private final ExoCache<String, List<CalendarEvent>> groupCalendarEventCache;
+
+  /** cache for calendar events in a particular group calendar - store query as key */
+  private final ExoCache<String, List<CalendarEvent>> groupCalendarRecurrentEventCache;
+
+  /** cache for event categories of users - store username as key */
+  private final ExoCache<String, List<EventCategory>> userEventCategories;
 
   /**
    * The map that contains all the locks
    */
   private final ConcurrentMap<String, Lock> locks = new ConcurrentHashMap<String, Lock>(64, 0.75f, 64);
-    
+
 
   private static final Log       log                 = ExoLogger.getLogger("cs.calendar.service");
 
@@ -146,7 +161,12 @@ public class JCRDataStorage implements DataStorage {
     repoService_ = repoService;
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     sessionProviderService_ = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);
-    groupCalendarCache_ = cservice.getCacheInstance("calendar.GroupCalendar"); 
+    groupCalendarCache_     = cservice.getCacheInstance("calendar.GroupCalendar");
+    userCalendarCache       = cservice.getCacheInstance("calendar.UserCalendar");
+    groupCalendarEventCache = cservice.getCacheInstance("calendar.GroupCalendarEvent");
+    groupCalendarRecurrentEventCache = cservice.getCacheInstance("calendar.GroupCalendarRecurrentEvent");
+    userCalendarSetting     = cservice.getCacheInstance("calendar.UserCalendarSetting");
+    userEventCategories     = cservice.getCacheInstance("calendar.EventCategories");
   }
 
     
@@ -307,16 +327,46 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception {
-    Node userCalendarHome = getUserCalendarHome(username);
-    NodeIterator iter = userCalendarHome.getNodes();
-    List<Calendar> calList = new ArrayList<Calendar>();
-    String[] defaultCalendars = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterPrivateCalendars();
-    while (iter.hasNext()) {
-      Calendar cal = getCalendar(defaultCalendars, username, iter.nextNode(), isShowAll);
-      if (cal != null)
-        calList.add(cal);
+    String[] defaultCalendars;
+    List<Calendar> calList;
+
+    Lock lock = getLock("UserCalendar", username);
+    lock.lock();
+    try {
+      calList = userCalendarCache.get(username);
+      if (calList == null) {
+        calList  = new ArrayList<Calendar>();
+        Node userCalendarHome = getUserCalendarHome(username);
+        NodeIterator iter     = userCalendarHome.getNodes();
+        defaultCalendars      = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterPrivateCalendars();
+
+        while (iter.hasNext()) {
+          Calendar cal = getCalendar(defaultCalendars, username, iter.nextNode(), isShowAll);
+          calList.add(cal);
+        }
+
+        userCalendarCache.put(username, calList);
+      }
+      else {
+
+        if (!isShowAll) {
+          defaultCalendars = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterPrivateCalendars();
+          List<Calendar> filteredCalList = new ArrayList<Calendar>();
+
+          for (Calendar calendar : calList) {
+            if (!Arrays.asList(defaultCalendars).contains(calendar.getId())) filteredCalList.add(calendar);
+          }
+          calList = filteredCalList;
+        }
+      }
+    } finally {
+      lock.unlock();
     }
-    return calList;
+
+    /** return a copy */
+    List<Calendar> returnedList = new ArrayList<Calendar>();
+    for (Calendar calendar : calList) returnedList.add(calendar);
+    return returnedList;
   }
 
   /**
@@ -338,6 +388,14 @@ public class JCRDataStorage implements DataStorage {
     setCalendarProperties(calendarNode, calendar);
     Session session = calendarHome.getSession();
     session.save();
+
+    Lock lock = getLock("UserCalendar", username);
+    lock.lock();
+    try {
+      userCalendarCache.put(username, null);
+    } finally {
+      lock.unlock();
+    }
   }
 
   /**
@@ -363,7 +421,17 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         log.error("Exception occurred when removing calendar " + calendarId, e);
       } finally {
+
       }
+
+      Lock lock = getLock("UserCalendar", username);
+      lock.lock();
+      try {
+        userCalendarCache.put(username, null);
+      } finally {
+        lock.unlock();
+      }
+
       try {
         removeFeed(username, calendarId);
       } catch (Exception e) {
@@ -399,7 +467,8 @@ public class JCRDataStorage implements DataStorage {
     }
 
     for (String groupId : groupIds) {
-      StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "//element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
+      //StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "//element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
+      StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
       List<Calendar> lCalendars;
       String sQuery = queryString.toString();
       Lock lock = getLock("GroupCalendar", sQuery);
@@ -557,16 +626,32 @@ public class JCRDataStorage implements DataStorage {
     return calendar;
   }
 
-  // Event Category APIs
+  /**=== Event Category APIs ===*/
 
   public List<EventCategory> getEventCategories(String username) throws Exception {
-    Node eventCategoryHome = getEventCategoryHome(username);
-    NodeIterator iter = eventCategoryHome.getNodes();
-    List<EventCategory> categories = new ArrayList<EventCategory>();
-    while (iter.hasNext()) {
-      categories.add(getEventCategory(iter.nextNode()));
+    List<EventCategory> eventCategoryList;
+    Lock lock = getLock("EventCategories", username);
+    lock.lock();
+
+    try {
+      eventCategoryList = userEventCategories.get(username);
+      if (eventCategoryList == null) {
+        /** query new */
+        eventCategoryList = new ArrayList<EventCategory>();
+        Node eventCategoryHome = getEventCategoryHome(username);
+        NodeIterator iter = eventCategoryHome.getNodes();
+
+        while (iter.hasNext()) {
+          eventCategoryList.add(getEventCategory(iter.nextNode()));
+        }
+      }
+
+      userEventCategories.put(username, eventCategoryList);
+    } finally {
+      lock.unlock();
     }
-    return categories;
+
+    return eventCategoryList;
   }
 
   public void saveEventCategory(String username,
@@ -584,7 +669,7 @@ public class JCRDataStorage implements DataStorage {
     } else {
 
       eventCategoryNode = eventCategoryHome.getNode(eventCategory.getId());
-      Node calendarHome = getUserCalendarHome(username);
+      Node calendarHome =  getUserCalendarHome(username);
       QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
       NodeIterator calIter = calendarHome.getNodes();
       Query query;
@@ -627,6 +712,14 @@ public class JCRDataStorage implements DataStorage {
     eventCategoryNode.setProperty(Utils.EXO_ID, eventCategory.getId());
     eventCategoryNode.setProperty(Utils.EXO_NAME, eventCategory.getName());
     eventCategoryHome.getSession().save();
+
+    Lock lock = getLock("EventCategories", username);
+    lock.lock();
+    try {
+      userEventCategories.put(username, null);
+    } finally {
+      lock.unlock();
+    }
   }
 
   public void removeEventCategory(String username, String eventCategoryId) throws Exception {
@@ -651,7 +744,14 @@ public class JCRDataStorage implements DataStorage {
       eventCategoryNode.remove();
       eventCategoryHome.save();
       eventCategoryHome.getSession().save();
-    }
+
+      Lock lock = getLock("EventCategories", username);
+      lock.lock();
+      try {
+        userEventCategories.put(username, null);
+      } finally {
+        lock.unlock();
+      }    }
   }
 
   /**
@@ -1176,6 +1276,9 @@ public class JCRDataStorage implements DataStorage {
     event.setCalendarId(calendarId);
     Node reminderFolder = getReminderFolder(event.getFromDateTime());
     saveEvent(calendarNode, event, reminderFolder, isNew);
+
+    groupCalendarEventCache.clearCache();
+    groupCalendarRecurrentEventCache.clearCache();
   }
 
   /**
@@ -1198,6 +1301,10 @@ public class JCRDataStorage implements DataStorage {
         if (log.isDebugEnabled())
           log.debug(e.getMessage());
       }
+
+      groupCalendarEventCache.clearCache();
+      groupCalendarRecurrentEventCache.clearCache();
+
       return event;
     }
     return null;
@@ -1751,12 +1858,26 @@ public class JCRDataStorage implements DataStorage {
     addCalendarSetting(calendarHome, setting);
     Session session = calendarHome.getSession();
     session.save();
+    Lock lock = getLock("UserCalendarSetting", username);
+    lock.lock();
+    try {
+      userCalendarSetting.put(username, null);
+    } finally {
+      lock.unlock();
+    }
   }
 
   private void saveCalendarSetting(CalendarSetting setting, String username) throws Exception {
     Node calendarHome = getUserCalendarServiceHome(username);
     addCalendarSetting(calendarHome, setting);
     calendarHome.save();
+    Lock lock = getLock("UserCalendarSetting", username);
+    lock.lock();
+    try {
+      userCalendarSetting.put(username, null);
+    } finally {
+      lock.unlock();
+    }
   }
 
   /**
@@ -1792,14 +1913,25 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public CalendarSetting getCalendarSetting(String username) throws Exception {
-    Node calendarHome = getUserCalendarServiceHome(username);
-    CalendarSetting setting = getCalendarSetting(calendarHome);
-    if (setting == null) {
-      saveCalendarSetting(username, new CalendarSetting());
-      setting = getCalendarSetting(calendarHome);
+    CalendarSetting calendarSetting;
+    Lock lock = getLock("UserCalendarSetting", username);
+    lock.lock();
+    try {
+      calendarSetting = userCalendarSetting.get(username);
+      if (calendarSetting == null) {
+        Node calendarHome = getUserCalendarServiceHome(username);
+        calendarSetting = getCalendarSetting(calendarHome);
+        if (calendarSetting == null) {
+          calendarSetting = new CalendarSetting();
+          addCalendarSetting(calendarHome, calendarSetting);
+        }
+        userCalendarSetting.put(username, calendarSetting);
+      }
+    } finally {
+      lock.unlock();
     }
 
-    return setting;
+    return calendarSetting;
   }
 
   /**
@@ -1880,6 +2012,7 @@ public class JCRDataStorage implements DataStorage {
         calendarSetting.setWorkingTimeBegin(workingTimeBegin);
         calendarSetting.setWorkingTimeEnd(workingTimeEnd);
       }
+
       return calendarSetting;
     }
     return null;
@@ -2367,11 +2500,219 @@ public class JCRDataStorage implements DataStorage {
 
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
-        log.debug("Fail to search hight light event", e);
+        log.debug("Fail to search highlight event", e);
       }
     }
 
     return mapData;
+  }
+
+
+  public List<Map<Integer, String>> searchHightLightEventSQL(String username, EventQuery eventQuery,
+                                                             String[] privateCalendars, String[] publicCalendars) throws Exception {
+    Node calendarHome      = getUserCalendarHome(username);
+    Node calendarShareNode = getSharedCalendarHome();
+    Node publicCalHome     = getPublicCalendarHome();
+    Query query;
+
+    CalendarSetting calSetting = getCalendarSetting(getUserCalendarServiceHome(username));
+    java.util.Calendar fromDateCal = calSetting.createCalendar(eventQuery.getFromDate().getTimeInMillis());
+    java.util.Calendar toDateCal   = calSetting.createCalendar(eventQuery.getToDate().getTimeInMillis());
+
+    Map<Integer, String> mapData = new HashMap<Integer, String>();
+    Map<Integer, String> emptyCalendarsMap = new HashMap<Integer, String>();
+
+    /** query private calendar */
+    QueryManager qm  = calendarHome.getSession().getWorkspace().getQueryManager();
+    for (String calendarId : privateCalendars) {
+      String calendarPath = calendarHome.getPath() + "/" + calendarId + "/%";
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
+          .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
+          .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
+
+      /**
+      StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(path + "/" + calendarId)
+          .append("/element(*,exo:calendarEvent)")
+          .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
+          .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+          .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')]")
+          .append(" /(@exo:calendarId, @exo:toDateTime, @exo:fromDateTime)");
+      **/
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+
+      try {
+        NodeIterator iterator = query.execute().getNodes();
+        if (!iterator.hasNext()) {
+          emptyCalendarsMap.put(emptyCalendarsMap.size(), calendarId);
+        }
+
+        mapData = updateMap(mapData, iterator, fromDateCal, toDateCal, calSetting, Calendar.TYPE_PRIVATE);
+
+      } catch (RepositoryException e) {
+        log.debug("RepositoryException: " + e.getLocalizedMessage());
+      } catch (Exception e) {
+        log.debug("Exception: " + e.getLocalizedMessage());
+      }
+
+    }
+
+    /** if group calendar then check event cache before query */
+    qm  = publicCalHome.getSession().getWorkspace().getQueryManager();
+
+    for (String calendarId : publicCalendars) {
+      String calendarPath = publicCalHome.getPath() + "/" + calendarId + "/%";
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
+          .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
+          .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      Lock lock = getLock("GroupCalendarEvent", queryEventsStatementSQL.toString());
+      lock.lock();
+      List<CalendarEvent> events;
+
+      try {
+        events = groupCalendarEventCache.get(queryEventsStatementSQL.toString());
+        if (events == null) {
+          query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+
+          try {
+            NodeIterator iterator = query.execute().getNodes();
+            if (!iterator.hasNext()) {
+              emptyCalendarsMap.put(emptyCalendarsMap.size(), calendarId);
+            }
+
+            events = getGroupHighLightEvents(iterator);
+            groupCalendarEventCache.put(queryEventsStatementSQL.toString(), events);
+
+          } catch (RepositoryException e) {
+            log.debug("RepositoryException: " + e.getLocalizedMessage());
+          } catch (Exception e) {
+            log.debug("Exception: " + e.getLocalizedMessage());
+          }
+        }
+
+        /** events exist in cache */
+        mapData = updateMap1(mapData, events.iterator(), fromDateCal, toDateCal, calSetting, Calendar.TYPE_PUBLIC);
+
+      } finally {
+        lock.unlock();
+      }
+    }
+
+    /** shared calendar */
+    qm  = calendarShareNode.getSession().getWorkspace().getQueryManager();
+
+    if (calendarShareNode.hasNode(username)) {
+      PropertyIterator propertyIterator = calendarShareNode.getNode(username).getReferences();
+      while (propertyIterator.hasNext()) {
+        try {
+
+          Node calendar = propertyIterator.nextProperty().getParent();
+          StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+              .append(" WHERE jcr:path LIKE '").append(calendar.getPath()).append("/%'")
+              .append(" AND NOT jcr:path LIKE '").append(calendar.getPath()).append("/%/%'")
+              .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
+              .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
+              .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
+
+          /**
+           StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(path + "/" + calendarId)
+           .append("/element(*,exo:calendarEvent)")
+           .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
+           .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+           .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')]")
+           .append(" /(@exo:calendarId, @exo:toDateTime, @exo:fromDateTime)");
+           **/
+
+          /** event type */
+          String eventType = eventQuery.getEventType();
+          if (eventType != null && eventType.length() > 0) {
+            queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+          }
+
+          /** event category */
+          String[] categoryIds = eventQuery.getCategoryId();
+          if (categoryIds != null && categoryIds.length > 0) {
+            queryEventsStatementSQL.append(" AND (");
+            for (int i = 0; i < categoryIds.length; i++) {
+              if (i == 0)
+                queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+              else
+                queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+            }
+            queryEventsStatementSQL.append(")");
+          }
+
+          query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+          NodeIterator iterator = query.execute().getNodes();
+          mapData = updateMap(mapData, iterator, fromDateCal, toDateCal, calSetting, Calendar.TYPE_SHARED);
+        } catch (Exception e) {
+          if (log.isDebugEnabled()) {
+            log.debug("Fail to update map of shared event", e);
+          }
+        }
+      }
+    }
+
+    List<Map<Integer, String>> result = new ArrayList<Map<Integer, String>>();
+    result.add(0, mapData);
+    result.add(1, emptyCalendarsMap);
+    return result;
+  }
+
+
+  private List<CalendarEvent> getGroupHighLightEvents(NodeIterator nodeIterator) throws Exception{
+    List<CalendarEvent> events = new ArrayList<CalendarEvent>();
+    while (nodeIterator.hasNext()) {
+      events.add(getEvent(nodeIterator.nextNode()));
+    }
+    return events;
   }
 
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username,
@@ -2386,7 +2727,8 @@ public class JCRDataStorage implements DataStorage {
                                                                                .get(java.util.Calendar.DAY_OF_YEAR)) {
       toDayOfYear = toDayOfYear + daysOfYear;
     }
-//    java.util.Calendar tempCalendar = Utils.getInstanceTempCalendar();
+
+    // java.util.Calendar tempCalendar = Utils.getInstanceTempCalendar();
     java.util.Calendar tempCalendar = java.util.Calendar.getInstance(TimeZone.getTimeZone(timezone));
 
     List<CalendarEvent> originalRecurEvents = getHighLightOriginalRecurrenceEvents(username,                                                                          eventQuery.getFromDate(),
@@ -2448,6 +2790,95 @@ public class JCRDataStorage implements DataStorage {
     return mapData;
   }
 
+
+  public List<Map<Integer, String>> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
+                                                                      String[] privateCalendars, String[] publicCalendars) throws Exception {
+    Map<Integer, String> mapData = new HashMap<Integer, String>();
+    int fromDayOfYear = eventQuery.getFromDate().get(java.util.Calendar.DAY_OF_YEAR);
+    int toDayOfYear = eventQuery.getFromDate().get(java.util.Calendar.DAY_OF_YEAR);
+    int daysOfYear = eventQuery.getFromDate().getMaximum(java.util.Calendar.DAY_OF_YEAR);
+    if (eventQuery.getToDate().get(java.util.Calendar.DAY_OF_YEAR) > eventQuery.getFromDate()
+        .get(java.util.Calendar.DAY_OF_YEAR)) {
+      toDayOfYear = toDayOfYear + daysOfYear;
+    }
+    java.util.Calendar tempCalendar = java.util.Calendar.getInstance(TimeZone.getTimeZone(timezone));
+
+    List<CalendarEvent> originalRecurEvents = searchHighLightOriginalRecurrenceEventsSQL(username,
+        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars);
+
+    CalendarEvent calEvent = originalRecurEvents.get(0);
+    String[] emptyCalsId = new String[]{};
+    if (calEvent.getCalendarId().equals("-1")) {
+      emptyCalsId = calEvent.getSummary().split(";");
+      originalRecurEvents.remove(0);
+    }
+
+    boolean isVictory = false;
+    if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
+      Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
+      while (recurEventsIter.hasNext() && !isVictory) {
+        CalendarEvent recurEvent = recurEventsIter.next();
+        Map<String, CalendarEvent> tempMap = getOccurrenceEvents(recurEvent,
+            eventQuery.getFromDate(),
+            eventQuery.getToDate(),
+            timezone);
+        if (tempMap != null) {
+          for (CalendarEvent event : tempMap.values().toArray(new CalendarEvent[0])) {
+            if (isVictory)
+              break;
+            tempCalendar.setTime(event.getFromDateTime());
+            int eventFromDayOfYear = tempCalendar.get(java.util.Calendar.DAY_OF_YEAR);
+            if (tempCalendar.get(java.util.Calendar.YEAR) < eventQuery.getFromDate()
+                .get(java.util.Calendar.YEAR)) {
+              eventFromDayOfYear = 1;
+            }
+
+            tempCalendar.setTime(event.getToDateTime());
+            int eventToDayOfYear = tempCalendar.get(java.util.Calendar.DAY_OF_YEAR);
+            if (tempCalendar.get(java.util.Calendar.YEAR) > eventQuery.getToDate()
+                .get(java.util.Calendar.YEAR)) {
+              eventToDayOfYear = 366;
+            }
+
+            Integer begin = -1;
+            Integer end = -1;
+            if (fromDayOfYear >= eventFromDayOfYear) {
+              begin = fromDayOfYear;
+              if (toDayOfYear <= eventToDayOfYear) {
+                end = toDayOfYear;
+                isVictory = true;
+              } else {
+                end = eventToDayOfYear;
+              }
+            } else {
+              begin = eventFromDayOfYear;
+              if (toDayOfYear <= eventToDayOfYear) {
+                end = toDayOfYear;
+              } else {
+                end = eventToDayOfYear;
+              }
+            }
+            if (begin > 0 && end > 0)
+              for (Integer i = begin; i <= end; i++)
+                mapData.put(i, VALUE);
+          }
+
+        }
+      }
+    }
+
+    //return mapData;
+    Map<Integer, String> emptyCalendarsMap = new HashMap<Integer, String>();
+    for (String calendarId : emptyCalsId) {
+      emptyCalendarsMap.put(emptyCalendarsMap.size(), calendarId);
+    }
+
+    List<Map<Integer, String>> result = new ArrayList<Map<Integer, String>>();
+    result.add(0, mapData);
+    result.add(1, emptyCalendarsMap);
+    return result;
+  }
+
   /**
    * put busy days of the year, which contain events, to "data" map.
    * 
@@ -2461,12 +2892,9 @@ public class JCRDataStorage implements DataStorage {
    * @return
    * @throws Exception
    */
-  private Map<Integer, String> updateMap(Map<Integer, String> data,
-                                         NodeIterator it,
-                                         java.util.Calendar fromDate,
-                                         java.util.Calendar toDate,
-                                         CalendarSetting calendarSetting,
-                                         int calType) throws Exception {
+  private Map<Integer, String> updateMap(Map<Integer, String> data, NodeIterator it,
+                                         java.util.Calendar fromDate, java.util.Calendar toDate,
+                                         CalendarSetting calendarSetting, int calType) throws Exception {
     String[] filterCalIds = null;
     switch (calType) {
     case Calendar.TYPE_PRIVATE:
@@ -2533,6 +2961,74 @@ public class JCRDataStorage implements DataStorage {
     }
     return data;
   }
+
+
+  private Map<Integer, String> updateMap1(Map<Integer, String> data, Iterator<CalendarEvent> it,
+                                         java.util.Calendar fromDate, java.util.Calendar toDate,
+                                         CalendarSetting calendarSetting, int calType) throws Exception {
+    String[] filterCalIds = null;
+    switch (calType) {
+      case Calendar.TYPE_PRIVATE:
+        filterCalIds = calendarSetting.getFilterPrivateCalendars();
+        break;
+      case Calendar.TYPE_PUBLIC:
+        filterCalIds = calendarSetting.getFilterPublicCalendars();
+        break;
+      case Calendar.TYPE_SHARED:
+        filterCalIds = calendarSetting.getFilterSharedCalendars();
+        break;
+      default:
+        break;
+    }
+    int fromDayOfYear = fromDate.get(java.util.Calendar.DAY_OF_YEAR);
+    int daysOfyer = fromDate.getMaximum(java.util.Calendar.DAY_OF_YEAR);
+    int toDayOfYear = toDate.get(java.util.Calendar.DAY_OF_YEAR);
+    if (toDate.get(java.util.Calendar.DAY_OF_YEAR) > fromDate.get(java.util.Calendar.DAY_OF_YEAR)) {
+      toDayOfYear = toDayOfYear + daysOfyer;
+    }
+    boolean isVictory = false;
+    while (it.hasNext() && !isVictory) {
+      CalendarEvent event = it.next();
+      if (filterCalIds == null
+          || !Arrays.asList(filterCalIds).contains(event.getCalendarId())) {
+        java.util.Calendar eventFormDate = calendarSetting.createCalendar(event.getFromDateTime().getTime());
+        java.util.Calendar eventToDate = calendarSetting.createCalendar(event.getToDateTime().getTime());
+
+        int eventFromDayOfYear = eventFormDate.get(java.util.Calendar.DAY_OF_YEAR);
+        int eventToDayOfYear = eventToDate.get(java.util.Calendar.DAY_OF_YEAR);
+
+        if (eventFormDate.get(java.util.Calendar.YEAR) < fromDate.get(java.util.Calendar.YEAR)) {
+          eventFromDayOfYear = 1;
+        }
+        if (eventToDate.get(java.util.Calendar.YEAR) > toDate.get(java.util.Calendar.YEAR)) {
+          eventToDayOfYear = 366;
+        }
+        Integer begin = -1;
+        Integer end = -1;
+        if (fromDayOfYear >= eventFromDayOfYear) {
+          begin = fromDayOfYear;
+          if (toDayOfYear <= eventToDayOfYear) {
+            end = toDayOfYear;
+            isVictory = true;
+          } else {
+            end = eventToDayOfYear;
+          }
+        } else {
+          begin = eventFromDayOfYear;
+          if (toDayOfYear <= eventToDayOfYear) {
+            end = toDayOfYear;
+          } else {
+            end = eventToDayOfYear;
+          }
+        }
+        if (begin > 0 && end > 0)
+          for (Integer i = begin; i <= end; i++)
+            data.put(i, VALUE);
+      }
+    }
+    return data;
+  }
+
 
   private List<Value> calculateSharedCalendar(String user,
                                               Node calendarNode,
@@ -2972,6 +3468,26 @@ public class JCRDataStorage implements DataStorage {
           }
         queryStatement.append(")");
       }
+
+    /** event type */
+    String eventType = eventQuery.getEventType();
+    if (eventType != null && eventType.length() > 0) {
+      queryStatement.append(" and (@exo:eventType='" + eventType + "')");
+    }
+
+    /** event category */
+    String[] categoryIds = eventQuery.getCategoryId();
+    if (categoryIds != null && categoryIds.length > 0) {
+      queryStatement.append(" and (");
+      for (int i = 0; i < categoryIds.length; i++) {
+        if (i == 0)
+          queryStatement.append("@exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        else
+          queryStatement.append(" or @exo:eventCategoryId='").append(categoryIds[i]).append("'");
+      }
+      queryStatement.append(")");
+    }
+
     queryStatement.append("]");
 
     query = qm.createQuery(queryStatement.toString(), Query.XPATH);
@@ -3009,8 +3525,28 @@ public class JCRDataStorage implements DataStorage {
             queryStatement.append(" or @exo:calendarId != '" + filteredCalendars[i] + "'");
         }
         queryStatement.append(")");
+    }
+
+    /** event type */
+    eventType = eventQuery.getEventType();
+    if (eventType != null && eventType.length() > 0) {
+      queryStatement.append(" and (@exo:eventType='" + eventType + "')");
+    }
+
+    /** event category */
+    categoryIds = eventQuery.getCategoryId();
+    if (categoryIds != null && categoryIds.length > 0) {
+      queryStatement.append(" and (");
+      for (int i = 0; i < categoryIds.length; i++) {
+        if (i == 0)
+          queryStatement.append("@exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        else
+          queryStatement.append(" or @exo:eventCategoryId='").append(categoryIds[i]).append("'");
       }
+      queryStatement.append(")");
+    }
     queryStatement.append("]");
+
     query = qm.createQuery(queryStatement.toString(), Query.XPATH);
 
     QueryEventsTask queryPublicEventsTask = new QueryEventsTask(query, String.valueOf(Calendar.TYPE_PUBLIC), latch);
@@ -3038,6 +3574,25 @@ public class JCRDataStorage implements DataStorage {
               queryStatement.append("@exo:calendarId != '" + filteredCalendars[i] + "'");
             else
               queryStatement.append(" or @exo:calendarId != '" + filteredCalendars[i] + "'");
+          }
+          queryStatement.append(")");
+        }
+
+        /** event type */
+        eventType = eventQuery.getEventType();
+        if (eventType != null && eventType.length() > 0) {
+          queryStatement.append(" and (@exo:eventType='" + eventType + "')");
+        }
+
+        /** event category */
+        categoryIds = eventQuery.getCategoryId();
+        if (categoryIds != null && categoryIds.length > 0) {
+          queryStatement.append(" and (");
+          for (int i = 0; i < categoryIds.length; i++) {
+            if (i == 0)
+              queryStatement.append("@exo:eventCategoryId='").append(categoryIds[i]).append("'");
+            else
+              queryStatement.append(" or @exo:eventCategoryId='").append(categoryIds[i]).append("'");
           }
           queryStatement.append(")");
         }
@@ -3097,6 +3652,219 @@ public class JCRDataStorage implements DataStorage {
     }
   }
 
+
+  /**
+   * {@inheritDoc}
+   */
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery,
+                                                     String[] privateCalendars, String[] publicCalendars,
+                                                     List<String> emptyCalendars) throws Exception {
+    List<CalendarEvent> allEvents = new ArrayList<CalendarEvent>();
+
+    Node calendarHome      = getUserCalendarHome(username);
+    Node calendarShareNode = getSharedCalendarHome();
+    Node publicCalHome     = getPublicCalendarHome();
+    Query query;
+
+    /** query private calendar */
+    QueryManager qm  = calendarHome.getSession().getWorkspace().getQueryManager();
+
+    for (String calendarId : privateCalendars) {
+      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
+      String calendarPath = calendarHome.getPath() + "/" + calendarId + "/%";
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
+          .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
+          .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
+
+      /**
+       StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(path + "/" + calendarId)
+       .append("/element(*,exo:calendarEvent)")
+       .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
+       .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+       .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')]")
+       .append(" /(@exo:calendarId, @exo:toDateTime, @exo:fromDateTime)");
+       **/
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+
+      try {
+        NodeIterator iterator = query.execute().getNodes();
+        CalendarEvent event;
+        while (iterator.hasNext()) {
+          event = getEvent(iterator.nextNode());
+          event.setCalType(String.valueOf(Calendar.TYPE_PRIVATE));
+          allEvents.add(event);
+        }
+      } catch (RepositoryException e) {
+        log.debug("RepositoryException: " + e.getLocalizedMessage());
+      } catch (Exception e) {
+        log.debug("Exception: " + e.getLocalizedMessage());
+      }
+
+    }
+
+    /** if group calendar then check event cache before query */
+    qm  = publicCalHome.getSession().getWorkspace().getQueryManager();
+
+    for (String calendarId : publicCalendars) {
+      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
+      String calendarPath = publicCalHome.getPath() + "/" + calendarId + "/%";
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
+          .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
+          .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      Lock lock = getLock("GroupCalendarEvent", queryEventsStatementSQL.toString());
+      lock.lock();
+      List<CalendarEvent> events;
+
+      try {
+
+        events = groupCalendarEventCache.get(queryEventsStatementSQL.toString());
+        if (events == null) {
+          query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+          events = new ArrayList<CalendarEvent>();
+
+          try {
+            NodeIterator iterator = query.execute().getNodes();
+            CalendarEvent event;
+            while (iterator.hasNext()) {
+              event = getEvent(iterator.nextNode());
+              event.setCalType(String.valueOf(Calendar.TYPE_PUBLIC));
+              events.add(event);
+            }
+
+            groupCalendarEventCache.put(queryEventsStatementSQL.toString(), events);
+
+          } catch (RepositoryException e) {
+            log.debug("RepositoryException: " + e.getLocalizedMessage());
+          } catch (Exception e) {
+            log.debug("Exception: " + e.getLocalizedMessage());
+          }
+        }
+      } finally {
+        lock.unlock();
+      }
+
+      allEvents.addAll(events);
+    }
+
+    /** shared calendar */
+    qm  = calendarShareNode.getSession().getWorkspace().getQueryManager();
+
+    if (calendarShareNode.hasNode(username)) {
+      PropertyIterator propertyIterator = calendarShareNode.getNode(username).getReferences();
+      while (propertyIterator.hasNext()) {
+        try {
+
+          Node calendar = propertyIterator.nextProperty().getParent();
+          StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+              .append(" WHERE jcr:path LIKE '").append(calendar.getPath()).append("/%'")
+              .append(" AND NOT jcr:path LIKE '").append(calendar.getPath()).append("/%/%'")
+              .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
+              .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
+              .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
+
+          /**
+           StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(path + "/" + calendarId)
+           .append("/element(*,exo:calendarEvent)")
+           .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
+           .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
+           .append(" and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='norepeat' and @exo:recurrenceId='')]")
+           .append(" /(@exo:calendarId, @exo:toDateTime, @exo:fromDateTime)");
+           **/
+
+          /** event type */
+          String eventType = eventQuery.getEventType();
+          if (eventType != null && eventType.length() > 0) {
+            queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+          }
+
+          /** event category */
+          String[] categoryIds = eventQuery.getCategoryId();
+          if (categoryIds != null && categoryIds.length > 0) {
+            queryEventsStatementSQL.append(" AND (");
+            for (int i = 0; i < categoryIds.length; i++) {
+              if (i == 0)
+                queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+              else
+                queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+            }
+            queryEventsStatementSQL.append(")");
+          }
+
+          query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+
+          try {
+            NodeIterator iterator = query.execute().getNodes();
+            CalendarEvent event;
+            while (iterator.hasNext()) {
+              event = getEvent(iterator.nextNode());
+              event.setCalType(String.valueOf(Calendar.TYPE_SHARED));
+              allEvents.add(event);
+            }
+          } catch (RepositoryException e) {
+            log.debug("RepositoryException: " + e.getLocalizedMessage());
+          } catch (Exception e) {
+            log.debug("Exception: " + e.getLocalizedMessage());
+          }
+        } catch (Exception e) {
+          if (log.isDebugEnabled()) {
+            log.debug("Fail to update map of shared event", e);
+          }
+        }
+      }
+    }
+
+    return allEvents;
+  }
+
+
   /**
    * Another version of getOriginalRecurrenceEvents using Thread
    */
@@ -3146,6 +3914,355 @@ public class JCRDataStorage implements DataStorage {
     recurEvents.addAll(publicEventsQueryTask.calendarEvents);
     return recurEvents;
   }
+
+
+  /**
+   * Another version of getOriginalRecurrenceEvents
+   */
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username,java.util.Calendar from,
+                                                                     java.util.Calendar to, EventQuery eventQuery, String[] privateCalendars,
+                                                                     String[] publicCalendars, List<String> emptyCalendars) throws Exception {
+    List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
+
+    /** get from user private calendars */
+    recurEvents.addAll(getOriginalRecurrenceEventsSQL(getUserCalendarHome(username), String.valueOf(Calendar.TYPE_PRIVATE),
+        from, to, eventQuery, privateCalendars, emptyCalendars));
+
+    Node publicHome = getPublicCalendarHome();
+    QueryManager qm = publicHome.getSession().getWorkspace().getQueryManager();
+
+    for (String calendarId : publicCalendars) {
+      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
+
+      String calendarPath = publicHome.getPath() + "/" + calendarId;
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%/%'")
+          .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
+          .append(" AND NOT exo:repeat='norepeat'")
+          .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
+          .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      Lock lock = getLock("GroupCalendarRecurrentEvent", queryEventsStatementSQL.toString());
+      lock.lock();
+      List<CalendarEvent> events;
+
+      try {
+        events = groupCalendarRecurrentEventCache.get(queryEventsStatementSQL.toString());
+        if (events == null) {
+          events = new ArrayList<CalendarEvent>();
+          Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+
+          try {
+            NodeIterator it = query.execute().getNodes();
+            while (it.hasNext()) {
+              Node eventNode = it.nextNode();
+              CalendarEvent event = getEvent(eventNode);
+              event.setCalType(String.valueOf(Calendar.TYPE_PUBLIC));
+              events.add(event);
+            }
+
+            groupCalendarRecurrentEventCache.put(queryEventsStatementSQL.toString(), events);
+
+          } catch (RepositoryException e) {
+            log.debug("RepositoryException: " + e.getLocalizedMessage());
+          } catch (Exception e) {
+            log.debug("Exception: " + e.getLocalizedMessage());
+          }
+        }
+      } finally {
+        lock.unlock();
+      }
+
+      recurEvents.addAll(events);
+    }
+
+    Node sharedCalendarHome = getSharedCalendarHome();
+    qm = sharedCalendarHome.getSession().getWorkspace().getQueryManager();
+
+    if (sharedCalendarHome.hasNode(username)) {
+      Node userNode = sharedCalendarHome.getNode(username);
+      PropertyIterator propertyIterator = userNode.getReferences();
+      Node calendarNode;
+      while (propertyIterator.hasNext()) {
+        calendarNode = propertyIterator.nextProperty().getParent();
+
+        StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+            .append(" WHERE jcr:path LIKE '").append(calendarNode.getPath()).append("/%'")
+            .append(" AND NOT jcr:path LIKE '").append(calendarNode.getPath()).append("/%/%'")
+            .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
+            .append(" AND NOT exo:repeat='norepeat'")
+            .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
+            .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
+
+        /** event type */
+        String eventType = eventQuery.getEventType();
+        if (eventType != null && eventType.length() > 0) {
+          queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+        }
+
+        /** event category */
+        String[] categoryIds = eventQuery.getCategoryId();
+        if (categoryIds != null && categoryIds.length > 0) {
+          queryEventsStatementSQL.append(" AND (");
+          for (int i = 0; i < categoryIds.length; i++) {
+            if (i == 0)
+              queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+            else
+              queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          }
+          queryEventsStatementSQL.append(")");
+        }
+
+        Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+        QueryResult result = query.execute();
+
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+          Node eventNode = it.nextNode();
+          CalendarEvent event = getEvent(eventNode);
+          event.setCalType(String.valueOf(Calendar.TYPE_SHARED));
+          recurEvents.add(event);
+        }
+
+      }
+    }
+
+    return recurEvents;
+  }
+
+
+  public List<CalendarEvent> searchHighLightOriginalRecurrenceEventsSQL(String username,java.util.Calendar from,
+                                                                        java.util.Calendar to, EventQuery eventQuery,
+                                                                        String[] privateCalendars, String[] publicCalendars) throws Exception {
+    List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
+    StringBuffer emptyCalendars = null;
+
+    /** query private calendars */
+    Node calendarHome = getUserCalendarHome(username);
+    QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
+
+    for (String calendarId : privateCalendars) {
+      String calendarPath = calendarHome.getPath() + "/" + calendarId;
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%/%'")
+          .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
+          .append(" AND NOT exo:repeat='norepeat'")
+          .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
+          .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
+
+      /**
+      StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(calendarPath)
+          .append("/element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
+          .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
+          .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))")
+          .append("]");
+      **/
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+      QueryResult result = query.execute();
+
+      NodeIterator it = result.getNodes();
+      if (!it.hasNext()) {
+
+        if (emptyCalendars == null) {
+          emptyCalendars = new StringBuffer();
+          emptyCalendars.append(calendarId);
+        }
+        else emptyCalendars.append(";" + calendarId);
+      }
+      else {
+        while (it.hasNext()) {
+          Node eventNode = it.nextNode();
+          CalendarEvent event = getEvent(eventNode);
+          event.setCalType(String.valueOf(Calendar.TYPE_PRIVATE));
+          recurEvents.add(event);
+        }
+      }
+    }
+
+    /** query public calendar evens */
+    Node publicHome = getPublicCalendarHome();
+    qm = publicHome.getSession().getWorkspace().getQueryManager();
+
+    for (String calendarId : publicCalendars) {
+      String calendarPath = publicHome.getPath() + "/" + calendarId;
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%/%'")
+          .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
+          .append(" AND NOT exo:repeat='norepeat'")
+          .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
+          .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      Lock lock = getLock("GroupCalendarRecurrentEvent", queryEventsStatementSQL.toString());
+      lock.lock();
+      List<CalendarEvent> events;
+
+      try {
+        events = groupCalendarRecurrentEventCache.get(queryEventsStatementSQL.toString());
+        if (events == null) {
+          Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+          events = new ArrayList<CalendarEvent>();
+
+          try {
+            NodeIterator it = query.execute().getNodes();
+            if (!it.hasNext()) {
+              if (emptyCalendars == null) {
+                emptyCalendars = new StringBuffer();
+                emptyCalendars.append(calendarId);
+              }
+              else emptyCalendars.append(";" + calendarId);
+            }
+            else {
+
+              while (it.hasNext()) {
+                Node eventNode = it.nextNode();
+                CalendarEvent event = getEvent(eventNode);
+                event.setCalType(String.valueOf(Calendar.TYPE_PUBLIC));
+                events.add(event);
+              }
+
+              groupCalendarRecurrentEventCache.put(queryEventsStatementSQL.toString(), events);
+            }
+
+          } catch (RepositoryException e) {
+            log.debug("RepositoryException: " + e.getLocalizedMessage());
+          } catch (Exception e) {
+            log.debug("Exception: " + e.getLocalizedMessage());
+          }
+        }
+      } finally {
+        lock.unlock();
+      }
+
+      recurEvents.addAll(events);
+    }
+
+    /** query shared calendar event */
+    Node sharedCalendarHome = getSharedCalendarHome();
+    qm = sharedCalendarHome.getSession().getWorkspace().getQueryManager();
+
+    if (sharedCalendarHome.hasNode(username)) {
+      Node userNode = sharedCalendarHome.getNode(username);
+      PropertyIterator propertyIterator = userNode.getReferences();
+      Node calendarNode;
+      while (propertyIterator.hasNext()) {
+        calendarNode = propertyIterator.nextProperty().getParent();
+
+        StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+            .append(" WHERE jcr:path LIKE '").append(calendarNode.getPath()).append("/%'")
+            .append(" AND NOT jcr:path LIKE '").append(calendarNode.getPath()).append("/%/%'")
+            .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
+            .append(" AND NOT exo:repeat='norepeat'")
+            .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
+            .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
+
+        /** event type */
+        String eventType = eventQuery.getEventType();
+        if (eventType != null && eventType.length() > 0) {
+          queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+        }
+
+        /** event category */
+        String[] categoryIds = eventQuery.getCategoryId();
+        if (categoryIds != null && categoryIds.length > 0) {
+          queryEventsStatementSQL.append(" AND (");
+          for (int i = 0; i < categoryIds.length; i++) {
+            if (i == 0)
+              queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+            else
+              queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          }
+          queryEventsStatementSQL.append(")");
+        }
+
+        Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+        QueryResult result = query.execute();
+
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+          Node eventNode = it.nextNode();
+          CalendarEvent event = getEvent(eventNode);
+          event.setCalType(String.valueOf(Calendar.TYPE_SHARED));
+          recurEvents.add(event);
+        }
+
+
+      }
+    }
+
+    if (emptyCalendars != null) {
+      CalendarEvent emptyCalEvent = new CalendarEvent();
+      emptyCalEvent.setCalendarId("-1");
+      emptyCalEvent.setSummary(emptyCalendars.toString());
+      recurEvents.add(0, emptyCalEvent);
+    }
+
+    return recurEvents;
+  }
+
 
   /**
    * Get all active 'original' recurrence event <br/>
@@ -3209,6 +4326,7 @@ public class JCRDataStorage implements DataStorage {
     return recurEvents;
   }
 
+
   /**
    * A faster version getOriginalRecurrenceEvents with improved JCR queries
    *
@@ -3255,6 +4373,25 @@ public class JCRDataStorage implements DataStorage {
       queryString.append(")");
     }
 
+    /**  Add event query to this
+    String eventType = eventQuery.getEventType();
+    if (eventType != null && eventType.length() > 0) {
+      queryStatement.append(" and (@exo:eventType='" + eventType + "')");
+    }
+
+    String categoryIds = eventQuery.getCategoryId();
+    if (categoryIds != null && categoryIds.length > 0) {
+      queryStatement.append(" and (");
+      for (int i = 0; i < categoryIds.length; i++) {
+        if (i == 0)
+          queryStatement.append("@exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        else
+          queryStatement.append(" or @exo:eventCategoryId='").append(categoryIds[i]).append("'");
+      }
+      queryStatement.append(")");
+    }
+     **/
+
     queryString.append("]");
     QueryManager qm = calendar.getSession().getWorkspace().getQueryManager();
     Query query = qm.createQuery(queryString.toString(), Query.XPATH);
@@ -3266,6 +4403,128 @@ public class JCRDataStorage implements DataStorage {
       CalendarEvent event = getEvent(eventNode);
       event.setCalType(calType);
       recurEvents.add(event);
+    }
+
+    return recurEvents;
+  }
+
+
+  /**
+   * Another version for getOriginalRecurrenceEvents1 using SQL with different queries
+   *
+   * @param calendar
+   * @param calType
+   * @param from
+   * @param to
+   * @param calendarIds
+   *
+   * @return
+   * @throws Exception
+   */
+  public List<CalendarEvent> getOriginalRecurrenceEventsSQL(Node calendar, String calType, java.util.Calendar from,
+                                                            java.util.Calendar to, EventQuery eventQuery,
+                                                            String[] calendarIds, List<String> emptyCalendars) throws Exception {
+    if (calendar == null) return null;
+
+    List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
+
+    for (String calendarId : calendarIds) {
+      /** skip the calendar if it's empty */
+      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
+
+      String calendarPath = calendar.getPath() + "/" + calendarId;
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%/%'")
+          .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
+          .append(" AND NOT exo:repeat='norepeat'")
+          .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
+          .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
+
+      StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(calendarPath)
+          .append("/element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
+          .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
+          .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))")
+          .append("]");
+
+      /** event type */
+      String eventType = eventQuery.getEventType();
+      if (eventType != null && eventType.length() > 0) {
+        queryEventsStatementSQL.append(" AND (exo:eventType='" + eventType + "')");
+      }
+
+      /** event category */
+      String[] categoryIds = eventQuery.getCategoryId();
+      if (categoryIds != null && categoryIds.length > 0) {
+        queryEventsStatementSQL.append(" AND (");
+        for (int i = 0; i < categoryIds.length; i++) {
+          if (i == 0)
+            queryEventsStatementSQL.append("exo:eventCategoryId='").append(categoryIds[i]).append("'");
+          else
+            queryEventsStatementSQL.append(" OR exo:eventCategoryId='").append(categoryIds[i]).append("'");
+        }
+        queryEventsStatementSQL.append(")");
+      }
+
+      QueryManager qm = calendar.getSession().getWorkspace().getQueryManager();
+      Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+
+      //Query query = qm.createQuery(queryEventsStatementXPath.toString(), Query.XPATH);
+      QueryResult result = query.execute();
+
+      NodeIterator it = result.getNodes();
+      while (it.hasNext()) {
+        Node eventNode = it.nextNode();
+        CalendarEvent event = getEvent(eventNode);
+        event.setCalType(calType);
+        recurEvents.add(event);
+      }
+    }
+
+    return recurEvents;
+  }
+
+
+  public List<CalendarEvent> searchOriginalRecurrenceEventsSQL(Node calendar, String calType, java.util.Calendar from,
+                                                               java.util.Calendar to, String[] calendarIds, List<String> emptyCalendars) throws Exception {
+    if (calendar == null) return null;
+
+    List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
+
+    for (String calendarId : calendarIds) {
+      String calendarPath = calendar.getPath() + "/" + calendarId;
+
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+          .append(" WHERE jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%/%'")
+          .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
+          .append(" AND NOT exo:repeat='norepeat'")
+          .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
+          .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
+
+      /**
+      StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(calendarPath)
+          .append("/element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
+          .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
+          .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))")
+          .append("]");
+      **/
+
+      QueryManager qm = calendar.getSession().getWorkspace().getQueryManager();
+      Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+      QueryResult result = query.execute();
+
+      NodeIterator it = result.getNodes();
+      if (!it.hasNext()) emptyCalendars.add(calendarId);
+      else {
+        while (it.hasNext()) {
+          Node eventNode = it.nextNode();
+          CalendarEvent event = getEvent(eventNode);
+          event.setCalType(calType);
+          recurEvents.add(event);
+        }
+      }
     }
 
     return recurEvents;

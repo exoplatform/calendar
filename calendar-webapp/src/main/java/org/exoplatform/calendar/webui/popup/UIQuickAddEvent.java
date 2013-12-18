@@ -382,6 +382,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
             return ;
           }
         }
+
         if(uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE)) {
           calService.saveUserEvent(username, calEvent.getCalendarId(), calEvent, true) ;
         }else if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)){

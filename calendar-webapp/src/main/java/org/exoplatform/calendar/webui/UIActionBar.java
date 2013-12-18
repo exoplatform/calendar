@@ -100,11 +100,10 @@ public class UIActionBar extends UIContainer  {
       UICalendarContainer uiVContainer = uiPortlet.findFirstComponentOfType(UICalendarContainer.class) ;
       uiVContainer.findFirstComponentOfType(UICalendars.class).checkAll();
       uiViewContainer.initView(viewType);
-      uiViewContainer.refresh() ;
       UIMiniCalendar miniCalendar = uiPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
       miniCalendar.setCategoryId(categoryId) ; 
       if(uiViewContainer.getRenderedChild() instanceof UIListContainer) {
-        UIListContainer listContainer = (UIListContainer)uiViewContainer.getRenderedChild() ;
+        UIListContainer listContainer = (UIListContainer) uiViewContainer.getRenderedChild() ;
         listContainer.setSelectedCategory(categoryId) ;
       }
       uiActionBar.setCurrentView(viewType) ;

@@ -20,6 +20,8 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.portal.webui.container.UIContainer;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIComponent;
 
@@ -31,8 +33,9 @@ import org.exoplatform.webui.core.UIComponent;
  */
 
 @ComponentConfig(
-                 template =  "app:/templates/calendar/webui/UICalendarViewContainer.gtmpl"
-    )
+    template =  "app:/templates/calendar/webui/UICalendarViewContainer.gtmpl"
+)
+
 public class UICalendarViewContainer extends UIContainer  {
 
   final public static String DAY_VIEW = "UIDayView".intern() ;
@@ -45,11 +48,15 @@ public class UICalendarViewContainer extends UIContainer  {
 
   private String currentViewType_;
 
+  private static final Log LOG = ExoLogger.getExoLogger(UICalendarViewContainer.class);
+
   public UICalendarViewContainer() throws Exception {
     initView(null) ;
-  }  
+  }
+
+
   public void initView(String viewType) throws Exception {
-    CalendarSetting calendarSetting = new CalendarSetting() ;
+    CalendarSetting calendarSetting = new CalendarSetting();
     try {
       calendarSetting = getAncestorOfType(UICalendarPortlet.class).getCalendarSetting() ;
     }catch (Exception e) {
@@ -57,44 +64,50 @@ public class UICalendarViewContainer extends UIContainer  {
       String username = CalendarUtils.getCurrentUser() ;
       calendarSetting =  cservice.getCalendarSetting(username) ;
     }
-    if(viewType == null) viewType = TYPES[Integer.parseInt(calendarSetting.getViewType())] ;
+
+    if (viewType == null) viewType = TYPES[Integer.parseInt(calendarSetting.getViewType())] ;
     currentViewType_ = viewType;
-    if(DAY_VIEW.equals(viewType)) {
+
+    if (DAY_VIEW.equals(viewType)) {
       UIDayView uiView = getChild(UIDayView.class) ;
       if(uiView == null) uiView =  addChild(UIDayView.class, null, null) ;
       if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
       setRenderedChild(viewType) ;
-    } else
-      if(WEEK_VIEW.equals(viewType)) {
-        UIWeekView uiView = getChild(UIWeekView.class) ;
-        if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
-        uiView.isShowCustomView_ = false ;
-        if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-        setRenderedChild(viewType) ;
-      } else
-        if(MONTH_VIEW.equals(viewType)) {
-          UIMonthView uiView = getChild(UIMonthView.class) ;
-          if(uiView == null) uiView =  addChild(UIMonthView.class, null, null) ;
-          if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-          setRenderedChild(viewType) ;
-        } else if(LIST_VIEW.equals(viewType)) {
-          UIListContainer uiView = getChild(UIListContainer.class) ;
-          if(uiView == null) uiView =  addChild(UIListContainer.class, null, null) ;
-          UIListView uiListView = uiView.getChild(UIListView.class) ;
-          uiListView.setShowEventAndTask(false) ;
-          uiListView.setCategoryId(null) ;
-          uiListView.refresh() ;
-          uiListView.isShowEvent_ = true ;
-          if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-          setRenderedChild(viewType) ;
-        } else if(WORKING_VIEW.equals(viewType)) {
-          UIWeekView uiView = getChild(UIWeekView.class) ;
-          if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
-          uiView.isShowCustomView_ = true ;
-          if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
-          setRenderedChild(WEEK_VIEW) ;
-        }
-    refresh() ;
+    }
+    else if (WEEK_VIEW.equals(viewType)) {
+      UIWeekView uiView = getChild(UIWeekView.class) ;
+      if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
+      uiView.isShowCustomView_ = false ;
+      if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+      setRenderedChild(viewType) ;
+    }
+    else if (MONTH_VIEW.equals(viewType)) {
+      UIMonthView uiView = getChild(UIMonthView.class) ;
+      if(uiView == null) uiView =  addChild(UIMonthView.class, null, null) ;
+      if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+      setRenderedChild(viewType) ;
+    }
+    else if (LIST_VIEW.equals(viewType)) {
+      UIListContainer uiView = getChild(UIListContainer.class) ;
+      boolean reloadListView = false;
+      if(uiView == null) {
+        uiView =  addChild(UIListContainer.class, null, null) ;
+        reloadListView = true;
+      }
+      UIListView uiListView = uiView.getChild(UIListView.class) ;
+      uiListView.setShowEventAndTask(false) ;
+      uiListView.setCategoryId(null) ;
+      uiListView.isShowEvent_ = true ;
+      if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+      setRenderedChild(viewType) ;
+      if (reloadListView) uiListView.refresh();
+    } else if (WORKING_VIEW.equals(viewType)) {
+      UIWeekView uiView = getChild(UIWeekView.class) ;
+      if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
+      uiView.isShowCustomView_ = true ;
+      if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+      setRenderedChild(WEEK_VIEW) ;
+    }
   }
 
 
@@ -110,13 +123,16 @@ public class UICalendarViewContainer extends UIContainer  {
    public void setCurrentViewType_(String currentViewType) {
      currentViewType_ = currentViewType;
    }
-   public void refresh() throws Exception {
-     for(UIComponent comp : getChildren()) {
-       if(comp.isRendered() && comp instanceof CalendarView){
-         ((CalendarView)comp).refresh() ;
-       }
-     }
+
+  public void refresh() throws Exception {
+    for (UIComponent comp : getChildren()) {
+      if (comp.isRendered() && comp instanceof CalendarView){
+        ((CalendarView)comp).refresh();
+      }
+    }
    }
+
+
    protected boolean isShowPane() {
      return getAncestorOfType(UICalendarWorkingContainer.class).getChild(UICalendarContainer.class).isRendered() ;
    }
@@ -134,7 +150,8 @@ public class UICalendarViewContainer extends UIContainer  {
      }
    }
    protected boolean isInSpace() {
-     return UICalendarPortlet.isInSpace() ;
+     //return UICalendarPortlet.isInSpace() ;
+     return getAncestorOfType(UICalendarPortlet.class).isInSpaceContext();
    }
    public void applySeting() throws Exception {
      for(UIComponent comp : getChildren()) {
