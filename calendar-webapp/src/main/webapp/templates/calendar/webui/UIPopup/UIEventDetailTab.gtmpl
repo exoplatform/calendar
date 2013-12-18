@@ -123,7 +123,14 @@
     %>
     </div>
           <div class="textLabel">
-          	<span class="repeatSummary"><%=uiForm.getRepeatSummary()%></span>
+          	 <span class="repeatSummary">
+            <%
+                if(uiForm.repeatEvent != null){
+                uiForm.setRepeatEvent(uiForm.repeatEvent);
+                }
+                print(uiForm.getRepeatSummary()) ;
+            %>
+            </span>
     <%
     renderActions(uicomponent.FIELD_ISREPEAT) ;
     %>

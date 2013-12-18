@@ -16,9 +16,17 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.exoplatform.services.jcr.util.IdGenerator;
+
+import com.sun.tools.javac.code.Attribute.Array;
 
 /**
  * Created by The eXo Platform SARL
@@ -476,6 +484,8 @@ public class CalendarEvent {
   }
 
   /**
+   * @deprecated
+   * @see #setExceptionIds(Collection)
    * @param excludeId the excludeId to set
    */
   public void setExcludeId(String[] excludeId) {
@@ -483,12 +493,55 @@ public class CalendarEvent {
   }
 
   /**
+   * @deprecated
+   * @see #getExceptionIds()
    * @return the excludeId
    */
   public String[] getExcludeId() {
     return excludeId;
   }
+  /**
+   * This method will set the collection of excluded event's id to the collection
+   * @param ids a collection of id with string type
+   */
+  public void setExceptionIds(Collection<String> ids){
+    if(ids != null)
+    this.excludeId = ids.toArray(this.excludeId);
+    else this.excludeId = null;
+  }
+  /**
+   * This method will return all id excluded event id
+   * @return collection of excluded event's id
+   */
+  public Collection<String> getExceptionIds(){
+    try {
+      return new HashSet<String>(Arrays.asList(this.excludeId));
+    } catch(NullPointerException npe) {
+      return null;
+    }
+  }
+  
+  /**
+   * This method will add more excluded id to existed collection 
+   * @param id a single id want to add to exited excluded collection
+   */
+  public void addExceptionId(String id){
+    if(this.excludeId != null){  
+     Set<String> existedId = new HashSet<String>(Arrays.asList(this.excludeId));
+     existedId.add(id);
+     this.excludeId = existedId.toArray(new String[]{});
+    }
+    else this.excludeId = new String[]{id};
+  }
 
+  public void removeExceptionId(String id){
+    if(this.excludeId != null){  
+      List<String> existedId = new ArrayList<String>(Arrays.asList(this.excludeId));
+      existedId.remove(id);
+      this.excludeId = existedId.toArray(new String[]{});
+     }
+  }
+  
   /**
    * @param repeatUntilDate the repeatUntilDate to set
    */

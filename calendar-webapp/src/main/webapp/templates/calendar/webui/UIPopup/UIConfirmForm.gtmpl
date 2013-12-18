@@ -1,16 +1,31 @@
-<% String fieldName; %>
+<% 
+  String fieldName; 
+  def rcontext = _ctx.getRequestContext() ;
+  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");  
+  requireJS.addScripts('cal.UICalendarPortlet.confirmOption("'+uicomponent.id+'");');
+%>
 <div id="$uicomponent.id" class="uiConfirmForm">
 <% uiform.begin() %>
 <div class="form-horizontal resizable">
-
   <div class="control-group">
-    <div class="controls-full center">
-      <div id="confirm" class="confirm">
-        <%=uicomponent.confirmMessage %>
+    <div class="controls-full">
+      <div id="confirm" class="confirm media">
+        <i class="uiIconQuestion uiIconBlue pull-left"></i>
+        <div class="media-body">
+        <%=uicomponent.getConfirmMessage()%>
+        </div>
       </div>
     </div>
   </div>
-
+  <div class="confirmRadio">
+	  <div class="actionLinks">
+		  <% for(String s in uicomponent.getAllActions()) {%>
+		  <a href="$s"></a>
+		  <% } %>
+	  </div>
+	  <%uicomponent.renderChildren();%>
+  </div>
 </div>
 <div class="uiAction uiActionBorder">
   <% for (action in uicomponent.getActions())

@@ -44,6 +44,11 @@ public class SingleEvent {
 
   private String dateFormat      = "";
 
+  private boolean isVirtual = true;
+  private boolean isEvent = true ;
+  private boolean isOccurrence = false;
+
+
   public String getSummary() {
     return summary;
   }
@@ -123,5 +128,28 @@ public class SingleEvent {
   public void setDateFormat(String dateFormat) {
     this.dateFormat = dateFormat;
   }
-  
+
+  public boolean isVirtual() {
+    return isVirtual;
+  }
+
+  public void setVirtual(boolean virtual) {
+    isVirtual = virtual;
+  }
+
+  public boolean isEvent() {
+    return isEvent;
+  }
+
+  public void setEvent(boolean event) {
+    isEvent = event;
+  }
+
+  public boolean isOccurrence() {
+    return isOccurrence;
+  }
+
+  public void setOccurrence(boolean occurrence) {
+    isOccurrence = occurrence;
+  }
 }

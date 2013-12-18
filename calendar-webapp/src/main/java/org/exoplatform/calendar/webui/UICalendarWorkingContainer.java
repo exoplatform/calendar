@@ -16,8 +16,6 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.Date;
-import java.util.List;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -26,6 +24,9 @@ import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.model.SelectItem;
 import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by The eXo Platform SARL

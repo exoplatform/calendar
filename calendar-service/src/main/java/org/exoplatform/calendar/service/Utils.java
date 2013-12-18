@@ -16,44 +16,28 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-import javax.jcr.Node;
-import javax.jcr.Session;
-
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.NumberList;
 import net.fortuna.ical4j.model.ParameterList;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.Time;
 import net.fortuna.ical4j.model.UtcOffset;
 import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.WeekDayList;
 import net.fortuna.ical4j.model.component.Daylight;
 import net.fortuna.ical4j.model.component.Standard;
+import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.TzId;
 import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
-import net.fortuna.ical4j.util.TimeZones;
-
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -70,6 +54,23 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
+
+import javax.jcr.Node;
+import javax.jcr.Session;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL
@@ -473,8 +474,6 @@ public class Utils {
    */
   public static GregorianCalendar getInstanceTempCalendar() {
     GregorianCalendar calendar = new GregorianCalendar();
-    // int gmtoffset = calendar.get(Calendar.DST_OFFSET) + calendar.get(Calendar.ZONE_OFFSET);
-    // calendar.setTimeInMillis(System.currentTimeMillis() - gmtoffset) ;
     calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
     return calendar;
   }
@@ -601,11 +600,15 @@ public class Utils {
   }
 
   public static boolean isRepeatEvent(CalendarEvent event) throws Exception {
-    return (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && isEmpty(event.getRecurrenceId()));
+    return (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()));
   }
 
   public static boolean isExceptionOccurrence(CalendarEvent event) throws Exception {
     return ((event.getIsExceptionOccurrence() != null && event.getIsExceptionOccurrence() == true));
+  }
+
+  public static boolean isOccurrence(CalendarEvent event){
+    return (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
   }
 
   public static Node getPublicServiceHome(SessionProvider provider) throws Exception {
@@ -874,5 +877,163 @@ public class Utils {
         recur.getMonthDayList().addAll(newNumberList);
       }
     }
+  }
+
+
+  /**
+   * Gets a repetitive event's occurrence date right before a given date
+   * @param recurEvent The repetitive event
+   * @param aDate  The date before which we find the occurrence date
+   * @param tz User timezone
+   * @return the occurrence date right before the given aDate
+   * @throws Exception
+   */
+  public static Date getPreviousOccurrenceDate(CalendarEvent recurEvent, Date aDate, TimeZone tz) throws Exception {
+
+    DateTime ical4jEventFrom = new DateTime(recurEvent.getFromDateTime());
+
+    VEvent vevent = new VEvent(ical4jEventFrom, Utils.EMPTY_STR);
+
+    Recur recur = getICalendarRecur(recurEvent);
+
+    vevent.getProperties().add(new RRule(recur));
+
+    Calendar calendar = new GregorianCalendar();
+    calendar.setTimeZone(tz);
+
+    calendar.set(Calendar.YEAR, calendar.getMinimum(Calendar.YEAR));
+    DateTime ical4jFrom = new DateTime(calendar.getTime());
+    calendar.setTime(aDate);
+    //store the difference after applying timezone
+    int delta = aDate.getDate() - calendar.get(Calendar.DATE);
+    //include the selected occurrence by move calendar to beginning of the next day
+    calendar.add(Calendar.DATE, 1);
+    calendar.set(Calendar.HOUR_OF_DAY,0);
+    calendar.set(Calendar.MINUTE,0);
+    calendar.set(Calendar.SECOND,0);
+
+    DateTime ical4jTo = new DateTime(calendar.getTime());
+
+    Period period = new Period(ical4jFrom, ical4jTo);
+    PeriodList list = vevent.calculateRecurrenceSet(period);
+
+    if (list == null || list.size() == 0 || list.size() == 1) {
+      return null;
+    }
+    Period last = (Period) list.last();
+    list.remove(last);
+    last = (Period) list.last();
+
+    calendar.setTimeInMillis(last.getStart().getTime());
+    //compensate the difference
+    calendar.add(Calendar.DATE, delta);
+
+    return calendar.getTime();
+  }
+  public static Recur getICalendarRecur(CalendarEvent recurEvent) throws Exception {
+    String repeatType = recurEvent.getRepeatType();
+    // get the repeat count property of recurrence event
+    int count = (int) recurEvent.getRepeatCount();
+
+    java.util.Calendar until = null;
+    if (recurEvent.getRepeatUntilDate() != null) {
+      until = Utils.getInstanceTempCalendar();
+      //set until to the end of the day, to include the until date in the occurrence instances list
+      until.setTimeInMillis(recurEvent.getRepeatUntilDate().getTime() + 24 * 60 * 60 * 1000 - 1);
+    }
+
+    int interval = (int) recurEvent.getRepeatInterval();
+    if (interval <= 1)
+      interval = 1;
+
+    Recur recur = null;
+
+    // daily recurrence
+    if (repeatType.equals(CalendarEvent.RP_DAILY)) {
+      if (until != null) {
+        recur = new Recur(Recur.DAILY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.DAILY, count);
+        } else
+          recur = new Recur("FREQ=DAILY");
+      }
+      recur.setInterval(interval);
+      return recur;
+    }
+
+    // weekly recurrence
+    if (repeatType.equals(CalendarEvent.RP_WEEKLY)) {
+      if (until != null) {
+        recur = new Recur(Recur.WEEKLY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.WEEKLY, count);
+        } else
+          recur = new Recur("FREQ=WEEKLY");
+      }
+      recur.setInterval(interval);
+
+      // byday property
+      String[] repeatByDay = recurEvent.getRepeatByDay();
+      if (repeatByDay == null || repeatByDay.length == 0)
+        return null;
+      WeekDayList weekDayList = new WeekDayList();
+      for (String s : repeatByDay) {
+        weekDayList.add(new WeekDay(s));
+      }
+      recur.getDayList().addAll(weekDayList);
+      return recur;
+    }
+
+    // monthly recurrence
+    if (repeatType.equals(CalendarEvent.RP_MONTHLY)) {
+      if (until != null) {
+        recur = new Recur(Recur.MONTHLY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.MONTHLY, count);
+        } else
+          recur = new Recur("FREQ=MONTHLY");
+      }
+      recur.setInterval(interval);
+
+      long[] repeatByMonthDay = recurEvent.getRepeatByMonthDay();
+      // case 1: byMonthDay: day 1, 15, 26 of month
+      if (repeatByMonthDay != null && repeatByMonthDay.length > 0) {
+        NumberList numberList = new NumberList();
+        for (long monthDay : repeatByMonthDay) {
+          numberList.add(new Integer((int) monthDay));
+        }
+        recur.getMonthDayList().addAll(numberList);
+      } else {
+        // case 2: byDay: 1SU: first Sunday of month, -1TU: last Tuesday of
+        // month
+        String[] repeatByDay = recurEvent.getRepeatByDay();
+        if (repeatByDay != null && repeatByDay.length > 0) {
+          WeekDayList weekDayList = new WeekDayList();
+          for (String s : repeatByDay) {
+            weekDayList.add(new WeekDay(s));
+          }
+          recur.getDayList().addAll(weekDayList);
+        }
+      }
+      return recur;
+    }
+
+    // yearly recurrence
+    if (repeatType.equals(CalendarEvent.RP_YEARLY)) {
+      if (until != null) {
+        recur = new Recur(Recur.YEARLY, new net.fortuna.ical4j.model.Date(until.getTime()));
+      } else {
+        if (count > 0) {
+          recur = new Recur(Recur.YEARLY, count);
+        } else
+          recur = new Recur("FREQ=YEARLY");
+      }
+      recur.setInterval(interval);
+      return recur;
+    }
+    return recur;
   }
 }

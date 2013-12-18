@@ -16,17 +16,6 @@
  */
 package org.exoplatform.webservice.cs.rest;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
-
-import javax.jcr.Node;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -53,6 +42,19 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.quartz.JobDetail;
+
+import javax.jcr.Node;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SAS
@@ -308,7 +310,7 @@ public class MockCalendarService implements CalendarService{
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
     data_ = new HashMap<String, List<CalendarEvent>>();
     data_.put(cal_.getId(), events);
-    log.info("\n\n calendar Saved");
+
 
   }
 
@@ -627,5 +629,93 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception {
+  }
+
+  @Override
+  public void saveOneOccurrenceEvent(CalendarEvent originEvent,
+                                     CalendarEvent newEvent,
+                                     String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void saveAllSeriesEvents(CalendarEvent originEvent,
+                                  String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  
+
+  @Override
+  public void removeOneOccurrenceEvent(CalendarEvent originEvent,
+                                       CalendarEvent removedOccurence,
+                                       String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+   
+
+  @Override
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,
+                                                       Date from,
+                                                       Date to,
+                                                       String userId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,
+                                               Date from,
+                                               Date to,
+                                               String userId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String buildRecurrenceId(Date formTime, String username) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  
+  @Override
+  public void saveFollowingSeriesEvents(CalendarEvent originEvent,
+                                        CalendarEvent newEvent,
+                                        String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void removeAllSeriesEvents(CalendarEvent originEvent, String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void removeFollowingSeriesEvents(CalendarEvent originEvent,
+                                          CalendarEvent newEvent,
+                                          String username) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public List<CalendarEvent> getExceptionEventsFromDate(String username,
+                                                        CalendarEvent event,
+                                                        Date fromDate) throws Exception {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
