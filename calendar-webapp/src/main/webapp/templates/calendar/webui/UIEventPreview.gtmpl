@@ -43,10 +43,10 @@
 <td valign="top" class="columnLeft">
 	<div >
 	<div class="text">
-		<%=uiform.getLabel('From')%><span><%=df.format(event.getFromDateTime())%></span>
+		<%=uiform.getLabel('From')%> <span> <%=df.format(event.getFromDateTime())%></span>
 	</div>
 	<div class="text ">
-		<%=uiform.getLabel('To')%><span><%=df.format(event.getToDateTime())%></span>
+		<%=uiform.getLabel('To')%> <span> <%=df.format(event.getToDateTime())%></span>
 	 </div>
 
 	<% if (event.getAttachment().size() != 0) { %>

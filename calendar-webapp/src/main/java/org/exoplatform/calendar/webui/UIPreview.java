@@ -51,7 +51,7 @@ import org.exoplatform.webui.event.EventListener;
                  template =  "app:/templates/calendar/webui/UIDefaultPreview.gtmpl",
                  events = {
                    @EventConfig(listeners = UIPreview.DownloadActionListener.class),
-                   @EventConfig(listeners = UICalendarView.EditActionListener.class),  
+                   @EventConfig(listeners = UICalendarView.EditActionListener.class),
                    @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
                    @EventConfig(listeners = UIPreview.CloseWindowActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),

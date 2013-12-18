@@ -1842,6 +1842,13 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
           event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
         }
+        //if (uiCalendarView instanceof UIListView || uiCalendarView instanceof UIListView) {
+          uiCalendarView.refresh();
+        //}
+        // update UI
+        uiPopupAction.deActivate();
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
       } catch (Exception e) {
         if (log.isDebugEnabled()) {
           log.debug("Fail to delete the event", e);
@@ -1900,12 +1907,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         if (calType.equals(CalendarUtils.SHARED_TYPE)) {
           originalEvent = calService.getSharedEvent(username, calendarId, eventId);
         }
-        calService.removeAllSeriesEvents(originalEvent, username);
-        //calService.removeRecurrenceSeries(username, originalEvent);
-        if (uiCalendarView instanceof UIListView) {
+
+        calService.removeRecurrenceSeries(username, originalEvent);
+        //if (uiCalendarView instanceof UIListView) {
           uiCalendarView.refresh();
-        }
+        //}
         uiPopupAction.deActivate();
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
       } catch (Exception e) {
         if (log.isDebugEnabled()) {
           log.debug("Fail to delete the recurrence series of the event", e);
