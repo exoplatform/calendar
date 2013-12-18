@@ -403,6 +403,12 @@ public interface CalendarService {
    */
   public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
+
+  public Map<Integer, String> searchHightLightEventSQL(String username, EventQuery eventQuery,
+                                                       String[] privateCalendars, String[] publicCalendars,
+                                                       String[] sharedCalendars) throws Exception;
+
+
   /**
    * Shares the private calendar to other users
    * @param username current user name(or user id)
@@ -447,6 +453,20 @@ public interface CalendarService {
    * @throws Exception
    */
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
+
+
+  /**
+   * A faster version of getAllNoRepeatEvents without thread
+   *
+   * @param username
+   * @param eventQuery
+   * @param privateCalendars
+   * @param publicCalendars
+   * @param sharedCalendars
+   * @return
+   * @throws Exception
+   */
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, String[] sharedCalendars) throws Exception;
 
 
   /**
@@ -840,7 +860,15 @@ public interface CalendarService {
    */
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception;
 
+  public Map<Integer, String> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
+                                                                String[] privateCalendars, String[] publicCalendars,
+                                                                String[] sharedCalendars) throws Exception;
+
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
+
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to,
+                                                                     String[] privateCalendars, String[] publicCalendars,
+                                                                     String[] sharedCalendars) throws Exception;
 
   /**
    * Shares Calendar with groups

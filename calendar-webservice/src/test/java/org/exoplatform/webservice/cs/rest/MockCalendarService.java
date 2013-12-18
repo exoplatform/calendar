@@ -156,6 +156,12 @@ public class MockCalendarService implements CalendarService{
   }
 
   @Override
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, String[] sharedCalendars) throws Exception {
+    return null;
+  }
+
+
+  @Override
   public String[] getExportImportType() throws Exception {
     return null;
   }
@@ -339,6 +345,14 @@ public class MockCalendarService implements CalendarService{
                                                     String[] publicCalendarIds) throws Exception {
     return null;
   }
+
+  @Override
+  public Map<Integer, String> searchHightLightEventSQL(String username, EventQuery eventQuery,
+                                                       String[] privateCalendars, String[] publicCalendars,
+                                                       String[] sharedCalendars) throws Exception {
+    return null;
+  }
+
 
   @Override
   public void shareCalendar(String username, String calendarId, List<String> receiverUsers) throws Exception {
@@ -574,10 +588,23 @@ public class MockCalendarService implements CalendarService{
     return null;
   }
 
+  public Map<Integer, String> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
+                                                                String[] privateCalendars, String[] publicCalendars,
+                                                                String[] sharedCalendars) throws Exception {
+    return null;
+  }
+
   @Override
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception {
     return null;
   }
+
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to,
+                                                                     String[] privateCalendars, String[] publicCalendars,
+                                                                     String[] sharedCalendars) throws Exception {
+    return null;
+  }
+
 
   @Override
   public RemoteCalendar getRemoteCalendar(String owner, String calendarId) throws Exception {

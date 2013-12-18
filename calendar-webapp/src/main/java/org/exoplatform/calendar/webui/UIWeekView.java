@@ -83,12 +83,16 @@ public class UIWeekView extends UICalendarView {
   protected Date beginDate_ ;
   protected Date endDate_ ; 
 
+  private static final Log LOG = ExoLogger.getExoLogger(UIWeekView.class);
+
   public UIWeekView() throws Exception {
-    super() ;
+    super();
+    LOG.info("UIWeekView constructor");
   }
 
   @Override
   public void refresh() throws Exception {
+    LOG.info("refresh");
     eventData_.clear() ;
     allDayEvent.clear();
     int i = 0 ;
@@ -114,18 +118,27 @@ public class UIWeekView extends UICalendarView {
 
     /** get all norepeat events */
     List<CalendarEvent> allEvents;
-    String[] publicCalendars = getPublicCalendars();
-    if(isInSpace()) {  
+    String[] publicCalendars  = getPublicCalendars();
+    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
+    String[] sharedCalendars  = getSharedCalendars().toArray(new String[]{});
+
+    if (isInSpace()) {
       eventQuery.setCalendarId(publicCalendars);
       allEvents = calendarService.getPublicEvents(eventQuery);
     }
-    else
-      allEvents = calendarService.getAllNoRepeatEvents(username, eventQuery, publicCalendars);
+    else {
+      //allEvents = calendarService.getAllNoRepeatEvents(username, eventQuery, publicCalendars);
 
+      allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
+          privateCalendars, publicCalendars, sharedCalendars);
+    }
 
     /** get exception occurrences, exclude original recurrence events */
-    List<CalendarEvent> originalRecurEvents = calendarService.
-        getHighLightOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), publicCalendars);
+    //List<CalendarEvent> originalRecurEvents = calendarService.
+    //    getHighLightOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), publicCalendars);
+
+    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
+        eventQuery.getFromDate(), eventQuery.getToDate(), privateCalendars, publicCalendars, sharedCalendars);
 
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {

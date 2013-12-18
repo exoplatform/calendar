@@ -277,6 +277,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return editedEventId_;
   }
 
+
+  /**
+   * Get all group calendars that user belongs to current user
+   * @return
+   * @throws Exception
+   */
   public String[] getPublicCalendars() throws Exception {
     Set<String> map = new HashSet<String>();
     for (GroupCalendarData group : getPublicCalendars(CalendarUtils.getCurrentUser())) {
@@ -286,6 +292,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
     return map.toArray(new String[] {});
   }
+
 
   public List<String> getPrivateCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
@@ -298,6 +305,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return list;
   }
 
+
   public List<String> getSharedCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
     if(isInSpace()) return list;
@@ -309,6 +317,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
     return list;
   }
+
 
   public String[] getFilterCalendarIds() throws Exception {
     List<String> filterList = new ArrayList<String>();
@@ -819,9 +828,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   @Override
   public void processRender(WebuiRequestContext arg0) throws Exception {
+    log.info("processRender: " + this);
     if (this instanceof UIListView) {
-    } else
+      log.info("instance of list view");
+    }
+    else {
+      log.info("==> refresh");
       refresh();
+    }
     super.processRender(arg0);
   }
 

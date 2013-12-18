@@ -89,6 +89,7 @@ public class UIMonthView extends UICalendarView {
   }
   @Override
   public void refresh() throws Exception {
+    log.info("Refresh");
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
     EventQuery eventQuery = new EventQuery() ;
@@ -96,12 +97,28 @@ public class UIMonthView extends UICalendarView {
     eventQuery.setToDate(getEndDateOfMonthView()) ;
     eventQuery.setExcludeRepeatEvent(true);
     List<CalendarEvent> allEvents ;
-    if(isInSpace()) {  
-      eventQuery.setCalendarId(getPublicCalendars());
+
+    String[] publicCalendars  = getPublicCalendars();
+    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
+    String[] sharedCalendars  = getSharedCalendars().toArray(new String[]{});
+
+    if (isInSpace()) {
+      eventQuery.setCalendarId(publicCalendars);
       allEvents = calendarService.getPublicEvents(eventQuery);
-    } else allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
+    } else {
+
+      //allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
+
+      allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
+          privateCalendars, publicCalendars, sharedCalendars);
+    }
+
+
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
+    //List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
+    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
+        eventQuery.getFromDate(), eventQuery.getToDate(), privateCalendars, publicCalendars, sharedCalendars);
+
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
       while (recurEventsIter.hasNext()) {
