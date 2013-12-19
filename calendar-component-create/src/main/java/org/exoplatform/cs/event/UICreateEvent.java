@@ -264,7 +264,9 @@ public class UICreateEvent extends UIForm {
       if (isAllDate) {
         DateFormat df = new SimpleDateFormat(dateFormat, locale);
         df.setCalendar(getInstanceOfCurrentCalendar());
-        return getEndDay(df.parse(fromField)).getTime();
+        Calendar temp = getEndDay(df.parse(fromField)) ;
+        temp.setTimeInMillis(temp.getTimeInMillis()-1);
+        return temp.getTime();
       }
       DateFormat df = new SimpleDateFormat(dateFormat + Utils.SPACE + timeFormat, locale);
       df.setCalendar(getInstanceOfCurrentCalendar());
