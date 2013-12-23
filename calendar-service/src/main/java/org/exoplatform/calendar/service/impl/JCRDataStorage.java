@@ -16,33 +16,22 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.jcr.*;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.XmlReader;
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.RRule;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
@@ -81,29 +70,43 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.IdentityConstants;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.NumberList;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
-import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.WeekDay;
-import net.fortuna.ical4j.model.WeekDayList;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.RRule;
+
+import javax.jcr.AccessDeniedException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang
@@ -130,14 +133,14 @@ public class JCRDataStorage implements DataStorage {
   private final RepositoryService      repoService_;
 
   private final SessionProviderService sessionProviderService_;
-  
+
   private final ExoCache<String, List<Calendar>> groupCalendarCache_;
 
   /**
    * The map that contains all the locks
    */
   private final ConcurrentMap<String, Lock> locks = new ConcurrentHashMap<String, Lock>(64, 0.75f, 64);
-    
+
 
   private static final Log       log                 = ExoLogger.getLogger("cs.calendar.service");
 
@@ -149,7 +152,7 @@ public class JCRDataStorage implements DataStorage {
     groupCalendarCache_ = cservice.getCacheInstance("calendar.GroupCalendar"); 
   }
 
-    
+
   /**
    * Gives the lock related to the given type and given id
    * @param type the type of the object for which we want a lock
@@ -172,7 +175,7 @@ public class JCRDataStorage implements DataStorage {
     }
     return lock;
   }
-     
+
   /**
    * {@inheritDoc}
    */
@@ -353,8 +356,8 @@ public class JCRDataStorage implements DataStorage {
         while (iter.hasNext()) {
           Node eventNode = iter.nextNode();
           Node eventFolder = getEventFolder(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME)
-                                                     .getDate()
-                                                     .getTime());
+                                            .getDate()
+                                            .getTime());
           syncRemoveEvent(eventFolder, eventNode.getName());
           removeReminder(eventNode);
         }
@@ -423,7 +426,7 @@ public class JCRDataStorage implements DataStorage {
       } finally {
         lock.unlock(); 
       }
-      
+
       if (!lCalendars.isEmpty()) {
         calendars = new ArrayList<Calendar>();
         for (Calendar c : lCalendars) {
@@ -469,8 +472,8 @@ public class JCRDataStorage implements DataStorage {
       while (iter.hasNext()) {
         Node eventNode = iter.nextNode();
         Node eventFolder = getEventFolder(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME)
-                                                   .getDate()
-                                                   .getTime());
+                                          .getDate()
+                                          .getTime());
         removeReminder(eventNode);
         syncRemoveEvent(eventFolder, eventNode.getName());
       }
@@ -488,22 +491,22 @@ public class JCRDataStorage implements DataStorage {
       return null;
     return loadCalendar(calNode);
   }
-  
+
   private Calendar getCalendar(String[] defaultFilterCalendars, String username, Calendar cal, boolean isShowAll) throws Exception {
     if (!isShowAll && defaultFilterCalendars != null && Arrays.asList(defaultFilterCalendars).contains(cal.getId()))
       return null;
     return cal;
   }
-   
+
   private Calendar loadCalendar(Node calNode) throws Exception {
     Calendar calendar = new Calendar();
     StringBuilder namePattern = new StringBuilder(256);
     namePattern.append(Utils.EXO_ID).append('|').append(Utils.EXO_NAME).append('|').append(Utils.EXO_DESCRIPTION)
-         .append('|').append(Utils.EXO_LOCALE).append('|')
-         .append(Utils.EXO_TIMEZONE).append('|').append(Utils.EXO_SHARED_COLOR).append('|')
-         .append(Utils.EXO_CALENDAR_COLOR).append('|').append(Utils.EXO_CALENDAR_OWNER).append('|')
-         .append(Utils.EXO_PUBLIC_URL).append('|').append(Utils.EXO_PRIVATE_URL).append('|').append(Utils.EXO_GROUPS)
-         .append('|').append(Utils.EXO_VIEW_PERMISSIONS).append('|').append(Utils.EXO_EDIT_PERMISSIONS);
+    .append('|').append(Utils.EXO_LOCALE).append('|')
+    .append(Utils.EXO_TIMEZONE).append('|').append(Utils.EXO_SHARED_COLOR).append('|')
+    .append(Utils.EXO_CALENDAR_COLOR).append('|').append(Utils.EXO_CALENDAR_OWNER).append('|')
+    .append(Utils.EXO_PUBLIC_URL).append('|').append(Utils.EXO_PRIVATE_URL).append('|').append(Utils.EXO_GROUPS)
+    .append('|').append(Utils.EXO_VIEW_PERMISSIONS).append('|').append(Utils.EXO_EDIT_PERMISSIONS);
     PropertyIterator it = calNode.getProperties(namePattern.toString());
     List<String> groups = null;
     String[] viewPermission = null, editPermission = null;
@@ -592,7 +595,7 @@ public class JCRDataStorage implements DataStorage {
       while (calIter.hasNext()) {
         StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
             .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategory.getId())
-                                                                      .append("']");
+            .append("']");
         query = qm.createQuery(queryString.toString(), Query.XPATH);
         result = query.execute();
         NodeIterator it = result.getNodes();
@@ -612,8 +615,8 @@ public class JCRDataStorage implements DataStorage {
               Node eventNode = it.nextNode();
               if (eventNode.hasProperty(Utils.EXO_EVENT_CATEGORYID))
                 if (eventNode.getProperty(Utils.EXO_EVENT_CATEGORYID)
-                             .getString()
-                             .equals(eventCategory.getId()))
+                    .getString()
+                    .equals(eventCategory.getId()))
                   eventNode.setProperty(Utils.EXO_EVENT_CATEGORY_NAME, eventCategory.getName());
             }
 
@@ -707,7 +710,7 @@ public class JCRDataStorage implements DataStorage {
       while (calIter.hasNext()) {
         StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
             .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategoryId)
-                                                                      .append("']");
+            .append("']");
         query = qm.createQuery(queryString.toString(), Query.XPATH);
         result = query.execute();
         NodeIterator it = result.getNodes();
@@ -735,8 +738,8 @@ public class JCRDataStorage implements DataStorage {
               Node eventNode = it.nextNode();
               if (eventNode.hasProperty(Utils.EXO_EVENT_CATEGORYID))
                 if (eventNode.getProperty(Utils.EXO_EVENT_CATEGORYID)
-                             .getString()
-                             .equals(eventCategoryId)) {
+                    .getString()
+                    .equals(eventCategoryId)) {
                   events.add(getEvent(eventNode));
                 }
             }
@@ -767,7 +770,7 @@ public class JCRDataStorage implements DataStorage {
     while (calIter.hasNext()) {
       StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
           .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategoryId)
-                                                                    .append("']");
+          .append("']");
       query = qm.createQuery(queryString.toString(), Query.XPATH);
       result = query.execute();
       NodeIterator it = result.getNodes();
@@ -831,7 +834,6 @@ public class JCRDataStorage implements DataStorage {
   public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     Node calendarNode = getUserCalendarHome(username).getNode(calendarId);
     event.setCalendarId(calendarId); // make sur the event is attached to the
-                                     // calendar
     if (event.getReminders() != null && event.getReminders().size() > 0) {
       try {
         Node reminderFolder = getReminderFolder(event.getFromDateTime());
@@ -1097,8 +1099,8 @@ public class JCRDataStorage implements DataStorage {
     if (eventNode.hasProperty(Utils.EXO_FROM_DATE_TIME)) {
       try {
         Node reminders = getReminderFolder(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME)
-                                                    .getDate()
-                                                    .getTime());
+                                           .getDate()
+                                           .getTime());
         try {
           reminders.getNode(eventNode.getName()).remove();
           reminders.save();
@@ -1215,9 +1217,9 @@ public class JCRDataStorage implements DataStorage {
                                                                   .getTime()));
     StringBuilder namePattern = new StringBuilder(128);
     namePattern.append(Utils.EXO_RECURRENCE_ID).append('|').append(Utils.EXO_IS_EXCEPTION).append('|').append(Utils.EXO_REPEAT_UNTIL)
-         .append('|').append(Utils.EXO_REPEAT_COUNT).append('|').append(Utils.EXO_ORIGINAL_REFERENCE).append('|')
-         .append(Utils.EXO_REPEAT_INTERVAL).append('|').append(Utils.EXO_EXCLUDE_ID).append('|').append(Utils.EXO_REPEAT_BYDAY)
-         .append('|').append(Utils.EXO_REPEAT_BYMONTHDAY);
+    .append('|').append(Utils.EXO_REPEAT_COUNT).append('|').append(Utils.EXO_ORIGINAL_REFERENCE).append('|')
+    .append(Utils.EXO_REPEAT_INTERVAL).append('|').append(Utils.EXO_EXCLUDE_ID).append('|').append(Utils.EXO_REPEAT_BYDAY)
+    .append('|').append(Utils.EXO_REPEAT_BYMONTHDAY);
     PropertyIterator it = eventNode.getProperties(namePattern.toString());
     while (it.hasNext()) {
       Property p = it.nextProperty();
@@ -1269,7 +1271,7 @@ public class JCRDataStorage implements DataStorage {
         }
       }             
     }
-    
+
     String activitiId = ActivityTypeUtils.getActivityId(eventNode) ;
     if(activitiId != null) {
       event.setActivityId(ActivityTypeUtils.getActivityId(eventNode));
@@ -1439,7 +1441,7 @@ public class JCRDataStorage implements DataStorage {
       ActivityTypeUtils.attachActivityId(eventNode, event.getActivityId());
     }
     calendarNode.getSession().save();
-    
+
     // only need for event, because we just get free/busy time of events in schedule tab.
     if(CalendarEvent.TYPE_EVENT.equals(event.getEventType())) {
       addEvent(event);
@@ -1512,7 +1514,7 @@ public class JCRDataStorage implements DataStorage {
 
     reminderNode.setProperty(Utils.EXO_DESCRIPTION, summary.toString());
     reminderNode.setProperty(Utils.EXO_SUMMARY, eventNode.getProperty(Utils.EXO_SUMMARY)
-                                                         .getString());
+                             .getString());
     if (!reminderFolder.isNew())
       reminderFolder.save();
     else
@@ -1590,8 +1592,8 @@ public class JCRDataStorage implements DataStorage {
           Node dateFolder = getEventFolder(cal.getTime());
           ev = new CalendarEvent();
           eventFolder.getSession()
-                     .getWorkspace()
-                     .copy(publicEvent.getPath(), dateFolder.getPath() + Utils.SLASH + ev.getId());
+          .getWorkspace()
+          .copy(publicEvent.getPath(), dateFolder.getPath() + Utils.SLASH + ev.getId());
           dateFolder.getSession().save();
           if (i <= toDate) {
             Node newEvent = dateFolder.getNode(ev.getId());
@@ -1620,9 +1622,9 @@ public class JCRDataStorage implements DataStorage {
   public void syncRemoveEvent(Node eventFolder, String rootEventId) throws Exception {
     QueryManager qm = eventFolder.getSession().getWorkspace().getQueryManager();
     StringBuilder queryString = new StringBuilder("/jcr:root")
-        .append(eventFolder.getParent().getParent().getParent().getPath())
-        .append("//element(*,exo:calendarPublicEvent)[@exo:rootEventId='").append(rootEventId)
-                                                                    .append("']");
+    .append(eventFolder.getParent().getParent().getParent().getPath())
+    .append("//element(*,exo:calendarPublicEvent)[@exo:rootEventId='").append(rootEventId)
+    .append("']");
     Query query = qm.createQuery(queryString.toString(), Query.XPATH);
     QueryResult result = query.execute();
     NodeIterator it = result.getNodes();
@@ -1737,7 +1739,7 @@ public class JCRDataStorage implements DataStorage {
       nodeContent = attachNode.addNode(Utils.JCR_CONTENT, Utils.NT_RESOURCE);
     }
     nodeContent.setProperty(Utils.JCR_LASTMODIFIED, java.util.Calendar.getInstance()
-                                                                      .getTimeInMillis());
+                            .getTimeInMillis());
     nodeContent.setProperty(Utils.JCR_MIMETYPE, attachment.getMimeType());
     nodeContent.setProperty(Utils.JCR_DATA, attachment.getInputStream());
   }
@@ -1812,12 +1814,12 @@ public class JCRDataStorage implements DataStorage {
       Node settingNode = calendarHome.getNode(CALENDAR_SETTING);
       StringBuilder namePattern = new StringBuilder(256);
       namePattern.append(Utils.EXO_VIEW_TYPE).append('|').append(Utils.EXO_TIME_INTERVAL).append('|').append(Utils.EXO_WEEK_START_ON)
-           .append('|').append(Utils.EXO_DATE_FORMAT).append('|').append(Utils.EXO_TIME_FORMAT).append('|')
-           .append(Utils.EXO_SEND_OPTION).append('|').append(Utils.EXO_BASE_URL).append('|')
-           .append(Utils.EXO_TIMEZONE).append('|')
-           .append(Utils.EXO_IS_SHOW_WORKING_TIME).append('|').append(Utils.EXO_WORKING_BEGIN).append('|').append(Utils.EXO_WORKING_END)
-           .append('|').append(Utils.EXO_PRIVATE_CALENDARS).append('|').append(Utils.EXO_PUBLIC_CALENDARS)
-           .append('|').append(Utils.EXO_SHARED_CALENDARS).append('|').append(Utils.EXO_SHARED_CALENDAR_COLORS);
+      .append('|').append(Utils.EXO_DATE_FORMAT).append('|').append(Utils.EXO_TIME_FORMAT).append('|')
+      .append(Utils.EXO_SEND_OPTION).append('|').append(Utils.EXO_BASE_URL).append('|')
+      .append(Utils.EXO_TIMEZONE).append('|')
+      .append(Utils.EXO_IS_SHOW_WORKING_TIME).append('|').append(Utils.EXO_WORKING_BEGIN).append('|').append(Utils.EXO_WORKING_END)
+      .append('|').append(Utils.EXO_PRIVATE_CALENDARS).append('|').append(Utils.EXO_PUBLIC_CALENDARS)
+      .append('|').append(Utils.EXO_SHARED_CALENDARS).append('|').append(Utils.EXO_SHARED_CALENDAR_COLORS);
       PropertyIterator it = settingNode.getProperties(namePattern.toString());
       String workingTimeBegin = null, workingTimeEnd = null;
       while (it.hasNext()) {
@@ -2073,8 +2075,8 @@ public class JCRDataStorage implements DataStorage {
           }
           StringBuilder path = new StringBuilder(Utils.SLASH);
           path.append(iCalHome.getName())
-              .append(Utils.SLASH)
-              .append(iCalHome.getNode(calendarId + Utils.ICS_EXT).getName());
+          .append(Utils.SLASH)
+          .append(iCalHome.getNode(calendarId + Utils.ICS_EXT).getName());
           String url = getEntryUrl(portalName,
                                    rssHomeNode.getSession().getWorkspace().getName(),
                                    username,
@@ -2386,10 +2388,10 @@ public class JCRDataStorage implements DataStorage {
     int toDayOfYear = eventQuery.getFromDate().get(java.util.Calendar.DAY_OF_YEAR);
     int daysOfYear = eventQuery.getFromDate().getMaximum(java.util.Calendar.DAY_OF_YEAR);
     if (eventQuery.getToDate().get(java.util.Calendar.DAY_OF_YEAR) > eventQuery.getFromDate()
-                                                                               .get(java.util.Calendar.DAY_OF_YEAR)) {
+        .get(java.util.Calendar.DAY_OF_YEAR)) {
       toDayOfYear = toDayOfYear + daysOfYear;
     }
-//    java.util.Calendar tempCalendar = Utils.getInstanceTempCalendar();
+    //    java.util.Calendar tempCalendar = Utils.getInstanceTempCalendar();
     java.util.Calendar tempCalendar = java.util.Calendar.getInstance(TimeZone.getTimeZone(timezone));
 
     List<CalendarEvent> originalRecurEvents = getHighLightOriginalRecurrenceEvents(username,
@@ -2412,14 +2414,14 @@ public class JCRDataStorage implements DataStorage {
             tempCalendar.setTime(event.getFromDateTime());
             int eventFromDayOfYear = tempCalendar.get(java.util.Calendar.DAY_OF_YEAR);
             if (tempCalendar.get(java.util.Calendar.YEAR) < eventQuery.getFromDate()
-                                                                      .get(java.util.Calendar.YEAR)) {
+                .get(java.util.Calendar.YEAR)) {
               eventFromDayOfYear = 1;
             }
 
             tempCalendar.setTime(event.getToDateTime());
             int eventToDayOfYear = tempCalendar.get(java.util.Calendar.DAY_OF_YEAR);
             if (tempCalendar.get(java.util.Calendar.YEAR) > eventQuery.getToDate()
-                                                                      .get(java.util.Calendar.YEAR)) {
+                .get(java.util.Calendar.YEAR)) {
               eventToDayOfYear = 366;
             }
 
@@ -2496,13 +2498,13 @@ public class JCRDataStorage implements DataStorage {
       Node eventNode = it.nextNode();
       if (filterCalIds == null
           || !Arrays.asList(filterCalIds).contains(eventNode.getProperty(Utils.EXO_CALENDAR_ID)
-                                                            .getString())) {
+                                                   .getString())) {
         java.util.Calendar eventFormDate = calendarSetting.createCalendar(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME)
-                                                                                   .getDate()
-                                                                                   .getTime());
+                                                                          .getDate()
+                                                                          .getTime());
         java.util.Calendar eventToDate = calendarSetting.createCalendar(eventNode.getProperty(Utils.EXO_TO_DATE_TIME)
-                                                                                 .getDate()
-                                                                                 .getTime());
+                                                                        .getDate()
+                                                                        .getTime());
         int eventFromDayOfYear = eventFormDate.get(java.util.Calendar.DAY_OF_YEAR);
         int eventToDayOfYear = eventToDate.get(java.util.Calendar.DAY_OF_YEAR);
 
@@ -2829,7 +2831,7 @@ public class JCRDataStorage implements DataStorage {
   @SuppressWarnings("unchecked")
   public boolean canEdit(Node calNode, String username) throws Exception {
     OrganizationService oService = (OrganizationService) ExoContainerContext.getCurrentContainer()
-                                                                            .getComponentInstanceOfType(OrganizationService.class);
+        .getComponentInstanceOfType(OrganizationService.class);
     StringBuilder sb = new StringBuilder(username);
     if (oService != null) {
       Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
@@ -2837,13 +2839,13 @@ public class JCRDataStorage implements DataStorage {
         sb.append(Utils.COMMA).append(g.getId()).append(Utils.SLASH_COLON).append(Utils.ANY);
         sb.append(Utils.COMMA).append(g.getId()).append(Utils.SLASH_COLON).append(username);
         Collection<Membership> memberShipsType = oService.getMembershipHandler()
-                                                         .findMembershipsByUserAndGroup(username,
-                                                                                        g.getId());
+            .findMembershipsByUserAndGroup(username,
+                                           g.getId());
         for (Membership mp : memberShipsType) {
           sb.append(Utils.COMMA)
-            .append(g.getId())
-            .append(Utils.SLASH_COLON)
-            .append(Utils.ANY_OF + mp.getMembershipType());
+          .append(g.getId())
+          .append(Utils.SLASH_COLON)
+          .append(Utils.ANY_OF + mp.getMembershipType());
         }
       }
     }
@@ -3285,15 +3287,15 @@ public class JCRDataStorage implements DataStorage {
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
     StringBuilder queryString = new StringBuilder("/jcr:root").append(calendar.getPath())
         .append("//element(*,exo:repeatCalendarEvent)[@exo:repeat!='").append(CalendarEvent.RP_NOREPEAT)
-                                                                .append("' and @exo:recurrenceId=''");
+        .append("' and @exo:recurrenceId=''");
     if (from != null) {
       queryString.append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('"
           + ISO8601.format(from)).append("'))")
-                 .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('"
-                     + ISO8601.format(from)).append("'))");
+          .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('"
+              + ISO8601.format(from)).append("'))");
     } else {
       queryString.append(" and (not(@exo:repeatUntil))")
-                 .append(" and (not(@exo:repeatFinishDate))");
+      .append(" and (not(@exo:repeatFinishDate))");
     }
     if (calendarIds != null && calendarIds.length > 0) {
       queryString.append(" and (");
@@ -3421,30 +3423,30 @@ public class JCRDataStorage implements DataStorage {
     TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
     SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
     format.setTimeZone(userTimeZone);
-    
+
     Map<String, CalendarEvent> occurrences = new HashMap<String, CalendarEvent>();
 
     int diffMinutes = (int) ((recurEvent.getToDateTime().getTime() - recurEvent.getFromDateTime()
-                                                                               .getTime()) / (60 * 1000));
+        .getTime()) / (60 * 1000));
 
     List<String> excludeIds = null;
     if (recurEvent.getExcludeId() != null && recurEvent.getExcludeId().length > 0) {
       excludeIds = new ArrayList<String>(Arrays.asList(recurEvent.getExcludeId()));
     }
 
-    Recur recur = getICalendarRecur(recurEvent);
+    Recur recur = Utils.getICalendarRecur(recurEvent);
     if (recur == null)
       return null;
 
     DateTime ical4jEventFrom = new DateTime(recurEvent.getFromDateTime());//the date time of the first occurrence of the series
     net.fortuna.ical4j.model.TimeZone tz = Utils.getICalTimeZone(TimeZone.getTimeZone(timezone));
     ical4jEventFrom.setTimeZone(tz);
-    
+
     Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
-    
+
     java.util.Calendar occurenceFrom = java.util.Calendar.getInstance();
     occurenceFrom.setTime(from.getTime());
-    
+
     // because occurrence event can begin before the 'from' but end after
     // 'from', so it still intersects with [from, to] window
     // thus, we decrease the 'from' value (by duration of event) to get such
@@ -3458,7 +3460,7 @@ public class JCRDataStorage implements DataStorage {
     DateList list = recur.getDates(ical4jEventFrom,
                                    period,
                                    net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
-    
+
     for (Object dt : list) {
       DateTime ical4jStart = (DateTime) dt;
       ical4jStart.setTimeZone(tz);
@@ -3469,30 +3471,36 @@ public class JCRDataStorage implements DataStorage {
       java.util.Calendar startTime = java.util.Calendar.getInstance(TimeZone.getDefault());
       java.util.Calendar endTime = java.util.Calendar.getInstance(TimeZone.getDefault());
       startTime.setTimeInMillis(ical4jStart.getTime());
-     
+
       occurrence.setFromDateTime(startTime.getTime());
-      
+
       endTime.setTime(startTime.getTime());
       endTime.add(java.util.Calendar.MINUTE, diffMinutes);
-      
+
       occurrence.setToDateTime(endTime.getTime());
-      
+
       // if user time zone uses DST, need to adapt the time occurrence 
       if( userTimeZone.useDaylightTime()) {
         adaptTimeToDST(occurrence, recurEvent, userTimeZone);    
       }
-      
+
       String recurId = format.format(occurrence.getFromDateTime());
-      
+
       // if this occurrence was listed in the exclude list, skip
-      if (excludeIds != null && excludeIds.contains(recurId))
-    	  continue;
-      
+      boolean isException = false ;
+      if(recurEvent.getExceptionIds() != null)
+        for(String s : recurEvent.getExcludeId()){
+          if(s.split("T")[0].equals(recurId.split("T")[0])) {
+            isException = true;
+            break ;
+          }
+        }
+      if(isException)continue;
+
       occurrence.setRecurrenceId(recurId);
       occurrences.put(recurId, occurrence);
     }
     return occurrences;
-
   }
 
   // here we need to edit the occurrence to have correct time 
@@ -3544,7 +3552,7 @@ public class JCRDataStorage implements DataStorage {
       DateTime ical4jEventFrom = new DateTime(originalEvent.getFromDateTime());
       VEvent vevent = new VEvent(ical4jEventFrom, Utils.EMPTY_STR);
 
-      Recur recur = getICalendarRecur(originalEvent);
+      Recur recur = Utils.getICalendarRecur(originalEvent);
 
       vevent.getProperties().add(new RRule(recur));
       java.util.Calendar calendar = new GregorianCalendar(2011, 7, 1);
@@ -3568,113 +3576,6 @@ public class JCRDataStorage implements DataStorage {
         log.debug("Exception occurred when calculating finish date of recurrence event", e);
       return null;
     }
-  }
-
-  public Recur getICalendarRecur(CalendarEvent recurEvent) throws Exception {
-    String repeatType = recurEvent.getRepeatType();
-    // get the repeat count property of recurrence event
-    int count = (int) recurEvent.getRepeatCount();
-
-    java.util.Calendar until = null;
-    if (recurEvent.getRepeatUntilDate() != null) {
-      until = Utils.getInstanceTempCalendar();
-      until.setTime(recurEvent.getRepeatUntilDate());
-    }
-
-    int interval = (int) recurEvent.getRepeatInterval();
-    if (interval <= 1)
-      interval = 1;
-
-    Recur recur = null;
-
-    // daily recurrence
-    if (repeatType.equals(CalendarEvent.RP_DAILY)) {
-      if (until != null) {
-        recur = new Recur(Recur.DAILY, new net.fortuna.ical4j.model.Date(until.getTime()));
-      } else {
-        if (count > 0) {
-          recur = new Recur(Recur.DAILY, count);
-        } else
-          recur = new Recur("FREQ=DAILY");
-      }
-      recur.setInterval(interval);
-      return recur;
-    }
-
-    // weekly recurrence
-    if (repeatType.equals(CalendarEvent.RP_WEEKLY)) {
-      if (until != null) {
-        recur = new Recur(Recur.WEEKLY, new net.fortuna.ical4j.model.Date(until.getTime()));
-      } else {
-        if (count > 0) {
-          recur = new Recur(Recur.WEEKLY, count);
-        } else
-          recur = new Recur("FREQ=WEEKLY");
-      }
-      recur.setInterval(interval);
-
-      // byday property
-      String[] repeatByDay = recurEvent.getRepeatByDay();
-      if (repeatByDay == null || repeatByDay.length == 0)
-        return null;
-      WeekDayList weekDayList = new WeekDayList();
-      for (String s : repeatByDay) {
-        weekDayList.add(new WeekDay(s));
-      }
-      recur.getDayList().addAll(weekDayList);
-      return recur;
-    }
-
-    // monthly recurrence
-    if (repeatType.equals(CalendarEvent.RP_MONTHLY)) {
-      if (until != null) {
-        recur = new Recur(Recur.MONTHLY, new net.fortuna.ical4j.model.Date(until.getTime()));
-      } else {
-        if (count > 0) {
-          recur = new Recur(Recur.MONTHLY, count);
-        } else
-          recur = new Recur("FREQ=MONTHLY");
-      }
-      recur.setInterval(interval);
-
-      long[] repeatByMonthDay = recurEvent.getRepeatByMonthDay();
-      // case 1: byMonthDay: day 1, 15, 26 of month
-      if (repeatByMonthDay != null && repeatByMonthDay.length > 0) {
-        NumberList numberList = new NumberList();
-        for (long monthDay : repeatByMonthDay) {
-          numberList.add(new Integer((int) monthDay));
-        }
-        recur.getMonthDayList().addAll(numberList);
-      } else {
-        // case 2: byDay: 1SU: first Sunday of month, -1TU: last Tuesday of
-        // month
-        String[] repeatByDay = recurEvent.getRepeatByDay();
-        if (repeatByDay != null && repeatByDay.length > 0) {
-          WeekDayList weekDayList = new WeekDayList();
-          for (String s : repeatByDay) {
-            weekDayList.add(new WeekDay(s));
-          }
-          recur.getDayList().addAll(weekDayList);
-        }
-      }
-      return recur;
-    }
-
-    // yearly recurrence
-    if (repeatType.equals(CalendarEvent.RP_YEARLY)) {
-      if (until != null) {
-        recur = new Recur(Recur.YEARLY, new net.fortuna.ical4j.model.Date(until.getTime()));
-      } else {
-        if (count > 0) {
-          recur = new Recur(Recur.YEARLY, count);
-        } else
-          recur = new Recur("FREQ=YEARLY");
-      }
-      recur.setInterval(interval);
-      return recur;
-    }
-
-    return recur;
   }
 
   /**
@@ -3723,8 +3624,8 @@ public class JCRDataStorage implements DataStorage {
         event = it.nextNode();
         if (event.hasProperty(Utils.EXO_EVENT_STATE)
             && !CalendarEvent.ST_AVAILABLE.equals(event.getProperty(Utils.EXO_EVENT_STATE)
-                                                       .getValue()
-                                                       .getString())) {
+                                                  .getValue()
+                                                  .getString())) {
           java.util.Calendar fromCal = event.getProperty(Utils.EXO_FROM_DATE_TIME).getDate();
           java.util.Calendar toCal = event.getProperty(Utils.EXO_TO_DATE_TIME).getDate();
           if (fromCal.getTimeInMillis() < eventQuery.getFromDate().getTimeInMillis())
@@ -3766,8 +3667,8 @@ public class JCRDataStorage implements DataStorage {
           if (calendar.hasNode(eventId)) {
             Node event = calendar.getNode(eventId);
             Node eventFolder = getEventFolder(event.getProperty(Utils.EXO_FROM_DATE_TIME)
-                                                   .getDate()
-                                                   .getTime());
+                                              .getDate()
+                                              .getTime());
             syncRemoveEvent(eventFolder, eventId);
             removeReminder(event);
             event.remove();
@@ -3805,7 +3706,7 @@ public class JCRDataStorage implements DataStorage {
                                 toCalendar,
                                 calEvent,
                                 getUserCalendarHome(username).getNode(toCalendar)
-                                                             .hasNode(calEvent.getId()));
+                                .hasNode(calEvent.getId()));
                 } else {
                   saveUserEvent(username, toCalendar, calEvent, false);
                 }
@@ -3822,7 +3723,7 @@ public class JCRDataStorage implements DataStorage {
                                           toCalendar,
                                           calEvent,
                                           getSharedCalendarHome().getNode(username)
-                                                                 .hasNode(calEvent.getId()));
+                                          .hasNode(calEvent.getId()));
               }
             }
             break;
@@ -3835,7 +3736,7 @@ public class JCRDataStorage implements DataStorage {
                 savePublicEvent(toCalendar,
                                 calEvent,
                                 getPublicCalendarHome().getNode(toCalendar)
-                                                       .hasNode(calEvent.getId()));
+                                .hasNode(calEvent.getId()));
               }
             }
             break;
@@ -3857,7 +3758,7 @@ public class JCRDataStorage implements DataStorage {
                               toCalendar,
                               calEvent,
                               getUserCalendarHome(username).getNode(toCalendar)
-                                                           .hasNode(calEvent.getId()));
+                              .hasNode(calEvent.getId()));
               }
             }
             break;
@@ -3872,7 +3773,7 @@ public class JCRDataStorage implements DataStorage {
                                             toCalendar,
                                             calEvent,
                                             getSharedCalendarHome().getNode(username)
-                                                                   .hasNode(calEvent.getId()));
+                                            .hasNode(calEvent.getId()));
                 } else {
                   saveEventToSharedCalendar(username, toCalendar, calEvent, false);
                 }
@@ -3888,7 +3789,7 @@ public class JCRDataStorage implements DataStorage {
                 savePublicEvent(toCalendar,
                                 calEvent,
                                 getPublicCalendarHome().getNode(toCalendar)
-                                                       .hasNode(calEvent.getId()));
+                                .hasNode(calEvent.getId()));
               }
             }
             break;
@@ -3910,7 +3811,7 @@ public class JCRDataStorage implements DataStorage {
                               toCalendar,
                               calEvent,
                               getUserCalendarHome(username).getNode(toCalendar)
-                                                           .hasNode(calEvent.getId()));
+                              .hasNode(calEvent.getId()));
               }
             }
             break;
@@ -3934,7 +3835,7 @@ public class JCRDataStorage implements DataStorage {
                   savePublicEvent(toCalendar,
                                   calEvent,
                                   getPublicCalendarHome().getNode(toCalendar)
-                                                         .hasNode(calEvent.getId()));
+                                  .hasNode(calEvent.getId()));
                 } else {
                   savePublicEvent(toCalendar, calEvent, false);
                 }
@@ -4191,7 +4092,7 @@ public class JCRDataStorage implements DataStorage {
                               toUserId,
                               eventId,
                               calendarId),
-                e);
+                              e);
     } finally {
       // session.close() ;
     }
@@ -4270,7 +4171,7 @@ public class JCRDataStorage implements DataStorage {
           participant.put(par.getKey() + ":" + par.getValue(), Utils.EMPTY_STR);
         }
         event.setParticipantStatus(participant.keySet().toArray(new String[participant.keySet()
-                                                                                      .size()]));
+                                                                           .size()]));
         if (Calendar.TYPE_PRIVATE == calType) {
           saveUserEvent(fromUserId, calendarId, event, false);
         } else if (Calendar.TYPE_SHARED == calType) {
@@ -4385,6 +4286,9 @@ public class JCRDataStorage implements DataStorage {
                                 currentRepo);
   }
 
+  public Session getSystemSession() throws Exception {
+    return getSession(createSystemProvider());
+  }
   private String[] ValuesToStrings(Value[] Val) throws Exception {
     if (Val.length == 1)
       return new String[] { Val[0].getString() };
@@ -4560,7 +4464,7 @@ public class JCRDataStorage implements DataStorage {
       CalendarSetting calSetting = getCalendarSetting(getUserCalendarServiceHome(username));
       Node calendar;
       OrganizationService organizationService = (OrganizationService) ExoContainerContext.getCurrentContainer()
-                                                                                         .getComponentInstanceOfType(OrganizationService.class);
+          .getComponentInstanceOfType(OrganizationService.class);
       Map<String, String> map = new HashMap<String, String>();
       for (String key : calSetting.getSharedCalendarsColors()) {
         map.put(key.split(":")[0], key.split(":")[1]);
@@ -4577,8 +4481,8 @@ public class JCRDataStorage implements DataStorage {
           deleteShared = false;
         else {
           Object[] groups = organizationService.getGroupHandler()
-                                               .findGroupsOfUser(username)
-                                               .toArray();
+              .findGroupsOfUser(username)
+              .toArray();
           for (Object object : groups) {
             if (viewPers.contains(((Group) object).getId())) {
               deleteShared = false;
@@ -4699,9 +4603,9 @@ public class JCRDataStorage implements DataStorage {
       remoteCalendar.setCalendarId(remoteCalendarId);
       StringBuilder namePattern = new StringBuilder(128);
       namePattern.append(Utils.EXO_REMOTE_TYPE).append('|').append(Utils.EXO_REMOTE_SYNC_PERIOD).append('|')
-           .append(Utils.EXO_REMOTE_BEFORE_DATE).append('|').append(Utils.EXO_REMOTE_AFTER_DATE).append('|')
-           .append(Utils.EXO_REMOTE_URL).append('|').append(Utils.EXO_REMOTE_USERNAME).append('|')
-           .append(Utils.EXO_REMOTE_PASSWORD).append('|').append(Utils.EXO_REMOTE_LAST_UPDATED);
+      .append(Utils.EXO_REMOTE_BEFORE_DATE).append('|').append(Utils.EXO_REMOTE_AFTER_DATE).append('|')
+      .append(Utils.EXO_REMOTE_URL).append('|').append(Utils.EXO_REMOTE_USERNAME).append('|')
+      .append(Utils.EXO_REMOTE_PASSWORD).append('|').append(Utils.EXO_REMOTE_LAST_UPDATED);
       PropertyIterator it = calendarNode.getProperties(namePattern.toString());
       while (it.hasNext()) {
         Property p = it.nextProperty();
@@ -4777,11 +4681,11 @@ public class JCRDataStorage implements DataStorage {
     try {
       Node calendarHome = getUserCalendarHome(username);
       String queryString = new StringBuilder("/jcr:root" + calendarHome.getPath()
-          + "//element(*,exo:remoteCalendar)[@exo:remoteUrl='").append(remoteUrl)
-                                                               .append("' and @exo:remoteType='")
-                                                               .append(remoteType)
-                                                               .append("']")
-                                                               .toString();
+                                             + "//element(*,exo:remoteCalendar)[@exo:remoteUrl='").append(remoteUrl)
+                                             .append("' and @exo:remoteType='")
+                                             .append(remoteType)
+                                             .append("']")
+                                             .toString();
       QueryManager queryManager = calendarHome.getSession().getWorkspace().getQueryManager();
       Query query = queryManager.createQuery(queryString.toString(), Query.XPATH);
       QueryResult results = query.execute();
@@ -4842,7 +4746,7 @@ public class JCRDataStorage implements DataStorage {
     Node eventNode = getUserCalendarHome(username).getNode(calendarId).getNode(eventId);
     eventNode.setProperty(Utils.EXO_CALDAV_HREF, etag);
   }
-  
+
   public CalendarEvent getEventById(String eventId) throws Exception {
     Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
     QueryManager queryManager = calendarApp.getSession().getWorkspace().getQueryManager();
@@ -4905,4 +4809,150 @@ public class JCRDataStorage implements DataStorage {
       super.unlock();
     }
   }
+
+
+  @Override
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,java.util.Calendar from, java.util.Calendar to, String userId) {
+    Collection<CalendarEvent> coll = new ArrayList<CalendarEvent>();
+    Collection<String> calendarIds = Arrays.asList(new String[]{originEvent.getCalendarId()}); 
+    CalendarSetting st = null;
+    try {
+      st = getCalendarSetting(userId);
+    } catch (Exception e) {
+      if (log.isDebugEnabled()) log.debug(e);
+    }
+    Collection<String> filterCalendarIds = Arrays.asList(st.getFilterPrivateCalendars());
+    filterCalendarIds.addAll(Arrays.asList(st.getFilterPublicCalendars()));
+    filterCalendarIds.addAll(Arrays.asList(st.getFilterSharedCalendars()));
+
+    StringBuffer queryString =  new StringBuffer("SELECT * FROM exo:calendarEvent WHERE ");
+    //TODO need to implement query with limited date/time
+    queryString.append(" exo:originalReference ='").append(originEvent.getId()).append("'");
+    QueryManager qm;
+    try {
+      qm = getUserCalendarHome(userId).getSession().getWorkspace().getQueryManager();
+      Query query = qm.createQuery(queryString.toString(), Query.SQL);
+      QueryResult result = query.execute();
+      NodeIterator it = result.getNodes();
+      while (it.hasNext()) {
+        Node eventNode = it.nextNode();
+        CalendarEvent event = getEvent(eventNode);
+        event.setCalType(originEvent.getCalType());
+        coll.add(event);
+      }
+    } catch (RepositoryException e) {
+      if (log.isDebugEnabled()) log.debug(e);
+      e.printStackTrace();
+    } catch (Exception e) {
+      if (log.isDebugEnabled()) log.debug(e);
+    }
+    return coll;
+  }
+
+
+  @Override
+  public Collection<CalendarEvent> buildSeriesByTime(CalendarEvent recurEvent,
+                                                     java.util.Calendar from,
+                                                     java.util.Calendar to,
+                                                     String userId) {
+    String timezone = TimeZone.getDefault().getID();
+    try {
+      timezone = getCalendarSetting(userId).getTimeZone();
+    } catch (Exception e) {
+      if (log.isDebugEnabled()) log.debug(e);
+    }
+    if (Utils.isEmpty(recurEvent.getRepeatType()))
+      return null;
+    if (from.after(to) || !recurEvent.getFromDateTime().before(to.getTime())) {
+      return null;
+    }
+
+    // check if this recurEvent is expired
+    if (recurEvent.getRepeatUntilDate() != null
+        && recurEvent.getRepeatUntilDate().before(from.getTime())) {
+      return null;
+    }
+
+    TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+    SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    format.setTimeZone(userTimeZone);
+
+    Collection<CalendarEvent> occurrences = new ArrayList<CalendarEvent>();
+
+    int diffMinutes = (int) ((recurEvent.getToDateTime().getTime() - recurEvent.getFromDateTime()
+        .getTime()) / (60 * 1000));
+
+    Recur recur = null;
+    try {
+      recur = Utils.getICalendarRecur(recurEvent);
+    } catch (Exception e) {
+      if (log.isDebugEnabled()) log.debug(e);
+    }
+    if (recur == null)
+      return null;
+
+    DateTime ical4jEventFrom = new DateTime(recurEvent.getFromDateTime());//the date time of the first occurrence of the series
+    net.fortuna.ical4j.model.TimeZone tz = null;
+    try {
+      tz = Utils.getICalTimeZone(TimeZone.getTimeZone(timezone));
+    } catch (ParseException e) {
+      if (log.isDebugEnabled()) log.debug(e);
+    }
+    ical4jEventFrom.setTimeZone(tz);
+
+    Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
+
+    java.util.Calendar occurenceFrom = java.util.Calendar.getInstance();
+    occurenceFrom.setTime(from.getTime());
+
+    // because occurrence event can begin before the 'from' but end after
+    // 'from', so it still intersects with [from, to] window
+    // thus, we decrease the 'from' value (by duration of event) to get such
+    // occurrences
+    occurenceFrom.add(java.util.Calendar.MINUTE, -(diffMinutes - 1));
+    DateTime ical4jFrom = new DateTime(occurenceFrom.getTime());
+    DateTime ical4jTo = new DateTime(to.getTime());
+    Period period = new Period(ical4jFrom, ical4jTo);
+    period.setTimeZone(tz);
+    // get list of occurrences in a period
+    DateList list = recur.getDates(ical4jEventFrom,
+                                   period,
+                                   net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
+
+    for (Object dt : list) {
+      DateTime ical4jStart = (DateTime) dt;
+      ical4jStart.setTimeZone(tz);
+
+      // make occurrence
+      CalendarEvent occurrence = new CalendarEvent(recurEvent);
+
+      java.util.Calendar startTime = java.util.Calendar.getInstance(TimeZone.getDefault());
+      java.util.Calendar endTime = java.util.Calendar.getInstance(TimeZone.getDefault());
+      startTime.setTimeInMillis(ical4jStart.getTime());
+
+      occurrence.setFromDateTime(startTime.getTime());
+
+      endTime.setTime(startTime.getTime());
+      endTime.add(java.util.Calendar.MINUTE, diffMinutes);
+
+      occurrence.setToDateTime(endTime.getTime());
+
+      // if user time zone uses DST, need to adapt the time occurrence 
+      if( userTimeZone.useDaylightTime()) {
+        adaptTimeToDST(occurrence, recurEvent, userTimeZone);    
+      }
+
+      String recurId = format.format(occurrence.getFromDateTime());
+
+      // if this occurrence was listed in the exclude list, skip
+      if (recurEvent.getExceptionIds() != null && recurEvent.getExceptionIds().contains(recurId))
+        continue;
+
+      occurrence.setRecurrenceId(recurId);
+      occurrences.add(occurrence);
+    }
+    // TODO Auto-generated method stub
+    return occurrences;
+  }
+
 }

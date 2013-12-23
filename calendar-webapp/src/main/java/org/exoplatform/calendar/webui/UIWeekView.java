@@ -30,6 +30,8 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.popup.UIConfirmForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -59,15 +61,20 @@ import org.exoplatform.webui.event.EventListener;
                    @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
                    @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
                    @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
                    @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),
                    @EventConfig(listeners = UIWeekView.UpdateEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
                    @EventConfig(listeners = UIWeekView.UpdateAllDayEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateFollowSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateAllSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateCancel.class)
                  }
     )
 public class UIWeekView extends UICalendarView {
@@ -203,8 +210,8 @@ public class UIWeekView extends UICalendarView {
   static  public class UpdateEventActionListener extends EventListener<UIWeekView> {
     @Override
     public void execute(Event<UIWeekView> event) throws Exception {
-      UIWeekView calendarview = event.getSource() ;
 
+      UIWeekView calendarview = event.getSource() ;
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(eventId + CALENDARID);
@@ -231,6 +238,7 @@ public class UIWeekView extends UICalendarView {
 
       if(eventCalendar != null) {
         CalendarService calService = CalendarUtils.getCalendarService() ;
+        boolean isMove = false;
         try {
           org.exoplatform.calendar.service.Calendar calendar = null ;
           if(eventCalendar.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) {
@@ -258,6 +266,7 @@ public class UIWeekView extends UICalendarView {
               }
               cal.set(Calendar.HOUR_OF_DAY, hoursBg) ;
               cal.set(Calendar.MINUTE, minutesBg) ;
+              isMove = (eventCalendar.getFromDateTime().getTime() != cal.getTimeInMillis()) ;
               eventCalendar.setFromDateTime(cal.getTime()) ;
               if(hoursEnd >= 24) {
                 hoursEnd = 23 ;
@@ -277,9 +286,23 @@ public class UIWeekView extends UICalendarView {
             }
             // if it's a 'virtual' occurrence
             if (isOccur && !Utils.isEmpty(recurId)) {
-              List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
-              listEvent.add(eventCalendar);
-              calendarService.updateOccurrenceEvent(calendarId, calendarId, calType, calType, listEvent, username);
+              if(!isMove) {
+                UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+                UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
+                confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+                confirmForm.setDelete(false);
+                confirmForm.setConfig_id(calendarview.getId()) ;
+                calendarview.setCurrentOccurrence(eventCalendar);
+                event.getRequestContext().addUIComponentToUpdateByAjax(pAction);
+              } else {
+                calService = CalendarUtils.getCalendarService() ;
+                CalendarEvent originEvent = calService.getRepetitiveEvent(eventCalendar);
+                calService.saveOneOccurrenceEvent(originEvent, eventCalendar, username);
+              }
+             // return;
+              //List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
+              //listEvent.add(eventCalendar);
+              //calendarService.updateOccurrenceEvent(calendarId, calendarId, calType, calType, listEvent, username);
             } else {
               if(calType.equals(CalendarUtils.PRIVATE_TYPE)) {
                 calendarService.saveUserEvent(username, calendarId, eventCalendar, false) ;  
@@ -292,7 +315,7 @@ public class UIWeekView extends UICalendarView {
             calendarview.setLastUpdatedEventId(eventId) ;
             calendarview.refresh() ;
             UIMiniCalendar uiMiniCalendar = uiCalendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
-            event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
+            event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar);
             if(isOccur) event.getRequestContext().addUIComponentToUpdateByAjax(calendarview) ;
             JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
             RequireJS requireJS = jsManager.getRequireJS();
@@ -311,6 +334,7 @@ public class UIWeekView extends UICalendarView {
           }
         }
       }
+
     }
   }
 

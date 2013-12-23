@@ -241,18 +241,20 @@ def eventList = [];
       
           <%if(CalendarEvent.TYPE_TASK.equals(event.getEventType())){%>
               <i class="uiIconCalTaskMini"></i>
-              <%} else {%>
+          <%} else {%>
               <i class="uiIconCalClockMini"></i>
+              <%if(isOccur){%>
+                  <i class="uiIconCalRecurring"></i>
+              <%} else if(!isOccur && event.getIsExceptionOccurrence()){%>
+                  <i class="uiIconCalEditRecurring"></i>
               <%}%>
-              <i class="uiIconCal<%=event.getPriority()%>Priority"></i>
-            $begin
-         
-        
+          <%}%>
+          <i class="uiIconCal<%=event.getPriority()%>Priority"></i><span>$begin</span>
         </div>
 
         <!---- DISPLAYING EVENT SUMMARY ---->
         <% if ( (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
-        <!-- if the element is of type TASK check whether it's completed -->
+        <!-- if the element is of type TASK check whether it s completed -->
         <div unselectable="on" class="eventContainer" style="text-decoration:line-through; ">
           <%=event.summary%>
         </div>
@@ -270,10 +272,13 @@ def eventList = [];
               <i class="uiIconCalTaskMini"></i>
               <%} else {%>
               <i class="uiIconCalClockMini"></i>
+              <%if(isOccur){%>
+                  <i class="uiIconCalRecurring"></i>
+              <%} else if(!isOccur && event.getIsExceptionOccurrence()){%>
+                  <i class="uiIconCalEditRecurring"></i>
               <%}%>
-              <i class="uiIconCal<%=event.getPriority()%>Priority"></i>
-      
-            $begin - $end
+              <%}%>
+              <i class="uiIconCal<%=event.getPriority()%>Priority"></i><span>$begin - $end</span>
           
         </div>
         <!---- DISPLAYING EVENT SUMMARY ---->

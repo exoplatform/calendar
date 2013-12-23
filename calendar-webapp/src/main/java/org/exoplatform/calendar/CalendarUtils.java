@@ -977,12 +977,12 @@ public class CalendarUtils {
     CalendarService calService = CalendarUtils.getCalendarService() ;
     String currentUser = CalendarUtils.getCurrentUser() ;
     org.exoplatform.calendar.service.Calendar calendar = null;
-    if(calType.equals(CalendarUtils.PRIVATE_TYPE)) {
+    if(CalendarUtils.PRIVATE_TYPE.equals(calType)) {
       calendar = calService.getUserCalendar(currentUser, calendarId) ;
-    } else if(calType.equals(CalendarUtils.SHARED_TYPE)) {
+    } else if(CalendarUtils.SHARED_TYPE.equals(calType)) {
       GroupCalendarData gCalendarData = calService.getSharedCalendars(currentUser, true) ;
       if(gCalendarData != null) calendar = gCalendarData.getCalendarById(calendarId) ;
-    } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
+    } else if(CalendarUtils.PUBLIC_TYPE.equals(calType)) {
       calendar = calService.getGroupCalendar(calendarId) ;
     }
     return calendar;

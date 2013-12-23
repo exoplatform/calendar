@@ -89,7 +89,7 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
         if (isEditable == false) checkbox.setDisabled(true);
 	%>
 	
-	  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
+	  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isOccur="false" recurId="" isEditable="$isEditable">
 	    <td class="center">
             <% uicomponent.renderField(checkbox) %>
         </td>
@@ -164,7 +164,7 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 			  </a>
 		  </li>
 		  <li>
-			  <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+			  <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
 				<i class="uiIconDelete uiIconLightGray"></i>
 				<%=_ctx.appRes("ContextMenu.label.Delete")%>
 			  </a>
