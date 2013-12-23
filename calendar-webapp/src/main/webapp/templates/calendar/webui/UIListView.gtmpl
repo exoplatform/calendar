@@ -60,10 +60,10 @@
             <% if (!searchDisplay) { %>
             <!-- search results displaying is disabled, show Attachment Icon, Priority and Event -->
             <th width="25" class="center">
-      <span class="uiCheckbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" >
-        <input type="checkbox" class="checkbox" value="4"/>
-        <span></span>
-      </span>
+              <span class="uiCheckbox" rel="tooltip" data-placement="bottom" title="<%=uiform.getLabel('CheckAll')%>" >
+                <input type="checkbox" class="checkbox" value="4"/>
+                <span></span>
+              </span>
             </th>
 
             <th width="40" class="center"><i class="uiIconAttach uiIconLightGray"></i></th>
@@ -86,7 +86,7 @@
                 else classCss = "uiIconMiniArrowDown uiIconLightGray";
                 }
             %>
-            <th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
+            <th><a href="$sortLink"><%=_ctx.appRes("UIListView.label.Summary")%><i class="$classCss pull-right"></i></a></th>
             <% } else {
                 /** Search result displaying enabled, replace Event by Title */
                 sortLink = uicomponent.event("Sort", uicomponent.EVENT_SUMMARY.toString()) ;
@@ -95,7 +95,7 @@
                 if (uicomponent.isAscending()) classCss = "uiIconMiniArrowUp uiIconLightGray";
                 else classCss = "uiIconMiniArrowDown uiIconLightGray";
                 } %>
-            <th><a href="$sortLink"><%=uiform.getLabel('Title')%><i class="$classCss pull-right"></i></a></th>
+            <th><a href="$sortLink"><%=_ctx.appRes("UIListView.label.Task")%><i class="$classCss pull-right"></i></a></th>
             <% } %>
 
             <%
