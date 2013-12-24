@@ -1768,6 +1768,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       if (monthlyType.equals(UIRepeatEventForm.RP_MONTHLY_BYDAY)) {
         java.util.Calendar temp = CalendarUtils.getInstanceOfCurrentCalendar();
         temp.setTime(repeatEvent.getFromDateTime());
+        temp.setFirstDayOfWeek(1);
         int weekOfMonth = temp.get(java.util.Calendar.WEEK_OF_MONTH);
         java.util.Calendar temp2 = CalendarUtils.getInstanceOfCurrentCalendar();
         temp2.setTime(temp.getTime());
