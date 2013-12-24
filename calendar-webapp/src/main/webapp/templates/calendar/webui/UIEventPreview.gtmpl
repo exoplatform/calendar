@@ -58,7 +58,7 @@
 		  <a id="downloadImage" class="downloadImage" href="#">
 			<img id="imagePreview" class="imagePreview" src="" style="display: none;" downloadlink="" />
 		</a>
-		<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
+		<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="<%=_ctx.appRes('UIPreviewPopup.action.CloseWindow')%>" data-placement="top" rel="tooltip" >
 			<i class="uiIconClose uiIconLightGray"></i>
 		</a>
 	</div>
