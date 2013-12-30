@@ -52,7 +52,7 @@
 	                %>
 	                </div>
 		                 <div class="textLabel">
-		                <%=field.getLabel();%>
+                             <%=(uicomponent.getLabel(CalendarEvent.RP_WEEKLY_BYDAY[i])).substring(0, 2);%>
 		                 </div>	                
 	                 </div>
 	                <%

@@ -235,7 +235,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	    var evtCont = gj(el[j]).find('div.eventContainer'); // get the content part of the event area
 	    var evtBar = gj(el[j]).find('div.eventContainerBar'); // get the title part of the event area
 	    // if the original title and description are not yet saved, we store them in a DOM attribute of the main element
-	    if (gj(el[j]).attr("titleHTML") == "" || gj(el[j]).attr("titleHTML") == null) gj(el[j]).attr("titleHTML", gj(evtBar).text());
+	    //if (gj(el[j]).attr("titleHTML") == "" || gj(el[j]).attr("titleHTML") == null) gj(el[j]).attr("titleHTML", gj(evtBar).text());
 	    if (gj(el[j]).attr("descHTML") == "" || gj(el[j]).attr("descHTML") == null) gj(el[j]).attr("descHTML", evtCont[0].innerHTML);
 
 	    if(mark != null) {				
@@ -257,7 +257,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	    else if ((hasFlag && width <= 76) || (!hasFlag && width <= 60)) {
 			// if the event has a priority and its width <= 76
 			// or the event has no priority and its width <= 60 : display start time only
-			evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML").split("-")[0];
+			//evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML").split("-")[0];
 			gj(el[j]).addClass("shortTitle");	
 	    }
 	    if (width <= 20) {
@@ -268,7 +268,7 @@ UIWeekView.prototype.adjustWidth = function(el) {
 	    // if the content was NOT shortened
 		// keep the original title and description
 	    if (!gj(el[j]).hasClass("shortDesc")) evtCont[0].innerHTML = gj(el[j]).attr("descHTML");
-		if (!gj(el[j]).hasClass("shortTitle")) evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML");
+		//if (!gj(el[j]).hasClass("shortTitle")) evtBar[0].lastChild.data = gj(el[j]).attr("titleHTML");
 
 
 	    if (el[j-1]&&(len > 1)) {
@@ -397,11 +397,17 @@ UIWeekView.prototype.drop = function(evt) {
 	var _e = window.event || evt ;
 	var UIWeekView = _module.UIWeekView ;
 	var isEventbox = UIWeekView.dragElement;
-	if (!UIWeekView.isCol(_e) || !isEventbox) return ;
+    if (!UIWeekView.isCol(_e) || !isEventbox) return ;
 	var currentCol = UIWeekView.currentCol ;
 	var sourceCol = UIWeekView.dragElement.parentNode ;
 	var eventY = UIWeekView.eventY ;
-	if((UIWeekView.mouseY != _e.clientY) || (UIWeekView.mouseX != _e.clientX)) _module.UICalendarPortlet.checkPermission(UIWeekView.dragElement);
+	if((UIWeekView.mouseY != _e.clientY) || (UIWeekView.mouseX != _e.clientX)) {
+        _module.UICalendarPortlet.checkPermission(UIWeekView.dragElement);
+        var repeatIcon = gj(isEventbox).find("i.uiIconCalRecurring") ;
+        if(repeatIcon.length != 0){
+            gj(repeatIcon).removeClass("uiIconCalRecurring").addClass("uiIconCalEditRecurring");
+        }
+    }
 	eXo.calendar.EventTooltip.enable();
 	return null ;
 } ;

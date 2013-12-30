@@ -29,6 +29,8 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.popup.UIConfirmForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -46,26 +48,31 @@ import org.exoplatform.webui.event.EventListener;
  * Aus 01, 2007 2:48:18 PM 
  */
 @ComponentConfig(
-    lifecycle = UIFormLifecycle.class,
-    template = "app:/templates/calendar/webui/UIDayView.gtmpl", 
-    events = {
-      @EventConfig(listeners = UICalendarView.AddEventActionListener.class),  
-      @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-      @EventConfig(listeners = UICalendarView.ViewActionListener.class),
-      @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
-      @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
-      @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
-      @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
-      @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
-      @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class), 
-      @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
-      @EventConfig(listeners = UIDayView.UpdateEventActionListener.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
-    }
-)
+                 lifecycle = UIFormLifecycle.class,
+                 template = "app:/templates/calendar/webui/UIDayView.gtmpl", 
+                 events = {
+                   @EventConfig(listeners = UICalendarView.AddEventActionListener.class),  
+                   @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.ViewActionListener.class),
+                   @EventConfig(listeners = UICalendarView.EditActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
+                   @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
+                   @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
+                   @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class), 
+                   @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),
+                   @EventConfig(listeners = UIDayView.UpdateEventActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateOnlyInstance.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateFollowSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateAllSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateCancel.class)
+                 }
+    )
 public class UIDayView extends UICalendarView {
   private static final Log log = ExoLogger.getExoLogger(UIDayView.class);
 
@@ -108,7 +115,7 @@ public class UIDayView extends UICalendarView {
         }
       }
     }
-    
+
     Iterator<CalendarEvent> iter = events.iterator() ;
     while (iter.hasNext()) {
       CalendarEvent ce = iter.next() ;
@@ -138,12 +145,13 @@ public class UIDayView extends UICalendarView {
     }
     return dataMap ;
   }
-  
+
   static  public class UpdateEventActionListener extends EventListener<UIDayView> {
     @Override
     public void execute(Event<UIDayView> event) throws Exception {
       UIDayView calendarview = event.getSource();
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
+
       calendarview.refresh();
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(eventId + CALENDARID);
@@ -156,7 +164,7 @@ public class UIDayView extends UICalendarView {
       String recurId = null;
       if (isOccur)
         recurId = event.getRequestContext().getRequestParameter(eventId + RECURID);
-      
+
       String username = CalendarUtils.getCurrentUser() ;
       CalendarEvent ce = null;
       if (isOccur && !Utils.isEmpty(recurId)) {
@@ -176,15 +184,17 @@ public class UIDayView extends UICalendarView {
           } else if(ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE)) {
             calendar = calService.getGroupCalendar(calendarId) ;
           }
+          boolean isMove = false;
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-            } else {
+          } else {
             if((ce.getCalType().equals(CalendarUtils.SHARED_TYPE) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(
-                        OrganizationService.class), Utils.getEditPerUsers(calendar), CalendarUtils.getCurrentUser())) ||
-               (ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(
-                        OrganizationService.class), calendar.getEditPermission(), CalendarUtils.getCurrentUser()))) 
+
+                                                                                                                                 OrganizationService.class), Utils.getEditPerUsers(calendar), CalendarUtils.getCurrentUser())) ||
+                                                                                                                                 (ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(
+                                                                                                                                                                                                                                                   OrganizationService.class), calendar.getEditPermission(), CalendarUtils.getCurrentUser()))) 
             {
-              
+
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit-event", null, 1)) ;
               calendarview.refresh() ;
               event.getRequestContext().addUIComponentToUpdateByAjax(calendarview.getParent()) ;
@@ -196,13 +206,17 @@ public class UIDayView extends UICalendarView {
             int minutesEnd = (Integer.parseInt(endTime)%60) ;
             Calendar cal = calendarview.getInstanceTempCalendar()  ; 
             cal.setTime(calendarview.getCurrentDate()) ;
+
             try {
+              //cal.setTimeInMillis(Long.parseLong(currentDate)) ;
               if(hoursBg < cal.getMinimum(Calendar.HOUR_OF_DAY)) {
-                hoursBg = 0 ;
-                minutesBg = 0 ;
+               hoursBg = 0 ;
+               minutesBg = 0 ;
               }
               cal.set(Calendar.HOUR_OF_DAY, hoursBg) ;
-              cal.set(Calendar.MINUTE, minutesBg) ; 
+              cal.set(Calendar.MINUTE, minutesBg) ;
+              cal.set(Calendar.SECOND, 0) ;
+              isMove = (ce.getFromDateTime().getHours() != cal.get(Calendar.HOUR) && ce.getFromDateTime().getMinutes() != cal.get(Calendar.MINUTE)) ;
               ce.setFromDateTime(cal.getTime());
               if(hoursEnd >= 24) {
                 hoursEnd = 23 ;
@@ -222,9 +236,23 @@ public class UIDayView extends UICalendarView {
             }
             // if it's a 'virtual' occurrence
             if (isOccur && !Utils.isEmpty(recurId)) {
-              List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
-              listEvent.add(ce);
-              calService.updateOccurrenceEvent(calendarId, calendarId, ce.getCalType(), ce.getCalType(), listEvent, username);
+              if(!isMove) {
+                UIPopupAction pAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
+                UIConfirmForm confirmForm =  pAction.activate(UIConfirmForm.class, 480);
+                confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
+                confirmForm.setDelete(false);
+                confirmForm.setConfig_id(calendarview.getId()) ;
+                calendarview.setCurrentOccurrence(ce);
+                event.getRequestContext().addUIComponentToUpdateByAjax(pAction);
+              } else {
+                calService = CalendarUtils.getCalendarService() ;
+                CalendarEvent originEvent = calService.getRepetitiveEvent(ce);
+                calService.saveOneOccurrenceEvent(originEvent, ce, username);
+              }
+              //return;
+              //List<CalendarEvent> listEvent = new ArrayList<CalendarEvent>();
+              //listEvent.add(ce);
+              //calService.updateOccurrenceEvent(calendarId, calendarId, ce.getCalType(), ce.getCalType(), listEvent, username);
             } else {
               if (ce.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) {
                 CalendarUtils.getCalendarService().saveUserEvent(username, calendarId, ce, false) ;
@@ -243,9 +271,9 @@ public class UIDayView extends UICalendarView {
           if (log.isDebugEnabled()) {
             log.debug("The calendar is not found", e);
           }
-          
+
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-          }
+        }
         UICalendarViewContainer uiViewContainer = uiCalendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
         CalendarSetting setting = calService.getCalendarSetting(username) ;
         uiViewContainer.refresh() ;
@@ -254,9 +282,9 @@ public class UIDayView extends UICalendarView {
       } else  {
         UICalendarWorkingContainer uiWorkingContainer = calendarview.getAncestorOfType(UICalendarWorkingContainer.class) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;
-        
+
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarView.msg.event-not-found", null)) ;
-        }
+      }
     }
   }
 
