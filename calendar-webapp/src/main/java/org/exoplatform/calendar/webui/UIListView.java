@@ -56,7 +56,7 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                    @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
                    @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
                    @EventConfig(listeners = UIListView.CloseSearchActionListener.class),
                    @EventConfig(listeners = UIListView.ViewDetailActionListener.class),
                    @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
@@ -67,7 +67,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                    @EventConfig(listeners = UIListView.SortActionListener.class ),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmUpdateCancel.class),
                    @EventConfig(listeners = UIListView.AdvancedSearchActionListener.class)
                  }
     )
@@ -131,9 +133,9 @@ public class UIListView extends UICalendarView {
       query.setCategoryId(new String[] { categoryId_ });
     }
 
-    java.util.Calendar fromcalendar = getBeginDay(new GregorianCalendar(getCurrentYear(),  getCurrentMonth(),  getCurrentDay())) ;
+    Calendar fromcalendar = getBeginDay(getCurrentCalendar());
     query.setFromDate(fromcalendar) ;
-    java.util.Calendar tocalendar = getEndDay(new GregorianCalendar(getCurrentYear(), getCurrentMonth(), getCurrentDay())) ;
+    Calendar tocalendar = getEndDay(getCurrentCalendar()); 
     if(tocalendar.get(Calendar.MILLISECOND) == 0) tocalendar.add(Calendar.MILLISECOND, -1);
     query.setToDate(tocalendar) ;
     if(!getViewType().equals(TYPE_BOTH)) {

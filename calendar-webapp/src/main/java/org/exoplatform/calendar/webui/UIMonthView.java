@@ -29,6 +29,8 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.webui.popup.UIConfirmForm;
+import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -58,7 +60,7 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
       @EventConfig(listeners = UICalendarView.EventSelectActionListener.class), 
       @EventConfig(listeners = UICalendarView.ViewActionListener.class),
       @EventConfig(listeners = UICalendarView.EditActionListener.class), 
-      @EventConfig(listeners = UICalendarView.DeleteActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+      @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
       @EventConfig(listeners = UICalendarView.GotoDateActionListener.class), 
       @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
       @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
@@ -69,7 +71,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
       @EventConfig(listeners = UIMonthView.UpdateEventActionListener.class),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),
-      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class)
+      @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
+      @EventConfig(listeners = UICalendarView.ConfirmDeleteFollowingSeries.class),
+      @EventConfig(listeners = UICalendarView.ConfirmUpdateCancel.class)
     }
 )
 public class UIMonthView extends UICalendarView {
@@ -257,7 +261,6 @@ public class UIMonthView extends UICalendarView {
       UICalendarPortlet uiPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class) ;
       String username = CalendarUtils.getCurrentUser() ;
       String value = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      
       CalendarService calService = CalendarUtils.getCalendarService() ;
       try {
         List<CalendarEvent> list = calendarview.getSelectedEvents() ;
@@ -323,6 +326,7 @@ public class UIMonthView extends UICalendarView {
       uiViewContainer.refresh() ;
       uiPortlet.setCalendarSetting(setting) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;
+      
     }
   }
   

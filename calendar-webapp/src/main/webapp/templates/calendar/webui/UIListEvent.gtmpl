@@ -145,9 +145,11 @@
     else isEditable = true;
     UICheckBoxInput checkbox = uicomponent.getChildById(event.getId());
     if (isEditable == false) checkbox.setDisabled(true);
+    Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+    String recurId = event.getRecurrenceId();
 %>
 
-  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isEditable="$isEditable">
+  <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
   <%if(!displaySearchResult) {%>
     <td class="center">
         <% uicomponent.renderField(checkbox) %>
@@ -167,6 +169,11 @@
 			  <i class="uiIconCalTaskMini uiIconLightGray"></i>
 			<%} else {%>
 			  <i class="uiIconCalClockMini uiIconLightGray"></i>
+        <%if(isOccur){%>
+          <i class="uiIconCalRecurring"></i>
+        <%} else if(!isOccur && event.getIsExceptionOccurrence()){%>
+          <i class="uiIconCalEditRecurring"></i>
+        <%}%>
 			<%}%>
 		  <span>
 			  <%=event.getSummary()%>
@@ -216,7 +223,7 @@
           </a>
       </li>
       <li>
-          <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+          <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
             <i class="uiIconDelete uiIconLightGray"></i>
             <%=_ctx.appRes("ContextMenu.label.Delete")%>
           </a>

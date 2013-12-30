@@ -53,7 +53,7 @@
 				<a id="downloadImage" class="downloadImage" href="#">
 					<img id="imagePreview" class="imagePreview" src="" style="display: none;" downloadlink="" />
 				</a>
-				<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="Close" data-placement="top" rel="tooltip" >
+				<a id="closeButton" class="closeButton actionIcon" style="display: none;" title="<%=_ctx.appRes('UIPreviewPopup.action.CloseWindow')%>" data-placement="top" rel="tooltip" >
 					<i class="uiIconClose uiIconLightGray"></i>
 				</a>
 			</div>
@@ -68,8 +68,8 @@
 				String rndString     = String.valueOf(new Date().getTime());
 				String View          = uiform.getLabel('View') ;
 				String Close         = uiform.getLabel('Close') ;
-        String viewText      = _ctx.appRes('UIPreview.label.ViewIcon');
-        int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
+                String viewText      = _ctx.appRes('UIPreview.label.ViewIcon');
+                int previewWidth     = uicomponent.getScaledImageDimensionFor(attachFile, uicomponent.DEFAULT_PREVIEW_DIMENSION)[0];
 				%>
 
 				<div class="thumbnailContainer">
