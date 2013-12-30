@@ -177,9 +177,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected Map<String, Map<String, CalendarEvent>> recurrenceEventsMap   = new LinkedHashMap<String, Map<String, CalendarEvent>>();
 
+  protected static List<String>                     emptyEventCalendars           = new ArrayList<String>();
+
+  protected static List<String>                     emptyRecurrentEventCalendars  = new ArrayList<String>();
+
   abstract LinkedHashMap<String, CalendarEvent> getDataMap();
 
   public UICalendarView() throws Exception {
+    log.info("UICalendarView constructor");
     calendar_ = CalendarUtils.getInstanceOfCurrentCalendar();
     addUIFormInput(new UIFormSelectBox(EVENT_CATEGORIES, EVENT_CATEGORIES, null));
     update();

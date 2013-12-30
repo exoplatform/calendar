@@ -119,21 +119,16 @@ public class UIMiniCalendar extends UICalendarView  {
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
 
+    String currentUser        = CalendarUtils.getCurrentUser();
     String[] publicCalendars  = getPublicCalendars();
     String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
     String[] sharedCalendars  = getSharedCalendars().toArray(new String[]{});
 
-    long startTime = System.currentTimeMillis();
-    dataMap = calendarService.searchHightLightEventSQL(CalendarUtils.getCurrentUser(), eventQuery,
-        privateCalendars, publicCalendars, sharedCalendars);
-    long estimatedTime1 = System.currentTimeMillis() - startTime;
-    LOG.info("time running searchHightLightEventSQL: " + estimatedTime1);
+    dataMap = calendarService.searchHightLightEventSQL(currentUser, eventQuery,
+        privateCalendars, publicCalendars, sharedCalendars, emptyEventCalendars);
 
-    long startTime1 = System.currentTimeMillis();
-    dataMap.putAll(calendarService.searchHighlightRecurrenceEventSQL(CalendarUtils.getCurrentUser(), eventQuery, timezone,
-        privateCalendars, publicCalendars, sharedCalendars));
-    long estimatedTime2 = System.currentTimeMillis() - startTime1;
-    LOG.info("time running searchHighlightRecurrenceEventSQL: " + estimatedTime2);
+    dataMap.putAll(calendarService.searchHighlightRecurrenceEventSQL(currentUser, eventQuery, timezone,
+        privateCalendars, publicCalendars, sharedCalendars, emptyRecurrentEventCalendars));
   }
 
   static  public class MoveNextActionListener extends EventListener<UIMiniCalendar> {

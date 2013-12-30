@@ -130,7 +130,7 @@ public class UIWeekView extends UICalendarView {
       //allEvents = calendarService.getAllNoRepeatEvents(username, eventQuery, publicCalendars);
 
       allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-          privateCalendars, publicCalendars, sharedCalendars);
+          privateCalendars, publicCalendars, sharedCalendars, emptyEventCalendars);
     }
 
     /** get exception occurrences, exclude original recurrence events */
@@ -138,7 +138,7 @@ public class UIWeekView extends UICalendarView {
     //    getHighLightOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), publicCalendars);
 
     List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-        eventQuery.getFromDate(), eventQuery.getToDate(), privateCalendars, publicCalendars, sharedCalendars);
+        eventQuery.getFromDate(), eventQuery.getToDate(), privateCalendars, publicCalendars, sharedCalendars, emptyRecurrentEventCalendars);
 
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {

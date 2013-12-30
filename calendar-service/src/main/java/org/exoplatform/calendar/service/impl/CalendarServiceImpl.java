@@ -363,8 +363,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public Map<Integer, String> searchHightLightEventSQL(String username, EventQuery eventQuery,
                                                        String[] privateCalendars, String[] publicCalendars,
-                                                       String[] sharedCalendars) throws Exception {
-    return storage_.searchHightLightEventSQL(username, eventQuery, privateCalendars, publicCalendars, sharedCalendars);
+                                                       String[] sharedCalendars, List<String> emptyCalendars) throws Exception {
+    return storage_.searchHightLightEventSQL(username, eventQuery, privateCalendars, publicCalendars, sharedCalendars, emptyCalendars);
   }
 
   /**
@@ -396,8 +396,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, String[] sharedCalendars) throws Exception {
-    return storage_.getAllNoRepeatEventsSQL(username, eventQuery, privateCalendars, publicCalendars, sharedCalendars);
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars,
+                                                     String[] publicCalendars, String[] sharedCalendars,
+                                                     List<String> emptyCalendars) throws Exception {
+    return storage_.getAllNoRepeatEventsSQL(username, eventQuery, privateCalendars, publicCalendars, sharedCalendars, emptyCalendars);
   }
 
   /**
@@ -903,8 +905,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public Map<Integer, String> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
                                                                 String[] privateCalendars, String[] publicCalendars,
-                                                                String[] sharedCalendars) throws Exception {
-    return storage_.searchHighlightRecurrenceEventSQL(username, eventQuery, timezone, privateCalendars, publicCalendars, sharedCalendars);
+                                                                String[] sharedCalendars, List<String> emptyCalendars) throws Exception {
+    return storage_.searchHighlightRecurrenceEventSQL(username, eventQuery, timezone, privateCalendars, publicCalendars, sharedCalendars, emptyCalendars);
   }
 
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception {
@@ -913,10 +915,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to,
                                                                      String[] privateCalendars, String[] publicCalendars,
-                                                                     String[] sharedCalendars) throws Exception {
-    return storage_.getHighLightOriginalRecurrenceEventsSQL(username, from, to, privateCalendars, publicCalendars, sharedCalendars);
+                                                                     String[] sharedCalendars, List<String> emptyCalendars) throws Exception {
+    return storage_.getHighLightOriginalRecurrenceEventsSQL(username, from, to, privateCalendars, publicCalendars, sharedCalendars, emptyCalendars);
   }
-
 
   /**
    * {@inheritDoc}

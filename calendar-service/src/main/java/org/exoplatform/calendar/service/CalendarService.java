@@ -406,7 +406,7 @@ public interface CalendarService {
 
   public Map<Integer, String> searchHightLightEventSQL(String username, EventQuery eventQuery,
                                                        String[] privateCalendars, String[] publicCalendars,
-                                                       String[] sharedCalendars) throws Exception;
+                                                       String[] sharedCalendars, List<String> emptyCalendars) throws Exception;
 
 
   /**
@@ -466,8 +466,9 @@ public interface CalendarService {
    * @return
    * @throws Exception
    */
-  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, String[] sharedCalendars) throws Exception;
-
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery,
+                                                     String[] privateCalendars, String[] publicCalendars,
+                                                     String[] sharedCalendars, List<String> emptyCalendars) throws Exception;
 
   /**
    * Removes shared calendars of an user
@@ -862,13 +863,14 @@ public interface CalendarService {
 
   public Map<Integer, String> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
                                                                 String[] privateCalendars, String[] publicCalendars,
-                                                                String[] sharedCalendars) throws Exception;
+                                                                String[] sharedCalendars, List<String> emptyCalendars) throws Exception;
 
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
 
   public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to,
                                                                      String[] privateCalendars, String[] publicCalendars,
-                                                                     String[] sharedCalendars) throws Exception;
+                                                                     String[] sharedCalendars, List<String> emptyCalendars) throws Exception;
+
 
   /**
    * Shares Calendar with groups
