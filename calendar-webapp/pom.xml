@@ -347,7 +347,7 @@
   <build>
     <finalName>calendar</finalName>
     <plugins>
-      <!-- Copy project less files -->
+      <!-- Copy project less files
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
@@ -371,7 +371,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Copy common less files -->
+      Copy common less files 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -390,14 +390,13 @@
                   <type>war</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                  <includes>skin/less/mixins.less,skin/less/variables.less</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
         </executions>
       </plugin>
-      <!-- Plugin to create css from less File to be able to build the skin -->
+       Plugin to create css from less File to be able to build the skin
       <plugin>
         <groupId>org.lesscss</groupId>
         <artifactId>lesscss-maven-plugin</artifactId>
@@ -417,7 +416,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin -->
     </plugins>
   </build>
 </project>
