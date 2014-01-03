@@ -131,6 +131,7 @@ public class UIMiniCalendar extends UICalendarView  {
         privateCalendars, publicCalendars, sharedCalendars, emptyRecurrentEventCalendars));
   }
 
+
   static  public class MoveNextActionListener extends EventListener<UIMiniCalendar> {
     @Override
     public void execute(Event<UIMiniCalendar> event) throws Exception {

@@ -621,7 +621,8 @@ UICalendarPortlet.prototype.resetSpaceDefaultLayout = function(){
 
 UICalendarPortlet.prototype.resetLayoutCallback = function(){
   var UICalendarPortlet = _module.UICalendarPortlet;
-  if(UICalendarPortlet.isSpace != "null") {
+  var isSpace = UICalendarPortlet.isSpace;
+  if(isSpace != null && isSpace != "") {
     UICalendarPortlet.resetSpaceDefaultLayout();
     return;
   }
@@ -636,7 +637,10 @@ UICalendarPortlet.prototype.resetLayoutCallback = function(){
  * Check layout configuration when page load to render a right layout
  */
 UICalendarPortlet.prototype.checkLayout = function(){
-	if(_module.UICalendarPortlet.isSpace != "null") base.Browser.setCookie(_module.LayoutManager.layoutId,"1",1);
+    var isSpace = _module.UICalendarPortlet.isSpace;
+    if(isSpace != null && isSpace != "") {
+        base.Browser.setCookie(_module.LayoutManager.layoutId,"1",1);
+    }
 	_module.LayoutManager.layouts = [] ;
 	_module.LayoutManager.switchCallback = _module.UICalendarPortlet.switchLayoutCallback;
 	_module.LayoutManager.resetCallback = _module.UICalendarPortlet.resetLayoutCallback;

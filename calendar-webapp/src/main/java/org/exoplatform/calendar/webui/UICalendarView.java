@@ -343,7 +343,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected List<GroupCalendarData> getPublicCalendars(String username) throws Exception {
     String[] groups = CalendarUtils.getUserGroups(username);
-    if(isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    //if(isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    if (uiCalendarPortlet.isInSpaceContext()) groups = new String[]{uiCalendarPortlet.getSpaceGroupId()};
     CalendarService calendarService = CalendarUtils.getCalendarService();
     List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups,
                                                                                false,
@@ -394,7 +396,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   public boolean isInSpace(){
-    return UICalendarPortlet.isInSpace();
+    //return UICalendarPortlet.isInSpace();
+    return getAncestorOfType(UICalendarPortlet.class).isInSpaceContext();
   }
 
   protected String renderDateTimeString(Date date) {
@@ -871,6 +874,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public CalendarEvent getcurrentOccurrence() {
     return currentOccurrence;
   }
+
+  public static void resetEmptyCalendars() {
+    emptyEventCalendars = null;
+    emptyRecurrentEventCalendars = null;
+  }
+
 
   static public class AddEventActionListener extends EventListener<UICalendarView> {
     @Override

@@ -70,6 +70,7 @@ public class UICalendarPortlet extends UIPortletApplication {
   private String spaceGroupId;
 
   public UICalendarPortlet() throws Exception {
+    log.info("UICalendarPortlet constructor");
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
     uiActionBar.setCurrentView(CalendarUtils.getViewInSetting()) ;
     addChild(UICalendarWorkingContainer.class, null, null) ;
@@ -184,10 +185,12 @@ public class UICalendarPortlet extends UIPortletApplication {
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
     ExoRouter.Route er = ExoRouter.route(requestPath);
+    spaceGroupId = spaceIdStr;
     if (er == null) return spaceIdStr;
     String spacePrettyName = er.localArgs.get("spacePrettyName");
     SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
     Space space = sService.getSpaceByPrettyName(spacePrettyName);
+    spaceGroupId = spaceIdStr;
     if (space == null) return spaceIdStr;
     spaceIdStr = space.getGroupId();
     spaceGroupId = (spaceIdStr == null ? "" : spaceIdStr);
@@ -198,6 +201,10 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   public static boolean isInSpace() {
     return !getSpaceId().equals("");
+  }
+
+  public boolean isInSpaceContext() {
+    return !getSpaceGroupId().equals("");
   }
 
   public void processInvitationURL(WebuiRequestContext context, PortalRequestContext pContext, String url) throws Exception

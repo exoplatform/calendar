@@ -75,6 +75,7 @@ import org.exoplatform.services.jcr.core.ManageableRepository;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -142,6 +143,8 @@ public class JCRDataStorage implements DataStorage {
 
   private CalendarSetting calSetting;
 
+  /** a map performs as a cache to query event categories for a user */
+  private List<EventCategory> eventCategories;
 
   private static final Log       log                 = ExoLogger.getLogger("cs.calendar.service");
 
@@ -596,13 +599,19 @@ public class JCRDataStorage implements DataStorage {
   // Event Category APIs
 
   public List<EventCategory> getEventCategories(String username) throws Exception {
+    log.info("getEventCategories: " + eventCategories);
+    if (eventCategories != null) return eventCategories;
+    log.info("getEventCategories - query new");
+    eventCategories = new ArrayList<EventCategory>();
     Node eventCategoryHome = getEventCategoryHome(username);
     NodeIterator iter = eventCategoryHome.getNodes();
-    List<EventCategory> categories = new ArrayList<EventCategory>();
+    //List<EventCategory> categories = new ArrayList<EventCategory>();
     while (iter.hasNext()) {
-      categories.add(getEventCategory(iter.nextNode()));
+      //categories.add(getEventCategory(iter.nextNode()));
+      eventCategories.add(getEventCategory(iter.nextNode()));
     }
-    return categories;
+    //return categories;
+    return eventCategories;
   }
 
   public void saveEventCategory(String username,
@@ -663,6 +672,7 @@ public class JCRDataStorage implements DataStorage {
     eventCategoryNode.setProperty(Utils.EXO_ID, eventCategory.getId());
     eventCategoryNode.setProperty(Utils.EXO_NAME, eventCategory.getName());
     eventCategoryHome.getSession().save();
+    eventCategories = null;
   }
 
   public void removeEventCategory(String username, String eventCategoryId) throws Exception {
@@ -687,6 +697,7 @@ public class JCRDataStorage implements DataStorage {
       eventCategoryNode.remove();
       eventCategoryHome.save();
       eventCategoryHome.getSession().save();
+      eventCategories = null;
     }
   }
 
@@ -2444,6 +2455,7 @@ public class JCRDataStorage implements DataStorage {
     calendarTypeMapping.put(calendarShareNode.getPath(), Calendar.TYPE_SHARED);
 
     Map<Integer, String> mapData = new HashMap<Integer, String>();
+    if (emptyCalendars == null) emptyCalendars = new ArrayList<String>();
 
     QueryManager qm = publicCalHome.getSession().getWorkspace().getQueryManager();
 
@@ -2489,6 +2501,7 @@ public class JCRDataStorage implements DataStorage {
         }
 
         query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
+
         //query = qm.createQuery(queryEventsStatementXPath.toString(), Query.XPATH);
 
         try {
@@ -2509,6 +2522,8 @@ public class JCRDataStorage implements DataStorage {
 
     return mapData;
   }
+
+
 
 
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username,
@@ -3546,6 +3561,7 @@ public class JCRDataStorage implements DataStorage {
                                                                         String[] publicCalendars, String[] sharedCalendars,
                                                                         List<String> emptyCalendars) throws Exception {
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
+    if (emptyCalendars == null) emptyCalendars = new ArrayList<String>();
 
     /** get from user private calendars */
     recurEvents.addAll(searchOriginalRecurrenceEventsSQL(getUserCalendarHome(username), String.valueOf(Calendar.TYPE_PRIVATE),

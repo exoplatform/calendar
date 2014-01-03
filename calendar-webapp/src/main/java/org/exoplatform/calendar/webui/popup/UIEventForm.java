@@ -45,6 +45,7 @@ import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.CalendarView;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarView;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.calendar.webui.UIListContainer;
@@ -407,8 +408,10 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       selectBoxWithGroups.setOptions(getCalendars()) ;
     }
     
-    String spaceId = UICalendarPortlet.getSpaceId();
-    if (spaceId != null) {
+    //String spaceId = UICalendarPortlet.getSpaceId();
+    String spaceId = getAncestorOfType(UICalendarPortlet.class).getSpaceGroupId();
+    if (!spaceId.equals("")) {
+      //if (spaceId != null) {
       setCalendarOptionOfSpaceAsSelected(spaceId, selectBoxWithGroups.getOptions(), selectBoxWithGroups);
     }
     
@@ -1510,7 +1513,10 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     eventId = calendarEvent.getId() ;
     CalendarView calendarView = (CalendarView)uiViewContainer.getRenderedChild() ;
     this.isChangedSignificantly = this.isSignificantChanged(calendarEvent, oldCalendarEvent);
-    
+
+    /** reset caches for empty calendars */
+    UICalendarView.resetEmptyCalendars();
+
     try {
 
       if(uiForm.isAddNew_){

@@ -152,7 +152,9 @@ public class UICalendars extends UIForm  {
   }
 
   public void checkAll() {
-    if (UICalendarPortlet.getSpaceId() != null) {
+
+    //if (UICalendarPortlet.getSpaceGroupId() != null) {
+    if (!getAncestorOfType(UICalendarPortlet.class).getSpaceGroupId().equals("")) {
       try {
         CalendarService calendarService = CalendarUtils.getCalendarService() ;
         for(UIComponent component : getChildren()){
@@ -303,7 +305,7 @@ public class UICalendars extends UIForm  {
   {
     UICalendarPortlet calendarPortlet = getAncestorOfType(UICalendarPortlet.class);
     String spaceGroupId = calendarPortlet.getSpaceGroupId();
-    if (spaceGroupId == null) {
+    if (spaceGroupId.equals("")) {
       return true;
     }
     if (groupIds == null) {
@@ -424,7 +426,9 @@ public class UICalendars extends UIForm  {
     try{ 
     String userId = CalendarUtils.getCurrentUser();
     String[] groups = CalendarUtils.getUserGroups(userId);
-    if(UICalendarPortlet.isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    //if(UICalendarPortlet.isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    if (uiCalendarPortlet.isInSpaceContext()) groups =  new String[]{uiCalendarPortlet.getSpaceGroupId()};
     CalendarService calendarService = CalendarUtils.getCalendarService();
     Set<String> set = new HashSet<String>();
     for (GroupCalendarData group : calendarService.getGroupCalendars(groups, false, userId)) {
