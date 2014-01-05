@@ -14,13 +14,11 @@
     <div class="horizontalLayout">
       <div class="formContainer resizable">
       <%
-         def share        = _ctx.appRes(uicomponent.id + ".label.Share");
-         def calendarName = "<strong>" + uicomponent.calendarName + "</strong>";
-         def shareNote    = _ctx.appRes(uicomponent.id + ".msg.share-calendar");
-         def note         = share + " " + calendarName + shareNote;
+         def shareCalendarNote = _ctx.appRes(uicomponent.id + ".msg.share-calendar");
+         shareCalendarNote = shareCalendarNote.replace("{0}", "<strong>" + uicomponent.calendarName + "</strong>");
       %>
       <div class="control-label">
-		<div class="calendarName">$note</div>
+		<div class="calendarName">$shareCalendarNote</div>
 	  </div>
 
       <% uicomponent.renderChild(uicomponent.getChildById(uicomponent.PERMISSION_GRID)) ;
