@@ -158,7 +158,6 @@ public class UICalendarPortlet extends UIPortletApplication {
   }
 
   public static String getGroupIdOfSpace() {
-    log.info("getGroupIdOfSpace");
     String spaceGroupId = "";
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
@@ -173,14 +172,8 @@ public class UICalendarPortlet extends UIPortletApplication {
   }
 
   public String getSpaceGroupId() {
-    log.info("getSpaceGroupId : " + spaceGroupId);
+    if (spaceGroupId != null) return spaceGroupId;
 
-    if (spaceGroupId != null) {
-      log.info("get from cache");
-      return spaceGroupId;
-    }
-
-    log.info("get new");
     String spaceIdStr = "";
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
@@ -194,7 +187,6 @@ public class UICalendarPortlet extends UIPortletApplication {
     if (space == null) return spaceIdStr;
     spaceIdStr = space.getGroupId();
     spaceGroupId = (spaceIdStr == null ? "" : spaceIdStr);
-    log.info("space group id : " + spaceGroupId);
     return spaceGroupId;
   }
 

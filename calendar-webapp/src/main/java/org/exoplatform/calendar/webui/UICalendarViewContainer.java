@@ -127,7 +127,6 @@ public class UICalendarViewContainer extends UIContainer  {
   public void refresh() throws Exception {
     LOG.info("refresh");
     for (UIComponent comp : getChildren()) {
-      LOG.info("child: " + comp);
       if (comp.isRendered() && comp instanceof CalendarView){
         ((CalendarView)comp).refresh();
       }

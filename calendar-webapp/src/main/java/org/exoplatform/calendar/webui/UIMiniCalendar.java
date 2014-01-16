@@ -16,9 +16,11 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -122,13 +124,42 @@ public class UIMiniCalendar extends UICalendarView  {
     String currentUser        = CalendarUtils.getCurrentUser();
     String[] publicCalendars  = getPublicCalendars();
     String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
-    String[] sharedCalendars  = getSharedCalendars().toArray(new String[]{});
 
-    dataMap = calendarService.searchHightLightEventSQL(currentUser, eventQuery,
-        privateCalendars, publicCalendars, sharedCalendars, emptyEventCalendars);
+    List<Map<Integer, String>> map = calendarService.searchHightLightEventSQL(currentUser, eventQuery,
+        privateCalendars, publicCalendars);
 
-    dataMap.putAll(calendarService.searchHighlightRecurrenceEventSQL(currentUser, eventQuery, timezone,
-        privateCalendars, publicCalendars, sharedCalendars, emptyRecurrentEventCalendars));
+    dataMap = map.get(0);
+    emptyEventCalendars = new ArrayList<String>(map.get(1).values());
+
+    map = calendarService.searchHighlightRecurrenceEventSQL(currentUser, eventQuery, timezone,
+        privateCalendars, publicCalendars);
+
+    dataMap.putAll(map.get(0));
+    emptyRecurrentEventCalendars = new ArrayList<String>(map.get(1).values());
+
+    /** Propagate empty calendars to other views */
+    UICalendarPortlet calendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    UICalendarViewContainer viewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class);
+
+    String viewType = viewContainer.getCurrentViewType();
+    if (UICalendarViewContainer.DAY_VIEW.equals(viewType) || UICalendarViewContainer.WORKING_VIEW.equals(viewType)) {
+      UIDayView dayView = viewContainer.getChild(UIDayView.class);
+      dayView.setEmptyEventCalendars(emptyEventCalendars);
+      dayView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    } else if (UICalendarViewContainer.WEEK_VIEW.equals(viewType)) {
+      UIWeekView weekView = viewContainer.getChild(UIWeekView.class);
+      weekView.setEmptyEventCalendars(emptyEventCalendars);
+      weekView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    } else if (UICalendarViewContainer.MONTH_VIEW.equals(viewType)) {
+      UIMonthView monthView = viewContainer.getChild(UIMonthView.class);
+      monthView.setEmptyEventCalendars(emptyEventCalendars);
+      monthView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    } else if (UICalendarViewContainer.LIST_VIEW.equals(viewType)) {
+      UIListView listView = viewContainer.getChild(UIListView.class);
+      listView.setEmptyEventCalendars(emptyEventCalendars);
+      listView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    }
+
   }
 
 

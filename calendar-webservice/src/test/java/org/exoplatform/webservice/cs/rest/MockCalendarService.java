@@ -157,8 +157,7 @@ public class MockCalendarService implements CalendarService{
 
   @Override
   public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery,
-                                                     String[] privateCalendars, String[] publicCalendars,
-                                                     String[] sharedCalendars, List<String> emptyCalendars) throws Exception {
+                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception {
     return null;
   }
 
@@ -349,9 +348,8 @@ public class MockCalendarService implements CalendarService{
   }
 
   @Override
-  public Map<Integer, String> searchHightLightEventSQL(String username, EventQuery eventQuery,
-                                                       String[] privateCalendars, String[] publicCalendars,
-                                                       String[] sharedCalendars, List<String> emptyCalendars) throws Exception {
+  public List<Map<Integer, String>> searchHightLightEventSQL(String username, EventQuery eventQuery,
+                                                       String[] privateCalendars, String[] publicCalendars) throws Exception {
     return null;
   }
 
@@ -590,11 +588,11 @@ public class MockCalendarService implements CalendarService{
     return null;
   }
 
-  public Map<Integer, String> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
-                                                                String[] privateCalendars, String[] publicCalendars,
-                                                                String[] sharedCalendars, List<String> emptyCalendars) throws Exception {
+  @Override
+  public List<Map<Integer, String>> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone, String[] privateCalendars, String[] publicCalendars) throws Exception {
     return null;
   }
+
 
   @Override
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception {
@@ -602,12 +600,9 @@ public class MockCalendarService implements CalendarService{
   }
 
   @Override
-  public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from,
-                                                                     java.util.Calendar to, String[] privateCalendars,
-                                                                     String[] publicCalendars, String[] sharedCalendars, List<String> emptyCalendars) throws Exception {
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception {
     return null;
   }
-
 
   @Override
   public RemoteCalendar getRemoteCalendar(String owner, String calendarId) throws Exception {

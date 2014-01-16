@@ -89,7 +89,7 @@ public class UIMonthView extends UICalendarView {
   }
   @Override
   public void refresh() throws Exception {
-    log.info("Refresh");
+    log.info("refresh");
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
     EventQuery eventQuery = new EventQuery() ;
@@ -100,7 +100,6 @@ public class UIMonthView extends UICalendarView {
 
     String[] publicCalendars  = getPublicCalendars();
     String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
-    String[] sharedCalendars  = getSharedCalendars().toArray(new String[]{});
 
     if (isInSpace()) {
       eventQuery.setCalendarId(publicCalendars);
@@ -110,14 +109,13 @@ public class UIMonthView extends UICalendarView {
       //allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
 
       allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-          privateCalendars, publicCalendars, sharedCalendars, emptyEventCalendars);
+          privateCalendars, publicCalendars, emptyEventCalendars);
     }
-
 
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     //List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
     List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-        eventQuery.getFromDate(), eventQuery.getToDate(), privateCalendars, publicCalendars, sharedCalendars, emptyRecurrentEventCalendars);
+        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
 
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();

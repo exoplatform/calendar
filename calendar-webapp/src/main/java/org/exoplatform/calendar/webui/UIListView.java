@@ -259,18 +259,16 @@ public class UIListView extends UICalendarView {
       }
     }
 
-
     String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
     String[] publicCalendars  = getPublicCalendars();
-    String[] sharedCalendars  = getSharedCalendars().toArray(new String[]{});
 
     //List<CalendarEvent> allEvents =  calendarService.getEvents(username, eventQuery, checkedPublicCalendars)  ;
     List<CalendarEvent> allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-        privateCalendars, publicCalendars, sharedCalendars, emptyEventCalendars);
+        privateCalendars, publicCalendars, emptyEventCalendars);
 
     //List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), checkedPublicCalendars);
     List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username, eventQuery.getFromDate(),
-        eventQuery.getToDate(), privateCalendars, publicCalendars, sharedCalendars, emptyRecurrentEventCalendars);
+        eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
 
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {

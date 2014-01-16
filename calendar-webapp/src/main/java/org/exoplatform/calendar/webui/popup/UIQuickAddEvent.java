@@ -268,6 +268,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   static  public class SaveActionListener extends EventListener<UIQuickAddEvent> {
     @Override
     public void execute(Event<UIQuickAddEvent> event) throws Exception {
+      log.info("SaveActionListener");
       UIQuickAddEvent uiForm = event.getSource() ;
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       
@@ -382,6 +383,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
             return ;
           }
         }
+
         if(uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE)) {
           calService.saveUserEvent(username, calEvent.getCalendarId(), calEvent, true) ;
         }else if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)){

@@ -783,9 +783,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
         }
 
-        /** reset caches for empty calendars */
-        UICalendarView.resetEmptyCalendars();
-
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
         CalendarUtils.removeCurrentCalendarSetting();
         calendarPortlet.cancelAction() ;

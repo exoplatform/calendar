@@ -177,9 +177,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected Map<String, Map<String, CalendarEvent>> recurrenceEventsMap   = new LinkedHashMap<String, Map<String, CalendarEvent>>();
 
-  protected static List<String>                     emptyEventCalendars           = new ArrayList<String>();
+  protected    List<String>                     emptyEventCalendars;
 
-  protected static List<String>                     emptyRecurrentEventCalendars  = new ArrayList<String>();
+  protected    List<String>                     emptyRecurrentEventCalendars;
 
   abstract LinkedHashMap<String, CalendarEvent> getDataMap();
 
@@ -209,6 +209,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    * @return string of time value in milliseconds.
    */
   public abstract String getDefaultStartTimeOfEvent();
+
+  public void setEmptyEventCalendars(List<String> calendars) {
+    emptyEventCalendars = calendars;
+  }
+
+  public void setEmptyRecurrentEventCalendars(List<String> calendars) {
+    emptyRecurrentEventCalendars = calendars;
+  }
 
   protected String renderDayViewInTitleBar(String monthOpenTag,
                                            String monthCloseTag,
@@ -874,12 +882,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public CalendarEvent getcurrentOccurrence() {
     return currentOccurrence;
   }
-
-  public static void resetEmptyCalendars() {
-    emptyEventCalendars = null;
-    emptyRecurrentEventCalendars = null;
-  }
-
 
   static public class AddEventActionListener extends EventListener<UICalendarView> {
     @Override
