@@ -144,18 +144,23 @@ public class UIMiniCalendar extends UICalendarView  {
     String viewType = viewContainer.getCurrentViewType();
     if (UICalendarViewContainer.DAY_VIEW.equals(viewType) || UICalendarViewContainer.WORKING_VIEW.equals(viewType)) {
       UIDayView dayView = viewContainer.getChild(UIDayView.class);
+      if (dayView == null) dayView =  viewContainer.addChild(UIDayView.class, null, null) ;
       dayView.setEmptyEventCalendars(emptyEventCalendars);
       dayView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
     } else if (UICalendarViewContainer.WEEK_VIEW.equals(viewType)) {
       UIWeekView weekView = viewContainer.getChild(UIWeekView.class);
+      if (weekView == null) weekView = viewContainer.addChild(UIWeekView.class, null, null);
       weekView.setEmptyEventCalendars(emptyEventCalendars);
       weekView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
     } else if (UICalendarViewContainer.MONTH_VIEW.equals(viewType)) {
       UIMonthView monthView = viewContainer.getChild(UIMonthView.class);
+      if (monthView == null) monthView = viewContainer.addChild(UIMonthView.class, null, null);
       monthView.setEmptyEventCalendars(emptyEventCalendars);
       monthView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
     } else if (UICalendarViewContainer.LIST_VIEW.equals(viewType)) {
-      UIListView listView = viewContainer.getChild(UIListView.class);
+      UIListContainer uiView = viewContainer.getChild(UIListContainer.class) ;
+      if (uiView == null) uiView =  viewContainer.addChild(UIListContainer.class, null, null) ;
+      UIListView listView = uiView.getChild(UIListView.class) ;
       listView.setEmptyEventCalendars(emptyEventCalendars);
       listView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
     }
