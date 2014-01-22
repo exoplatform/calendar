@@ -71,7 +71,6 @@ import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.organization.account.UIUserSelector;
-import sun.util.calendar.Gregorian;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
