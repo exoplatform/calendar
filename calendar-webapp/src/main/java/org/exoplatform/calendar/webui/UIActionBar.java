@@ -92,7 +92,6 @@ public class UIActionBar extends UIContainer  {
   static public class ChangeViewActionListener extends EventListener<UIActionBar> {
     @Override
     public void execute(Event<UIActionBar> event) throws Exception {
-      LOG.info("ChangeViewActionListener");
       UIActionBar uiActionBar = event.getSource() ;
       String viewType = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String categoryId = event.getRequestContext().getRequestParameter("categoryId") ;
@@ -101,7 +100,6 @@ public class UIActionBar extends UIContainer  {
       UICalendarContainer uiVContainer = uiPortlet.findFirstComponentOfType(UICalendarContainer.class) ;
       uiVContainer.findFirstComponentOfType(UICalendars.class).checkAll();
       uiViewContainer.initView(viewType);
-      //uiViewContainer.refresh() ;
       UIMiniCalendar miniCalendar = uiPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
       miniCalendar.setCategoryId(categoryId) ; 
       if(uiViewContainer.getRenderedChild() instanceof UIListContainer) {

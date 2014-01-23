@@ -56,7 +56,6 @@ public class UICalendarViewContainer extends UIContainer  {
 
 
   public void initView(String viewType) throws Exception {
-    LOG.info("initView: " + viewType);
     CalendarSetting calendarSetting = new CalendarSetting();
     try {
       calendarSetting = getAncestorOfType(UICalendarPortlet.class).getCalendarSetting() ;
@@ -94,8 +93,6 @@ public class UICalendarViewContainer extends UIContainer  {
       UIListView uiListView = uiView.getChild(UIListView.class) ;
       uiListView.setShowEventAndTask(false) ;
       uiListView.setCategoryId(null) ;
-      //LOG.info("==> uiListView.refresh");
-      //uiListView.refresh() ;
       uiListView.isShowEvent_ = true ;
       if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
       setRenderedChild(viewType) ;
@@ -106,8 +103,6 @@ public class UICalendarViewContainer extends UIContainer  {
       if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
       setRenderedChild(WEEK_VIEW) ;
     }
-
-    // refresh();
   }
 
 
@@ -125,7 +120,6 @@ public class UICalendarViewContainer extends UIContainer  {
    }
 
   public void refresh() throws Exception {
-    LOG.info("refresh");
     for (UIComponent comp : getChildren()) {
       if (comp.isRendered() && comp instanceof CalendarView){
         ((CalendarView)comp).refresh();

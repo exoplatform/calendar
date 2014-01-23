@@ -77,7 +77,6 @@ public class UIDayView extends UICalendarView {
   }
   @Override
   public void refresh() throws Exception {
-    log.info("Refresh");
     eventData_.clear() ;
     allDayEvent_.clear() ;
     Calendar begin = getBeginDay(getCurrentCalendar()) ;  

@@ -108,14 +108,12 @@ public class UIWeekView extends UICalendarView {
 
   public UIWeekView() throws Exception {
     super();
-    LOG.info("UIWeekView constructor");
   }
 
   /**
    * initialization
    */
   private void init() throws Exception {
-    log.info("init");
     String dateFormat = getDateFormat();
     Locale locale = WebuiRequestContext.getCurrentInstance().getParentAppRequestContext().getLocale() ;
     Calendar beginDate = getBeginDateOfWeek();
@@ -136,7 +134,6 @@ public class UIWeekView extends UICalendarView {
 
   @Override
   public void refresh() throws Exception {
-    LOG.info("refresh");
     init();
     eventData_.clear() ;
     allDayEvent.clear();
@@ -171,16 +168,11 @@ public class UIWeekView extends UICalendarView {
       allEvents = calendarService.getPublicEvents(eventQuery);
     }
     else {
-      //allEvents = calendarService.getAllNoRepeatEvents(username, eventQuery, publicCalendars);
-
       allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
           privateCalendars, publicCalendars, emptyEventCalendars);
     }
 
     /** get exception occurrences, exclude original recurrence events */
-    //List<CalendarEvent> originalRecurEvents = calendarService.
-    //    getHighLightOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), publicCalendars);
-
     List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
         eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
 

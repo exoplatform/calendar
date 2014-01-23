@@ -37,16 +37,13 @@ public class UIListContainer extends UIContainer implements CalendarView {
   private static final Log LOG = ExoLogger.getExoLogger(UIListContainer.class);
 
   public UIListContainer() throws Exception {
-    LOG.info("UIListContainer constructor");
     addChild(UIListView.class, null, null) ;
     addChild(UIPreview.class, null, null) ;    
   }
 
   @Override
   public void refresh() throws Exception {
-    LOG.info("refresh");
     UIListView list = getChild(UIListView.class) ;
-    LOG.info("==> uiListView.refresh");
     list.refresh() ;
     UIPreview view = getChild(UIPreview.class) ;
     view.refresh() ;

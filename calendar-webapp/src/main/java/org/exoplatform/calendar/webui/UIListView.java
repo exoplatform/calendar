@@ -102,8 +102,7 @@ public class UIListView extends UICalendarView {
     if(getEvents().length > 0 ) {
       selectedEvent_ = getEvents()[0].getId() ;
     }
-    log.info("UIListView constructor");
-  } 
+  }
 
   @Override
   public String getTemplate() {
@@ -127,7 +126,6 @@ public class UIListView extends UICalendarView {
 
   @Override
   public void refresh() throws Exception {
-    log.info("refresh");
     UIListContainer uiListContainer = getParent() ;
     this.setCalClicked(true);
     if (uiListContainer.isDisplaySearchResult()) return ;

@@ -126,11 +126,10 @@ public class UICalendars extends UIForm  {
   }
 
   public void init() throws Exception {
-    LOG.info("init - this: " + this);
-
     privateCalendars = null;
     publicCalendars  = null;
     sharedCalendars  = null;
+    colorMap_.clear();
 
     /** init checkbox */
     for (Calendar calendar : getAllPrivateCalendars()) {
@@ -306,10 +305,7 @@ public class UICalendars extends UIForm  {
    */
   public List<Calendar> getAllPrivateCalendars() throws Exception
   {
-    LOG.info("getAllPrivateCalendars: " + this);
     if (privateCalendars != null) return privateCalendars;
-
-    LOG.info("getAllPrivateCalendars - query new");
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
     boolean filterFromSetting = false;
@@ -364,7 +360,8 @@ public class UICalendars extends UIForm  {
   protected boolean isCalendarOfSpace1(String[] groupIds)
   {
     UICalendarPortlet calendarPortlet = getAncestorOfType(UICalendarPortlet.class);
-    String spaceGroupId = calendarPortlet.getSpaceGroupId();
+    String spaceGroupId = calendarPortlet != null ? calendarPortlet.getSpaceGroupId()
+        : UICalendarPortlet.getGroupIdOfSpace();
     if (spaceGroupId.equals("")) {
       return true;
     }
@@ -449,14 +446,10 @@ public class UICalendars extends UIForm  {
    */
   public List<Calendar> getAllPublicCalendars() throws Exception
   {
-    LOG.info("getAllPublicCalendars: " + this);
     if (publicCalendars != null) return publicCalendars;
-
-    LOG.info("getAllPublicCalendars - query new");
 
     String username = CalendarUtils.getCurrentUser() ;
     String[] groups = CalendarUtils.getUserGroups(username) ;
-
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     /* return all calendars for a list of group, filter by calendar setting */
     boolean filterFromSetting = false;
@@ -466,35 +459,14 @@ public class UICalendars extends UIForm  {
       return publicCalendars;
     }
 
-    //Map<String, String> map = new HashMap<String, String> () ;
-    List<Calendar> calendars = new ArrayList<Calendar>();  /* contains all calendar */
-
-    for (GroupCalendarData group : groupCalendars) {
-
-      calendars.addAll(group.getCalendars()) ;
-      /**
-      for(Calendar calendar : calendars) {
-        map.put(calendar.getId(), calendar.getId()) ;
-        colorMap_.put(buildId(Calendar.TYPE_PUBLIC ,calendar.getId()), calendar.getCalendarColor()) ;
-
-        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
-        if (checkbox == null) {
-          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-          checkbox.setChecked(isCalendarOfSpace1(calendar.getGroups()));
-          addUIFormInput(checkbox);
-        } else {
-          setCheckedCheckbox(checkbox, calendar);
-        }
-      }
-      **/
-    }
-
+    List<Calendar> calendars = new ArrayList<Calendar>();
+    for (GroupCalendarData group : groupCalendars) calendars.addAll(group.getCalendars()) ;
     publicCalendars = new ArrayList<Calendar>(new HashSet<Calendar>(calendars));
     return publicCalendars;
   }
   
   public String[] getPublicCalendarIds() {
-    try{ 
+    try {
     String userId = CalendarUtils.getCurrentUser();
     String[] groups = CalendarUtils.getUserGroups(userId);
     //if(UICalendarPortlet.isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
@@ -524,40 +496,13 @@ public class UICalendars extends UIForm  {
    */
   public GroupCalendarData getSharedCalendars() throws Exception
   {
-    LOG.info("getSharedCalendars: " + this);
     if (sharedCalendars != null) return sharedCalendars;
 
-    LOG.info("getSharedCalendars - query new");
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     /* get shared calendar but filter from setting */
     boolean filterFromSetting = false;
     GroupCalendarData groupCalendars = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(), filterFromSetting) ;
     if (groupCalendars == null) groupCalendars = new GroupCalendarData("", "", new ArrayList<Calendar>(0));
-
-    /**
-    CalendarSetting setting = calendarService.getCalendarSetting(CalendarUtils.getCurrentUser()) ;
-
-    Map<String, String> map = new HashMap<String, String>() ;
-    for(String key : setting.getSharedCalendarsColors()) {
-      map.put(key.split(CalendarUtils.COLON)[0], key.split(CalendarUtils.COLON)[1]) ;
-    }
-
-    List<Calendar> calendars = groupCalendars.getCalendars() ;
-    for(Calendar calendar : calendars) {
-      String color = map.get(calendar.getId()) ;
-      if(color == null) color = calendar.getCalendarColor() ;
-      colorMap_.put(buildId(Calendar.TYPE_SHARED, calendar.getId()), color) ;
-      UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
-      if (checkbox == null) {
-        checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-        checkbox.setChecked(isCalendarOfSpace1(calendar.getGroups()));
-        addUIFormInput(checkbox);
-      } else {
-        setCheckedCheckbox(checkbox, calendar);
-      }
-    }
-    **/
-
     sharedCalendars = groupCalendars;
     return groupCalendars ;
   }

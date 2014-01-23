@@ -1348,7 +1348,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   }
   
   public void saveAndNoAsk(Event<UIEventForm> event, boolean isSend, boolean updateSeries)throws Exception {
-    LOG.info("saveAndNoAsk");
     UIEventForm uiForm = event.getSource() ;
     UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
     UIPopupAction uiPopupAction = uiForm.getAncestorOfType(UIPopupAction.class) ;
@@ -2008,7 +2007,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   static  public class SaveActionListener extends EventListener<UIEventForm> {
     @Override
     public void execute(Event<UIEventForm> event) throws Exception {
-      LOG.info("SaveActionListener");
       UIEventForm uiForm = event.getSource() ;
       
       UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;

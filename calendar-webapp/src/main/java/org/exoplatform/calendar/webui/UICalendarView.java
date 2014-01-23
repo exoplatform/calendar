@@ -184,7 +184,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   abstract LinkedHashMap<String, CalendarEvent> getDataMap();
 
   public UICalendarView() throws Exception {
-    log.info("UICalendarView constructor");
     calendar_ = CalendarUtils.getInstanceOfCurrentCalendar();
     addUIFormInput(new UIFormSelectBox(EVENT_CATEGORIES, EVENT_CATEGORIES, null));
     update();
@@ -404,7 +403,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   public boolean isInSpace(){
-    //return UICalendarPortlet.isInSpace();
     return getAncestorOfType(UICalendarPortlet.class).isInSpaceContext();
   }
 
@@ -844,14 +842,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   @Override
   public void processRender(WebuiRequestContext arg0) throws Exception {
-    log.info("processRender: " + this);
-    if (this instanceof UIListView) {
-      log.info("instance of list view");
-    }
-    else {
-      log.info("==> refresh");
-      refresh();
-    }
+    if (! (this instanceof UIListView)) refresh();
     super.processRender(arg0);
   }
 

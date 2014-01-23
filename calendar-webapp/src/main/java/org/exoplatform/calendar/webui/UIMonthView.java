@@ -89,7 +89,6 @@ public class UIMonthView extends UICalendarView {
   }
   @Override
   public void refresh() throws Exception {
-    log.info("refresh");
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
     EventQuery eventQuery = new EventQuery() ;

@@ -327,8 +327,6 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception {
-    log.info("getUserCalendars - username: " + username);
-
     String[] defaultCalendars;
     List<Calendar> calList;
 
@@ -337,18 +335,16 @@ public class JCRDataStorage implements DataStorage {
     try {
       calList = userCalendarCache.get(username);
       if (calList == null) {
-        log.info("getUserCalendars - entry does not exist in cache");
-        calList = new ArrayList<Calendar>();
+        calList  = new ArrayList<Calendar>();
         Node userCalendarHome = getUserCalendarHome(username);
         NodeIterator iter     = userCalendarHome.getNodes();
         defaultCalendars      = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterPrivateCalendars();
 
         while (iter.hasNext()) {
           Calendar cal = getCalendar(defaultCalendars, username, iter.nextNode(), isShowAll);
-          // Calendar cal = loadCalendar(iter.nextNode());
           calList.add(cal);
-          // if (!Arrays.asList(defaultCalendars).contains(cal.getId())) calList.add(cal);
         }
+
         userCalendarCache.put(username, calList);
       }
       else {
@@ -367,7 +363,10 @@ public class JCRDataStorage implements DataStorage {
       lock.unlock();
     }
 
-    return calList;
+    /** return a copy */
+    List<Calendar> returnedList = new ArrayList<Calendar>();
+    for (Calendar calendar : calList) returnedList.add(calendar);
+    return returnedList;
   }
 
   /**
@@ -390,7 +389,6 @@ public class JCRDataStorage implements DataStorage {
     Session session = calendarHome.getSession();
     session.save();
 
-    log.info("saveUserCalendar - clear cache for user : " + username);
     Lock lock = getLock("UserCalendar", username);
     lock.lock();
     try {
@@ -426,7 +424,6 @@ public class JCRDataStorage implements DataStorage {
 
       }
 
-      log.info("removeUserCalendar  - clear cache for user : " + username);
       Lock lock = getLock("UserCalendar", username);
       lock.lock();
       try {
@@ -470,7 +467,6 @@ public class JCRDataStorage implements DataStorage {
     }
 
     for (String groupId : groupIds) {
-      log.info("getGroupCalendars - groupId: " + groupId);
       //StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "//element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
       StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
       List<Calendar> lCalendars;
@@ -481,7 +477,6 @@ public class JCRDataStorage implements DataStorage {
         lCalendars = groupCalendarCache_.get(sQuery);
         if (lCalendars == null)
         {
-          log.info("getGroupCalendars - entry does not exist in cache");
           lCalendars = new ArrayList<Calendar>();
           QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
           Query query = qm.createQuery(sQuery, Query.XPATH);
@@ -631,11 +626,9 @@ public class JCRDataStorage implements DataStorage {
     return calendar;
   }
 
-  // Event Category APIs
+  /**=== Event Category APIs ===*/
 
   public List<EventCategory> getEventCategories(String username) throws Exception {
-    log.info("getEventCategories - username: " + username);
-
     List<EventCategory> eventCategoryList;
     Lock lock = getLock("EventCategories", username);
     lock.lock();
@@ -643,14 +636,12 @@ public class JCRDataStorage implements DataStorage {
     try {
       eventCategoryList = userEventCategories.get(username);
       if (eventCategoryList == null) {
-        log.info("getEventCategories - query new");
-
+        /** query new */
         eventCategoryList = new ArrayList<EventCategory>();
         Node eventCategoryHome = getEventCategoryHome(username);
         NodeIterator iter = eventCategoryHome.getNodes();
-        //List<EventCategory> categories = new ArrayList<EventCategory>();
+
         while (iter.hasNext()) {
-          //categories.add(getEventCategory(iter.nextNode()));
           eventCategoryList.add(getEventCategory(iter.nextNode()));
         }
       }
@@ -722,7 +713,6 @@ public class JCRDataStorage implements DataStorage {
     eventCategoryNode.setProperty(Utils.EXO_NAME, eventCategory.getName());
     eventCategoryHome.getSession().save();
 
-    log.info("saveEventCategory - clear cache for user : " + username);
     Lock lock = getLock("EventCategories", username);
     lock.lock();
     try {
@@ -755,7 +745,6 @@ public class JCRDataStorage implements DataStorage {
       eventCategoryHome.save();
       eventCategoryHome.getSession().save();
 
-      log.info("removeEventCategory - clear cache for user : " + username);
       Lock lock = getLock("EventCategories", username);
       lock.lock();
       try {
@@ -1288,7 +1277,6 @@ public class JCRDataStorage implements DataStorage {
     Node reminderFolder = getReminderFolder(event.getFromDateTime());
     saveEvent(calendarNode, event, reminderFolder, isNew);
 
-    log.info("savePublicEvent - clear group calendar event cache");
     groupCalendarEventCache.clearCache();
     groupCalendarRecurrentEventCache.clearCache();
   }
@@ -1313,8 +1301,6 @@ public class JCRDataStorage implements DataStorage {
         if (log.isDebugEnabled())
           log.debug(e.getMessage());
       }
-
-      log.info("removePublicEvent - clear group calendar event cache");
 
       groupCalendarEventCache.clearCache();
       groupCalendarRecurrentEventCache.clearCache();
@@ -2537,12 +2523,8 @@ public class JCRDataStorage implements DataStorage {
     Map<Integer, String> emptyCalendarsMap = new HashMap<Integer, String>();
 
     /** query private calendar */
-    log.info("searchHightLightEventSQL - private calendar");
-
     QueryManager qm  = calendarHome.getSession().getWorkspace().getQueryManager();
-
     for (String calendarId : privateCalendars) {
-      log.info("searchHightLightEventSQL - calendar Id : " + calendarId);
       String calendarPath = calendarHome.getPath() + "/" + calendarId + "/%";
 
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
@@ -2585,7 +2567,6 @@ public class JCRDataStorage implements DataStorage {
       try {
         NodeIterator iterator = query.execute().getNodes();
         if (!iterator.hasNext()) {
-          log.info("searchHightLightEventSQL - empty calendar");
           emptyCalendarsMap.put(emptyCalendarsMap.size(), calendarId);
         }
 
@@ -2600,13 +2581,9 @@ public class JCRDataStorage implements DataStorage {
     }
 
     /** if group calendar then check event cache before query */
-    log.info("searchHightLightEventSQL - public calendar");
-
     qm  = publicCalHome.getSession().getWorkspace().getQueryManager();
 
     for (String calendarId : publicCalendars) {
-
-      log.info("searchHightLightEventSQL - calendar Id : " + calendarId);
       String calendarPath = publicCalHome.getPath() + "/" + calendarId + "/%";
 
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
@@ -2642,14 +2619,11 @@ public class JCRDataStorage implements DataStorage {
       try {
         events = groupCalendarEventCache.get(queryEventsStatementSQL.toString());
         if (events == null) {
-          log.info("get events for group calendars - entry does not exist in cache");
-
           query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
 
           try {
             NodeIterator iterator = query.execute().getNodes();
             if (!iterator.hasNext()) {
-              log.info("searchHightLightEventSQL - empty calendar");
               emptyCalendarsMap.put(emptyCalendarsMap.size(), calendarId);
             }
 
@@ -2674,10 +2648,7 @@ public class JCRDataStorage implements DataStorage {
     /** shared calendar */
     qm  = calendarShareNode.getSession().getWorkspace().getQueryManager();
 
-    log.info("searchHightLightEventSQL - shared calendar");
-
     if (calendarShareNode.hasNode(username)) {
-
       PropertyIterator propertyIterator = calendarShareNode.getNode(username).getReferences();
       while (propertyIterator.hasNext()) {
         try {
@@ -3467,7 +3438,6 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
-    log.info("getAllNoRepeatEvents");
     List<CalendarEvent> allEvents = new ArrayList<CalendarEvent>();
     String[] filteredCalendars;
     Node calendarHome      = getUserCalendarHome(username);
@@ -3519,8 +3489,6 @@ public class JCRDataStorage implements DataStorage {
     }
 
     queryStatement.append("]");
-
-    log.info("getAllNoRepeatEvents - query private calendar events: " + queryStatement.toString());
 
     query = qm.createQuery(queryStatement.toString(), Query.XPATH);
 
@@ -3577,10 +3545,7 @@ public class JCRDataStorage implements DataStorage {
       }
       queryStatement.append(")");
     }
-
     queryStatement.append("]");
-
-    log.info("getAllNoRepeatEvents - query public calendar events: " + queryStatement.toString());
 
     query = qm.createQuery(queryStatement.toString(), Query.XPATH);
 
@@ -3631,10 +3596,7 @@ public class JCRDataStorage implements DataStorage {
           }
           queryStatement.append(")");
         }
-
         queryStatement.append("]");
-
-        log.info("getAllNoRepeatEvents - query shared calendar events: " + queryStatement.toString());
 
         query = qm.createQuery(queryStatement.toString(), Query.XPATH);
         NodeIterator iterator = query.execute().getNodes();
@@ -3705,19 +3667,10 @@ public class JCRDataStorage implements DataStorage {
     Query query;
 
     /** query private calendar */
-    log.info("getAllNoRepeatEventsSQL - private calendar");
-
     QueryManager qm  = calendarHome.getSession().getWorkspace().getQueryManager();
 
     for (String calendarId : privateCalendars) {
-
-      log.info("getAllNoRepeatEventsSQL - calendarId: " + calendarId);
-
-      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) {
-        log.info("getAllNoRepeatEventsSQL - empty calendar");
-        continue;
-      }
-
+      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
       String calendarPath = calendarHome.getPath() + "/" + calendarId + "/%";
 
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
@@ -3774,17 +3727,10 @@ public class JCRDataStorage implements DataStorage {
     }
 
     /** if group calendar then check event cache before query */
-    log.info("getAllNoRepeatEventsSQL - public calendar");
     qm  = publicCalHome.getSession().getWorkspace().getQueryManager();
 
     for (String calendarId : publicCalendars) {
-      log.info("getAllNoRepeatEventsSQL - calendarId: " + calendarId);
-
-      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) {
-        log.info("getAllNoRepeatEventsSQL - empty calendar");
-        continue;
-      }
-
+      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
       String calendarPath = publicCalHome.getPath() + "/" + calendarId + "/%";
 
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
@@ -3821,8 +3767,6 @@ public class JCRDataStorage implements DataStorage {
 
         events = groupCalendarEventCache.get(queryEventsStatementSQL.toString());
         if (events == null) {
-          log.info("get events for group calendars - entry does not exist in cache");
-
           query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
           events = new ArrayList<CalendarEvent>();
 
@@ -3853,10 +3797,7 @@ public class JCRDataStorage implements DataStorage {
     /** shared calendar */
     qm  = calendarShareNode.getSession().getWorkspace().getQueryManager();
 
-    log.info("getAllNoRepeatEventsSQL - shared calendar");
-
     if (calendarShareNode.hasNode(username)) {
-
       PropertyIterator propertyIterator = calendarShareNode.getNode(username).getReferences();
       while (propertyIterator.hasNext()) {
         try {
@@ -3990,15 +3931,8 @@ public class JCRDataStorage implements DataStorage {
     Node publicHome = getPublicCalendarHome();
     QueryManager qm = publicHome.getSession().getWorkspace().getQueryManager();
 
-    log.info("getHighLightOriginalRecurrenceEventsSQL - public calendar");
-
     for (String calendarId : publicCalendars) {
-      log.info("getHighLightOriginalRecurrenceEventsSQL - calendarId: " + calendarId);
-
-      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) {
-        log.info("getHighLightOriginalRecurrenceEventsSQL - empty calendar");
-        continue;
-      }
+      if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
 
       String calendarPath = publicHome.getPath() + "/" + calendarId;
 
@@ -4036,8 +3970,6 @@ public class JCRDataStorage implements DataStorage {
       try {
         events = groupCalendarRecurrentEventCache.get(queryEventsStatementSQL.toString());
         if (events == null) {
-          log.info("get recurrent events for group calendars - entry does not exist in cache");
-
           events = new ArrayList<CalendarEvent>();
           Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
 
@@ -4067,8 +3999,6 @@ public class JCRDataStorage implements DataStorage {
 
     Node sharedCalendarHome = getSharedCalendarHome();
     qm = sharedCalendarHome.getSession().getWorkspace().getQueryManager();
-
-    log.info("getHighLightOriginalRecurrenceEventsSQL - shared calendar");
 
     if (sharedCalendarHome.hasNode(username)) {
       Node userNode = sharedCalendarHome.getNode(username);
@@ -4132,11 +4062,7 @@ public class JCRDataStorage implements DataStorage {
     Node calendarHome = getUserCalendarHome(username);
     QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
 
-    log.info("searchHighLightOriginalRecurrenceEventsSQL - private calendar");
-
     for (String calendarId : privateCalendars) {
-      log.info("searchHighLightOriginalRecurrenceEventsSQL - calendarId: " + calendarId);
-
       String calendarPath = calendarHome.getPath() + "/" + calendarId;
 
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
@@ -4196,14 +4122,11 @@ public class JCRDataStorage implements DataStorage {
       }
     }
 
+    /** query public calendar evens */
     Node publicHome = getPublicCalendarHome();
     qm = publicHome.getSession().getWorkspace().getQueryManager();
 
-    log.info("searchHighLightOriginalRecurrenceEventsSQL - public calendar");
-
     for (String calendarId : publicCalendars) {
-      log.info("searchHighLightOriginalRecurrenceEventsSQL - calendarId: " + calendarId);
-
       String calendarPath = publicHome.getPath() + "/" + calendarId;
 
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
@@ -4240,15 +4163,12 @@ public class JCRDataStorage implements DataStorage {
       try {
         events = groupCalendarRecurrentEventCache.get(queryEventsStatementSQL.toString());
         if (events == null) {
-          log.info("get recurrent events for group calendars - entry does not exist in cache");
-
           Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
           events = new ArrayList<CalendarEvent>();
 
           try {
             NodeIterator it = query.execute().getNodes();
             if (!it.hasNext()) {
-              log.info("calendar is empty");
               if (emptyCalendars == null) {
                 emptyCalendars = new StringBuffer();
                 emptyCalendars.append(calendarId);
@@ -4280,10 +4200,9 @@ public class JCRDataStorage implements DataStorage {
       recurEvents.addAll(events);
     }
 
+    /** query shared calendar event */
     Node sharedCalendarHome = getSharedCalendarHome();
     qm = sharedCalendarHome.getSession().getWorkspace().getQueryManager();
-
-    log.info("searchHighLightOriginalRecurrenceEventsSQL - shared calendar");
 
     if (sharedCalendarHome.hasNode(username)) {
       Node userNode = sharedCalendarHome.getNode(username);
@@ -4335,7 +4254,6 @@ public class JCRDataStorage implements DataStorage {
     }
 
     if (emptyCalendars != null) {
-      log.info("has empty calendars");
       CalendarEvent emptyCalEvent = new CalendarEvent();
       emptyCalEvent.setCalendarId("-1");
       emptyCalEvent.setSummary(emptyCalendars.toString());
@@ -4511,8 +4429,6 @@ public class JCRDataStorage implements DataStorage {
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
 
     for (String calendarId : calendarIds) {
-      log.info("getOriginalRecurrenceEventsSQL - calendarId: " + calendarId);
-
       /** skip the calendar if it's empty */
       if (emptyCalendars!= null && emptyCalendars.contains(calendarId)) continue;
 
@@ -4577,8 +4493,6 @@ public class JCRDataStorage implements DataStorage {
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
 
     for (String calendarId : calendarIds) {
-      log.info("searchOriginalRecurrenceEventsSQL - calendarId: " + calendarId);
-
       String calendarPath = calendar.getPath() + "/" + calendarId;
 
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
@@ -4589,17 +4503,16 @@ public class JCRDataStorage implements DataStorage {
           .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
           .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
 
+      /**
       StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(calendarPath)
           .append("/element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
           .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
           .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))")
           .append("]");
+      **/
 
       QueryManager qm = calendar.getSession().getWorkspace().getQueryManager();
       Query query = qm.createQuery(queryEventsStatementSQL.toString(), Query.SQL);
-
-      //Query query = qm.createQuery(queryEventsStatementXPath.toString(), Query.XPATH);
-
       QueryResult result = query.execute();
 
       NodeIterator it = result.getNodes();

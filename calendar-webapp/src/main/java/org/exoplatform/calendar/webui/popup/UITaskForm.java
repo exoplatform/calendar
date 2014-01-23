@@ -717,10 +717,10 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       selectBoxWithGroups.setOptions(getCalendars()) ;
     }
 
-    //String spaceId = UICalendarPortlet.getSpaceId();
-    String spaceId = getAncestorOfType(UICalendarPortlet.class).getSpaceGroupId();
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    String spaceId = uiCalendarPortlet != null ? uiCalendarPortlet.getSpaceGroupId()
+        : UICalendarPortlet.getGroupIdOfSpace();
     if (!spaceId.equals("")) {
-      //if (spaceId != null) {
       setCalendarOptionOfSpaceAsSelected(spaceId, selectBoxWithGroups.getOptions(), selectBoxWithGroups);
     }
     

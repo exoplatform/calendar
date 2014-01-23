@@ -110,7 +110,6 @@ public class UIMiniCalendar extends UICalendarView  {
 
   @Override
   public void refresh() throws Exception {
-    LOG.info("refresh");
     dataMap.clear() ;
     EventQuery eventQuery = new EventQuery() ;
     eventQuery.setFromDate(getBeginDateOfMonth()) ;

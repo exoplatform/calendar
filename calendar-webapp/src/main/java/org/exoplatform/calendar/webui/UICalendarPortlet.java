@@ -70,7 +70,6 @@ public class UICalendarPortlet extends UIPortletApplication {
   private String spaceGroupId;
 
   public UICalendarPortlet() throws Exception {
-    log.info("UICalendarPortlet constructor");
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
     uiActionBar.setCurrentView(CalendarUtils.getViewInSetting()) ;
     addChild(UICalendarWorkingContainer.class, null, null) ;
