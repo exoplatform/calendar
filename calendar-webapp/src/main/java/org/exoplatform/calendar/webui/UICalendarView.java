@@ -291,7 +291,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
 
   /**
-   * Get all group calendars that user belongs to current user
+   * Get all group calendars that user belongs to current user - filter settings
    * @return
    * @throws Exception
    */
@@ -345,14 +345,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       if (!filterList.contains(id))
         results.add(id);
     }
-    return filterList.toArray(new String[] {});
+    return results.toArray(new String[] {});
   }
 
   protected List<GroupCalendarData> getPublicCalendars(String username) throws Exception {
     String[] groups = CalendarUtils.getUserGroups(username);
-    //if(isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
     UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
-    if (uiCalendarPortlet.isInSpaceContext()) groups = new String[]{uiCalendarPortlet.getSpaceGroupId()};
+    if (isInSpace()) groups = new String[]{ uiCalendarPortlet != null ? uiCalendarPortlet.getSpaceGroupId()
+      : UICalendarPortlet.getGroupIdOfSpace()};
     CalendarService calendarService = CalendarUtils.getCalendarService();
     List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups,
                                                                                false,
@@ -403,7 +403,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   public boolean isInSpace(){
-    return getAncestorOfType(UICalendarPortlet.class).isInSpaceContext();
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    return uiCalendarPortlet != null ? uiCalendarPortlet.isInSpaceContext()
+        : UICalendarPortlet.isInSpace();
   }
 
   protected String renderDateTimeString(Date date) {

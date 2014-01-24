@@ -145,7 +145,7 @@ public class UIListView extends UICalendarView {
     }
     query.setExcludeRepeatEvent(true);
 
-    List<String> calendarIds = findCalendarIds();
+    List<String> calendarIds = Arrays.asList(getFilterCalendarIds());
     if (calendarIds.size() > 0)
       query.setCalendarId(calendarIds.toArray(new String[] {}));
     else {
@@ -236,14 +236,14 @@ public class UIListView extends UICalendarView {
   public List<CalendarEvent> getAllEvents(EventQuery eventQuery) throws Exception {
     CalendarService calendarService = CalendarUtils.getCalendarService();
     String username = CalendarUtils.getCurrentUser() ;
-    UICalendars uiCalendars = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
-    String[] checkedPublicCalendars =  uiCalendars.getCheckedPublicCalendars();
+    String[] publicCalendars  = getPublicCalendars();
+
 
     if (isDisplaySearchResult()) {
       eventQuery.setExcludeRepeatEvent(false);
 
       if (eventQuery.getCalendarId().length == 1) {
-        if (Arrays.asList(checkedPublicCalendars).contains(eventQuery.getCalendarId()[0])) {
+        if (Arrays.asList(publicCalendars).contains(eventQuery.getCalendarId()[0])) {
           /* filter for public calendar, only include search results of this public calendar */
           return calendarService.getEvents(username, eventQuery, eventQuery.getCalendarId());
         }
@@ -253,18 +253,15 @@ public class UIListView extends UICalendarView {
         }
       }
       else {
-        return calendarService.getEvents(username, eventQuery, checkedPublicCalendars)  ;
+        return calendarService.getEvents(username, eventQuery, publicCalendars)  ;
       }
     }
 
     String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
-    String[] publicCalendars  = getPublicCalendars();
 
-    //List<CalendarEvent> allEvents =  calendarService.getEvents(username, eventQuery, checkedPublicCalendars)  ;
     List<CalendarEvent> allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
         privateCalendars, publicCalendars, emptyEventCalendars);
 
-    //List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), checkedPublicCalendars);
     List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username, eventQuery.getFromDate(),
         eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
 

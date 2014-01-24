@@ -89,13 +89,18 @@ public class UICalendarViewContainer extends UIContainer  {
     }
     else if (LIST_VIEW.equals(viewType)) {
       UIListContainer uiView = getChild(UIListContainer.class) ;
-      if(uiView == null) uiView =  addChild(UIListContainer.class, null, null) ;
+      boolean reloadListView = false;
+      if(uiView == null) {
+        uiView =  addChild(UIListContainer.class, null, null) ;
+        reloadListView = true;
+      }
       UIListView uiListView = uiView.getChild(UIListView.class) ;
       uiListView.setShowEventAndTask(false) ;
       uiListView.setCategoryId(null) ;
       uiListView.isShowEvent_ = true ;
       if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
       setRenderedChild(viewType) ;
+      if (reloadListView) uiListView.refresh();
     } else if (WORKING_VIEW.equals(viewType)) {
       UIWeekView uiView = getChild(UIWeekView.class) ;
       if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
