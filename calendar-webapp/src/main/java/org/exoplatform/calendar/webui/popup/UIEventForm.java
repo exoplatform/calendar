@@ -71,7 +71,6 @@ import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.organization.account.UIUserSelector;
-import sun.util.calendar.Gregorian;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
@@ -1169,18 +1168,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;
     org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
 
-    try {
-      OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
-          .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
-      ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
-      attachmentCal.setInputStream(is) ;
-      attachmentCal.setName("icalendar.ics");
-      attachmentCal.setMimeType("text/calendar") ;
-    }
-    catch (Exception e) {
-      attachmentCal = null;
-      if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
-    }
 
     CalendarSetting calendarSetting;
     DateFormat _df;
@@ -1190,33 +1177,45 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       userEmail = eXoMailMap.get(userId);
 
       calendarSetting = (calService.getCalendarSetting(userId) != null) ?
-                                                                         calService.getCalendarSetting(userId) : CalendarUtils.getCurrentUserCalendarSetting();
-                                                                         _df = new SimpleDateFormat(calendarSetting.getDateFormat() + " " + calendarSetting.getTimeFormat());
-                                                                         _df.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
+              calService.getCalendarSetting(userId) : CalendarUtils.getCurrentUserCalendarSetting();
+      _df = new SimpleDateFormat(calendarSetting.getDateFormat() + " " + calendarSetting.getTimeFormat());
+      _df.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
 
-                                                                         if (CalendarUtils.isEmpty(userEmail)) continue;
-                                                                         org.exoplatform.services.mail.Message  message = new org.exoplatform.services.mail.Message();
-                                                                         message.setSubject(buildMailSubject(event, _df)) ;
-                                                                         message.setBody(getBodyMail(buildMailBody(invitor, event, toId, _df, CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone())),
-                                                                                                     eXoIdMap, userEmail, invitor, event)) ;
-                                                                         message.setTo(userEmail);
-                                                                         message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
-                                                                         message.setFrom(user.getEmail()) ;
+      if (CalendarUtils.isEmpty(userEmail)) continue;
+      org.exoplatform.services.mail.Message  message = new org.exoplatform.services.mail.Message();
+      message.setSubject(buildMailSubject(event, _df)) ;
+      message.setBody(getBodyMail(buildMailBody(invitor, event, toId, _df, CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone())),
+              eXoIdMap, userEmail, invitor, event)) ;
+      message.setTo(userEmail);
+      message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
+      message.setFrom(user.getEmail()) ;
+      try {
+        OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
+                .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
+        ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
+        attachmentCal.setInputStream(is) ;
+        attachmentCal.setName("icalendar.ics");
+        attachmentCal.setMimeType("text/calendar") ;
+      }
+      catch (Exception e) {
+        attachmentCal = null;
+        if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
+      }
 
-                                                                         if (attachmentCal != null) {
-                                                                           message.addAttachment(attachmentCal) ;
-                                                                         }
+      if (attachmentCal != null) {
+        message.addAttachment(attachmentCal) ;
+      }
 
-                                                                         if(!atts.isEmpty()){
-                                                                           for(Attachment att : atts) {
-                                                                             org.exoplatform.services.mail.Attachment attachment = new org.exoplatform.services.mail.Attachment() ;
-                                                                             attachment.setInputStream(att.getInputStream()) ;
-                                                                             attachment.setMimeType(att.getMimeType()) ;
-                                                                             attachment.setName(att.getName());
-                                                                             message.addAttachment(attachment) ;
-                                                                           }
-                                                                         }
-                                                                         mService.sendMessage(message) ;
+      if(!atts.isEmpty()){
+        for(Attachment att : atts) {
+          org.exoplatform.services.mail.Attachment attachment = new org.exoplatform.services.mail.Attachment() ;
+          attachment.setInputStream(att.getInputStream()) ;
+          attachment.setMimeType(att.getMimeType()) ;
+          attachment.setName(att.getName());
+          message.addAttachment(attachment) ;
+        }
+      }
+      mService.sendMessage(message) ;
     }
   }
 
