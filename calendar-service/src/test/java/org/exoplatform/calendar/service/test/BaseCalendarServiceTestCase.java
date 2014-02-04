@@ -48,14 +48,13 @@ import org.exoplatform.services.security.MembershipEntry;
 
 /**
  * Created by The eXo Platform SAS
- * @author : Hung nguyen
- *          hung.nguyen@exoplatform.com
- * May 7, 2008
+ * 
+ * @author : Hung nguyen hung.nguyen@exoplatform.com May 7, 2008
  */
 
 @ConfiguredBy({
     @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),
-    @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
+    @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.test.jcr-configuration.xml"),
     @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
     @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/test-portal-configuration.xml"),
     @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.core.test.configuration.xml"),
@@ -98,12 +97,13 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
     // Login user
     login(username);
 
-    /*ListAccess<User> users = organizationService_.getUserHandler().findAllUsers(UserStatus.DISABLED);
-    if (users != null) {
-        for (User user : users.load(0, users.getSize())) {
-            organizationService_.getUserHandler().setEnabled(user.getUserName(), true, false);
-        }
-    }*/
+    /*
+     * ListAccess<User> users =
+     * organizationService_.getUserHandler().findAllUsers(UserStatus.DISABLED);
+     * if (users != null) { for (User user : users.load(0, users.getSize())) {
+     * organizationService_.getUserHandler().setEnabled(user.getUserName(),
+     * true, false); } }
+     */
   }
 
   @Override
@@ -117,7 +117,26 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
   }
 
   protected void cleanData(User user) throws Exception {
-    CalendarCollection<Calendar> cals = calendarService_.getAllCalendars(username, Calendar.TYPE_ALL,0, 500);
+    // . Get all private calendar of user
+    List<Calendar> cals = calendarService_.getUserCalendars(user.getUserName(), true);
+
+    // . Load all group calendar
+    List<Group> groups = new ArrayList<Group>();
+    groups.addAll(organizationService_.getGroupHandler().findGroupsOfUser(user.getUserName()));
+    String[] groupIds = new String[groups.size()];
+    for (int i = 0; i < groups.size(); i++) {
+      groupIds[i] = groups.get(i).getId();
+    }
+    for (GroupCalendarData g : calendarService_.getGroupCalendars(groupIds,
+                                                                  true,
+                                                                  user.getUserName())) {
+      cals.addAll(g.getCalendars());
+    }
+
+    // . Find all shared calendar
+    GroupCalendarData gData = calendarService_.getSharedCalendars(user.getUserName(), true);
+    if (gData != null)
+      cals.addAll(gData.getCalendars());
 
     // . Remove all calendar
     for (int i = 0; i < cals.size(); i++) {
@@ -214,7 +233,7 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
       CalendarEvent calendarEvent = new CalendarEvent();
       if (eventCategory != null) {
         calendarEvent.setEventCategoryId(eventCategory.getId());
-        calendarEvent.setEventCategoryName(eventCategory.getName());        
+        calendarEvent.setEventCategoryName(eventCategory.getName());
       }
       calendarEvent.setSummary(summary);
       calendarEvent.setFromDateTime(fromCal.getTime());
@@ -228,7 +247,8 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
     }
   }
 
-  protected CalendarEvent createUserEvent(String username, String calendarId,
+  protected CalendarEvent createUserEvent(String username,
+                                          String calendarId,
                                           EventCategory eventCategory,
                                           String summary,
                                           boolean isPrivate,
@@ -271,7 +291,7 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
       CalendarEvent publicEvent = new CalendarEvent();
       if (eventCategory != null) {
         publicEvent.setEventCategoryId(eventCategory.getId());
-        publicEvent.setEventCategoryName(eventCategory.getName());        
+        publicEvent.setEventCategoryName(eventCategory.getName());
       }
       publicEvent.setSummary(summary);
       publicEvent.setFromDateTime(fromCal.getTime());
