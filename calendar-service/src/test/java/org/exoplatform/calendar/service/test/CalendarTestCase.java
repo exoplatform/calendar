@@ -16,14 +16,15 @@
  */
 package org.exoplatform.calendar.service.test;
 
-import javax.jcr.PathNotFoundException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.jcr.PathNotFoundException;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarCollection;
@@ -37,9 +38,13 @@ import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
+import org.exoplatform.calendar.service.impl.EventSearchConnector;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.service.impl.UnifiedQuery;
+import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.jcr.RepositoryService;
@@ -49,11 +54,13 @@ import org.exoplatform.services.organization.User;
 public class CalendarTestCase extends BaseCalendarServiceTestCase {
   private RepositoryService repositoryService_ ;
   private JCRDataStorage  storage_;
+  private CalendarSearchServiceConnector eventSearchConnector_;
 
   public void setUp() throws Exception {
     super.setUp();
     repositoryService_ = getService(RepositoryService.class);
     storage_ = ((CalendarServiceImpl)calendarService_).getDataStorage();
+    eventSearchConnector_ = getService(EventSearchConnector.class);
   }
 
   public void testInitServices() throws Exception{
