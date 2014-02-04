@@ -27,46 +27,46 @@ import org.exoplatform.services.log.Log;
  * Created by The eXo Platform SAS
  * @author : Hung nguyen
  *          hung.nguyen@exoplatform.com
- * May 7, 2008  
+ * May 7, 2008
  */
 
 @ConfiguredBy({
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/test-portal-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.core.test.configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.jcr-configuration.xml"),
-  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.portal-configuration.xml")
+        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),
+        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.test.jcr-configuration.xml"),
+        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
+        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/test-portal-configuration.xml"),
+        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.core.test.configuration.xml"),
+        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.jcr-configuration.xml"),
+        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.portal-configuration.xml")
 })
 
 public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
 
-  protected static Log                  log                    = ExoLogger.getLogger("cs.calendar.services.test");
+    protected static Log                  log                    = ExoLogger.getLogger("cs.calendar.services.test");
 
-  
- 
-  
-  @Override
-  public void setUp() throws Exception {
-    begin();
-  }
 
-  @Override
-  public void tearDown() throws Exception {
 
-    removeAllData();
-    end();
-  }
-  
 
-  private void removeAllData() {
-    // TODO Auto-generated method stub
-    
-  }
+    @Override
+    public void setUp() throws Exception {
+        begin();
+    }
 
-  @SuppressWarnings("unchecked")
-  public <T> T getService(Class<T> clazz) {
-    return (T) getContainer().getComponentInstanceOfType(clazz);
-  }
+    @Override
+    public void tearDown() throws Exception {
+
+        removeAllData();
+        end();
+    }
+
+
+    private void removeAllData() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getService(Class<T> clazz) {
+        return (T) getContainer().getComponentInstanceOfType(clazz);
+    }
 }
