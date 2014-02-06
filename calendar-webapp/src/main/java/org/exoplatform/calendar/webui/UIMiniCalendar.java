@@ -16,14 +16,18 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -50,6 +54,8 @@ import org.exoplatform.webui.event.EventListener;
 public class UIMiniCalendar extends UICalendarView  {
   private Map<Integer, String> dataMap = new HashMap<Integer, String>() ;
   private String categoryId_ = null ;
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIMiniCalendar.class);
 
   public UIMiniCalendar() throws Exception { }
 
@@ -100,6 +106,8 @@ public class UIMiniCalendar extends UICalendarView  {
   public String getSelectedCategory() {
     return categoryId_  ;
   }
+
+
   @Override
   public void refresh() throws Exception {
     dataMap.clear() ;
@@ -112,10 +120,53 @@ public class UIMiniCalendar extends UICalendarView  {
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
 
-    String[] publicCalendars = getPublicCalendars();
-    dataMap = calendarService.searchHightLightEvent(CalendarUtils.getCurrentUser(), eventQuery, publicCalendars);
-    dataMap.putAll(calendarService.searchHighlightRecurrenceEvent(CalendarUtils.getCurrentUser(), eventQuery, publicCalendars, timezone));
+    String currentUser        = CalendarUtils.getCurrentUser();
+    String[] publicCalendars  = getPublicCalendars();
+    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
+
+    List<Map<Integer, String>> map = calendarService.searchHightLightEventSQL(currentUser, eventQuery,
+        privateCalendars, publicCalendars);
+
+    dataMap = map.get(0);
+    emptyEventCalendars = new ArrayList<String>(map.get(1).values());
+
+    map = calendarService.searchHighlightRecurrenceEventSQL(currentUser, eventQuery, timezone,
+        privateCalendars, publicCalendars);
+
+    dataMap.putAll(map.get(0));
+    emptyRecurrentEventCalendars = new ArrayList<String>(map.get(1).values());
+
+    /** Propagate empty calendars to other views */
+    UICalendarPortlet calendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    UICalendarViewContainer viewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class);
+
+    String viewType = viewContainer.getCurrentViewType();
+    if (UICalendarViewContainer.DAY_VIEW.equals(viewType) || UICalendarViewContainer.WORKING_VIEW.equals(viewType)) {
+      UIDayView dayView = viewContainer.getChild(UIDayView.class);
+      if (dayView == null) dayView =  viewContainer.addChild(UIDayView.class, null, null) ;
+      dayView.setEmptyEventCalendars(emptyEventCalendars);
+      dayView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    } else if (UICalendarViewContainer.WEEK_VIEW.equals(viewType)) {
+      UIWeekView weekView = viewContainer.getChild(UIWeekView.class);
+      if (weekView == null) weekView = viewContainer.addChild(UIWeekView.class, null, null);
+      weekView.setEmptyEventCalendars(emptyEventCalendars);
+      weekView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    } else if (UICalendarViewContainer.MONTH_VIEW.equals(viewType)) {
+      UIMonthView monthView = viewContainer.getChild(UIMonthView.class);
+      if (monthView == null) monthView = viewContainer.addChild(UIMonthView.class, null, null);
+      monthView.setEmptyEventCalendars(emptyEventCalendars);
+      monthView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    } else if (UICalendarViewContainer.LIST_VIEW.equals(viewType)) {
+      UIListContainer uiView = viewContainer.getChild(UIListContainer.class) ;
+      if (uiView == null) uiView =  viewContainer.addChild(UIListContainer.class, null, null) ;
+      UIListView listView = uiView.getChild(UIListView.class) ;
+      listView.setEmptyEventCalendars(emptyEventCalendars);
+      listView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
+    }
+
   }
+
+
   static  public class MoveNextActionListener extends EventListener<UIMiniCalendar> {
     @Override
     public void execute(Event<UIMiniCalendar> event) throws Exception {

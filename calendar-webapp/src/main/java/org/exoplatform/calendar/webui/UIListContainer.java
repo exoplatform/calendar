@@ -18,6 +18,8 @@ package org.exoplatform.calendar.webui;
 
 import java.util.Calendar;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
 /**
@@ -31,6 +33,9 @@ import org.exoplatform.webui.core.UIContainer;
     template =  "app:/templates/calendar/webui/UIListContainer.gtmpl"
 )
 public class UIListContainer extends UIContainer implements CalendarView {
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIListContainer.class);
+
   public UIListContainer() throws Exception {
     addChild(UIListView.class, null, null) ;
     addChild(UIPreview.class, null, null) ;    
@@ -43,6 +48,7 @@ public class UIListContainer extends UIContainer implements CalendarView {
     UIPreview view = getChild(UIPreview.class) ;
     view.refresh() ;
   }
+
   @Override
   public void update() throws Exception {
     UIListView list = getChild(UIListView.class) ;
@@ -86,7 +92,7 @@ public class UIListContainer extends UIContainer implements CalendarView {
   @Override
   public void setSelectedCategory(String categoryId) throws Exception {
     getChild(UIListView.class).setCategoryId(categoryId);
-    getChild(UIListView.class).refresh() ;
+    //getChild(UIListView.class).refresh() ;
   }
 
   @Override

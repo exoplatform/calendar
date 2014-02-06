@@ -45,6 +45,7 @@ import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.CalendarView;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarView;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.calendar.webui.UIListContainer;
@@ -407,9 +408,11 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       selectBoxWithGroups.setOptions(getCalendars()) ;
     }
     
-    String spaceId = UICalendarPortlet.getSpaceId();
-    if (spaceId != null) {
-      setCalendarOptionOfSpaceAsSelected(spaceId, selectBoxWithGroups.getOptions(), selectBoxWithGroups);
+    //String spaceId = UICalendarPortlet.getSpaceId();
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    if (uiCalendarPortlet != null && !uiCalendarPortlet.getSpaceGroupId().equals("")) {
+      //if (spaceId != null) {
+      setCalendarOptionOfSpaceAsSelected(uiCalendarPortlet.getSpaceGroupId(), selectBoxWithGroups.getOptions(), selectBoxWithGroups);
     }
     
     calType_ = calType ;
@@ -1519,7 +1522,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     eventId = calendarEvent.getId() ;
     CalendarView calendarView = (CalendarView)uiViewContainer.getRenderedChild() ;
     this.isChangedSignificantly = this.isSignificantChanged(calendarEvent, oldCalendarEvent);
-    
+
     try {
 
       if(uiForm.isAddNew_){
@@ -1578,9 +1581,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         uiViewContainer.refresh() ;
       }  
       calendarView.setLastUpdatedEventId(eventId) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiViewContainer) ;
       UIMiniCalendar uiMiniCalendar = calendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiViewContainer) ;
       uiPopupAction.deActivate() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction) ;
     }catch (Exception e) {

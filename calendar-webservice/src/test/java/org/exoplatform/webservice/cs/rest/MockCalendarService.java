@@ -156,6 +156,13 @@ public class MockCalendarService implements CalendarService{
   }
 
   @Override
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery,
+                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception {
+    return null;
+  }
+
+
+  @Override
   public String[] getExportImportType() throws Exception {
     return null;
   }
@@ -339,6 +346,13 @@ public class MockCalendarService implements CalendarService{
                                                     String[] publicCalendarIds) throws Exception {
     return null;
   }
+
+  @Override
+  public List<Map<Integer, String>> searchHightLightEventSQL(String username, EventQuery eventQuery,
+                                                       String[] privateCalendars, String[] publicCalendars) throws Exception {
+    return null;
+  }
+
 
   @Override
   public void shareCalendar(String username, String calendarId, List<String> receiverUsers) throws Exception {
@@ -575,7 +589,18 @@ public class MockCalendarService implements CalendarService{
   }
 
   @Override
+  public List<Map<Integer, String>> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone, String[] privateCalendars, String[] publicCalendars) throws Exception {
+    return null;
+  }
+
+
+  @Override
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception {
+    return null;
+  }
+
+  @Override
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception {
     return null;
   }
 

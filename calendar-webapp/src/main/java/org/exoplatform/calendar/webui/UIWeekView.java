@@ -16,6 +16,9 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.jcr.PathNotFoundException;
 import org.exoplatform.calendar.CalendarUtils;
@@ -36,6 +40,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.JavascriptManager;
 import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -83,12 +88,53 @@ public class UIWeekView extends UICalendarView {
   protected Date beginDate_ ;
   protected Date endDate_ ; 
 
+  /** used in template */
+  private DateFormat tf;
+
+  private DateFormat dtf;
+
+  private DateFormat wf;
+
+  private DateFormat tempFormat;
+
+  private DateFormat dayFormat;
+
+  private DateFormat fullDateFormat;
+
+  private List<String> eventList;
+
+
+  private static final Log LOG = ExoLogger.getExoLogger(UIWeekView.class);
+
   public UIWeekView() throws Exception {
-    super() ;
+    super();
+  }
+
+  /**
+   * initialization
+   */
+  private void init() throws Exception {
+    String dateFormat = getDateFormat();
+    Locale locale = WebuiRequestContext.getCurrentInstance().getParentAppRequestContext().getLocale() ;
+    Calendar beginDate = getBeginDateOfWeek();
+
+    dtf = new SimpleDateFormat(dateFormat + " " + CalendarUtils.TIMEFORMAT, locale) ;
+    tf  = new SimpleDateFormat(getTimeFormat(), locale) ;
+    tf.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
+    wf  = new  SimpleDateFormat("EEE, dd MMM", locale) ;
+
+    tempFormat     = new  SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", Locale.ENGLISH) ;
+    tempFormat.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
+    dayFormat      = new SimpleDateFormat(dateFormat, Locale.ENGLISH) ;
+    dayFormat.setCalendar(beginDate);
+    fullDateFormat = new SimpleDateFormat(dateFormat+" "+CalendarUtils.TIMEFORMAT, Locale.ENGLISH) ;
+    fullDateFormat.setCalendar(beginDate);
+    eventList = new ArrayList<String>();
   }
 
   @Override
   public void refresh() throws Exception {
+    init();
     eventData_.clear() ;
     allDayEvent.clear();
     int i = 0 ;
@@ -114,18 +160,21 @@ public class UIWeekView extends UICalendarView {
 
     /** get all norepeat events */
     List<CalendarEvent> allEvents;
-    String[] publicCalendars = getPublicCalendars();
-    if(isInSpace()) {  
+    String[] publicCalendars  = getPublicCalendars();
+    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
+
+    if (isInSpace()) {
       eventQuery.setCalendarId(publicCalendars);
       allEvents = calendarService.getPublicEvents(eventQuery);
     }
-    else
-      allEvents = calendarService.getAllNoRepeatEvents(username, eventQuery, publicCalendars);
-
+    else {
+      allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
+          privateCalendars, publicCalendars, emptyEventCalendars);
+    }
 
     /** get exception occurrences, exclude original recurrence events */
-    List<CalendarEvent> originalRecurEvents = calendarService.
-        getHighLightOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), publicCalendars);
+    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
+        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
 
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
@@ -157,9 +206,327 @@ public class UIWeekView extends UICalendarView {
         c.add(Calendar.DATE, 1) ;
       }
     }
+
     for( CalendarEvent ce : allEvents) {
       allDayEvent.add(ce);
-    } 
+    }
+
+  }
+
+
+  /** used in template */
+  private String renderDayHeader() throws Exception {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("\n<table style=\"table-layout:fixed;\" class=\"uiGrid table\"  cellspacing=\"0\"")
+      .append(" cellpadding=\"0\" exocallback=\"eXo.calendar.UIWeekView.callbackSelectionX();\">")
+      .append("\n<tr>")
+      .append("\n<td style=\"width: 55px;\" class=\"UIEmtyBlock\"></td>");
+
+    String cssClass = "day";
+    String dayActionLink;
+    String actionLink;
+    String styleCss = "";
+
+    Calendar cl = getBeginDateOfWeek();
+    int t = 0 ;
+    int numberOfDays  = isShowCustomView_ ? 5 : 7;
+    String styleWidth = isShowCustomView_ ? "width:19.8%;*width:20%;" : "width:13.8%;*width:14%;" ;
+
+    while (t++ < numberOfDays) {
+      if (isCurrentDay(cl.get(Calendar.DATE), cl.get(Calendar.MONTH), cl.get(Calendar.YEAR))) {
+        cssClass = "today" ;
+      }
+
+      dayActionLink = TYPE_DAY + "&currentTime="+ cl.getTimeInMillis() ;
+      actionLink =  event("GotoDate",dayActionLink) ;
+
+      if (cl.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) styleCss = "" ;
+      wf.setCalendar(cl) ;
+
+      stringBuilder.append("\n<td class=\"" + cssClass + " uiCellBlock center\" style=\"" + styleWidth + "\" startTime=\""
+          + cl.getTimeInMillis() + "\" startTimeFull=\"" + tempFormat.format(cl.getTime()) + "\">")
+        .append("\n<a href=\"" + actionLink + "\" style=\"" + styleCss + "\">" + wf.format(cl.getTime()) + "</a>")
+        .append("</td>");
+      cl.add(Calendar.DATE,1) ;
+    }
+
+    stringBuilder.append("\n</tr>")
+      .append("\n</table>");
+
+    return stringBuilder.toString();
+  }
+
+  /** used in template */
+  private String renderAllDayGrid() throws Exception {
+    int numberOfDays  = isShowCustomView_ ? 5 : 7;
+    String styleWidth = isShowCustomView_ ? "width:19.8%;*width:20%;" : "width:13.8%;*width:14%;" ;
+
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("\n<div id=\"UIWeekViewGridAllDay\" class=\"eventAllDay\" numberOfDays=\"" + numberOfDays + "\">")
+      .append("\n<div class=\"eventAlldayBoard\" style=\"position:relative\">")
+      .append("\n<table style=\"table-layout:fixed;\" class=\"uiGrid table allDayTable \" cellspacing=\"0\" cellpadding=\"0\">")
+      .append("\n<tr>")
+      .append("\n<td style=\"width: 55px;\"></td>");
+
+    Calendar cl = getBeginDateOfWeek() ;
+    int t = 0 ;
+    while (t++ <numberOfDays) {
+
+      stringBuilder.append("\n<td class=\"whiteTd\" style=\"" + styleWidth + "\" startTimeFull=\"" + tempFormat.format(cl.getTime()) + "\"></td>");
+      cl.add(Calendar.DATE,1);
+    }
+    stringBuilder.append("\n</tr>")
+        .append("\n</table>");
+
+    for (CalendarEvent event : allDayEvent) {
+      long begindate  =  event.getFromDateTime().getTime() ;
+      long enddate    = event.getToDateTime().getTime() ;
+      //long startTime  = event.getFromDateTime().getTime() ;
+      //long finishTime = event.getToDateTime().getTime() ;
+      String eventId  = event.getId();
+      String calType  = event.getCalType();
+      String calendarId = event.getCalendarId();
+      String color    = getColors().get(calType + CalendarUtils.COLON + calendarId) ;
+      //String title    = tf.format(event.getFromDateTime()) + "->" + tf.format(event.getToDateTime())+ ":&#013; " + event.getSummary() ;
+      String actionLink =  event("UpdateAllDayEvent", eventId);
+      boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+      String recurId  = event.getRecurrenceId();
+      boolean isEditable;
+      if (!event.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) isEditable = isEventEditable(event);
+      else isEditable = true;
+
+      stringBuilder.append("\n<div class=\"eventContainer eventAlldayContainer weekViewEventBoxes clearfix\" eventcat=\"" + event.getEventCategoryId() + "\" style=\"position:absolute;display:none;\"")
+        .append("\n caltype=\"" + calType + "\" eventid=\"" + eventId + "\" isOccur=\"" + isOccur + "\" recurId=\"" + recurId + "\"")
+        .append("\n calid=\"" + calendarId + "\" startTime=\"" + begindate + "\" endTime=\"" + enddate + "\"")
+        .append("\n startTimeFull=\"" + tempFormat.format(event.getFromDateTime()) + "\" endTimeFull=\"" + tempFormat.format(event.getToDateTime()) + "\"")
+        .append("\n actionlink=\"" + actionLink + "\" isEditable=\"" + isEditable + "\">");
+
+      if (!eventList.contains(eventId)) {
+        eventList.add(eventId);
+
+        stringBuilder.append("\n<input type=\"hidden\" name=\"" + eventId + "calType\" value=\"" + calType + "\" />")
+          .append("\n<input type=\"hidden\" name=\"" + eventId + "calendarId\" value=\"" + calendarId + "\" />")
+          .append("\n<input type=\"hidden\" name=\"" + eventId + "startTime\" value=\"\" />")
+          .append("\n<input type=\"hidden\" name=\"" + eventId + "finishTime\" value=\"\" />")
+          .append("\n<input type=\"hidden\" name=\"" + eventId + "isOccur\" value=\"" + isOccur + "\" />")
+          .append("\n<input type=\"hidden\" name=\"" + eventId + "recurId\" value=\"" + recurId + "\" />")
+          .append("\n<input type=\"hidden\" name=\"" + eventId + "currentDate\" value=\"\" />");
+      }
+
+      if (event.getFromDateTime().before(getBeginDateOfWeek().getTime())) {
+        stringBuilder.append("\n<div class=\"leftContinueEvent  pull-left " + color + "\">")
+          .append("\n<i class=\"uiIconMiniArrowLeft uiIconWhite\"></i>")
+          .append("\n</div>");
+      } else {
+        stringBuilder.append("\n<div class=\"leftResizeEvent LeftResizeEvent resizeEventContainer pull-left " + color + "\">")
+          .append("\n<span></span>\n</div>");
+      }
+
+      if (event.getToDateTime().after(getEndDateOfWeek().getTime())) {
+        stringBuilder.append("\n<div class=\"rightContinueEvent pull-right " + color + "\">")
+          .append("\n<i class=\"uiIconMiniArrowRight uiIconWhite\"></i>\n</div>");
+      } else {
+        stringBuilder.append("\n<div class=\"rightResizeEvent RightResizeEvent resizeEventContainer pull-right " + color + "\">")
+          .append("\n<span></span>\n</div>");
+      }
+
+      stringBuilder.append("\n<div class=\"eventAlldayContent " + color + "\">" + event.getSummary() + "</div>")
+        .append("\n</div>");
+    }
+    stringBuilder.append("\n</div>\n</div>");
+
+    return stringBuilder.toString();
+  }
+
+  /** used in template */
+  private String renderEventBoard() throws Exception {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    stringBuilder.append("\n<div class=\"eventBoard\">");
+
+    Calendar cl = getBeginDateOfWeek() ;
+    int t = 0 ;
+    int numberOfDays  = isShowCustomView_ ? 5 : 7;
+    String styleWidth = isShowCustomView_ ? "width:19.8%;*width:20%;" : "width:13.8%;*width:14%;" ;
+
+    while (t++ < numberOfDays) {
+      int day   = cl.get(Calendar.DATE) ;
+      int month = cl.get(Calendar.MONTH) ;
+      int year  = cl.get(Calendar.YEAR) ;
+      String key = keyGen(day, month, year) ;
+      int dayOfWeek = cl.get(Calendar.DAY_OF_WEEK) ;
+      List<CalendarEvent> events = getEventData().get(key) ;
+      if (events != null) {
+        for (CalendarEvent event : events) {
+          String eventId   = event.getId();
+          String begin     =  tf.format(event.getFromDateTime()) ;
+          String begindate = dtf.format(event.getFromDateTime()) ;
+          String end       = tf.format(event.getToDateTime()) ;
+          Calendar cal     = CalendarUtils.getInstanceTempCalendar() ;
+          cal.setTime(event.getFromDateTime()) ;
+          int beginTime    = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
+          cal.setTime(event.getToDateTime()) ;
+          int endTime      = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
+          String color     = getColors().get(event.getCalType() + CalendarUtils.COLON+ event.getCalendarId()) ;
+          String actionLink =  event("UpdateEvent", eventId) ;
+          boolean isOccur  = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+          String recurId   = event.getRecurrenceId();
+          boolean isEditable;
+          if (!event.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) isEditable = isEventEditable(event);
+          else isEditable = true;
+
+          stringBuilder.append("\n<div class=\"eventContainerBorder weekViewEventBoxes " + color + "\" eventindex=\"" + dayOfWeek + "\"")
+            .append(" style=\"position: absolute;display:none\" eventcat=\"" + event.getEventCategoryId() + "\" caltype=\"" + event.getCalType() + "\"")
+            .append(" eventid=\"" + eventId + "\" calid=\"" + event.getCalendarId() + "\" actionlink=\"" + actionLink + "\" unselectable=\"on\"")
+            .append(" startTime=\"" + beginTime + "\" endTime=\"" + endTime + "\" isOccur=\"" + isOccur + "\" recurId=\"" + recurId + "\" isEditable=\"" + isEditable + "\">");
+
+          if (!eventList.contains(eventId)) {
+            eventList.add(eventId);
+
+            stringBuilder.append("\n<input type=\"hidden\" name=\"" + eventId + "calType\" value=\"" + event.getCalType() + "\" />")
+              .append("\n<input type=\"hidden\" name=\"" + eventId + "calendarId\" value=\"" + event.getCalendarId() + "\" />")
+              .append("\n<input type=\"hidden\" name=\"" + eventId + "startTime\" value=\"\" />")
+              .append("\n<input type=\"hidden\" name=\"" + eventId + "finishTime\" value=\"\" />")
+              .append("\n<input type=\"hidden\" name=\"" + eventId + "isOccur\" value=\"" + isOccur + "\" />")
+              .append("\n<input type=\"hidden\" name=\"" + eventId + "recurId\" value=\"" + recurId + "\" />")
+              .append("\n<input type=\"hidden\" name=\"" + eventId + "currentDate\" value=\"\" />");
+          }
+
+          /** display event duration */
+          if (event.isEventDurationSmallerThanHalfHour() ) {       /** short event */
+            stringBuilder.append("\n<div class=\"clearfix\">")
+              .append("\n<div unselectable=\"on\" class=\"eventContainerBar eventTitle pull-left\" style=\" display: inline-block; \">");
+
+            if (CalendarEvent.TYPE_TASK.equals(event.getEventType())) {
+              stringBuilder.append("\n<i class=\"uiIconCalTaskMini\"></i>");
+            } else {
+              stringBuilder.append("\n<i class=\"uiIconCalClockMini\"></i>");
+            }
+
+            stringBuilder.append("\n<i class=\"uiIconCal" + event.getPriority() + "Priority\"></i>" + begin + "</div>");
+
+            /** display event summary */
+            if ( (event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.getEventState().equals(CalendarEvent.COMPLETED) ) ) {
+              stringBuilder.append("\n<div unselectable=\"on\" class=\"eventContainer\" style=\"text-decoration:line-through; \">" +
+                  event.getSummary() + "</div>");
+            } else {
+              stringBuilder.append("\n<div class=\"eventContainer \" >" + event.getSummary() + "</div>");
+            }
+            stringBuilder.append("</div>");
+          } else {
+
+            stringBuilder.append("\n<div unselectable=\"on\" class=\"eventContainerBar eventTitle\">");
+
+            if (CalendarEvent.TYPE_TASK.equals(event.getEventType())) {
+              stringBuilder.append("\n<i class=\"uiIconCalTaskMini\"></i>");
+            } else {
+              stringBuilder.append("\n<i class=\"uiIconCalClockMini\"></i>");
+            }
+
+            stringBuilder.append("\n<i class=\"uiIconCal" + event.getPriority() + "Priority\"></i>")
+              .append(begin + " - " + end + "</div>");
+
+            if ((event.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (event.getEventState().equals(CalendarEvent.COMPLETED) ) ) {
+              stringBuilder.append("\n<div unselectable=\"on\" class=\"eventContainer\" style=\" text-decoration:line-through; \">")
+                .append(event.getSummary() + "</div>");
+            } else {
+              stringBuilder.append("\n<div class=\"eventContainer\">" + event.getSummary() + "</div>");
+            }
+          }
+
+          stringBuilder.append("\n<div class=\"resizeEventContainer\" unselectable=\"on\">")
+            .append("\n<span></span>\n</div>\n</div>");
+        }
+      }
+      cl.add(Calendar.DATE, 1) ;
+    }
+
+    stringBuilder.append("\n</div>")
+      .append("\n<table style=\"table-layout:fixed;\" class=\"uiGrid table \" id=\"UIWeekViewGrid\" lastupdatedid=\"" + getLastUpdatedEventId() + "\"")
+      .append(" cellspacing=\"0\" cellpadding=\"0\">")
+      .append("\n<tbody>");
+
+    boolean flag = false ;
+    String style = isShowWorkingTime() ? "WorkOffTime" : "none" ;
+    String styleClass;
+
+    String tempTimeFormat = CalendarUtils.TIMEFORMATPATTERNS[0] ;
+    if (getTimeFormat().startsWith("HH")) tempTimeFormat = CalendarUtils.TIMEFORMATPATTERNS[1] ;
+    int counter = 0 ;
+    String timeName = "Gray";
+    for (String full : getDisplayTimes(tempTimeFormat, getTimeInterval(), Locale.ENGLISH)){
+      if ((counter % 4) == 0 || (counter % 4) == 1) {
+        timeName = "OddRow";
+      } else if((counter % 4) == 2 || (counter % 4) == 3) {
+        timeName = "EvenRow";
+      }
+
+      String time = full.substring(0,full.lastIndexOf("_")) ;
+      String display = full.substring(full.lastIndexOf("_")+1) ;
+      if (isShowWorkingTime()) {
+        if(time.equals(getStartTime())) {style = "" ;}
+        if(time.equals(getEndTime())) {style = "WorkOffTime" ;}
+      }
+
+      if (flag) { styleClass = "tdDotLine" ;}
+      else { styleClass = "tdLine";}
+
+      stringBuilder.append("\n<tr class=\"" + style + " " + timeName + "\">");
+
+      if (!flag) {
+        stringBuilder.append("\n<td class=\"tdTime center\" style=\"width: 55px;\">");
+      } else {
+        stringBuilder.append("\n<td style=\"width: 55px;\">");
+      }
+
+      stringBuilder.append("\n<div>");
+      if (!flag) { stringBuilder.append(display); }
+      else { stringBuilder.append("&nbsp;"); }
+
+      stringBuilder.append("\n</div>\n</td>");
+
+      cl = getBeginDateOfWeek() ;
+      DateFormat dayFormat = new SimpleDateFormat(getDateFormat(), Locale.ENGLISH) ;
+      DateFormat fullDateFormat = new SimpleDateFormat(getDateFormat()+" "+CalendarUtils.TIMEFORMAT, Locale.ENGLISH) ;
+      dayFormat.setCalendar(cl);
+      fullDateFormat.setCalendar(cl);
+
+      t = 0 ;
+      String cssClass;
+      while (t++ < numberOfDays) {
+        //df.setCalendar(cl) ;
+        String startTime = dayFormat.format(cl.getTime()) + " " + time;
+        //dtf.setCalendar(cl) ;
+        fullDateFormat.setLenient(false);
+        // add try-catch block to handle Daylight Saving Time problem
+        try {
+          cl.setTime(fullDateFormat.parse(startTime)) ;
+        } catch (ParseException e) {
+          fullDateFormat.setLenient(true);
+          cl.setTime(fullDateFormat.parse(startTime));
+        }
+        int dayOfWeek = cl.get(Calendar.DAY_OF_WEEK) ;
+        if(isCurrentDay(cl.get(Calendar.DATE), cl.get(Calendar.MONTH), cl.get(Calendar.YEAR))) {
+          cssClass = "today" ;
+        } else if(dayOfWeek == 1 || dayOfWeek == 7){
+          cssClass = "Weekend" ;
+        } else {
+          cssClass = "Weekday" ;
+        }
+
+        stringBuilder.append("\n<td startFull=\"" + tempFormat.format(cl.getTime()) + "\" startTime=\"" + cl.getTimeInMillis() + "\"")
+          .append(" eventindex=\"" + dayOfWeek + "\" class=\"" + styleClass + " " +  cssClass + " " + style + "\" style=\"" + styleWidth + "\">")
+          .append("\n<span></span>\n</td>");
+        cl.add(Calendar.DATE, 1) ;
+      }
+      flag = ! flag ;
+
+      stringBuilder.append("</tr>");
+      counter ++;
+    }
+    stringBuilder.append("\n</tbody>\n</table>");
+
+    return stringBuilder.toString();
   }
 
 
