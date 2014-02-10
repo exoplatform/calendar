@@ -16,6 +16,8 @@
  **/
 package org.exoplatform.calendar.service;
 
+import org.exoplatform.services.jcr.util.IdGenerator;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,10 +25,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.exoplatform.services.jcr.util.IdGenerator;
-
-import com.sun.tools.javac.code.Attribute.Array;
 
 /**
  * Created by The eXo Platform SARL
@@ -456,7 +454,7 @@ public class CalendarEvent {
   }
 
   /**
-   * @param recurrenceIndex the recurrenceIndex to set
+   * @param recurrenceId the recurrenceIndex to set
    */
   public void setRecurrenceId(String recurrenceId) {
     this.recurrenceId = recurrenceId;
