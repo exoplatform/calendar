@@ -44,16 +44,16 @@
     <!-- **************************************** -->
     <org.exoplatform.depmgt.version>9-upgrade-gatein-3.7.x-SNAPSHOT</org.exoplatform.depmgt.version>
     <!-- JCR Project Dependencies -->
-    <org.exoplatform.kernel.version>2.5.0-Alpha3</org.exoplatform.kernel.version>
-    <org.exoplatform.core.version>2.6.0-Alpha3</org.exoplatform.core.version>
-    <org.exoplatform.ws.version>2.4.0-Alpha3</org.exoplatform.ws.version>
-    <org.exoplatform.jcr.version>1.16.0-Alpha3</org.exoplatform.jcr.version>
+    <org.exoplatform.kernel.version>2.5.0-Alpha4</org.exoplatform.kernel.version>
+    <org.exoplatform.core.version>2.6.0-Alpha4</org.exoplatform.core.version>
+    <org.exoplatform.ws.version>2.4.0-Alpha4</org.exoplatform.ws.version>
+    <org.exoplatform.jcr.version>1.16.0-Alpha4</org.exoplatform.jcr.version>
     <!-- GateIn Project Dependencies -->
     <org.gatein.portal.version>3.7.0.Alpha02-SNAPSHOT</org.gatein.portal.version>
-    <org.gatein.common.version>2.1.1.Final</org.gatein.common.version>
-    <org.gatein.wci.version>2.3.1.Final</org.gatein.wci.version>
-    <org.gatein.pc.version>2.4.2.Final</org.gatein.pc.version>
-    <org.gatein.sso.version>1.3.4.Final</org.gatein.sso.version>
+    <org.gatein.common.version>2.2.0.Beta01</org.gatein.common.version>
+    <org.gatein.wci.version>2.4.0.Beta01</org.gatein.wci.version>
+    <org.gatein.pc.version>2.5.0.Beta01</org.gatein.pc.version>
+    <org.gatein.sso.version>1.4.0.Beta01</org.gatein.sso.version>
     <!-- Platform Project Dependencies -->
     <org.exoplatform.commons.version>4.1.x-commons-upgrade-gatein-3.7.x-SNAPSHOT</org.exoplatform.commons.version>
     <org.exoplatform.social.version>4.1.x-soc-upgrade-gatein-3.7.x-SNAPSHOT</org.exoplatform.social.version>
@@ -307,11 +307,6 @@
             <groupId>org.exoplatform.kernel</groupId>
             <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
             <version>${org.exoplatform.kernel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.exoplatform.jcr</groupId>
-            <artifactId>exo.jcr.component.core.impl.infinispan.v5</artifactId>
-            <version>${org.exoplatform.jcr.version}</version>
         </dependency>
       <!-- Use to generate some documentation -->
       <dependency>
