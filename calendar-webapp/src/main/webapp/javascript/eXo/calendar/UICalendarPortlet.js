@@ -785,7 +785,9 @@
         height -= (extraHeight + 5);
 
         // IE8 fix - does not allow negative height
-        eventContainer.style.height = Math.max(height, 0) + "px";
+        if (height > 0) {
+          eventContainer.style.height = height + "px";
+        }
     };
 
     /**
