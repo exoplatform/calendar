@@ -209,8 +209,8 @@ UIContextMenu.prototype.swapMenu = function(oldmenu, mousePos, evt) {
         return false;
       }
     }
-    var left = mousePos.x - 2;
-    var top = mousePos.y - 2;
+    var left = mousePos.x - 3;
+    var top = mousePos.y - 3;
     if (Browser.isIE6())
       this.menuElement.style.width = "140px";
     if (base.I18n.isRT()) {
