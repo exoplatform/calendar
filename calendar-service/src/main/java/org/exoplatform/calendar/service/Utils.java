@@ -52,6 +52,7 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserStatus;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
 
@@ -446,7 +447,7 @@ public class Utils {
   public static String  JCR_EXCERPT_ROW = "rep:excerpt(.)";
   
   public static String DATE_FORMAT_RECUR_ID = "yyyyMMdd'T'HHmmss'Z'";
-  
+
   public final static Map<String, String> SORT_FIELD_MAP = new LinkedHashMap<String, String>(){{
     put(ORDERBY_RELEVANCY, JCR_SCORE);
     put(ORDERBY_DATE, EXO_DATE_CREATED);
@@ -467,6 +468,18 @@ public class Utils {
   public static final String SPACES_GROUP = "spaces";
   public static final String SPACES_GROUP_ID_PREFIX = "/spaces/";
   public static final String SPACE_CALENDAR_ID_SUFFIX = "_space_calendar";
+
+
+
+  public static OrganizationService getOrganizationService(){
+    return (OrganizationService)ExoContainerContext.getCurrentContainer().getComponentInstance(OrganizationService.class) ;
+  }
+
+  public static boolean isUserEnabled(String userId) throws Exception{
+    return getOrganizationService().getUserHandler().findUserByName(userId, UserStatus.BOTH).isEnabled();
+  }
+
+
 
   /**
    * The method creates an instance of calendar object with time zone is GMT 0

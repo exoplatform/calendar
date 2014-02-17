@@ -25,12 +25,17 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.ws.rs.core.MediaType;
 import org.exoplatform.commons.utils.ISO8601;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.mail.Message;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserHandler;
+import org.exoplatform.services.organization.UserStatus;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
@@ -54,6 +59,8 @@ public class ReminderJob extends MultiTenancyJob {
       SessionProvider provider = SessionProvider.createSystemProvider();
       try {
         MailService mailService = (MailService) container.getComponentInstanceOfType(MailService.class);
+        OrganizationService orgService = container.getComponentInstanceOfType(OrganizationService.class);
+        UserHandler userHandler = orgService.getUserHandler();
         if (log_.isDebugEnabled())
           log_.debug("Calendar email reminder service");
         java.util.Calendar fromCalendar = GregorianCalendar.getInstance();
@@ -78,6 +85,16 @@ public class ReminderJob extends MultiTenancyJob {
           long remindTime = reminder.getProperty(Utils.EXO_REMINDER_DATE).getDate().getTimeInMillis();
           long interval = reminder.getProperty(Utils.EXO_TIME_INTERVAL).getLong() * 60 * 1000;
           String to = reminder.getProperty(Utils.EXO_EMAIL).getString();
+          String[] emails = to.split(Utils.COMMA);
+          StringBuilder sb = new StringBuilder();
+          for (String email : emails) {
+              org.exoplatform.services.organization.Query orgQuery = new org.exoplatform.services.organization.Query();
+              orgQuery.setEmail(email);
+              ListAccess<User> users = userHandler.findUsersByQuery(orgQuery, UserStatus.DISABLED);
+              if (users.getSize() > 0) continue;
+              sb.append(email).append(Utils.COMMA);
+          }
+          to = sb.toString();
           if (to != null && to.length() > 0) {
             message = new Message();
             message.setMimeType(MediaType.TEXT_HTML);

@@ -29,6 +29,9 @@ import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.UserHandler;
+import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.quartz.JobExecutionContext;
 
@@ -55,6 +58,8 @@ public class PopupReminderJob extends MultiTenancyJob {
           log_.debug("Calendar popup reminder service");
         java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
         ContinuationService continuation = (ContinuationService) container.getComponentInstanceOfType(ContinuationService.class);
+        OrganizationService orgService = container.getComponentInstanceOfType(OrganizationService.class);
+        UserHandler userHandler = orgService.getUserHandler();
         Node calendarHome = Utils.getPublicServiceHome(provider);
         if (calendarHome == null)
           return;
@@ -107,7 +112,9 @@ public class PopupReminderJob extends MultiTenancyJob {
         if (!popupReminders.isEmpty()) {
           for (Reminder rmdObj : popupReminders) {
             for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
-              continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
+              if (userHandler.findUserByName(user, UserStatus.DISABLED) == null) { 
+                continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
+              }  
             }
           }
         }

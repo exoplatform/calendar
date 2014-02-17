@@ -56,6 +56,7 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
@@ -397,14 +398,18 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception {
+    if(Utils.isUserEnabled(username))
     return storage_.getSharedCalendars(username, isShowAll);
+    else return null;
   }
 
   /**
    * {@inheritDoc}
    */
   public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
+    if(Utils.isUserEnabled(username))
     return storage_.getEvents(username, eventQuery, publicCalendarIds);
+    else return new ArrayList<CalendarEvent>();
   }
 
   @Override
@@ -556,7 +561,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   public List<CalendarEvent> getSharedEventByCalendars(String username, List<String> calendarIds) throws Exception {
+    if(Utils.isUserEnabled(username))
     return storage_.getSharedEventByCalendars(username, calendarIds);
+    else return new ArrayList<CalendarEvent>();
   }
 
   public void removeFeedData(String username, String title) {

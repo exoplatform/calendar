@@ -1125,6 +1125,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
 
   protected void sendMail(MailService svr, OrganizationService orSvr, CalendarSetting setting, String fromId,  String toId, CalendarEvent event) throws Exception {
     User invitor = orSvr.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()) ;
+    if (invitor == null) return;
     List<Attachment> atts = getAttachments(null, false);
 
     Map<String, String> eXoIdMap = new HashMap<String, String>();
@@ -1985,7 +1986,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       String [] invitors = uiEventForm.getMeetingInvitation() ;
       if (invitors != null) currentEmails.addAll(Arrays.asList(invitors)) ;
       for (String value : values.split(CalendarUtils.COMMA)) {
-        String email = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(value).getEmail() ;
+        User u = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(value);
+        if (u == null) continue;
+        String email = u.getEmail() ;
         if (!currentEmails.contains(email)) currentEmails.add(email) ;
         if (!uiEventForm.participants_.keySet().contains(value)) {
           uiEventForm.participants_.put(value, email) ;
