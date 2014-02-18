@@ -87,6 +87,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1910,44 +1911,48 @@ public class JCRDataStorage implements DataStorage {
     Node rssHome = getRssHome(username);
     NodeIterator iter = rssHome.getNodes();
     List<String> removedFeedNodes = new ArrayList<String>();
-    while (iter.hasNext()) {
-      Node feedNode = iter.nextNode();
-      if (feedNode.isNodeType(Utils.EXO_RSS_DATA)) {
-        FeedData feedData = new FeedData();
-        feedData.setTitle(feedNode.getProperty("exo:title").getString());
-        StringBuilder url = new StringBuilder(feedNode.getProperty(Utils.EXO_BASE_URL).getString());
-        url.append("/").append(PortalContainer.getCurrentPortalContainerName());
-        url.append("/").append(feedNode.getSession().getWorkspace().getName());
-        url.append("/").append(username);
-        url.append("/").append(feedNode.getName());
-        feedData.setUrl(url.toString());
+    try {
+      while (iter.hasNext()) {
+        Node feedNode = iter.nextNode();
+        if (feedNode.isNodeType(Utils.EXO_RSS_DATA)) {
+          FeedData feedData = new FeedData();
+          feedData.setTitle(feedNode.getProperty("exo:title").getString());
+          StringBuilder url = new StringBuilder(feedNode.getProperty(Utils.EXO_BASE_URL).getString());
+          url.append("/").append(PortalContainer.getCurrentPortalContainerName());
+          url.append("/").append(feedNode.getSession().getWorkspace().getName());
+          url.append("/").append(username);
+          url.append("/").append(feedNode.getName());
+          feedData.setUrl(url.toString());
 
-        URL feedUrl = new URL(feedData.getUrl());
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(feedUrl));
+          URL feedUrl = new URL(feedData.getUrl());
+          SyndFeedInput input = new SyndFeedInput();
+          SyndFeed feed = input.build(new XmlReader(feedUrl));
 
-        List entries = feed.getEntries();
-        List<SyndEntry> listBefore = new ArrayList<SyndEntry>();
-        listBefore.addAll(entries);
-        for (int i = 0; i < listBefore.size(); i++) {
-          SyndEntry entry = listBefore.get(i);
-          String id = entry.getLink().substring(entry.getLink().lastIndexOf("/") + 1);
-          if (id.contains(calendarId)) {
-            listBefore.remove(i);
-            i--;
+          List entries = feed.getEntries();
+          List<SyndEntry> listBefore = new ArrayList<SyndEntry>();
+          listBefore.addAll(entries);
+          for (int i = 0; i < listBefore.size(); i++) {
+            SyndEntry entry = listBefore.get(i);
+            String id = entry.getLink().substring(entry.getLink().lastIndexOf("/") + 1);
+            if (id.contains(calendarId)) {
+              listBefore.remove(i);
+              i--;
+            }
+          }
+          if (listBefore.size() == 0) {
+            removedFeedNodes.add(feedNode.getName());
+          } else {
+            feed.setEntries(listBefore);
+            SyndFeedOutput output = new SyndFeedOutput();
+            String feedXML = output.outputString(feed);
+            feedXML = StringUtils.replace(feedXML, "&amp;", "&");
+            feedNode.setProperty(Utils.EXO_CONTENT, new ByteArrayInputStream(feedXML.getBytes()));
+            feedNode.save();
           }
         }
-        if (listBefore.size() == 0) {
-          removedFeedNodes.add(feedNode.getName());
-        } else {
-          feed.setEntries(listBefore);
-          SyndFeedOutput output = new SyndFeedOutput();
-          String feedXML = output.outputString(feed);
-          feedXML = StringUtils.replace(feedXML, "&amp;", "&");
-          feedNode.setProperty(Utils.EXO_CONTENT, new ByteArrayInputStream(feedXML.getBytes()));
-          feedNode.save();
-        }
       }
+    } catch (MalformedURLException mue) {
+      if(log.isDebugEnabled()) log.debug("Could not update rss");
     }
     if (removedFeedNodes.size() > 0) {
       for (String s : removedFeedNodes) {

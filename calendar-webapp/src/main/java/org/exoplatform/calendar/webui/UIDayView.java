@@ -52,7 +52,9 @@ import org.exoplatform.webui.event.EventListener;
                  template = "app:/templates/calendar/webui/UIDayView.gtmpl", 
                  events = {
                    @EventConfig(listeners = UICalendarView.AddEventActionListener.class),  
-                   @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class, confirm="UICalendarView.msg.confirm-delete"),
+                   @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
+                   @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
                    @EventConfig(listeners = UICalendarView.EditActionListener.class), 
                    @EventConfig(listeners = UICalendarView.DeleteActionListener.class),

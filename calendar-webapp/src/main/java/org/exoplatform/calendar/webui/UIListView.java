@@ -50,6 +50,8 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                  events = {
                    @EventConfig(listeners = UICalendarView.AddEventActionListener.class),      
                    @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
+                   @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteEvent.class),
                    @EventConfig(listeners = UICalendarView.CancelDeleteEvent.class),
                    @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
