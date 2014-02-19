@@ -91,7 +91,7 @@ public class CalendarWebservice implements ResourceContainer{
   public final static String BASE_EVENT_URL = BASE_URL + "/event".intern();
   final public static String BASE_URL_PUBLIC = "/cs/calendar/subscribe/".intern();
   final public static String BASE_URL_PRIVATE = PRIVATE + BASE_URL + "/".intern();
-  private Log log = ExoLogger.getExoLogger("calendar.webservice");
+  private Log log = ExoLogger.getExoLogger(CalendarWebservice.class);
 
   static CacheControl cc = new CacheControl();
   static {

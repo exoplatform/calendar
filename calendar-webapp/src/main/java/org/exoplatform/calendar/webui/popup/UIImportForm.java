@@ -39,9 +39,6 @@ import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
-import org.exoplatform.web.application.JavascriptManager;
-import org.exoplatform.web.application.RequireJS;
-import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -224,7 +221,8 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
       temp.put(key, tempS);
     } else {
       temp = perms_.get(selectField);
-      if(temp.get(key) != null && !tempS.equals(temp.get(key))) tempS = temp.get(key) + CalendarUtils.COMMA +  tempS;
+      if(temp.get(key) != null && !tempS.equals(temp.get(key)))
+        tempS = new StringBuilder().append(temp.get(key)).append(CalendarUtils.COMMA).append(tempS).toString();
       temp.put(key, tempS);
     }
     perms_.put(selectField, temp);

@@ -564,7 +564,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     User u = organizationService.getUserHandler().findUserByName(userName);
     String fullName = u.getFirstName();
     if (u.getLastName() != null && fullName != null) {
-      fullName = fullName + " " + u.getLastName();
+      fullName = new StringBuilder().append(fullName).append(" ").append(u.getLastName()).toString();
     }
     if (fullName == null) fullName = u.getUserName();
     // save default calendar

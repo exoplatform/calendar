@@ -881,7 +881,8 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       UIFormStringInput uiInput = uiTaskDetailTab.getUIStringInput(UITaskDetailTab.FIELD_DELEGATION);
       String currentValues = uiInput.getValue();
       String values = uiUserSelector.getSelectedUsers();
-      if(!CalendarUtils.isEmpty(currentValues) && !currentValues.equals("null")) values += ","+ currentValues;
+      if(!CalendarUtils.isEmpty(currentValues) && !currentValues.equals("null")) 
+        values = new StringBuilder().append(values).append(",").append(currentValues).toString();
       values = CalendarUtils.cleanValue(values);
       uiInput.setValue(values);
       //close popup

@@ -29,9 +29,6 @@ import java.util.TimeZone;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.webui.UICalendarPortlet;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.RequestContext;
@@ -59,8 +56,6 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
   final public static String FIELD_CURRENTATTENDER = "currentAttender".intern() ;
   protected Map<String, String> parMap_ = new HashMap<String, String>() ;
   public Calendar calendar_ ;
-
-  private static final Log LOG = ExoLogger.getExoLogger(UIEventAttenderTab.class);
 
   public UIEventAttenderTab(String arg0) {
     super(arg0);
@@ -131,7 +126,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     String fullName = u.getDisplayName();
     if(fullName == null) fullName = u.getFirstName();
     if (u.getLastName() != null && fullName != null) {
-      fullName = fullName + " " + u.getLastName();
+      fullName = new StringBuilder().append(fullName).append(" ").append(u.getLastName()).toString();
     }
     if (fullName == null) fullName = u.getUserName();
     return fullName;

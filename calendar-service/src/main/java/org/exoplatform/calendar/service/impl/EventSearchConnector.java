@@ -32,7 +32,6 @@ public class EventSearchConnector extends CalendarSearchServiceConnector {
 
   public EventSearchConnector(InitParams initParams) {
     super(initParams);
-    // TODO Auto-generated constructor stub
   }
 
   public Collection<SearchResult> search(SearchContext context, String query,

@@ -71,7 +71,7 @@ import java.util.TimeZone;
     )
 public class UICalendarPortlet extends UIPortletApplication {
 
-  private static Log log = ExoLogger.getLogger("org.exoplatform.calendar.webui.UICalendarPortlet");
+  private static Log log = ExoLogger.getLogger(UICalendarPortlet.class);
 
   public UICalendarPortlet() throws Exception {
     addChild(UIConfirmation.class, null, null);

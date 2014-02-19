@@ -47,7 +47,6 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                  events = {
                    @EventConfig(listeners = UIAddressForm.AddActionListener.class), 
                    @EventConfig(listeners = UIAddressForm.ReplaceActionListener.class, phase = Phase.DECODE),
-                   @EventConfig(listeners = UIAddressForm.SearchActionListener.class), 
                    @EventConfig(listeners = UIAddressForm.ShowPageActionListener.class, phase = Phase.DECODE),
                    @EventConfig(listeners = UIAddressForm.ChangeGroupActionListener.class, phase = Phase.DECODE),
                    @EventConfig(listeners = UIAddressForm.CancelActionListener.class, phase = Phase.DECODE)
@@ -226,38 +225,13 @@ public class UIAddressForm extends UIForm implements UIPopupComponent {
       event.getRequestContext().addUIComponentToUpdateByAjax(chilPopup) ;
     }  
   } 
-  static  public class SearchActionListener extends EventListener<UIAddressForm> {
-    @Override
-    public void execute(Event<UIAddressForm> event) throws Exception {
-      UIAddressForm uiForm = event.getSource();  
-      String text = uiForm.getUIStringInput(UIAddressForm.FIELD_KEYWORD).getValue() ;
-      String category = uiForm.getUIFormSelectBox(UIAddressForm.FIELD_GROUP).getValue() ;
-      //TODO update code there
-      /**
-      if(category.equals(NewUserListener.DEFAULTGROUP)) category = category + CalendarUtils.getCurrentUser() ;
-      uiForm.selectedAddressId_ = category ;
-      try {
-        ContactFilter filter = new ContactFilter() ;
-        if(!CalendarUtils.isEmpty(uiForm.selectedAddressId_)) {
-          filter.setCategories(new String[]{uiForm.selectedAddressId_}) ;
-        } 
-        if(!CalendarUtils.isEmpty(text)) filter.setText(CalendarUtils.encodeJCRText(text)) ;
-        uiForm.setContactList(filter) ;
-        uiForm.getUIFormSelectBox(UIAddressForm.FIELD_GROUP).setValue(category) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
-      } catch (Exception e) {
-        event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UIAddressForm.msg.keyword-error", null)) ;
-      }
-      **/
-      
-    }
-  }
+  
   static  public class ChangeGroupActionListener extends EventListener<UIAddressForm> {
     @Override
     public void execute(Event<UIAddressForm> event) throws Exception {
       UIAddressForm uiForm = event.getSource();  
       String category = uiForm.getUIFormSelectBox(UIAddressForm.FIELD_GROUP).getValue() ;
-      if(category.equals(NewUserListener.DEFAULTGROUP)) category = category + CalendarUtils.getCurrentUser() ;
+      if(category.equals(NewUserListener.DEFAULTGROUP)) category = new StringBuilder().append(category).append(CalendarUtils.getCurrentUser()).toString() ;
       uiForm.selectedAddressId_ = category ;
       uiForm.getUIStringInput(UIAddressForm.FIELD_KEYWORD).setValue(null) ;
       uiForm.getUIFormSelectBox(UIAddressForm.FIELD_GROUP).setValue(uiForm.selectedAddressId_) ;

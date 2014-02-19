@@ -143,7 +143,7 @@ public class JCRDataStorage implements DataStorage {
   private final ConcurrentMap<String, Lock> locks = new ConcurrentHashMap<String, Lock>(64, 0.75f, 64);
 
 
-  private static final Log       log                 = ExoLogger.getLogger("cs.calendar.service");
+  private static final Log       log                 = ExoLogger.getLogger(JCRDataStorage.class);
 
   public JCRDataStorage(NodeHierarchyCreator nodeHierarchyCreator, RepositoryService repoService, CacheService cservice) throws Exception {
     nodeHierarchyCreator_ = nodeHierarchyCreator;
@@ -366,7 +366,6 @@ public class JCRDataStorage implements DataStorage {
         calendarHome.save();
       } catch (Exception e) {
         log.error("Exception occurred when removing calendar " + calendarId, e);
-      } finally {
       }
       try {
         removeFeed(username, calendarId);
@@ -842,7 +841,6 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.debug(e);
-      } finally {
       }
     } else {
       saveEvent(calendarNode, event, null, isNew);
@@ -1319,7 +1317,6 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.debug(e);
-      } finally {
       }
     }
 
@@ -2035,7 +2032,8 @@ public class JCRDataStorage implements DataStorage {
         }
       }
     } catch (Exception e) {
-      log.debug(e);
+      if (log.isDebugEnabled())
+        log.debug(e);
     }
     return feeds;
   }
@@ -2377,8 +2375,6 @@ public class JCRDataStorage implements DataStorage {
     } catch (Exception e) {
       if (log.isDebugEnabled())
         log.debug(e);
-    } finally {
-      // systemSession.close() ;
     }
     return new EventPageList(events, 10);
   }
@@ -3156,8 +3152,6 @@ public class JCRDataStorage implements DataStorage {
       if (log.isDebugEnabled()) {
         log.debug("Fail to get events", e);
       }
-    } finally {
-      // systemSession.close() ;
     }
     return events;
   }
@@ -3594,11 +3588,13 @@ public class JCRDataStorage implements DataStorage {
     if (!Utils.isSameDate(fromDate, toDate)) {
       Map<String, String> remainingInfo = checkFreeBusy(eventQuery, toDate);
       if (remainingInfo.size() > 0) {
+        StringBuilder sb = new StringBuilder();
         for (String par : remainingInfo.keySet()) {
-          String newValue = remainingInfo.get(par);
+          sb.append(remainingInfo.get(par));
           if (participantMap.containsKey(par))
-            newValue += Utils.COMMA + participantMap.get(par);
-          participantMap.put(par, newValue);
+            sb.append(Utils.COMMA).append(participantMap.get(par));
+          participantMap.put(par, sb.toString());
+          sb.setLength(0);
         }
       }
     }
@@ -3859,8 +3855,6 @@ public class JCRDataStorage implements DataStorage {
       if (log.isDebugEnabled()) {
         log.debug("Fail to move event", e);
       }
-    } finally {
-      // systemSession.close() ;
     }
   }
 
@@ -4098,8 +4092,6 @@ public class JCRDataStorage implements DataStorage {
                               eventId,
                               calendarId),
                               e);
-    } finally {
-      // session.close() ;
     }
   }
 
@@ -4188,7 +4180,6 @@ public class JCRDataStorage implements DataStorage {
 
     } catch (Exception e) {
       throw new Exception(e.getClass().toString(), e.fillInStackTrace());
-    } finally {
     }
   }
 
@@ -4542,16 +4533,16 @@ public class JCRDataStorage implements DataStorage {
   public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
     Node calendarNode = getPublicCalendarHome().getNode(calendarId);
     Node eventNode = calendarNode.getNode(taskId);
-    String taskDelegator = null;
+    StringBuilder taskDelegator = new StringBuilder();
     if (eventNode.hasProperty(Utils.EXO_TASK_DELEGATOR))
-      taskDelegator = eventNode.getProperty(Utils.EXO_TASK_DELEGATOR).getString();
+      taskDelegator.append(eventNode.getProperty(Utils.EXO_TASK_DELEGATOR).getString());
     if (assignee != null && assignee.length() > 0) {
-      if (taskDelegator == null || taskDelegator.trim().length() == 0) {
-        taskDelegator = assignee;
+      if (taskDelegator.toString().trim().length() == 0) {
+        taskDelegator = new StringBuilder(assignee);
       } else {
-        taskDelegator += "," + assignee;
+        taskDelegator.append(",").append(assignee);
       }
-      eventNode.setProperty(Utils.EXO_TASK_DELEGATOR, taskDelegator);
+      eventNode.setProperty(Utils.EXO_TASK_DELEGATOR, taskDelegator.toString());
       eventNode.getSession().save();
     }
   }
@@ -4831,7 +4822,6 @@ public class JCRDataStorage implements DataStorage {
     filterCalendarIds.addAll(Arrays.asList(st.getFilterSharedCalendars()));
 
     StringBuffer queryString =  new StringBuffer("SELECT * FROM exo:calendarEvent WHERE ");
-    //TODO need to implement query with limited date/time
     queryString.append(" exo:originalReference ='").append(originEvent.getId()).append("'");
     QueryManager qm;
     try {
@@ -4955,7 +4945,6 @@ public class JCRDataStorage implements DataStorage {
       occurrence.setRecurrenceId(recurId);
       occurrences.add(occurrence);
     }
-    // TODO Auto-generated method stub
     return occurrences;
   }
 

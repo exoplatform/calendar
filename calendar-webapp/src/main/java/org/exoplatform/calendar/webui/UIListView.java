@@ -76,7 +76,7 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                  }
     )
 public class UIListView extends UICalendarView {
-  private static final Log log = ExoLogger.getLogger("org.exoplatform.calendar.webui.UIListView");
+  private static final Log log = ExoLogger.getLogger(UIListView.class);
   private LinkedHashMap<String, CalendarEvent> eventMap_ = new LinkedHashMap<String, CalendarEvent>() ;
   private EventPageList pageList_ = null ;
   private String selectedEvent_ = null ;

@@ -126,7 +126,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
   
   public static final String    ICAL_PROPS_CALENDAR_DESCRIPTION = "X-WR-CALDESC";
   
-  private static final Log       logger                       = ExoLogger.getLogger("cs.calendar.service.remote");
+  private static final Log       logger                       = ExoLogger.getLogger(RemoteCalendarServiceImpl.class);
 
   private JCRDataStorage         storage_;
 
@@ -199,11 +199,11 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
     } catch (MalformedURLException e) {
       if (logger.isDebugEnabled())
         logger.debug(e.getMessage(), e);
-      throw new IOException("URL is invalid. Maybe no legal protocol or URl could not be parsed");
+      throw new RuntimeException("URL is invalid. Maybe no legal protocol or URl could not be parsed");
     } catch (IOException e) {
       if (logger.isDebugEnabled())
         logger.debug(e.getMessage(), e);
-      throw new IOException("Error occurs when connecting to remote server");
+      throw new RuntimeException("Error occurs when connecting to remote server");
     }
   }
 
