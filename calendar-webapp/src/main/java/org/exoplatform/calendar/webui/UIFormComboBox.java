@@ -18,6 +18,7 @@ package org.exoplatform.calendar.webui;
 
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.exoplatform.web.application.RequireJS;
@@ -149,11 +150,13 @@ public class UIFormComboBox extends UIFormInputBase<String>  {
     requirejs.addScripts("wx.UICombobox.init('" + parentId + "','" + getId() + "');");       
     
     Writer w = context.getWriter();
-    String options = "[";
+    StringBuilder options =  new StringBuilder("[");
     StringBuffer text = new StringBuffer(
         "<div class='UIComboboxComponent'><div class='UIComboboxList'><div class='UIComboboxContainer'><div class='UIComboboxItemContainer'>");
-    for (SelectItemOption item : options_) {      
-      options += "'" + item.getValue() + "',";
+    for (Iterator<SelectItemOption<String>> i = options_.iterator(); i.hasNext(); ) {
+      SelectItemOption<String> item = i.next();
+      options.append("'").append(item.getValue());
+      if (i.hasNext()) options.append("',");
       //text.append("<div onclick='eXo.calendar.UICombobox.getValue(this);' value='").append(item.getValue()).append("' class='UIComboboxItem'>");
       text.append("<div value='").append(item.getValue()).append("' class='UIComboboxItem'>");
       text.append("<div class='UIComboboxIcon'>");
@@ -163,7 +166,7 @@ public class UIFormComboBox extends UIFormInputBase<String>  {
     }    
     
     text.append("</div></div></div>");
-    options = options.substring(0, options.length() - 1) + "]";
+    options.append("]");
     
     text.append("<input class='UIComboboxInput' options=\"").append(options)
         //.append("\" onkeyup='eXo.calendar.UICombobox.complete(this,event);' name='").append(getName())

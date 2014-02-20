@@ -416,7 +416,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       temp.put(key, tempS) ;
     } else {
       temp = perms_.get(selectField) ;
-      if(temp.get(key) != null && !tempS.equals(temp.get(key))) tempS = temp.get(key) + CalendarUtils.COMMA +  tempS ;
+      if(temp.get(key) != null && !tempS.equals(temp.get(key))) 
+        tempS = new StringBuilder().append(temp.get(key)).append(CalendarUtils.COMMA).append(tempS).toString() ;
       temp.put(key, tempS) ;
     }
     perms_.put(selectField, temp) ;

@@ -552,10 +552,11 @@ public class CalendarUtils {
     String selectedNode = Util.getUIPortal().getSelectedUserNode().getURI() ;
     String portalName = pContext.getPortalOwner();
     if (url.indexOf(portalName) > 0) {
-      if(url.indexOf(portalName + "/" + selectedNode) < 0){
-        url = url.replaceFirst(portalName, portalName + "/" + selectedNode) ;
+      String s = new StringBuilder().append(portalName).append("/").append(selectedNode).toString();  
+      if(url.indexOf(s) < 0){
+        url = url.replaceFirst(portalName, s) ;
       } 
-      selectedNode = portalName + "/" + selectedNode;
+      selectedNode = s;
       url = url.substring(0, url.lastIndexOf(selectedNode) + selectedNode.length());
     } 
     
@@ -741,12 +742,12 @@ public class CalendarUtils {
   }
 
   public static String convertSize(long size) throws Exception {
-    String str = "";
+    StringBuilder str = new StringBuilder();
     DecimalFormat df = new DecimalFormat("0.00");
-    if (size > 1024 * 1024) str += df.format(((double) size)/(1024 * 1024)) + " MB" ;
-    else if (size > 1024) str += df.format(((double) size)/(1024)) + " KB" ;
-    else str += size + " B" ;
-    return str ;
+    if (size > 1024 * 1024) str.append(df.format(((double) size)/(1024 * 1024))).append(" MB");
+    else if (size > 1024) str.append(df.format(((double) size)/(1024))).append(" KB");
+    else str.append(size).append(" B");
+    return str.toString();
   }
 
   public static boolean isAValidEmailAddress(String email) {

@@ -343,8 +343,6 @@ public class UIUserSelector extends UIForm implements UIPopupComponent
     }
   }
 
-  //TODO maybe check duplicate user in method:
-  //OrganizationService.getUserHandler().findUsersByGroup(groupId)
   public PageList removeDuplicate(PageList users) throws Exception
   {
     List after = new ArrayList();

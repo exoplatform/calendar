@@ -86,7 +86,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private OrganizationService organizationService_;
   private SpaceService spaceService_;
 
-  private static final Log     log                 = ExoLogger.getLogger("cs.calendar.unified.search.service");
+  private static final Log     log                 = ExoLogger.getLogger(CalendarSearchServiceConnector.class);
   private Map<String, Calendar> calendarMap = new HashMap<String,  Calendar>();
 
 
@@ -193,7 +193,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       }
     }
     catch (Exception e) {
-      log.info("Could not execute unified seach " + dataType , e) ; 
+      if (log.isDebugEnabled()) log.debug("Could not execute unified seach " + dataType , e) ; 
     } finally {
       provider.close();
     }
@@ -239,7 +239,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         }
       }
     }catch (Exception e) {
-      log.info("Error when building result object from result data " + e);
+      if (log.isDebugEnabled())  log.debug("Error when building result object from result data " + e);
     }
     return null;
   }
@@ -267,7 +267,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           }
       }
     } catch (Exception e) {
-      log.info("Error when building customer exerpt property from data " + e);
+      if (log.isDebugEnabled()) log.debug("Error when building customer exerpt property from data " + e);
     }
     return origin.toString();
   }
@@ -295,7 +295,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     try {
       return buildDate(iter, Utils.EXO_DATE_CREATED).getTimeInMillis();
     } catch (Exception e) {
-      log.info("Clould not build date value to long from data " + e);
+      if (log.isDebugEnabled()) log.debug("Clould not build date value to long from data " + e);
       return 0;
     }
   }
@@ -314,7 +314,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         }
       }
     } catch (Exception e) {
-      log.info("Could not build date value from " + readProperty + " : " + e);
+      if (log.isDebugEnabled()) log.debug("Could not build date value from " + readProperty + " : " + e);
       return null;
     }
   }
@@ -341,7 +341,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         return row.getValue(Utils.JCR_SCORE).getLong() ;
       }
     } catch (Exception e) {
-      log.info("No score return by query " + e);
+      if (log.isDebugEnabled()) log.debug("No score return by query " + e);
     }
     return 0;
   }
@@ -432,7 +432,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           }
         }
       } catch (Exception e) {
-        log.info("build link error !");
+        if (log.isDebugEnabled()) log.debug("build link error !");
       }
     return url;
   }

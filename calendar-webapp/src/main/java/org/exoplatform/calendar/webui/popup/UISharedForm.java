@@ -641,7 +641,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       UIGroupSelector groupSelector = event.getSource();
       String groupId = event.getRequestContext().getRequestParameter(OBJECTID);
       UISharedForm sharedForm = groupSelector.getParent().getParent();
-      groupId = groupId + CalendarUtils.SLASH_COLON + CalendarUtils.ANY;
+      groupId = new StringBuilder().append(groupId).append(CalendarUtils.SLASH_COLON).append(CalendarUtils.ANY).toString();
 
       sharedForm.updatePermissionOwnerInputWith(groupId);
 

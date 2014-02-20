@@ -35,7 +35,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
 public class ReminderJob extends MultiTenancyJob {
-  private static Log log_ = ExoLogger.getLogger("cs.calendar.job.mail");  
+  private static Log log_ = ExoLogger.getLogger(ReminderJob.class);  
 
   @Override
   public Class<? extends MultiTenancyTask> getTask() {

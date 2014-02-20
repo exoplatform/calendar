@@ -55,7 +55,7 @@ public class SynchronizeRemoteCalendarJob extends MultiTenancyJob {
 
   public static Boolean       isExecuting                       = false;
 
-  private static Log          log_                              = ExoLogger.getLogger("cs.calendar.job.synchronizeremote");
+  private static Log          log_                              = ExoLogger.getLogger(SynchronizeRemoteCalendarJob.class);
 
   public static final String  USERNAME                          = "username";
 

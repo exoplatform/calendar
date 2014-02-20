@@ -245,15 +245,15 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
   public Boolean isValidate(){
     String value = getUIStringInput(TEXT).getValue();
     if(value == null) value = "" ;
-    String formData = "";
-    formData += value;
-    formData += getUIFormSelectBox(TYPE).getValue();
-    formData += getUIFormSelectBox(CALENDAR).getValue();
-    formData += getUIFormSelectBox(CATEGORY).getValue();
-    formData += getUIFormSelectBox(PRIORITY).getValue();
-    formData += getFromDateValue() ;
-    formData += getToDateValue() ;
-    return !CalendarUtils.isEmpty(formData);
+    StringBuilder formData = new StringBuilder();
+    formData.append(value);
+    formData.append(getUIFormSelectBox(TYPE).getValue());
+    formData.append(getUIFormSelectBox(CALENDAR).getValue());
+    formData.append(getUIFormSelectBox(CATEGORY).getValue());
+    formData.append(getUIFormSelectBox(PRIORITY).getValue());
+    formData.append(getFromDateValue());
+    formData.append(getToDateValue());
+    return !CalendarUtils.isEmpty(formData.toString());
   }
   static  public class SearchActionListener extends EventListener<UIAdvancedSearchForm> {
     @Override
