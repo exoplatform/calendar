@@ -28,7 +28,7 @@
           <property name="groupName" value="CollaborationSuite"/>
           <property name="job" value="org.exoplatform.calendar.service.ReminderJob"/>
           <property name="repeatCount" value="0"/>
-          <property name="period" value="180000"/><!-- 3 minutes -->
+          <property name="period" value="15000"/><!-- 15 seconds -->
           <property name="startTime" value="+60000"/><!-- start after 1 minute delay -->
           <property name="endTime" value=""/>               
         </properties-param>
