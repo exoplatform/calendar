@@ -438,27 +438,25 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   }
 
   private static String getSiteName(SiteKey siteKey) {
-    try{
-      ExoContainer container = ExoContainerContext.getCurrentContainer();
-      NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
-      NavigationContext nav = navService.loadNavigation(siteKey);
-      NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
-      if (parentNodeCtx.getSize() >= 1) {
-        Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
-        if (siteKey.getType() == SiteType.GROUP) {
-          children = parentNodeCtx.get(0).getNodes();
-        }
-        Iterator<NodeContext<?>> it = children.iterator();
-        NodeContext<?> child = null;
-        while (it.hasNext()) {
-          child = it.next();
-          if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
-            return child.getName();
-          }
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
+    NavigationContext nav = navService.loadNavigation(siteKey);
+    NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
+    if (parentNodeCtx == null) return Utils.EMPTY_STR;
+    if (parentNodeCtx.getSize() >= 1) {
+      Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
+      if (siteKey.getType() == SiteType.GROUP) {
+        if (parentNodeCtx.get(0) == null) return Utils.EMPTY_STR;
+        children = parentNodeCtx.get(0).getNodes();
+      }
+      Iterator<NodeContext<?>> it = children.iterator();
+      NodeContext<?> child = null;
+      while (it.hasNext()) {
+        child = it.next();
+        if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
+          return child.getName();
         }
       }
-    } catch (NullPointerException e) {
-      return Utils.EMPTY_STR;
     }
     return Utils.EMPTY_STR;
   }
