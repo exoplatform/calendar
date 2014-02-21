@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.jcr.PathNotFoundException;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.portlet.PortletPreferences;
 import org.exoplatform.calendar.service.Attachment;
@@ -759,20 +760,12 @@ public class CalendarUtils {
     addressList = addressList.replaceAll(SEMICOLON,COMMA) ;
     List<String> emails = new ArrayList<String>() ;
     emails.addAll(Arrays.asList(addressList.split(COMMA))) ;
-    try{
-      for (String email : emails) {
-        email = email.trim() ;
-        if(!email.matches(emailRegex)) {
-          return false ;
-        }
+    for (String email : emails) {
+      email = email.trim() ;
+      if(!email.matches(emailRegex)) {
+        return false ;
       }
-    }catch (Exception e){
-      if (log.isDebugEnabled()) {
-        log.debug("Regular expression syntax is not valid", e);
-      }
-      return false;
     }
-
     return true ;
   }
 
@@ -783,18 +776,10 @@ public class CalendarUtils {
     emails.addAll(Arrays.asList(addressList.split(COMMA))) ;
     for (String email : emails) {
       email = email.trim() ;
-      try{
-        if(!email.matches(emailRegex)) {
-          if (invalidEmails.length() > 0) invalidEmails.append(", ") ;
-          invalidEmails.append(email) ;
-        }
-      } catch (Exception e){
-        if (log.isDebugEnabled()) {
-          log.debug("Regular expression syntax is not valid", e);
-        }
+      if(!email.matches(emailRegex)) {
         if (invalidEmails.length() > 0) invalidEmails.append(", ") ;
         invalidEmails.append(email) ;
-      }    
+      }
     }
     if (invalidEmails.length() ==0) return addressList ;
     return invalidEmails.toString() ;
@@ -819,7 +804,7 @@ public class CalendarUtils {
     try {
       InternetAddress[] iAdds = InternetAddress.parse(address, true);
       return iAdds[0].getAddress() ;
-    }catch (Exception e) {
+    } catch (AddressException e) {
       if (log.isDebugEnabled()) {
         log.debug("The mail address is not valid", e);
       }
@@ -1021,7 +1006,7 @@ public class CalendarUtils {
     int limitMB;
     try {
       limitMB = Integer.parseInt(portletPref.getValue("uploadFileSizeLimitMB", "").trim());
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       limitMB = DEFAULT_VALUE_UPLOAD_PORTAL;
     }
     return limitMB;

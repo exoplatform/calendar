@@ -205,15 +205,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     this.setId("UIEventForm");
     saveEventInvitation = "SaveEvent-Invitation" ;
     saveEventNoInvitation = "SaveEvent-NoSendInvitation" ;
-    try{
-      saveEventInvitation = getLabel("SaveEvent-Invitation") ;
-      saveEventNoInvitation = getLabel("SaveEvent-NoSendInvitation") ;
-    } catch (Exception e) {
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Fail to get label: " + saveEventInvitation, e);
-        LOG.debug("Fail to get label: " + saveEventNoInvitation, e);
-      }
-    }
+    saveEventInvitation = getLabel("SaveEvent-Invitation") ;
+    saveEventNoInvitation = getLabel("SaveEvent-NoSendInvitation") ;
+    
     UIEventDetailTab eventDetailTab =  new UIEventDetailTab(TAB_EVENTDETAIL) ;
     addChild(eventDetailTab) ;
     UIEventReminderTab eventReminderTab =  new UIEventReminderTab(TAB_EVENTREMINDER) ;
@@ -366,7 +360,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     java.util.Calendar cal = CalendarUtils.getInstanceOfCurrentCalendar() ;
     try {
       cal.setTimeInMillis(Long.parseLong(formTime)) ;
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       UIMiniCalendar miniCalendar = uiForm.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;
       cal.setTime(miniCalendar.getCurrentCalendar().getTime()) ;
     }
@@ -776,7 +770,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     try {
       String time =  eventReminderTab.getUIFormSelectBox(UIEventReminderTab.POPUP_REPEAT_INTERVAL).getValue() ;
       return Long.parseLong(time) ;
-    } catch (Exception e){
+    } catch (NumberFormatException e){
       if (LOG.isDebugEnabled()) {
         LOG.debug("Can't get time from POPUP_REPEAT_INTERVAL", e);
       }

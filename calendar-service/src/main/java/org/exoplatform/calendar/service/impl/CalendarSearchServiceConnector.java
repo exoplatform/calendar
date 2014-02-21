@@ -16,6 +16,7 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -294,7 +295,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private long buildDate(Object iter) {
     try {
       return buildDate(iter, Utils.EXO_DATE_CREATED).getTimeInMillis();
-    } catch (Exception e) {
+    } catch (NullPointerException e) {
       if (log.isDebugEnabled()) log.debug("Clould not build date value to long from data " + e);
       return 0;
     }
@@ -479,26 +480,26 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   }
 
   public String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
-    try {
-      HashedMap qualifiedName = new HashedMap();
-      qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
-      qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
-      qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
-      if(Utils.isEmpty(spaceGroupId)) {
-        qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteName);
-        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.PORTAL.getName());
-      } else {
-        String groupId = spaceGroupId.split(Utils.SLASH)[2];
-        if(spaceService_ != null) {
-          Space sp = spaceService_.getSpaceByGroupId(spaceGroupId);
-          if(sp != null) groupId = sp.getPrettyName();
-        }
-        qualifiedName.put(QualifiedName.create("gtn", "sitename"), spaceGroupId.replaceAll("/", ":"));
-        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
-        qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
+    HashedMap qualifiedName = new HashedMap();
+    qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
+    qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
+    qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
+    if(Utils.isEmpty(spaceGroupId)) {
+      qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteName);
+      qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.PORTAL.getName());
+    } else {
+      String groupId = spaceGroupId.split(Utils.SLASH)[2];
+      if(spaceService_ != null) {
+        Space sp = spaceService_.getSpaceByGroupId(spaceGroupId);
+        if(sp != null) groupId = sp.getPrettyName();
       }
+      qualifiedName.put(QualifiedName.create("gtn", "sitename"), spaceGroupId.replaceAll("/", ":"));
+      qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
+      qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
+    }
+    try {
       return "/" + handler + URLDecoder.decode(router.render(qualifiedName), "UTF-8");
-    } catch (Exception e) {
+    } catch (UnsupportedEncodingException e) {
       return null;
     }
   }

@@ -220,7 +220,7 @@ public class RemoteCalendar {
         return ((isBefore) ? ((-1) * l) : l);
       }
       return calendar.getTimeInMillis() - calendar2.getTimeInMillis();
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       return 0;
     }
   }

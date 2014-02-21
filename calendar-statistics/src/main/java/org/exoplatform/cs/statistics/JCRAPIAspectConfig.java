@@ -69,7 +69,7 @@ public class JCRAPIAspectConfig
                className = (String)o;
                lTargetInterfaces.add(Class.forName(className));
             }
-            catch (Exception e)
+            catch (ClassNotFoundException e)
             {
                LOG.warn("Cannot find the target interface " + className, e);
             }

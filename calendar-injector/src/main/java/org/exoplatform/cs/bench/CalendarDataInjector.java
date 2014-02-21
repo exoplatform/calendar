@@ -98,22 +98,18 @@ public class CalendarDataInjector extends DataInjector {
   private void initDatas() {
     String str = "/:*.*";
     rand = new Random();
-    try {
-      Identity identity = ConversationState.getCurrent().getIdentity();
-      currentUser = identity.getUserId();
-      Set<String> set = new HashSet<String>(identity.getGroups());
-      groupShare = new String[set.size() + 1];
-      int i = 0;
-      for (String string : set) {
-        groupShare[i] = string + str;
-        i++;
-      }
-      groupShare[i] = currentUser;
-      set.add(currentUser);
-      groups = set.toArray(new String[set.size()]);
-    } catch (Exception e) {
-      log.info("Can not inint user...", e);
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    currentUser = identity.getUserId();
+    Set<String> set = new HashSet<String>(identity.getGroups());
+    groupShare = new String[set.size() + 1];
+    int i = 0;
+    for (String string : set) {
+      groupShare[i] = string + str;
+      i++;
     }
+    groupShare[i] = currentUser;
+    set.add(currentUser);
+    groups = set.toArray(new String[set.size()]);
   }
 
   @Override
@@ -124,25 +120,17 @@ public class CalendarDataInjector extends DataInjector {
   private int getParam(InitParams initParams, String param, int df) {
     try {
       return Integer.parseInt(initParams.getValueParam(param).getValue());
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       return df;
     }
   }
 
   private boolean getParam(InitParams initParams, String param) {
-    try {
-      return Boolean.parseBoolean(initParams.getValueParam(param).getValue());
-    } catch (Exception e) {
-      return false;
-    }
+    return Boolean.parseBoolean(initParams.getValueParam(param).getValue());
   }
 
   private String getParam(InitParams initParams, String param, String df) {
-    try {
-      return String.valueOf(initParams.getValueParam(param).getValue());
-    } catch (Exception e) {
-      return df;
-    }
+    return String.valueOf(initParams.getValueParam(param).getValue());
   }
 
   public void initParams(InitParams initParams) {

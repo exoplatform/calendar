@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.webui.popup;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -187,7 +188,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     if(getFromDateValue() != null) 
       try {
         return df.parse(getFromDateValue()) ;
-      }  catch (Exception e) {
+      }  catch (ParseException e) {
         return null ;
       }
       return null ;
@@ -198,7 +199,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     if(getToDateValue() != null) 
       try {
         return df.parse(getToDateValue()) ;
-      }  catch (Exception e) {
+      }  catch (ParseException e) {
         return null ;
       }
       return null ;
@@ -295,7 +296,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         if(calendarId != null && calendarId.trim().length() > 0){
           try {
             query.setCalendarId(new String[]{calendarId.split(CalendarUtils.COLON)[1].trim()}) ;            
-          } catch (Exception e) {
+          } catch (ArrayIndexOutOfBoundsException e) {
             if (log.isDebugEnabled()) {
               log.debug("Fail to set calendar id", e);
             }
