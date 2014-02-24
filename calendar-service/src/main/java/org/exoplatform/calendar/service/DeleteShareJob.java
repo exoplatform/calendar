@@ -41,7 +41,7 @@ import org.quartz.UnableToInterruptJobException;
  */
 public class DeleteShareJob implements Job, InterruptableJob{
 
-  private static Log         log                  = ExoLogger.getLogger("cs.service.job");
+  private static Log         log                  = ExoLogger.getLogger(DeleteShareJob.class);
 
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {

@@ -16,6 +16,7 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private OrganizationService organizationService_;
   private SpaceService spaceService_;
 
-  private static final Log     log                 = ExoLogger.getLogger("cs.calendar.unified.search.service");
+  private static final Log     log                 = ExoLogger.getLogger(CalendarSearchServiceConnector.class);
   private Map<String, Calendar> calendarMap = new HashMap<String,  Calendar>();
 
 
@@ -193,7 +194,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       }
     }
     catch (Exception e) {
-      log.info("Could not execute unified seach " + dataType , e) ; 
+      if (log.isDebugEnabled()) log.debug("Could not execute unified seach " + dataType , e) ; 
     } finally {
       provider.close();
     }
@@ -239,7 +240,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         }
       }
     }catch (Exception e) {
-      log.info("Error when building result object from result data " + e);
+      if (log.isDebugEnabled())  log.debug("Error when building result object from result data " + e);
     }
     return null;
   }
@@ -267,7 +268,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           }
       }
     } catch (Exception e) {
-      log.info("Error when building customer exerpt property from data " + e);
+      if (log.isDebugEnabled()) log.debug("Error when building customer exerpt property from data " + e);
     }
     return origin.toString();
   }
@@ -294,8 +295,8 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private long buildDate(Object iter) {
     try {
       return buildDate(iter, Utils.EXO_DATE_CREATED).getTimeInMillis();
-    } catch (Exception e) {
-      log.info("Clould not build date value to long from data " + e);
+    } catch (NullPointerException e) {
+      if (log.isDebugEnabled()) log.debug("Clould not build date value to long from data " + e);
       return 0;
     }
   }
@@ -314,7 +315,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         }
       }
     } catch (Exception e) {
-      log.info("Could not build date value from " + readProperty + " : " + e);
+      if (log.isDebugEnabled()) log.debug("Could not build date value from " + readProperty + " : " + e);
       return null;
     }
   }
@@ -341,7 +342,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         return row.getValue(Utils.JCR_SCORE).getLong() ;
       }
     } catch (Exception e) {
-      log.info("No score return by query " + e);
+      if (log.isDebugEnabled()) log.debug("No score return by query " + e);
     }
     return 0;
   }
@@ -432,33 +433,31 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           }
         }
       } catch (Exception e) {
-        log.info("build link error !");
+        if (log.isDebugEnabled()) log.debug("build link error !");
       }
     return url;
   }
 
   private static String getSiteName(SiteKey siteKey) {
-    try{
-      ExoContainer container = ExoContainerContext.getCurrentContainer();
-      NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
-      NavigationContext nav = navService.loadNavigation(siteKey);
-      NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
-      if (parentNodeCtx.getSize() >= 1) {
-        Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
-        if (siteKey.getType() == SiteType.GROUP) {
-          children = parentNodeCtx.get(0).getNodes();
-        }
-        Iterator<NodeContext<?>> it = children.iterator();
-        NodeContext<?> child = null;
-        while (it.hasNext()) {
-          child = it.next();
-          if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
-            return child.getName();
-          }
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
+    NavigationContext nav = navService.loadNavigation(siteKey);
+    NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
+    if (parentNodeCtx == null) return Utils.EMPTY_STR;
+    if (parentNodeCtx.getSize() >= 1) {
+      Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
+      if (siteKey.getType() == SiteType.GROUP) {
+        if (parentNodeCtx.get(0) == null) return Utils.EMPTY_STR;
+        children = parentNodeCtx.get(0).getNodes();
+      }
+      Iterator<NodeContext<?>> it = children.iterator();
+      NodeContext<?> child = null;
+      while (it.hasNext()) {
+        child = it.next();
+        if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
+          return child.getName();
         }
       }
-    } catch (NullPointerException e) {
-      return Utils.EMPTY_STR;
     }
     return Utils.EMPTY_STR;
   }
@@ -481,26 +480,26 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   }
 
   public String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
-    try {
-      HashedMap qualifiedName = new HashedMap();
-      qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
-      qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
-      qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
-      if(Utils.isEmpty(spaceGroupId)) {
-        qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteName);
-        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.PORTAL.getName());
-      } else {
-        String groupId = spaceGroupId.split(Utils.SLASH)[2];
-        if(spaceService_ != null) {
-          Space sp = spaceService_.getSpaceByGroupId(spaceGroupId);
-          if(sp != null) groupId = sp.getPrettyName();
-        }
-        qualifiedName.put(QualifiedName.create("gtn", "sitename"), spaceGroupId.replaceAll("/", ":"));
-        qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
-        qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
+    HashedMap qualifiedName = new HashedMap();
+    qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);
+    qualifiedName.put(QualifiedName.create("gtn", "path"), pageName);
+    qualifiedName.put(QualifiedName.create("gtn", "lang"), "");
+    if(Utils.isEmpty(spaceGroupId)) {
+      qualifiedName.put(QualifiedName.create("gtn", "sitename"), siteName);
+      qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.PORTAL.getName());
+    } else {
+      String groupId = spaceGroupId.split(Utils.SLASH)[2];
+      if(spaceService_ != null) {
+        Space sp = spaceService_.getSpaceByGroupId(spaceGroupId);
+        if(sp != null) groupId = sp.getPrettyName();
       }
+      qualifiedName.put(QualifiedName.create("gtn", "sitename"), spaceGroupId.replaceAll("/", ":"));
+      qualifiedName.put(QualifiedName.create("gtn", "sitetype"), SiteType.GROUP.getName());
+      qualifiedName.put(QualifiedName.create("gtn", "path"), groupId + "/" + pageName);
+    }
+    try {
       return "/" + handler + URLDecoder.decode(router.render(qualifiedName), "UTF-8");
-    } catch (Exception e) {
+    } catch (UnsupportedEncodingException e) {
       return null;
     }
   }

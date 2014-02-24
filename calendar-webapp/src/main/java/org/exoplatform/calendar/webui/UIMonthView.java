@@ -29,8 +29,6 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.webui.popup.UIConfirmForm;
-import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -61,7 +59,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
       @EventConfig(listeners = UICalendarView.ViewActionListener.class),
       @EventConfig(listeners = UICalendarView.EditActionListener.class), 
       @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
-      @EventConfig(listeners = UICalendarView.GotoDateActionListener.class), 
+      @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
+      @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
+      @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
       @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
       @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
       @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),

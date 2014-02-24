@@ -53,14 +53,16 @@ public class UnifiedQuery extends EventQuery {
         }
         Collection<String> inputs = parse(text) ;
         int inputCount = 0 ;
-        for(String keyword : inputs){
-          if(inputCount > 0) queryString.append(" OR ");
-          int filterCount = 0 ;
+        for(String keyword : inputs){ 
+          if(inputCount > 0) queryString.append(" AND ");
+          queryString.append("(");
+          int filterCount = 0 ;          
           for(String filter : Utils.SEARCH_FIELDS) {
             if(filterCount > 0) queryString.append(" OR ");
             queryString.append("CONTAINS(").append(filter).append(",'").append(keyword).append("')");
             filterCount ++ ;
           }
+          queryString.append(")");
           inputCount ++ ;
         }
         if (!Utils.isEmpty(getEventType())) {

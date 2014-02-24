@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.jcr.PathNotFoundException;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.portlet.PortletPreferences;
 import org.exoplatform.calendar.service.Attachment;
@@ -552,10 +553,11 @@ public class CalendarUtils {
     String selectedNode = Util.getUIPortal().getSelectedUserNode().getURI() ;
     String portalName = pContext.getPortalOwner();
     if (url.indexOf(portalName) > 0) {
-      if(url.indexOf(portalName + "/" + selectedNode) < 0){
-        url = url.replaceFirst(portalName, portalName + "/" + selectedNode) ;
+      String s = new StringBuilder().append(portalName).append("/").append(selectedNode).toString();  
+      if(url.indexOf(s) < 0){
+        url = url.replaceFirst(portalName, s) ;
       } 
-      selectedNode = portalName + "/" + selectedNode;
+      selectedNode = s;
       url = url.substring(0, url.lastIndexOf(selectedNode) + selectedNode.length());
     } 
     
@@ -741,12 +743,12 @@ public class CalendarUtils {
   }
 
   public static String convertSize(long size) throws Exception {
-    String str = "";
+    StringBuilder str = new StringBuilder();
     DecimalFormat df = new DecimalFormat("0.00");
-    if (size > 1024 * 1024) str += df.format(((double) size)/(1024 * 1024)) + " MB" ;
-    else if (size > 1024) str += df.format(((double) size)/(1024)) + " KB" ;
-    else str += size + " B" ;
-    return str ;
+    if (size > 1024 * 1024) str.append(df.format(((double) size)/(1024 * 1024))).append(" MB");
+    else if (size > 1024) str.append(df.format(((double) size)/(1024))).append(" KB");
+    else str.append(size).append(" B");
+    return str.toString();
   }
 
   public static boolean isAValidEmailAddress(String email) {
@@ -758,20 +760,12 @@ public class CalendarUtils {
     addressList = addressList.replaceAll(SEMICOLON,COMMA) ;
     List<String> emails = new ArrayList<String>() ;
     emails.addAll(Arrays.asList(addressList.split(COMMA))) ;
-    try{
-      for (String email : emails) {
-        email = email.trim() ;
-        if(!email.matches(emailRegex)) {
-          return false ;
-        }
+    for (String email : emails) {
+      email = email.trim() ;
+      if(!email.matches(emailRegex)) {
+        return false ;
       }
-    }catch (Exception e){
-      if (log.isDebugEnabled()) {
-        log.debug("Regular expression syntax is not valid", e);
-      }
-      return false;
     }
-
     return true ;
   }
 
@@ -782,18 +776,10 @@ public class CalendarUtils {
     emails.addAll(Arrays.asList(addressList.split(COMMA))) ;
     for (String email : emails) {
       email = email.trim() ;
-      try{
-        if(!email.matches(emailRegex)) {
-          if (invalidEmails.length() > 0) invalidEmails.append(", ") ;
-          invalidEmails.append(email) ;
-        }
-      } catch (Exception e){
-        if (log.isDebugEnabled()) {
-          log.debug("Regular expression syntax is not valid", e);
-        }
+      if(!email.matches(emailRegex)) {
         if (invalidEmails.length() > 0) invalidEmails.append(", ") ;
         invalidEmails.append(email) ;
-      }    
+      }
     }
     if (invalidEmails.length() ==0) return addressList ;
     return invalidEmails.toString() ;
@@ -818,7 +804,7 @@ public class CalendarUtils {
     try {
       InternetAddress[] iAdds = InternetAddress.parse(address, true);
       return iAdds[0].getAddress() ;
-    }catch (Exception e) {
+    } catch (AddressException e) {
       if (log.isDebugEnabled()) {
         log.debug("The mail address is not valid", e);
       }
@@ -1020,7 +1006,7 @@ public class CalendarUtils {
     int limitMB;
     try {
       limitMB = Integer.parseInt(portletPref.getValue("uploadFileSizeLimitMB", "").trim());
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       limitMB = DEFAULT_VALUE_UPLOAD_PORTAL;
     }
     return limitMB;

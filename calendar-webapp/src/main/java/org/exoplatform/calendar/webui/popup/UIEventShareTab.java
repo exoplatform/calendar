@@ -22,12 +22,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIGrid;
@@ -50,7 +54,9 @@ import org.exoplatform.webui.form.UIFormRadioBoxInput;
                  template = "app:/templates/calendar/webui/UIPopup/UIEventShareTab.gtmpl",
                  events = {
                      @EventConfig(listeners = UIEventShareTab.ShowPageActionListener.class, phase = Phase.PROCESS),
-                     @EventConfig(listeners = UIEventShareTab.DeleteActionListener.class, confirm = "UIEventForm.msg.confirm-delete", phase = Phase.DECODE)
+                     @EventConfig(listeners = UIEventShareTab.DeleteActionListener.class, phase = Phase.DECODE),
+                     @EventConfig(listeners = UIEventShareTab.ConfirmCloseActionListener.class),
+                     @EventConfig(listeners = UIEventShareTab.AbortCloseActionListener.class)
                  }
 ) 
 public class UIEventShareTab extends UIFormInputWithActions {
@@ -65,6 +71,8 @@ public class UIEventShareTab extends UIFormInputWithActions {
   private Map<String, List<ActionData>> actionField_ = new HashMap<String, List<ActionData>>() ;
 
   private static final Log LOG = ExoLogger.getExoLogger(UIEventShareTab.class);
+  private String parStatus ;
+
 
   public UIEventShareTab(String id) throws Exception {
     super(id);
@@ -121,13 +129,29 @@ public class UIEventShareTab extends UIFormInputWithActions {
       event.getRequestContext().addUIComponentToUpdateByAjax(uiEventShareTab);           
     }
   }
-  
+
+  //, confirm = "UIEventForm.msg.confirm-delete"
   static  public class DeleteActionListener extends EventListener<UIEventShareTab> {
     @Override
     public void execute(Event<UIEventShareTab> event) throws Exception {
       UIEventShareTab uiEventShareTab = event.getSource() ;
       UIEventForm uiEventForm = uiEventShareTab.getParent() ;
+      UICalendarPortlet calendarPortlet = uiEventShareTab.getAncestorOfType(UICalendarPortlet.class);
       String parStatus = event.getRequestContext().getRequestParameter(OBJECTID) ;
+      uiEventShareTab.parStatus = parStatus;
+      ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
+      String message = resourceBundle.getString("UIEventForm.msg.confirm-delete");
+      calendarPortlet.showConfirmWindow(uiEventShareTab, message);
+      return ;
+     }
+    }
+
+  static  public class ConfirmCloseActionListener extends EventListener<UIEventShareTab> {
+    @Override
+    public void execute(Event<UIEventShareTab> event) throws Exception {
+      UIEventShareTab uiEventShareTab = event.getSource() ;
+      UIEventForm uiEventForm = uiEventShareTab.getParent() ;
+      String parStatus = uiEventShareTab.parStatus;
       UIEventAttenderTab tabAttender = uiEventForm.getChildById(UIEventForm.TAB_EVENTATTENDER) ;
       //UIEventShareTab uiEventShareTab = uiEventForm.getChildById(UIEventForm.TAB_EVENTSHARE) ;
       Long currentPage  = uiEventShareTab.getCurrentPage() ;
@@ -135,8 +159,8 @@ public class UIEventShareTab extends UIFormInputWithActions {
         uiEventForm.participants_.remove(parStatus);
         tabAttender.parMap_.remove(parStatus) ;
       }
-       uiEventForm.participantStatus_.remove(parStatus);
-       for(Iterator<ParticipantStatus> i = uiEventForm.participantStatusList_.iterator(); i.hasNext();){
+      uiEventForm.participantStatus_.remove(parStatus);
+      for(Iterator<ParticipantStatus> i = uiEventForm.participantStatusList_.iterator(); i.hasNext();){
         ParticipantStatus participantStatus = i.next();
         if(parStatus.equalsIgnoreCase(participantStatus.getParticipant()))
           i.remove();
@@ -144,13 +168,21 @@ public class UIEventShareTab extends UIFormInputWithActions {
       uiEventShareTab.setParticipantStatusList(uiEventForm.getParticipantStatusList());
       if (currentPage <= uiEventShareTab.getAvailablePage())
         uiEventShareTab.updateCurrentPage(currentPage.intValue());
-      else 
+      else
         uiEventShareTab.updateCurrentPage((int)uiEventShareTab.getAvailablePage());
       uiEventForm.setSelectedTab(UIEventForm.TAB_EVENTSHARE) ;
       //event.getRequestContext().addUIComponentToUpdateByAjax(tabAttender) ;
       //event.getRequestContext().addUIComponentToUpdateByAjax(uiEventShareTab) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiEventForm.getAncestorOfType(UIPopupAction.class)) ;
-     }
     }
+  }
+  static  public class AbortCloseActionListener extends EventListener<UIEventShareTab> {
+    @Override
+    public void execute(Event<UIEventShareTab> event) throws Exception {
+      UIEventShareTab uiEventShareTab = event.getSource() ;
+      uiEventShareTab.parStatus = null;
+      return;
+    }
+  }
   
 }

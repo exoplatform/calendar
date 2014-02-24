@@ -3,6 +3,7 @@
   import org.exoplatform.calendar.webui.UICalendarWorkingContainer ;
   import org.exoplatform.calendar.webui.popup.UIPopupAction ;
   import org.exoplatform.calendar.service.CalendarSetting;
+  import org.exoplatform.webui.core.UIConfirmation;
   try {
     def rcontext = _ctx.getRequestContext() ;
 	def jsManager = rcontext.getJavascriptManager();	
@@ -147,5 +148,6 @@
 <div class="UICalendarPortlet UIEmpty">
 <%
   uicomponent.renderChild(UIPopupAction.class) ;
+  uicomponent.renderChild(UIConfirmation.class) ;
 %>
 </div>

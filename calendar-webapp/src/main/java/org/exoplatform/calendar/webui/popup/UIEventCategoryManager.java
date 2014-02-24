@@ -20,6 +20,8 @@ import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
@@ -39,6 +41,7 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
+import org.exoplatform.webui.core.UIConfirmation;
 import org.exoplatform.webui.core.UIGrid;
 import org.exoplatform.webui.core.lifecycle.UIContainerLifecycle;
 import org.exoplatform.webui.event.Event;
@@ -54,13 +57,16 @@ import org.exoplatform.webui.event.EventListener;
                  lifecycle = UIContainerLifecycle.class,
                  events = {
                    @EventConfig(listeners = UIEventCategoryManager.EditActionListener.class),
-                   @EventConfig(listeners = UIEventCategoryManager.DeleteActionListener.class, confirm = "UIEventCategoryManager.msg.confirm-delete")
+                   @EventConfig(listeners = UIEventCategoryManager.DeleteActionListener.class),
+                   @EventConfig(listeners = UIEventCategoryManager.ConfirmCloseActionListener.class),
+                   @EventConfig(listeners = UIEventCategoryManager.AbortCloseActionListener.class)
                  }
 )
 public class UIEventCategoryManager extends UIContainer implements UIPopupComponent {
   public static String[] BEAN_FIELD = {"name"};
   private static String[] ACTION = {"Edit", "Delete"} ;
   public String categoryId_ ;
+  private String confirmedCategoryId_;
   Map<String, String> defaultEventCategoriesMap = new LinkedHashMap<String, String>();
 
   public UIEventCategoryManager() throws Exception {
@@ -152,6 +158,13 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
              .addMessage(new ApplicationMessage("UIEventCategoryManager.msg.cannot-delete", null));
         return ;        
       }
+      uiManager.confirmedCategoryId_ = eventCategoryId;
+      //, confirm = "UIEventCategoryManager.msg.confirm-delete"
+      ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
+      String message = resourceBundle.getString("UIEventCategoryManager.msg.confirm-delete");
+      calendarPortlet.showConfirmWindow(uiManager, message);
+      return ;
+      /*
       CalendarService calService = uiManager.getApplicationComponent(CalendarService.class) ;
       String username = CalendarUtils.getCurrentUser() ;
       calService.removeEventCategory(username, eventCategoryId) ;
@@ -196,6 +209,76 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
         event.getRequestContext().addUIComponentToUpdateByAjax(uiTaskDetailTab) ;
       }
       event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet) ;
+      */
     }
   }
+  static  public class ConfirmCloseActionListener extends EventListener<UIEventCategoryManager> {
+      @Override
+      public void execute(Event<UIEventCategoryManager> event) throws Exception {
+
+        UIEventCategoryManager uiManager = event.getSource() ;
+        UICalendarPortlet calendarPortlet = uiManager.getAncestorOfType(UICalendarPortlet.class) ;
+        if (uiManager.confirmedCategoryId_.equalsIgnoreCase(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL)) {
+          event.getRequestContext()
+                  .getUIApplication()
+                  .addMessage(new ApplicationMessage("UIEventCategoryManager.msg.cannot-delete", null));
+          return ;
+        }
+      CalendarService calService = uiManager.getApplicationComponent(CalendarService.class) ;
+      String username = CalendarUtils.getCurrentUser() ;
+      calService.removeEventCategory(username, uiManager.confirmedCategoryId_) ;
+      UICalendars uiCalendars = calendarPortlet.findFirstComponentOfType(UICalendars.class) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendars) ;
+      UICalendarViewContainer uiViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
+      if(uiViewContainer.getRenderedChild()  instanceof UIListContainer) {
+        UIListContainer list = (UIListContainer)uiViewContainer.getRenderedChild() ;
+        UIListView uiListView = list.getChild(UIListView.class) ;
+        if(uiListView.isDisplaySearchResult()) {
+          uiListView.setDisplaySearchResult(false) ;
+          uiListView.setCategoryId(null) ;
+          uiListView.refresh() ;
+          uiListView.setLastViewId(null) ;
+          UISearchForm uiSearchForm = calendarPortlet.findFirstComponentOfType(UISearchForm.class) ;
+          uiSearchForm.reset() ;
+          UIActionBar uiActionBar = calendarPortlet.findFirstComponentOfType(UIActionBar.class) ;
+          event.getRequestContext().addUIComponentToUpdateByAjax(uiSearchForm) ;
+          event.getRequestContext().addUIComponentToUpdateByAjax(uiActionBar) ;
+        }
+      }
+      uiViewContainer.updateCategory() ;
+      uiViewContainer.refresh() ;
+      UIMiniCalendar uiMiniCalendar = calendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiViewContainer) ;
+      Long currentPage  = uiManager.getCurrentPage() ;
+      uiManager.updateGrid() ;
+      if(currentPage <= uiManager.getAvailablePage()) uiManager.setCurrentPage(currentPage.intValue()) ;
+      uiManager.resetForm() ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiManager.getAncestorOfType(UIPopupAction.class)) ;
+      UIEventDetailTab uiEventDetailTab = calendarPortlet.findFirstComponentOfType(UIEventDetailTab.class) ;
+      UITaskDetailTab uiTaskDetailTab = calendarPortlet.findFirstComponentOfType(UITaskDetailTab.class) ;
+      if(uiEventDetailTab != null) {
+        uiEventDetailTab.getUIFormSelectBox(UIEventDetailTab.FIELD_CATEGORY).setOptions(CalendarUtils.getCategory());
+        uiEventDetailTab.getUIFormSelectBox(UIEventDetailTab.FIELD_CATEGORY).setValue(uiManager.categoryId_) ;
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiEventDetailTab) ;
+      }
+      if(uiTaskDetailTab != null) {
+        uiTaskDetailTab.getUIFormSelectBox(UITaskDetailTab.FIELD_CATEGORY).setOptions(CalendarUtils.getCategory());
+        uiTaskDetailTab.getUIFormSelectBox(UITaskDetailTab.FIELD_CATEGORY).setValue(uiManager.categoryId_) ;
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiTaskDetailTab) ;
+      }
+      event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet) ;
+      }
+    }
+
+  static  public class AbortCloseActionListener extends EventListener<UIEventCategoryManager> {
+      @Override
+      public void execute(Event<UIEventCategoryManager> event) throws Exception {
+        UIEventCategoryManager uiManager = event.getSource() ;
+        uiManager.confirmedCategoryId_ = null;
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiManager) ;
+      }
+    }
+
+
 }

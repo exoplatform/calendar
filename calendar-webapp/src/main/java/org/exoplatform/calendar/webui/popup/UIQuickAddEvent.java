@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.webui.popup;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -161,7 +162,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       df.setCalendar(CalendarUtils.getInstanceOfCurrentCalendar()) ;
       return df.parse(fromField.getValue() + Utils.SPACE + timeFile.getValue()) ;
     }
-    catch (Exception e) {
+    catch (ParseException e) {
       if (log.isDebugEnabled()) {
         log.debug("Fail to get event from date", e);
       }
@@ -194,7 +195,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
       DateFormat df = new SimpleDateFormat(dateFormat + Utils.SPACE + timeFormat, locale) ;
       df.setCalendar(CalendarUtils.getInstanceOfCurrentCalendar()) ;
       return df.parse(toField.getValue() + Utils.SPACE + timeFile.getValue()) ;
-    } catch (Exception e) {
+    } catch (ParseException e) {
       if (log.isDebugEnabled()) {
         log.debug("Fail to get event to date", e);
       }
@@ -273,7 +274,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
 		  }else if("UIQuickAddTask".equals(this.getId())) {
 		    defaultTime = Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.task.suggest"));   
 		  }
-	  } catch (Exception e) {
+	  } catch (NumberFormatException e) {
 	    if("UIQuickAddTask".equals(this.getId())) defaultTime = 1;
 	  }
 	  return defaultTime;

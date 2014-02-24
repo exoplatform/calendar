@@ -87,6 +87,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -142,7 +143,7 @@ public class JCRDataStorage implements DataStorage {
   private final ConcurrentMap<String, Lock> locks = new ConcurrentHashMap<String, Lock>(64, 0.75f, 64);
 
 
-  private static final Log       log                 = ExoLogger.getLogger("cs.calendar.service");
+  private static final Log       log                 = ExoLogger.getLogger(JCRDataStorage.class);
 
   public JCRDataStorage(NodeHierarchyCreator nodeHierarchyCreator, RepositoryService repoService, CacheService cservice) throws Exception {
     nodeHierarchyCreator_ = nodeHierarchyCreator;
@@ -365,7 +366,6 @@ public class JCRDataStorage implements DataStorage {
         calendarHome.save();
       } catch (Exception e) {
         log.error("Exception occurred when removing calendar " + calendarId, e);
-      } finally {
       }
       try {
         removeFeed(username, calendarId);
@@ -841,7 +841,6 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.debug(e);
-      } finally {
       }
     } else {
       saveEvent(calendarNode, event, null, isNew);
@@ -1318,7 +1317,6 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.debug(e);
-      } finally {
       }
     }
 
@@ -1910,44 +1908,48 @@ public class JCRDataStorage implements DataStorage {
     Node rssHome = getRssHome(username);
     NodeIterator iter = rssHome.getNodes();
     List<String> removedFeedNodes = new ArrayList<String>();
-    while (iter.hasNext()) {
-      Node feedNode = iter.nextNode();
-      if (feedNode.isNodeType(Utils.EXO_RSS_DATA)) {
-        FeedData feedData = new FeedData();
-        feedData.setTitle(feedNode.getProperty("exo:title").getString());
-        StringBuilder url = new StringBuilder(feedNode.getProperty(Utils.EXO_BASE_URL).getString());
-        url.append("/").append(PortalContainer.getCurrentPortalContainerName());
-        url.append("/").append(feedNode.getSession().getWorkspace().getName());
-        url.append("/").append(username);
-        url.append("/").append(feedNode.getName());
-        feedData.setUrl(url.toString());
+    try {
+      while (iter.hasNext()) {
+        Node feedNode = iter.nextNode();
+        if (feedNode.isNodeType(Utils.EXO_RSS_DATA)) {
+          FeedData feedData = new FeedData();
+          feedData.setTitle(feedNode.getProperty("exo:title").getString());
+          StringBuilder url = new StringBuilder(feedNode.getProperty(Utils.EXO_BASE_URL).getString());
+          url.append("/").append(PortalContainer.getCurrentPortalContainerName());
+          url.append("/").append(feedNode.getSession().getWorkspace().getName());
+          url.append("/").append(username);
+          url.append("/").append(feedNode.getName());
+          feedData.setUrl(url.toString());
 
-        URL feedUrl = new URL(feedData.getUrl());
-        SyndFeedInput input = new SyndFeedInput();
-        SyndFeed feed = input.build(new XmlReader(feedUrl));
+          URL feedUrl = new URL(feedData.getUrl());
+          SyndFeedInput input = new SyndFeedInput();
+          SyndFeed feed = input.build(new XmlReader(feedUrl));
 
-        List entries = feed.getEntries();
-        List<SyndEntry> listBefore = new ArrayList<SyndEntry>();
-        listBefore.addAll(entries);
-        for (int i = 0; i < listBefore.size(); i++) {
-          SyndEntry entry = listBefore.get(i);
-          String id = entry.getLink().substring(entry.getLink().lastIndexOf("/") + 1);
-          if (id.contains(calendarId)) {
-            listBefore.remove(i);
-            i--;
+          List entries = feed.getEntries();
+          List<SyndEntry> listBefore = new ArrayList<SyndEntry>();
+          listBefore.addAll(entries);
+          for (int i = 0; i < listBefore.size(); i++) {
+            SyndEntry entry = listBefore.get(i);
+            String id = entry.getLink().substring(entry.getLink().lastIndexOf("/") + 1);
+            if (id.contains(calendarId)) {
+              listBefore.remove(i);
+              i--;
+            }
+          }
+          if (listBefore.size() == 0) {
+            removedFeedNodes.add(feedNode.getName());
+          } else {
+            feed.setEntries(listBefore);
+            SyndFeedOutput output = new SyndFeedOutput();
+            String feedXML = output.outputString(feed);
+            feedXML = StringUtils.replace(feedXML, "&amp;", "&");
+            feedNode.setProperty(Utils.EXO_CONTENT, new ByteArrayInputStream(feedXML.getBytes()));
+            feedNode.save();
           }
         }
-        if (listBefore.size() == 0) {
-          removedFeedNodes.add(feedNode.getName());
-        } else {
-          feed.setEntries(listBefore);
-          SyndFeedOutput output = new SyndFeedOutput();
-          String feedXML = output.outputString(feed);
-          feedXML = StringUtils.replace(feedXML, "&amp;", "&");
-          feedNode.setProperty(Utils.EXO_CONTENT, new ByteArrayInputStream(feedXML.getBytes()));
-          feedNode.save();
-        }
       }
+    } catch (MalformedURLException mue) {
+      if(log.isDebugEnabled()) log.debug("Could not update rss");
     }
     if (removedFeedNodes.size() > 0) {
       for (String s : removedFeedNodes) {
@@ -2030,7 +2032,8 @@ public class JCRDataStorage implements DataStorage {
         }
       }
     } catch (Exception e) {
-      log.debug(e);
+      if (log.isDebugEnabled())
+        log.debug(e);
     }
     return feeds;
   }
@@ -2372,8 +2375,6 @@ public class JCRDataStorage implements DataStorage {
     } catch (Exception e) {
       if (log.isDebugEnabled())
         log.debug(e);
-    } finally {
-      // systemSession.close() ;
     }
     return new EventPageList(events, 10);
   }
@@ -3151,8 +3152,6 @@ public class JCRDataStorage implements DataStorage {
       if (log.isDebugEnabled()) {
         log.debug("Fail to get events", e);
       }
-    } finally {
-      // systemSession.close() ;
     }
     return events;
   }
@@ -3589,11 +3588,13 @@ public class JCRDataStorage implements DataStorage {
     if (!Utils.isSameDate(fromDate, toDate)) {
       Map<String, String> remainingInfo = checkFreeBusy(eventQuery, toDate);
       if (remainingInfo.size() > 0) {
+        StringBuilder sb = new StringBuilder();
         for (String par : remainingInfo.keySet()) {
-          String newValue = remainingInfo.get(par);
+          sb.append(remainingInfo.get(par));
           if (participantMap.containsKey(par))
-            newValue += Utils.COMMA + participantMap.get(par);
-          participantMap.put(par, newValue);
+            sb.append(Utils.COMMA).append(participantMap.get(par));
+          participantMap.put(par, sb.toString());
+          sb.setLength(0);
         }
       }
     }
@@ -3854,8 +3855,6 @@ public class JCRDataStorage implements DataStorage {
       if (log.isDebugEnabled()) {
         log.debug("Fail to move event", e);
       }
-    } finally {
-      // systemSession.close() ;
     }
   }
 
@@ -4093,8 +4092,6 @@ public class JCRDataStorage implements DataStorage {
                               eventId,
                               calendarId),
                               e);
-    } finally {
-      // session.close() ;
     }
   }
 
@@ -4183,7 +4180,6 @@ public class JCRDataStorage implements DataStorage {
 
     } catch (Exception e) {
       throw new Exception(e.getClass().toString(), e.fillInStackTrace());
-    } finally {
     }
   }
 
@@ -4537,16 +4533,16 @@ public class JCRDataStorage implements DataStorage {
   public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
     Node calendarNode = getPublicCalendarHome().getNode(calendarId);
     Node eventNode = calendarNode.getNode(taskId);
-    String taskDelegator = null;
+    StringBuilder taskDelegator = new StringBuilder();
     if (eventNode.hasProperty(Utils.EXO_TASK_DELEGATOR))
-      taskDelegator = eventNode.getProperty(Utils.EXO_TASK_DELEGATOR).getString();
+      taskDelegator.append(eventNode.getProperty(Utils.EXO_TASK_DELEGATOR).getString());
     if (assignee != null && assignee.length() > 0) {
-      if (taskDelegator == null || taskDelegator.trim().length() == 0) {
-        taskDelegator = assignee;
+      if (taskDelegator.toString().trim().length() == 0) {
+        taskDelegator = new StringBuilder(assignee);
       } else {
-        taskDelegator += "," + assignee;
+        taskDelegator.append(",").append(assignee);
       }
-      eventNode.setProperty(Utils.EXO_TASK_DELEGATOR, taskDelegator);
+      eventNode.setProperty(Utils.EXO_TASK_DELEGATOR, taskDelegator.toString());
       eventNode.getSession().save();
     }
   }
@@ -4826,7 +4822,6 @@ public class JCRDataStorage implements DataStorage {
     filterCalendarIds.addAll(Arrays.asList(st.getFilterSharedCalendars()));
 
     StringBuffer queryString =  new StringBuffer("SELECT * FROM exo:calendarEvent WHERE ");
-    //TODO need to implement query with limited date/time
     queryString.append(" exo:originalReference ='").append(originEvent.getId()).append("'");
     QueryManager qm;
     try {
@@ -4950,7 +4945,6 @@ public class JCRDataStorage implements DataStorage {
       occurrence.setRecurrenceId(recurId);
       occurrences.add(occurrence);
     }
-    // TODO Auto-generated method stub
     return occurrences;
   }
 

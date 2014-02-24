@@ -560,9 +560,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //calEvent.setCalType(CalendarEvent.TYPE_EVENT);
     calEvent.setEventCategoryId(eventCategory.getId());
     //Search summary 
-    calEvent.setSummary("Have a meeting");
+    calEvent.setSummary("do you getting Have some busy day?");
     java.util.Calendar fromCal = java.util.Calendar.getInstance();
-    fromCal.add(java.util.Calendar.MINUTE, 1);
+    fromCal.add(java.util.Calendar.MINUTE, 5);
     java.util.Calendar toCal = java.util.Calendar.getInstance();
     toCal.add(java.util.Calendar.HOUR, 1);
     toCal.add(java.util.Calendar.MINUTE, 1);
@@ -577,7 +577,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(1,data.size()) ;
 
     //=Keyword to search=//
-    keyword = "do \"you getting\" Have some busy day?" ;
+    keyword = "Have \"you getting\" busy" ;
     query.setText(keyword);
     result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     //Success to search 
@@ -683,7 +683,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent2.setFromDateTime(calEvent.getFromDateTime());
     calEvent2.setToDateTime(calEvent.getToDateTime());
     calEvent2.setSummary("Summary CEO come we will have some dayoff");
-    calEvent2.setDescription("");
+    calEvent2.setDescription("friday");
     calEvent2.setLocation("");
     calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent2, true);
@@ -707,7 +707,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     CalendarSearchResult calSerResult2 = (CalendarSearchResult)result.toArray()[1] ;
     checkFields(calSerResult2);
     checkFieldsValueWithType(cal.getName(), calEvent2, calSerResult2);
-    assertEquals(false, item.getDate() > item2.getDate()) ;
+    assertEquals(false, item.getDate() < item2.getDate()) ;
 
     //Test query filter by permission 
     loginUser(user2) ;
@@ -850,7 +850,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     toCal.add(java.util.Calendar.MINUTE, 65);
 
     //Simple case
-    String keyword = "hello \"how are\" you " ;
+    String keyword = "you are search able" ;
     EventQuery query = new UnifiedQuery() ;
     query.setText(keyword) ;
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
@@ -879,7 +879,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent.setFromDateTime(fromCal.getTime());
     calEvent.setToDateTime(toCal.getTime());
     calEvent.setSummary("how do you do root");
-    calEvent.setDescription("I am a search able event");
+    calEvent.setDescription("you are a search able event");
     calEvent.setCalendarId(cal.getId());
     calEvent.setEventCategoryId(eventCategory.getId());
     calEvent.setPrivate(false);
@@ -940,6 +940,66 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   }
 
+  public void testUnifiedSeachAllWord() throws Exception {
+    loginUser(username) ;
+    Calendar cal = new Calendar() ;
+    cal.setName("root calendar");
+    calendarService_.saveUserCalendar(username, cal, true);
+
+    EventCategory eventCategory = new EventCategory() ;
+    eventCategory.setName("Meeting");
+    calendarService_.saveEventCategory(username, eventCategory, true);
+
+    CalendarEvent calEvent = new CalendarEvent();
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 1);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.HOUR, 1);
+    toCal.add(java.util.Calendar.MINUTE, 1);
+    calEvent.setFromDateTime(fromCal.getTime());
+    calEvent.setToDateTime(toCal.getTime());
+
+    calEvent.setSummary("abcde fghik");
+    calEvent.setDescription("I am a search able event");
+    calEvent.setCalendarId(cal.getId());
+    calEvent.setEventCategoryId(eventCategory.getId());
+    calendarService_.saveUserEvent(username, cal.getId(),calEvent, true);
+
+    CalendarEvent calEvent2 = new CalendarEvent() ;
+    calEvent2.setSummary("abcde");
+    calEvent2.setCalendarId(cal.getId());
+    calEvent2.setEventCategoryId(eventCategory.getId());
+    calEvent2.setFromDateTime(fromCal.getTime());
+    calEvent2.setToDateTime(toCal.getTime());
+    calendarService_.saveUserEvent(username, cal.getId(), calEvent2, true);
+
+    CalendarEvent task = new CalendarEvent() ;
+    task.setEventType(CalendarEvent.TYPE_TASK);
+    task.setSummary("fghik");
+    task.setCalendarId(cal.getId());
+    task.setEventCategoryId(eventCategory.getId());
+    calendarService_.saveUserEvent(username, cal.getId(), task, true);
+
+  //Simple case
+    String keyword = "abcde fghik" ;
+    EventQuery query = new UnifiedQuery() ;
+    query.setText(keyword) ;
+    Collection<String> params = new ArrayList<String>();
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertNotNull(result) ;
+    assertEquals(result.size(), 1);
+    assertEquals(keyword, result.iterator().next().getTitle());
+
+    // Clean up data 
+    String[] ids = new String[]{cal.getId()};
+    calendarService_.removeUserEvent(username, ids[0], calEvent.getId());
+    calendarService_.removeUserEvent(username, ids[0], calEvent2.getId());
+    calendarService_.removeEventCategory(username, eventCategory.getId());
+    assertNotNull(calendarService_.removeUserCalendar(username, ids[0]));
+  }
+  
   private Router loadConfiguration(String path) throws IOException{
     InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
     try {
