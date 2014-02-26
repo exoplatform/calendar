@@ -56,10 +56,10 @@ public class UnifiedQuery extends EventQuery {
         for(String keyword : inputs){ 
           if(inputCount > 0) queryString.append(" AND ");
           queryString.append("(");
-          int filterCount = 0 ;          
+          int filterCount = 0 ;
           for(String filter : Utils.SEARCH_FIELDS) {
             if(filterCount > 0) queryString.append(" OR ");
-            queryString.append("CONTAINS(").append(filter).append(",'").append(keyword).append("')");
+            queryString.append("CONTAINS(").append(filter).append(",'").append(escapeContainsQuery(keyword)).append("')");
             filterCount ++ ;
           }
           queryString.append(")");
@@ -92,7 +92,7 @@ public class UnifiedQuery extends EventQuery {
       String founds = matcher.group(1);
       terms.add(founds);
     }
-    String remain = matcher.replaceAll("").replaceAll("\"", "").trim(); //remove all remaining double quotes
+    String remain = matcher.replaceAll("").replaceAll("\"\"", "").trim(); //remove all remaining double quotes
     if(!remain.isEmpty()) terms.addAll(Arrays.asList(remain.split("\\s+")));
     return terms;
   }
