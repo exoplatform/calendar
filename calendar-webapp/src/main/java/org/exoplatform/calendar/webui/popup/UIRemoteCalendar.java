@@ -97,7 +97,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     UIFormStringInput remoteUrl = new UIFormStringInput(URL, URL, null);
     remoteUrl.addValidator(MandatoryValidator.class);
     addUIFormInput(remoteUrl);
-    addUIFormInput(new UIFormStringInput(NAME, NAME, null).addValidator(MandatoryValidator.class).addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class));
+    addUIFormInput(new UIFormStringInput(NAME, NAME, null).addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class));
     addUIFormInput(new UIFormTextAreaInput(DESCRIPTION, DESCRIPTION, null));
     addUIFormInput(new UICheckBoxInput(USE_AUTHENTICATION, USE_AUTHENTICATION, null));
 
