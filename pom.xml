@@ -49,7 +49,7 @@
     <org.exoplatform.ws.version>2.4.0-Alpha4</org.exoplatform.ws.version>
     <org.exoplatform.jcr.version>1.16.0-Alpha4</org.exoplatform.jcr.version>
     <!-- GateIn Project Dependencies -->
-    <org.gatein.portal.version>3.7.0.Alpha02-SNAPSHOT</org.gatein.portal.version>
+    <org.gatein.portal.version>3.7.0.Beta01</org.gatein.portal.version>
     <org.gatein.common.version>2.2.0.Beta01</org.gatein.common.version>
     <org.gatein.wci.version>2.4.0.Beta01</org.gatein.wci.version>
     <org.gatein.pc.version>2.5.0.Beta01</org.gatein.pc.version>
