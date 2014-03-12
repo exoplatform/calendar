@@ -207,13 +207,13 @@
 %>
 <%uiform.begin()%>
 <div class="uiBox uiCalendars">
-  <h5 class="title">
+  <h5 class="title clearfix">
     <div id="UICalendars_calendarActions" class="pull-right">
       <div class="actionIconSmall " rel="tooltip" data-placement="left" title="<%=uiform.getLabel("calendarActions")%>">
         <i class="uiIconCalSimplePlus uiIconLightGray"></i>
 		  </div>
     </div>
-	  <%=uiform.getLabel("calendars")%>
+	 <span class="pull-left"> <%=uiform.getLabel("calendars")%></span>
 	</h5>
 
   <div class="contentContainer">
