@@ -73,6 +73,8 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   private static Log log = ExoLogger.getLogger(UICalendarPortlet.class);
 
+  private String spaceGroupId;
+
   public UICalendarPortlet() throws Exception {
     addChild(UIConfirmation.class, null, null);
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
@@ -144,11 +146,11 @@ public class UICalendarPortlet extends UIPortletApplication {
   }
 
   /**
-   * get space id if the request comes from one Social space, else return null.
+   * get space id if the request comes from one Social space, else return empty string.
    * @return 
    */
   public static String getSpaceId() {
-    String spaceIdStr = null;
+    String spaceIdStr = "";
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
     ExoRouter.Route er = ExoRouter.route(requestPath);
@@ -156,27 +158,51 @@ public class UICalendarPortlet extends UIPortletApplication {
     String spacePrettyName = er.localArgs.get("spacePrettyName");
     SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
     Space space = sService.getSpaceByPrettyName(spacePrettyName);
-    if(space == null) return spaceIdStr;
+    if (space == null) return spaceIdStr;
     spaceIdStr = space.getId();
-    return spaceIdStr;
+    return spaceIdStr == null ? "" : spaceIdStr;
   }
 
-  public static String getGroupIdOfSpace(){
-    String spaceGroupId = null;
+  public static String getGroupIdOfSpace() {
+    String spaceGroupId = "";
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
     ExoRouter.Route er = ExoRouter.route(requestPath);
-    if(er == null) return spaceGroupId;
+    if (er == null) return spaceGroupId;
     String spacePrettyName = er.localArgs.get("spacePrettyName");
     SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
     Space space = sService.getSpaceByPrettyName(spacePrettyName);
-    if(space == null) return spaceGroupId;
+    if (space == null) return spaceGroupId;
     spaceGroupId = space.getGroupId();
+    return spaceGroupId == null ? "" : spaceGroupId;
+  }
+
+  public String getSpaceGroupId() {
+    if (spaceGroupId != null) return spaceGroupId;
+
+    String spaceIdStr = "";
+    PortalRequestContext pContext = Util.getPortalRequestContext();
+    String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+    ExoRouter.Route er = ExoRouter.route(requestPath);
+    spaceGroupId = spaceIdStr;
+    if (er == null) return spaceIdStr;
+    String spacePrettyName = er.localArgs.get("spacePrettyName");
+    SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+    Space space = sService.getSpaceByPrettyName(spacePrettyName);
+    spaceGroupId = spaceIdStr;
+    if (space == null) return spaceIdStr;
+    spaceIdStr = space.getGroupId();
+    spaceGroupId = (spaceIdStr == null ? "" : spaceIdStr);
     return spaceGroupId;
   }
 
+
   public static boolean isInSpace() {
-    return getSpaceId() != null;
+    return !getSpaceId().equals("");
+  }
+
+  public boolean isInSpaceContext() {
+    return !getSpaceGroupId().equals("");
   }
 
   public void processInvitationURL(WebuiRequestContext context, PortalRequestContext pContext, String url) throws Exception

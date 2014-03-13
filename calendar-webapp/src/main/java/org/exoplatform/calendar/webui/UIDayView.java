@@ -98,14 +98,24 @@ public class UIDayView extends UICalendarView {
     eventQuery.setFromDate(begin) ;
     eventQuery.setToDate(end) ;
     eventQuery.setExcludeRepeatEvent(true);
+
+    String[] publicCalendars  = getPublicCalendars();
+    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
+
     if(isInSpace()) { 
-      eventQuery.setCalendarId(getPublicCalendars());
+      eventQuery.setCalendarId(publicCalendars);
       events = calendarService.getPublicEvents(eventQuery);
     }
-    else
-      events = calendarService.getEvents(username, eventQuery, getPublicCalendars());
+    else {
+      events =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
+          privateCalendars, publicCalendars, emptyEventCalendars);
+    }
+
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());    
+
+    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
+        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
+
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
       while (recurEventsIter.hasNext()) {
