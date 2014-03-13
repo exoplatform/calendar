@@ -211,7 +211,7 @@ public class EventQuery {
       return queryString.toString();
     } else {
       if (calendarPath != null)
-        queryString = new StringBuilder("/jcr:root").append(calendarPath).append("//element(*,").append(nodeType).append(")");
+        queryString = new StringBuilder("/jcr:root").append(Utils.escapeIllegalCalendarPath(calendarPath)).append("//element(*,").append(nodeType).append(")");
       else
         queryString = new StringBuilder("/jcr:root//element(*,").append(nodeType).append(")");
       boolean hasConjuntion = false;

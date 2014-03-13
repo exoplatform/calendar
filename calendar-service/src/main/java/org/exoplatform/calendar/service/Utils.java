@@ -875,4 +875,36 @@ public class Utils {
       }
     }
   }
+  
+  /**
+   * Avoid the illegal xPath of personal calendar when user name starts with number or user name is an email 
+   * @param element Calendar path
+   * @return Escaped string by converting '@' character and/or the first number of user name to hexa character
+   */
+  
+  public static String escapeIllegalCalendarPath(String element) {
+    StringBuilder buffer = new StringBuilder();
+    for (int i = 0; i < element.length(); i++) {
+      char ch = element.charAt(i);
+      if ((isInteger(Character.toString(ch)) && (i == 0 || (i > 0 && element.charAt(i - 1) == '/'))) || ch == '@' ) {
+        buffer.append("_x");
+        buffer.append(String.format("%04x", (int) ch));
+        buffer.append("_");
+      } else {
+    	buffer.append(ch);
+      }
+    }
+    return buffer.toString();
+  }
+  
+  public static boolean isInteger(String s) {
+    try { 
+	  Integer.parseInt(s); 
+	} catch(NumberFormatException e) { 
+	  return false; 
+	}
+	// only got here if we didn't return false
+	return true;
+  }
+  
 }
