@@ -18,6 +18,7 @@ package org.exoplatform.calendar.service;
 
 import javax.jcr.query.Query;
 import org.exoplatform.commons.utils.ISO8601;
+import org.exoplatform.commons.utils.XPathUtils;
 
 /**
  * Created by The eXo Platform SARL
@@ -211,7 +212,7 @@ public class EventQuery {
       return queryString.toString();
     } else {
       if (calendarPath != null)
-        queryString = new StringBuilder("/jcr:root").append(Utils.escapeIllegalCalendarPath(calendarPath)).append("//element(*,").append(nodeType).append(")");
+        queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendarPath)).append("//element(*,").append(nodeType).append(")");
       else
         queryString = new StringBuilder("/jcr:root//element(*,").append(nodeType).append(")");
       boolean hasConjuntion = false;

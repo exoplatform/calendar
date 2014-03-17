@@ -62,6 +62,7 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ISO8601;
+import org.exoplatform.commons.utils.XPathUtils;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -4344,7 +4345,7 @@ public class JCRDataStorage implements DataStorage {
     if (calendar == null) return null;
 
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
-    StringBuilder queryString = new StringBuilder("/jcr:root").append(Utils.escapeIllegalCalendarPath(calendar.getPath()))
+    StringBuilder queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendar.getPath()))
         .append("//element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
         .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
         .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))");
@@ -4540,7 +4541,7 @@ public class JCRDataStorage implements DataStorage {
     if (calendar == null)
       return null;
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
-    StringBuilder queryString = new StringBuilder("/jcr:root").append(Utils.escapeIllegalCalendarPath(calendar.getPath()))
+    StringBuilder queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendar.getPath()))
         .append("//element(*,exo:repeatCalendarEvent)[@exo:repeat!='").append(CalendarEvent.RP_NOREPEAT)
                                                                 .append("' and @exo:recurrenceId=''");
     if (from != null) {
