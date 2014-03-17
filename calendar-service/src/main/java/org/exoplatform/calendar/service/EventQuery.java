@@ -180,12 +180,17 @@ public class EventQuery {
       else
         queryString = new StringBuilder(" select * from ").append(nodeType).append(" ");
       if (!Utils.isEmpty(text)) {
-        text.replaceAll("\"", "\\\"").replaceAll("-", Utils.EMPTY_STR);
-        queryString.append(" and (").append(Utils.EXO_SUMMARY).append(" like '%").append(text).append("%'");
-        queryString.append(" or ").append(Utils.EXO_DESCRIPTION).append(" like '%").append(text).append("%'");
-        queryString.append(" or ").append(Utils.EXO_LOCATION).append(" like '%").append(text).append("%'");
-        queryString.append(" or ").append(Utils.EXO_PARTICIPANT).append(" like '%").append(text).append("%'");
-        queryString.append(" or ").append(Utils.EXO_INVITATION).append(" like '%").append(text).append("%'");
+        String val = escapeLikeQuery(text);
+        queryString.append(" and (").append(Utils.EXO_SUMMARY).append(" like '%").append(val).append("%'");
+        queryString.append(" ESCAPE '\\'");
+        queryString.append(" or ").append(Utils.EXO_DESCRIPTION).append(" like '%").append(val).append("%'");
+        queryString.append(" ESCAPE '\\'");
+        queryString.append(" or ").append(Utils.EXO_LOCATION).append(" like '%").append(val).append("%'");
+        queryString.append(" ESCAPE '\\'");
+        queryString.append(" or ").append(Utils.EXO_PARTICIPANT).append(" like '%").append(val).append("%'");
+        queryString.append(" ESCAPE '\\'");
+        queryString.append(" or ").append(Utils.EXO_INVITATION).append(" like '%").append(val).append("%'");
+        queryString.append(" ESCAPE '\\'");
         // queryString.append(" and contains (.,'"+ text +"') ") ;
         queryString.append(")");
       }
@@ -218,11 +223,12 @@ public class EventQuery {
       StringBuilder stringBuffer = new StringBuilder("[");
       // desclared full text query
       if (text != null && text.length() > 0) {
-        stringBuffer.append("(jcr:contains(@").append(Utils.EXO_SUMMARY).append(", '").append(text).append("')")
-              .append(" or jcr:contains(@").append(Utils.EXO_DESCRIPTION).append(", '").append(text).append("')")
-              .append(" or jcr:contains(@").append(Utils.EXO_LOCATION).append(", '").append(text).append("')")
-              .append(" or jcr:contains(@").append(Utils.EXO_PARTICIPANT).append(", '").append(text).append("')")
-              .append(" or jcr:contains(@").append(Utils.EXO_INVITATION).append(", '").append(text).append("'))");
+        String val = escapeContainsQuery(text);
+        stringBuffer.append("(jcr:contains(@").append(Utils.EXO_SUMMARY).append(", '").append(val).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_DESCRIPTION).append(", '").append(val).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_LOCATION).append(", '").append(val).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_PARTICIPANT).append(", '").append(val).append("')")
+              .append(" or jcr:contains(@").append(Utils.EXO_INVITATION).append(", '").append(val).append("'))");
         hasConjuntion = true;
       }
       // desclared event type query
@@ -420,5 +426,35 @@ public class EventQuery {
 
   public Boolean getExcludeRepeatEvent() {
     return excludeRepeatEvent;
+  }
+  
+  protected String escapeContainsQuery(String s) {
+    StringBuilder buffer = new StringBuilder();
+    for (int i = 0; i < s.length(); i++) {
+        char ch = s.charAt(i);
+        if (ch == '"' || ch == '-' || ch == '\\') {
+            buffer.append('\\').append(ch);
+        }  else if (ch == '\'') {
+          buffer.append("''");
+        } else {
+            buffer.append(ch);
+        }
+    }
+    return buffer.toString();
+  }
+
+  protected String escapeLikeQuery(String s) {
+    StringBuilder buffer = new StringBuilder();
+    for (int i = 0; i < s.length(); i++) {
+        char ch = s.charAt(i);
+        if (ch == '%' || ch == '_' || ch == '\\') {
+            buffer.append('\\').append(ch);
+        } else if (ch == '\'') {
+            buffer.append("''");
+        } else {
+            buffer.append(ch);
+        }
+    }
+    return buffer.toString();
   }
 }

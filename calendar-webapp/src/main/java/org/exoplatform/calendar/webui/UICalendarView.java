@@ -183,6 +183,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected Map<String, Map<String, CalendarEvent>> recurrenceEventsMap = new LinkedHashMap<String, Map<String, CalendarEvent>>();
 
+  protected    List<String>                     emptyEventCalendars;
+
+  protected    List<String>                     emptyRecurrentEventCalendars;
+
   abstract LinkedHashMap<String, CalendarEvent> getDataMap();
 
   private String singleDeletedEventId = null;
@@ -214,6 +218,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    * @return string of time value in milliseconds.
    */
   public abstract String getDefaultStartTimeOfEvent();
+
+  public void setEmptyEventCalendars(List<String> calendars) {
+    emptyEventCalendars = calendars;
+  }
+
+  public void setEmptyRecurrentEventCalendars(List<String> calendars) {
+    emptyRecurrentEventCalendars = calendars;
+  }
 
   protected String renderDayViewInTitleBar(String monthOpenTag,
                                            String monthCloseTag,
@@ -291,6 +303,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return editedEventId_;
   }
 
+
+  /**
+   * Get all group calendars that user belongs to current user - filter settings
+   * @return
+   * @throws Exception
+   */
   public String[] getPublicCalendars() throws Exception {
     Set<String> map = new HashSet<String>();
     for (GroupCalendarData group : getPublicCalendars(CalendarUtils.getCurrentUser())) {
@@ -300,6 +318,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
     return map.toArray(new String[]{});
   }
+
 
   public List<String> getPrivateCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
@@ -312,6 +331,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return list;
   }
 
+
   public List<String> getSharedCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
     if (isInSpace()) return list;
@@ -323,6 +343,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
     return list;
   }
+
 
   public String[] getFilterCalendarIds() throws Exception {
     List<String> filterList = new ArrayList<String>();
@@ -338,12 +359,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       if (!filterList.contains(id))
         results.add(id);
     }
-    return filterList.toArray(new String[]{});
+    return results.toArray(new String[] {});
   }
 
   protected List<GroupCalendarData> getPublicCalendars(String username) throws Exception {
     String[] groups = CalendarUtils.getUserGroups(username);
-    if (isInSpace()) groups = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    if (isInSpace()) groups = new String[]{ uiCalendarPortlet != null ? uiCalendarPortlet.getSpaceGroupId()
+      : UICalendarPortlet.getGroupIdOfSpace()};
     CalendarService calendarService = CalendarUtils.getCalendarService();
     List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups,
             false,
@@ -393,8 +416,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public void refresh() throws Exception {
   }
 
-  public boolean isInSpace() {
-    return UICalendarPortlet.isInSpace();
+  public boolean isInSpace(){
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    return uiCalendarPortlet != null ? uiCalendarPortlet.isInSpaceContext()
+        : UICalendarPortlet.isInSpace();
   }
 
   protected String renderDateTimeString(Date date) {
@@ -838,9 +863,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   @Override
   public void processRender(WebuiRequestContext arg0) throws Exception {
-    if (this instanceof UIListView) {
-    } else
-      refresh();
+    if (! (this instanceof UIListView)) refresh();
     super.processRender(arg0);
   }
 

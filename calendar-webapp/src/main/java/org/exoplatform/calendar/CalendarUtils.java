@@ -204,8 +204,9 @@ public class CalendarUtils {
   }
 
   static public CalendarService getCalendarService() throws Exception {
-    return (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
+    return (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class);
   }
+
   static public OrganizationService getOrganizationService() throws Exception {
     return (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
   }
