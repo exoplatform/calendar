@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.webui.popup;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,8 +101,12 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     CalendarService cservice = CalendarUtils.getCalendarService() ;
     options.add(new SelectItemOption<String>("", "")) ;
     String[] groupIds = CalendarUtils.getUserGroups(username);
-    if(UICalendarPortlet.isInSpace()){
+    //UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+
+    if (UICalendarPortlet.isInSpace()){
       groupIds = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
+    //if (uiCalendarPortlet.isInSpaceContext()) {
+      //groupIds = new String[]{uiCalendarPortlet.getSpaceGroupId()};
     } else {
       for(Calendar cal : cservice.getUserCalendars(username, true)) {
         options.add(new SelectItemOption<String>(cal.getName(), Calendar.TYPE_PRIVATE + CalendarUtils.COLON + cal.getId())) ;
@@ -187,7 +192,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     if(getFromDateValue() != null) 
       try {
         return df.parse(getFromDateValue()) ;
-      }  catch (Exception e) {
+      }  catch (ParseException e) {
         return null ;
       }
       return null ;
@@ -198,7 +203,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     if(getToDateValue() != null) 
       try {
         return df.parse(getToDateValue()) ;
-      }  catch (Exception e) {
+      }  catch (ParseException e) {
         return null ;
       }
       return null ;
@@ -245,15 +250,15 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
   public Boolean isValidate(){
     String value = getUIStringInput(TEXT).getValue();
     if(value == null) value = "" ;
-    String formData = "";
-    formData += value;
-    formData += getUIFormSelectBox(TYPE).getValue();
-    formData += getUIFormSelectBox(CALENDAR).getValue();
-    formData += getUIFormSelectBox(CATEGORY).getValue();
-    formData += getUIFormSelectBox(PRIORITY).getValue();
-    formData += getFromDateValue() ;
-    formData += getToDateValue() ;
-    return !CalendarUtils.isEmpty(formData);
+    StringBuilder formData = new StringBuilder();
+    formData.append(value);
+    formData.append(getUIFormSelectBox(TYPE).getValue());
+    formData.append(getUIFormSelectBox(CALENDAR).getValue());
+    formData.append(getUIFormSelectBox(CATEGORY).getValue());
+    formData.append(getUIFormSelectBox(PRIORITY).getValue());
+    formData.append(getFromDateValue());
+    formData.append(getToDateValue());
+    return !CalendarUtils.isEmpty(formData.toString());
   }
   static  public class SearchActionListener extends EventListener<UIAdvancedSearchForm> {
     @Override
@@ -295,7 +300,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         if(calendarId != null && calendarId.trim().length() > 0){
           try {
             query.setCalendarId(new String[]{calendarId.split(CalendarUtils.COLON)[1].trim()}) ;            
-          } catch (Exception e) {
+          } catch (ArrayIndexOutOfBoundsException e) {
             if (log.isDebugEnabled()) {
               log.debug("Fail to set calendar id", e);
             }

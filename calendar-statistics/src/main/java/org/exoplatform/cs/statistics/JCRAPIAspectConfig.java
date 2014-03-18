@@ -37,7 +37,7 @@ public class JCRAPIAspectConfig
    /**
     * The logger
     */
-   private static final Log LOG = ExoLogger.getLogger("exo.jcr.component.statistics.JCRAPIAspectConfig");
+   private static final Log LOG = ExoLogger.getLogger(JCRAPIAspectConfig.class);
 
    /**
     * The list of interfaces that we want to monitor
@@ -69,7 +69,7 @@ public class JCRAPIAspectConfig
                className = (String)o;
                lTargetInterfaces.add(Class.forName(className));
             }
-            catch (Exception e)
+            catch (ClassNotFoundException e)
             {
                LOG.warn("Cannot find the target interface " + className, e);
             }

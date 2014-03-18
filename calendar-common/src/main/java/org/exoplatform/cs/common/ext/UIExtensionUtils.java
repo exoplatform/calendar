@@ -34,7 +34,7 @@ import org.exoplatform.webui.ext.UIExtensionManager;
  * Dec 16, 2010  
  */
 public final class UIExtensionUtils {
-  private static final Log logger = ExoLogger.getLogger("cs.common.ext.UIExtensionUtils");
+  private static final Log logger = ExoLogger.getLogger(UIExtensionUtils.class);
   
   /**
    * get list of ui components by extenstion type and parent component.

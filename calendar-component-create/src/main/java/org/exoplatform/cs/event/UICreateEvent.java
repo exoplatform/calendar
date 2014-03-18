@@ -202,7 +202,7 @@ public class UICreateEvent extends UIForm {
               }
               String owner = "";
               if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner() != null) owner = calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner() + " - ";
-              calName=owner+calName;
+              calName= new StringBuilder(owner).append(calName).toString();
             }
           }
         }

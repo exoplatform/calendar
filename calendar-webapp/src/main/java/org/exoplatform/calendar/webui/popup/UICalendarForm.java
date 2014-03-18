@@ -33,6 +33,7 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.calendar.webui.UICalendarView;
 import org.exoplatform.calendar.webui.UICalendarWorkingContainer;
 import org.exoplatform.calendar.webui.UIFormColorPicker;
 import org.exoplatform.services.log.ExoLogger;
@@ -416,7 +417,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       temp.put(key, tempS) ;
     } else {
       temp = perms_.get(selectField) ;
-      if(temp.get(key) != null && !tempS.equals(temp.get(key))) tempS = temp.get(key) + CalendarUtils.COMMA +  tempS ;
+      if(temp.get(key) != null && !tempS.equals(temp.get(key))) 
+        tempS = new StringBuilder().append(temp.get(key)).append(CalendarUtils.COMMA).append(tempS).toString() ;
       temp.put(key, tempS) ;
     }
     perms_.put(selectField, temp) ;
@@ -660,6 +662,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     @Override
     @SuppressWarnings({ "unchecked", "deprecation" })
     public void execute(Event<UICalendarForm> event) throws Exception {
+
       try {
         UICalendarForm uiForm = event.getSource() ;
         StringBuffer notFoundUser = new StringBuffer("");

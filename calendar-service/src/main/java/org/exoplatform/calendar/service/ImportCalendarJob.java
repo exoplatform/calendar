@@ -18,7 +18,6 @@ package org.exoplatform.calendar.service;
 
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.ResourceBundle;
 
 import org.exoplatform.calendar.service.impl.ICalendarImportExport;
 import org.exoplatform.container.PortalContainer;
@@ -33,7 +32,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
 import org.quartz.impl.JobDetailImpl;
-import org.quartz.impl.triggers.SimpleTriggerImpl;
 
 /**
  * Created by The eXo Platform SAS
@@ -61,7 +59,7 @@ public class ImportCalendarJob implements Job, InterruptableJob {
   public static final String START_MESSAGE_KEY = "startImport:%s";
   public static final String FINISH_MESSAGE_KEY = "finishImport:%s";
   public static final String ERROR_MESSAGE_KEY = "errorImport:%s";
-  private static Log log = ExoLogger.getLogger("calendar.service.import.job");
+  private static Log log = ExoLogger.getLogger(ImportCalendarJob.class);
   
   @Override
   public void interrupt() throws UnableToInterruptJobException {

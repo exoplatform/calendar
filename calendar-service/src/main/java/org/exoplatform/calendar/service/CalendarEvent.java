@@ -512,11 +512,7 @@ public class CalendarEvent {
    * @return collection of excluded event's id
    */
   public Collection<String> getExceptionIds(){
-    try {
-      return new HashSet<String>(Arrays.asList(this.excludeId));
-    } catch(NullPointerException npe) {
-      return null;
-    }
+    return this.excludeId != null ? new HashSet<String>(Arrays.asList(this.excludeId)) : null;
   }
   
   /**

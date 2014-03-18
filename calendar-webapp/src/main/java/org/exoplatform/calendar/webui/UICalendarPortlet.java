@@ -16,14 +16,6 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -47,12 +39,26 @@ import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiApplication;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
+import org.exoplatform.webui.core.UIComponent;
+import org.exoplatform.webui.core.UIConfirmation;
+import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.mortbay.cometd.AbstractBayeux;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 /**
  * Author : Nguyen Quang Hung
@@ -65,9 +71,12 @@ import org.mortbay.cometd.continuation.EXoContinuationBayeux;
     )
 public class UICalendarPortlet extends UIPortletApplication {
 
-  private static Log log = ExoLogger.getLogger("org.exoplatform.calendar.webui.UICalendarPortlet");
+  private static Log log = ExoLogger.getLogger(UICalendarPortlet.class);
+
+  private String spaceGroupId;
 
   public UICalendarPortlet() throws Exception {
+    addChild(UIConfirmation.class, null, null);
     UIActionBar uiActionBar = addChild(UIActionBar.class, null, null) ;
     uiActionBar.setCurrentView(CalendarUtils.getViewInSetting()) ;
     addChild(UICalendarWorkingContainer.class, null, null) ;
@@ -137,11 +146,11 @@ public class UICalendarPortlet extends UIPortletApplication {
   }
 
   /**
-   * get space id if the request comes from one Social space, else return null.
+   * get space id if the request comes from one Social space, else return empty string.
    * @return 
    */
   public static String getSpaceId() {
-    String spaceIdStr = null;
+    String spaceIdStr = "";
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
     ExoRouter.Route er = ExoRouter.route(requestPath);
@@ -149,27 +158,51 @@ public class UICalendarPortlet extends UIPortletApplication {
     String spacePrettyName = er.localArgs.get("spacePrettyName");
     SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
     Space space = sService.getSpaceByPrettyName(spacePrettyName);
-    if(space == null) return spaceIdStr;
+    if (space == null) return spaceIdStr;
     spaceIdStr = space.getId();
-    return spaceIdStr;
+    return spaceIdStr == null ? "" : spaceIdStr;
   }
 
-  public static String getGroupIdOfSpace(){
-    String spaceGroupId = null;
+  public static String getGroupIdOfSpace() {
+    String spaceGroupId = "";
     PortalRequestContext pContext = Util.getPortalRequestContext();
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
     ExoRouter.Route er = ExoRouter.route(requestPath);
-    if(er == null) return spaceGroupId;
+    if (er == null) return spaceGroupId;
     String spacePrettyName = er.localArgs.get("spacePrettyName");
     SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
     Space space = sService.getSpaceByPrettyName(spacePrettyName);
-    if(space == null) return spaceGroupId;
+    if (space == null) return spaceGroupId;
     spaceGroupId = space.getGroupId();
+    return spaceGroupId == null ? "" : spaceGroupId;
+  }
+
+  public String getSpaceGroupId() {
+    if (spaceGroupId != null) return spaceGroupId;
+
+    String spaceIdStr = "";
+    PortalRequestContext pContext = Util.getPortalRequestContext();
+    String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
+    ExoRouter.Route er = ExoRouter.route(requestPath);
+    spaceGroupId = spaceIdStr;
+    if (er == null) return spaceIdStr;
+    String spacePrettyName = er.localArgs.get("spacePrettyName");
+    SpaceService sService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
+    Space space = sService.getSpaceByPrettyName(spacePrettyName);
+    spaceGroupId = spaceIdStr;
+    if (space == null) return spaceIdStr;
+    spaceIdStr = space.getGroupId();
+    spaceGroupId = (spaceIdStr == null ? "" : spaceIdStr);
     return spaceGroupId;
   }
 
+
   public static boolean isInSpace() {
-    return getSpaceId() != null;
+    return !getSpaceId().equals("");
+  }
+
+  public boolean isInSpaceContext() {
+    return !getSpaceGroupId().equals("");
   }
 
   public void processInvitationURL(WebuiRequestContext context, PortalRequestContext pContext, String url) throws Exception
@@ -338,5 +371,24 @@ public class UICalendarPortlet extends UIPortletApplication {
   public void processRender(WebuiApplication app, WebuiRequestContext context) throws Exception {
     processExternalUrl(context);
     super.processRender(app, context);
+  }
+
+  public void showConfirmWindow(UIComponent comp, String message) {
+    UIConfirmation uiConfirmation = getChild(UIConfirmation.class);
+    uiConfirmation.setCaller(comp);
+    uiConfirmation.setMessage(message);
+    createActionConfirms(uiConfirmation);
+    ((WebuiRequestContext) WebuiRequestContext.getCurrentInstance()).addUIComponentToUpdateByAjax(uiConfirmation);
+  }
+  public void createActionConfirms(UIConfirmation uiConfirmation) {
+    ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
+    String yes = resourceBundle.getString("UICalendarPortlet.confirm.yes");
+    if(yes == null) yes = "UICalendarPortlet.confirm.yes";
+    String no = resourceBundle.getString("UICalendarPortlet.confirm.no");
+    if(no == null) no = "UICalendarPortlet.confirm.no";
+    List<UIConfirmation.ActionConfirm> actionConfirms = new ArrayList<UIConfirmation.ActionConfirm>();
+    actionConfirms.add(new UIConfirmation.ActionConfirm("ConfirmClose", yes));
+    actionConfirms.add(new UIConfirmation.ActionConfirm("AbortClose", no));
+    uiConfirmation.setActions(actionConfirms);
   }
 }

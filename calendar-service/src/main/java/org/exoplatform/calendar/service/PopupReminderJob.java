@@ -17,7 +17,6 @@
 package org.exoplatform.calendar.service;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -34,7 +33,7 @@ import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.quartz.JobExecutionContext;
 
 public class PopupReminderJob extends MultiTenancyJob {
-  private static Log log_ = ExoLogger.getLogger("cs.calendar.job.popup");
+  private static Log log_ = ExoLogger.getLogger(PopupReminderJob.class);
 
   @Override
   public Class<? extends MultiTenancyTask> getTask() {

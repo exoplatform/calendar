@@ -3,6 +3,7 @@
   import org.exoplatform.calendar.webui.UICalendarWorkingContainer ;
   import org.exoplatform.calendar.webui.popup.UIPopupAction ;
   import org.exoplatform.calendar.service.CalendarSetting;
+  import org.exoplatform.webui.core.UIConfirmation;
   try {
     def rcontext = _ctx.getRequestContext() ;
 	def jsManager = rcontext.getJavascriptManager();	
@@ -131,7 +132,7 @@
       requireJS.addScripts('cal.Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;
       requireJS.addScripts('cal.UICalendarPortlet.weekStartOn = "' + weekStartOn + '";');
       requireJS.addScripts('cal.UICalendarPortlet.settingTimezone = "'+ settingTimeZone +'" ;') ;
-      requireJS.addScripts('cal.UICalendarPortlet.isSpace = "'+ uicomponent.getSpaceId() +'" ;') ;
+      requireJS.addScripts('cal.UICalendarPortlet.isSpace = "'+ uicomponent.getSpaceGroupId() +'" ;') ;
       requireJS.addScripts('cal.LayoutManager.layoutId = "calendarlayout-' + uicomponent.getRemoteUser() + '";');
       requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
       requireJS.addScripts('cal.CalendarLayout.init();');
@@ -147,5 +148,6 @@
 <div class="UICalendarPortlet UIEmpty">
 <%
   uicomponent.renderChild(UIPopupAction.class) ;
+  uicomponent.renderChild(UIConfirmation.class) ;
 %>
 </div>

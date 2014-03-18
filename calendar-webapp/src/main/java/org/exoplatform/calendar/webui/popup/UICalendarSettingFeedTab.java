@@ -21,9 +21,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -49,8 +52,9 @@ import org.exoplatform.webui.form.UIFormRadioBoxInput;
     template = "app:/templates/calendar/webui/UIPopup/UICalendarSettingFeedTab.gtmpl",
     events = {
         @EventConfig(listeners = UICalendarSettingFeedTab.ShowPageActionListener.class, phase = Phase.DECODE),
-        @EventConfig(listeners = UICalendarSettingFeedTab.DeleteActionListener.class, phase = Phase.DECODE
-                     , confirm = "UICalendarSettingFeedTab.msg.confirm-delete"),
+        @EventConfig(listeners = UICalendarSettingFeedTab.DeleteActionListener.class, phase = Phase.DECODE),
+        @EventConfig(listeners = UICalendarSettingFeedTab.ConfirmCloseActionListener.class),
+        @EventConfig(listeners = UICalendarSettingFeedTab.AbortCloseActionListener.class),
         @EventConfig(listeners = UICalendarSettingFeedTab.RssActionListener.class, phase = Phase.DECODE),
         @EventConfig(listeners = UICalendarSettingFeedTab.EditActionListener.class, phase = Phase.DECODE)
     }
@@ -59,7 +63,8 @@ public class UICalendarSettingFeedTab extends UIFormInputWithActions {
   private Map<String, List<ActionData>> actionField_  = new HashMap<String, List<ActionData>>() ;
   public static String[] BEAN_FIELD = {"feed"};
   private static String[] ACTION = {"Rss", "Edit", "Delete"} ;
-  
+  private String title ;
+
   public UICalendarSettingFeedTab(String compId) throws Exception {
     super(compId);
     setComponentConfig(getClass(), null) ;
@@ -115,12 +120,28 @@ public class UICalendarSettingFeedTab extends UIFormInputWithActions {
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm);           
     }
   }
-  
+
+  //confirm = "UICalendarSettingFeedTab.msg.confirm-delete"
+
   static  public class DeleteActionListener extends EventListener<UICalendarSettingFeedTab> {
     @Override
     public void execute(Event<UICalendarSettingFeedTab> event) throws Exception {
       UICalendarSettingFeedTab uiform = event.getSource() ;
+      UICalendarPortlet calendarPortlet =  uiform.getAncestorOfType(UICalendarPortlet.class);
       String title = event.getRequestContext().getRequestParameter(OBJECTID) ;
+      uiform.title = title;
+      ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
+      String message = resourceBundle.getString("UICalendarSettingFeedTab.msg.confirm-delete");
+      calendarPortlet.showConfirmWindow(uiform, message);
+      return ;
+
+    }
+  }
+  static  public class ConfirmCloseActionListener extends EventListener<UICalendarSettingFeedTab> {
+    @Override
+    public void execute(Event<UICalendarSettingFeedTab> event) throws Exception {
+      UICalendarSettingFeedTab uiform = event.getSource() ;
+      String title  = uiform.title;
       CalendarService calendarService = CalendarUtils.getCalendarService();
       String username = CalendarUtils.getCurrentUser();
       calendarService.removeFeedData(username, title);
@@ -128,7 +149,14 @@ public class UICalendarSettingFeedTab extends UIFormInputWithActions {
       event.getRequestContext().addUIComponentToUpdateByAjax(uiform);
     }
   }
-  
+  static  public class AbortCloseActionListener extends EventListener<UICalendarSettingFeedTab> {
+    @Override
+    public void execute(Event<UICalendarSettingFeedTab> event) throws Exception {
+      UICalendarSettingFeedTab uiform = event.getSource() ;
+      uiform.title = null;
+      return;
+    }
+  }
   static  public class EditActionListener extends EventListener<UICalendarSettingFeedTab> {
     @Override
     public void execute(Event<UICalendarSettingFeedTab> event) throws Exception {
