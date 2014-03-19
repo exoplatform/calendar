@@ -240,7 +240,7 @@ public class UISelectUserForm extends UIForm implements UIPopupComponent {
       if(CalendarUtils.isEmpty(keyword)) {
         uiForm.init(uiForm.pars_) ;
       }  else {
-        keyword = "*" + keyword + "*" ;
+        keyword = new StringBuilder().append("*").append(keyword).append("*").toString() ;
         Query q = new Query() ;
         if(USER_NAME.equals(filter)) {
           q.setUserName(keyword) ;

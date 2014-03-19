@@ -29,8 +29,6 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.webui.popup.UIConfirmForm;
-import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -61,7 +59,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
       @EventConfig(listeners = UICalendarView.ViewActionListener.class),
       @EventConfig(listeners = UICalendarView.EditActionListener.class), 
       @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
-      @EventConfig(listeners = UICalendarView.GotoDateActionListener.class), 
+      @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
+      @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
+      @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
       @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
       @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
       @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),
@@ -102,12 +102,26 @@ public class UIMonthView extends UICalendarView {
     eventQuery.setToDate(getEndDateOfMonthView()) ;
     eventQuery.setExcludeRepeatEvent(true);
     List<CalendarEvent> allEvents ;
-    if(isInSpace()) {  
-      eventQuery.setCalendarId(getPublicCalendars());
+
+    String[] publicCalendars  = getPublicCalendars();
+    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
+
+    if (isInSpace()) {
+      eventQuery.setCalendarId(publicCalendars);
       allEvents = calendarService.getPublicEvents(eventQuery);
-    } else allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
+    } else {
+
+      //allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
+
+      allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
+          privateCalendars, publicCalendars, emptyEventCalendars);
+    }
+
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
+    //List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
+    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
+        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
+
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
       while (recurEventsIter.hasNext()) {

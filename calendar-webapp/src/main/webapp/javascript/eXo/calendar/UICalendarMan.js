@@ -715,7 +715,8 @@ GUIMan.prototype.paintWeek = function() {
 	}
     }
     var allDayTable = gj(this.eventAlldayNode).find('.allDayTable');
-    allDayTable.css('height', (maxEventRow > 1)?(maxEventRow * this.EVENT_BAR_HEIGH) + 'px':'17px');
+    allDayTable.css('height', ((maxEventRow +1) * this.EVENT_BAR_HEIGH + 'px'));
+    allDayTable.css('cursor','pointer');
 };
 
 /**

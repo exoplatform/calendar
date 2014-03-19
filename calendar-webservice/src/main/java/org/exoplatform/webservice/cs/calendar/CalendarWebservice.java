@@ -48,6 +48,7 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.container.ExoContainerContext;
@@ -91,7 +92,7 @@ public class CalendarWebservice implements ResourceContainer{
   public final static String BASE_EVENT_URL = BASE_URL + "/event".intern();
   final public static String BASE_URL_PUBLIC = "/cs/calendar/subscribe/".intern();
   final public static String BASE_URL_PRIVATE = PRIVATE + BASE_URL + "/".intern();
-  private Log log = ExoLogger.getExoLogger("calendar.webservice");
+  private Log log = ExoLogger.getExoLogger(CalendarWebservice.class);
 
   static CacheControl cc = new CacheControl();
   static {
@@ -272,11 +273,8 @@ public class CalendarWebservice implements ResourceContainer{
         if (calendar != null) {
           events.addAll(calendarService.getUserEventByCalendar(username, calendarIds));
         } else {
-          try {
-            calendar = calendarService.getSharedCalendars(username, false).getCalendarById(calendarId);
-          } catch (NullPointerException e) {
-            calendar = null;
-          }
+            GroupCalendarData groupData = calendarService.getSharedCalendars(username, false);
+            calendar = groupData != null ?  groupData.getCalendarById(calendarId) : null;
           if (calendar != null) {
             events.addAll(calendarService.getSharedEventByCalendars(username, calendarIds));
           } else {
@@ -380,12 +378,8 @@ public class CalendarWebservice implements ResourceContainer{
 
       CalendarImportExport icalEx = calendarService.getCalendarImportExports(CalendarService.ICALENDAR);
       OutputStream out = icalEx.exportCalendar(username, Arrays.asList(calendarId), type, -1);
-      InputStream in = new ByteArrayInputStream(out.toString().getBytes());
+      InputStream in = out != null ? new ByteArrayInputStream(out.toString().getBytes()) : null;
       return Response.ok(in, "text/calendar")
-      .header("Cache-Control", "private max-age=600, s-maxage=120").
-      header("Content-Disposition", "attachment;filename=\"" + calendarId + ".ics").cacheControl(cacheControl).build();
-    }catch (NullPointerException ne) {
-      return Response.ok(null, "text/calendar")
       .header("Cache-Control", "private max-age=600, s-maxage=120").
       header("Content-Disposition", "attachment;filename=\"" + calendarId + ".ics").cacheControl(cacheControl).build();
     } catch (Exception e) {
@@ -421,12 +415,8 @@ public class CalendarWebservice implements ResourceContainer{
       }
       CalendarImportExport icalEx = calendarService.getCalendarImportExports(CalendarService.ICALENDAR);
       OutputStream out = icalEx.exportCalendar(username, Arrays.asList(calendarId), type, -1);
-      InputStream in = new ByteArrayInputStream(out.toString().getBytes());
+      InputStream in = out != null ? new ByteArrayInputStream(out.toString().getBytes()) : null;
       return Response.ok(in, "text/calendar")
-      .header("Cache-Control", "private max-age=600, s-maxage=120").
-      header("Content-Disposition", "attachment;filename=\"" + calendarId + ".ics").cacheControl(cacheControl).build();
-    }catch (NullPointerException ne) {
-      return Response.ok(null, "text/calendar")
       .header("Cache-Control", "private max-age=600, s-maxage=120").
       header("Content-Disposition", "attachment;filename=\"" + calendarId + ".ics").cacheControl(cacheControl).build();
     } catch (Exception e) {

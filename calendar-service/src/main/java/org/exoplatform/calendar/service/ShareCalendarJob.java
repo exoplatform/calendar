@@ -42,7 +42,7 @@ import org.quartz.UnableToInterruptJobException;
 
 public class ShareCalendarJob implements Job, InterruptableJob {
 
-  private static Log         log                  = ExoLogger.getLogger("cs.service.job");
+  private static Log         log                  = ExoLogger.getLogger(ShareCalendarJob.class);
 
   public ShareCalendarJob() throws Exception {
 
@@ -101,7 +101,8 @@ public class ShareCalendarJob implements Job, InterruptableJob {
       
       log.info("Finish sharing calendar for groups");
     } catch (Exception e) {
-      log.debug("Cant share calendar by job:" + e);
+      if (log.isDebugEnabled())
+        log.debug("Cant share calendar by job:" + e);
     }
 
   }

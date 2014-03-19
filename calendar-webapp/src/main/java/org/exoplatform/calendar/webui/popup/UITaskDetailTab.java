@@ -234,7 +234,7 @@ public class UITaskDetailTab extends UIFormInputWithActions {
   protected int getTimeShift(){
 	  try {
 		    return Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.task.suggest")); 
-		  } catch (Exception e) {
+		  } catch (NumberFormatException e) {
 			return 2;
 	  }
   }

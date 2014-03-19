@@ -406,6 +406,11 @@ public interface CalendarService {
    */
   public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
+
+  public List<Map<Integer, String>> searchHightLightEventSQL(String username, EventQuery eventQuery,
+                                                             String[] privateCalendars, String[] publicCalendars) throws Exception;
+
+
   /**
    * Shares the private calendar to other users
    * @param username current user name(or user id)
@@ -451,6 +456,19 @@ public interface CalendarService {
    */
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
+
+  /**
+   * A faster version of getAllNoRepeatEvents without thread
+   *
+   * @param username
+   * @param eventQuery
+   * @param privateCalendars
+   * @param publicCalendars
+   * @return
+   * @throws Exception
+   */
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery,
+                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
 
   /**
    * Removes shared calendars of an user
@@ -922,19 +940,25 @@ public interface CalendarService {
    */
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception;
 
-  public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from,
-                                                                  java.util.Calendar to, String[] publicCalendarIds) throws Exception;
+  public List<Map<Integer, String>> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
+                                                                      String[] privateCalendars, String[] publicCalendars) throws Exception;
 
-  /**
-   * Shares Calendar with groups
-   * <p> When a calendar is selected to share with a group, the sharing process will run as job 
-   * in background to avoid blocking the user. It will send notification for users about starting and finishing the job.
-   *
-   * @param username Id of current user
-   * @param calendarId Id of shared calendar
-   * @param sharedGroups List of shared groups
-   * @throws Exception
-   */
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
+
+  public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery,
+                                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
+
+
+    /**
+     * Shares Calendar with groups
+     * <p> When a calendar is selected to share with a group, the sharing process will run as job
+     * in background to avoid blocking the user. It will send notification for users about starting and finishing the job.
+     *
+     * @param username Id of current user
+     * @param calendarId Id of shared calendar
+     * @param sharedGroups List of shared groups
+     * @throws Exception
+     */
   public void shareCalendarByRunJob(String username, String calendarId, List<String> sharedGroups) throws Exception;
 
   /**

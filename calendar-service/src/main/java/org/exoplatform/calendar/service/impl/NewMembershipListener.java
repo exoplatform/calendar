@@ -20,9 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.DataStorage;
-import org.exoplatform.services.jcr.RepositoryService;
-import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipEventListener;
 

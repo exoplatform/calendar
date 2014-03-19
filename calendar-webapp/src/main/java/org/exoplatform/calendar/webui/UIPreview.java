@@ -53,6 +53,8 @@ import org.exoplatform.webui.event.EventListener;
                    @EventConfig(listeners = UIPreview.DownloadActionListener.class),
                    @EventConfig(listeners = UICalendarView.EditActionListener.class),
                    @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
+                   @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
+                   @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
                    @EventConfig(listeners = UIPreview.CloseWindowActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteOnlyInstance.class),
                    @EventConfig(listeners = UICalendarView.ConfirmDeleteAllSeries.class),

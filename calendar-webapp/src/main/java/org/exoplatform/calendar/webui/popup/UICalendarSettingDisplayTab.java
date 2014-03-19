@@ -214,10 +214,14 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
    */
   protected boolean isCalendarOfSpace(String[] groupIds)
   {
-    String spaceGroupId = UICalendarPortlet.getGroupIdOfSpace();
-    if (spaceGroupId == null) {
+    UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+    //String spaceGroupId = UICalendarPortlet.getGroupIdOfSpace();
+    String spaceGroupId = uiCalendarPortlet.getSpaceGroupId();
+    //if (spaceGroupId == null) {
+    if (spaceGroupId.equals("")) {
       return true;
     }
+
     if (groupIds != null && groupIds.length > 0) {
       for (String groupId : groupIds) {
         if (groupId.equals(spaceGroupId)) {

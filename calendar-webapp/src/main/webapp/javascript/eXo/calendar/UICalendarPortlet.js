@@ -170,14 +170,13 @@
     UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type){
         var startTime = _module.UICalendarPortlet.getCurrenTimeWithTimeZone();
         if(parseInt(type) ==1) {
-            this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeShift"));
+            this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeshift"));
             this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * this.timeShiftE * 60 * 1000) ;
         }
         else if(parseInt(type) ==2) {
-            this.timeShiftT = parseInt(gj("#UIQuickAddTask").parents("#QuickAddEventContainer").attr("timeShift"));
+            this.timeShiftT = parseInt(gj("#UIQuickAddTask").parents("#QuickAddEventContainer").attr("timeshift"));
             this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * this.timeShiftT * 60 * 1000) ;
-        }
-        this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * 60 * 1000) ;
+        } else this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * 60 * 1000) ;
     } ;
 
     /**
@@ -197,11 +196,11 @@
         var calId = id.split('&')[0].split('=')[1];
         var selectedCalId = calType + ":" + calId;
         if(parseInt(type) ==1) {
-            this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeShift"));
+            this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeshift"));
             this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30*this.timeShiftE*60*1000, selectedCalId) ;
         }
         else if(parseInt(type) ==2) {
-            this.timeShiftT = parseInt(gj("#UIQuickAddTask").parents("#QuickAddEventContainer").attr("timeShift"));
+            this.timeShiftT = parseInt(gj("#UIQuickAddTask").parents("#QuickAddEventContainer").attr("timeshift"));
             this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30*this.timeShiftT*60*1000, selectedCalId) ;
         }
 
@@ -257,12 +256,12 @@
         if(data.isAllday && tempTimeShift > 46) {
 
             if(parseInt(type) ==1) {
-                this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeShift"));
+                this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeshift"));
                 data.fromTime = parseInt(fromMilli + 10*60*60*1000);
                 data.toTime =  parseInt(fromMilli + 10*60*60*1000 + 30*60*this.timeShiftE*1000);
             }
             else if(parseInt(type) ==2) {
-                this.timeShiftT = parseInt(gj("#UIQuickAddTask").parents("#QuickAddEventContainer").attr("timeShift"));
+                this.timeShiftT = parseInt(gj("#UIQuickAddTask").parents("#QuickAddEventContainer").attr("timeshift"));
                 data.fromTime = parseInt(fromMilli + 10*60*60*1000);
                 data.toTime =  parseInt(fromMilli + 10*60*60*1000 + 30*60*this.timeShiftT*1000);
             }
@@ -651,7 +650,8 @@
 
     UICalendarPortlet.prototype.resetLayoutCallback = function(){
         var UICalendarPortlet = _module.UICalendarPortlet;
-        if(UICalendarPortlet.isSpace != "null") {
+        var isSpace = UICalendarPortlet.isSpace;
+        if(isSpace != null && isSpace != "") {
             UICalendarPortlet.resetSpaceDefaultLayout();
             return;
         }
@@ -666,7 +666,10 @@
      * Check layout configuration when page load to render a right layout
      */
     UICalendarPortlet.prototype.checkLayout = function(){
-        if(_module.UICalendarPortlet.isSpace != "null") base.Browser.setCookie(_module.LayoutManager.layoutId,"1",1);
+        var isSpace = _module.UICalendarPortlet.isSpace;
+        if(isSpace != null && isSpace != "") {
+          base.Browser.setCookie(_module.LayoutManager.layoutId,"1",1);
+        }
         _module.LayoutManager.layouts = [] ;
         _module.LayoutManager.switchCallback = _module.UICalendarPortlet.switchLayoutCallback;
         _module.LayoutManager.resetCallback = _module.UICalendarPortlet.resetLayoutCallback;
@@ -786,7 +789,9 @@
         height -= (extraHeight + 5);
 
         // IE8 fix - does not allow negative height
-        eventContainer.style.height = Math.max(height, 0) + "px";
+        if (height > 0) {
+          eventContainer.style.height = height + "px";
+        }
     };
 
     /**

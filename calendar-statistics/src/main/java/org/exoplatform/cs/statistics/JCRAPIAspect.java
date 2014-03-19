@@ -64,7 +64,7 @@ public abstract class JCRAPIAspect
    /**
     * The logger
     */
-   private static final Log LOG = ExoLogger.getLogger("exo.jcr.component.statistics.JCRAPIAspectC");
+   private static final Log LOG = ExoLogger.getLogger(JCRAPIAspect.class);
    
    /**
     * The result of the mapping if the corresponding value cannot be found.
