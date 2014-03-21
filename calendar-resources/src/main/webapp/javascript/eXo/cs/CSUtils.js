@@ -700,7 +700,7 @@ EventManager.prototype.getEventTargetByClass = function(evt, className){
 
 EventManager.prototype.getEventTargetByTagName = function(evt, tagName){
 	var target = this.getEventTarget(evt);
-	if (target.tagName.toLowerCase() == tagName.trim())
+	if (target.tagName.toLowerCase() == gj.trim(tagName))
 		return target ;
 	else
 		return gj(target).parents(tagName)[0] ;
