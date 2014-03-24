@@ -141,12 +141,12 @@ public class UIMiniCalendar extends UICalendarView  {
     UICalendarViewContainer viewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class);
 
     String viewType = viewContainer.getCurrentViewType();
-    if (UICalendarViewContainer.DAY_VIEW.equals(viewType) || UICalendarViewContainer.WORKING_VIEW.equals(viewType)) {
+    if (UICalendarViewContainer.DAY_VIEW.equals(viewType)) {
       UIDayView dayView = viewContainer.getChild(UIDayView.class);
       if (dayView == null) dayView =  viewContainer.addChild(UIDayView.class, null, null) ;
       dayView.setEmptyEventCalendars(emptyEventCalendars);
       dayView.setEmptyRecurrentEventCalendars(emptyRecurrentEventCalendars);
-    } else if (UICalendarViewContainer.WEEK_VIEW.equals(viewType)) {
+    } else if (UICalendarViewContainer.WEEK_VIEW.equals(viewType) || UICalendarViewContainer.WORKING_VIEW.equals(viewType)) {
       UIWeekView weekView = viewContainer.getChild(UIWeekView.class);
       if (weekView == null) weekView = viewContainer.addChild(UIWeekView.class, null, null);
       weekView.setEmptyEventCalendars(emptyEventCalendars);
