@@ -104,7 +104,9 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   public static final String ADD_GROUP_INPUT = "AddGroupInput";
 
-  public static final String ADD_GROUP_INPUT_LABEL = "Select Group";
+  public static final String ADD_GROUP_INPUT_DEFAULT_VALUE = "Select Group";
+
+  public static final String ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle("UIGroupSelector.label.selectGroup", ADD_GROUP_INPUT_DEFAULT_VALUE);  
 
   public static final String OPEN_SELECT_GROUP_FORM = "OpenSelectGroupForm";
 
