@@ -180,7 +180,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getDefaultWorkspaceName(), "portal-test");
     assertNotNull(organizationService_) ;
 
-    assertEquals(organizationService_.getUserHandler().findAllUsers(UserStatus.BOTH).getSize(), 8);
+    assertEquals(organizationService_.getUserHandler().findAllUsers(UserStatus.ANY).getSize(), 8);
 
     assertNotNull(storage_);
 

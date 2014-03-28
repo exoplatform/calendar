@@ -476,7 +476,7 @@ public class Utils {
   }
 
   public static boolean isUserEnabled(String userId) throws Exception{
-    return getOrganizationService().getUserHandler().findUserByName(userId, UserStatus.BOTH).isEnabled();
+    return getOrganizationService().getUserHandler().findUserByName(userId, UserStatus.ANY).isEnabled();
   }
 
 

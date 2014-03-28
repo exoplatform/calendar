@@ -44,16 +44,16 @@
     <!-- **************************************** -->
     <org.exoplatform.depmgt.version>9-upgrade-gatein-3.7.x-SNAPSHOT</org.exoplatform.depmgt.version>
     <!-- JCR Project Dependencies -->
-    <org.exoplatform.kernel.version>2.5.0-Alpha4</org.exoplatform.kernel.version>
-    <org.exoplatform.core.version>2.6.0-Alpha4</org.exoplatform.core.version>
-    <org.exoplatform.ws.version>2.4.0-Alpha4</org.exoplatform.ws.version>
-    <org.exoplatform.jcr.version>1.16.0-Alpha4</org.exoplatform.jcr.version>
+    <org.exoplatform.kernel.version>2.5.0-CR2</org.exoplatform.kernel.version>
+    <org.exoplatform.core.version>2.6.0-CR2</org.exoplatform.core.version>
+    <org.exoplatform.ws.version>2.4.0-CR2</org.exoplatform.ws.version>
+    <org.exoplatform.jcr.version>1.16.0-CR2</org.exoplatform.jcr.version>
     <!-- GateIn Project Dependencies -->
-    <org.gatein.portal.version>3.7.0.Beta01</org.gatein.portal.version>
-    <org.gatein.common.version>2.2.0.Beta01</org.gatein.common.version>
-    <org.gatein.wci.version>2.4.0.Beta01</org.gatein.wci.version>
-    <org.gatein.pc.version>2.5.0.Beta01</org.gatein.pc.version>
-    <org.gatein.sso.version>1.4.0.Beta01</org.gatein.sso.version>
+    <org.gatein.portal.version>3.7.0.Final</org.gatein.portal.version>
+    <org.gatein.common.version>2.2.2.Final</org.gatein.common.version>
+    <org.gatein.wci.version>2.4.1.Final</org.gatein.wci.version>
+    <org.gatein.pc.version>2.5.1.Final</org.gatein.pc.version>
+    <org.gatein.sso.version>1.4.0.Final</org.gatein.sso.version>
     <!-- Platform Project Dependencies -->
     <org.exoplatform.commons.version>4.1.x-commons-upgrade-gatein-3.7.x-SNAPSHOT</org.exoplatform.commons.version>
     <org.exoplatform.social.version>4.1.x-soc-upgrade-gatein-3.7.x-SNAPSHOT</org.exoplatform.social.version>
@@ -84,6 +84,31 @@
         <classifier>source-release</classifier>
         <type>zip</type>
       </dependency>
+      <!-- Import versions of core modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.core</groupId>
+        <artifactId>core-parent</artifactId>
+        <version>${org.exoplatform.core.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Import versions of kernel modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.kernel</groupId>
+        <artifactId>kernel-parent</artifactId>
+        <version>${org.exoplatform.kernel.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+        <!-- This artifact isn't declared in kernel parent -->
+        <!-- We enforce it to have the good version in our packaging -->
+        <!-- remove it after migration to jcr 1.16.x-->
+        <dependency>
+            <groupId>org.exoplatform.kernel</groupId>
+            <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
+            <version>${org.exoplatform.kernel.version}</version>
+        </dependency>
+      <!-- Our own project modules -->
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-common</artifactId>
@@ -284,30 +309,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Import versions of core modules to use -->
-      <dependency>
-        <groupId>org.exoplatform.core</groupId>
-        <artifactId>core-parent</artifactId>
-        <version>${org.exoplatform.core.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- Import versions of kernel modules to use -->
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>kernel-parent</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-        <!-- This artifact isn't declared in kernel parent -->
-        <!-- We enforce it to have the good version in our packaging -->
-        <!-- remove it after migration to jcr 1.16.x-->
-        <dependency>
-            <groupId>org.exoplatform.kernel</groupId>
-            <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
-            <version>${org.exoplatform.kernel.version}</version>
-        </dependency>
       <!-- Use to generate some documentation -->
       <dependency>
         <groupId>org.exoplatform.doc</groupId>
