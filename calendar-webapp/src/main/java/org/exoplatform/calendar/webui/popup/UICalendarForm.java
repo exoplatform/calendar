@@ -104,9 +104,9 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   public static final String ADD_GROUP_INPUT = "AddGroupInput";
 
-  public static final String ADD_GROUP_INPUT_DEFAULT_VALUE = "Select Group";
-
-  public static final String ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle("UIGroupSelector.label.selectGroup", ADD_GROUP_INPUT_DEFAULT_VALUE);  
+  public static String ADD_GROUP_INPUT_LABEL = "Select Group";
+  
+  public static final String SELECT_GROUP_LABEL = "UIGroupSelector.label.selectGroup";
 
   public static final String OPEN_SELECT_GROUP_FORM = "OpenSelectGroupForm";
 
@@ -210,6 +210,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     groupTab.addUIFormInput(new UIFormStringInput(EDIT_PERMISSION, null, null)) ;
 
     /* add input field for adding group */
+    ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle(SELECT_GROUP_LABEL, ADD_GROUP_INPUT_LABEL);
     groupTab.addUIFormInput(new UIFormStringInput(ADD_GROUP_INPUT, null, ADD_GROUP_INPUT_LABEL));
 
     /* add icon to open popup to select group */
@@ -447,7 +448,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   private void updateSelectGroup(String selectField, String groupId)
   {
     UIFormStringInput addGroupInput = getChild(UIGroupCalendarTab.class).getChildById(ADD_GROUP_INPUT);
-
+    ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle(SELECT_GROUP_LABEL, ADD_GROUP_INPUT_LABEL);
+    
     if (addGroupInput.getValue() == null) addGroupInput.setValue("");
     if (addGroupInput.getValue().contains(groupId)) return ;
     /* empty the input at the first moment inserting a groupId */
@@ -606,6 +608,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       UIGroupCalendarTab groupTab = uiCalendarForm.getChild(UIGroupCalendarTab.class);
       UIFormStringInput addGroupInput = groupTab.getChildById(ADD_GROUP_INPUT);
       String[] groups = addGroupInput.getValue().split(CalendarUtils.COMMA);
+      ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle(SELECT_GROUP_LABEL, ADD_GROUP_INPUT_LABEL);
 
       for (String groupId : groups)
       {
