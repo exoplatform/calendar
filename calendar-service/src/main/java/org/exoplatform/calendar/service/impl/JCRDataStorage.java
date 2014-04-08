@@ -469,7 +469,7 @@ public class JCRDataStorage implements DataStorage {
 
     for (String groupId : groupIds) {
       //StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "//element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
-      StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
+      StringBuilder queryString = new StringBuilder("/jcr:root" + XPathUtils.escapeIllegalXPathName(calendarHome.getPath()) + "/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
       List<Calendar> lCalendars;
       String sQuery = queryString.toString();
       Lock lock = getLock("GroupCalendar", sQuery);
@@ -676,7 +676,7 @@ public class JCRDataStorage implements DataStorage {
       Query query;
       QueryResult result;
       while (calIter.hasNext()) {
-        StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
+        StringBuilder queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calIter.nextNode().getPath()))
             .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategory.getId())
                                                                       .append("']");
         query = qm.createQuery(queryString.toString(), Query.XPATH);
@@ -806,7 +806,7 @@ public class JCRDataStorage implements DataStorage {
       QueryResult result;
       NodeIterator calIter = publicCalendarHome.getNodes();
       while (calIter.hasNext()) {
-        StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
+        StringBuilder queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calIter.nextNode().getPath()))
             .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategoryId)
                                                                       .append("']");
         query = qm.createQuery(queryString.toString(), Query.XPATH);
@@ -866,7 +866,7 @@ public class JCRDataStorage implements DataStorage {
     QueryResult result;
     NodeIterator calIter = calendarHome.getNodes();
     while (calIter.hasNext()) {
-      StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
+      StringBuilder queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calIter.nextNode().getPath()))
           .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategoryId)
                                                                     .append("']");
       query = qm.createQuery(queryString.toString(), Query.XPATH);
@@ -880,7 +880,7 @@ public class JCRDataStorage implements DataStorage {
   }
 
   private CalendarEvent getEventById(Node calendarHome, String eventId) throws Exception {
-    String queryString = new StringBuilder("/jcr:root").append(calendarHome.getPath())
+    String queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendarHome.getPath()))
         .append("//element(*,exo:calendarEvent)[@exo:id='").append(eventId).append("']").toString();
     QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
     Query query = qm.createQuery(queryString, Query.XPATH);
@@ -1728,7 +1728,7 @@ public class JCRDataStorage implements DataStorage {
   public void syncRemoveEvent(Node eventFolder, String rootEventId) throws Exception {
     QueryManager qm = eventFolder.getSession().getWorkspace().getQueryManager();
     StringBuilder queryString = new StringBuilder("/jcr:root")
-        .append(eventFolder.getParent().getParent().getParent().getPath())
+        .append(XPathUtils.escapeIllegalXPathName(eventFolder.getParent().getParent().getParent().getPath()))
         .append("//element(*,exo:calendarPublicEvent)[@exo:rootEventId='").append(rootEventId)
                                                                     .append("']");
     Query query = qm.createQuery(queryString.toString(), Query.XPATH);
@@ -2429,7 +2429,7 @@ public class JCRDataStorage implements DataStorage {
 
       /** private events */
       if (queryPrivateEvents == 1) {
-        queryStatement = new StringBuilder("/jcr:root").append(calendarHome.getPath())
+        queryStatement = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendarHome.getPath()))
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
             .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
@@ -2443,7 +2443,7 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** public events */
-      queryStatement = new StringBuilder("/jcr:root").append(publicCalHome.getPath())
+      queryStatement = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(publicCalHome.getPath()))
           .append("//element(*,exo:calendarEvent)")
           .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
           .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
@@ -2475,7 +2475,7 @@ public class JCRDataStorage implements DataStorage {
           try {
 
             Node calendar = propertyIterator.nextProperty().getParent();
-            queryStatement = new StringBuilder("/jcr:root").append(calendar.getPath())
+            queryStatement = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendar.getPath()))
                 .append("//element(*,exo:calendarEvent)")
                 .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
                 .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
@@ -3453,7 +3453,7 @@ public class JCRDataStorage implements DataStorage {
     /** query private calendar events */
     filteredCalendars = calSetting.getFilterPrivateCalendars();
 
-    StringBuilder queryStatement = new StringBuilder("/jcr:root").append(calendarHome.getPath())
+    StringBuilder queryStatement = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendarHome.getPath()))
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
             .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
@@ -3500,7 +3500,7 @@ public class JCRDataStorage implements DataStorage {
     /** query public events */
     filteredCalendars = calSetting.getFilterPublicCalendars();
 
-    queryStatement = new StringBuilder("/jcr:root").append(publicCalHome.getPath())
+    queryStatement = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(publicCalHome.getPath()))
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
             .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
@@ -3562,7 +3562,7 @@ public class JCRDataStorage implements DataStorage {
 
       while (propertyIterator.hasNext()) {
         Node calendar = propertyIterator.nextProperty().getParent();
-        queryStatement = new StringBuilder("/jcr:root").append(calendar.getPath())
+        queryStatement = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendar.getPath()))
             .append("//element(*,exo:calendarEvent)")
             .append(" [ not(@exo:toDateTime < xs:dateTime('" + ISO8601.format(eventQuery.getFromDate()) + "')")
             .append(" or @exo:fromDateTime > xs:dateTime('" + ISO8601.format(eventQuery.getToDate()) + "'))")
@@ -4443,7 +4443,7 @@ public class JCRDataStorage implements DataStorage {
           .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
           .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
 
-      StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(calendarPath)
+      StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendarPath))
           .append("/element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
           .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
           .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))")
@@ -6034,7 +6034,7 @@ public class JCRDataStorage implements DataStorage {
   public Calendar getRemoteCalendar(String username, String remoteUrl, String remoteType) throws Exception {
     try {
       Node calendarHome = getUserCalendarHome(username);
-      String queryString = new StringBuilder("/jcr:root" + calendarHome.getPath()
+      String queryString = new StringBuilder("/jcr:root" + XPathUtils.escapeIllegalXPathName(calendarHome.getPath())
           + "//element(*,exo:remoteCalendar)[@exo:remoteUrl='").append(remoteUrl)
                                                                .append("' and @exo:remoteType='")
                                                                .append(remoteType)
@@ -6058,7 +6058,7 @@ public class JCRDataStorage implements DataStorage {
   public int getRemoteCalendarCount(String username) throws Exception {
     try {
       Node calendarHome = getUserCalendarHome(username);
-      String queryString = new StringBuilder("/jcr:root").append(calendarHome.getPath())
+      String queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calendarHome.getPath()))
           .append("//element(*,exo:remoteCalendar)").toString();
       QueryManager queryManager = calendarHome.getSession().getWorkspace().getQueryManager();
       Query query = queryManager.createQuery(queryString.toString(), Query.XPATH);
