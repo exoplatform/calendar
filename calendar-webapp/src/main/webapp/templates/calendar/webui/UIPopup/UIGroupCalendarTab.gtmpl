@@ -7,10 +7,10 @@
   def addGroupInput  = uicomponent.getChildById(uiCalendarForm.ADD_GROUP_INPUT);
   def calendarGroups = uicomponent.groupsList.toArray();
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
-  String selectGroupLb = _ctx.appRes("UIGroupSelector.label.selectGroup");  
+  String selectGroupLbl = _ctx.appRes("UICalendarForm.label.AddGroupInput");  
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('#AddGroupInput').click(function() { if (gj('#AddGroupInput').attr('value') === '$selectGroupLb') { gj('#AddGroupInput').attr('value', ''); } });");
-  requirejs.addScripts("gj('#AddGroupInput').blur(function() { var value = gj('#AddGroupInput').attr('value'); if ((value == null) || (value === '')) { gj('#AddGroupInput').attr('value', '$selectGroupLb'); } });");
+  requirejs.addScripts("gj('#AddGroupInput').click(function() { if (gj('#AddGroupInput').attr('value') === '$selectGroupLbl') { gj('#AddGroupInput').attr('value', ''); } });");
+  requirejs.addScripts("gj('#AddGroupInput').blur(function() { var value = gj('#AddGroupInput').attr('value'); if ((value == null) || (value === '')) { gj('#AddGroupInput').attr('value', '$selectGroupLbl'); } });");
 
   private void renderActions(String fieldKey) {
 	  def uiCalendarForm = uicomponent.getParentFrom() ;
