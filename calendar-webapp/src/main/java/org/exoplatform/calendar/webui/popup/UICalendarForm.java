@@ -104,9 +104,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   public static final String ADD_GROUP_INPUT = "AddGroupInput";
 
-  public static String ADD_GROUP_INPUT_LABEL = "Select Group";
-  
-  public static final String SELECT_GROUP_LABEL = "UIGroupSelector.label.selectGroup";
+  public static final String ADD_GROUP_INPUT_LABEL = "Select Group";
 
   public static final String OPEN_SELECT_GROUP_FORM = "OpenSelectGroupForm";
 
@@ -209,9 +207,9 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     groupTab.addUIFormInput(new UIFormInputInfo(SELECT_GROUPS, SELECT_GROUPS, null)) ;
     groupTab.addUIFormInput(new UIFormStringInput(EDIT_PERMISSION, null, null)) ;
 
-    /* add input field for adding group */
-    ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle(SELECT_GROUP_LABEL, ADD_GROUP_INPUT_LABEL);
-    groupTab.addUIFormInput(new UIFormStringInput(ADD_GROUP_INPUT, null, ADD_GROUP_INPUT_LABEL));
+    /* add input field for adding group */    
+    String SelectGroupLbl =  CalendarUtils.getResourceBundle("UICalendarForm.label." + ADD_GROUP_INPUT, ADD_GROUP_INPUT_LABEL);
+    groupTab.addUIFormInput(new UIFormStringInput(ADD_GROUP_INPUT, null, SelectGroupLbl));
 
     /* add icon to open popup to select group */
     List<ActionData> actions = new ArrayList<ActionData>() ;
@@ -448,19 +446,17 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   private void updateSelectGroup(String selectField, String groupId)
   {
     UIFormStringInput addGroupInput = getChild(UIGroupCalendarTab.class).getChildById(ADD_GROUP_INPUT);
-    ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle(SELECT_GROUP_LABEL, ADD_GROUP_INPUT_LABEL);
+    String SelectGroupLbl = CalendarUtils.getResourceBundle("UICalendarForm.label." + ADD_GROUP_INPUT, ADD_GROUP_INPUT_LABEL);
     
     if (addGroupInput.getValue() == null) addGroupInput.setValue("");
     if (addGroupInput.getValue().contains(groupId)) return ;
     /* empty the input at the first moment inserting a groupId */
-    if (addGroupInput.getValue().equals(ADD_GROUP_INPUT_LABEL)) {
+    if (addGroupInput.getValue().equals(SelectGroupLbl)) {
       addGroupInput.setValue(groupId);
       return;
     }
 
-    addGroupInput.setValue(
-                           addGroupInput.getValue() + CalendarUtils.COMMA + " " + groupId
-        );
+    addGroupInput.setValue(addGroupInput.getValue() + CalendarUtils.COMMA + " " + groupId);
   }
 
   /**
@@ -608,13 +604,13 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       UIGroupCalendarTab groupTab = uiCalendarForm.getChild(UIGroupCalendarTab.class);
       UIFormStringInput addGroupInput = groupTab.getChildById(ADD_GROUP_INPUT);
       String[] groups = addGroupInput.getValue().split(CalendarUtils.COMMA);
-      ADD_GROUP_INPUT_LABEL = CalendarUtils.getResourceBundle(SELECT_GROUP_LABEL, ADD_GROUP_INPUT_LABEL);
+      String SelectGroupLbl = CalendarUtils.getResourceBundle("UICalendarForm.label." + ADD_GROUP_INPUT, ADD_GROUP_INPUT_LABEL);
 
       for (String groupId : groups)
       {
         groupTab.addGroupPermissionEntry(groupId.trim());
       }
-      addGroupInput.setValue(ADD_GROUP_INPUT_LABEL);
+      addGroupInput.setValue(SelectGroupLbl);
       UIPopupAction uiPopupAction = uiCalendarForm.getAncestorOfType(UIPopupContainer.class).getChild(UIPopupAction.class) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarForm.getParent());
