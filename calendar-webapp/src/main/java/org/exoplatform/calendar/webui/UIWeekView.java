@@ -410,8 +410,14 @@ public class UIWeekView extends UICalendarView {
               stringBuilder.append("\n<i class=\"uiIconCalTaskMini\"></i>");
             } else {
               stringBuilder.append("\n<i class=\"uiIconCalClockMini\"></i>");
+              //occurring icon
+              if (isOccur) {
+                  stringBuilder.append("<i class=\"uiIconCalRecurring\"></i>");
+              } else if (!isOccur && Boolean.TRUE.equals(event.getIsExceptionOccurrence())) {
+                  stringBuilder.append("<i class=\"uiIconCalEditRecurring\"></i>");
+              }
             }
-
+        
             stringBuilder.append("\n<i class=\"uiIconCal" + event.getPriority() + "Priority\"></i>" + begin + "</div>");
 
             /** display event summary */
@@ -430,6 +436,12 @@ public class UIWeekView extends UICalendarView {
               stringBuilder.append("\n<i class=\"uiIconCalTaskMini\"></i>");
             } else {
               stringBuilder.append("\n<i class=\"uiIconCalClockMini\"></i>");
+              //occurring icon
+              if (isOccur) {
+                  stringBuilder.append("<i class=\"uiIconCalRecurring\"></i>");
+              } else if (!isOccur && Boolean.TRUE.equals(event.getIsExceptionOccurrence())) {
+                  stringBuilder.append("<i class=\"uiIconCalEditRecurring\"></i>");
+              }              
             }
 
             stringBuilder.append("\n<i class=\"uiIconCal" + event.getPriority() + "Priority\"></i>")
