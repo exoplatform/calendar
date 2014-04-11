@@ -382,10 +382,18 @@ public class UICalendarPortlet extends UIPortletApplication {
   }
   public void createActionConfirms(UIConfirmation uiConfirmation) {
     ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
-    String yes = resourceBundle.getString("UICalendarPortlet.confirm.yes");
+    String yes = null;
+    try {
+      yes = resourceBundle.getString("UICalendarPortlet.confirm.yes");
+    } catch (Exception ex) {}
     if(yes == null) yes = "UICalendarPortlet.confirm.yes";
-    String no = resourceBundle.getString("UICalendarPortlet.confirm.no");
+
+    String no = null;
+    try {
+      no = resourceBundle.getString("UICalendarPortlet.confirm.no");
+    } catch (Exception ex) {}
     if(no == null) no = "UICalendarPortlet.confirm.no";
+
     List<UIConfirmation.ActionConfirm> actionConfirms = new ArrayList<UIConfirmation.ActionConfirm>();
     actionConfirms.add(new UIConfirmation.ActionConfirm("ConfirmClose", yes));
     actionConfirms.add(new UIConfirmation.ActionConfirm("AbortClose", no));
