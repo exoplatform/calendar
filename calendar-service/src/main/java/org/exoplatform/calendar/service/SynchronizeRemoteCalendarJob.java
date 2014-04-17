@@ -23,7 +23,6 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import org.exoplatform.commons.utils.XPathUtils;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -114,7 +113,7 @@ public class SynchronizeRemoteCalendarJob extends MultiTenancyJob {
         // get list of remote calendar of current user
         Node userCalendarHome = getUserCalendarHome(provider);
         StringBuffer path = new StringBuffer("/jcr:root");
-        path.append(XPathUtils.escapeIllegalXPathName(userCalendarHome.getPath()));
+        path.append(userCalendarHome.getPath());
         path.append("//element(*,exo:remoteCalendar)");
         QueryManager queryManager = getSession(provider).getWorkspace().getQueryManager();
         Query query = queryManager.createQuery(path.toString(), Query.XPATH);

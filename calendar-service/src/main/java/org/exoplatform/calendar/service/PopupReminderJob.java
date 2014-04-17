@@ -26,7 +26,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import org.exoplatform.commons.utils.ISO8601;
-import org.exoplatform.commons.utils.XPathUtils;
 import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
@@ -163,7 +162,7 @@ public class PopupReminderJob extends MultiTenancyJob {
     String month = "M" + String.valueOf(fromCalendar.get(java.util.Calendar.MONTH) + 1);
     String day = "D" + String.valueOf(fromCalendar.get(java.util.Calendar.DATE));
     StringBuffer path = new StringBuffer("/jcr:root");
-    path.append(XPathUtils.escapeIllegalXPathName(Utils.getPublicServiceHome(provider).getPath()));
+    path.append(Utils.getPublicServiceHome(provider).getPath());
     path.append(Utils.SLASH).append(year).append(Utils.SLASH).append(month).append(Utils.SLASH).append(day);
     path.append(Utils.SLASH).append(Utils.CALENDAR_REMINDER);
     return path.toString();
