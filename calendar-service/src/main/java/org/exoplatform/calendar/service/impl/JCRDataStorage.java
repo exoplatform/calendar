@@ -676,7 +676,7 @@ public class JCRDataStorage implements DataStorage {
       Query query;
       QueryResult result;
       while (calIter.hasNext()) {
-        StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
+        StringBuilder queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calIter.nextNode().getPath()))
             .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategory.getId())
                                                                       .append("']");
         query = qm.createQuery(queryString.toString(), Query.XPATH);
@@ -866,7 +866,7 @@ public class JCRDataStorage implements DataStorage {
     QueryResult result;
     NodeIterator calIter = calendarHome.getNodes();
     while (calIter.hasNext()) {
-      StringBuilder queryString = new StringBuilder("/jcr:root").append(calIter.nextNode().getPath())
+      StringBuilder queryString = new StringBuilder("/jcr:root").append(XPathUtils.escapeIllegalXPathName(calIter.nextNode().getPath()))
           .append("//element(*,exo:calendarEvent)[@exo:eventCategoryId='").append(eventCategoryId)
                                                                     .append("']");
       query = qm.createQuery(queryString.toString(), Query.XPATH);
