@@ -568,19 +568,12 @@ public class UICalendars extends UIForm  {
 
     if(calType.equals(CalendarUtils.SHARED_TYPE)) {
       calendar = calService.getSharedCalendars(currentUser, true).getCalendarById(calendarId) ;
-      return CalendarUtils.canEdit(null, Utils.getEditPerUsers(calendar), currentUser) ;
+      return Utils.canEdit(Utils.getEditPerUsers(calendar)) ;
     } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
       calendar = calService.getGroupCalendar(calendarId) ;
-      return CalendarUtils.canEdit(uiComponent.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), currentUser) ;
-    }
+      return Utils.canEdit(calendar.getEditPermission()) ;
+    }  
     return false ;
-  }
-  public boolean canEdit(String[] savePerms, String[] checkPerms) throws Exception{
-    return CalendarUtils.hasEditPermission(savePerms, checkPerms);
-  }
-
-  public String getCheckPermissionString() throws Exception {
-    return CalendarUtils.getCheckPermissionString();
   }
 
   public boolean isRemoteCalendar(String calendarId) throws Exception {
@@ -794,9 +787,8 @@ public class UICalendars extends UIForm  {
             return;
           }
 
-          String[] checkPerms = uiComponent.getCheckPermissionString().split(CalendarUtils.COMMA);
-          if((CalendarUtils.SHARED_TYPE.equals(calType) && !uiComponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms)) ||
-              (CalendarUtils.PUBLIC_TYPE.equals(calType) && !uiComponent.canEdit(calendar.getEditPermission(), checkPerms)))
+          if((CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.canEdit(Utils.getEditPerUsers(calendar))) ||
+              (CalendarUtils.PUBLIC_TYPE.equals(calType) && !Utils.canEdit(calendar.getEditPermission()))) 
           {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet) ;
@@ -877,7 +869,7 @@ public class UICalendars extends UIForm  {
             for(GroupCalendarData groupCal : uiComponent.getPublicCalendars()) {
               for(Calendar cal : groupCal.getCalendars()) {
                 if(cal.getId().equals(calendarId)) {
-                  canEdit = CalendarUtils.canEdit(oService, (groupCal.getCalendarById(calendarId)).getEditPermission(), username) ;
+                  canEdit = Utils.canEdit((groupCal.getCalendarById(calendarId)).getEditPermission()) ;
                   break ;
                 }
               }
@@ -980,9 +972,9 @@ public class UICalendars extends UIForm  {
       } else {
         boolean canEdit = false ;
         if(calType.equals(CalendarUtils.SHARED_TYPE)) {
-          canEdit = CalendarUtils.canEdit(null, Utils.getEditPerUsers(calendar), currentUser) ;
+          canEdit = Utils.canEdit(Utils.getEditPerUsers(calendar)) ;
         } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
-          canEdit = CalendarUtils.canEdit(CalendarUtils.getOrganizationService(), calendar.getEditPermission(), currentUser) ;
+          canEdit = Utils.canEdit(calendar.getEditPermission()) ;
         }
         if(!calType.equals(CalendarUtils.PRIVATE_TYPE) && !canEdit) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null)) ;
@@ -1069,7 +1061,7 @@ public class UICalendars extends UIForm  {
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
-            if(!CalendarUtils.canEdit(uiComponent.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username)){
+            if(!Utils.canEdit(calendar.getEditPermission())) {
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, AbstractApplicationMessage.WARNING)) ;
               return ;
             }

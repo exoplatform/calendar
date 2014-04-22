@@ -16,6 +16,24 @@
  **/
 package org.exoplatform.calendar.service;
 
+import javax.jcr.Node;
+import javax.jcr.Session;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.NumberList;
@@ -38,6 +56,7 @@ import net.fortuna.ical4j.model.property.TzId;
 import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
+
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -53,25 +72,11 @@ import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserStatus;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL
@@ -500,51 +505,49 @@ public class Utils {
     return string == null || string.trim().length() == 0;
   }
 
-  @SuppressWarnings("unchecked")
   public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
-    StringBuffer sb = new StringBuffer(username);
-    if (oService != null) {
-      Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
-      for (Group g : groups) {
-        sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY);
-        sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(username);
-        Collection<Membership> memberShipsType = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, g.getId());
-        for (Membership mp : memberShipsType) {
-          sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY_OF + mp.getMembershipType());
+    for (String savePer : savePerms) {
+      PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+      
+      if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+        if (savePer.equals(username)) {
+          return true;
+        }
+      } else {
+        String groupId = permission.getGroupId();
+        String membershipType = permission.getMembership();
+        MembershipEntry expected = new MembershipEntry(groupId, membershipType);
+        
+        Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
+        for (Membership ms : memberships) {
+          //Core project care about * membership type
+          MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
+          if (userMS.equals(expected)) {
+              return true;
+          }
         }
       }
     }
-    return hasEditPermission(savePerms, sb.toString().split(Utils.COMMA));
-  }
-
-  public static boolean isMemberShipType(Collection<Membership> mbsh, String value) {
-    if (!isEmpty(value))
-      for (String check : value.split(COMMA)) {
-        check = check.trim();
-        if (check.lastIndexOf(ANY_OF) > -1) {
-          if (ANY.equals(check))
-            return true;
-          value = check.substring(check.lastIndexOf(ANY_OF) + ANY_OF.length());
-          if (mbsh != null && !mbsh.isEmpty()) {
-            for (Membership mb : mbsh) {
-              if (mb.getMembershipType().equals(value))
-                return true;
-            }
-          }
-        }
-      }
     return false;
   }
+  
+  public static boolean canEdit(String[] savePerms) throws Exception {
+    Identity identity = ConversationState.getCurrent().getIdentity();
 
-  public static boolean hasEditPermission(String[] savePerms, String[] checkPerms) {
-    if (savePerms != null)
-      for (String sp : savePerms) {
-        for (String cp : checkPerms) {
-          if (sp.equals(cp)) {
-            return true;
-          }
+    for (String savePer : savePerms) {
+      PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+
+      if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+        if (savePer.equals(identity.getUserId())) {
+          return true;
         }
+      } else {
+        String groupId = permission.getGroupId();
+        String membershipType = permission.getMembership();
+
+        return identity.isMemberOf(groupId, membershipType);
       }
+    }
     return false;
   }
 
@@ -574,7 +577,6 @@ public class Utils {
 
   public static String[] getEditPerUsers(org.exoplatform.calendar.service.Calendar calendar) throws Exception {
     List<String> sharedUsers = new ArrayList<String>();
-    OrganizationService organizationService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
     if (calendar.getEditPermission() != null)
       for (String editPer : calendar.getEditPermission()) {
         if (editPer.contains(Utils.SLASH)) {
@@ -703,23 +705,21 @@ public class Utils {
     Set<String> userIds = new HashSet<String>();
     
     if (usersInGroup == null) return userIds;
-    
-    if("*".equals(membershipId)) { // if membership id is "*" that means we get all users in the group
-      for(User user : usersInGroup.toArray(new User[]{})) {
-        userIds.add(user.getUserName());
-      }
-      return userIds;
-    } else {
-      for (User user : usersInGroup.toArray(new User[]{}))
-      {
-        Membership membership = organizationService.getMembershipHandler().findMembershipByUserGroupAndType(user.getUserName(),
-            groupId, membershipId);
-        if (membership != null) {
-          userIds.add(user.getUserName());
+
+    MembershipEntry expected = new MembershipEntry(groupId, membershipId);
+    for (User user : usersInGroup)
+    {        
+        Collection<Membership> membership = organizationService.getMembershipHandler().findMembershipsByUserAndGroup(user.getUserName(), groupId);
+        for (Membership ms : membership) {
+            //Core project care about * membership type
+            MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
+            if (userMS.equals(expected)) {
+                userIds.add(user.getUserName());
+                break;
+            }
         }
-      }
-      return userIds;
     }
+    return userIds;
     
   }
   /**

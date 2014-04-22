@@ -968,9 +968,9 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
         } else {
           boolean canEdit = false ;          
           if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)) {
-            canEdit = CalendarUtils.canEdit(null, Utils.getEditPerUsers(currentCalendar), username) ;
+            canEdit = Utils.canEdit(Utils.getEditPerUsers(currentCalendar)) ;
           } else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)) {
-            canEdit = CalendarUtils.canEdit(CalendarUtils.getOrganizationService(),currentCalendar.getEditPermission(), username) ;
+            canEdit = Utils.canEdit(currentCalendar.getEditPermission()) ;
           }
           if(!canEdit && !uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE) ) {
             uiPopupAction.deActivate() ;

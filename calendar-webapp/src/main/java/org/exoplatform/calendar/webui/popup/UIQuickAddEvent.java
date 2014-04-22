@@ -268,7 +268,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   }
   
   public boolean canEdit(String[] savePerms) throws Exception{
-    return CalendarUtils.canEdit(CalendarUtils.getOrganizationService(), savePerms, CalendarUtils.getCurrentUser()) ;
+    return Utils.canEdit(savePerms) ;
   }
   protected int getTimeShift(){
     int defaultTime = 2;
@@ -387,7 +387,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
           event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UICalendarPortlet.class)) ;
           return ;
         } else {
-          if(CalendarUtils.SHARED_TYPE.equals(uiForm.calType_) && !CalendarUtils.canEdit(null, Utils.getEditPerUsers(calendar), username)) {
+          if(CalendarUtils.SHARED_TYPE.equals(uiForm.calType_) && !Utils.canEdit(Utils.getEditPerUsers(calendar))) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null,1));
             uiForm.reset() ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UICalendarPortlet.class)) ;

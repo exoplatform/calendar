@@ -383,12 +383,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    *      in template
    */
   protected boolean isEventEditable(CalendarEvent event) throws Exception {
-    String username = CalendarUtils.getCurrentUser();
     org.exoplatform.calendar.service.Calendar calendar = CalendarUtils.getCalendar(event.getCalType(),
             event.getCalendarId());
-    return CalendarUtils.canEdit(getApplicationComponent(OrganizationService.class),
-            calendar.getEditPermission(),
-            username);
+    return Utils.canEdit(calendar.getEditPermission());
   }
 
   public LinkedHashMap<String, String> getColors() {
@@ -686,7 +683,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         org.exoplatform.calendar.service.Calendar cal = null;
         if (CalendarUtils.PUBLIC_TYPE.equals(ce.getCalType())) {
           cal = calService.getGroupCalendar(ce.getCalendarId());
-          if (CalendarUtils.canEdit(orService, cal.getEditPermission(), username)) {
+          if (Utils.canEdit(cal.getEditPermission())) {
             calService.removePublicEvent(ce.getCalendarId(), ce.getId());
           } else {
             allDelete_ = false;
@@ -695,7 +692,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           calService.removeUserEvent(username, ce.getCalendarId(), ce.getId());
         } else if (CalendarUtils.SHARED_TYPE.equals(ce.getCalType())) {
           cal = calService.getSharedCalendars(username, true).getCalendarById(ce.getCalendarId());
-          if (CalendarUtils.canEdit(null, Utils.getEditPerUsers(cal), username)) {
+          if (Utils.canEdit(Utils.getEditPerUsers(cal))) {
             calService.removeSharedEvent(username, ce.getCalendarId(), ce.getId());
           } else {
             allDelete_ = false;
@@ -1336,17 +1333,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           GroupCalendarData calendarData = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(),
                   true);
           if (calendarData != null && calendarData.getCalendarById(calendarId) != null)
-            canEdit = CalendarUtils.canEdit(null,
-                    Utils.getEditPerUsers(calendarData.getCalendarById(calendarId)),
-                    username);
+            canEdit = Utils.canEdit(Utils.getEditPerUsers(calendarData.getCalendarById(calendarId)));
         } else if (CalendarUtils.PUBLIC_TYPE.equals(calType)) {
-          OrganizationService oSevices = uiCalendarView.getApplicationComponent(OrganizationService.class);
           List<GroupCalendarData> publicData = uiCalendarView.getPublicCalendars(username);
           for (GroupCalendarData calendarData : publicData) {
             if (calendarData.getCalendarById(calendarId) != null) {
-              canEdit = CalendarUtils.canEdit(oSevices,
-                      (calendarData.getCalendarById(calendarId)).getEditPermission(),
-                      username);
+              canEdit = Utils.canEdit((calendarData.getCalendarById(calendarId)).getEditPermission());
               break;
             }
           }
@@ -1463,12 +1455,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             return;
           }
 
-          if ((CalendarUtils.SHARED_TYPE.equals(calType) && !CalendarUtils.canEdit(uiCalendarView.getApplicationComponent(OrganizationService.class),
-                  Utils.getEditPerUsers(calendar),
-                  CalendarUtils.getCurrentUser()))
-                  || (CalendarUtils.PUBLIC_TYPE.equals(calType) && !CalendarUtils.canEdit(uiCalendarView.getApplicationComponent(OrganizationService.class),
-                  calendar.getEditPermission(),
-                  CalendarUtils.getCurrentUser()))) {
+          if ((CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.canEdit(Utils.getEditPerUsers(calendar)))
+                  || (CalendarUtils.PUBLIC_TYPE.equals(calType) && !Utils.canEdit(calendar.getEditPermission()))) {
 
             event.getRequestContext()
                     .getUIApplication()
@@ -1845,11 +1833,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       } else {
         boolean canEdit = false;
         if (calType.equals(CalendarUtils.SHARED_TYPE)) {
-          canEdit = CalendarUtils.canEdit(null, Utils.getEditPerUsers(calendar), currentUser);
+          canEdit = Utils.canEdit(Utils.getEditPerUsers(calendar));
         } else if (calType.equals(CalendarUtils.PUBLIC_TYPE)) {
-          canEdit = CalendarUtils.canEdit(CalendarUtils.getOrganizationService(),
-                  calendar.getEditPermission(),
-                  currentUser);
+          canEdit = Utils.canEdit(calendar.getEditPermission());
         }
         if (!calType.equals(CalendarUtils.PRIVATE_TYPE) && !canEdit) {
           event.getRequestContext()
@@ -2001,12 +1987,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   private boolean isHaveNotPermission(org.exoplatform.calendar.service.Calendar calendar,
                                       String calType) throws Exception {
-    return (CalendarUtils.SHARED_TYPE.equals(calType) && !CalendarUtils.canEdit(getApplicationComponent(OrganizationService.class),
-            Utils.getEditPerUsers(calendar),
-            CalendarUtils.getCurrentUser()))
-            || (CalendarUtils.PUBLIC_TYPE.equals(calType) && !CalendarUtils.canEdit(getApplicationComponent(OrganizationService.class),
-            calendar.getEditPermission(),
-            CalendarUtils.getCurrentUser()));
+    return (CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.canEdit(Utils.getEditPerUsers(calendar)))
+            || (CalendarUtils.PUBLIC_TYPE.equals(calType) && !Utils.canEdit(calendar.getEditPermission()));
   }
 
   public static class ConfirmDeleteAllSeries extends EventListener<UICalendarView> {

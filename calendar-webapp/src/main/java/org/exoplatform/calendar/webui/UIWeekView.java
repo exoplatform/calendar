@@ -773,8 +773,8 @@ public class UIWeekView extends UICalendarView {
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
-            if((CalendarUtils.SHARED_TYPE.equals(calType) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(OrganizationService.class), Utils.getEditPerUsers(calendar), username)) ||
-                (CalendarUtils.PUBLIC_TYPE.equals(calType) && !CalendarUtils.canEdit(calendarview.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username))) 
+            if((CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.canEdit(Utils.getEditPerUsers(calendar))) ||
+                (CalendarUtils.PUBLIC_TYPE.equals(calType) && !Utils.canEdit(calendar.getEditPermission()))) 
             {
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit-event", null, 1)) ;
               calendarview.refresh() ;

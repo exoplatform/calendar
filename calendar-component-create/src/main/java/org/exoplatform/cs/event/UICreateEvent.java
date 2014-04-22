@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -15,6 +14,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -27,10 +27,8 @@ import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -427,7 +425,7 @@ public class UICreateEvent extends UIForm {
     if (gcd != null) {
       SelectOptionGroup sharedGrp = new SelectOptionGroup(SHARED_CALENDARS);
       for (org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
-        if (canEdit(null, Utils.getEditPerUsers(c), username)) {
+        if (Utils.canEdit(Utils.getEditPerUsers(c))) {
           if (c.getId().equals(Utils.getDefaultCalendarId(c.getCalendarOwner())) && c.getName().equals(NewUserListener.defaultCalendarName)) {
             String newName = getResourceBundle("UICreateEvent.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
             c.setName(newName);
@@ -447,11 +445,10 @@ public class UICreateEvent extends UIForm {
 
     if (lgcd != null) {
       SelectOptionGroup pubGrp = new SelectOptionGroup(PUBLIC_CALENDARS);
-      String[] checkPerms = getCheckPermissionString().split(COMMA);
       for (GroupCalendarData g : lgcd) {
         String groupName = g.getName();
         for (org.exoplatform.calendar.service.Calendar c : g.getCalendars()) {
-          if (hasEditPermission(c.getEditPermission(), checkPerms)) {
+          if (Utils.canEdit(c.getEditPermission())) {
             if (!hash.containsKey(c.getId())) {
               hash.put(c.getId(), "");
               pubGrp.addOption(new SelectOption(getGroupCalendarName(groupName.substring(groupName.lastIndexOf("/") + 1),
@@ -469,34 +466,6 @@ public class UICreateEvent extends UIForm {
     return (CalendarService) PortalContainer.getInstance().getComponentInstance(CalendarService.class);
   }
 
-  @SuppressWarnings("unchecked")
-  public static String getCheckPermissionString() throws Exception {
-    Identity identity = ConversationState.getCurrent().getIdentity();
-    StringBuffer sb = new StringBuffer(identity.getUserId());
-    Set<String> groupsId = identity.getGroups();
-    for (String groupId : groupsId) {
-      sb.append(COMMA).append(groupId).append(SLASH_COLON).append(ANY);
-      sb.append(COMMA).append(groupId).append(SLASH_COLON).append(identity.getUserId());
-    }
-    Collection<MembershipEntry> memberships = identity.getMemberships();
-    for (MembershipEntry membership : memberships) {
-      sb.append(COMMA).append(membership.getGroup()).append(SLASH_COLON).append(ANY_OF + membership.getMembershipType());
-    }
-    return sb.toString();
-  }
-
-  public static boolean hasEditPermission(String[] savePerms, String[] checkPerms) {
-    if (savePerms != null)
-      for (String sp : savePerms) {
-        for (String cp : checkPerms) {
-          if (sp.equals(cp)) {
-            return true;
-          }
-        }
-      }
-    return false;
-  }
-
   public static String getResourceBundle(String key, String defaultValue) {
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
     ResourceBundle res = context.getApplicationResourceBundle();
@@ -510,11 +479,6 @@ public class UICreateEvent extends UIForm {
 
   static public String getCurrentUser() throws Exception {
     return Util.getPortalRequestContext().getRemoteUser();
-  }
-
-  public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
-    String checkPerms = getCheckPermissionString();
-    return hasEditPermission(savePerms, checkPerms.toString().split(COMMA));
   }
 
   public static final String[] getUserGroups(String username) throws Exception {

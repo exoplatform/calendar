@@ -26,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.PermissionOwner;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendars;
@@ -864,7 +866,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       Set<Permission> permissionList = new HashSet<Permission>();
       for (String aPermission : permissions)
       {
-        permissionList.add(new Permission( new PermissionOwner().createPermissionOwnerFrom(aPermission) ));
+        permissionList.add(new Permission(PermissionOwner.createPermissionOwnerFrom(aPermission)));
       }
       return permissionList;
     }
@@ -884,181 +886,4 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       return permissions;
     }
   }
-
-
-  public static class PermissionOwner
-  {
-    /**
-     * id of Permission Owner is
-     * - userId: like john if owner is an user
-     * - groupId: like /platform/users if owner is a group
-     * - membershipId: like /platform/users:*.manager
-     * used to evaluate equality
-     **/
-    private String id;
-
-    /**
-     * owner = user --> empty string
-     * owner = group --> groupId
-     * owner = membership --> groupId
-     **/
-    private String groupId;
-
-    private String membership;
-
-    private String ownerType;
-
-    public static final String USER_OWNER = "user";
-
-    public static final String GROUP_OWNER = "group";
-
-    public static final String MEMBERSHIP_OWNER = "membership";
-
-    public String getId()
-    {
-      return id;
-    }
-
-    public void setId(String permissionId)
-    {
-      id = permissionId;
-    }
-
-    public String getMembership() {
-      return membership;
-    }
-
-    public void setMembership(String membership) {
-      this.membership = membership;
-    }
-
-    public String getGroupId() {
-      return groupId;
-    }
-
-    public void setGroupId(String groupId) {
-      this.groupId = groupId;
-    }
-
-    public String getOwnerType() {
-      return ownerType;
-    }
-
-    public void setOwnerType(String ownerType) {
-      this.ownerType = ownerType;
-    }
-
-    public PermissionOwner() {}
-
-    /**
-     * example of permission statement
-     * - membership: /platform/users/:*.manager
-     * - user: demo
-     * - group: /organization/management/executive-board/:*.*
-     */
-    private static PermissionOwner createPermissionOwnerFrom(String permissionStatement)
-    {
-      PermissionOwner owner = new PermissionOwner();
-      owner.setId(permissionStatement);
-
-      /* user permission */
-      if (permissionStatement.indexOf(CalendarUtils.SLASH_COLON) == -1)
-      {
-        owner.setGroupId("");
-        owner.setMembership("");
-        owner.setOwnerType(USER_OWNER);
-        return owner;
-      }
-
-      int indexOfSlashColon = permissionStatement.indexOf(CalendarUtils.SLASH_COLON);
-      owner.setGroupId(permissionStatement.substring(0, indexOfSlashColon));
-
-      /* membership permission */
-      if (permissionStatement.indexOf(CalendarUtils.ANY) == -1 )
-      {
-        int indexAnyOf = permissionStatement.indexOf(CalendarUtils.ANY_OF);
-        owner.setMembership(permissionStatement.substring(indexAnyOf + 2, permissionStatement.length()));
-        owner.setOwnerType(MEMBERSHIP_OWNER);
-        return owner;
-      }
-
-      /* group permission */
-      owner.setMembership(CalendarUtils.ANY);
-      owner.setOwnerType(GROUP_OWNER);
-      return owner;
-    }
-
-    /**
-     * takes the string after the last "/" of group id
-     * and replace special character by space
-     *
-     * @return
-     */
-    private String truncateGroupId()
-    {
-      String[] groupIdParts = groupId.split(CalendarUtils.SLASH);
-      char[] newGroupId = groupIdParts[groupIdParts.length - 1].toCharArray();
-      newGroupId[0] = Character.toUpperCase(newGroupId[0]); /* upper case the first character */
-      return new String(newGroupId).replaceAll("[^a-zA-Z0-9]+"," "); /* replace special character by space */
-    }
-
-    /**
-     * translate membership *.* to anybody
-     *
-     * @return
-     */
-    private String getMeaningfulMembership()
-    {
-      if (membership.equals(CalendarUtils.STAR))
-        return "Anybody";
-      return membership;
-    }
-
-    /**
-     * returns a readable permission under form: user or membership in group
-     *
-     * @return
-     */
-    public String getMeaningfulPermissionOwnerStatement()
-    {
-      if (ownerType.equals(USER_OWNER))
-        return id;
-      else if (ownerType.equals(GROUP_OWNER))
-        return "Anybody in " + truncateGroupId();
-      return getMeaningfulMembership() + " in " + truncateGroupId();
-    }
-
-    /**
-     * get the owner statement for the permission
-     *
-     * @return
-     */
-    @Override
-    public String toString()
-    {
-      return id;
-    }
-
-    /**
-     * compare 2 permissions owner
-     * equality happens when 2 permission owner has the same type and id
-     *
-     * @param o
-     * @return
-     */
-    @Override
-    public boolean equals(Object o)
-    {
-      if ( !(o instanceof PermissionOwner) ) return false;
-      PermissionOwner owner = ((PermissionOwner) o);
-      return id.equals(owner.getId());
-    }
-
-    @Override
-    public int hashCode()
-    {
-      return Math.abs(id.hashCode());
-    }
-  }
-
 }

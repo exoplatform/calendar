@@ -112,7 +112,6 @@ import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.IdentityConstants;
 
@@ -3258,49 +3257,16 @@ public class JCRDataStorage implements DataStorage {
   /**
    * {@inheritDoc}
    */
-  @SuppressWarnings("unchecked")
   public boolean canEdit(Node calNode, String username) throws Exception {
     OrganizationService oService = (OrganizationService) ExoContainerContext.getCurrentContainer()
-        .getComponentInstanceOfType(OrganizationService.class);
-    StringBuilder sb = new StringBuilder(username);
-    if (oService != null) {
-      Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
-      for (Group g : groups) {
-        sb.append(Utils.COMMA).append(g.getId()).append(Utils.SLASH_COLON).append(Utils.ANY);
-        sb.append(Utils.COMMA).append(g.getId()).append(Utils.SLASH_COLON).append(username);
-        Collection<Membership> memberShipsType = oService.getMembershipHandler()
-            .findMembershipsByUserAndGroup(username,
-                                           g.getId());
-        for (Membership mp : memberShipsType) {
-          sb.append(Utils.COMMA)
-          .append(g.getId())
-          .append(Utils.SLASH_COLON)
-          .append(Utils.ANY_OF + mp.getMembershipType());
-        }
-      }
-    }
+        .getComponentInstanceOfType(OrganizationService.class);    
 
     Value[] editValues = calNode.getProperty(Utils.EXO_EDIT_PERMISSIONS).getValues();
-    List<String> editPerms = new ArrayList<String>();
-    for (Value v : editValues) {
-      String value = v.getString();
-      if (value.contains(Utils.SLASH)) {
-        editPerms.addAll(Utils.getUsersCanEdit(value));
-      } else {
-        editPerms.add(value);
-      }
+    String[] editPerms = new String[editValues.length];
+    for (int i = 0; i < editValues.length; i++) {
+      editPerms[i] = editValues[i].getString();
     }
-    if (editPerms != null) {
-      String[] checkPerms = sb.toString().split(Utils.COMMA);
-      for (String sp : editPerms) {
-        for (String cp : checkPerms) {
-          if (sp.equals(cp)) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
+    return Utils.canEdit(oService, editPerms, username);
   }
 
   /**
