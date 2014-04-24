@@ -3387,9 +3387,9 @@
         }
     };
 
-    UICalendarPortlet.prototype.overidePopUpClose = function(){
-        gj('.uiIconClose').attr('onclick','');
-        gj('.uiIconClose').click(function(){gj(this).parents()[1].style.display = 'none';});
+    UICalendarPortlet.prototype.overidePopUpClose = function() {
+        gj('.UICalendarPortlet .uiIconClose').attr('onclick','');
+        gj('.UICalendarPortlet .uiIconClose').click(function(){gj(this).parents()[1].style.display = 'none';});
     }
 
     UICalendarPortlet.prototype.checkEventCategoryName = function(textFieldId){
