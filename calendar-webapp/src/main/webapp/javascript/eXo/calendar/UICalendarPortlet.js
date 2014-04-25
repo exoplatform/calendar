@@ -1547,6 +1547,8 @@
         var src = _e.srcElement || _e.target;
         var isEditable;
         var map = null;
+        var timeShiftE = parseInt(gj("#UIQuickAddEvent").closest("#QuickAddEventContainer").attr("timeshift"));
+        var timeShiftT = parseInt(gj("#UIQuickAddTask").closest("#QuickAddEventContainer").attr("timeshift"));
 
         if (src.nodeName == "TD") {
             src = gj(src).parents("tr")[0];
@@ -1557,8 +1559,10 @@
             for(var i = 0; i < items.length; i++){
                 var aTag = items[i];
                 if(gj(aTag).hasClass("createEvent")) {
+                    endTime = startTime + timeShiftE * 30 * 60 * 1000;
                     aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,1,"+startTime+","+endTime+");"
                 } else if(gj(aTag).hasClass("createTask")) {
+                    endTime = startTime + timeShiftT * 30 * 60 * 1000;
                     aTag.href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this,2,"+startTime+","+endTime+");"
                 }
             }
@@ -1685,6 +1689,8 @@
 
         } else {
             var container = gj(src).parents(".eventWeekContent")[0];
+            var timeShiftE = parseInt(gj("#UIQuickAddEvent").closest("#QuickAddEventContainer").attr("timeshift"));
+            var timeShiftT = parseInt(gj("#UIQuickAddTask").closest("#QuickAddEventContainer").attr("timeshift"));
             var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
             obj = cs.CSUtils.EventManager.getEventTargetByTagName(evt,"td");
             map = Date.parse(obj.getAttribute("startFull"));
@@ -1698,11 +1704,13 @@
                     var tTime = fTime + 30*60*1000 ;
 
                     if(gj(items[i]).hasClass("createEvent")){
+                        tTime = fTime + timeShiftE*30*60*1000;
                         items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this, 1,"+fTime+","+tTime+");"
                         if(isNaN(fTime)) {
                             items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 1);" ;
                         }
                     } else if (gj(items[i]).hasClass("createTask")) {
+                        tTime = fTime + timeShiftT*30*60*1000;
                         items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithTime(this, 2, "+fTime+","+tTime+");"
                         if(isNaN(fTime)) {
                             items[i].href = "javascript:eXo.calendar.UICalendarPortlet.addQuickShowHidden(this, 2);" ;
