@@ -16,6 +16,14 @@
  */
 package org.exoplatform.calendar.service.impl;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
@@ -27,14 +35,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.Row;
-import javax.jcr.query.RowIterator;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Calendar;
@@ -88,12 +88,10 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private SpaceService spaceService_;
 
   private static final Log     log                 = ExoLogger.getLogger(CalendarSearchServiceConnector.class);
-  private Map<String, Calendar> calendarMap = new HashMap<String,  Calendar>();
-
-
+  private ThreadLocal<Map<String, Calendar>> calendarMap = new ThreadLocal<Map<String, Calendar>>();
 
   public CalendarSearchServiceConnector(InitParams initParams) {
-    super(initParams);
+    super(initParams);    
     nodeHierarchyCreator_  = (NodeHierarchyCreator) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(NodeHierarchyCreator.class);
     calendarService_  = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarServiceImpl.class);
     organizationService_ = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
@@ -123,19 +121,19 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     List<SearchResult> events = new ArrayList<SearchResult>();
     SessionProvider provider = SessionProvider.createSystemProvider();
     try {
-      calendarMap.clear();
+      getCalendarMap().clear();
       String userId = ConversationState.getCurrent().getIdentity().getUserId() ;
       Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(provider, userId);
       List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
       for(Calendar cal : privateCalendars){
-        calendarMap.put(cal.getId(), cal);
+        getCalendarMap().put(cal.getId(), cal);
       }
 
       GroupCalendarData sharedCalendar = calendarService_.getSharedCalendars(userId, true) ;
       if(sharedCalendar != null) {
         List<Calendar> shareCalendars = sharedCalendar.getCalendars();
         for(Calendar cal : shareCalendars){
-          calendarMap.put(cal.getId(), cal);
+          getCalendarMap().put(cal.getId(), cal);
         }
       }
       Collection<Group> group = organizationService_.getGroupHandler().findGroupsOfUser(userId);
@@ -153,7 +151,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
             if(gCal.getCalendars() != null) spaceCalendars.addAll(gCal.getCalendars());
           }
           for(Calendar cal : spaceCalendars){
-            calendarMap.put(cal.getId(), cal);
+            getCalendarMap().put(cal.getId(), cal);
           }
         }
       }
@@ -212,8 +210,8 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         if(eventNode.hasProperty(Utils.EXO_CALENDAR_ID))
           calId = eventNode.getProperty(Utils.EXO_CALENDAR_ID).getString() ;
       }
-      if(calendarMap.keySet().contains(calId)) {
-        Calendar cal = calendarMap.get(calId);
+      if(getCalendarMap().keySet().contains(calId)) {
+        Calendar cal = getCalendarMap().get(calId);
         String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
         int calType = calendarService_.getTypeOfCalendar(currentUser, calId);
         if(isSearchable(calType, cal, currentUser, iter)){
@@ -323,12 +321,12 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private String buildCalName(String property, Object iter) throws RepositoryException{
     if(iter instanceof Row){
       Row row = (Row) iter;
-      if(row.getValue(property) != null && calendarMap.get(row.getValue(property).getString()) != null) 
-        return calendarMap.get(row.getValue(property).getString()).getName() ;
+      if(row.getValue(property) != null && getCalendarMap().get(row.getValue(property).getString()) != null) 
+        return getCalendarMap().get(row.getValue(property).getString()).getName() ;
     } else {
       Node eventNode = (Node) iter;
-      if(eventNode.hasProperty(property) && calendarMap.get(eventNode.getProperty(property).getString()) != null){
-        return calendarMap.get(eventNode.getProperty(property).getString()).getName();
+      if(eventNode.hasProperty(property) && getCalendarMap().get(eventNode.getProperty(property).getString()) != null){
+        return getCalendarMap().get(eventNode.getProperty(property).getString()).getName();
       }
     }
     return Utils.EMPTY_STR;
@@ -416,7 +414,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         SiteKey siteKey = null ;
         String spaceGroupId = null;
         if (calendarId.indexOf(Utils.SPACE_CALENDAR_ID_SUFFIX) > 0) {
-          spaceGroupId = calendarMap.get(calendarId).getCalendarOwner();
+          spaceGroupId = getCalendarMap().get(calendarId).getCalendarOwner();
           siteKey = SiteKey.group(spaceGroupId);
         } else {
           UserPortalConfig prc = getUserPortalConfig();
@@ -502,5 +500,14 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     } catch (UnsupportedEncodingException e) {
       return null;
     }
+  }
+  
+  private Map<String, Calendar> getCalendarMap() {
+    Map<String, Calendar> map = calendarMap.get();
+    if (map == null) {
+      map = new HashMap<String, Calendar>();      
+      calendarMap.set(map);
+    }    
+    return map;
   }
 }
