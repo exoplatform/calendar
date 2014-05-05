@@ -46,6 +46,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.services.resources.LocaleContextInfo;
+import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -997,7 +998,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     OrganizationService orgService = CalendarUtils.getOrganizationService() ;
 
     for(String s : values.split("[\\r\\n]+")) {
-      User user = orgService.getUserHandler().findUserByName(s) ;
+      User user = orgService.getUserHandler().findUserByName(s, UserStatus.ANY) ;
       if(user != null) {
         participants_.put(s.trim(), user.getEmail()) ;
       }
@@ -1358,7 +1359,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
 
     try {
-      if (toId != null) {
+      if (toId != null && !toId.isEmpty()) {
         sendMail(CalendarUtils.getMailService(), CalendarUtils.getOrganizationService(), calSetting, username, toId, calendarEvent);
         List<String> parsUpdated = new LinkedList<String>();
         for (String parSt : calendarEvent.getParticipantStatus()) {
