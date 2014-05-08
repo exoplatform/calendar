@@ -2268,6 +2268,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         this.name = participant;
         this.email = participant;
       }
+      if (!status.equals(STATUS_EMPTY)) {
+        status = CalendarUtils.getResourceBundle("UIEventForm.label." + status,status);
+      }
       this.status = status;
     }
 
