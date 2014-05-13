@@ -26,9 +26,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jcr.PathNotFoundException;
 import javax.jcr.query.Query;
@@ -2508,6 +2511,69 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.removeUserCalendar(username, cal.getId());
   }
   
+  public void testMultiThreadSearch() throws Exception {
+    loginUser(username) ;
+    String keyword = "Have a meeting" ;
+
+    List<Calendar> calendars = new LinkedList<Calendar>();
+    for (int i = 0; i < 100; i++) {
+      Calendar cal = new Calendar();
+      cal.setName("CalendarName" +  i);
+      calendarService_.saveUserCalendar(username, cal, true);
+      calendars.add(cal);      
+      
+      CalendarEvent calEvent = newEvent(keyword);
+      calendarService_.saveUserEvent(username, cal.getId(), calEvent, true);      
+    }
+    
+    final EventQuery uQuery = new UnifiedQuery();
+    uQuery.setText(keyword) ;
+    final Collection<String> params = new ArrayList<String>();
+    uQuery.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    uQuery.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    
+    //Workaround to make sure sharedCalendar JCR node has been created
+    //It can't be created in multithreading
+    unifiedSearchService_.search(null, uQuery.getText(), params, 0, -1, uQuery.getOrderBy()[0] , uQuery.getOrderType());
+
+    final AtomicBoolean fail = new AtomicBoolean(false);
+    final CountDownLatch wait = new CountDownLatch(1);
+    Runnable runner = new Runnable() {     
+      @Override
+      public void run() {
+        try {
+          wait.await();
+        } catch (InterruptedException e) {
+        }
+        begin();
+        loginUser(username) ;
+        Collection<SearchResult> result = unifiedSearchService_.search(null, uQuery.getText(), params, 0, -1, 
+                                                                       uQuery.getOrderBy()[0] , uQuery.getOrderType());
+        if (result == null || result.size() < 100) {
+          fail.set(true);
+        }
+        end();
+      }
+    };
+    
+    List<Thread> threads = new LinkedList<Thread>();
+    for (int i = 0; i < 20; i++) {
+      Thread t = new Thread(runner);
+      t.start();
+      threads.add(t);
+    }
+    wait.countDown();
+    
+    //wait for all threads complete
+    for (Thread t : threads) {
+      t.join();
+    }
+
+    for (Calendar cal : calendars) {
+      calendarService_.removeUserCalendar(username, cal.getId());
+    }
+    assertFalse(fail.get());
+  }
   
   private CalendarEvent newEvent(String summary) {
     CalendarEvent event = new CalendarEvent();
