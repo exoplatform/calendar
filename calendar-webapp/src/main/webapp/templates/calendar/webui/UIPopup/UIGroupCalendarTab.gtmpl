@@ -9,7 +9,8 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   def placeHolder = _ctx.appRes("UICalendarForm.label.AddGroupInput");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('#AddGroupInput').attr('placeholder','" + placeHolder +"');");
+  requirejs.require("SHARED/placeholder","placeholder");
+  requirejs.addScripts("gj('#AddGroupInput').attr('placeholder','" + placeHolder +"').placeholder();");
 
   private void renderActions(String fieldKey) {
 	  def uiCalendarForm = uicomponent.getParentFrom() ;
@@ -93,7 +94,7 @@
       <% if(calendarGroups.length == 0) {
       %> <tr>
           <td class='empty center' colspan='3'><%= _ctx.appRes("UICalendarForm.label.noGroupSelected") %></td>
-          </tr> 
+          </tr>
       <% } else {
             for (String groupId : calendarGroups) { %>
               <tr>
@@ -109,7 +110,7 @@
               <% renderActions(groupId+uiCalendarForm.PERMISSION_SUB); %>
               </td>
               </tr>
-        <% } 
+        <% }
        } %>
       </tbody>
   </table>
