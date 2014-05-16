@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.0.6</version>
+    <version>4.0.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-statistics</artifactId>
   <name>eXo Calendar Common Statistics</name>
