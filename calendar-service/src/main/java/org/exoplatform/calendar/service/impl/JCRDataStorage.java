@@ -16,6 +16,20 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -28,6 +42,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,11 +53,17 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.jcr.*;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.NumberList;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.WeekDayList;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.RRule;
+
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
@@ -60,6 +81,8 @@ import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.commons.cache.future.FutureExoCache;
+import org.exoplatform.commons.cache.future.Loader;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.commons.utils.XPathUtils;
@@ -82,8 +105,8 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.IdentityConstants;
+
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -93,18 +116,6 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.XmlReader;
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.NumberList;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
-import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.TimeZoneRegistry;
-import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
-import net.fortuna.ical4j.model.WeekDay;
-import net.fortuna.ical4j.model.WeekDayList;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.RRule;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang
@@ -131,14 +142,6 @@ public class JCRDataStorage implements DataStorage {
   private final RepositoryService      repoService_;
 
   private final SessionProviderService sessionProviderService_;
-  
-  private final ExoCache<String, List<Calendar>>      groupCalendarCache_;
-
-  /** cache for private calendars of users - store username as key */
-  private final ExoCache<String, List<Calendar>>      userCalendarCache;
-
-  /** cache for calendar setting of users - store username as key */
-  private final ExoCache<String, CalendarSetting>     userCalendarSetting;
 
   /** cache for calendar events in a particular group calendar - store query as key */
   private final ExoCache<String, List<CalendarEvent>> groupCalendarEventCache;
@@ -148,12 +151,17 @@ public class JCRDataStorage implements DataStorage {
 
   /** cache for event categories of users - store username as key */
   private final ExoCache<String, List<EventCategory>> userEventCategories;
+  
+  private FutureExoCache<String, List<Calendar>, JCRDataStorage> userCalendarCache;
+  private FutureExoCache<String, List<Calendar>, JCRDataStorage> groupCalendarCache;
+  private FutureExoCache<String, CalendarSetting, JCRDataStorage> calendarSettingCache;
 
   /**
    * The map that contains all the locks
    */
   private final ConcurrentMap<String, Lock> locks = new ConcurrentHashMap<String, Lock>(64, 0.75f, 64);
 
+  private String groupHomePath;
 
   private static final Log       log                 = ExoLogger.getLogger("cs.calendar.service");
 
@@ -161,16 +169,22 @@ public class JCRDataStorage implements DataStorage {
     nodeHierarchyCreator_ = nodeHierarchyCreator;
     repoService_ = repoService;
     ExoContainer container = ExoContainerContext.getCurrentContainer();
-    sessionProviderService_ = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);
-    groupCalendarCache_     = cservice.getCacheInstance("calendar.GroupCalendar");
-    userCalendarCache       = cservice.getCacheInstance("calendar.UserCalendar");
-    groupCalendarEventCache = cservice.getCacheInstance("calendar.GroupCalendarEvent");
+    sessionProviderService_ = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);    
+    
+    ExoCache<String, List<Calendar>> eXoUserCalendarCache       = cservice.getCacheInstance("calendar.UserCalendar");
+    userCalendarCache = new FutureExoCache<String, List<Calendar>, JCRDataStorage>(new UserCalendarLoader(), eXoUserCalendarCache);
+    
+    ExoCache<String, List<Calendar>>  eXoGroupCalendarCache     = cservice.getCacheInstance("calendar.GroupCalendar");
+    groupCalendarCache = new FutureExoCache<String, List<Calendar>, JCRDataStorage>(new GroupCalendarLoader(), eXoGroupCalendarCache);
+
+    ExoCache<String, CalendarSetting> eXoSettingCache = cservice.getCacheInstance("calendar.UserCalendarSetting");
+    calendarSettingCache = new FutureExoCache<String, CalendarSetting, JCRDataStorage>(new CalendarSettingLoader(), eXoSettingCache);
+    
+    groupCalendarEventCache = cservice.getCacheInstance("calendar.GroupCalendarEvent");    
     groupCalendarRecurrentEventCache = cservice.getCacheInstance("calendar.GroupCalendarRecurrentEvent");
-    userCalendarSetting     = cservice.getCacheInstance("calendar.UserCalendarSetting");
     userEventCategories     = cservice.getCacheInstance("calendar.EventCategories");
   }
 
-    
   /**
    * Gives the lock related to the given type and given id
    * @param type the type of the object for which we want a lock
@@ -329,45 +343,18 @@ public class JCRDataStorage implements DataStorage {
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception {
     String[] defaultCalendars;
-    List<Calendar> calList;
+    List<Calendar> calList = userCalendarCache.get(this, username);
 
-    Lock lock = getLock("UserCalendar", username);
-    lock.lock();
-    try {
-      calList = userCalendarCache.get(username);
-      if (calList == null) {
-        calList  = new ArrayList<Calendar>();
-        Node userCalendarHome = getUserCalendarHome(username);
-        NodeIterator iter     = userCalendarHome.getNodes();
-        defaultCalendars      = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterPrivateCalendars();
+    if (!isShowAll) {
+      defaultCalendars = getCalendarSetting(username).getFilterPrivateCalendars();
+      List<Calendar> filteredCalList = new ArrayList<Calendar>();
 
-        while (iter.hasNext()) {
-          Calendar cal = getCalendar(defaultCalendars, username, iter.nextNode(), isShowAll);
-          calList.add(cal);
-        }
-
-        userCalendarCache.put(username, calList);
+      for (Calendar calendar : calList) {
+        if (!Arrays.asList(defaultCalendars).contains(calendar.getId())) filteredCalList.add(calendar);
       }
-      else {
-
-        if (!isShowAll) {
-          defaultCalendars = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterPrivateCalendars();
-          List<Calendar> filteredCalList = new ArrayList<Calendar>();
-
-          for (Calendar calendar : calList) {
-            if (!Arrays.asList(defaultCalendars).contains(calendar.getId())) filteredCalList.add(calendar);
-          }
-          calList = filteredCalList;
-        }
-      }
-    } finally {
-      lock.unlock();
+      calList = filteredCalList;
     }
-
-    /** return a copy */
-    List<Calendar> returnedList = new ArrayList<Calendar>();
-    for (Calendar calendar : calList) returnedList.add(calendar);
-    return returnedList;
+    return calList;
   }
 
   /**
@@ -390,13 +377,7 @@ public class JCRDataStorage implements DataStorage {
     Session session = calendarHome.getSession();
     session.save();
 
-    Lock lock = getLock("UserCalendar", username);
-    lock.lock();
-    try {
-      userCalendarCache.put(username, null);
-    } finally {
-      lock.unlock();
-    }
+    userCalendarCache.remove(username);
   }
 
   /**
@@ -425,13 +406,7 @@ public class JCRDataStorage implements DataStorage {
 
       }
 
-      Lock lock = getLock("UserCalendar", username);
-      lock.lock();
-      try {
-        userCalendarCache.put(username, null);
-      } finally {
-        lock.unlock();
-      }
+      userCalendarCache.remove(username);
 
       try {
         removeFeed(username, calendarId);
@@ -457,46 +432,24 @@ public class JCRDataStorage implements DataStorage {
   public List<GroupCalendarData> getGroupCalendars(String[] groupIds,
                                                    boolean isShowAll,
                                                    String username) throws Exception {
-    List<Calendar> calendars;
-    Node calendarHome = getPublicCalendarHome();
-    List<GroupCalendarData> groupCalendars = new ArrayList<GroupCalendarData>();
-    String[] defaultCalendars = null;
-    if (username != null) {
-      CalendarSetting calendarSetting = getCalendarSetting(getUserCalendarServiceHome(username));
-      if (calendarSetting != null)
-        defaultCalendars = calendarSetting.getFilterPublicCalendars();
-    }
+    List<GroupCalendarData> groupCalendars = new LinkedList<GroupCalendarData>();    
 
     for (String groupId : groupIds) {
       //StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "//element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
-      StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
-      List<Calendar> lCalendars;
+      StringBuilder queryString = new StringBuilder("/jcr:root").append(getGroupCalendarHomePath()).append("/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
       String sQuery = queryString.toString();
-      Lock lock = getLock("GroupCalendar", sQuery);
-      lock.lock();
-      try {
-        lCalendars = groupCalendarCache_.get(sQuery);
-        if (lCalendars == null)
-        {
-          lCalendars = new ArrayList<Calendar>();
-          QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
-          Query query = qm.createQuery(sQuery, Query.XPATH);
-          QueryResult result = query.execute();
-          NodeIterator it = result.getNodes();
-          while (it.hasNext()) {
-            Node calNode = it.nextNode();
-            Calendar cal = loadCalendar(calNode);
-            lCalendars.add(cal);
-          }
-          groupCalendarCache_.put(sQuery, lCalendars);
+
+      List<Calendar> calList = groupCalendarCache.get(this, sQuery);      
+      if (!calList.isEmpty()) {
+        String[] defaultCalendars = null;
+        if (username != null) {
+          CalendarSetting calendarSetting = getCalendarSetting(username);
+          if (calendarSetting != null)
+            defaultCalendars = calendarSetting.getFilterPublicCalendars();
         }
-      } finally {
-        lock.unlock(); 
-      }
-      
-      if (!lCalendars.isEmpty()) {
-        calendars = new ArrayList<Calendar>();
-        for (Calendar c : lCalendars) {
+        
+        List<Calendar> calendars = new LinkedList<Calendar>();
+        for (Calendar c : calList) {
           Calendar cal = getCalendar(defaultCalendars, null, c, isShowAll);
           if (cal != null)
             calendars.add(cal);
@@ -506,6 +459,20 @@ public class JCRDataStorage implements DataStorage {
     }
     return groupCalendars;
   }
+
+  private String getGroupCalendarHomePath() {
+    if (groupHomePath == null) {
+      try {
+        groupHomePath = getPublicCalendarHome().getPath();
+      } catch (Exception e) {
+        groupHomePath = null;
+        log.error("Can't find group calendar home path", e);
+      }
+    }
+    return groupHomePath;
+  }
+  
+
 
   /**
    * {@inheritDoc}
@@ -524,7 +491,7 @@ public class JCRDataStorage implements DataStorage {
     setCalendarProperties(calendarNode, calendar);
     calendarHome.getSession().save();
     // Clear the cache to avoid inconsistency
-    groupCalendarCache_.clearCache(); 
+    groupCalendarCache.clear(); 
   }
 
   /**
@@ -547,7 +514,7 @@ public class JCRDataStorage implements DataStorage {
       calNode.remove();
       calendarHome.getSession().save();
       // Clear the cache to avoid inconsistency
-      groupCalendarCache_.clearCache(); 
+      groupCalendarCache.clear(); 
       return calendar;
     }
     return null;
@@ -1859,26 +1826,14 @@ public class JCRDataStorage implements DataStorage {
     addCalendarSetting(calendarHome, setting);
     Session session = calendarHome.getSession();
     session.save();
-    Lock lock = getLock("UserCalendarSetting", username);
-    lock.lock();
-    try {
-      userCalendarSetting.put(username, null);
-    } finally {
-      lock.unlock();
-    }
+    calendarSettingCache.remove(username);
   }
 
   private void saveCalendarSetting(CalendarSetting setting, String username) throws Exception {
     Node calendarHome = getUserCalendarServiceHome(username);
     addCalendarSetting(calendarHome, setting);
     calendarHome.save();
-    Lock lock = getLock("UserCalendarSetting", username);
-    lock.lock();
-    try {
-      userCalendarSetting.put(username, null);
-    } finally {
-      lock.unlock();
-    }
+    calendarSettingCache.remove(username);
   }
 
   /**
@@ -1914,24 +1869,7 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public CalendarSetting getCalendarSetting(String username) throws Exception {
-    CalendarSetting calendarSetting;
-    Lock lock = getLock("UserCalendarSetting", username);
-    lock.lock();
-    try {
-      calendarSetting = userCalendarSetting.get(username);
-      if (calendarSetting == null) {
-        Node calendarHome = getUserCalendarServiceHome(username);
-        calendarSetting = getCalendarSetting(calendarHome);
-        if (calendarSetting == null) {
-          calendarSetting = new CalendarSetting();
-          addCalendarSetting(calendarHome, calendarSetting);
-        }
-        userCalendarSetting.put(username, calendarSetting);
-      }
-    } finally {
-      lock.unlock();
-    }
-
+    CalendarSetting calendarSetting = calendarSettingCache.get(this, username);      
     return calendarSetting;
   }
 
@@ -3121,7 +3059,7 @@ public class JCRDataStorage implements DataStorage {
       PropertyIterator iter = sharedNode.getReferences();
       String[] defaultFilterCalendars = null;
       if (username != null) {
-        defaultFilterCalendars = getCalendarSetting(getUserCalendarServiceHome(username)).getFilterSharedCalendars();
+        defaultFilterCalendars = getCalendarSetting(username).getFilterSharedCalendars();
       }
       while (iter.hasNext()) {
         try {
@@ -6129,6 +6067,53 @@ public class JCRDataStorage implements DataStorage {
       return null;
     }
   }
+  
+  private static class CalendarSettingLoader implements Loader<String, CalendarSetting, JCRDataStorage> {
+    @Override
+    public CalendarSetting retrieve(JCRDataStorage context, String key) throws Exception {
+      Node calendarHome = context.getUserCalendarServiceHome(key);
+      CalendarSetting calendarSetting = context.getCalendarSetting(calendarHome);
+      if (calendarSetting == null) {
+        calendarSetting = new CalendarSetting();
+        context.addCalendarSetting(calendarHome, calendarSetting);
+      }
+      
+      return calendarSetting;
+    }
+  };
+  
+  private static class UserCalendarLoader implements Loader<String, List<Calendar>, JCRDataStorage> {
+    @Override
+    public List<Calendar> retrieve(JCRDataStorage context, String key) throws Exception {
+      List<Calendar> calList  = new LinkedList<Calendar>();
+      Node userCalendarHome = context.getUserCalendarHome(key);
+      NodeIterator iter     = userCalendarHome.getNodes();
+      while (iter.hasNext()) {
+        calList.add(context.loadCalendar(iter.nextNode()));
+      }
+      return calList;
+    }
+  };
+  
+  private static class GroupCalendarLoader implements Loader<String, List<Calendar>, JCRDataStorage> {
+    @Override
+    public List<Calendar> retrieve(JCRDataStorage context, String key) throws Exception {
+      Node calendarHome = context.getPublicCalendarHome();
+      QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
+      Query query = qm.createQuery(key, Query.XPATH);
+      QueryResult result = query.execute();
+      
+      List<Calendar> calendarList = new LinkedList<Calendar>();
+      NodeIterator it = result.getNodes();
+      while (it.hasNext()) {
+        Node calNode = it.nextNode();
+        Calendar cal = context.loadCalendar(calNode);
+        calendarList.add(cal);
+      }
+      return calendarList;
+    }
+  };
+  
   /**
    * This kind of locks can self unregister from the map of locks
    */
