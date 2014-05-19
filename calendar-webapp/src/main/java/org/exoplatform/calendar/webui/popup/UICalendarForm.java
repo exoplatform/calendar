@@ -789,7 +789,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         calendarPortlet.cancelAction() ;
         UICalendarWorkingContainer uiWorkingContainer = calendarPortlet.getChild(UICalendarWorkingContainer.class) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer) ;
-
+        
         if (!CalendarUtils.isEmpty(notFoundUser.toString())) {
           JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
           RequireJS requireJS = jsManager.getRequireJS();
@@ -837,7 +837,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         continue;
       }
       else {
-        if (!s.equals(CalendarUtils.ANY))
+        if (!s.equals(CalendarUtils.ANY) && !s.startsWith("*."))
           notFoundUser.append(s + ", ");
       }
 
