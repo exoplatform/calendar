@@ -2620,7 +2620,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.removeUserCalendar(username, cal.getId());
   }
   
-  public void testMultiThreadSearch() throws Exception {
+  public void _testMultiThreadSearch() throws Exception {
     loginUser(username) ;
     String keyword = "Have a meeting" ;
 
@@ -2647,7 +2647,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     final AtomicBoolean fail = new AtomicBoolean(false);
     final CountDownLatch wait = new CountDownLatch(1);
-    Runnable runner = new Runnable() {     
+    Runnable runner = new Runnable() {    
       @Override
       public void run() {
         try {
