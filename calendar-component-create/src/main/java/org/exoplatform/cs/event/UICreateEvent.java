@@ -183,11 +183,7 @@ public class UICreateEvent extends UIForm {
         calEvent.setCalType(uiForm.calType_);
         String calName="";
         if(calService.getUserCalendar(username,uiForm.getEventCalendar())!=null){
-
-          if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(username)) ) {
-            calName = calService.getUserCalendar(username,uiForm.getEventCalendar()).getName();
-
-          }
+          calName = calService.getUserCalendar(username,uiForm.getEventCalendar()).getName();
         }else {
           if(calService.getGroupCalendar(uiForm.getEventCalendar())!=null){
 
