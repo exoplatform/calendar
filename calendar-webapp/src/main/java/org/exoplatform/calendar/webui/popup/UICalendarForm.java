@@ -18,6 +18,7 @@ package org.exoplatform.calendar.webui.popup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,6 +40,7 @@ import org.exoplatform.calendar.webui.UIFormColorPicker;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.web.application.AbstractApplicationMessage;
@@ -418,7 +420,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       temp.put(key, tempS) ;
     } else {
       temp = perms_.get(selectField) ;
-      if(temp.get(key) != null && !tempS.equals(temp.get(key))) tempS = temp.get(key) + CalendarUtils.COMMA +  tempS ;
+      if(temp.get(key) != null && !tempS.equals(temp.get(key)))
+        tempS = new StringBuilder().append(temp.get(key)).append(CalendarUtils.COMMA).append(tempS).toString() ;
       temp.put(key, tempS) ;
     }
     perms_.put(selectField, temp) ;
@@ -810,61 +813,44 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
                                             String groupIdSelected,
                                             String groupKey,
                                             Event<?> event,
-                                            StringBuffer notFoundUser) throws Exception
-                                            {
+                                            StringBuffer notFoundUser) throws Exception {
     if (CalendarUtils.isEmpty(groupPermissions)) return new ArrayList<String>(0);
 
-    for (String s : groupPermissions.split(CalendarUtils.COMMA))
-    {
-      s = s.trim() ;
+    for (String s : groupPermissions.split(CalendarUtils.COMMA)) {
+      s = s.trim();
       if (CalendarUtils.isEmpty(s)) continue;
-      /* find all users from group */
-      List<User> users = orgService.getUserHandler().findUsersByGroup(groupIdSelected).getAll() ;
-      boolean isExisted = false ;
-
-      /* check if user exists in the group */
-      for (User u : users)
-      {
-        if (u.getUserName().equals(s)) {
-          isExisted = true ;
-          break ;
-        }
-      }
-
-      if (isExisted) {
-        /* user exists, add key to edit permission */
-        listPermission.add(groupKey + s) ;
-        continue;
-      }
-      else {
-        if (!s.equals(CalendarUtils.ANY))
-          notFoundUser.append(s + ", ");
-      }
 
       /* users equals to anyone */
-      if (s.equals(CalendarUtils.ANY))
-      {
-        listPermission.add(groupKey + s) ;
+      if (s.equals(CalendarUtils.ANY)) {
+        listPermission.add(groupKey + s);
         continue;
       }
 
       /* membership type */
-      if (s.indexOf(CalendarUtils.ANY_OF) > -1)
-      {
-        String membership = s.substring(s.lastIndexOf(CalendarUtils.DOT)+ 1, s.length()) ;
+      if (s.startsWith(CalendarUtils.ANY_OF)) {
+        String membership = s.substring(CalendarUtils.ANY_OF.length());
         if (orgService.getMembershipTypeHandler().findMembershipType(membership) != null) {
-          listPermission.add(groupKey + s) ;
+            listPermission.add(groupKey + s) ;
         } else {
-          event.getRequestContext().getUIApplication()
-          .addMessage(new ApplicationMessage("UICalendarForm.msg.name-not-on-group",
-                                             new Object[]{s, groupKey}, AbstractApplicationMessage.WARNING));
+            event.getRequestContext().getUIApplication()
+                    .addMessage(new ApplicationMessage("UICalendarForm.msg.name-not-on-group",
+                            new Object[]{s, groupKey}, AbstractApplicationMessage.WARNING));
         }
+
+        continue;
       }
 
+      /* Check user exising and in group */
+      Collection<Membership> memberships = orgService.getMembershipHandler().findMembershipsByUserAndGroup(s, groupIdSelected);
+      if(memberships != null && !memberships.isEmpty()) {
+          listPermission.add(groupKey + s) ;
+      } else {
+          notFoundUser.append(s + ", ");
+      }
     }
 
     return listPermission;
-                                            }
+  }
 
   static  public class CancelActionListener extends EventListener<UICalendarForm> {
     @Override
