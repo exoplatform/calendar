@@ -62,6 +62,7 @@ import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -2620,7 +2621,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.removeUserCalendar(username, cal.getId());
   }
   
-  public void _testMultiThreadSearch() throws Exception {
+  public void testMultiThreadSearch() throws Exception {
     loginUser(username) ;
     String keyword = "Have a meeting" ;
 
@@ -2645,11 +2646,13 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //It can't be created in multithreading
     unifiedSearchService_.search(null, uQuery.getText(), params, 0, -1, uQuery.getOrderBy()[0] , uQuery.getOrderType());
 
+    final ExoContainer container = ExoContainerContext.getCurrentContainer();
     final AtomicBoolean fail = new AtomicBoolean(false);
     final CountDownLatch wait = new CountDownLatch(1);
-    Runnable runner = new Runnable() {    
+    Runnable runner = new Runnable() {
       @Override
       public void run() {
+        ExoContainerContext.setCurrentContainer(container);
         try {
           wait.await();
         } catch (InterruptedException e) {
@@ -2664,7 +2667,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
         end();
       }
     };
-    
+        
     List<Thread> threads = new LinkedList<Thread>();
     for (int i = 0; i < 20; i++) {
       Thread t = new Thread(runner);
