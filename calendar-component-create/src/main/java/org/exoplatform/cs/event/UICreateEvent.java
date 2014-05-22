@@ -182,20 +182,15 @@ public class UICreateEvent extends UIForm {
         calEvent.setToDateTime(to);
         calEvent.setCalType(uiForm.calType_);
         String calName="";
-        if(calService.getUserCalendar(username,uiForm.getEventCalendar())!=null){
-
-          if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(username)) ) {
+        if(calService.getUserCalendar(username,uiForm.getEventCalendar())!=null) {
             calName = calService.getUserCalendar(username,uiForm.getEventCalendar()).getName();
 
-          }
-        }else {
+        } else {
           if(calService.getGroupCalendar(uiForm.getEventCalendar())!=null){
-
-
             calName= getGroupCalendarName(calService.getGroupCalendar(uiForm.getEventCalendar()).getGroups()[0].substring(calService.getGroupCalendar(uiForm.getEventCalendar()).getGroups()[0].lastIndexOf("/") + 1),
                                           calService.getGroupCalendar(uiForm.getEventCalendar()).getName()) ;
 
-          } else{
+          } else {
             if( calService.getSharedCalendars(username,true).getCalendarById(uiForm.getEventCalendar())!=null){
               if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner())) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(NewUserListener.defaultCalendarName)) {
                 calName = getResourceBundle("UICreateEvent.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
@@ -256,7 +251,7 @@ public class UICreateEvent extends UIForm {
     return df.parse(fromField + Utils.SPACE + timeField);
     } catch (Exception e) {
       return null;
-    } 
+    }
   }
 
   public static Date getEndDate(boolean isAllDate, String dateFormat, String fromField, String timeFormat, String timeField) throws Exception {
@@ -273,7 +268,7 @@ public class UICreateEvent extends UIForm {
       return df.parse(fromField + Utils.SPACE + timeField);
     } catch (Exception e) {
       return null;
-    }  
+    }
   }
 
   public static CalendarSetting getCurrentUserCalendarSetting() {
