@@ -73,7 +73,14 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Our own project modules -->
+      <!-- Declare our own artifacts -->
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar</artifactId>
+        <version>${project.version}</version>
+        <classifier>source-release</classifier>
+        <type>zip</type>
+      </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-common</artifactId>
