@@ -1,4 +1,4 @@
-(function(cs, gj, cometd){
+(function(gj, cometd){
 	function Reminder() {} ;
 
 	_module = {};
@@ -125,4 +125,4 @@
 
 	_module.Reminder = eXo.calendar.Reminder;
 	return _module;
-})(cs, gj,cometd);
+})(gj,cometd);

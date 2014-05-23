@@ -1,4 +1,4 @@
-(function(base, cs, gj){
+(function(base, CSUtils, gj){
 var _module = {};
 eXo.calendar = eXo.calendar || {};
 
@@ -125,10 +125,10 @@ CalendarLayout.prototype.expandCalendarContainer = function() {
  
 
 if (!eXo.calendar.CalendarLayout) eXo.calendar.CalendarLayout = new CalendarLayout();
-if(!eXo.calendar.LayoutManager) eXo.calendar.LayoutManager = cs.CSUtils.LayoutManager("calendarlayout");
+if(!eXo.calendar.LayoutManager) eXo.calendar.LayoutManager = CSUtils.LayoutManager("calendarlayout");
 
 _module.CalendarLayout = eXo.calendar.CalendarLayout;
 _module.LayoutManager = eXo.calendar.LayoutManager;
 
 return _module;
-})(base, cs, gj);
+})(base, CSUtils, gj);

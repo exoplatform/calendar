@@ -1,4 +1,4 @@
-(function(cs, gj, base){
+(function(CSUtils, gj, base){
 function UICalendars() {
     this.POPUP_CONTAINER_ID = "tmpMenuElement";
     this.calsFormElem     = null;
@@ -72,7 +72,7 @@ _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").U
 
 UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-  var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"calendarItem") || cs.CSUtils.EventManager.getEventTargetByClass(evt,"GroupItem");
+  var obj = CSUtils.EventManager.getEventTargetByClass(evt,"calendarItem") || CSUtils.EventManager.getEventTargetByClass(evt,"GroupItem");
   var calType = obj.getAttribute("calType");
   var calName = obj.getAttribute("calName");
   var calColor = obj.getAttribute("calColor");
@@ -96,7 +96,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   }
   if(!menu || !obj.id) {
     if (menu) menu.style.display = 'none';
-    cs.UIContextMenu.menuElement = null ;
+    UIContextMenu.menuElement = null ;
     return ;
   } 
   var value = "" ;
@@ -208,7 +208,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   var contentContainerElm = gj(anchorElm).parents(".contentContainer")[0];
   if (contentContainerElm) {
     /* position the menu at one third of its height */
-    menu.style.top = (cs.CSUtils.Browser.findPosY(anchorElm) - Math.round(menu.offsetHeight/3)) + 'px';
+    menu.style.top = (gj(anchorElm).offset().top - Math.round(menu.offsetHeight/3)) + 'px';
   }
 
   /* reposition menu to a distance of 3 px to bottom of viewport if it exceeds the viewport */
@@ -219,7 +219,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
   }
 
   var arrowIcon = gj(menu).find(".arrowLeft")[0];
-  var positionYofAnchor = cs.CSUtils.Browser.findPosY(anchorElm);
+  var positionYofAnchor = gj(anchorElm).offset().top;
   var positionYofMenu   = gj(menu).position().top;
   var positionOfArrowRelativeToMenu = positionYofAnchor - positionYofMenu;
   /* add 7px to center arrow */
@@ -246,7 +246,7 @@ UICalendars.prototype.calendarMenuCallback = function(anchorElm, evt) {
 UICalendars.prototype.showMenu = function(anchorElm, evt, menuClassName, menuCallback) {
   var _e = window.event || evt;
   _e.cancelBubble = true;
-  cs.CSUtils.EventManager.cancelBubble(evt);
+  CSUtils.EventManager.cancelBubble(evt);
   var menuTemplateElm = gj(this.calsFormElem).find('div.' + menuClassName)[0]; 
   this.renderMenu(menuTemplateElm, anchorElm);
   // invoke callback
@@ -258,4 +258,4 @@ eXo.calendar.UICalendars = _module.UICalendars;
 
 return _module;
 
-})(cs, gj, base);
+})(CSUtils, gj, base);

@@ -3,10 +3,10 @@
   import org.exoplatform.calendar.webui.UIPreview ;
 
   def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
-  requirejs.require("SHARED/csResources","cs");
+  requirejs.require("SHARED/CSUtils","CSUtils");
   requirejs.require("SHARED/jquery","gj");
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
-  requirejs.addScripts("gj('div.ResizeReadingPane').mousedown(function(event) {cs.CSUtils.Spliter.doResize(event, this); });");
+  requirejs.addScripts("gj('div.ResizeReadingPane').mousedown(function(event) {CSUtils.Spliter.doResize(event, this); });");
   requirejs.addScripts("var uiListContainer = gj(document).find('.uiListContainer')[0]; cal.UICalendarPortlet.resizeHeight(uiListContainer, 7); gj(window).resize(function() { cal.UICalendarPortlet.resizeHeight(uiListContainer, 7); } );");
   requirejs.addScripts("cal.UICalendarPortlet.scrollToActiveEventInListView(uiListContainer);");
 %>

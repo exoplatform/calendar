@@ -1,4 +1,4 @@
-(function(){
+(function() {
 var _module = {};
 
 function Resize() {} ;
@@ -15,8 +15,8 @@ Resize.prototype.start = function(e)	{
 	Resize.obj = new Object();
 	var o = Resize.obj.elemt = this;
 	e = app.fixE(e);
-	Resize.obj.initMouseX = browser.findMouseXInPage(e);
-	Resize.obj.initMouseY = browser.findMouseYInPage(e);
+	Resize.obj.initMouseX = e.pageX;
+	Resize.obj.initMouseY = e.pageY;
 	Resize.obj.initWidth = parseInt(o.oToResizeWidth.style.width) ;
 	Resize.obj.initHeight = parseInt(o.oToResizeHeight.style.height);
 //	window.status = Resize.obj.initWidth + " : " + Resize.obj.initHeight;
@@ -28,8 +28,8 @@ Resize.prototype.start = function(e)	{
 Resize.prototype.drag = function(e) {
 	e = app.fixE(e);
 	var o = Resize.obj.elemt;
-	var nx = Resize.obj.initWidth + (browser.findMouseXInPage(e) - Resize.obj.initMouseX) ;
-	var ny = Resize.obj.initHeight + (browser.findMouseYInPage(e) - Resize.obj.initMouseY) ;
+	var nx = Resize.obj.initWidth + (e.pageX - Resize.obj.initMouseX) ;
+	var ny = Resize.obj.initHeight + (e.pageY - Resize.obj.initMouseY) ;
 	nx = Math.max(100, nx) ;
 	ny = Math.max(100, ny) ;
 	o.oToResizeHeight.style.height = ny + 'px';
@@ -44,7 +44,6 @@ Resize.prototype.end = function(e) {
 	delete Resize.obj;
 } ;
 
-//eXo.core.Resize = new Resize() ;
 _module.Resize = new Resize() ;
 
 return _module.Resize;

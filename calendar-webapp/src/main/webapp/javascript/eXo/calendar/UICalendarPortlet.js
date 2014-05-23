@@ -1,7 +1,8 @@
-(function(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview, UIColorPicker) {
+(function(base, gtnav, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, 
+		wx, ScheduleSupport, UIEventPreview, UIColorPicker, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker) {
     var _module = {};
     eXo.calendar = eXo.calendar || {};
-    function UICalendarPortlet(){
+    function UICalendarPortlet() {
         this.clickone = 0 ;
         this.portletId = "calendars";
         this.currentDate = 0;
@@ -56,10 +57,10 @@
         var i = items.length;
         while(i--){
             gj(items[i]).on({'mouseover':function(){
-                cs.CSUtils.Utils.swapClass(this,hoverClass);
+                CSUtils.Utils.swapClass(this,hoverClass);
             },
                 'mouseout':function(){
-                    cs.CSUtils.Utils.swapClass(this,hoverClass);
+                    CSUtils.Utils.swapClass(this,hoverClass);
                 }});
         };
     } ;
@@ -234,7 +235,7 @@
         }
         var CalendarWorkingWorkspace =  _module.UICalendarPortlet.getElementById("UICalendarWorkingContainer");
         var id = (id)?id:this.getCheckedCalendar(this.filterForm);
-        cs.DOMUtil.cleanUpHiddenElements();
+        DOMUtil.cleanUpHiddenElements();
         var UIQuickAddEventPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddEventPopupWindow")[0];
         var UIQuickAddTaskPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddTaskPopupWindow")[0];
         var selectedCategory = (_module.UICalendarPortlet.filterSelect) ? _module.UICalendarPortlet.filterSelect : null;
@@ -245,7 +246,7 @@
 
         var tmpMenuElement = document.getElementById("tmpMenuElement");
         if (tmpMenuElement) uiPopup.hide(tmpMenuElement) ;
-        var formater = cs.CSUtils.DateTimeFormater ;
+        var formater = CSUtils.DateTimeFormatter ;
         var data = {
             from:parseInt(fromMilli),
             fromTime:parseInt(fromMilli),
@@ -306,7 +307,7 @@
         var eventName = uiform.elements["eventName"];
         var description = uiform.elements["description"];
 
-        var formater = cs.CSUtils.DateTimeFormater ;
+        var formater = CSUtils.DateTimeFormatter ;
         var timeType = "HH:MM" ;
         var dateType = fromField.getAttribute("format").replace("MM","mm") ;
         if(this.timeFormat == "hh:mm a")  timeType = formater.masks.shortTime ;
@@ -628,9 +629,9 @@
      */
     UICalendarPortlet.prototype.showHide = function(obj){
         if (obj.style.display != "block") {
-            cs.DOMUtil.cleanUpHiddenElements();
+            DOMUtil.cleanUpHiddenElements();
             obj.style.display = "block";
-            cs.DOMUtil.listHideElements(obj);
+            DOMUtil.listHideElements(obj);
         }
     };
 
@@ -1327,8 +1328,8 @@
     UICalendarPortlet.prototype.initDND = function(evt){
         eXo.calendar.EventTooltip.disable(evt);
         var _e = window.event || evt;
-        cs.CSUtils.EventManager.cancelBubble(evt);
-        if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) return ;
+        CSUtils.EventManager.cancelBubble(evt);
+        if(CSUtils.EventManager.getMouseButton(evt) == 2) return ;
         var UICalendarPortlet = _module.UICalendarPortlet;
         UICalendarPortlet.dragObject = this;
         UICalendarPortlet.resetZIndex(UICalendarPortlet.dragObject);
@@ -1459,7 +1460,6 @@
      * @param {Object} compid Portlet id
      */
     UICalendarPortlet.prototype.showContextMenu = function(compid){
-        var UIContextMenu = cs.UIContextMenu;
         this.portletNode = gj(document.getElementById(compid)).parents(".PORTLET-FRAGMENT")[0];
         this.portletName = compid;
         UIContextMenu.portletName = this.portletName;
@@ -1534,7 +1534,7 @@
         }
         $checkbox.attr('checked', true);
 
-        var items = gj(cs.UIContextMenu.menuElement).find("a");
+        var items = gj(UIContextMenu.menuElement).find("a");
         for (var i = 0; i < items.length; i++) {
             if (gj(items[i]).hasClass("eventAction")) {
                 items[i].parentNode.style.display = "block";
@@ -1553,7 +1553,7 @@
             }
         }
 
-        cs.UIContextMenu.changeAction(cs.UIContextMenu.menuElement, map);
+        UIContextMenu.changeAction(UIContextMenu.menuElement, map);
     };
 
     /**
@@ -1573,7 +1573,7 @@
             src = gj(src).parents("tr")[0];
             var startTime = parseInt(Date.parse(src.getAttribute('startfull')));
             var endTime = startTime + 30*60*1000 ;
-            var items = gj(cs.UIContextMenu.menuElement).find("a");
+            var items = gj(UIContextMenu.menuElement).find("a");
 
             for(var i = 0; i < items.length; i++){
                 var aTag = items[i];
@@ -1615,7 +1615,7 @@
             }
         }
 
-        var items = gj(cs.UIContextMenu.menuElement).find("a");
+        var items = gj(UIContextMenu.menuElement).find("a");
         for (var i = 0; i < items.length; i++) {
             if (gj(items[i]).hasClass("eventAction")) {
                 items[i].parentNode.style.display = "block";
@@ -1632,7 +1632,7 @@
             }
         }
 
-        cs.UIContextMenu.changeAction(cs.UIContextMenu.menuElement, map);
+        UIContextMenu.changeAction(UIContextMenu.menuElement, map);
     };
 
     /**
@@ -1640,10 +1640,9 @@
      * @param {Object} evt Mouse event
      */
     UICalendarPortlet.prototype.weekViewCallback = function(evt){
-        var src = cs.CSUtils.EventManager.getEventTarget(evt);
-        var UIContextMenu = cs.UIContextMenu;
+        var src = CSUtils.EventManager.getEventTarget(evt);
         var map = null;
-        var obj = cs.CSUtils.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
+        var obj = CSUtils.EventManager.getEventTargetByClass(evt,"weekViewEventBoxes");
         var items = gj(UIContextMenu.menuElement).find("a");
         if (obj) {
             var eventId = obj.getAttribute("eventid");
@@ -1711,7 +1710,7 @@
             var timeShiftE = parseInt(gj("#UIQuickAddEvent").closest("#QuickAddEventContainer").attr("timeshift"));
             var timeShiftT = parseInt(gj("#UIQuickAddTask").closest("#QuickAddEventContainer").attr("timeshift"));
             var mouseY = (base.Browser.findMouseRelativeY(container,evt) + container.scrollTop)*60000;
-            obj = cs.CSUtils.EventManager.getEventTargetByTagName(evt,"td");
+            obj = CSUtils.EventManager.getEventTargetByTagName(evt,"td");
             map = Date.parse(obj.getAttribute("startFull"));
             for (var i = 0; i < items.length; i++) {
                 if (items[i].style.display == "block") {
@@ -1748,7 +1747,6 @@
     UICalendarPortlet.prototype.monthViewCallback = function(evt){
         var _e = window.event || evt;
         var src = _e.srcElement || _e.target;
-        var UIContextMenu = cs.UIContextMenu;
         var objvalue = "";
         var links = gj(UIContextMenu.menuElement).find("a");
         var isEditable;
@@ -1803,7 +1801,7 @@
             $checkbox.attr('checked', true);
         }
 
-        var items = gj(cs.UIContextMenu.menuElement).find("a");
+        var items = gj(UIContextMenu.menuElement).find("a");
         for (var i = 0; i < items.length; i++) {
             if (gj(items[i]).hasClass("eventAction")) {
                 items[i].parentNode.style.display = "block";
@@ -2279,7 +2277,7 @@
      * @param {Object} evt Mouse event
      */
     UICalendarPortlet.prototype.showView = function(obj, evt){
-        cs.CSUtils.EventManager.cancelBubble(evt);
+        CSUtils.EventManager.cancelBubble(evt);
         var oldmenu = gj(obj).find('div.uiRightClickPopupMenu')[0];
         var actions = gj(oldmenu).find("a.ItemLabel");
         if (!this.selectedCategory)
@@ -2299,8 +2297,8 @@
      */
     UICalendarPortlet.prototype.swapIeMenu = function(menu, clickobj){
         var Browser = base.Browser;
-        var x = Browser.findPosXInContainer(clickobj, menu.offsetParent) - cs.CSUtils.Utils.getScrollLeft(clickobj);
-        var y = Browser.findPosYInContainer(clickobj, menu.offsetParent) - cs.CSUtils.Utils.getScrollTop(clickobj) + clickobj.offsetHeight;
+        var x = Browser.findPosXInContainer(clickobj, menu.offsetParent) - CSUtils.Utils.getScrollLeft(clickobj);
+        var y = Browser.findPosYInContainer(clickobj, menu.offsetParent) - CSUtils.Utils.getScrollTop(clickobj) + clickobj.offsetHeight;
         var browserHeight = document.documentElement.clientHeight;
         var uiRightClickPopupMenu = (!gj(menu).hasClass("uiRightClickPopupMenu")) ? gj(menu).find('div.uiRightClickPopupMenu')[0] : menu;
         this.showHide(menu);
@@ -2566,7 +2564,7 @@
         if(bottom >= UISelection.container.offsetHeight) endTime -= 1;
         var container = UICalendarPortlet.getElementById("UICalendarViewContainer");
         UICalendarPortlet.addQuickShowHiddenWithTime(container, 1, startTime, endTime) ;
-        cs.DOMUtil.listHideElements(UISelection.block);
+        DOMUtil.listHideElements(UISelection.block);
         UISelection.startTime = null;
         UISelection.startY = null;
         UISelection.startX = null;
@@ -2960,7 +2958,7 @@
         var container = _module.UICalendarPortlet.getElementById("uiActionBar") ;
         if(container) {
             var mainContainer = gj(container).find('div.CalendarActionBar')[0];
-            var randomId = cs.DOMUtil.generateId("CalendarScrollbar");
+            var randomId = base.eXo.generateId("CalendarScrollbar");
             mainContainer.setAttribute("id",randomId);
             uiNav.scrollMgr = new gtnav.ScrollManager(randomId) ;
 
@@ -3023,7 +3021,7 @@
             var self = eXo.calendar.EventTooltip;
             if(self._container) delete self._container;
             if(!self._container){
-                var eventNode = cs.CSUtils.EventManager.getEventTarget(evt);
+                var eventNode = CSUtils.EventManager.getEventTarget(evt);
                 eventNode = gj(eventNode).parents('.UICalendarPortlet')[0];
                 self._container = gj(eventNode).find('div.uiCalPopover')[0];
                 gj(self._container).off('mouseover mouseout click').on({'mouseover':function(evt){
@@ -3079,7 +3077,7 @@
         },
         disable: function(evt){
             this.hideElement();
-            if(evt && cs.CSUtils.EventManager.getMouseButton(evt) != 2) this.isDnD = true;
+            if(evt && CSUtils.EventManager.getMouseButton(evt) != 2) this.isDnD = true;
         },
         enable: function(){
             this.isDnD = false;
@@ -3746,10 +3744,10 @@
 
     UICalendarPortlet.prototype.addDay = function(eFromDate, dayNum, eToDate, datePattern) {
         var dateValue = eFromDate.val();
-        cs.CalDateTimePicker.currentDate = this.dateParses(dateValue, datePattern);
-        cs.CalDateTimePicker.currentDate.setDate(cs.CalDateTimePicker.currentDate.getDate()+dayNum);
-        cs.CalDateTimePicker.datePattern = datePattern;
-        var value = cs.CalDateTimePicker.getDateTimeString();
+        CalDateTimePicker.currentDate = this.dateParses(dateValue, datePattern);
+        CalDateTimePicker.currentDate.setDate(CalDateTimePicker.currentDate.getDate()+dayNum);
+        CalDateTimePicker.datePattern = datePattern;
+        var value = CalDateTimePicker.getDateTimeString();
         eToDate.val(value);
     }
 
@@ -3865,4 +3863,5 @@
     eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
     var uiPopup = uiPopupWindow ;
     return _module;
-})(base, gtnav, CalendarLayout,cs, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, wx, ScheduleSupport, UIEventPreview, UIColorPicker);
+})(base, gtnav, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
+		uiPopupWindow, wx, ScheduleSupport, UIEventPreview, UIColorPicker, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker);

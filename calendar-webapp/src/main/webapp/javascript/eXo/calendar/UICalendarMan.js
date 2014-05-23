@@ -1,4 +1,4 @@
-(function(cs, gj, Highlighter){
+(function(DOMUtil, CSUtils, gj, Highlighter){
 var _module = {};
 eXo.calendar = eXo.calendar || {};
 eXo.calendar.UIHSelection = Highlighter ;
@@ -818,7 +818,7 @@ GUIMan.prototype.initDND = function() {
         var eventNode = events[i].rootNode;
         var checkbox = gj(eventNode).find('input.checkbox')[0];
         if (checkbox) {
-            gj(checkbox).off('mousedown click').on('mousedown',this.cancelEvent).on('click',cs.CSUtils.EventManager.cancelBubble);
+            gj(checkbox).off('mousedown click').on('mousedown',this.cancelEvent).on('click',CSUtils.EventManager.cancelBubble);
         }
         gj(eventNode).off('dblclick').on('dblclick',eXo.calendar.UICalendarPortlet.ondblclickCallback);
         gj(eventNode).off('mouseover mouseout').on('mouseover',eXo.calendar.EventTooltip.show).on('mouseout',eXo.calendar.EventTooltip.hide);
@@ -835,7 +835,7 @@ GUIMan.prototype.cancelEvent = function(event) {
   event = window.event || event ;
   event.cancelBubble = true ;
   //Fix bug for click checkbox event
-  cs.CSUtils.EventManager.cancelBubble(event);
+  CSUtils.EventManager.cancelBubble(event);
   if (event.preventDefault) {
     event.preventDefault();
   }
@@ -1001,7 +1001,6 @@ GUIMan.prototype.setWidthForMoreEvent = function(moreEventList,len,dayNode){
 };
 
 GUIMan.prototype.hideMore = function(evt){
-	var DOMUtil = cs.DOMUtil;
 	var items = DOMUtil.hideElementList;
 	var ln = items.length ;
 	if (ln > 0) {
@@ -1010,9 +1009,9 @@ GUIMan.prototype.hideMore = function(evt){
 				items[i].style.zIndex = 1 ;
 			items[i].style.display = "none" ;
 		}
-		DOMUtil.hideElementList.clear() ;
+		DOMUtil.hideElementList = [];
 	}
-	var src = cs.CSUtils.EventManager.getEventTarget(evt);
+	var src = CSUtils.EventManager.getEventTarget(evt);
 	var	moreContainerNode = gj(src).parents('.moreEventContainer')[0]; 
 	if(!moreContainerNode) 
 		moreContainerNode = gj(src).nextAll("div")[0];
@@ -1028,7 +1027,7 @@ GUIMan.prototype.showMore = function(evt) {
     gj(moreEventContainer).find('div.dayContentContainer').off('mouseover mouseout').on('mouseover', eXo.calendar.EventTooltip.show)
     .on('mouseout', eXo.calendar.EventTooltip.hide);
     if(GUIMan.lastMore) GUIMan.lastMore.style.zIndex = 1;
-    cs.CSUtils.EventManager.cancelBubble(evt);
+    CSUtils.EventManager.cancelBubble(evt);
     GUIMan.hideMore(evt);
     if (!moreEventContainer.style.display || moreEventContainer.style.display == 'none') {
 
@@ -1040,21 +1039,22 @@ GUIMan.prototype.showMore = function(evt) {
 	if(gj.browser.webkit) {
 	    moreLeft += 1;
 	}
-	gj(moreEventContainer).css('left', moreLeft);	cs.DOMUtil.listHideElements(moreEventContainer);
-	gj(moreEventContainer).off('click mousedown contextmenu').on({'click':cs.CSUtils.EventManager.cancelBubble,
-	    'mousedown':function(evt){
-		cs.CSUtils.EventManager.cancelEvent(evt);
-		if(cs.CSUtils.EventManager.getMouseButton(evt) == 2) {
-		    var index = cs.DOMUtil.hideElementList.indexOf(this);
-		    cs.DOMUtil.hideElementList.splice(index,1);
+	gj(moreEventContainer).css('left', moreLeft);
+	DOMUtil.listHideElements(moreEventContainer);
+	gj(moreEventContainer).off('click mousedown contextmenu').on({'click' : CSUtils.EventManager.cancelBubble,
+	    'mousedown':function(evt) {
+		CSUtils.EventManager.cancelEvent(evt);
+		if(CSUtils.EventManager.getMouseButton(evt) == 2) {
+		    var index = DOMUtil.hideElementList.indexOf(this);
+		    DOMUtil.hideElementList.splice(index,1);
 		}
 	    },
 	    'contextmenu':function(evt){
-		cs.CSUtils.EventManager.cancelEvent(evt);
-		var index = cs.DOMUtil.hideElementList.indexOf(this);
-		cs.DOMUtil.hideElementList.splice(index,1);
-		cs.UIContextMenu.show(evt) ;
-		cs.DOMUtil.hideElementList.push(this);
+		CSUtils.EventManager.cancelEvent(evt);
+		var index = DOMUtil.hideElementList.indexOf(this);
+		DOMUtil.hideElementList.splice(index,1);
+		UIContextMenu.show(evt) ;
+		DOMUtil.hideElementList.push(this);
 		return false;
 	    }});
 
@@ -1273,4 +1273,4 @@ eXo.calendar.Highlighter = Highlighter.Highlighter;
 _module.Highlighter = Highlighter.Highlighter;
 
 return _module;
-})(cs, gj, Highlighter);
+})(DOMUtil, CSUtils, gj, Highlighter);

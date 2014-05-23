@@ -1,14 +1,14 @@
-(function(base, cs, gj){
+(function(base, gj, DragDrop, Utils) {
 var _module = {};
 eXo.calendar = eXo.calendar || {};
 // Create new method for special context
-cs.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
+DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEvent) {
   if(dropableTargets == null) return null ;
   var UICalendarDragDropObj = _module.UICalendarDragDrop;
   var additionX = UICalendarDragDropObj.RowContainerDay.scrollLeft;
   var additionY = UICalendarDragDropObj.RowContainerDay.scrollTop;
-  var mousexInPage = cs.Browser.Browser.findMouseXInPage(mouseEvent) + additionX ;
-  var mouseyInPage = cs.Browser.Browser.findMouseYInPage(mouseEvent) + additionY ;
+  var mousexInPage = mouseEvent.pageX + additionX ;
+  var mouseyInPage = mouseEvent.pageY + additionY ;
   if(gj.browser.msie != undefined && base.I18n.isRT())
   	mousexInPage = mousexInPage / 2;
   
@@ -19,8 +19,8 @@ cs.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEv
   for(var i = 0 ; i < len ; i++) {
     var ele =  dropableTargets[i] ;
     if(document.getElementById("UIPageDesktop")) {
-		mousexInPage = cs.Browser.Browser.findMouseXInPage(mouseEvent) + cs.Utils.getScrollLeft(ele) ;
-  		mouseyInPage = cs.Browser.Browser.findMouseYInPage(mouseEvent) + cs.Utils.getScrollTop(ele) ;
+		mousexInPage = mouseEvent.pageX + Utils.getScrollLeft(ele) ;
+  		mouseyInPage = mouseEvent.pageY + Utils.getScrollTop(ele) ;
 	}
     if(dragObject != ele && this.isIn(mousexInPage, mouseyInPage, ele)) {
       if(foundTarget == null) {
@@ -43,7 +43,7 @@ cs.DragDrop.findDropableTarget4Cal = function(dndEvent, dropableTargets, mouseEv
 function UICalendarDragDrop() {
   this.scKey = 'background' ;
   this.scValue = '#c0c0c0' ;
-  this.DragDrop = cs.DragDrop ;
+  this.DragDrop = DragDrop ;
   this.dropableSets = [] ;
   this.listView = false ;
   this.onMouseMoveCount = 0; //Trick to slow onMouseMove event on Safari
@@ -148,12 +148,12 @@ UICalendarDragDrop.prototype.synDragObjectPos = function(dndEvent) {
     }
   }
   var dragObject = dndEvent.dragObject ;
-  var mouseX = cs.Browser.Browser.findMouseXInPage(dndEvent.backupMouseEvent);
-  var mouseY = cs.Browser.Browser.findMouseYInPage(dndEvent.backupMouseEvent);
+  var mouseX = dndEvent.backupMouseEvent.pageX;
+  var mouseY = dndEvent.backupMouseEvent.pageY;
   dragObject.style.top = mouseY + 'px' ;
   dragObject.style.left = mouseX + 'px' ;
   if (base.I18n.isRT()) {
-		if(gj.browser.msie != undefined) mouseX -= cs.Utils.getScrollbarWidth();
+		if(gj.browser.msie != undefined) mouseX -= Utils.getScrollbarWidth();
 		dragObject.style.right = (gj(window).width() - mouseX) + 'px' ;
 		dragObject.style.left = '' ;
   }
@@ -186,8 +186,8 @@ UICalendarDragDrop.prototype.dragCallback = function(dndEvent) {
   _module.UICalendarDragDrop.synDragObjectPos(dndEvent) ;
   // Re-find target
   var foundTarget = 
-     cs.DragDrop.findDropableTarget4Cal(dndEvent, cs.DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
-  var junkMove =  cs.DragDrop.isJunkMove(dragObject, foundTarget) ;
+     DragDrop.findDropableTarget4Cal(dndEvent, DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
+  var junkMove =  DragDrop.isJunkMove(dragObject, foundTarget) ;
   dndEvent.update(foundTarget, junkMove) ;
   
   if (dndEvent.foundTargetObject) {
@@ -217,8 +217,8 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
   }
   // Re-find target
   var foundTarget = 
-      cs.DragDrop.findDropableTarget4Cal(dndEvent, cs.DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
-  var junkMove =  cs.DragDrop.isJunkMove(dndEvent.dragObject, foundTarget) ;
+      DragDrop.findDropableTarget4Cal(dndEvent, DragDrop.dropableTargets, dndEvent.backupMouseEvent) ;
+  var junkMove =  DragDrop.isJunkMove(dndEvent.dragObject, foundTarget) ;
   dndEvent.update(foundTarget, junkMove) ;
   
   gj(dndEvent.dragObject).remove();
@@ -228,7 +228,7 @@ UICalendarDragDrop.prototype.dropCallback = function(dndEvent) {
   this.foundTargetObjectCatch = dndEvent.foundTargetObject ;
 	if (this.foundTargetObjectCatch && gj(this.foundTargetObjectCatch).hasClass("calendarItem")) {
 		var moveAction = gj(dndEvent.dragObject).find('div.eventBoxes')[0].getAttribute("moveAction"); 
-		ajaxAsyncGetRequest(cs.Utils.createUrl(moveAction,null), false) ;
+		ajaxAsyncGetRequest(Utils.createUrl(moveAction,null), false) ;
 		return ;
 	}
   if (this.foundTargetObjectCatch) {
@@ -305,4 +305,4 @@ _module.UICalendarDragDrop = new UICalendarDragDrop();
 eXo.calendar.UICalendarDragDrop = _module.UICalendarDragDrop;
 
 return _module.UICalendarDragDrop;
-})(base, cs, gj);
+})(base, gj, DragDrop, Utils);

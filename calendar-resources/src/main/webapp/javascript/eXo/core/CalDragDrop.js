@@ -1,8 +1,50 @@
-(function(DOMUtil, CSUtils, base){
+(function(base, gj) {
 var _module = {};
 
-_module.DOMUtil = DOMUtil;
-_module.Browser = CSUtils.Browser;
+function MouseObject() {
+  this.init(null) ;
+};
+
+MouseObject.prototype.init = function(mouseEvent) {
+  this.mousexInPage = null ;
+  this.mouseyInPage = null ;
+
+  this.lastMousexInPage = null ;
+  this.lastMouseyInPage = null ;
+
+  this.mousexInClient = null ;
+  this.mouseyInClient = null ;
+
+  this.lastMousexInClient = null ;
+  this.lastMouseyInClient = null ;
+
+  this.deltax = null ;
+  this.deltay = null ;
+  if(mouseEvent != null) this.update(mouseEvent) ;
+} ;
+
+MouseObject.prototype.update = function(mouseEvent) {
+  var  x = mouseEvent.pageX;
+  var  y = mouseEvent.pageY;
+
+  this.lastMousexInPage =  this.mousexInPage != null ? this.mousexInPage : x ;
+  this.lastMouseyInPage =  this.mouseyInPage != null ? this.mouseyInPage : y ;
+
+  this.mousexInPage = x ;
+  this.mouseyInPage = y ;
+
+  x  =  mouseEvent.clientX;
+  y  =  mouseEvent.clientY;
+
+  this.lastMousexInClient =  this.mousexInClient != null ? this.mousexInClient : x ;
+  this.lastMouseyInClient =  this.mouseyInClient != null ? this.mouseyInClient : y ;
+
+  this.mousexInClient = x ;
+  this.mouseyInClient = y ;
+
+  this.deltax = this.mousexInClient - this.lastMousexInClient ;
+  this.deltay = this.mouseyInClient - this.lastMouseyInClient ;
+};
 
 function DragDropEvent(clickObject, dragObject) {
   this.clickObject = clickObject ;
@@ -130,8 +172,8 @@ DragDrop.prototype.destroy = function() {
   
 DragDrop.prototype.findDropableTarget = function(dndEvent, dropableTargets, mouseEvent) {
   if(dropableTargets == null) return null ;
-  var mousexInPage = _module.Browser.findMouseXInPage(mouseEvent) ;
-  var mouseyInPage = _module.Browser.findMouseYInPage(mouseEvent) ;
+  var mousexInPage = mouseEvent.pageX;
+  var mouseyInPage = mouseEvent.pageY;
   
 	var clickObject = dndEvent.clickObject ;
 	var dragObject = dndEvent.dragObject ;
@@ -144,7 +186,7 @@ DragDrop.prototype.findDropableTarget = function(dndEvent, dropableTargets, mous
       if(foundTarget == null) {
         foundTarget = ele ;
       } else {
-        if(_module.DOMUtil.hasAncestor(ele, foundTarget)) {
+        if(gj(ele).closest(foundTarget)) {
           foundTarget = ele ;
         }
       } 
@@ -157,13 +199,13 @@ DragDrop.prototype.findDropableTarget = function(dndEvent, dropableTargets, mous
 DragDrop.prototype.isIn = function(x, y, component) {
   var componentLeft = base.Browser.findPosX(component);
   var componentRight = componentLeft + component.offsetWidth ;
-  var componentTop = _module.Browser.findPosY(component) ;
+  var componentTop = gj(component).offset().top;
   var componentBottom = componentTop + component.offsetHeight ;
   var isOver = false ;
 
   if((componentLeft < x) && (x < componentRight)) {
     if((componentTop < y) && (y < componentBottom)) {
-      isOver = true ;
+      isOver = true;
     }
   }
   return isOver ;
@@ -176,12 +218,8 @@ DragDrop.prototype.isJunkMove = function(src, target) {
   if(target == null) return true ;
   return false ;
 } ;
-	
-//eXo.cs.DragDrop = new DragDrop() ;
 
+_module.Mouse = new MouseObject() ;
 _module.DragDrop = new DragDrop() ;
-_module.Mouse = CSUtils.Mouse;
-_module.Browser = CSUtils.Browser;
-_module.DOMUtil = DOMUtil.DOMUtil;
 return _module.DragDrop;
-})(DOMUtil, CSUtils, base); 
+})(base, gj);

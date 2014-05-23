@@ -1,7 +1,5 @@
-(function(DOMUtil, base, Browser, gj){
+(function(base, gj){
 var _module = {};
-_module.DOMUtil = DOMUtil ;
-_module.Browser = Browser;
 eXo = eXo || {}
 eXo.cs = eXo.cs || {} ;
 
@@ -184,7 +182,7 @@ function LayoutSpliter() {
  */
 LayoutSpliter.prototype.doResize = function(e , markerobj) {
   _e = (window.event) ? window.event : e ;
-  this.posY = _module.Browser.Browser.findMouseYInPage(_e) ;// browser undefined
+  this.posY = _e.pageY;// browser undefined
   var marker = (typeof(markerobj) == "string")? document.getElementById(markerobj):markerobj ;
   var container = marker.parentNode ;
   var areas = gj(container).find('div.spliterResizableListArea'); 
@@ -202,7 +200,7 @@ LayoutSpliter.prototype.doResize = function(e , markerobj) {
 LayoutSpliter.prototype.adjustHeight = function(evt) {
   evt = (window.event) ? window.event : evt ;
   var Spliter = _module.Spliter ;
-  var delta = _module.Browser.Browser.findMouseYInPage(evt) - Spliter.posY ;
+  var delta = evt.pageY - Spliter.posY ;
   var afterHeight = Spliter.afterY - delta ;
   var beforeHeight = Spliter.beforeY + delta ;
   if (beforeHeight <= 0  || afterHeight <= 0) return ;
@@ -229,22 +227,6 @@ _module.Spliter = new LayoutSpliter() ;
 /********************* Utility function for CS ******************/
 
 function Utils() {}
-
-Utils.prototype.show = function(obj, evt){
-	if(!evt) evt = window.event ;
-	evt.cancelBubble = true ;
-	var DOMUtil = _module.DOMUtil ;
-	var uiPopupCategory = gj(obj).find('ul.uiRightClickPopupMenu')[0] ;	
-	if (!uiPopupCategory) 
-		uiPopupCategory = gj(obj).find('div.uiRightClickPopupMenu')[0] ;
-	if(uiPopupCategory.style.display == "none") {
-		DOMUtil.cleanUpHiddenElements() ;
-		uiPopupCategory.style.display = "block" ;
-		DOMUtil.listHideElements(uiPopupCategory) ;
-		if(base.I18n.isRT()) uiPopupCategory.style.left = (obj.offsetWidth - uiPopupCategory.offsetWidth) + "px" ;
-	}	
-	else uiPopupCategory.style.display = "none" ;
-};
 
 Utils.prototype.showHidePane = function(clickobj, beforeobj, afterobj) {
   var container = gj(clickobj).parents('.SpliterContainer')[0]; 
@@ -835,9 +817,9 @@ _module.LayoutManager = function(id){
  * The date defaults to the current date/time.
  * The mask defaults to dateFormat.masks.default.
  */
-function DateTimeFormater(){
+function DateTimeFormatter(){
 };
-DateTimeFormater.prototype.masks = {
+DateTimeFormatter.prototype.masks = {
 	"default":      "ddd mmm dd yyyy HH:MM:ss",
 	shortDate:      "m/d/yy",
 	mediumDate:     "mmm d, yyyy",
@@ -851,17 +833,17 @@ DateTimeFormater.prototype.masks = {
 	isoDateTime:    "yyyy-mm-dd'T'HH:MM:ss",
 	isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
 };
-DateTimeFormater.prototype.token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
-DateTimeFormater.prototype.timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g;
-DateTimeFormater.prototype.timezoneClip = /[^-+\dA-Z]/g;
-DateTimeFormater.prototype.pad = function(val, len) {
+DateTimeFormatter.prototype.token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g;
+DateTimeFormatter.prototype.timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g;
+DateTimeFormatter.prototype.timezoneClip = /[^-+\dA-Z]/g;
+DateTimeFormatter.prototype.pad = function(val, len) {
 	val = String(val);
 	len = len || 2;
 	while (val.length < len) val = "0" + val;
 	return val;
 };
 
-DateTimeFormater.prototype.i18n = {
+DateTimeFormatter.prototype.i18n = {
 	dayNames: [
 		"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
 		"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
@@ -872,8 +854,8 @@ DateTimeFormater.prototype.i18n = {
 	]
 };
 
-DateTimeFormater.prototype.format = function (date, mask, utc) {
-	var dF = _module.DateTimeFormater;
+DateTimeFormatter.prototype.format = function (date, mask, utc) {
+	var dF = _module.DateTimeFormatter;
 
 	// You can't provide utc if you skip other args (use the "UTC:" mask prefix)
 	if (arguments.length == 1 && (typeof date == "string" || date instanceof String) && !/\d/.test(date)) {
@@ -938,12 +920,6 @@ DateTimeFormater.prototype.format = function (date, mask, utc) {
 	});
 };
 
-
-_module.DateTimeFormater = new DateTimeFormater();
-
-document.onclick = DOMUtil.DOMUtil.cleanUpHiddenElements;
-_module.Mouse = Browser.Mouse;
-_module.Browser = Browser.Browser;
-_module.DOMUtil = DOMUtil.DOMUtil;
+_module.DateTimeFormatter = new DateTimeFormatter();
 return _module;
-})(DOMUtil, base, Browser, gj);
+})(base, gj);

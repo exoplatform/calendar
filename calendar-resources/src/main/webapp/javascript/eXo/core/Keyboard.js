@@ -81,7 +81,7 @@ Keyboard.prototype.onKeyPress = function(event) {
   var keychar = '' ;
   var eventHandler = false ;
 
-  if (gj.browser.msie != undefined && this.controlKeyCodes.contains(keynum)) {
+  if (gj.browser.msie != undefined && gj.inArray(keynum, this.controlKeyCodes) != -1) {
     return false ;
   }
   

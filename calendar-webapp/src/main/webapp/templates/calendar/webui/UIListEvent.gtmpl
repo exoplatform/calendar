@@ -25,11 +25,11 @@
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
-  requirejs.require("SHARED/csResources","cs");
+  requirejs.require("SHARED/CSUtils","CSUtils");
   requirejs.require("SHARED/jquery","gj");
 
   requirejs.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
-  requirejs.addScripts('cs.CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
+  requirejs.addScripts('CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIListEvent\');');
   requirejs.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
 %>

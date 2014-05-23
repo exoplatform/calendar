@@ -70,8 +70,7 @@
       <as>wx</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
+      <module>DOMUtil</module>
     </depends>
     <depends>
       <module>jquery</module>
@@ -88,6 +87,16 @@
     </depends>
     <depends>
       <module>UIColorPicker</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
+    </depends>
+    <depends>
+      <module>CalContextMenu</module>
+      <as>UIContextMenu</as>
+    </depends>
+    <depends>
+      <module>CalDateTimePicker</module>
     </depends>
     </module>
   </portlet>
@@ -131,11 +140,10 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
+      <module>base</module>
     </depends>
     <depends>
-      <module>base</module>
+      <module>CSUtils</module>
     </depends>
   </module>
   <module>
@@ -144,15 +152,14 @@
       <path>/javascript/eXo/calendar/CalendarLayout.js</path>
     </script>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
-    <depends>
       <module>jquery</module>
       <as>gj</as>
     </depends>
     <depends>
       <module>base</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
     </depends>
   </module>
   <module>
@@ -168,10 +175,6 @@
       <module>jquery</module>
       <as>gj</as>
     </depends>
-    <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
   </module>
   <module>
     <name>UICalendars</name>
@@ -183,11 +186,10 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
+      <module>base</module>
     </depends>
     <depends>
-      <module>base</module>
+      <module>CSUtils</module>
     </depends>
   </module>
   <module>
@@ -200,15 +202,13 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
-    <depends>
-      <module>jquery</module>
-      <as>gj</as>
-    </depends>
-    <depends>
       <module>base</module>
+    </depends>
+    <depends>
+        <module>Utils</module>
+    </depends>
+    <depends>
+        <module>DragDrop</module>
     </depends>
   </module>
   <module>
@@ -221,14 +221,16 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
-    <depends>
-      <module>UICalendarMan</module>
-    </depends>
-    <depends>
       <module>base</module>
+    </depends>
+    <depends>
+      <module>common</module>
+    </depends>
+    <depends>
+      <module>Utils</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
     </depends>
   </module>
   <module>
@@ -241,11 +243,13 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
+      <module>DOMUtil</module>
     </depends>
     <depends>
       <module>Highlighter</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
     </depends>
   </module>
   <module>
@@ -287,4 +291,3 @@
   </module>
 
 </gatein-resources>
-

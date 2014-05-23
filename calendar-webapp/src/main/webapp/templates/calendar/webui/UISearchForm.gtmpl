@@ -4,13 +4,13 @@ uiform.begin();
   def searchPlaceHolder = _ctx.appRes("UISearch.label.Search");
   action = uicomponent.event("Search") ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
-  requirejs.require("SHARED/csResources","cs");
+  requirejs.require("SHARED/CSUtils","CSUtils");
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
   requirejs.require("SHARED/jquery","gj");
   requirejs.require("SHARED/placeholder","placeholder");
   requirejs.addScripts("gj('#UISearchForm input#value').attr('placeholder','" + searchPlaceHolder +"').placeholder();");
   requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
-  requirejs.addScripts('cs.CSUtils.Utils.captureInput("value");');
+  requirejs.addScripts('CSUtils.Utils.captureInput("value");');
 %>
 <div class="uiSearchForm uiSearchInput pull-right"  onclick="$action">
     <div onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>

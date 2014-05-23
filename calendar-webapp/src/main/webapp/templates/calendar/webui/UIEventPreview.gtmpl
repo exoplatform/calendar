@@ -12,7 +12,6 @@
 	CalendarEvent event = uicomponent.getEvent() ;
 	color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
 	def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
-	requirejs.require("SHARED/csResources","cs");
 	requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 	requirejs.require("SHARED/jquery","gj");
 	requirejs.addScripts("gj('#UIEventPreview_fullSize').click(function() { cal.UICalendarPortlet.toggleEventPreview(this);  });");
