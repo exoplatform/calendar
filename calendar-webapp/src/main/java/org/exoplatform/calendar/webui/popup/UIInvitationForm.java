@@ -19,8 +19,12 @@ package org.exoplatform.calendar.webui.popup;
 import java.util.LinkedHashMap;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.Query;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.JavascriptManager;
@@ -47,7 +51,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
  * Created by The eXo Platform SAS
  * Author : eXoPlatform
  *          exo@exoplatform.com
- * May 12, 2009  
+ * May 12, 2009
  */
 @ComponentConfigs ( {
   @ComponentConfig (
@@ -111,27 +115,27 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     uiGroup.setId("PGroupSelector");
     uiGroup.getChild(UITree.class).setId("PTreeGroupSelector");
     uiGroup.getChild(UIBreadcumbs.class).setId("PBreadcumbsGroupSelector");
-  } 
+  }
 
   @Override
   public String[] getActions() {
-    return new String[]{"Save","Cancel"} ;   
+    return new String[]{"Save","Cancel"} ;
   }
 
   public String appendValue(String oldValue, String newValue) {
     LinkedHashMap<String, String> map = new LinkedHashMap<String, String>() ;
     if(!CalendarUtils.isEmpty(oldValue)) {
       oldValue = oldValue.replaceAll(CalendarUtils.COMMA, CalendarUtils.BREAK_LINE);
-      oldValue = oldValue.replaceAll(CalendarUtils.SEMICOLON, CalendarUtils.BREAK_LINE);      
+      oldValue = oldValue.replaceAll(CalendarUtils.SEMICOLON, CalendarUtils.BREAK_LINE);
       for(String s : oldValue.split(CalendarUtils.BREAK_LINE)){
         map.put(s+CalendarUtils.BREAK_LINE, s+CalendarUtils.BREAK_LINE);
-      }       
+      }
     }
     if(newValue.indexOf(CalendarUtils.COMMA) > -1) {
       for (String s : newValue.split(CalendarUtils.COMMA)) {
         map.put(s + CalendarUtils.BREAK_LINE, s+ CalendarUtils.BREAK_LINE);
       }
-    } else 
+    } else
       if(newValue.indexOf(CalendarUtils.SEMICOLON) > -1) {
         for (String s : newValue.split(CalendarUtils.SEMICOLON)) {
           map.put(s + CalendarUtils.BREAK_LINE, s+ CalendarUtils.BREAK_LINE);
@@ -154,26 +158,52 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     return getUIFormTextAreaInput(FIELD_INVITATION_MSG).getValue() ;
   }
   public void setInvitationMsg(String value) {
-    getUIFormTextAreaInput(FIELD_INVITATION_MSG).setValue(value) ; 
+    getUIFormTextAreaInput(FIELD_INVITATION_MSG).setValue(value) ;
   }
 
   public String escapeGroupReferences(String s){
     if(CalendarUtils.isEmpty(s)) return new String("");
     return s.replace("$", "\\$");
   }
-  
+
   static public class SaveActionListener extends EventListener<UIInvitationForm>{
     @Override
     public void execute(Event<UIInvitationForm> event) throws Exception{
       UIInvitationForm uiInvitationForm = event.getSource();
-      UIPopupContainer uiParentPopup = (UIPopupContainer)uiInvitationForm.getParent() ;
-      UIPopupContainer uiGrandParentPopup = uiParentPopup.getAncestorOfType(UIPopupContainer.class) ;
-      UIEventForm uiEventForm = uiGrandParentPopup.getChild(UIEventForm.class) ;
+      UIPopupContainer uiParentPopup = uiInvitationForm.getParent();
+      UIPopupContainer uiGrandParentPopup = uiParentPopup.getAncestorOfType(UIPopupContainer.class);
+      UIEventForm uiEventForm = uiGrandParentPopup.getChild(UIEventForm.class);
       UIEventShareTab uiEventShareTab =  uiEventForm.getChild(UIEventShareTab.class);
       Long currentPage = uiEventShareTab.getCurrentPage();
-      uiEventForm.invitationMsg_ = uiInvitationForm.getUIFormTextAreaInput(FIELD_INVITATION_MSG).getValue() ;
-      uiEventForm.participantList_ = uiInvitationForm.getParticipantValue() ;
+      uiEventForm.invitationMsg_ = uiInvitationForm.getUIFormTextAreaInput(FIELD_INVITATION_MSG).getValue();
+      uiEventForm.participantList_ = uiInvitationForm.getParticipantValue();
       uiEventForm.participantList_ = uiInvitationForm.appendValue(uiEventForm.participantList_,"");
+
+      //. convert email to username if that email is registered
+      UserHandler userHandler = CalendarUtils.getOrganizationService().getUserHandler();
+      Query query = new Query();
+      StringBuilder builder = new StringBuilder();
+      for(String p : uiEventForm.participantList_.split(NEW_LINE)) {
+        p = p.trim();
+        String participant = p;
+        if(p.indexOf('@') > -1) {
+          query.setEmail(p);
+          ListAccess<User> users = null;
+          try {
+            users = userHandler.findUsersByQuery(query);
+          } catch (Exception ex) {}
+
+          if(users != null && users.getSize() > 0) {
+            participant = users.load(0, 1)[0].getUserName();
+          }
+        }
+
+        if(builder.length() > 0) {
+            builder.append(NEW_LINE);
+        }
+        builder.append(participant);
+      }
+      uiEventForm.participantList_ = builder.toString();
 
       // contains both invalid userId and email
       StringBuilder invalidParticipants = new StringBuilder();
@@ -209,7 +239,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
         event.getRequestContext().getUIApplication()
              .addMessage(new ApplicationMessage(msg, new String[] { invalidParticipants.toString() },
                                                 AbstractApplicationMessage.WARNING));
-      }      
+      }
     }
   }
 
@@ -238,7 +268,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
     @Override
     public void execute(Event<UIInvitationForm> event) throws Exception{
       UIInvitationForm uiInvitationForm = event.getSource();
-      UIPopupContainer uiPopupContainer = uiInvitationForm.getParent();  
+      UIPopupContainer uiPopupContainer = uiInvitationForm.getParent();
       uiPopupContainer.deActivate();
       UIPopupWindow uiPopupWindow = uiPopupContainer.getChild(UIPopupWindow.class) ;
       if(uiPopupWindow == null)uiPopupWindow = uiPopupContainer.addChild(UIPopupWindow.class, "UIPopupWindowUserSelectEventFormForParticipant", "UIPopupWindowUserSelectEventFormForParticipant") ;
@@ -262,15 +292,15 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
   static public class AddGroupParticipantActionListener extends EventListener<UIInvitationForm>{
     @Override
     public void execute(Event<UIInvitationForm> event) throws Exception{
-      UIInvitationForm uiInvitationForm = event.getSource();  
+      UIInvitationForm uiInvitationForm = event.getSource();
       UIPopupWindow uiPopupWindow = uiInvitationForm.getChild(UIPopupWindow.class) ;
       if(uiPopupWindow != null) {
         uiPopupWindow.setUIComponent(null) ;
         uiPopupWindow.setRendered(false);
         uiPopupWindow.setShow(false) ;
       }
-      uiPopupWindow.setShow(true);    
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupWindow) ;      
+      uiPopupWindow.setShow(true);
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupWindow) ;
     }
   }
 
@@ -288,8 +318,8 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
 //      event.getRequestContext().addUIComponentToUpdateByAjax(uiInvitationForm) ;
       //close select user popup
       uiPoupPopupWindow.setUIComponent(null) ;
-      uiPoupPopupWindow.setShow(false) ;      
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;  
+      uiPoupPopupWindow.setShow(false) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;
     }
   }
 
@@ -300,8 +330,8 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
       UIPopupWindow uiPoupPopupWindow = uiUserSelector.getParent() ;
       UIPopupContainer uiContainer = uiPoupPopupWindow.getAncestorOfType(UIPopupContainer.class) ;
       uiPoupPopupWindow.setUIComponent(null) ;
-      uiPoupPopupWindow.setShow(false) ;      
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;  
+      uiPoupPopupWindow.setShow(false) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;
     }
   }
 
