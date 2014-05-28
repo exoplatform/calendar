@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.CalendarUtils;
@@ -45,7 +46,6 @@ import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.CalendarView;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
-import org.exoplatform.calendar.webui.UICalendarView;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.calendar.webui.UIListContainer;
@@ -1153,21 +1153,16 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
      values.append(event.getId()) ;
 
      CalendarService calService = CalendarUtils.getCalendarService() ;
-     org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;
-     org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
+     org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;     
 
-     try {
+     byte[] icsFile = null;
+     try {         
        OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
-         .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
-       ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
-       attachmentCal.setInputStream(is) ;
-       attachmentCal.setName("icalendar.ics");
-       attachmentCal.setMimeType("text/calendar") ;
-     }
-     catch (Exception e) {
-       attachmentCal = null;
+           .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId());
+       icsFile = out.toString().getBytes("UTF-8");
+     } catch (Exception e) {
        if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
-     }
+     }     
 
      CalendarSetting calendarSetting;
      DateFormat _df;
@@ -1190,8 +1185,13 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
        message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
        message.setFrom(user.getEmail()) ;
 
-       if (attachmentCal != null) {
-         message.addAttachment(attachmentCal) ;
+       if (icsFile != null) {
+         ByteArrayInputStream is = new ByteArrayInputStream(icsFile);
+         org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment();
+         attachmentCal.setInputStream(is);
+         attachmentCal.setName("icalendar.ics");
+         attachmentCal.setMimeType("text/calendar");
+         message.addAttachment(attachmentCal);
        }
 
        if(!atts.isEmpty()){
