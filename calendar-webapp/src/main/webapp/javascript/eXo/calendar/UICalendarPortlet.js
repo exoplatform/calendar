@@ -3351,15 +3351,24 @@
         var uiCombobox = wx.UICombobox ;
         var comboList = gj(uiWorkingWorkspace).find('input.UIComboboxInput');
         var i = comboList.length ;
-        while(i--){
+        while(i--) {
+          if (!gj(comboList[i]).data("initialized")) {
             comboList[i].value = gj(comboList[i]).prevAll('input')[0].value;
-            var onfocus = comboList[i].getAttribute("onfocus") ;
-            var onclick = comboList[i].getAttribute("onclick") ;
-            var onblur = comboList[i].getAttribute("onblur") ;
-            if(!onfocus) gj(comboList[i]).on('focus', uiCombobox.show) ;
-            if(!onclick) gj(comboList[i]).on('click', uiCombobox.show) ;
-            if(!onblur)  gj(comboList[i]).on('blur',uiCombobox.correct) ;
+				  
+            var onfocus = comboList[i].getAttribute("onfocus");
+            var onclick = comboList[i].getAttribute("onclick");
+            if(!onfocus) gj(comboList[i]).on('focus.tryShow', uiCombobox.tryShow);
+            if(!onclick) gj(comboList[i]).on('click.tryShow', uiCombobox.tryShow);
+                    
+            gj(comboList[i]).data("initialized", true);
+          }
         }
+    };
+
+    wx.UICombobox.tryShow = function() {
+      if (gj(this).parent().find(".UIComboboxContainer").css('display') === 'none') {
+    	wx.UICombobox.show.apply(this, arguments);
+      }
     };
 
     /**
