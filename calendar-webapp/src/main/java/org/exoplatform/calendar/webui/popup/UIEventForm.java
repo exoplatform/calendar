@@ -36,12 +36,15 @@ import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
+import org.exoplatform.portal.Constants;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserProfile;
+import org.exoplatform.services.resources.LocaleContextInfo;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -88,6 +91,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 /**
@@ -1049,8 +1053,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
   }
 
-  private String buildMailSubject(CalendarEvent event, DateFormat df) {
-    StringBuffer sbSubject = new StringBuffer("["+getLabel("invitation")+"] ") ;
+  private String buildMailSubject(CalendarEvent event, DateFormat df, ResourceBundle res) {
+    StringBuffer sbSubject = new StringBuffer("["+getLabel(res, "invitation")+"] ") ;
     sbSubject.append(event.getSummary()) ;
     sbSubject.append(" ") ;
     sbSubject.append(df.format(event.getFromDateTime())) ;
@@ -1058,7 +1062,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     return sbSubject.toString();
   }
 
-  private String buildMailBody(User invitor, CalendarEvent event, String toId, DateFormat df, String timezone) throws Exception {
+  private String buildMailBody(User invitor, CalendarEvent event, String toId, DateFormat df, String timezone, ResourceBundle res) throws Exception {
     List<Attachment> atts = getAttachments(null, false);
 
     StringBuffer sbBody = new StringBuffer() ;
@@ -1066,34 +1070,34 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     sbBody.append("<table style=\"margin: 0px; padding: 0px; border-collapse: collapse; border-spacing: 0px; width: 100%; line-height: 16px;\">") ;
     sbBody.append("<tbody>") ;
     sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap; \">"+getLabel("fromWho")+":</td>") ;
+    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap; \">"+getLabel(res, "fromWho")+":</td>") ;
     sbBody.append("<td style=\"padding: 4px;\"> " + invitor.getUserName() +"("+invitor.getEmail()+")" + " </td>") ;
     sbBody.append("</tr>") ;
 
     sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_MESSAGE)+":</td>") ;
+    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, UIEventDetailTab.FIELD_MESSAGE)+":</td>") ;
     sbBody.append("<td style=\"padding: 4px;\">" + event.getMessage()+ "</td>") ;
     sbBody.append("</tr>") ;
 
     sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_EVENT)+":</td>") ;
+    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, UIEventDetailTab.FIELD_EVENT)+":</td>") ;
     sbBody.append("<td style=\"padding: 4px;\">" + event.getSummary()+ "</td>") ;
     sbBody.append("</tr>") ;
     sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_DESCRIPTION)+":</td>") ;
+    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, UIEventDetailTab.FIELD_DESCRIPTION)+":</td>") ;
     sbBody.append("<td style=\"padding: 4px;\">" + (event.getDescription() != null && event.getDescription().trim().length() > 0 ? event.getDescription() : " ") + "</td>") ;
     sbBody.append("</tr>") ;
     sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel("when")+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\"> <div>"+getLabel(UIEventDetailTab.FIELD_FROM)+": " +df.format(event.getFromDateTime())+" " + timezone + "</div>");
-    sbBody.append("<div>"+getLabel(UIEventDetailTab.FIELD_TO)+": "+df.format(event.getToDateTime())+" " + timezone + "</div></td>") ;
+    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, "when")+":</td>") ;
+    sbBody.append("<td style=\"padding: 4px;\"> <div>"+getLabel(res, UIEventDetailTab.FIELD_FROM)+": " +df.format(event.getFromDateTime())+" " + timezone + "</div>");
+    sbBody.append("<div>"+getLabel(res, UIEventDetailTab.FIELD_TO)+": "+df.format(event.getToDateTime())+" " + timezone + "</div></td>") ;
     sbBody.append("</tr>") ;
     sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_PLACE)+":</td>") ;
+    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, UIEventDetailTab.FIELD_PLACE)+":</td>") ;
     sbBody.append("<td style=\"padding: 4px;\">" + (event.getLocation() != null && event.getLocation().trim().length() > 0 ? event.getLocation(): " ") + "</td>") ;
     sbBody.append("</tr>") ;
     sbBody.append("<tr>") ;
-    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(FIELD_MEETING)+"</td>") ;
+    sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, FIELD_MEETING)+"</td>") ;
     toId = toId.replace(CalendarUtils.BREAK_LINE, CalendarUtils.COMMA);
     if (CalendarUtils.isEmpty(getInvitationEmail())) {
       sbBody.append("<td style=\"padding: 4px;\">" +toId + "</td>") ;
@@ -1104,7 +1108,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     sbBody.append("</tr>");
     if(!atts.isEmpty()){
       sbBody.append("<tr>");
-      sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(UIEventDetailTab.FIELD_ATTACHMENTS)+":</td>");
+      sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, UIEventDetailTab.FIELD_ATTACHMENTS)+":</td>");
       StringBuffer sbf = new StringBuffer();
       for(Attachment att : atts) {
         if(sbf.length() > 0) sbf.append(",") ;
@@ -1157,6 +1161,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     String emailList = sbAddress.toString();
     String userId;
     for (String userEmail : emailList.split(CalendarUtils.COMMA)) {
+      if (CalendarUtils.isEmpty(userEmail)) continue;
+
       userId = eXoIdMap.get(userEmail);
 
       calendarSetting = null;
@@ -1167,14 +1173,28 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         calendarSetting = CalendarUtils.getCurrentUserCalendarSetting();
       }
 
+      //. get Resource bundle
+      WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
+      ResourceBundle res = null;
+      if(userId != null) {
+        UserProfile userProfile = orgService.getUserProfileHandler().findUserProfileByName(userId);
+        String lang = userProfile == null ? null : userProfile.getUserInfoMap().get(Constants.USER_LANGUAGE);
+        if(lang != null && !lang.isEmpty()) {
+          res = context.getApplication().getResourceBundle(LocaleContextInfo.getLocale(lang));
+        }
+      }
+      if(res == null) {
+        res = context.getApplicationResourceBundle();
+      }
+
+
       _df = new SimpleDateFormat(calendarSetting.getDateFormat() + " " + calendarSetting.getTimeFormat());
       _df.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
 
-      if (CalendarUtils.isEmpty(userEmail)) continue;
-      org.exoplatform.services.mail.Message  message = new org.exoplatform.services.mail.Message();
-      message.setSubject(buildMailSubject(event, _df)) ;
-      message.setBody(getBodyMail(buildMailBody(invitor, event, toId, _df, CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone())),
-              eXoIdMap, userEmail, invitor, event)) ;
+      org.exoplatform.services.mail.Message message = new org.exoplatform.services.mail.Message();
+      message.setSubject(buildMailSubject(event, _df, res));
+      message.setBody(getBodyMail(buildMailBody(invitor, event, toId, _df, CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone()), res),
+              eXoIdMap, userEmail, invitor, event, res)) ;
       message.setTo(userEmail);
       message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
       message.setFrom(user.getEmail()) ;
@@ -1208,16 +1228,16 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
   }
 
-  private String getBodyMail(String sbBody,Map<String, String> eXoIdMap,String s,User invitor,CalendarEvent event) throws Exception {
+  private String getBodyMail(String sbBody,Map<String, String> eXoIdMap,String s,User invitor,CalendarEvent event, ResourceBundle res) throws Exception {
     StringBuilder body = new StringBuilder(sbBody.toString());
     String eXoId = CalendarUtils.isEmpty(eXoIdMap.get(s)) ? "null":eXoIdMap.get(s);
     body.append("<tr>");
     body.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">");
-    body.append(getLabel("likeToAttend")+" </td><td> <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT, invitor, s, eXoId, event) + "\" >"+getLabel("yes")+"</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.NOTSURE, invitor, s, eXoId, event) + "\" >"+getLabel("notSure")+"</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.DENY, invitor, s, eXoId, event) + "\" >"+getLabel("no")+"</a>");
+    body.append(getLabel(res, "likeToAttend")+" </td><td> <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT, invitor, s, eXoId, event) + "\" >"+getLabel(res, "yes")+"</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.NOTSURE, invitor, s, eXoId, event) + "\" >"+getLabel(res, "notSure")+"</a>" + " - " + "<a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.DENY, invitor, s, eXoId, event) + "\" >"+getLabel(res, "no")+"</a>");
     body.append("</td></tr>");
     body.append("<tr>");
     body.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">");
-    body.append(getLabel("seeMoreDetails")+" </td><td><a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT_IMPORT, invitor, s, eXoId, event) + "\" >"+getLabel("importToExoCalendar")+"</a> "+getLabel("or")+" <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.JUMP_TO_CALENDAR, invitor, s, eXoId, event) + "\" >"+getLabel("jumpToExoCalendar")+"</a>");
+    body.append(getLabel(res, "seeMoreDetails")+" </td><td><a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.ACCEPT_IMPORT, invitor, s, eXoId, event) + "\" >"+getLabel(res, "importToExoCalendar")+"</a> "+getLabel(res, "or")+" <a href=\"" + getReplyInvitationLink(org.exoplatform.calendar.service.Utils.JUMP_TO_CALENDAR, invitor, s, eXoId, event) + "\" >"+getLabel(res, "jumpToExoCalendar")+"</a>");
     body.append("</td></tr>");
     body.append("</tbody>");
     body.append("</table>");
