@@ -1984,7 +1984,7 @@
             imgChk.className = "iconCheckBox checkbox";
         }
 
-        if ((!events || events.length == 0) && _module.UICalendarPortlet.getElementById("uiListView")) {
+        if ((!events || events.length == 0) && _module.UICalendarPortlet.getElementById("UIListView")) {
             uiForm.submitForm('UICalendars','Tick', true)
         }
         if (!events) return;
@@ -3354,12 +3354,12 @@
         while(i--) {
           if (!gj(comboList[i]).data("initialized")) {
             comboList[i].value = gj(comboList[i]).prevAll('input')[0].value;
-				  
+
             var onfocus = comboList[i].getAttribute("onfocus");
             var onclick = comboList[i].getAttribute("onclick");
             if(!onfocus) gj(comboList[i]).on('focus.tryShow', uiCombobox.tryShow);
             if(!onclick) gj(comboList[i]).on('click.tryShow', uiCombobox.tryShow);
-                    
+
             gj(comboList[i]).data("initialized", true);
           }
         }
@@ -3426,7 +3426,7 @@
         if(_module.lastSelectedCategory) {
             selectBox = gj(_module.UICalendarPortlet.filterSelect);
             selectBox.val(_module.lastSelectedCategory);
-            //re-filter    
+            //re-filter
             if(gj('#UIListContainer').size() > 0) {//list view
                 uiForm.submitEvent(_module.UICalendarPortlet.portletId +'#UIListView','Onchange','&objectId=eventCategories');
             } else {//other views
@@ -3645,7 +3645,7 @@
             input.focus();//focus
             tmp = input.val();
             input.val('');
-            input.val(tmp); //move the cursor to the end 
+            input.val(tmp); //move the cursor to the end
         }
     }
 
