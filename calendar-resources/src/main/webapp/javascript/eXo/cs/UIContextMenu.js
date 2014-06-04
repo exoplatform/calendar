@@ -20,49 +20,44 @@ var UIContextMenu = {
 			this.preventDefault = conf.preventDefault ;
 			this.preventForms = conf.preventForms ;
 		}catch(e) {}	
-		document.getElementById(this.portletName).onmouseover = this.setup ;
-		document.getElementById(this.portletName).onmouseout = this.setup ;
+		gj("#" + this.portletName).off().on("mouseover mouseout", this.setup);
 	},
 
 	setup : function(evt) {
-		var _e = window.event || evt ;
-		var type = _e.type ;
+		var type = evt.type ;
 		if(type == "mouseover") document.oncontextmenu = UIContextMenu.show;
 		if(type == "mouseout") document.oncontextmenu = function() { return true ;} ;
 	},
 
 	attach : function(classNames, menuId) {
 		if (typeof(classNames) == "string") {
-			this.menus[classNames] = menuId;
+		  UIContextMenu.menus[classNames] = menuId;
 		}
 
 		if (typeof(classNames) == "object") {
 			for (x = 0; x < classNames.length; x++) {
-				this.menus[classNames[x]] = menuId ;
+			  UIContextMenu.menus[classNames[x]] = menuId ;
 			}
 		}
 	},
 
 	getMenuElementId : function() {
-		while(this.attachedElement != null) {
-			var className = this.attachedElement.className;
+		while(UIContextMenu.attachedElement != null) {
+			var className = UIContextMenu.attachedElement.className;
 
 			if (typeof(className) != "undefined") {
 				className = className.replace(/^\s+/g, "").replace(/\s+$/g, "")
 				var classArray = className.split(/[ ]+/g);
 
 				for (i = 0; i < classArray.length; i++) {
-					if (this.menus[classArray[i]]) {
-						return this.menus[classArray[i]];
+					if (UIContextMenu.menus[classArray[i]]) {
+						return UIContextMenu.menus[classArray[i]];
 					}
 				}
 			}
 
-			if (this.IE) {
-				this.attachedElement = this.attachedElement.parentElement;
-			} else {
-				this.attachedElement = this.attachedElement.parentNode;
-			}
+			var elem = gj(UIContextMenu.attachedElement).parent();
+			UIContextMenu.attachedElement = elem.length > 0 ? elem[0] : null;
 		}
 
 		return null;
@@ -71,16 +66,16 @@ var UIContextMenu = {
 	getReturnValue : function() {
 		var returnValue = true;	
 		try{
-			var tname = this.attachedElement.tagName.toLowerCase();
+			var tname = UIContextMenu.attachedElement.tagName.toLowerCase();
 		}catch(e) {return true ;}	
 		if ((tname == "input" || tname == "textarea")) {
-			if (!this.preventForms) {
+			if (!UIContextMenu.preventForms) {
 				returnValue = true;
 			} else {
 				returnValue = false;
 			}
 		} else {
-			if (!this.preventDefault) {
+			if (!UIContextMenu.preventDefault) {
 				returnValue = true;
 			} else {
 				returnValue = false;
@@ -106,7 +101,7 @@ var UIContextMenu = {
 	},
 
 	autoHide : function(evt) {
-		Utils = window.require("SHARED/CSUtils").Utils;
+		Utils = window.require("SHARED/CSUtils");
 		var _e = window.event || evt ;
 		var eventType = _e.type ;
 		if (eventType == 'mouseout' && (this.style.display != "none")) {
@@ -122,7 +117,7 @@ var UIContextMenu = {
 	replaceall : function(string, obj) {			
 		var p = new Array() ;
 		var i = 0 ;
-		for(var reg in obj){
+		for(var reg in obj) {
 			p.push(new RegExp(reg)) ;
 			string = string.replace(p[i], obj[reg]) ;
 			i++ ;
@@ -137,8 +132,8 @@ var UIContextMenu = {
 		var href = "" ;
 		if (typeof(id) == "string") {
 			for(var i = 0 ; i < len ; i++) {
-				href = String(actions[i].href) ;
-				if(href.indexOf('&ajaxRequest=true') > 0){
+				href = String(actions[i].href);
+				if(href.indexOf('&ajaxRequest=true') > 0) {
 				  if (href.indexOf('&objectId=') < 0) {
 				    actions[i].href = href.replace('&ajaxRequest=true', '&objectId=' + id + '&ajaxRequest=true');
 				  }
@@ -149,7 +144,7 @@ var UIContextMenu = {
 		} else if (typeof(id) == "object") {
 			for(var i = 0 ; i < len ; i++) {
 				href = String(actions[i].href) ;			
-				actions[i].href = this.replaceall(href, id) ;
+				actions[i].href = UIContextMenu.replaceall(href, id);
 			}
 		} else {
 			return  ;
@@ -157,28 +152,26 @@ var UIContextMenu = {
 	},
 
 	showHide : function() {
-		if(!this.menuElement) return ;
-		if (this.menuElement.style.display != "block") {
-			DOMUtil.cleanUpHiddenElements() ;
-			this.menuElement.style.display = "block" ;
-			DOMUtil.listHideElements(this.menuElement) ;
+		if(!UIContextMenu.menuElement) return ;
+		if (UIContextMenu.menuElement.style.display != "block") {
+			DOMUtil.cleanUpHiddenElements();
+			UIContextMenu.menuElement.style.display = "block";
+			DOMUtil.listHideElements(UIContextMenu.menuElement);
 		} else {
-			this.menuElement.style.display = "none" ;
+		  UIContextMenu.menuElement.style.display = "none";
 		}
 	},
 
 	swapMenu : function(oldmenu, mousePos, evt) {
-	  Utils = window.require("SHARED/CSUtils").Utils;
-	  var Browser = base.Browser;
-	  var browserHeight = gj(window).height() + document.documentElement.scrollTop || document.body.scrollTop;
-	  var browserWidth = gj(window).width() + document.documentElement.scrollLeft || document.body.scrollLeft;
-	  if (document.getElementById("tmpMenuElement"))
-	    gj("#tmpMenuElement").remove();
+	  Utils = window.require("SHARED/CSUtils");
+	  var browserHeight = gj(window).height();
+	  var browserWidth = gj(window).width();
+	  gj("#tmpMenuElement").remove();
 	  var tmpMenuElement = oldmenu.cloneNode(true);
 	  tmpMenuElement.setAttribute("id", "tmpMenuElement");
-	  gj(tmpMenuElement).addClass(this.portletCssClass + " UIEmpty");
-	  this.menuElement = tmpMenuElement;
-	  var callback = this.getCallback(tmpMenuElement);  
+	  gj(tmpMenuElement).addClass(UIContextMenu.portletCssClass + " UIEmpty");
+	  UIContextMenu.menuElement = tmpMenuElement;
+	  var callback = UIContextMenu.getCallback(tmpMenuElement);  
 	  if (callback) {	
 		//Just a workaround for this case
 		//TODO: Add all "window." before all variables in callback string
@@ -187,10 +180,10 @@ var UIContextMenu = {
 		eval(callback);
 	  }
 	  var uiApplication = document.getElementById("UIPortalApplication");
-	  if (this.menuElement) {
-	    document.body.insertBefore(this.menuElement, uiApplication);
+	  if (UIContextMenu.menuElement) {
+	    document.body.insertBefore(UIContextMenu.menuElement, uiApplication);
 	    uiRightClickPopupMenu.disableContextMenu('tmpMenuElement');
-	    this.menuElement.onmousedown = function(e) {
+	    UIContextMenu.menuElement.onmousedown = function(e) {
 	      var rightclick = false;
 	      if (!e)
 	        var e = window.event;
@@ -208,29 +201,25 @@ var UIContextMenu = {
 	    }
 	    var left = mousePos.x - 3;
 	    var top = mousePos.y - 3;
-	    if (Browser.isIE6())
-	      this.menuElement.style.width = "140px";
 	    if (base.I18n.isRT()) {
-	      left -= (Utils.getElementWidth(this.menuElement) - 3);
-	      if (Browser.isIE6() || Browser.isIE7())
-	        left -= Utils.getScrollbarWidth() + 3;
+	      left -= (Utils.getElementWidth(UIContextMenu.menuElement) - 3);
 	    }
 	    //this.menuElement.style.padding = "0px";
-	    this.menuElement.style.zIndex = 2000;
-	    this.menuElement.style.top = top + "px";
-	    this.menuElement.style.left = left + "px";
+	    UIContextMenu.menuElement.style.zIndex = 2000;
+	    UIContextMenu.menuElement.style.top = top + "px";
+	    UIContextMenu.menuElement.style.left = left + "px";
 
 	    /* set display to block to be able to calculate offsetHeight */
-	    gj(this.menuElement).css("display", "block");
+	    gj(UIContextMenu.menuElement).css("display", "block");
 
-	    if ((this.menuElement.offsetHeight + mousePos.y) > browserHeight)
-	      this.menuElement.style.top = mousePos.y - this.menuElement.offsetHeight + 2 + "px";
-	    if ((this.menuElement.offsetWidth + mousePos.x) > browserWidth)
-	      this.menuElement.style.left = mousePos.x - this.menuElement.offsetWidth + 2 + "px";
-	    this.menuElement.style.display = "none";
-	    this.menuElement.style.visibility = "visible";
+	    if ((UIContextMenu.menuElement.offsetHeight + mousePos.y) > browserHeight)
+	      UIContextMenu.menuElement.style.top = mousePos.y - UIContextMenu.menuElement.offsetHeight + 2 + "px";
+	    if ((UIContextMenu.menuElement.offsetWidth + mousePos.x) > browserWidth)
+	      UIContextMenu.menuElement.style.left = mousePos.x - UIContextMenu.menuElement.offsetWidth + 2 + "px";
+	    UIContextMenu.menuElement.style.display = "none";
+	    UIContextMenu.menuElement.style.visibility = "visible";
 	  }
-	  this.showHide(); 	
+	  UIContextMenu.showHide(); 	
 	},
 
 	show : function(evt) {

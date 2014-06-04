@@ -14,6 +14,7 @@
   <portlet>
     <name>CalendarPortlet</name>
     <module>
+      <load-group>calendar</load-group>
       <script>
         <path>/javascript/eXo/calendar/UICalendarPortlet.js</path>
       </script>
@@ -31,9 +32,6 @@
     </depends>
     <depends>
       <module>Reminder</module>
-    </depends>
-    <depends>
-      <module>UICalendarDragDrop</module>
     </depends>
     <depends>
       <module>UIWeekView</module>
@@ -83,12 +81,6 @@
       <module>ScheduleSupport</module>
     </depends>
     <depends>
-      <module>UIEventPreview</module>
-    </depends>
-    <depends>
-      <module>UIColorPicker</module>
-    </depends>
-    <depends>
       <module>CSUtils</module>
     </depends>
     <depends>
@@ -98,10 +90,18 @@
     <depends>
       <module>CalDateTimePicker</module>
     </depends>
+    <depends>
+      <module>DateTimeFormatter</module>
+    </depends>
+    <depends>
+      <module>UIHSelection</module>
+    </depends>
     </module>
   </portlet>
+  
   <module>
     <name>ScheduleSupport</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/ScheduleSupport.js</path>
     </script>
@@ -110,6 +110,7 @@
       <as>gj</as>
     </depends>
   </module>
+  
   <module>
     <name>UIEventPreview</name>
     <script>
@@ -120,7 +121,8 @@
       <as>gj</as>
     </depends>
   </module>
-    <module>
+  
+  <module>
     <name>UICalendarSettingForm</name>
     <script>
       <path>/javascript/eXo/calendar/UICalendarSettingForm.js</path>
@@ -130,8 +132,10 @@
       <as>gj</as>
     </depends>
   </module>
+  
   <module>
     <name>Highlighter</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/Highlighter.js</path>
     </script>
@@ -146,10 +150,12 @@
       <module>CSUtils</module>
     </depends>
   </module>
+  
   <module>
-    <name>CalendarLayout</name>
+    <name>UIHSelection</name>
+    <load-group>calendar</load-group>
     <script>
-      <path>/javascript/eXo/calendar/CalendarLayout.js</path>
+      <path>/javascript/eXo/calendar/UIHSelection.js</path>
     </script>
     <depends>
       <module>jquery</module>
@@ -162,8 +168,28 @@
       <module>CSUtils</module>
     </depends>
   </module>
+  
+  <module>
+    <name>CalendarLayout</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/CalendarLayout.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>LayoutManager</module>
+    </depends>
+  </module>
+  
   <module>
     <name>Reminder</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/Reminder.js</path>
     </script>
@@ -176,8 +202,10 @@
       <as>gj</as>
     </depends>
   </module>
+  
   <module>
     <name>UICalendars</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UICalendars.js</path>
     </script>
@@ -188,12 +216,11 @@
     <depends>
       <module>base</module>
     </depends>
-    <depends>
-      <module>CSUtils</module>
-    </depends>
   </module>
+  
   <module>
     <name>UICalendarDragDrop</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UICalendarDragDrop.js</path>
     </script>
@@ -205,14 +232,16 @@
       <module>base</module>
     </depends>
     <depends>
-        <module>Utils</module>
+        <module>CSUtils</module>
     </depends>
     <depends>
-        <module>DragDrop</module>
+        <module>common</module>
     </depends>
   </module>
+  
   <module>
     <name>UIWeekView</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UIWeekView.js</path>
     </script>
@@ -227,16 +256,53 @@
       <module>common</module>
     </depends>
     <depends>
-      <module>Utils</module>
+      <module>DateTimeFormatter</module>
     </depends>
     <depends>
-      <module>CSUtils</module>
+      <module>Highlighter</module>
+    </depends>
+    <depends>
+      <module>UIHSelection</module>
+    </depends>
+    <depends>
+      <module>UIHorizontalResize</module>
     </depends>
   </module>
+  
+  <module>
+    <name>UIHorizontalResize</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UIHorizontalResize.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+  </module>
+  
   <module>
     <name>UICalendarMan</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UICalendarMan.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>GUIMan</module>
+    </depends>
+    <depends>
+      <module>EventMan</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>GUIMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/GUIMan.js</path>
     </script>
     <depends>
       <module>jquery</module>
@@ -249,9 +315,76 @@
       <module>Highlighter</module>
     </depends>
     <depends>
-      <module>CSUtils</module>
+      <module>UIHSelection</module>
+    </depends>
+    <depends>
+      <module>UICalendarDragDrop</module>
+    </depends>
+    <depends>
+      <module>EventMan</module>
     </depends>
   </module>
+  
+  <module>
+    <name>QuickSortObject</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/QuickSortObject.js</path>
+    </script>
+  </module>
+  
+  <module>
+    <name>EventObject</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/EventObject.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
+  
+  <module>
+    <name>DayMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/DayMan.js</path>
+    </script>
+  </module>
+  
+  <module>
+    <name>WeekMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/WeekMan.js</path>
+    </script>
+    <depends>
+      <module>QuickSortObject</module>
+    </depends>
+    <depends>
+      <module>DayMan</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>EventMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/EventMan.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>EventObject</module>
+    </depends>
+    <depends>
+      <module>WeekMan</module>
+    </depends>
+  </module>
+  
   <module>
     <name>UIColorPicker</name>
     <script>
@@ -262,14 +395,15 @@
       <as>gj</as>
     </depends>
   </module>
+  
   <module>
     <name>LoadMorePlugin</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/LoadMoreActionPlugin.js</path>
     </script>
     <depends>
       <module>jquery</module>
-      <as>gj</as>
     </depends>
   </module>
 

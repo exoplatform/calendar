@@ -16,12 +16,14 @@
   def requireJS = rcontext.getJavascriptManager().getRequireJS();
   
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+  requireJS.require("SHARED/GUIMan","GUIMan");
+  requireJS.require("SHARED/UICalendarMan","UICalendarMan");
   requireJS.addScripts('cal.UICalendarPortlet.onLoad() ;') ;   
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   requireJS.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIMonthView\');');
   requireJS.require("SHARED/jquery","gj");
-  rcontext.getJavascriptManager().addOnResizeJavascript('function(){cal.UICalendarMan.initMonth();}') ;
+  rcontext.getJavascriptManager().addOnResizeJavascript('function(){UICalendarMan.initMonth();}') ;
   
   int currentDay = uicomponent.getCurrentDay() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
@@ -81,7 +83,7 @@
     <div class="eventMonthContainer">
       <div class="eventMonthContent">
         <div class="rowContainerDay" style="position:relative ;" lastUpdatedId="<%=uicomponent.getLastUpdatedEventId()%>">
-      <table class="uiGrid table" id="UIMonthViewGrid" cellspacing="0" borderspacing="0" eXoCallback="eXo.calendar.UICalendarMan.GUIMan.callbackHighlighter() ;">
+      <table class="uiGrid table" id="UIMonthViewGrid" cellspacing="0" borderspacing="0" eXoCallback="eXo.calendar.GUIMan.callbackHighlighter() ;">
         <col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%"><col width="14%">      
         <tbody>
 

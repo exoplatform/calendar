@@ -4,6 +4,7 @@
                   xmlns="http://www.gatein.org/xml/ns/gatein_resources_1_3">
     <module>
         <name>DOMUtil</name>
+        <load-group>CalendarUtil</load-group>
         <script>
             <path>/javascript/eXo/core/DOMUtil.js</path>
         </script>
@@ -11,34 +12,45 @@
             <module>jquery</module>
             <as>gj</as>
         </depends>
-    </module>
-    <module>
-        <name>Keyboard</name>
-        <script>
-            <path>/javascript/eXo/core/Keyboard.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-            <as>gj</as>
-        </depends>
-    </module>
+    </module>    
     <module>
         <name>CSUtils</name>
+        <load-group>CalendarUtil</load-group>
         <script>
             <path>/javascript/eXo/cs/CSUtils.js</path>
         </script>
         <depends>
-            <module>base</module>
+            <module>jquery</module>
+            <as>gj</as>
         </depends>
+    </module>
+    <module>
+        <name>CheckBox</name>
+        <load-group>CalendarUtil</load-group>
+        <script>
+            <path>/javascript/eXo/cs/CheckBox.js</path>
+        </script>
         <depends>
             <module>jquery</module>
             <as>gj</as>
         </depends>
     </module>
     <module>
-        <name>DragDrop</name>
+        <name>Spliter</name>
+        <load-group>CalendarUtil</load-group>
         <script>
-            <path>/javascript/eXo/core/CalDragDrop.js</path>
+            <path>/javascript/eXo/cs/Spliter.js</path>
+        </script>
+        <depends>
+            <module>jquery</module>
+            <as>gj</as>
+        </depends>
+    </module>
+    <module>
+        <name>LayoutManager</name>
+        <load-group>CalendarUI</load-group>
+        <script>
+            <path>/javascript/eXo/cs/LayoutManager.js</path>
         </script>
         <depends>
             <module>base</module>
@@ -49,7 +61,15 @@
         </depends>
     </module>
     <module>
+        <name>DateTimeFormatter</name>
+        <load-group>CalendarUI</load-group>
+        <script>
+            <path>/javascript/eXo/cs/DateTimeFormatter.js</path>
+        </script>
+    </module>
+    <module>
         <name>CalContextMenu</name>
+        <load-group>CalendarUI</load-group>
         <script>
             <path>/javascript/eXo/cs/UIContextMenu.js</path>
         </script>
@@ -66,28 +86,10 @@
         <depends>
             <module>uiRightClickPopupMenu</module>
         </depends>
-    </module>
-    <module>
-        <name>Resize</name>
-        <script>
-            <path>/javascript/eXo/core/Resize.js</path>
-        </script>
-    </module>
-    <module>
-        <name>MaskLayerControl</name>
-        <script>
-            <path>/javascript/eXo/cs/MaskLayerControl.js</path>
-        </script>
-        <depends>
-            <module>base</module>
-        </depends>
-        <depends>
-            <module>jquery</module>
-            <as>gj</as>
-        </depends>
-    </module>
+    </module>    
     <module>
         <name>CalDateTimePicker</name>
+        <load-group>CalendarUI</load-group>
         <supported-locale>de</supported-locale>
         <supported-locale>en</supported-locale>
         <supported-locale>fr</supported-locale>
@@ -111,50 +113,25 @@
         <supported-locale>el</supported-locale>
         <supported-locale>ro</supported-locale>
         <supported-locale>pl</supported-locale>
-        <supported-locale>ca</supported-locale>
+        <supported-locale>ca</supported-locale>        
         <script>
             <path>/javascript/eXo/cs/UIDateTimePicker.js</path>
             <resource-bundle>eXo.calendar.DateTimePicker</resource-bundle>
         </script>
         <depends>
-            <module>base</module>
-        </depends>
-        <depends>
             <module>jquery</module>
             <as>gj</as>
-        </depends>
-        <depends>
-            <module>webui-ext</module>
-            <as>wx</as>
         </depends>
         <depends>
             <module>uiCalendar</module>
         </depends>
-    </module>
-    <module>
-        <name>FormHelper</name>
-        <script>
-            <path>/javascript/eXo/cs/FormHelper.js</path>
-        </script>
-        <depends>
-            <module>jquery</module>
-            <as>gj</as>
-        </depends>
-    </module>
-    <module>
-        <name>WebserviceManager</name>
-        <script>
-            <path>/javascript/eXo/cs/webservice/core/WebserviceManager.js</path>
-        </script>
-    </module>
+    </module>    
     <module>
         <name>TimePicker</name>
+        <load-group>CalendarUI</load-group>
         <script>
             <path>/javascript/eXo/cs/TimePicker.js</path>
         </script>
-        <depends>
-            <module>base</module>
-        </depends>
         <depends>
             <module>jquery</module>
             <as>gj</as>

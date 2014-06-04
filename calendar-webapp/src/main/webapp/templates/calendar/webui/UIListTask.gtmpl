@@ -20,8 +20,8 @@ def requireJS = rcontext.getJavascriptManager().getRequireJS();
 
 requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
 requireJS.addScripts('cal.UICalendarPortlet.listViewDblClick("'+uiform.id+'") ;') ;
-requireJS.require("SHARED/CSUtils","CSUtils");
-requireJS.addScripts('CSUtils.CheckBox.init("'+uiform.id+'") ;') ;
+requireJS.require("SHARED/CheckBox","CheckBox");
+requireJS.addScripts('CheckBox.init("'+uiform.id+'") ;') ;
 rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
 
 //INLINE Scripts

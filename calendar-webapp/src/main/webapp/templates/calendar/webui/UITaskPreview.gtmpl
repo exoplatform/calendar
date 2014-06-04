@@ -15,10 +15,11 @@
 	def requireJS = rcontext.getJavascriptManager().getRequireJS();
 	requireJS.require("SHARED/jquery","gj").require("SHARED/csResource","cs");
 	requireJS.require("PORTLET/CalendarPortlet","cal");
+	requireJS.require("SHARED/UIEventPreview","UIEventPreview");
 	requireJS.addScripts("gj('#maximizeDetails').click(function() { cal.UICalendarPortlet.toggleEventPreview(this); });");
 	requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
-	requireJS.addScripts("gj('#closeButton').click(function() { cal.UIEventPreview.closeImagePreview(this); }); ");
-	requireJS.addScripts("gj('.viewIconContainer').click(function() { cal.UIEventPreview.clickOnViewIconContainer(this); });");
+	requireJS.addScripts("gj('#closeButton').click(function() { UIEventPreview.closeImagePreview(this); }); ");
+	requireJS.addScripts("gj('.viewIconContainer').click(function() { UIEventPreview.clickOnViewIconContainer(this); });");
 	def resizable = "";
 	if (uicomponent.isShowPopup()) { 
 	  resizable = "resizable";
