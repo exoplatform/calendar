@@ -75,7 +75,7 @@ public class UIConfirmForm extends UIForm implements UIPopupComponent{
       if(isMutipleTask()) return super.getId() + "Tasks";
       else
       if(isMutipleEvent()) return super.getId() + "Events";
-      else return super.getId();
+      else return super.getId() + "EventsAndTasks";
     } else {
       if(isDelete) return super.getId() + "Delete" ;
       else return super.getId() + "Update";
