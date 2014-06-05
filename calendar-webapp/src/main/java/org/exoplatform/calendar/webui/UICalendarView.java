@@ -1620,7 +1620,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             }
           }
         }
-        ((UICalendarView) uiContainer.getRenderedChild()).setCurrentCalendar(cal);
+        ((CalendarView) uiContainer.getRenderedChild()).setCurrentCalendar(cal);
         uiContainer.initView(UICalendarViewContainer.TYPES[type]);
         switch (type) {
           case TYPE_DAY: {
