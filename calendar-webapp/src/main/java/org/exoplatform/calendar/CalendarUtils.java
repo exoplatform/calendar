@@ -400,11 +400,13 @@ public class CalendarUtils {
     Locale[] avai = Locale.getAvailableLocales();
     Locale locale = null;
     for (Locale l : avai) {
-      if (l.getISO3Country().equalsIgnoreCase(locationName)) {
-        locale = l;
-        break;
-      }
-    }
+      try {
+        if (l.getISO3Country().equalsIgnoreCase(locationName)) {
+          locale = l;
+          break;
+        }
+      } catch (MissingResourceException ex) {}
+    }      
 
     if (locale != null) {
       String country = locale.getISO3Country();
