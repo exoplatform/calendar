@@ -1151,9 +1151,16 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
     User user = orSvr.getUserHandler().findUserByName(fromId) ;
     CalendarService calService = CalendarUtils.getCalendarService() ;
-    org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;
-    org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
-
+    org.exoplatform.services.mail.MailService mService = getApplicationComponent(org.exoplatform.services.mail.impl.MailServiceImpl.class) ;    
+    
+    byte[] icsFile = null;
+    try {         
+      OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
+          .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId());
+      icsFile = out.toString().getBytes("UTF-8");
+    } catch (Exception e) {
+      if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
+    }
 
     CalendarSetting calendarSetting;
     DateFormat _df;
@@ -1198,20 +1205,13 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       message.setTo(userEmail);
       message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
       message.setFrom(user.getEmail()) ;
-      try {
-        OutputStream out = calService.getCalendarImportExports(CalendarService.ICALENDAR)
-                .exportEventCalendar(fromId, event.getCalendarId(), event.getCalType(), event.getId()) ;
-        ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
+      
+      if (icsFile != null) {
+        ByteArrayInputStream is = new ByteArrayInputStream(icsFile) ;
+        org.exoplatform.services.mail.Attachment attachmentCal = new org.exoplatform.services.mail.Attachment() ;
         attachmentCal.setInputStream(is) ;
         attachmentCal.setName("icalendar.ics");
         attachmentCal.setMimeType("text/calendar") ;
-      }
-      catch (Exception e) {
-        attachmentCal = null;
-        if (LOG.isDebugEnabled()) LOG.debug("Fail to create attachment", e);
-      }
-
-      if (attachmentCal != null) {
         message.addAttachment(attachmentCal) ;
       }
 
