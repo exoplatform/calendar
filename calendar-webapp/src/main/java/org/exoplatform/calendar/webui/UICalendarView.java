@@ -1486,8 +1486,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiCalendarView.singleDeletedEventId = eventId;
             uiCalendarView.singleDeletedCalendarId = calendarId;
             uiCalendarView.singleDeletedEventType = calType;
+            CalendarEvent calendarEvent = calendarService.getEventById(eventId);
             ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
-            String message = resourceBundle.getString("UICalendarView.msg.confirm-delete");
+            String message;
+            if(CalendarEvent.TYPE_TASK.equals(calendarEvent.getEventType())) {
+              message = resourceBundle.getString("UICalendarView.msg.confirm-delete-task");
+            } else {
+              message = resourceBundle.getString("UICalendarView.msg.confirm-delete-event");
+            }
             uiPortlet.showConfirmWindow(uiCalendarView, message);
             return ;
           }

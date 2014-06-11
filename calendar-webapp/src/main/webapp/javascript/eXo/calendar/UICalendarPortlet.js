@@ -1517,6 +1517,16 @@
             "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
         };
 
+        var $event = gj(src);
+        var $checkbox = $event.find('input[type="checkbox"][name^="Event"]');
+        var $form = $event.closest('form.UIForm');
+        var $checked = $form.find('input[type="checkbox"][name^="Event"]:checked');
+        if($checked.length > 0 && !$checkbox.is(':checked')) {
+          $checked.attr('checked',false);
+          $checked = $form.find('input[type="checkbox"][name^="Event"]:checked');
+        }
+        $checkbox.attr('checked', true);
+
         var items = gj(cs.UIContextMenu.menuElement).find("a");
         for (var i = 0; i < items.length; i++) {
             if (gj(items[i]).hasClass("eventAction")) {
@@ -1530,6 +1540,8 @@
                     {
                         items[i].parentNode.style.display = "none";
                     }
+                } else if($checked.length > 1 && items[i].href.indexOf("Delete") > 0) {
+                  items[i].href = items[i].getAttribute('deleteActionLink');
                 }
             }
         }
@@ -1730,9 +1742,10 @@
         var _e = window.event || evt;
         var src = _e.srcElement || _e.target;
         var UIContextMenu = cs.UIContextMenu;
-        var objectValue = "";
+        var objvalue = "";
         var links = gj(UIContextMenu.menuElement).find("a");
         var isEditable;
+        var $checked = new Array();
 
         if (!gj(src).parents(".eventBoxes")[0]) {
             var eventCell = gj(src);
@@ -1771,6 +1784,16 @@
 
                 UIContextMenu.changeAction(UIContextMenu.menuElement, map);
             }
+
+            var $event = gj(src).closest('.dayContentContainer');
+            var $checkbox = $event.find('input[type="checkbox"][name^="Event"]');
+            var $monthViewForm = gj('form#UIMonthView');
+            $checked = $monthViewForm.find('input[type="checkbox"][name^="Event"]:checked');
+            if($checked.length > 0 && !$checkbox.is(':checked')) {
+                $checked.attr('checked',false);
+                $checked = $monthViewForm.find('input[type="checkbox"][name^="Event"]:checked');
+            }
+            $checkbox.attr('checked', true);
         }
 
         var items = gj(cs.UIContextMenu.menuElement).find("a");
@@ -1778,15 +1801,50 @@
             if (gj(items[i]).hasClass("eventAction")) {
                 items[i].parentNode.style.display = "block";
 
-                if (isEditable && (isEditable == "false"))
-                {
+                if (isEditable && (isEditable == "false")) {
                     if ((items[i].href.indexOf("Edit") >= 0) ||
                         (items[i].href.indexOf("Delete") >= 0) ||
                         (items[i].href.indexOf("ExportEvent") >= 0))
                     {
                         items[i].parentNode.style.display = "none";
                     }
+                } else if($checked.length > 1 && items[i].href.indexOf("Delete") > 0) {
+                    items[i].href = items[i].getAttribute('deleteActionLink');
                 }
+            }
+        }
+    };
+
+    UICalendarPortlet.prototype.topbarDeleteAction = function(formId, elementId) {
+        var $form = gj('form#' + formId);
+        var $element = $form.find('#' + elementId);
+
+        var $checked = $form.find('input[type="checkbox"][name^="Event"]:checked');
+        if($checked.length > 1) {
+            var action = $element.attr('multiDeleteAction');
+            if(action) {
+                gj.globalEval(action);
+            }
+        } else {
+            var UIContextMenu = cs.UIContextMenu;
+            var $event = $checked.closest('.eventBoxes, .uiListViewRow');
+            var action = $element.attr('singleDeleteAction');
+            if(action) {
+                var eventId = $event.attr("eventId");
+                var calendarId = $event.attr("calId");
+                var calType = $event.attr("calType");
+                var isOccur = $event.attr("isOccur");
+                var recurId = $event.attr("recurId");
+                if (recurId == "null") recurId = "";
+                var map = {
+                  "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
+                  "calendarId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calendarId=" + calendarId,
+                  "calType\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "calType=" + calType,
+                  "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
+                  "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
+                };
+                action = UIContextMenu.replaceall(action, map);
+                gj.globalEval(action);
             }
         }
     };
