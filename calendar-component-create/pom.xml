@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.1-M2</version>
   </parent>
   <artifactId>calendar-component-create</artifactId>
   <packaging>jar</packaging>
