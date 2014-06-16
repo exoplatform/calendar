@@ -8,6 +8,7 @@ import java.util.Calendar;
 def rcontext = _ctx.getRequestContext() ;
 def msg = _ctx.appRes("UICalendarView.msg.check-box-required");
 def parent = uicomponent.getParent().getId() ;
+def componentId = uicomponent.getId();
 rcontext.getJavascriptManager().require("PORTLET/calendar/CalendarPortlet","cal").addScripts('cal.UICalendarPortlet.getFilterSelect("'+uiform.id+'") ;') ;
 uicomponent.update() ;
 uicomponent.setSelectedCategory(uicomponent.getSelectedCategory()) ;
@@ -129,7 +130,11 @@ int currentDay = uicomponent.getCurrentDay() ;
   Calendar calendar = uicomponent.getCurrentCalendar() ;
 
 %>
-      <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>" class="pull-left actionIcon">
+      <div id="UIHeaderBar_2" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>"
+           actionLink="javascript:window.eXo.calendar.UICalendarPortlet.topbarDeleteAction('$componentId', 'UIHeaderBar_2')"
+           multiDeleteAction="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>"
+           singleDeleteAction="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId");%>"
+           class="pull-left actionIcon">
         <i class="uiIconDelete uiIconLightGray"></i>
       </div>
 
@@ -165,7 +170,10 @@ int currentDay = uicomponent.getCurrentDay() ;
    String linkDayPrevious = uicomponent.event(uicomponent.ACT_PREVIOUS, String.valueOf(Calendar.DATE)) ;
    monthViewAction = uicomponent.TYPE_MONTH +"&currentTime="+ uicomponent.getCurrentCalendar().getTimeInMillis();
 %>
-		<a class="actionIcon pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>" actionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
+		<a class="actionIcon pull-left" id="UIHeaderBar_3" rel="tooltip" data-placement="bottom" title="<%=_ctx.appRes('UICalendarView.label.delete')%>"
+           actionLink="javascript:window.eXo.calendar.UICalendarPortlet.topbarDeleteAction('$componentId', 'UIHeaderBar_3')"
+           multiDeleteAction="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>"
+           singleDeleteAction="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId");%>">
       <i class="uiIconDelete uiIconLightGray"></i>
     </a> 
 		<div id="UIHeaderBar_1" class="dropdown pull-left">

@@ -166,8 +166,6 @@ public class CalendarUtils {
   final public static String ITEM_NERVER = "never".intern();
   final public static String ITEM_ASK = "ask".intern();
   final public static String emailRegex = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-.]+";
-  /* single email format regex */
-  public static final String emailFormat = "[_A-Za-z0-9-]+@[_A-Za-z0-9-.]+";
   final public static String contactRegex = ".\\("+ emailRegex + "\\)";
 
   public final static String INVITATION_URL = "/invitation/".intern();
@@ -402,11 +400,13 @@ public class CalendarUtils {
     Locale[] avai = Locale.getAvailableLocales();
     Locale locale = null;
     for (Locale l : avai) {
-      if (l.getISO3Country().equalsIgnoreCase(locationName)) {
-        locale = l;
-        break;
-      }
-    }
+      try {
+        if (l.getISO3Country().equalsIgnoreCase(locationName)) {
+          locale = l;
+          break;
+        }
+      } catch (MissingResourceException ex) {}
+    }      
 
     if (locale != null) {
       String country = locale.getISO3Country();
@@ -753,7 +753,7 @@ public class CalendarUtils {
   }
 
   public static boolean isAValidEmailAddress(String email) {
-    return email.matches(emailFormat);
+    return email.matches(emailRegex);
   }
 
   public static boolean isValidEmailAddresses(String addressList) {
