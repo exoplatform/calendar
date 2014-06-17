@@ -144,8 +144,8 @@
             currentDate = Integer.parseInt(sdf.format(temcalendar.getTime()));
             }
             println "</tr>" ;
-          }  
-          
+          }
+
           %>
         </tbody>
       </table>
@@ -243,7 +243,7 @@
 <% /*End Popup Menu*/ %>
   
 <% /*Begin Popup Menu - Calendar Actions */ %>
-<div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="UIMonthViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.dayViewCallback" style="display: none ;" >
+<div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="UIMonthViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.monthViewCallback" style="display: none ;" >
 <ul class="uiDropDownCal" style="display:block;">
   <li>
       <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
@@ -258,7 +258,8 @@
       </a>
   </li>
   <li>
-      <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+      <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>"
+                            deleteActionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
         <i class="uiIconDelete uiIconLightGray"></i>
         <%=_ctx.appRes("ContextMenu.label.Delete")%>
       </a>

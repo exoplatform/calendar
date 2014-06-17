@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
-  
+
   <component>
     <type>org.exoplatform.webservice.cs.calendar.CalendarWebservice</type>
-  </component>  
+  </component>
   <component>
     <type>org.exoplatform.services.jcr.impl.ext.action.SessionActionCatalog</type>
     <component-plugins>
@@ -18,11 +18,11 @@
         <name>actions</name>
         <object type="org.exoplatform.services.jcr.impl.ext.action.AddActionsPlugin$ActionsConfig">
           <field  name="actions">
-            <collection type="java.util.ArrayList">                
+            <collection type="java.util.ArrayList">
               <value>
                 <object type="org.exoplatform.services.jcr.impl.ext.action.ActionConfiguration">
                   <field  name="eventTypes"><string>addNode,changeProperty</string></field>
-                  <field  name="nodeTypes"><string>exo:calendarEvent</string></field>                     
+                  <field  name="nodeTypes"><string>exo:calendarEvent</string></field>
                   <field  name="actionClassName"><string>org.exoplatform.webservice.cs.LastUpdateAction</string></field>
                 </object>
               </value>
@@ -34,4 +34,23 @@
     </component-plugin>
     </component-plugins>
   </component>
+  <external-component-plugins>
+    <!-- The full qualified name of the ResourceBundleService -->
+    <target-component>org.exoplatform.services.resources.ResourceBundleService</target-component>
+    <component-plugin>
+      <!-- The name of the plugin -->
+      <name>Calendar Rest ResourceBundle Plugin</name>
+      <!-- The name of the method to call on the ResourceBundleService in order to register the ResourceBundles -->
+      <set-method>addResourceBundle</set-method>
+      <!-- The full qualified name of the BaseResourceBundlePlugin -->
+      <type>org.exoplatform.services.resources.impl.BaseResourceBundlePlugin</type>
+      <init-params>
+        <values-param>
+          <name>classpath.resources</name>
+          <description>The resources that start with the following package name should be load from file system</description>
+          <value>locale.rest.calendar.CalendarRest</value>
+        </values-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
 </configuration>

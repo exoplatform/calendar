@@ -227,7 +227,9 @@
             </a>
         </li>
         <li>
-            <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+            <a class="eventAction"
+               href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>"
+               deleteActionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
                 <i class="uiIconDelete uiIconLightGray"></i>
                 <%=_ctx.appRes("ContextMenu.label.Delete")%>
             </a>

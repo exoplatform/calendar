@@ -1486,8 +1486,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiCalendarView.singleDeletedEventId = eventId;
             uiCalendarView.singleDeletedCalendarId = calendarId;
             uiCalendarView.singleDeletedEventType = calType;
+            CalendarEvent calendarEvent = calendarService.getEventById(eventId);
             ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
-            String message = resourceBundle.getString("UICalendarView.msg.confirm-delete");
+            String message;
+            if(CalendarEvent.TYPE_TASK.equals(calendarEvent.getEventType())) {
+              message = resourceBundle.getString("UICalendarView.msg.confirm-delete-task");
+            } else {
+              message = resourceBundle.getString("UICalendarView.msg.confirm-delete-event");
+            }
             uiPortlet.showConfirmWindow(uiCalendarView, message);
             return ;
           }
@@ -1620,7 +1626,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             }
           }
         }
-        ((UICalendarView) uiContainer.getRenderedChild()).setCurrentCalendar(cal);
+        ((CalendarView) uiContainer.getRenderedChild()).setCurrentCalendar(cal);
         uiContainer.initView(UICalendarViewContainer.TYPES[type]);
         switch (type) {
           case TYPE_DAY: {
@@ -1688,15 +1694,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
       }
       uiView.refresh();
-      UIListContainer uiListContainer = uiView.getAncestorOfType(UIListContainer.class);
-      if (uiView instanceof UIListView) {
-        UIListView uiListView = (UIListView) uiView;
-        uiListView.setSelectedEvent(null);
-      }
-      if (uiListContainer != null) {
-        uiListContainer.setLastUpdatedEventId(null);
-        uiListContainer.getChild(UIPreview.class).setEvent(null);
-      }
       event.getRequestContext().addUIComponentToUpdateByAjax(uiView.getParent());
     }
   }
