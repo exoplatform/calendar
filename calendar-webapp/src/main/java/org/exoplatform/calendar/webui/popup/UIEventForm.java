@@ -1401,7 +1401,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
             && CalendarUtils.isSameDate(fromDate, occurrence.getFromDateTime())) {
       // popup confirm form
       UIConfirmForm confirmForm =  uiPopupAction.activate(UIConfirmForm.class, 600);
-      confirmForm.setConfirmMessage(uiForm.getLabel("update-recurrence-event-confirm-msg"));
+      confirmForm.setConfirmMessage("update-recurrence-event-confirm-msg");
       confirmForm.setConfig_id(uiForm.getId());
       confirmForm.setDelete(false);
       event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
