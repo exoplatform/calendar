@@ -15,6 +15,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -220,7 +221,8 @@ public class UICreateEvent extends UIForm {
         if (cancelEvent != null) {
           cancelEvent.broadcast();
         }
-        event.getRequestContext().getJavascriptManager().require("SHARED/navigation-toolbar", "toolbarnav").addScripts("toolbarnav.UIPortalNavigation.cancelNextClick('UICreateList','UICreatePlatformToolBarPortlet','" + message + "');");
+        event.getRequestContext().getJavascriptManager().require("SHARED/navigation-toolbar", "toolbarnav")
+             .addScripts("toolbarnav.UIPortalNavigation.cancelNextClick('UICreateList','UICreatePlatformToolBarPortlet','" + StringEscapeUtils.escapeJavaScript(message) + "');");
       } catch (Exception e) {
         if (log.isDebugEnabled()) {
           log.debug("Fail to quick add event to the calendar", e);
