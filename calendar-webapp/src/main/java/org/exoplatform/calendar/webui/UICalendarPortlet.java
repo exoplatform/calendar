@@ -83,6 +83,8 @@ public class UICalendarPortlet extends UIPortletApplication {
     UIPopupAction uiPopup =  addChild(UIPopupAction.class, null, null) ;
     uiPopup.setId("UICalendarPopupAction") ;
     uiPopup.getChild(UIPopupWindow.class).setId("UICalendarPopupWindow") ;
+    
+    addChild(UICalendarPortletEditMode.class, null, null);
   }
   public CalendarSetting getCalendarSetting() throws Exception{
     return CalendarUtils.getCurrentUserCalendarSetting(); 
