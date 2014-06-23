@@ -142,6 +142,7 @@ public class CalendarUtils {
   public static final String TWELVE_HOURS  = "12-Hours".intern() ;
   public static final String TWENTY_FOUR_HOURS  = "24-Hours".intern() ;
   public static final int DEFAULT_VALUE_UPLOAD_PORTAL = -1;
+  public static final String UPLOAD_LIMIT = "uploadFileSizeLimitMB";
 
   public static final String BREAK_LINE = "\n".intern() ;
 
@@ -1006,7 +1007,7 @@ public class CalendarUtils {
     PortletPreferences portletPref = pcontext.getRequest().getPreferences();
     int limitMB;
     try {
-      limitMB = Integer.parseInt(portletPref.getValue("uploadFileSizeLimitMB", "").trim());
+      limitMB = Integer.parseInt(portletPref.getValue(UPLOAD_LIMIT, "").trim());
     } catch (NumberFormatException e) {
       limitMB = DEFAULT_VALUE_UPLOAD_PORTAL;
     }

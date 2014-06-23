@@ -3418,6 +3418,10 @@
             if(!onfocus) gj(comboList[i]).on('focus.tryShow', uiCombobox.tryShow);
             if(!onclick) gj(comboList[i]).on('click.tryShow', uiCombobox.tryShow);
 
+            //workround to clear registered event in combobox template
+            comboList[i].onkeyup = null;
+            //register by jquery instead
+            gj(comboList[i]).off('keyup').on('keyup.combo', uiCombobox.onKeyUp);
             gj(comboList[i]).data("initialized", true);
           }
         }
@@ -3425,9 +3429,59 @@
 
     wx.UICombobox.tryShow = function() {
       if (gj(this).parent().find(".UIComboboxContainer").css('display') === 'none') {
-    	wx.UICombobox.show.apply(this, arguments);
+        wx.UICombobox.show.apply(this, arguments);
       }
     };
+
+    wx.UICombobox.onKeyUp = function(e) {
+      if (e.keyCode == 38 || e.keyCode == 40) {
+//        wx.UICombobox.tryShow.call(this);
+        
+        var jInput = gj(this);
+        var hiddenInput = jInput.prev('input');      
+        var data = eval(this.getAttribute("options"));
+        
+        var idx = 0;
+        var val = hiddenInput.val();
+        if (val && val !== '') {
+          idx = gj.inArray(val, data);
+        }
+        idx = idx != -1 ? idx : 0;
+        
+        if(e.keyCode == 38) {
+          //Up arrow key
+          idx = idx > 0 ? idx - 1 : 0;
+        } else if(e.keyCode = 40) {
+          //Down arrow key
+          idx = idx < data.length - 1 ? idx + 1 : idx;
+        }
+        
+        var item = jInput.parent().find('.UIComboboxLabel').get(idx);
+        jInput.attr('value', gj(item).html());
+        wx.UICombobox.setSelectedItem(jInput.get(0));
+      } else {
+        wx.UICombobox.complete(this, e);
+      }
+      
+    };
+    
+    wx.UICombobox.setSelectedItem = function (textbox) {
+      if (this.lastSelectedItem)
+          gj(this.lastSelectedItem).removeClass("UIComboboxSelectedItem");
+      var selectedIndex = parseInt(this.getSelectedItem(textbox));
+      if (selectedIndex >= 0) {
+          gj(this.items[selectedIndex]).addClass("UIComboboxSelectedItem");
+          this.lastSelectedItem = this.items[selectedIndex];
+          
+          var container = gj(this.list).find('.UIComboboxItemContainer'); 
+          var currPos = gj(this.lastSelectedItem).height() * selectedIndex;
+          if (currPos < container.scrollTop() || currPos > container.scrollTop() + container.height()) {
+            container.scrollTop(currPos);
+          }
+          var hidden = gj(textbox).prev("input")[0];
+          hidden.value = this.items[selectedIndex].getAttribute("value");
+      }
+  };
 
     /**
      Override combobox onchange
