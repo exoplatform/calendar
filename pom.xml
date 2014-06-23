@@ -56,7 +56,7 @@
     <org.exoplatform.social.version>4.1.x-soc-stabilization-SNAPSHOT</org.exoplatform.social.version>
     <org.exoplatform.platform-ui.version>4.1.x-plfui-stabilization-SNAPSHOT</org.exoplatform.platform-ui.version>
     <!-- Platform Project 3rd party Dependencies -->
-    <org.exoplatform.doc.doc-style.version>4.1.0-SNAPSHOT</org.exoplatform.doc.doc-style.version>
+    <org.exoplatform.doc.doc-style.version>4.1.x-SNAPSHOT</org.exoplatform.doc.doc-style.version>
   </properties>
   <dependencyManagement>
     <!-- ### NEVER CHANGE THIS ORDER OF DEPMGT ### -->
