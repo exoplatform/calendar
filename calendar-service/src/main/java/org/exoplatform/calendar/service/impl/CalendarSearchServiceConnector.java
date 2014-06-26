@@ -19,10 +19,7 @@ package org.exoplatform.calendar.service.impl;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
-import javax.jcr.query.RowIterator;
 
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
@@ -30,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +38,7 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
+import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
@@ -55,8 +54,6 @@ import org.exoplatform.portal.mop.navigation.NodeContext;
 import org.exoplatform.portal.mop.navigation.NodeModel;
 import org.exoplatform.portal.mop.navigation.Scope;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
-import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
-import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.ConversationState;
@@ -74,10 +71,9 @@ import org.exoplatform.web.controller.router.Router;
  */
 public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
-
-  private NodeHierarchyCreator nodeHierarchyCreator_;
   private CalendarService calendarService_;
   private SpaceService spaceService_;
+  private JCRDataStorage jcrDataStorage;
 
   private static final Log     log                 = ExoLogger.getLogger("cs.calendar.unified.search.service");
   private Map<String, Calendar> calendarMap = new HashMap<String,  Calendar>();
@@ -86,9 +82,9 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   public CalendarSearchServiceConnector(InitParams initParams) {
     super(initParams);
-    nodeHierarchyCreator_  = (NodeHierarchyCreator) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(NodeHierarchyCreator.class);
     calendarService_  = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarServiceImpl.class);
     spaceService_ = (SpaceService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SpaceService.class);
+    jcrDataStorage = ((CalendarServiceImpl)calendarService_).getDataStorage();
   }
 
 
@@ -113,11 +109,14 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
                                                 String order) {
     List<SearchResult> events = new ArrayList<SearchResult>();
     SessionProvider provider = SessionProvider.createSystemProvider();
+
+    List<String> gCals = new LinkedList<String>();
+    Map<String, List<Calendar>> sCals = new HashMap<String, List<Calendar>>();
+    
     try {
       calendarMap.clear();
       Identity currentUser = ConversationState.getCurrent().getIdentity(); 
       String userId = currentUser.getUserId() ;
-      Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(provider, userId);
       List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
       for(Calendar cal : privateCalendars) {
         calendarMap.put(cal.getId(), cal);
@@ -128,6 +127,13 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         List<Calendar> shareCalendars = sharedCalendar.getCalendars();
         for(Calendar cal : shareCalendars){
           calendarMap.put(cal.getId(), cal);
+          
+          List<Calendar> ls = sCals.get(cal.getCalendarOwner());
+          if (ls == null) {
+            ls = new LinkedList<Calendar>();
+            sCals.put(cal.getCalendarOwner(), ls);
+          }
+          ls.add(cal);
         }
       }
 
@@ -141,52 +147,72 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           }
           for(Calendar cal : spaceCalendars) {
             calendarMap.put(cal.getId(), cal);
+            gCals.add(cal.getId());
           }
         }
       }
 
-      EventQuery eventQuery = new UnifiedQuery(); 
-      java.util.Calendar today = java.util.Calendar.getInstance();
-      eventQuery.setFromDate(today) ;
-      eventQuery.setQueryType(Query.SQL);
-      eventQuery.setEventType(dataType);
-      eventQuery.setText(query) ;
-      String sortBy =  Utils.SORT_FIELD_MAP.get(sort);
-      if(Utils.ORDERBY_DATE.equals(sortBy)) {
-        if(CalendarEvent.TYPE_EVENT.equals(dataType))
-          sortBy = Utils.EXO_FROM_DATE_TIME ;
-        else sortBy = Utils.EXO_TO_DATE_TIME ;
+      MultiListAccess listAccess = new MultiListAccess();
+      
+      Node uHome = jcrDataStorage.getUserCalendarHome(userId);
+      EventQuery uEventQuery = createQuery(dataType, query, sort, order, uHome.getPath(), null);      
+      listAccess.add(new EventListAccess(jcrDataStorage, uEventQuery));
+      
+      if (gCals.size() > 0) {
+        Node gHome = jcrDataStorage.getPublicCalendarHome();
+        EventQuery gEventQuery = createQuery(dataType, query, sort, order, gHome.getPath(), gCals.toArray(new String[gCals.size()]));      
+        listAccess.add(new EventListAccess(jcrDataStorage, gEventQuery));        
+      }
+      
+      for (String u : sCals.keySet()) {
+        List<Calendar> ls = sCals.get(u);
+        String[] ids = new String[ls.size()];
+        for (int i = 0; i < ls.size(); i++) {
+          ids[i] = ls.get(i).getId();
+        }
+        
+        Node sHome = jcrDataStorage.getUserCalendarHome(u);
+        EventQuery sEventQuery = createQuery(dataType, query, sort, order, sHome.getPath(), ids);
+        listAccess.add(new EventListAccess(jcrDataStorage, sEventQuery));
       }
 
-      eventQuery.setOrderBy(new String[]{sortBy});
-      eventQuery.setOrderType(order);
-      if(CalendarEvent.TYPE_TASK.equals(dataType))
-        eventQuery.setState(CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED);
-      //log.info("\n -------" + eventQuery.getQueryStatement() + "\n") ;
-      QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
-      QueryImpl jcrquery = (QueryImpl)qm.createQuery(eventQuery.getQueryStatement(), eventQuery.getQueryType());
-      jcrquery.setOffset(offset);
-      jcrquery.setLimit(limit);
-      QueryResult result = jcrquery.execute();
-      /*
-      NodeIterator it = result.getNodes();
-      while (it.hasNext()) {
-        events.add(getResult(it.nextNode()));
-      }
-       */
-      RowIterator rIt = result.getRows();
-      while (rIt.hasNext()) {
-        SearchResult rs = buildResult(context, sites, dataType, rIt.nextRow());
+      Object[] rows = listAccess.load(offset, limit);
+      for (Object row : rows) {
+        SearchResult rs = buildResult(context, sites, dataType, row);
         if(rs != null) events.add(rs);
       }
     }
     catch (Exception e) {
-      log.info("Could not execute unified seach " + dataType , e) ; 
+      log.info("Could not execute unified seach " + dataType , e);
     } finally {
       provider.close();
     }
     return events;
   }
+
+  private EventQuery createQuery(String dataType, String queryText, String sort, String order, String calendarPath, String[] calendarIds) throws Exception {
+    EventQuery eventQuery = new UnifiedQuery(); 
+    java.util.Calendar today = java.util.Calendar.getInstance();
+    eventQuery.setFromDate(today) ;
+    eventQuery.setQueryType(Query.SQL);
+    eventQuery.setEventType(dataType);
+    eventQuery.setText(queryText) ;
+    String sortBy =  Utils.SORT_FIELD_MAP.get(sort);
+    if(Utils.ORDERBY_DATE.equals(sortBy)) {
+      if(CalendarEvent.TYPE_EVENT.equals(dataType))
+        sortBy = Utils.EXO_FROM_DATE_TIME ;
+      else sortBy = Utils.EXO_TO_DATE_TIME ;
+    }
+    eventQuery.setOrderBy(new String[]{sortBy});
+    eventQuery.setOrderType(order);
+    if(CalendarEvent.TYPE_TASK.equals(dataType))
+      eventQuery.setState(CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED);
+    eventQuery.setCalendarPath(calendarPath);
+    eventQuery.setCalendarId(calendarIds);
+    
+    return eventQuery;
+  }
+
 
   private SearchResult buildResult(SearchContext sc, Collection<String> siteKeys, String dataType, Object iter) {
     try {

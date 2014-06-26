@@ -373,6 +373,7 @@ public class JCRDataStorage implements DataStorage {
     } else {
       calendarNode = calendarHome.getNode(calendar.getId());
     }
+    calendar.setCalendarOwner(username);
     setCalendarProperties(calendarNode, calendar);
     Session session = calendarHome.getSession();
     session.save();

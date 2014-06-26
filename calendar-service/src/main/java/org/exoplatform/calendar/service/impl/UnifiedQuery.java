@@ -46,8 +46,20 @@ public class UnifiedQuery extends EventQuery {
         queryString.append(repeat("%s", Arrays.asList(Utils.SELECT_FIELDS), ","));
         queryString.append(" FROM " + getNodeType() + " WHERE ");
         if(!Utils.isEmpty(getCalendarPath())) {
-          queryString.append("jcr:path LIKE '").append(getCalendarPath()).append("/%' AND ");
+          queryString.append("jcr:path LIKE '").append(getCalendarPath()).append("/%/%' AND ");
         }
+        
+        if (getCalendarId() != null && getCalendarId().length > 0) {
+          queryString.append("(");
+          for (int i = 0; i < getCalendarId().length; i++) { 
+            if (i != 0) {
+              queryString.append(" OR ");
+            }
+            queryString.append(Utils.EXO_CALENDAR_ID).append(" = '").append(getCalendarId()[i]).append("'");
+          }
+          queryString.append(") AND ");
+        }
+        
         if (!Utils.isEmpty(getEventType())) {
           queryString.append(Utils.EXO_EVENT_TYPE).append(" = '").append(getEventType()).append("' AND (");
         }
@@ -68,7 +80,7 @@ public class UnifiedQuery extends EventQuery {
         }
         if (getFromDate() != null && CalendarEvent.TYPE_EVENT.equals(getEventType())) {
           queryString.append(" AND ").append(queryStringForFromTime(getFromDate()));
-        }
+        }        
         if (!Utils.isEmpty(getState())) {
           if(getState().indexOf(Utils.COLON) >0)
             for(String state : getState().split(Utils.COLON))
