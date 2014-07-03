@@ -16,7 +16,10 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.NumberList;
+import net.fortuna.ical4j.model.Period;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.WeekDayList;
@@ -1214,6 +1217,32 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       String calendarId = originEvent.getCalendarId();
       if(!isFirstOccurrence) {
+        //
+        if (selectedOccurrence.getRepeatUntilDate() == null && selectedOccurrence.getRepeatCount() != 0) {
+          Recur recur = Utils.getICalendarRecur(originEvent);
+          
+          DateTime ical4jEventFrom = new DateTime(originEvent.getFromDateTime());//the date time of the first occurrence of the series
+          net.fortuna.ical4j.model.TimeZone tz = Utils.getICalTimeZone(TimeZone.getTimeZone(timezone));
+          ical4jEventFrom.setTimeZone(tz);
+          
+          TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+          SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+          format.setTimeZone(userTimeZone);
+          
+          Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
+
+          DateTime ical4jFrom = new DateTime(originEvent.getFromDateTime());
+          DateTime ical4jTo = new DateTime(selectedOccurrence.getFromDateTime());
+          Period period = new Period(ical4jFrom, ical4jTo);
+          period.setTimeZone(tz);
+          // get list of occurrences in a period
+          DateList list = recur.getDates(ical4jEventFrom,
+                                         period,
+                                         net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
+          long count = selectedOccurrence.getRepeatCount();
+          selectedOccurrence.setRepeatCount(count - list.size());
+        }
+        
         //if selected occurrence is not the first occurrence, update the origin event and set new id for
         //the selected occurrence
         originEvent.setRepeatUntilDate(stopDate);
