@@ -1082,13 +1082,13 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         if (Utils.isExceptionOccurrence(selectedOccurrence)) {
           storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, false);
         } else {
+          storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, true);
           //create activity for the exception event
           if(fromType == Calendar.TYPE_PUBLIC) {
             for(CalendarEventListener cel : eventListeners_) {
               cel.savePublicEvent(selectedOccurrence, selectedOccurrence.getCalendarId());
             }
           }
-          storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, true);
         }
       } else { //this case is when the exception event is moved to another calendar
 
