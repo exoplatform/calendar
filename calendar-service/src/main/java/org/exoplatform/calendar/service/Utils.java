@@ -1036,4 +1036,45 @@ public class Utils {
     }
     return recur;
   }
+
+  /*
+   * updates the origin date in case the repeat rule is changed
+   * for ex: Every Tuesday -> Every Wednesday, the origin date
+   * should be updated (+1 in this case).
+   */
+  public static void updateOriginDate(CalendarEvent event, TimeZone tz) throws Exception {
+    //distance between from-end of event
+    long diff = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
+
+    java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
+    calendar.setTime(event.getFromDateTime());
+
+    Recur recur = Utils.getICalendarRecur(event);
+
+    WeekDayList weekDayList = recur.getDayList();
+
+    if("WEEKLY".equals(recur.getFrequency())) {
+      if(weekDayList.size() > 0) {
+        calendar.set(java.util.Calendar.DAY_OF_WEEK, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
+      }
+    }
+
+    if("MONTHLY".equals(recur.getFrequency())) {
+      if(weekDayList.size() > 0) {
+        if(weekDayList.size() > 0) {
+          calendar.set(java.util.Calendar.DAY_OF_WEEK_IN_MONTH, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
+        }
+
+        NumberList monthDayList = recur.getMonthDayList();
+
+        if(monthDayList.size() > 0) {
+          calendar.set(java.util.Calendar.DAY_OF_MONTH, ((Integer) monthDayList.get(0)).intValue());
+        }
+      }
+    }
+    event.setFromDateTime(calendar.getTime());
+
+    calendar.setTimeInMillis(calendar.getTimeInMillis() + diff);
+    event.setToDateTime(calendar.getTime());
+  }
 }

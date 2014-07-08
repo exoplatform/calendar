@@ -1130,7 +1130,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       updateOriginFromToTime(originEvent, occurrence);
       fillOriginFromOccurrence(originEvent, occurrence);
-      updateOriginDate(originEvent, tz);
+      Utils.updateOriginDate(originEvent, tz);
 
       int fromType = Integer.parseInt(originEvent.getCalType());
       int toType = Integer.parseInt(occurrence.getCalType());
@@ -1510,47 +1510,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     newToDate.setTime(fromDate.getTime());
     newToDate.add(java.util.Calendar.MINUTE, diffMinutes);
     originEvent.setToDateTime(newToDate.getTime());
-  }
-
-  /*
-   * updates the origin date in case the repeat rule is changed
-   * for ex: Every Tuesday -> Every Wednesday, the origin date
-   * should be updated (+1 in this case).
-   */
-  private void updateOriginDate(CalendarEvent event, TimeZone tz) throws Exception {
-    //distance between from-end of event
-    long diff = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
-
-    java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
-    calendar.setTime(event.getFromDateTime());
-
-    Recur recur = Utils.getICalendarRecur(event);
-
-    WeekDayList weekDayList = recur.getDayList();
-
-    if("WEEKLY".equals(recur.getFrequency())) {
-      if(weekDayList.size() > 0) {
-        calendar.set(java.util.Calendar.DAY_OF_WEEK, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
-      }
-    }
-
-    if("MONTHLY".equals(recur.getFrequency())) {
-      if(weekDayList.size() > 0) {
-        if(weekDayList.size() > 0) {
-          calendar.set(java.util.Calendar.DAY_OF_WEEK_IN_MONTH, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
-        }
-
-        NumberList monthDayList = recur.getMonthDayList();
-
-        if(monthDayList.size() > 0) {
-          calendar.set(java.util.Calendar.DAY_OF_MONTH, ((Integer) monthDayList.get(0)).intValue());
-        }
-      }
-    }
-    event.setFromDateTime(calendar.getTime());
-
-    calendar.setTimeInMillis(calendar.getTimeInMillis() + diff);
-    event.setToDateTime(calendar.getTime());
   }
 
   private void fillOriginFromOccurrence(CalendarEvent originEvent, CalendarEvent occurrence) {

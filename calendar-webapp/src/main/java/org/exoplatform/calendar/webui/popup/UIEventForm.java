@@ -1591,6 +1591,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
         calendarEvent.setRepeatUntilDate(repeatEvent.getRepeatUntilDate());
         calendarEvent.setRepeatByDay(repeatEvent.getRepeatByDay());
         calendarEvent.setRepeatByMonthDay(repeatEvent.getRepeatByMonthDay());
+
+        TimeZone tz = TimeZone.getTimeZone(calSetting.getTimeZone());
+        Utils.updateOriginDate(calendarEvent, tz);
       }
     } else {
       calendarEvent.setRepeatType(CalendarEvent.RP_NOREPEAT);
