@@ -1050,6 +1050,9 @@ public class Utils {
     calendar.setTime(event.getFromDateTime());
 
     Recur recur = Utils.getICalendarRecur(event);
+    if(recur == null) {
+      return;
+    }
 
     WeekDayList weekDayList = recur.getDayList();
 
