@@ -348,8 +348,12 @@ public class EventQuery {
         // case where the event ends in the interval
         stringBuffer.append("@exo:toDateTime >= xs:dateTime('").append(ISO8601.format(fromDate)).append("') and ");
         stringBuffer.append("@exo:toDateTime <= xs:dateTime('").append(ISO8601.format(toDate)).append("')");
-
+        stringBuffer.append(") or (");        
+        stringBuffer.append("(not(@exo:repeatUntil) or @exo:repeatUntil >=  xs:dateTime('" + ISO8601.format(fromDate) +  "'))");
+        stringBuffer.append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >=  xs:dateTime('" + ISO8601.format(toDate) +  "'))");
+        stringBuffer.append(" and @exo:repeat != 'norepeat'");
         stringBuffer.append(")");
+        
         stringBuffer.append(")");
         hasConjuntion = true;
       } else if (fromDate != null) {
@@ -444,7 +448,7 @@ public class EventQuery {
     return buffer.toString();
   }
 
-  public static String escapeLikeQuery(String s) {
+  protected String escapeLikeQuery(String s) {
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {
         char ch = s.charAt(i);

@@ -259,26 +259,34 @@ public class UIListView extends UICalendarView {
       privateCalendars = getPrivateCalendars();
     }
     
+    List<CalendarEvent> allEvents = new LinkedList<CalendarEvent>();
+    List<CalendarEvent> originalRecurEvents = new LinkedList<CalendarEvent>();
     if (isDisplaySearchResult()) {
       eventQuery.setExcludeRepeatEvent(false);
       UIMiniCalendar uiMiniCalendar = this.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;      
       eventQuery.setFromDate(uiMiniCalendar.getCurrentCalendar());
       eventQuery.setToDate(uiMiniCalendar.getEndDateOfMonth());
-    }    
-    
-    List<CalendarEvent> allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-                                                                             privateCalendars.toArray(new String[privateCalendars.size()]),
-                                                                             publicCalendars.toArray(new String[publicCalendars.size()]),
-                                                                             emptyEventCalendars);
-
-    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-            eventQuery.getFromDate(),
-            eventQuery.getToDate(),
-            eventQuery,
-            privateCalendars.toArray(new String[privateCalendars.size()]),
-            publicCalendars.toArray(new String[publicCalendars.size()]),
-            emptyRecurrentEventCalendars);
-    
+      originalRecurEvents.addAll(calendarService.getEvents(username, eventQuery, publicCalendars.toArray(new String[publicCalendars.size()])));
+      for (CalendarEvent evt : originalRecurEvents) {
+        if (CalendarEvent.RP_NOREPEAT.equals(evt.getRepeatType())) {
+          allEvents.add(evt);          
+        }
+      }
+    } else {
+      allEvents.addAll(calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
+                                                                               privateCalendars.toArray(new String[privateCalendars.size()]),
+                                                                               publicCalendars.toArray(new String[publicCalendars.size()]),
+                                                                               emptyEventCalendars));
+      
+      originalRecurEvents.addAll(calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
+                                                                                                        eventQuery.getFromDate(),
+                                                                                                        eventQuery.getToDate(),
+                                                                                                        eventQuery,
+                                                                                                        privateCalendars.toArray(new String[privateCalendars.size()]),
+                                                                                                        publicCalendars.toArray(new String[publicCalendars.size()]),
+                                                                                                        emptyRecurrentEventCalendars));      
+    }
+        
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
