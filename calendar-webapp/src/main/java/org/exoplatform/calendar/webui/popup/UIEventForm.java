@@ -31,6 +31,7 @@ import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
 import org.exoplatform.calendar.webui.UIListContainer;
+import org.exoplatform.calendar.webui.UIListView;
 import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
@@ -74,6 +75,7 @@ import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.ext.UIFormComboBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.organization.account.UIUserSelector;
+
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.text.DateFormat;
@@ -1668,14 +1670,11 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
           if (LOG.isWarnEnabled()) LOG.warn("Sending invitation failed!" , e);
         }
       }
-
-      if(calendarView instanceof UIListContainer) {
-        UIListContainer uiListContainer = (UIListContainer)calendarView ;
-        if (!uiListContainer.isDisplaySearchResult()) {
-          uiViewContainer.refresh() ;
-        }
-      } else {
-        uiViewContainer.refresh() ;
+      
+      uiViewContainer.refresh();
+      UIListContainer uiListView = calendarPortlet.findFirstComponentOfType(UIListContainer.class);
+      if (uiListView != null && uiListView.isRendered() && uiListView.isDisplaySearchResult()) {
+        uiListView.findFirstComponentOfType(UIListView.class).refreshSearch();
       }
       calendarView.setLastUpdatedEventId(eventId) ;
       UIMiniCalendar uiMiniCalendar = calendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;

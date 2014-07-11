@@ -25,6 +25,7 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.XmlReader;
+
 import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Period;
@@ -32,6 +33,7 @@ import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.RRule;
+
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
@@ -86,6 +88,7 @@ import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -3630,6 +3633,9 @@ public class JCRDataStorage implements DataStorage {
     Node publicCalHome     = getPublicCalendarHome();
     Query query;
 
+    //
+    String textQuery = buildTextQuery(eventQuery.getText());
+    
     /** query private calendar */
     QueryManager qm  = calendarHome.getSession().getWorkspace().getQueryManager();
 
@@ -3640,6 +3646,7 @@ public class JCRDataStorage implements DataStorage {
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
           .append(" WHERE jcr:path LIKE '").append(calendarPath).append("'")
           .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(textQuery)
           .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
           .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
           .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
@@ -3700,6 +3707,7 @@ public class JCRDataStorage implements DataStorage {
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
           .append(" WHERE jcr:path LIKE '").append(calendarPath).append("'")
           .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%'")
+          .append(textQuery)
           .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
           .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
           .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
@@ -3770,6 +3778,7 @@ public class JCRDataStorage implements DataStorage {
           StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
               .append(" WHERE jcr:path LIKE '").append(calendar.getPath()).append("/%'")
               .append(" AND NOT jcr:path LIKE '").append(calendar.getPath()).append("/%/%'")
+              .append(textQuery)
               .append(" AND NOT (exo:toDateTime < TIMESTAMP '" + ISO8601.format(eventQuery.getFromDate()) + "'")
               .append(" OR exo:fromDateTime > TIMESTAMP '" + ISO8601.format(eventQuery.getToDate()) + "')")
               .append(" AND NOT (jcr:mixinTypes='exo:repeatCalendarEvent' AND NOT exo:repeat='norepeat' AND exo:recurrenceId='')");
@@ -3827,6 +3836,26 @@ public class JCRDataStorage implements DataStorage {
 
     return allEvents;
   }
+
+  private String buildTextQuery(String text) {
+    StringBuilder textBuilder = new StringBuilder();
+    if (!Utils.isEmpty(text)) {
+      String val = EventQuery.escapeLikeQuery(text);
+      textBuilder.append(" and (").append(Utils.EXO_SUMMARY).append(" like '%").append(val).append("%'");
+      textBuilder.append(" ESCAPE '\\'");
+      textBuilder.append(" or ").append(Utils.EXO_DESCRIPTION).append(" like '%").append(val).append("%'");
+      textBuilder.append(" ESCAPE '\\'");
+      textBuilder.append(" or ").append(Utils.EXO_LOCATION).append(" like '%").append(val).append("%'");
+      textBuilder.append(" ESCAPE '\\'");
+      textBuilder.append(" or ").append(Utils.EXO_PARTICIPANT).append(" like '%").append(val).append("%'");
+      textBuilder.append(" ESCAPE '\\'");
+      textBuilder.append(" or ").append(Utils.EXO_INVITATION).append(" like '%").append(val).append("%'");
+      textBuilder.append(" ESCAPE '\\'");
+      textBuilder.append(")");
+    }
+    return textBuilder.toString();
+  }
+  
 
 
   /**
@@ -3933,6 +3962,8 @@ public class JCRDataStorage implements DataStorage {
     recurEvents.addAll(getOriginalRecurrenceEventsSQL(getUserCalendarHome(username), String.valueOf(Calendar.TYPE_PRIVATE),
         from, to, eventQuery, privateCalendars, emptyCalendars));
 
+    String textQuery = buildTextQuery(eventQuery.getText());
+    
     Node publicHome = getPublicCalendarHome();
     QueryManager qm = publicHome.getSession().getWorkspace().getQueryManager();
 
@@ -3944,6 +3975,7 @@ public class JCRDataStorage implements DataStorage {
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
           .append(" WHERE jcr:path LIKE '").append(calendarPath).append("/%'")
           .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%/%'")
+          .append(textQuery)
           .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
           .append(" AND NOT exo:repeat='norepeat'")
           .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
@@ -4015,6 +4047,7 @@ public class JCRDataStorage implements DataStorage {
         StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
             .append(" WHERE jcr:path LIKE '").append(calendarNode.getPath()).append("/%'")
             .append(" AND NOT jcr:path LIKE '").append(calendarNode.getPath()).append("/%/%'")
+            .append(textQuery)
             .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
             .append(" AND NOT exo:repeat='norepeat'")
             .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
@@ -4424,6 +4457,8 @@ public class JCRDataStorage implements DataStorage {
                                                             String[] calendarIds, List<String> emptyCalendars) throws Exception {
     if (calendar == null) return null;
 
+    String textQuery = buildTextQuery(eventQuery.getText());
+    
     List<CalendarEvent> recurEvents = new ArrayList<CalendarEvent>();
 
     for (String calendarId : calendarIds) {
@@ -4435,16 +4470,11 @@ public class JCRDataStorage implements DataStorage {
       StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
           .append(" WHERE jcr:path LIKE '").append(calendarPath).append("/%'")
           .append(" AND NOT jcr:path LIKE '").append(calendarPath).append("/%/%'")
+          .append(textQuery)
           .append(" AND jcr:mixinTypes='exo:repeatCalendarEvent'")
           .append(" AND NOT exo:repeat='norepeat'")
           .append(" AND (exo:repeatUntil IS NULL OR exo:repeatUntil >=  TIMESTAMP '" + ISO8601.format(from) +  "' )")
           .append(" AND (exo:repeatFinishDate IS NULL OR exo:repeatFinishDate >=  TIMESTAMP '" + ISO8601.format(from) +  "' )");
-
-      StringBuilder queryEventsStatementXPath = new StringBuilder("/jcr:root").append(calendarPath)
-          .append("/element(*,exo:repeatCalendarEvent) [@exo:repeat!='norepeat' and @exo:recurrenceId=''")
-          .append(" and (not(@exo:repeatUntil) or @exo:repeatUntil >= xs:dateTime('" + ISO8601.format(from) + "'))")
-          .append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >= xs:dateTime('" + ISO8601.format(from) + "'))")
-          .append("]");
 
       /** event type */
       String eventType = eventQuery.getEventType();
@@ -6200,5 +6230,5 @@ public class JCRDataStorage implements DataStorage {
     }
     return occurrences;
   }
-
+  
 }

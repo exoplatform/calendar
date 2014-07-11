@@ -444,7 +444,7 @@ public class EventQuery {
     return buffer.toString();
   }
 
-  protected String escapeLikeQuery(String s) {
+  public static String escapeLikeQuery(String s) {
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {
         char ch = s.charAt(i);
