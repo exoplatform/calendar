@@ -30,8 +30,6 @@ import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.web.application.JavascriptManager;
-import org.exoplatform.web.application.RequireJS;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -123,8 +121,12 @@ public class UIListView extends UICalendarView {
   public void setIsAscending(boolean b) { isAscending_ = b; }
   public boolean isAscending() { return isAscending_; }
 
-  public void setEventQuery(EventQuery eventQuery) { query = eventQuery; }
-  public EventQuery getEventQuery() { return query; }
+  public void setEventQuery(EventQuery eventQuery) { 
+    query = new EventQuery(eventQuery);
+  }
+  public EventQuery getEventQuery() { 
+    return new EventQuery(query);    
+  }
 
   @Override
   public void refresh() throws Exception {
@@ -188,16 +190,12 @@ public class UIListView extends UICalendarView {
   }
   
   public void refreshSearch() throws Exception {
-//    UICalendarPortlet portlet = this.getAncestorOfType(UICalendarPortlet.class);
-//    UISearchForm searchForm = portlet.findFirstComponentOfType(UISearchForm.class);
-//    Event<?> evt = searchForm.createEvent("Search", Event.Phase.PROCESS, WebuiRequestContext.<WebuiRequestContext>getCurrentInstance());
-//    evt.broadcast();
-      
-    //workaround, there is bug in jcr, it doesn't flush result right after saving event
-    WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
-    JavascriptManager jsMan = context.getJavascriptManager();
-    RequireJS js = jsMan.require("SHARED/csResources","cs");
-    js.addScripts("cs.CSUtils.Utils.doAction('.UICalendarPortlet #value');");
+    this.setDisplaySearchResult(true);
+    List<CalendarEvent> allEvents = this.getAllEvents(getEventQuery());
+    this.update(new EventPageList(allEvents, 10));
+    this.setSelectedEvent(null);
+    this.setLastUpdatedEventId(null);
+    this.getParent().findFirstComponentOfType(UIPreview.class).setEvent(null);
   }
 
   private List<String> findCalendarIds() throws Exception {
@@ -263,9 +261,11 @@ public class UIListView extends UICalendarView {
     List<CalendarEvent> originalRecurEvents = new LinkedList<CalendarEvent>();
     if (isDisplaySearchResult()) {
       eventQuery.setExcludeRepeatEvent(false);
-      UIMiniCalendar uiMiniCalendar = this.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;      
-      eventQuery.setFromDate(uiMiniCalendar.getCurrentCalendar());
-      eventQuery.setToDate(uiMiniCalendar.getEndDateOfMonth());
+      UIMiniCalendar uiMiniCalendar = this.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;            
+      Calendar fromDate = CalendarUtils.getBeginDay(uiMiniCalendar.getCurrentCalendar());      
+      eventQuery.setFromDate(fromDate);
+      Calendar toDate = CalendarUtils.getEndDay(uiMiniCalendar.getEndDateOfMonth());
+      eventQuery.setToDate(toDate);
       originalRecurEvents.addAll(calendarService.getEvents(username, eventQuery, publicCalendars.toArray(new String[publicCalendars.size()])));
       for (CalendarEvent evt : originalRecurEvents) {
         if (CalendarEvent.RP_NOREPEAT.equals(evt.getRepeatType())) {
@@ -536,7 +536,7 @@ public class UIListView extends UICalendarView {
       UIListView uiListView = event.getSource() ;
       long currentPage      = uiListView.getCurrentPage() ;
       String fieldId        = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      EventQuery query      = uiListView.query ;
+      EventQuery query      = uiListView.getEventQuery();
 
       List<String> calendarIds = uiListView.findCalendarIds();
       if (calendarIds.size() > 0)
