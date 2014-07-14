@@ -121,14 +121,18 @@ public class UIListView extends UICalendarView {
   public void setIsAscending(boolean b) { isAscending_ = b; }
   public boolean isAscending() { return isAscending_; }
 
-  public void setEventQuery(EventQuery eventQuery) { query = eventQuery; }
-  public EventQuery getEventQuery() { return query; }
+  public void setEventQuery(EventQuery eventQuery) { 
+    query = new EventQuery(eventQuery);
+  }
+  public EventQuery getEventQuery() { 
+    return new EventQuery(query);    
+  }
 
   @Override
   public void refresh() throws Exception {
     UIListContainer uiListContainer = getParent() ;
     this.setCalClicked(true);
-    if (uiListContainer.isDisplaySearchResult()) return ;
+    if (uiListContainer.isDisplaySearchResult()) return;
     query = new EventQuery() ;
     if (!CalendarUtils.isEmpty(categoryId_) && !categoryId_.toLowerCase().equals("null")
         && !categoryId_.equals("calId") && !categoryId_.equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL)) {
@@ -183,6 +187,15 @@ public class UIListView extends UICalendarView {
         view.setEvent(eventMap_.get(selectedEvent));
         setLastUpdatedEventId(selectedEvent);
     }
+  }
+  
+  public void refreshSearch() throws Exception {
+    this.setDisplaySearchResult(true);
+    List<CalendarEvent> allEvents = this.getAllEvents(getEventQuery());
+    this.update(new EventPageList(allEvents, 10));
+    this.setSelectedEvent(null);
+    this.setLastUpdatedEventId(null);
+    this.getParent().findFirstComponentOfType(UIPreview.class).setEvent(null);
   }
 
   private List<String> findCalendarIds() throws Exception {
@@ -243,25 +256,37 @@ public class UIListView extends UICalendarView {
       publicCalendars  = Arrays.asList(getPublicCalendars());
       privateCalendars = getPrivateCalendars();
     }
-
+    
+    List<CalendarEvent> allEvents = new LinkedList<CalendarEvent>();
+    List<CalendarEvent> originalRecurEvents = new LinkedList<CalendarEvent>();
     if (isDisplaySearchResult()) {
       eventQuery.setExcludeRepeatEvent(false);
-      return calendarService.getEvents(username, eventQuery, publicCalendars.toArray(new String[publicCalendars.size()]));
+      UIMiniCalendar uiMiniCalendar = this.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;            
+      Calendar fromDate = CalendarUtils.getBeginDay(uiMiniCalendar.getCurrentCalendar());      
+      eventQuery.setFromDate(fromDate);
+      Calendar toDate = CalendarUtils.getEndDay(uiMiniCalendar.getEndDateOfMonth());
+      eventQuery.setToDate(toDate);
+      originalRecurEvents.addAll(calendarService.getEvents(username, eventQuery, publicCalendars.toArray(new String[publicCalendars.size()])));
+      for (CalendarEvent evt : originalRecurEvents) {
+        if (CalendarEvent.RP_NOREPEAT.equals(evt.getRepeatType())) {
+          allEvents.add(evt);          
+        }
+      }
+    } else {
+      allEvents.addAll(calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
+                                                                               privateCalendars.toArray(new String[privateCalendars.size()]),
+                                                                               publicCalendars.toArray(new String[publicCalendars.size()]),
+                                                                               emptyEventCalendars));
+      
+      originalRecurEvents.addAll(calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
+                                                                                                        eventQuery.getFromDate(),
+                                                                                                        eventQuery.getToDate(),
+                                                                                                        eventQuery,
+                                                                                                        privateCalendars.toArray(new String[privateCalendars.size()]),
+                                                                                                        publicCalendars.toArray(new String[publicCalendars.size()]),
+                                                                                                        emptyRecurrentEventCalendars));      
     }
-
-    List<CalendarEvent> allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-                                                                privateCalendars.toArray(new String[privateCalendars.size()]),
-                                                                publicCalendars.toArray(new String[publicCalendars.size()]),
-                                                                emptyEventCalendars);
-
-    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-            eventQuery.getFromDate(),
-            eventQuery.getToDate(),
-            eventQuery,
-            privateCalendars.toArray(new String[privateCalendars.size()]),
-            publicCalendars.toArray(new String[publicCalendars.size()]),
-            emptyRecurrentEventCalendars);
-
+        
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
@@ -274,6 +299,18 @@ public class UIListView extends UICalendarView {
         }
       }
     }
+
+    final String orderType = eventQuery.getOrderType();
+    Collections.sort(allEvents, new Comparator<CalendarEvent>() {
+      @Override
+      public int compare(CalendarEvent o1, CalendarEvent o2) {
+        if (Utils.DESCENDING.equals(orderType)) {
+          return o2.getFromDateTime().compareTo(o1.getFromDateTime());          
+        } else {
+          return o1.getFromDateTime().compareTo(o2.getFromDateTime());
+        }
+      }
+    });
     return allEvents;
   }
 
@@ -299,13 +336,18 @@ public class UIListView extends UICalendarView {
     eventMap_.clear();
     if(pageList_ != null) {
       for(CalendarEvent calendarEvent : pageList_.getPage(page ,CalendarUtils.getCurrentUser())) {
-        UICheckBoxInput checkbox = new UICheckBoxInput(calendarEvent.getId(),calendarEvent.getId(), false) ;
+        String id = calendarEvent.getId();
+        if (calendarEvent.getRecurrenceId() != null && (calendarEvent.getIsExceptionOccurrence() == null || !calendarEvent.getIsExceptionOccurrence())
+            && isDisplaySearchResult()) {
+            id = id + "-" + calendarEvent.getRecurrenceId();
+        }
+        UICheckBoxInput checkbox = new UICheckBoxInput(id, id, false) ;
         addUIFormInput(checkbox);
         if(getViewType().equals(TYPE_BOTH)){
-          eventMap_.put(calendarEvent.getId(), calendarEvent) ;
+          eventMap_.put(id, calendarEvent);
         }
         else if(getViewType().equals(calendarEvent.getEventType())) {
-          eventMap_.put(calendarEvent.getId(), calendarEvent) ;
+          eventMap_.put(id, calendarEvent);
         }
       }
     }
@@ -372,14 +414,28 @@ public class UIListView extends UICalendarView {
     public void execute(Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource();
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
+      Boolean isOccur = false;
+      if (!Utils.isEmpty(event.getRequestContext().getRequestParameter(ISOCCUR))) {
+        isOccur = Boolean.parseBoolean(event.getRequestContext().getRequestParameter(ISOCCUR));
+      }
+      String recurId = null, selectedId = eventId;
+      if (isOccur) {
+        recurId = event.getRequestContext().getRequestParameter(RECURID);      
+        selectedId = selectedId + "-" + recurId;
+      }
+      
       UIListContainer uiListContainer = uiListView.getAncestorOfType(UIListContainer.class);
       UIPreview uiPreview = uiListContainer.getChild(UIPreview.class);
       CalendarEvent calendarEvent = null;
       if(uiListView.getDataMap() != null) {
-        calendarEvent = uiListView.getDataMap().get(eventId) ;
+        if (isOccur && !Utils.isEmpty(recurId)) {
+            calendarEvent = uiListView.getRecurrenceMap().get(eventId).get(recurId);
+        } else {
+            calendarEvent = uiListView.getDataMap().get(eventId) ;            
+        }
         if(calendarEvent != null) {
           uiListView.setLastUpdatedEventId(eventId) ;
-          uiListView.setSelectedEvent(calendarEvent.getId()) ;
+          uiListView.setSelectedEvent(selectedId);
           uiPreview.setEvent(calendarEvent);
         } else {
           uiListView.setLastUpdatedEventId(eventId) ;
@@ -462,7 +518,7 @@ public class UIListView extends UICalendarView {
     }
   }
   public CalendarEvent getSelectedEventObj() {
-    return eventMap_.get(selectedEvent_) ;
+    return eventMap_.get(selectedEvent_);
   }
 
   public void setKeyWords(String keyWords) {
@@ -472,7 +528,7 @@ public class UIListView extends UICalendarView {
   public String getKeyWords() {
     return keyWords_;
   }
-
+  
   public static class SortActionListener extends EventListener<UIListView> {
 
     @Override
@@ -480,7 +536,7 @@ public class UIListView extends UICalendarView {
       UIListView uiListView = event.getSource() ;
       long currentPage      = uiListView.getCurrentPage() ;
       String fieldId        = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      EventQuery query      = uiListView.query ;
+      EventQuery query      = uiListView.getEventQuery();
 
       List<String> calendarIds = uiListView.findCalendarIds();
       if (calendarIds.size() > 0)

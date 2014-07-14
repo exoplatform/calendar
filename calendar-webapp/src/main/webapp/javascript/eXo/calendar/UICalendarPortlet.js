@@ -3579,9 +3579,10 @@
         var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
         var arr = eval(values);
         if(isNew == "false") this.dayDiff = this.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
-        if(compid == "UIEventForm"){
-            var fromIndex = arr.indexOf(eFromTime.val());
-            var toIndex = arr.indexOf(eToTime.val()) ;
+        if(compid == "UIEventForm") {        	
+            var fromIndex = this.getTimeIndex(eFromTime.val());
+            var toIndex = this.getTimeIndex(eToTime.val(), true);
+            
             this.timeShiftE = toIndex - fromIndex ;
         } else if(compid == "UITaskForm") {
             var fromIndex = arr.indexOf(eFromTime.val());
@@ -3600,6 +3601,16 @@
         gj(eToTime).prev().on('click','a.UIComboboxItem', function(){_module.UICalendarPortlet.updateShifTime(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift)});
         gj(eToTime).next().on('keydown', function(event){_module.UICalendarPortlet.updateShifTime(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift, event)});
     }
+    
+    UICalendarPortlet.prototype.getTimeIndex = function(time, roundUp) {
+    	var t = time.split(":");
+    	var minutes = parseInt(gj.trim(t[0])) * 60 + parseInt(gj.trim(t[1]));
+    	if (roundUp) {
+    		return Math.ceil(minutes/30);
+    	} else {
+    		return Math.floor(minutes/30);
+    	}
+    }
 
     UICalendarPortlet.prototype.suggestTime = function(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift, event){
         if(event != null) {
@@ -3610,7 +3621,7 @@
         var arr = eval(values);
         var start = eFromTime.val();
         var size = arr.length ;
-        var index = arr.indexOf(start);
+        var index = this.getTimeIndex(start);
         if(compid == "UIEventForm"){
             if((index + this.timeShiftE)>= size){
                 this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
@@ -3659,9 +3670,9 @@
         var arr = eval(values);
         var start = eFromTime.val();
         var size = arr.length ;
-        var indexs = arr.indexOf(start);
+        var indexs = this.getTimeIndex(start);
         var end = eToTime.val();
-        var indexe = arr.indexOf(end);
+        var indexe = this.getTimeIndex(end, true);
         if(compid == "UIEventForm"){
             if((indexe - indexs) > 0) {
                 this.timeShiftE = indexe - indexs;

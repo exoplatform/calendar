@@ -16,7 +16,9 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -182,7 +184,18 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
     return dataMap ;
   }
 
-  public String getPortalName() {
+  @Override
+  public Map<String, Map<String, CalendarEvent>> getRecurrenceMap() {
+    Map<String, Map<String, CalendarEvent>> recurMap = new HashMap<String, Map<String,CalendarEvent>>();
+    if(event_ != null) {
+      Map<String, CalendarEvent> eventMap = new HashMap<String, CalendarEvent>();
+      eventMap.put(event_.getRecurrenceId(), event_);
+      recurMap.put(event_.getId(), eventMap) ;
+    }
+    return recurMap;        
+  }
+
+public String getPortalName() {
     PortalContainer pcontainer =  PortalContainer.getInstance() ;
     return pcontainer.getPortalContainerInfo().getContainerName() ;
   }
