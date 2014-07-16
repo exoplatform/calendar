@@ -546,14 +546,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return rb_;
   }
 
-  public EventCategory getEventCategoryByName(String username, String eventCategoryName) throws Exception {   
-    ResourceBundle rb = getResourceBundle(); 
+  public EventCategory getEventCategoryByName(String username, String eventCategoryName) throws Exception {
     for (EventCategory ev : storage_.getEventCategories(username)) {
       if (ev.getName().equalsIgnoreCase(eventCategoryName)) {
         return ev;
-      }  else if (rb != null && eventCategoryName.equalsIgnoreCase(rb.getString("UICalendarView.label." + ev.getId()))) {
-        return ev;
-      } 
+      }
     }
     return null;
   }
