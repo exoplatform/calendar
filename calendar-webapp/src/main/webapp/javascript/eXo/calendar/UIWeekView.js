@@ -415,7 +415,7 @@
     getOffset : function(object, evt) {  
       return {
         "x": (UIWeekView.mousePos(evt).x - base.Browser.findPosX(object)) ,
-        "y": (UIWeekView.mousePos(evt).y - gj(object).offset().top)
+        "y": (UIWeekView.mousePos(evt).y - gj(object).offset().top - gj(object).offsetParent().scrollTop())
       } ;
     },
 
