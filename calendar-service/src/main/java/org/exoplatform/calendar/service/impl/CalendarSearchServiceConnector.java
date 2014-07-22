@@ -32,9 +32,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.Set;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Calendar;
@@ -49,8 +48,6 @@ import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
-import org.exoplatform.portal.config.UserPortalConfig;
-import org.exoplatform.portal.config.UserPortalConfigService;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.mop.navigation.NavigationContext;
@@ -58,16 +55,13 @@ import org.exoplatform.portal.mop.navigation.NavigationService;
 import org.exoplatform.portal.mop.navigation.NodeContext;
 import org.exoplatform.portal.mop.navigation.NodeModel;
 import org.exoplatform.portal.mop.navigation.Scope;
-import org.exoplatform.portal.mop.user.UserNavigation;
-import org.exoplatform.portal.mop.user.UserPortalContext;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.web.controller.QualifiedName;
@@ -84,7 +78,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   private NodeHierarchyCreator nodeHierarchyCreator_;
   private CalendarService calendarService_;
-  private OrganizationService organizationService_;
   private SpaceService spaceService_;
 
   private static final Log     log                 = ExoLogger.getLogger(CalendarSearchServiceConnector.class);
@@ -94,7 +87,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     super(initParams);    
     nodeHierarchyCreator_  = (NodeHierarchyCreator) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(NodeHierarchyCreator.class);
     calendarService_  = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarServiceImpl.class);
-    organizationService_ = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
     spaceService_ = (SpaceService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SpaceService.class);
   }
 
@@ -122,10 +114,11 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     SessionProvider provider = SessionProvider.createSystemProvider();
     try {
       getCalendarMap().clear();
-      String userId = ConversationState.getCurrent().getIdentity().getUserId() ;
+      Identity currentUser = ConversationState.getCurrent().getIdentity(); 
+      String userId = currentUser.getUserId() ;
       Node calendarHome = nodeHierarchyCreator_.getUserApplicationNode(provider, userId);
       List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
-      for(Calendar cal : privateCalendars){
+      for(Calendar cal : privateCalendars) {
         getCalendarMap().put(cal.getId(), cal);
       }
 
@@ -136,18 +129,13 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           getCalendarMap().put(cal.getId(), cal);
         }
       }
-      Collection<Group> group = organizationService_.getGroupHandler().findGroupsOfUser(userId);
-      if(!group.isEmpty()) {
-        String[] groupIds = new String[group.size()];
-        int i = 0 ;
-        for(Group g : group) {
-          groupIds[i] = g.getId() ;
-          i++;
-        }
-        List<GroupCalendarData> groupCalendar = calendarService_.getGroupCalendars(groupIds, true, userId) ;
+
+      Set<String> groupIds = currentUser.getGroups(); 
+      if(!groupIds.isEmpty()) {
+        List<GroupCalendarData> groupCalendar = calendarService_.getGroupCalendars(groupIds.toArray(new String[groupIds.size()]), true, userId) ;
         if(groupCalendar != null) {
           List<Calendar> spaceCalendars = new ArrayList<Calendar>();
-          for(GroupCalendarData gCal : groupCalendar){
+          for(GroupCalendarData gCal : groupCalendar) {
             if(gCal.getCalendars() != null) spaceCalendars.addAll(gCal.getCalendars());
           }
           for(Calendar cal : spaceCalendars){
@@ -202,7 +190,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   private SearchResult buildResult(SearchContext sc, Collection<String> siteKeys, String dataType, Object iter) {
     try {
       String calId = null;
-      if(iter instanceof Row){
+      if(iter instanceof Row) {
         Row row = (Row) iter;
         calId = row.getValue(Utils.EXO_CALENDAR_ID).getString() ;
       } else {
@@ -212,30 +200,27 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       }
       if(getCalendarMap().keySet().contains(calId)) {
         Calendar cal = getCalendarMap().get(calId);
-        String currentUser = ConversationState.getCurrent().getIdentity().getUserId();
-        int calType = calendarService_.getTypeOfCalendar(currentUser, calId);
-        if(isSearchable(calType, cal, currentUser, iter)){
-          StringBuffer detail = new StringBuffer();
-          String title = buildValue(Utils.EXO_SUMMARY, iter);
-          detail.append(buildCalName(Utils.EXO_CALENDAR_ID, iter)) ; 
-          String url = buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
-          String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
-          String detailValue = Utils.EMPTY_STR;
-          String imageUrl = buildImageUrl(iter);
-          detail.append(buildDetail(iter));
-          if(detail.length() > 0) detailValue = detail.toString();
-          long relevancy = buildScore(iter);
-          long date = buildDate(iter) ;
-          CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
-          result.setDataType(dataType);
-          result.setTimeZoneName(cal.getTimeZone());
-          if(CalendarEvent.TYPE_EVENT.equals(dataType)){
-            result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
-          } else if (CalendarEvent.TYPE_TASK.equals(dataType)) {
-            result.setTaskStatus(buildValue(Utils.EXO_EVENT_STATE, iter));
-          }
-          return result;
+
+        StringBuffer detail = new StringBuffer();
+        String title = buildValue(Utils.EXO_SUMMARY, iter);
+        detail.append(cal.getName());
+        String url = buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
+        String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
+        String detailValue = Utils.EMPTY_STR;
+        String imageUrl = buildImageUrl(iter);
+        detail.append(buildDetail(iter));
+        if(detail.length() > 0) detailValue = detail.toString();
+        long relevancy = buildScore(iter);
+        long date = buildDate(iter) ;
+        CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
+        result.setDataType(dataType);
+        result.setTimeZoneName(cal.getTimeZone());
+        if(CalendarEvent.TYPE_EVENT.equals(dataType)) {
+          result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
+        } else if (CalendarEvent.TYPE_TASK.equals(dataType)) {
+          result.setTaskStatus(buildValue(Utils.EXO_EVENT_STATE, iter));
         }
+        return result;
       }
     }catch (Exception e) {
       if (log.isDebugEnabled())  log.debug("Error when building result object from result data " + e);
@@ -273,7 +258,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   private String buildImageUrl(Object iter) throws RepositoryException{
     String icon = null;
-    if(iter instanceof Row){
+    if(iter instanceof Row) {
       Row row = (Row) iter;
       if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
         if(CalendarEvent.TYPE_TASK.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString())) 
@@ -281,7 +266,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         else icon = Utils.EVENT_ICON_URL; 
     } else {
       Node eventNode = (Node) iter;
-      if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
+      if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)) {
         if(CalendarEvent.TYPE_TASK.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString())) 
           icon = Utils.TASK_ICON_URL;
         else icon = Utils.EVENT_ICON_URL;
@@ -317,21 +302,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       return null;
     }
   }
-
-  private String buildCalName(String property, Object iter) throws RepositoryException{
-    if(iter instanceof Row){
-      Row row = (Row) iter;
-      if(row.getValue(property) != null && getCalendarMap().get(row.getValue(property).getString()) != null) 
-        return getCalendarMap().get(row.getValue(property).getString()).getName() ;
-    } else {
-      Node eventNode = (Node) iter;
-      if(eventNode.hasProperty(property) && getCalendarMap().get(eventNode.getProperty(property).getString()) != null){
-        return getCalendarMap().get(eventNode.getProperty(property).getString()).getName();
-      }
-    }
-    return Utils.EMPTY_STR;
-  }
-
 
   private long buildScore(Object iter){
     try {
@@ -393,88 +363,69 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     return detail.toString();
   }
 
-  private boolean isSearchable(int calType, Calendar cal, String uId,  Object iter) throws Exception{
-    Row row = (Row) iter;
-    boolean isTask = CalendarEvent.TYPE_TASK.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString());
-    boolean isPrivateCalendar = (Calendar.TYPE_PRIVATE == calType);
-    boolean isPrivateEvent = row.getValue(Utils.EXO_IS_PRIVATE).getBoolean();
-    boolean isViewPublic = (!isPrivateCalendar && !isPrivateEvent);
-    boolean isEditable = (!isTask && !isPrivateCalendar && isPrivateEvent && (cal.getEditPermission() != null) && Utils.canEdit(organizationService_, cal.getEditPermission(), uId)); 
-    return (isTask || isPrivateCalendar || isViewPublic || isEditable); 
-  }
-
   private String buildLink(SearchContext sc, Collection<String> siteKeys, String calendarId, String eventId) {
     String url = Utils.NONE_NAGVIGATION;
     if(sc != null)
       try {
-        Router router = sc.getRouter();
-        ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
-            .getComponentInstanceOfType(ExoContainerContext.class);
-        String handler = context.getPortalContainerName();
         SiteKey siteKey = null ;
         String spaceGroupId = null;
+        String siteName = sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME;
+
         if (calendarId.indexOf(Utils.SPACE_CALENDAR_ID_SUFFIX) > 0) {
           spaceGroupId = getCalendarMap().get(calendarId).getCalendarOwner();
           siteKey = SiteKey.group(spaceGroupId);
         } else {
-          UserPortalConfig prc = getUserPortalConfig();
-          siteKey = SiteKey.portal(prc.getPortalConfig().getName());
+          siteKey = SiteKey.portal(siteName);
         }
-        if(siteKey != null) {
-          if(!Utils.isEmpty(siteKey.getName())) {
-            String pageName = getSiteName(siteKey);
-            if(Utils.isEmpty(pageName)) {
-              siteKey = SiteKey.portal(sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME);
-              pageName = getSiteName(siteKey);
-            }
-            url = new StringBuffer(getUrl(router, handler, siteKey.getName(), spaceGroupId, pageName)).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
-          }
+        
+        String pageName = findCalendarPageNode(siteKey);
+        if(Utils.isEmpty(pageName)) {
+          siteKey = SiteKey.portal(siteName);
+          pageName = findCalendarPageNode(siteKey);
         }
+
+        Router router = sc.getRouter();
+        ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
+            .getComponentInstanceOfType(ExoContainerContext.class);
+        String handler = context.getPortalContainerName();
+        url = new StringBuffer(getUrl(router, handler, siteKey.getName(), spaceGroupId, pageName)).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
       } catch (Exception e) {
         if (log.isDebugEnabled()) log.debug("build link error !");
       }
     return url;
   }
 
-  private static String getSiteName(SiteKey siteKey) {
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
-    NavigationContext nav = navService.loadNavigation(siteKey);
-    NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, Scope.ALL, null);
-    if (parentNodeCtx == null) return Utils.EMPTY_STR;
-    if (parentNodeCtx.getSize() >= 1) {
-      Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
-      if (siteKey.getType() == SiteType.GROUP) {
-        if (parentNodeCtx.get(0) == null) return Utils.EMPTY_STR;
-        children = parentNodeCtx.get(0).getNodes();
+  private static String findCalendarPageNode(SiteKey siteKey) {
+    try {
+      ExoContainer container = ExoContainerContext.getCurrentContainer();
+      NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
+      NavigationContext nav = navService.loadNavigation(siteKey);
+      
+      Scope scope;
+      if (siteKey.getType().equals(SiteType.GROUP)) {
+        scope = Scope.GRANDCHILDREN;
+      } else {
+        scope = Scope.CHILDREN;
       }
-      Iterator<NodeContext<?>> it = children.iterator();
-      NodeContext<?> child = null;
-      while (it.hasNext()) {
-        child = it.next();
-        if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
-          return child.getName();
+      NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, scope, null);
+      if (parentNodeCtx.getSize() >= 1) {
+        Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
+        if (siteKey.getType() == SiteType.GROUP) {
+          children = parentNodeCtx.get(0).getNodes();
+        }
+        Iterator<NodeContext<?>> it = children.iterator();
+        NodeContext<?> child = null;
+        while (it.hasNext()) {
+          child = it.next();
+          if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
+            return child.getName();
+          }
         }
       }
+    } catch (NullPointerException e) {
+      return Utils.EMPTY_STR;
     }
     return Utils.EMPTY_STR;
-  }
-  private static UserPortalConfig getUserPortalConfig() throws Exception {
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    UserPortalConfigService userPortalConfigSer = (UserPortalConfigService)
-        container.getComponentInstanceOfType(UserPortalConfigService.class);
-    UserPortalContext NULL_CONTEXT = new UserPortalContext() {
-      public ResourceBundle getBundle(UserNavigation navigation) {
-        return null;
-      }
-      public Locale getUserLocale() {
-        return Locale.ENGLISH;
-      }
-    };
-    String remoteId = ConversationState.getCurrent().getIdentity().getUserId() ;
-    UserPortalConfig userPortalCfg = userPortalConfigSer.
-        getUserPortalConfig(userPortalConfigSer.getDefaultPortal(), remoteId, NULL_CONTEXT);
-    return userPortalCfg;
   }
 
   public String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
