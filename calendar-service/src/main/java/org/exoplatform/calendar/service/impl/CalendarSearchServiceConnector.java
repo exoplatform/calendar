@@ -116,9 +116,11 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       getCalendarMap().clear();
       Identity currentUser = ConversationState.getCurrent().getIdentity(); 
       String userId = currentUser.getUserId() ;
+      List<String> uCals = new LinkedList<String>();
       List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
       for(Calendar cal : privateCalendars) {
         getCalendarMap().put(cal.getId(), cal);
+        uCals.add(cal.getId());
       }
 
       GroupCalendarData sharedCalendar = calendarService_.getSharedCalendars(userId, true) ;
@@ -154,7 +156,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       MultiListAccess listAccess = new MultiListAccess();
       
       Node uHome = jcrDataStorage.getUserCalendarHome(userId);
-      EventQuery uEventQuery = createQuery(dataType, query, sort, order, uHome.getPath(), null);      
+      EventQuery uEventQuery = createQuery(dataType, query, sort, order, uHome.getPath(), uCals.toArray(new String[uCals.size()]));      
       listAccess.add(new EventListAccess(jcrDataStorage, uEventQuery));
       
       if (gCals.size() > 0) {
