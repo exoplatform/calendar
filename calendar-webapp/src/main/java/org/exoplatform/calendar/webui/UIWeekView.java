@@ -700,12 +700,14 @@ public class UIWeekView extends UICalendarView {
             calendarview.refresh() ;
             UIMiniCalendar uiMiniCalendar = uiCalendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar);
-            if(isOccur) event.getRequestContext().addUIComponentToUpdateByAjax(calendarview) ;
-            JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
-            RequireJS requireJS = jsManager.getRequireJS();
-            requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-            requireJS.addScripts("cal.UIWeekView.setSize();cal.UIWeekView.cleanUp();");
-
+            if(isOccur) {
+                event.getRequestContext().addUIComponentToUpdateByAjax(calendarview) ;
+            } else {
+                JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
+                RequireJS requireJS = jsManager.getRequireJS();
+                requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
+                requireJS.addScripts("cal.UIWeekView.setSize();cal.UIWeekView.cleanUp();");
+            }
           }
         } catch (PathNotFoundException e) {
           if (log.isDebugEnabled()) {
