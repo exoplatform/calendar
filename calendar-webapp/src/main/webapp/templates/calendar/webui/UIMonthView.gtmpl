@@ -109,9 +109,11 @@
              dateTime = temcalendar.getTimeInMillis() ;  
             actionUpdate = uicomponent.event('UpdateEvent', dateTime + '&' + uicomponent.EVENTID + '=event&' + uicomponent.CALENDARID + '=cal&' + uicomponent.CALTYPE + '=caltype') ;
             dayActionLink = uicomponent.TYPE_DAY +"&currentTime="+  dateTime ;
-            if (validDay) { 
+            if (validDay) {
+              tdClass = "";
               if (uicomponent.isCurrentDay(dayOfMonth, currentMonth, currentYear )) {
               clazz = 'today';
+              tdClass = 'tdToday';
               } else if (dayOfWeek == 1 || dayOfWeek == 7) {
               clazz = 'dayBox';
               } else {
@@ -119,7 +121,7 @@
               }
               month = currentMonth + 1 ;
               %>
-              <td id="r<%=week%>c<%=dayOfWeek%>" rindex="<%=week%>" cindex="<%=dayOfWeek%>" startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>"  actionLink="$actionUpdate" class="calendarContentNomal uiCellBlock" startTime='<%=temcalendar.getTimeInMillis()%>' > 
+              <td id="r<%=week%>c<%=dayOfWeek%>" rindex="<%=week%>" cindex="<%=dayOfWeek%>" startTimeFull="<%=tempFormat.format(temcalendar.getTime())%>"  actionLink="$actionUpdate" class="calendarContentNomal uiCellBlock $tdClass" startTime='<%=temcalendar.getTimeInMillis()%>' >
               <div class="dayBox $clazz">
               <a href="<%=uicomponent.event("GotoDate",dayActionLink)%>" onmousedown="event.cancelBubble = true ;">
                <%=sdf.format(temcalendar.getTime())%> 
