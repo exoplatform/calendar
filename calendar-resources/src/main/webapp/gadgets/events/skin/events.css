@@ -63,7 +63,7 @@ table {
 }
 
 .UIGadgetThemes .GadCont .IconLink {
-  background: url('/csResources/gadgets/events/skin/IconLink.gif') no-repeat left center;
+  background: url('IconLink.gif') no-repeat left center;
   display: block;
 }
 

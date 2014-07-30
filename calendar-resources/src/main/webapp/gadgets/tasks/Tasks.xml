@@ -5,12 +5,12 @@
     directory_title="My Tasks"
     title_url="http://www.exoplatform.org"
     description="Tasks list."
-    thumbnail="/csResources/gadgets/tasks/skin/Tasks.png">
-    <Locale messages="/csResources/gadgets/tasks/locale/default.xml" />
-    <Locale lang="ar" messages="/csResources/gadgets/tasks/locale/ar.xml" language_direction="rtl"/>
-    <Locale lang="fr" messages="/csResources/gadgets/tasks/locale/fr.xml" />
-    <Locale lang="vi" messages="/csResources/gadgets/tasks/locale/vi.xml" />
-    <Locale lang="it" messages="/csResources/gadgets/events/locale/it.xml" />
+    thumbnail="skin/Tasks.png">
+    <Locale messages="locale/default.xml" />
+    <Locale lang="ar" messages="locale/ar.xml" language_direction="rtl"/>
+    <Locale lang="fr" messages="locale/fr.xml" />
+    <Locale lang="vi" messages="locale/vi.xml" />
+    <Locale lang="it" messages="locale/it.xml" />
     <Require feature="setprefs"/>
     <Require feature="dynamic-height"/>
     <UserPref name="setting" default_value="/calendar;/rest/cs/calendar/getissues;10;AM/PM;Default" datatype="hidden" />

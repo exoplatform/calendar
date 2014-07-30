@@ -243,7 +243,7 @@ eXoEventGadget.prototype.doTask = function(obj){
 	if(confirm(confirmMsg)){
 		var taskitem = obj.parentNode;
 		var url = eXoEventGadget.createRequestUrl();
-		url = url.replace(/calendar.*$/ig,"calendar/updatestatus/"+obj.value);
+		url = url.replace(/calendar.*$/ig,"calendar/updatestatus/"+obj.value+"/3?statusid=3");
 		eXoEventGadget.ajaxAsyncGetRequest(url);
 		eXoEventGadget.swapClass(taskitem);
 		obj.disabled = true;
