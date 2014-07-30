@@ -138,6 +138,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   public Map<String, Map<String, String>> perms_ = new HashMap<String, Map<String, String>>() ;
   public Calendar calendar_ = null ;
   public String calType_ =  CalendarUtils.PRIVATE_TYPE ;
+  private String originPublicURL = null;
   private boolean isAddNew_ = true ;
   public String groupCalId_ = null ;
 
@@ -267,6 +268,7 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
       setTimeZone(null) ;
       setSelectedColor(null) ;
     } else {
+      calendar_.setPublicUrl(originPublicURL);
       init(calendar_, null) ;
     }
   }
@@ -275,7 +277,8 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
 
   public void init(Calendar calendar, CalendarSetting setting) throws Exception {
     isAddNew_ = false ;
-    calendar_ = calendar ;
+    calendar_ = calendar;
+    originPublicURL = calendar.getPublicUrl();
 
     UIFormInputWithActions calendarDetail = getChildById(INPUT_CALENDAR);
     if (setting != null) {
@@ -331,7 +334,11 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     {
       groupTab.setRendered(false) ;
     }
-    setTimeZone(setting.getTimeZone()) ;
+
+    if(setting != null) {
+      setTimeZone(setting.getTimeZone()) ;
+    }
+
     setSelectedColor(calendar.getCalendarColor()) ;
     if(calendar.getPrivateUrl() == null || calendar.getPrivateUrl().isEmpty()) {
       calendar_.setPrivateUrl(CalendarUtils.buildSubscribeUrl(calendar.getId(), calType_, true));
