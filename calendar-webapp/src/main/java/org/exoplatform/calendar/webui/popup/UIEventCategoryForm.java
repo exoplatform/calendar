@@ -17,6 +17,9 @@
 package org.exoplatform.calendar.webui.popup;
 
 import javax.jcr.ItemExistsException;
+
+import java.util.List;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
@@ -90,29 +93,31 @@ public class UIEventCategoryForm extends UIForm {
     @Override
     public void execute(Event<UIEventCategoryForm> event) throws Exception {
       UIEventCategoryForm uiForm = event.getSource() ;
+      UIEventCategoryManager uiManager = uiForm.getAncestorOfType(UIEventCategoryManager.class);
+      
       String name = uiForm.getUIStringInput(EVENT_CATEGORY_NAME).getValue() ;
       if(!CalendarUtils.isEmpty(name)) {
         name = name.trim() ;
       }
       
       name = CalendarUtils.reduceSpace(name) ;
-      UIEventCategoryManager uiManager = uiForm.getAncestorOfType(UIEventCategoryManager.class) ;
       CalendarService calendarService = CalendarUtils.getCalendarService();
       String username = CalendarUtils.getCurrentUser() ;
+      List<EventCategory> categories = calendarService.getEventCategories(username);
       EventCategory eventCat = new EventCategory() ;
       eventCat.setName(name) ;
       try {
         if(uiForm.isAddNew_) {
-          for (String defaultName : uiManager.defaultEventCategoriesMap.values()) {
-            if (defaultName.equalsIgnoreCase(eventCat.getName())) {
+          for (EventCategory cat : categories) {
+            if (cat.getLocalizedName().equalsIgnoreCase(eventCat.getName())) {
               throw new ItemExistsException();
             }
           }
           calendarService.saveEventCategory(username, eventCat, true) ;
         } else { 
           eventCat = uiForm.getEventCategory() ;
-          for (String defaultName : uiManager.defaultEventCategoriesMap.values()) {
-            if (defaultName.equalsIgnoreCase(name) && !eventCat.getName().equalsIgnoreCase(name)) {
+          for (EventCategory cat : categories) {
+            if (cat.getLocalizedName().equalsIgnoreCase(name) && !eventCat.getName().equalsIgnoreCase(name)) {
               throw new ItemExistsException();
             }
           }
