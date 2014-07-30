@@ -16,7 +16,13 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.services.jcr.util.IdGenerator;
+import org.exoplatform.web.application.RequestContext;
+import org.exoplatform.webui.application.WebuiRequestContext;
 
 /**
  * Created by The eXo Platform SARL
@@ -41,6 +47,24 @@ public class EventCategory {
 
   public void setName(String name) {
     this.name = name;
+  }
+  
+  public String getLocalizedName() {
+    WebuiRequestContext context = RequestContext.getCurrentInstance();
+    ResourceBundle res = context.getApplicationResourceBundle();
+    
+    for (int i = 0; i < NewUserListener.defaultEventCategoryIds.length; i++) {
+      if (getId().equals(NewUserListener.defaultEventCategoryIds[i])
+          && getName().equals(NewUserListener.defaultEventCategoryNames[i])) {
+        try {
+          if (res != null) {
+            return res.getString("UICalendarView.label." + getId());            
+          }
+        } catch (MissingResourceException e) {
+        }
+      }
+    }
+    return getName();
   }
 
   public void setDataInit(boolean isDataInit) {

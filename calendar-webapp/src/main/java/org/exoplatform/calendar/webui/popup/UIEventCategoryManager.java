@@ -17,9 +17,7 @@
 package org.exoplatform.calendar.webui.popup;
 
 import java.io.Writer;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.exoplatform.calendar.CalendarUtils;
@@ -41,7 +39,6 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
-import org.exoplatform.webui.core.UIConfirmation;
 import org.exoplatform.webui.core.UIGrid;
 import org.exoplatform.webui.core.lifecycle.UIContainerLifecycle;
 import org.exoplatform.webui.event.Event;
@@ -63,11 +60,10 @@ import org.exoplatform.webui.event.EventListener;
                  }
 )
 public class UIEventCategoryManager extends UIContainer implements UIPopupComponent {
-  public static String[] BEAN_FIELD = {"name"};
+  public static String[] BEAN_FIELD = {"localizedName"};
   private static String[] ACTION = {"Edit", "Delete"} ;
   public String categoryId_ ;
   private String confirmedCategoryId_;
-  Map<String, String> defaultEventCategoriesMap = new LinkedHashMap<String, String>();
 
   public UIEventCategoryManager() throws Exception {
     this.setName("UIEventCategoryManager") ;
@@ -106,29 +102,11 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
     CalendarService calService = getApplicationComponent(CalendarService.class) ;
     String username = CalendarUtils.getCurrentUser() ;
     List<EventCategory>  categories = calService.getEventCategories(username) ;
-    defaultEventCategoriesMap.clear();
-    for (EventCategory category : categories) {
-      // Check if EventCategory is default event category
-      boolean isDefaultEventCategory = false;
-      for (int i = 0; i < NewUserListener.defaultEventCategoryIds.length; i++) {
-        if (category.getId().equals(NewUserListener.defaultEventCategoryIds[i])
-            && category.getName().equals(NewUserListener.defaultEventCategoryNames[i])) {
-          isDefaultEventCategory = true;
-          break;
-        }
-      }
-      
-      if (isDefaultEventCategory) {
-        String newName = CalendarUtils.getResourceBundle("UICalendarView.label." + category.getId(), category.getId());
-        category.setName(newName);
-        defaultEventCategoriesMap.put(category.getId(), newName);
-      }
-    }
     UIGrid uiGrid = getChild(UIGrid.class) ; 
     LazyPageList<EventCategory> pageList = new LazyPageList<EventCategory>(new ListAccessImpl<EventCategory>(EventCategory.class, categories), 10);
     uiGrid.getUIPageIterator().setPageList(pageList) ;   
   }
-
+  
   static  public class EditActionListener extends EventListener<UIEventCategoryManager> {
     @Override
     public void execute(Event<UIEventCategoryManager> event) throws Exception {
@@ -139,10 +117,8 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
       CalendarService calService = uiManager.getApplicationComponent(CalendarService.class) ;
       String username = CalendarUtils.getCurrentUser() ;
       EventCategory category = calService.getEventCategory(username, categoryId) ;
-      uiForm.setEventCategory(category) ;
-      if (uiManager.defaultEventCategoriesMap.containsKey(categoryId)) 
-        category.setName(uiManager.defaultEventCategoriesMap.get(categoryId));      
-      uiForm.setCategoryName(category.getName());
+      uiForm.setEventCategory(category);
+      uiForm.setCategoryName(category.getLocalizedName());
       event.getRequestContext().addUIComponentToUpdateByAjax(uiManager) ;
     }
   }
@@ -279,6 +255,5 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
         event.getRequestContext().addUIComponentToUpdateByAjax(uiManager) ;
       }
     }
-
 
 }
