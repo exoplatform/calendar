@@ -5,12 +5,12 @@
     directory_title="Upcoming Events"
     title_url="http://www.exoplatform.org"
     description="Upcoming events list."  
-    thumbnail="/csResources/gadgets/events/skin/Events.png">
-    <Locale messages="/csResources/gadgets/events/locale/default.xml" />
-    <Locale lang="ar" messages="/csResources/gadgets/events/locale/ar.xml" language_direction="rtl"/>
-    <Locale lang="fr" messages="/csResources/gadgets/events/locale/fr.xml" />
-    <Locale lang="vi" messages="/csResources/gadgets/events/locale/vi.xml" />
-    <Locale lang="it" messages="/csResources/gadgets/events/locale/it.xml" />
+    thumbnail="skin/Events.png">
+    <Locale messages="locale/default.xml" />
+    <Locale lang="ar" messages="locale/ar.xml" language_direction="rtl"/>
+    <Locale lang="fr" messages="locale/fr.xml" />
+    <Locale lang="vi" messages="locale/vi.xml" />
+    <Locale lang="it" messages="locale/it.xml" />
     <Require feature="setprefs"/>
     <Require feature="dynamic-height"/>
   </ModulePrefs>  
