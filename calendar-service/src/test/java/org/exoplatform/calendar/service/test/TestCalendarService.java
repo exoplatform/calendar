@@ -1130,6 +1130,50 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(calendarService_.removeUserCalendar(username, ids[0]));
   }
   
+  public void testUnifiedSeachDetail() throws Exception {
+    loginUser(username);
+    Calendar cal = new Calendar();
+    cal.setName("root calendar");
+    cal.setTimeZone(TimeZone.getAvailableIDs(0)[0]); //GMT+0
+    calendarService_.saveUserCalendar(username, cal, true);
+
+    EventCategory eventCategory = new EventCategory();
+    eventCategory.setName("Meeting");
+    calendarService_.saveEventCategory(username, eventCategory, true);
+
+    CalendarEvent calEvent = new CalendarEvent();
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 1);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.HOUR, 1);
+    toCal.add(java.util.Calendar.MINUTE, 1);
+    createUserEvent(cal.getId(), eventCategory, "test", fromCal, toCal);
+
+    //Simple case
+    String keyword = "test";
+    EventQuery query = new UnifiedQuery();
+    query.setText(keyword);
+    Collection<String> params = new ArrayList<String>();
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertNotNull(result);
+    assertEquals(result.size(), 1);
+    SearchResult r = result.iterator().next();
+    assertEquals(keyword, r.getTitle());
+    
+    SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT);
+    df.setTimeZone(TimeZone.getTimeZone(cal.getTimeZone()));
+    String detail = "root calendar - " + df.format(fromCal.getTime());
+    assertEquals(detail, r.getDetail());
+
+    // Clean up data 
+    String[] ids = new String[]{cal.getId()};
+    calendarService_.removeUserEvent(username, ids[0], calEvent.getId());
+    calendarService_.removeEventCategory(username, eventCategory.getId());
+    assertNotNull(calendarService_.removeUserCalendar(username, ids[0]));
+  }
+
   private Router loadConfiguration(String path) throws IOException{
     InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
     try {

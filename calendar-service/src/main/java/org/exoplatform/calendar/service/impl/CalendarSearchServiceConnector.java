@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Calendar;
@@ -236,7 +237,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
         String detailValue = Utils.EMPTY_STR;
         String imageUrl = buildImageUrl(iter);
-        detail.append(buildDetail(iter));
+        detail.append(buildDetail(iter, cal.getTimeZone()));
         if(detail.length() > 0) detailValue = detail.toString();
         long relevancy = buildScore(iter);
         long date = buildDate(iter) ;
@@ -356,8 +357,9 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     return Utils.EMPTY_STR;
   }
 
-  private String buildDetail(Object iter) throws RepositoryException{
+  private String buildDetail(Object iter, String timeZone) throws RepositoryException{
     SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT) ;
+    df.setTimeZone(TimeZone.getTimeZone(timeZone));
     StringBuffer detail = new StringBuffer();
     if(iter instanceof Row){
       Row row = (Row) iter;
