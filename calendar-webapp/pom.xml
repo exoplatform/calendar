@@ -165,7 +165,11 @@
         <exclusion>          
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
-        </exclusion>  
+        </exclusion>
+          <exclusion>
+              <groupId>jdom</groupId>
+              <artifactId>jdom</artifactId>
+          </exclusion>
         <exclusion>          
           <groupId>xpp3</groupId>
           <artifactId>xpp3_min</artifactId>

@@ -869,7 +869,7 @@ public class UICalendars extends UIForm  {
             for(GroupCalendarData groupCal : uiComponent.getPublicCalendars()) {
               for(Calendar cal : groupCal.getCalendars()) {
                 if(cal.getId().equals(calendarId)) {
-                  canEdit = Utils.canEdit((groupCal.getCalendarById(calendarId)).getEditPermission()) ;
+                  canEdit = Utils.canEdit(oService, (groupCal.getCalendarById(calendarId)).getEditPermission(), username) ;
                   break ;
                 }
               }
@@ -1061,7 +1061,7 @@ public class UICalendars extends UIForm  {
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
-            if(!Utils.canEdit(calendar.getEditPermission())) {
+            if(!Utils.canEdit(uiComponent.getApplicationComponent(OrganizationService.class), calendar.getEditPermission(), username)){
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, AbstractApplicationMessage.WARNING)) ;
               return ;
             }
