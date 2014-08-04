@@ -21,79 +21,95 @@
       <depends>
         <module>bts_tooltip</module>
       </depends>
-    <depends>
-      <module>LoadMorePlugin</module>
-    </depends>
-    <depends>
-      <module>Highlighter</module>
-    </depends>
-    <depends>
-      <module>CalendarLayout</module>
-    </depends>
-    <depends>
-      <module>Reminder</module>
-    </depends>
-    <depends>
-      <module>UIWeekView</module>
-    </depends>
-    <depends>
-      <module>UICalendarMan</module>
-    </depends>
-    <depends>
-      <module>common</module>
-    </depends>
+	   <depends>
+	     <module>LoadMorePlugin</module>
+	   </depends>
+	   <depends>
+	     <module>Highlighter</module>
+	   </depends>
+	   <depends>
+	     <module>CalendarLayout</module>
+	   </depends>
+	   <depends>
+	     <module>Reminder</module>
+	   </depends>
+	   <depends>
+	     <module>UIWeekView</module>
+	   </depends>
+	   <depends>
+	     <module>UICalendarMan</module>
+	   </depends>
+	   <depends>
+	     <module>common</module>
+	   </depends>
+	   <depends>
+	     <module>base</module>
+	   </depends>
+	   <depends>
+	     <module>uiPopup</module>
+	   </depends>
+	   <depends>
+	     <module>commons-cometd</module>
+	     <as>cometd</as>
+	   </depends>
+	   <depends>
+	     <module>uiForm</module>
+	   </depends>
+	   <depends>
+	     <module>uiPopupWindow</module>
+	   </depends>
+	   <depends>
+	     <module>webui-ext</module>
+	     <as>wx</as>
+	   </depends>
+	   <depends>
+	     <module>DOMUtil</module>
+	   </depends>
+	   <depends>
+	     <module>jquery</module>
+	     <as>gj</as>
+	   </depends>
+	   <depends>
+	     <module>UICalendars</module>
+	   </depends>
+	   <depends>
+	     <module>ScheduleSupport</module>
+	   </depends>
+	   <depends>
+	     <module>CSUtils</module>
+	   </depends>
+	   <depends>
+	     <module>CalContextMenu</module>
+	     <as>UIContextMenu</as>
+	   </depends>
+	   <depends>
+	     <module>CalDateTimePicker</module>
+	   </depends>
+	   <depends>
+	     <module>DateTimeFormatter</module>
+	   </depends>
+	   <depends>
+	     <module>UIHSelection</module>
+	   </depends>
+	   <depends>
+	     <module>UIResizeEvent</module>
+	   </depends>
+    </module>
+  </portlet>
+  
+  <module>
+    <name>UIResizeEvent</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UIResizeEvent.js</path>
+    </script>
     <depends>
       <module>base</module>
-      <as>base</as>
-    </depends>
-    <depends>
-      <module>uiPopup</module>
-    </depends>
-    <depends>
-      <module>commons-cometd</module>
-      <as>cometd</as>
-    </depends>
-    <depends>
-      <module>uiForm</module>
-    </depends>
-    <depends>
-      <module>uiPopupWindow</module>
-    </depends>
-    <depends>
-      <module>webui-ext</module>
-      <as>wx</as>
-    </depends>
-    <depends>
-      <module>DOMUtil</module>
     </depends>
     <depends>
       <module>jquery</module>
-      <as>gj</as>
     </depends>
-    <depends>
-      <module>UICalendars</module>
-    </depends>
-    <depends>
-      <module>ScheduleSupport</module>
-    </depends>
-    <depends>
-      <module>CSUtils</module>
-    </depends>
-    <depends>
-      <module>CalContextMenu</module>
-      <as>UIContextMenu</as>
-    </depends>
-    <depends>
-      <module>CalDateTimePicker</module>
-    </depends>
-    <depends>
-      <module>DateTimeFormatter</module>
-    </depends>
-    <depends>
-      <module>UIHSelection</module>
-    </depends>
-    </module>
-  </portlet>
+  </module>
   
   <module>
     <name>DOMUtil</name>
@@ -401,6 +417,9 @@
     </depends>
     <depends>
       <module>UIHorizontalResize</module>
+    </depends>
+    <depends>
+      <module>UIResizeEvent</module>
     </depends>
   </module>
   

@@ -1,4 +1,4 @@
-(function(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize) {	
+(function(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent) {	
   var UIWeekView = {	
     originalHeightOfEventWeekContent : null,
     
@@ -490,7 +490,6 @@
       _e.stopPropagation();
       //_e.cancelBubble = true ;
       if(_e.button == 2) return ;
-      var UIResizeEvent = eXo.calendar.UIResizeEvent ;
       // this : the marker - div tag with class resizeEventContainer
       var eventContainer = gj(this).parents('.eventContainerBorder')[0]; 
       var siblingOfMarker = gj(this).prevAll('div')[0];
@@ -514,7 +513,6 @@
      */
     resizeCallback : function(evt) {
         var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
-        var UIResizeEvent = eXo.calendar.UIResizeEvent ;
         var eventBox = UIResizeEvent.outerElement ;
         var start =  parseInt(eventBox.getAttribute("startTime")) ;
         var end =  start + UICalendarPortlet.pixelsToMins(eventBox.offsetHeight);
@@ -947,4 +945,4 @@
   eXo.calendar = eXo.calendar || {} ;
   eXo.calendar.UIWeekView = UIWeekView;
   return UIWeekView;
-})(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize);
+})(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent);

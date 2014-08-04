@@ -134,7 +134,7 @@
 
       requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
       requireJS.require("SHARED/Reminder","Reminder");
-      requireJS.require("SHARED/UIContextMenu","uiContextMenu");
+      requireJS.require("SHARED/CalContextMenu","uiContextMenu");
       requireJS.addScripts('cal.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
 	
       //def params = "{restContext: $restContext,settingTimezone: $settingTimeZone}";
