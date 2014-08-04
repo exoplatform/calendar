@@ -1,4 +1,4 @@
-(function(base, gtnav, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, 
+(function(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, 
 		wx, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection) {
     var _module = {};
     eXo.calendar = eXo.calendar || {};
@@ -14,12 +14,6 @@
         this.timeShiftE = 0;
         this.timeShiftT = 0;
         this.dayDiff = 0;
-    }
-
-    UICalendarPortlet.prototype.onLoad = function(param){
-        eXo.calendar = eXo.calendar || {};
-        _module.restContext = param.restContext;
-        _module.settingTimezone = param.settingTimezone;
     }
 
     /**
@@ -541,6 +535,7 @@
         this.workingStart = UICalendarPortlet.timeToMin(workingStart);
         this.timeFormat = (arguments.length > 2) ? gj.trim(new String(arguments[2])) : null;
         this.portletName = arguments[3];
+        this.portletNode = gj("#" + portletName).parents(".PORTLET-FRAGMENT")[0];
     };
 
     /**
@@ -1452,52 +1447,6 @@
         gj.globalEval(actionLink);
     };
 
-
-    /**
-     * Sets up context menu for Calendar portlet
-     * @param {Object} compid Portlet id
-     */
-    UICalendarPortlet.prototype.showContextMenu = function(compid){
-        this.portletNode = gj(document.getElementById(compid)).parents(".PORTLET-FRAGMENT")[0];
-        this.portletName = compid;
-        UIContextMenu.portletName = this.portletName;
-        var config = {
-            'preventDefault': false,
-            'preventForms': false
-        };
-        UIContextMenu.init(config);
-        UIContextMenu.attach("calendarContentNomal", "UIMonthViewRightMenu");
-        UIContextMenu.attach("eventOnDayContent", "UIMonthViewEventRightMenu");
-        UIContextMenu.attach("TimeRule", "UIDayViewRightMenu");
-        UIContextMenu.attach("eventBoxes", "UIDayViewEventRightMenu");
-        UIContextMenu.attach(["Weekday","Weekend","today", "eventAlldayContainer"], "UIWeekViewRightMenu");
-        UIContextMenu.attach("uiListViewRow", "uiListViewEventRightMenu");
-        if(document.getElementById("UIPageDesktop")) this.firstRun = false ;
-        this.fixIE();
-    };
-
-    /**
-     * Fixs relative positioning problems in IE
-     */
-    UICalendarPortlet.prototype.fixIE = function(){
-        var isDesktop = document.getElementById("UIPageDesktop");
-        if ((gj.browser.msie != undefined) && isDesktop) {
-            var portlet = this.portletNode;
-            var uiResizeBlock = gj(portlet).parents(".UIResizableBlock")[0];
-            var relative = gj(uiResizeBlock).find("div.FixIE")[0];
-            if (!relative)
-                return;
-            relative.className = "UIResizableBlock";
-            var style = {
-                position: "relative",
-                height: uiResizeBlock.offsetHeight + 'px',
-                width: "100%",
-                overflow: "auto"
-            };
-            this.setStyle(relative, style);
-        }
-    };
-
     /**
      * Callback method when right click in list view
      * @param {Object} evt Mouse event
@@ -1829,7 +1778,6 @@
                 gj.globalEval(action);
             }
         } else {
-            var UIContextMenu = cs.UIContextMenu;
             var $event = $checked.closest('.eventBoxes, .uiListViewRow');
             var action = $element.attr('singleDeleteAction');
             if(action) {
@@ -2909,25 +2857,6 @@
     eXo.calendar.UIResizeEvent = new UIResizeEvent();
     eXo.calendar.UISelection = new UISelection();
 
-    UICalendarPortlet.prototype.fixFirstLoad = function(){
-        if (this.firstRun){
-            if (this.delay) {
-                window.clearTimeout(this.delay);
-                delete this.delay ;
-            }
-            return;
-        }
-        if (document.getElementById("UIPageDesktop")) {
-            if (_module.UICalendarPortlet.getElementById("UIWeekView")) {
-                _module.UICalendarMan.initWeek();
-                _module.UIWeekView.setSize();
-                _module.UICalendarPortlet.setFocus();
-                this.firstRun = true;
-            }
-        }
-
-    };
-
     UICalendarPortlet.prototype.fixForMaximize = function(){
         var obj = _module.UICalendarPortlet.portletNode ;
         var uiWindow = gj(obj).parents(".UIWindow")[0];
@@ -2939,73 +2868,6 @@
             }
             if (_module.UICalendarPortlet.getElementById("UIMonthView")) {
                 _module.UICalendarMan.initMonth();
-            }
-        }
-    };
-
-    /**
-     *
-     * Scroll Manager for Action bar
-     */
-    function CalendarScrollManager(){
-    };
-
-    CalendarScrollManager.prototype.load = function(){
-        var uiNav = _module.CalendarScrollManager ;
-        var container = _module.UICalendarPortlet.getElementById("uiActionBar") ;
-        if(container) {
-            var mainContainer = gj(container).find('div.CalendarActionBar')[0];
-            var randomId = base.eXo.generateId("CalendarScrollbar");
-            mainContainer.setAttribute("id",randomId);
-            uiNav.scrollMgr = new gtnav.ScrollManager(randomId) ;
-
-            uiNav.scrollMgr.initFunction = uiNav.initScroll ;
-            uiNav.scrollMgr.mainContainer = mainContainer ;
-            uiNav.scrollMgr.arrowsContainer = gj(container).find('div.ScrollButtons')[0];
-            uiNav.scrollMgr.loadItems("ActionBarButton", true) ;
-            var button = gj(uiNav.scrollMgr.arrowsContainer).find('div');
-            if(button.length >= 2) {
-                uiNav.scrollMgr.initArrowButton(button[0],"left", "ScrollLeftButton", "HighlightScrollLeftButton", "DisableScrollLeftButton") ;
-                uiNav.scrollMgr.initArrowButton(button[1],"right", "ScrollRightButton", "HighlightScrollRightButton", "DisableScrollRightButton") ;
-            }
-
-            uiNav.scrollManagerLoaded = true;
-            uiNav.initScroll() ;
-        }
-    } ;
-
-    CalendarScrollManager.prototype.initScroll = function() {
-        var uiNav = _module.CalendarScrollManager ;
-        if(!uiNav.scrollManagerLoaded) uiNav.load() ;
-        var elements = uiNav.scrollMgr.elements ;
-        uiNav.scrollMgr.init() ;
-        uiNav.scrollMgr.csCheckAvailableSpace() ;
-        uiNav.scrollMgr.renderElements() ;
-    } ;
-
-    gtnav.ScrollManager.prototype.loadItems = function(elementClass, clean) {
-        if (clean) this.cleanElements();
-        this.elements.clear();
-        var items = gj(this.mainContainer).find('div.' + elementClass);
-        for(var i = 0; i < items.length; i++){
-            this.elements.push(items[i]);
-        }
-    };
-
-    gtnav.ScrollManager.prototype.csCheckAvailableSpace = function(maxSpace) { // in pixels
-        if (!maxSpace) maxSpace = this.getElementSpace(this.mainContainer) - this.getElementSpace(this.arrowsContainer);
-        var elementsSpace = 0;
-        var margin = 0;
-        var length =  this.elements.length;
-        for (var i = 0; i < length; i++) {
-            elementsSpace += this.getElementSpace(this.elements[i]);
-            if (i+1 < length) margin = this.getElementSpace(this.elements[i+1]) / 3;
-            else margin = this.margin;
-            if (elementsSpace + margin < maxSpace) {
-                this.elements[i].isVisible = true;
-                this.lastVisibleIndex = i;
-            } else {
-                this.elements[i].isVisible = false;
             }
         }
     };
@@ -3268,10 +3130,6 @@
 
         return dayName + ", " + monthName + " " + dateInMonth;
     };
-
-
-    _module.CalendarScrollManager = new CalendarScrollManager();
-    eXo.calendar.CalendarScrollManager = _module.CalendarScrollManager;
 
     UICalendarPortlet.prototype.useAuthenticationForRemoteCalendar = function(id) {
         var USE_AUTHENTICATION = "useAuthentication";
@@ -3852,5 +3710,5 @@
     eXo.calendar.UICalendarPortlet = _module.UICalendarPortlet;
     var uiPopup = uiPopupWindow ;
     return _module;
-})(base, gtnav, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
+})(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
 		uiPopupWindow, wx, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection);

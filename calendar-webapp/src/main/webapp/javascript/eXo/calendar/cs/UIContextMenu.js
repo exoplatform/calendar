@@ -8,6 +8,50 @@ var UIContextMenu = {
 	preventForms : true,
 	portletCssClass : "UICalendarPortlet",
 	
+	/**
+     * Sets up context menu for Calendar portlet
+     * @param {Object} compid Portlet id
+     */
+    showContextMenu : function(compid) {
+        this.portletNode = gj(document.getElementById(compid)).parents(".PORTLET-FRAGMENT")[0];
+        this.portletName = compid;
+        UIContextMenu.portletName = this.portletName;
+        var config = {
+            'preventDefault': false,
+            'preventForms': false
+        };
+        UIContextMenu.init(config);
+        UIContextMenu.attach("calendarContentNomal", "UIMonthViewRightMenu");
+        UIContextMenu.attach("eventOnDayContent", "UIMonthViewEventRightMenu");
+        UIContextMenu.attach("TimeRule", "UIDayViewRightMenu");
+        UIContextMenu.attach("eventBoxes", "UIDayViewEventRightMenu");
+        UIContextMenu.attach(["Weekday","Weekend","today", "eventAlldayContainer"], "UIWeekViewRightMenu");
+        UIContextMenu.attach("uiListViewRow", "uiListViewEventRightMenu");
+        this.fixIE();
+    },
+
+    /**
+     * Fixs relative positioning problems in IE
+     */
+    fixIE : function() {
+        var isDesktop = document.getElementById("UIPageDesktop");
+        if ((gj.browser.msie != undefined) && isDesktop) {
+            var portlet = this.portletNode;
+            var uiResizeBlock = gj(portlet).parents(".UIResizableBlock")[0];
+            var relative = gj(uiResizeBlock).find("div.FixIE")[0];
+            if (!relative)
+                return;
+            relative.className = "UIResizableBlock";
+            var style = {
+                position: "relative",
+                height: uiResizeBlock.offsetHeight + 'px',
+                width: "100%",
+                overflow: "auto"
+            };
+            gj(relative).css(style);
+        }
+    },
+    
 	getCallback : function(menu) {
 		  if(!menu) return ;
 			var callback = menu.getAttribute("eXoCallback") ;

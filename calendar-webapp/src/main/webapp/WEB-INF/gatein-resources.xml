@@ -50,10 +50,6 @@
       <module>uiPopup</module>
     </depends>
     <depends>
-      <module>navigation</module>
-      <as>gtnav</as>
-    </depends>
-    <depends>
       <module>commons-cometd</module>
       <as>cometd</as>
     </depends>
