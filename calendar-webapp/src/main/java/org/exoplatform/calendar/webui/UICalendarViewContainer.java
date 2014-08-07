@@ -100,7 +100,7 @@ public class UICalendarViewContainer extends UIContainer  {
       uiListView.isShowEvent_ = true ;
       if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
       setRenderedChild(viewType) ;
-      if (reloadListView) uiListView.refresh();
+      if (reloadListView) uiListView.setCalClicked(false);
     } else if (WORKING_VIEW.equals(viewType)) {
       UIWeekView uiView = getChild(UIWeekView.class) ;
       if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
