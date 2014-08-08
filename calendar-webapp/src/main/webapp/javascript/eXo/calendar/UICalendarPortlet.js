@@ -3692,14 +3692,44 @@
         }
     };
 
+  /**
+   * When user input an incorrect date, we will set current date for that field.
+   * @param $eDate
+   */
+    UICalendarPortlet.prototype.correctDate = function($eDate) {
+        $eDate = gj($eDate);
+        var format = $eDate.attr("format");
+        var val = $eDate.val();
+        var pattern = format;
+        pattern = pattern.replace('dd', '\\d{1,2}');
+        pattern = pattern.replace('MM', '\\d{1,2}');
+        pattern = pattern.replace('yyyy', '\\d{4}');
+        var p = new RegExp('^'+pattern+'$');
+        var valid = p.test(val);
+        if(valid) {
+            var date = this.dateParses(val, format);
+            valid = !isNaN(date.getTime());
+        }
+
+        // If it is not validate set the date is current date
+        if(!valid) {
+            cs.CalDateTimePicker.currentDate = new Date();
+            cs.CalDateTimePicker.datePattern = format;
+            var value = cs.CalDateTimePicker.getDateTimeString();
+            $eDate.val(value);
+        }
+    }
+
     UICalendarPortlet.prototype.suggestDate = function(eFromDate, eToDate){
         var divCal = gj('div.uiCalendarComponent[relId="'+gj(eFromDate).attr('name')+'"]');
         if(divCal.length > 0){
             var format = gj(eFromDate).attr("format");
+            this.correctDate(eFromDate);
             this.addDay(eFromDate,this.dayDiff, eToDate, format);
         }
         var endDivCal = gj('div.uiCalendarComponent[relId="'+gj(eToDate).attr('name')+'"]');
         if (endDivCal.length > 0) {
+            this.correctDate(eToDate);
             var dayDiff = this.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
             if(dayDiff >= 0) this.dayDiff = dayDiff;
         };
