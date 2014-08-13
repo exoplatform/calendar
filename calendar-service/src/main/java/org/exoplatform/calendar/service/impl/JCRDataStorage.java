@@ -340,19 +340,22 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception {
-    String[] defaultCalendars;
     List<Calendar> calList = userCalendarCache.get(this, username);
+    List<Calendar> retList = new LinkedList<Calendar>();
 
     if (!isShowAll) {
-      defaultCalendars = getCalendarSetting(username).getFilterPrivateCalendars();
-      List<Calendar> filteredCalList = new ArrayList<Calendar>();
+      List<String> defaultCalendars = Arrays.asList(getCalendarSetting(username).getFilterPrivateCalendars());
 
       for (Calendar calendar : calList) {
-        if (!Arrays.asList(defaultCalendars).contains(calendar.getId())) filteredCalList.add(calendar);
+        if (!defaultCalendars.contains(calendar.getId())) {
+          retList.add(calendar);
+        }
       }
-      calList = filteredCalList;
+    } else {
+      retList.addAll(calList);
     }
-    return calList;
+
+    return retList;
   }
 
   /**
