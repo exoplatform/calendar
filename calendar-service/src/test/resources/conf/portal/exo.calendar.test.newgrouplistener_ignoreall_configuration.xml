@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright (C) 2011 eXo Platform SAS.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd http://www.exoplaform.org/xml/ns/kernel_1_2.xsd"
+               xmlns="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd">
+  <external-component-plugins>
+    <target-component>org.exoplatform.services.organization.OrganizationService</target-component>
+    <component-plugin>
+      <name>calendar.new.group.event.listener</name>
+      <set-method>addListenerPlugin</set-method>
+      <type>org.exoplatform.calendar.service.impl.NewGroupListener</type>
+      <description>Config of the listener executed each time a new group is created</description>
+      <init-params>
+        <value-param>
+          <name>defaultEditPermission</name>
+          <value>*.*</value><!-- Multi value membership, use coma (,) to split values-->
+        </value-param>
+        <value-param>
+          <name>defaultViewPermission</name>
+          <value>*.*</value><!-- Multi value membership, use coma (,) to split values-->
+        </value-param>
+
+        <value-param>
+          <name>defaultLocale</name>
+          <value>BEL</value><!-- see more locale ids http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html -->
+        </value-param>
+
+        <value-param>
+          <name>defaultTimeZone</name>
+          <value>Europe/Brussels</value><!-- see more for timeZone ids http://www.unicode.org/cldr/data/docs/design/formatting/zone_log.html#windows_ids -->
+        </value-param>
+
+        <values-param>
+          <name>ignoredGroups</name>
+          <description>Definition group to ignore create default calendar</description>
+          <!--
+          <value>/platform/guests</value>
+           -->
+          <value>/*</value> <!-- single value, use more <value> tags to add more group -->
+        </values-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+</configuration>

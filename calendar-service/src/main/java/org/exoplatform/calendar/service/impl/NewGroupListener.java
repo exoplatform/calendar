@@ -67,19 +67,30 @@ public class NewGroupListener extends GroupEventListener {
   }
 
   public void postSave(Group group, boolean isNew) throws Exception {
-    if (!isNew)
-      return;
+    if (!isNew) return;
+
     String groupId = group.getId();
     String parentId = group.getParentId();
-    if (ignore_groups_ != null && !ignore_groups_.isEmpty())
+    if(parentId != null) {
+      parentId = parentId.toLowerCase();
+    }
+
+    if (ignore_groups_ != null && !ignore_groups_.isEmpty()) {
       for (String g : ignore_groups_) {
-        if (groupId.equalsIgnoreCase(g))
+        if (groupId.equalsIgnoreCase(g) || Utils.SLASH_AST.equals(g)) {
           return;
-        // if(g.contains("/spaces/*") && groupId.toLowerCase().contains("spaces/")) return;
-        // ignore create calendar for group of space
-        if ((g.lastIndexOf(Utils.SLASH_AST) > -1) && ((g.substring(0, g.lastIndexOf(Utils.SLASH_AST))).equalsIgnoreCase(parentId)))
-          return;
+        }
+
+        int index = g.lastIndexOf(Utils.SLASH_AST);
+        if (index > 0 && parentId != null) {
+          String calendarGroup = g.substring(0, index).toLowerCase();
+          if(parentId.startsWith(calendarGroup)) {
+            return;
+          }
+        }
       }
+    }
+
     boolean isPublic = true;
     Calendar calendar = new Calendar();
     String calName = group.getLabel();
