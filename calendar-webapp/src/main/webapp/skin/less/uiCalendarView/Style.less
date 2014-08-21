@@ -114,14 +114,22 @@
 
 	.resizeEventContainer{
 	    background: none;
-	    border-bottom: 1px solid @white;
-	    border-top: 1px solid @white;
 	    cursor: n-resize;
-	    height: 1px;
+	    height: 7px;
 	    margin: -4px auto 1px;
-	    max-width: 13px;
-	    width: 20%;
 	    display: none;
+        position: relative;
+
+        span {
+            display: block;
+            border-bottom: 1px solid @white;
+            border-top: 1px solid @white;
+            cursor: n-resize;
+            height: 1px;
+            margin: auto;
+            max-width: 13px;
+            width: 20%;
+        }
 	}
 	.eventContainer + .resizeEventContainer {
 		margin-top: 0;
