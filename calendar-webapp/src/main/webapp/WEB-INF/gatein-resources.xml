@@ -92,6 +92,9 @@
 	     <module>UIHSelection</module>
 	   </depends>
 	   <depends>
+	     <module>UISelection</module>
+	   </depends>
+	   <depends>
 	     <module>UIResizeEvent</module>
 	   </depends>
     </module>
@@ -317,6 +320,24 @@
     </depends>
     <depends>
       <module>CSUtils</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>UISelection</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UISelection.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>DOMUtil</module>
     </depends>
   </module>
   
