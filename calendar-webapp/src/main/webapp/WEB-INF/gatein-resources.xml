@@ -57,11 +57,7 @@
 	   </depends>
 	   <depends>
 	     <module>uiPopupWindow</module>
-	   </depends>
-	   <depends>
-	     <module>webui-ext</module>
-	     <as>wx</as>
-	   </depends>
+	   </depends>	   
 	   <depends>
 	     <module>DOMUtil</module>
 	   </depends>
@@ -100,8 +96,29 @@
 	   <depends>
 	     <module>EventTooltip</module>
 	   </depends>
+	   <depends>
+	     <module>UICombobox</module>
+	   </depends>
     </module>
   </portlet>
+  
+  <module>
+    <name>UICombobox</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UICombobox.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+    <depends>
+     <module>webui-ext</module>
+     <as>wx</as>
+    </depends>
+    <depends>
+     <module>ScheduleSupport</module>
+    </depends>
+  </module>
   
   <module>
     <name>UIResizeEvent</name>
