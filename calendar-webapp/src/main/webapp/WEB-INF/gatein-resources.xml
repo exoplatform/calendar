@@ -97,6 +97,9 @@
 	   <depends>
 	     <module>UIResizeEvent</module>
 	   </depends>
+	   <depends>
+	     <module>EventTooltip</module>
+	   </depends>
     </module>
   </portlet>
   
@@ -105,6 +108,20 @@
     <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UIResizeEvent.js</path>
+    </script>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>EventTooltip</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/EventTooltip.js</path>
     </script>
     <depends>
       <module>base</module>
