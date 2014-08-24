@@ -1,4 +1,4 @@
-(function(base, gj) {
+(function(base, gj, CSUtils) {
 
 	var _module = {};	
 	
@@ -8,6 +8,7 @@
 		 * @param {Object} evt Mouse event
 		 */
 		init : function(evt) {
+		  _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 		    var _e = window.event || evt;
 		    if (_e.stopPropagation) {
 		        _e.stopPropagation();
@@ -31,8 +32,7 @@
 		    var interval = _module.UICalendarPortlet.interval;
 		    UIResizeEvent.start(_e, innerElement, outerElement, container, minHeight, interval);
 		    //UIResizeEvent.callback = UIResizeEvent.resizeCallback;
-			//TODO: This is recursive dependency, we should remove this
-		    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+			//TODO: This is recursive dependency, we should remove this		    
 		    _module.UICalendarPortlet.dropCallback = UIResizeEvent.resizeCallback;
 		    _module.UICalendarPortlet.setPosition(outerElement);
 		    eXo.calendar.EventTooltip.disable(evt);
@@ -59,8 +59,7 @@
 		    this.innerElement = innerElement;
 		    this.outerElement = outerElement;
 		    this.container = container;
-		    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-		    _module.UICalendarPortlet.resetZIndex(this.outerElement);
+		    CSUtils.resetZIndex(this.outerElement);
 		    this.minHeight = (minHeight) ? parseInt(minHeight) : 15;
 		    this.interval = (interval != "undefined") ? parseInt(interval) : 15;
 		    gj(document).on({'mousemove':UIResizeEvent.execute,
@@ -80,6 +79,7 @@
 		 * @param {Object} evt Mouse event
 		 */
 		execute : function(evt) {
+		    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 		    eXo.calendar.EventTooltip.disable(evt);
 		    var _e = window.event || evt;
 		    var mouseY = base.Browser.findMouseRelativeY(UIResizeEvent.container, _e);
@@ -106,6 +106,7 @@
 		 * @param {Object} evt Mouse event
 		 */
 		end : function(evt) {
+		    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 		    gj(document).off("mousemove mouseup");
 		    var _e = window.event || evt;
 		    _module.UICalendarPortlet.checkPermission(UIResizeEvent.outerElement) ;
@@ -117,6 +118,7 @@
 		 * @param {Object} evt Mouse object
 		 */
 		resizeCallback : function(evt) {
+		    _module.UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 		    var UICalendarPortlet = _module.UICalendarPortlet;
 		    var eventBox = UIResizeEvent.outerElement;
 
@@ -137,7 +139,8 @@
 		        form.elements[eventId + "isOccur"].value = isOccur;
 		        form.elements[eventId + "recurId"].value = recurId;
 		        UICalendarPortlet.setTimeValue(eventBox,start,end);
-		        UICalendarPortlet.showEvent();
+		        var uiDayView = window.require("SHARED/UIDayView");
+		        uiDayView.showEvent();
 		        gj.globalEval(actionLink);
 		    }
 		    UIResizeEvent.innerElement = null;
@@ -155,4 +158,4 @@
 		}
 	};
 	return UIResizeEvent;
-})(base, $);
+})(base, $, CSUtils);

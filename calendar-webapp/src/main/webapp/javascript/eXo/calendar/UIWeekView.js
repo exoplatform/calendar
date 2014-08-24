@@ -1,4 +1,4 @@
-(function(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent) {	
+(function(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent, CSUtils) {	
   var UIWeekView = {	
     originalHeightOfEventWeekContent : null,
     
@@ -285,13 +285,13 @@
 
     showInCol : function(obj) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
-      var items = UICalendarPortlet.getElements(obj) ;
+      var items = CSUtils.getElements(obj) ;
       var len = items.length ;
       if (len <= 0) return ;
       var container = (gj.browser.mozilla != undefined) ? UIWeekView.container : items[0].offsetParent ;
       var left = parseFloat((base.Browser.findPosXInContainer(obj, container) - 1)/container.offsetWidth)*100 ;
       var width = parseFloat((obj.offsetWidth - 2)/container.offsetWidth)*100 ;
-      items = UICalendarPortlet.sortByAttribute(items, "startTime") ;
+      items = CSUtils.sortByAttribute(items, "startTime") ;
       UIWeekView.adjustWidth(items, obj.offsetWidth, base.Browser.findPosXInContainer(obj, container,base.I18n.isRT())) ;
     },
 
@@ -304,7 +304,7 @@
       //_e.cancelBubble = true ;
       if (_e.button == 2) return ;
       UIWeekView.dragElement = this ;
-      UICalendarPortlet.resetZIndex(UIWeekView.dragElement) ;
+      CSUtils.resetZIndex(UIWeekView.dragElement) ;
       UIWeekView.objectOffsetLeft = base.Browser.findPosX(UIWeekView.dragElement) ;
       UIWeekView.offset = UIWeekView.getOffset(UIWeekView.dragElement, _e) ;
       UIWeekView.mouseY = _e.clientY ;
@@ -783,13 +783,12 @@
     sortEventsInCol : function(events) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
       var index = this.getStartEvent(events) ;
-      //events = eXo.calendar.UICalendarPortlet.sortByAttribute(events, "startTime", "dsc") ;
       var len = index.length ;// alert(len) ;
       var tmp = new Array() ;
       for(var i = 0 ; i < len ; i ++) {
         tmp.pushAll(this.setGroup(events, index[i])) ;
       }
-      UICalendarPortlet.sortByAttribute(tmp, "startTime") ;
+      CSUtils.sortByAttribute(tmp, "startTime") ;
       return tmp ;
     },
 
@@ -945,4 +944,4 @@
   eXo.calendar = eXo.calendar || {} ;
   eXo.calendar.UIWeekView = UIWeekView;
   return UIWeekView;
-})(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent);
+})(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent, CSUtils);

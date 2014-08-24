@@ -47,11 +47,7 @@
 	   </depends>
 	   <depends>
 	     <module>uiPopup</module>
-	   </depends>
-	   <depends>
-	     <module>commons-cometd</module>
-	     <as>cometd</as>
-	   </depends>
+	   </depends>	   
 	   <depends>
 	     <module>uiForm</module>
 	   </depends>
@@ -91,14 +87,18 @@
 	     <module>UISelection</module>
 	   </depends>
 	   <depends>
-	     <module>UIResizeEvent</module>
-	   </depends>
-	   <depends>
 	     <module>EventTooltip</module>
 	   </depends>
 	   <depends>
 	     <module>UICombobox</module>
 	   </depends>
+	   <depends>
+	     <module>UIDayView</module>
+	   </depends>	   
+		<depends>
+		 <module>commons-cometd</module>
+		 <as>cometd</as>
+		</depends>
     </module>
   </portlet>
   
@@ -121,6 +121,32 @@
   </module>
   
   <module>
+    <name>UIDayView</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UIDayView.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+    <depends>
+      <module>EventTooltip</module>
+    </depends>
+    <depends>
+      <module>UIResizeEvent</module>
+    </depends>
+    <depends>
+      <module>uiForm</module>
+    </depends>
+    <depends>
+      <module>base</module>
+    </depends>    
+    <depends>
+      <module>CSUtils</module>
+    </depends>
+  </module>
+  
+  <module>
     <name>UIResizeEvent</name>
     <load-group>calendar</load-group>
     <script>
@@ -131,6 +157,9 @@
     </depends>
     <depends>
       <module>jquery</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
     </depends>
   </module>
   
@@ -475,6 +504,9 @@
     </depends>
     <depends>
       <module>UIResizeEvent</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
     </depends>
   </module>
   

@@ -1,5 +1,5 @@
 (function(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, 
-		ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UIResizeEvent, UISelection) {
+		ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, cometd) {
     var _module = {};
     eXo.calendar = eXo.calendar || {};
     function UICalendarPortlet() {
@@ -31,19 +31,6 @@
         var UICalendarPortlet = _module.UICalendarPortlet;
         return Math.round(minutes / UICalendarPortlet.MINUTE_PER_CELL) * UICalendarPortlet.CELL_HEIGHT;
     };
-
-
-
-    /**
-     * Set stylesheet for a DOM element
-     * @param {Object} object DOM Element
-     * @param {Object} styles Object contains style name and style value
-     */
-    UICalendarPortlet.prototype.setStyle = function(object, styles){
-        for (var value in styles) {
-            object.style[value] = styles[value];
-        }
-    } ;
 
     UICalendarPortlet.prototype.attachSwapClass = function(compId,className,hoverClass){
         var component = document.getElementById(compId);
@@ -87,59 +74,6 @@
         if(eventObj.getAttribute("orginalSize")){
             return eventObj.getAttribute("orginalSize");
         }
-    };
-
-    UICalendarPortlet.prototype.setPosition = function(eventObj){
-        var me = _module.UICalendarPortlet ;
-        me.activeEventObject = eventObj ;
-        var cTop = gj(eventObj).top;
-        var cLeft = gj(eventObj).offset().left;
-        var cWdith = gj(eventObj).width();
-        var cHeight =gj(eventObj).height();
-        var cTitle = gj(eventObj).find('div.eventTitle')[0].innerHTML;
-        var cInnerHeight = gj(eventObj).find('div.eventContainer').height() ;
-        me.restoreTitle = cTitle ;
-        me.restoreContainerHeight = cInnerHeight ;
-        me.restoreSize = {
-            "top": cTop,
-            "left": cLeft,
-            "width": cWdith,
-            "height": cHeight
-        };
-    };
-
-    UICalendarPortlet.prototype.restorePosition = function(eventObj){
-        this.setStyle(eventObj,this.restoreSize);
-        var eventTitle = gj(eventObj).find('div.eventTitle')[0];
-        var eventContainer = gj(eventObj).find('div.eventContainer')[0];
-        if(this.restoreTitle && eventTitle) eventTitle.innerHTML = this.restoreTitle ;
-        if(this.restoreContainerHeight && eventContainer) eventContainer.style.height = this.restoreContainerHeight ;
-        this.restoreSize = null ;
-        this.activeEventObject = null ;
-        this.dropCallback = null ;
-        this.restoreTitle = null ;
-    };
-
-    UICalendarPortlet.prototype.postCheck = function(response){
-        var me = _module.UICalendarPortlet ;
-        gj.globalEval("var data = " + response.responseText);
-        var isEdit = data.permission;
-        if(!isEdit){
-            me.notify(me.activeEventObject);
-            me.restorePosition(me.activeEventObject);
-        } else{
-            if(me.dropCallback) me.dropCallback();
-            delete me.activeEventObject ;
-            delete me.restoreSize;
-        }
-    };
-
-    UICalendarPortlet.prototype.checkPermission = function(eventObj){
-        var calId = eventObj.getAttribute("calid");
-        var calType = eventObj.getAttribute("calType");
-        var baseURL  = (_module.restContext)?eXo.env.portal.context+ '/' + _module.restContext +'/cs/calendar/checkPermission/':'portal/rest/cs/calendar/checkPermission/';
-        var url = baseURL + cometd.exoId +"/"+ calId +"/"+ calType +"/";
-        this.makeRequest(url,this.postCheck);
     };
 
     /**
@@ -342,7 +276,7 @@
      * Convert time from milliseconds to minutes
      * @param {Int} Milliseconds Milliseconds
      */
-    UICalendarPortlet.prototype.timeToMin = function(milliseconds){
+    UICalendarPortlet.prototype.timeToMin = function(milliseconds) {
         if (typeof(milliseconds) == "string") milliseconds = parseInt(milliseconds);
         var d = new Date(milliseconds);
         var hour = d.getHours();
@@ -357,7 +291,7 @@
      * @param {String} timeFormat  Format string of time
      * @return minutes
      */
-    UICalendarPortlet.prototype.minToTime = function(min, timeFormat){
+    UICalendarPortlet.prototype.minToTime = function(min, timeFormat) {
         var minutes = min % 60;
         var hour = (min - minutes) / 60;
         if (hour < 10)
@@ -393,7 +327,7 @@
      * @param {Object} millis Milliseconds
      * @return date object Date object
      */
-    UICalendarPortlet.prototype.getBeginDay = function(millis){
+    UICalendarPortlet.prototype.getBeginDay = function(millis) {
         var d = new Date(parseInt(millis));
         var date = d.getDate();
         var month = d.getMonth() + 1;
@@ -408,7 +342,7 @@
      * @param {Object} end Ending date in milliseconds
      * @return Difference of two days
      */
-    UICalendarPortlet.prototype.dateDiff = function(start, end){
+    UICalendarPortlet.prototype.dateDiff = function(start, end) {
         var start = this.getBeginDay(start);
         var end = this.getBeginDay(end);
         var msDiff = end - start;
@@ -422,7 +356,7 @@
      * @param {Object} settingTimeZone Timezone offset of user setting
      * @param {Object} severTimeZone Timezone offset of server
      */
-    UICalendarPortlet.prototype.toSettingTime = function(time, settingTimeZone, severTimeZone){
+    UICalendarPortlet.prototype.toSettingTime = function(time, settingTimeZone, severTimeZone) {
         var GMT = time - (3600000 * serverTimeZone);
         var settingTime = GMT + (3600000 * settingTimeZone);
         return settingTime;
@@ -433,7 +367,7 @@
      * @param {Object} date Date object
      * @return Full year
      */
-    UICalendarPortlet.prototype.getYear = function(date){
+    UICalendarPortlet.prototype.getYear = function(date) {
         x = date.getYear();
         var y = x % 100;
         y += (y < 38) ? 2000 : 1900;
@@ -445,7 +379,7 @@
      * @param {Object} milliseconds Time in milliseconds
      * @return Day of week
      */
-    UICalendarPortlet.prototype.getDay = function(milliseconds){
+    UICalendarPortlet.prototype.getDay = function(milliseconds) {
         var d = new Date(milliseconds);
         var day = d.getDay();
         return day;
@@ -456,7 +390,7 @@
      * @param {Object} milliseconds Time in milliseconds
      * @return Boolean value
      */
-    UICalendarPortlet.prototype.isBeginDate = function(milliseconds){
+    UICalendarPortlet.prototype.isBeginDate = function(milliseconds) {
         var d = new Date(milliseconds);
         var hour = d.getHours();
         var min = d.getMinutes();
@@ -470,7 +404,7 @@
      * @param {Object} milliseconds Time in milliseconds
      * @return Boolean value
      */
-    UICalendarPortlet.prototype.isBeginWeek = function(milliseconds){
+    UICalendarPortlet.prototype.isBeginWeek = function(milliseconds) {
         var d = new Date(milliseconds);
         var day = d.getDay();
         var hour = d.getHours();
@@ -485,7 +419,7 @@
      * @param {Object} now Time in milliseconds
      * @return number of week
      */
-    UICalendarPortlet.prototype.getWeekNumber = function(now){
+    UICalendarPortlet.prototype.getWeekNumber = function(now) {
         var today = new Date(now);
         var Year = this.getYear(today);
         var Month = today.getMonth();
@@ -505,7 +439,7 @@
         return NumberOfWeek;
     };
 
-    UICalendarPortlet.prototype.setTimeValue = function(event, start,end,currentCol){
+    UICalendarPortlet.prototype.setTimeValue = function(event, start,end,currentCol) {
         event.setAttribute("startTime",start);
         event.setAttribute("endTime",end);
         if(currentCol) event.setAttribute("eventindex",currentCol.getAttribute("eventindex"));
@@ -515,7 +449,7 @@
      * Gets working days of week from user setting then overrides weekdays property of UICalendarPorlet object
      * @param {Object} weekdays
      */
-    UICalendarPortlet.prototype.getWorkingdays = function(weekdays){
+    UICalendarPortlet.prototype.getWorkingdays = function(weekdays) {
         this.weekdays = weekdays;
     };
 
@@ -526,7 +460,7 @@
      * @param param3 User time format
      * @param param4 Portlet id
      */
-    UICalendarPortlet.prototype.setting = function(){
+    UICalendarPortlet.prototype.setting = function() {
         var UICalendarPortlet = _module.UICalendarPortlet;
         this.interval = ((arguments.length > 0) && (isNaN(parseInt(arguments[0])) == false)) ? parseInt(arguments[0]) : parseInt(15);
         this.interval = this.minsToPixels(this.interval);
@@ -543,7 +477,7 @@
      * @param {Object} obj DOM element
      * @param {Object} container DOM element contains all calendar events
      */
-    UICalendarPortlet.prototype.setFocus = function(){
+    UICalendarPortlet.prototype.setFocus = function() {
         if(_module.UICalendarPortlet.getElementById("UIWeekView")){
             var obj = _module.UICalendarPortlet.getElementById("UIWeekViewGrid") ;
             var container = gj(obj).parents(".eventWeekContent")[0] ;
@@ -586,7 +520,7 @@
      * @param {Object} min minutes
      * @param {Object} events array of calendar events
      */
-    UICalendarPortlet.prototype.hasEventThrough = function(min,events){
+    UICalendarPortlet.prototype.hasEventThrough = function(min,events) {
         var start = 0 ;
         var end = 0 ;
         var i = events.length
@@ -604,7 +538,7 @@
      * Hide a DOM elemnt automatically after interval time
      * @param {Object} evt Mouse event
      */
-    UICalendarPortlet.prototype.autoHide = function(evt){
+    UICalendarPortlet.prototype.autoHide = function(evt) {
         var _e = window.event || evt;
         var eventType = _e.type;
         var UICalendarPortlet = _module.UICalendarPortlet;
@@ -621,14 +555,13 @@
      * Show/hide a DOM element
      * @param {Object} obj DOM element
      */
-    UICalendarPortlet.prototype.showHide = function(obj){
+    UICalendarPortlet.prototype.showHide = function(obj) {
         if (obj.style.display != "block") {
             DOMUtil.cleanUpHiddenElements();
             obj.style.display = "block";
             DOMUtil.listHideElements(obj);
         }
     };
-
 
     UICalendarPortlet.prototype.switchLayoutCallback = function(layout,status){
         var UICalendarPortlet = _module.UICalendarPortlet;
@@ -667,7 +600,7 @@
     /**
      * Check layout configuration when page load to render a right layout
      */
-    UICalendarPortlet.prototype.checkLayout = function(){
+    UICalendarPortlet.prototype.checkLayout = function() {
         var isSpace = _module.UICalendarPortlet.isSpace;
         if(isSpace != null && isSpace != "") {
           base.Browser.setCookie(_module.LayoutManager.layoutId,"1",1);
@@ -683,7 +616,7 @@
      * Switch among types of layout
      * @param {int} layout Layout value in order number
      */
-    UICalendarPortlet.prototype.switchLayout = function(layout){
+    UICalendarPortlet.prototype.switchLayout = function(layout) {
         var layoutMan = _module.LayoutManager ;
         if(layout == 0){
             layoutMan.reset();
@@ -698,50 +631,11 @@
     };
 
     /**
-     * Initialize some properties in Day view
-     */
-    UICalendarPortlet.prototype.init = function(){
-        try {
-            var UICalendarPortlet = _module.UICalendarPortlet;
-            var uiDayViewGrid = _module.UICalendarPortlet.getElementById("UIDayViewGrid");
-            if (!uiDayViewGrid)
-                return false;
-            UICalendarPortlet.viewer = gj(uiDayViewGrid).find('div.eventBoardContainer')[0];
-            UICalendarPortlet.step = 60;
-        }
-        catch (e) {
-            window.status = " !!! Error : " + e.message;
-            return false;
-        }
-        return true;
-    };
-
-    /**
-     * Get all event element
-     * @param {Object} viewer DOM element contains all calendar events
-     * @return All event from container
-     */
-    UICalendarPortlet.prototype.getElements = function(viewer){
-        var className = (arguments.length > 1) ? arguments[1] : "eventContainerBorder";
-        var elements = gj(viewer).find("div." + className);
-        var len = elements.length;
-        var elems = new Array();
-        for (var i = 0; i < len; i++) {
-            if (elements[i].style.display != "none") {
-                elements[i].style.left = "0%";
-                elements[i].style.zIndex = 1;
-                elems.push(elements[i]);
-            }
-        }
-        return elems;
-    };
-
-    /**
      * Checks a DOM element is visible or hidden
      * @param {Object} obj DOM element
      * @return Boolean value
      */
-    UICalendarPortlet.prototype.isShow = function(obj){
+    UICalendarPortlet.prototype.isShow = function(obj) {
         if (obj.style.display != "none")
             return true;
         return false;
@@ -752,7 +646,7 @@
      * @param {Object} elements All calendar event
      * @return An array of DOM element
      */
-    UICalendarPortlet.prototype.getBlockElements = function(elements){
+    UICalendarPortlet.prototype.getBlockElements = function(elements) {
         var el = new Array();
         var len = elements.length;
         for (var i = 0; i < len; i++) {
@@ -763,45 +657,11 @@
     };
 
     /**
-     * Sets size for a DOM element that includes height and top properties
-     * @param {Object} obj Calendar event element
-     */
-    UICalendarPortlet.prototype.setSize = function(obj){
-        var UICalendarPortlet = _module.UICalendarPortlet;
-        var start = parseInt(obj.getAttribute("startTime"));
-        var topY = UICalendarPortlet.minsToPixels(start);
-        var end = parseInt(obj.getAttribute("endTime"));
-        var eventContainer = gj(obj).find('div.eventContainer')[0];
-        if (end == 0)
-            end = 1440;
-        end = (end != 0) ? end : 1440;
-        height = UICalendarPortlet.minsToPixels(Math.abs(start - end));
-        if (height <= UICalendarPortlet.CELL_HEIGHT) {
-            height = UICalendarPortlet.CELL_HEIGHT;
-        }
-        var styles = {
-            "top": topY + "px",
-            "height": height + "px"
-        };
-        UICalendarPortlet.setStyle(obj, styles);
-        var busyIcon = gj(obj).children("div")[0] ;
-        if(!busyIcon ||  (busyIcon.offsetHeight <= 5))
-            busyIcon = gj(obj).find("div.eventContainerBar")[0] ;
-        var extraHeight = busyIcon.offsetHeight + gj(obj).find("div.resizeEventContainer")[0].offsetHeight;
-        height -= (extraHeight + 5);
-
-        // IE8 fix - does not allow negative height
-        if (height > 0) {
-          eventContainer.style.height = height + "px";
-        }
-    };
-
-    /**
      * Sets width for a DOM element in percent unit
      * @param {Object} element A DOM element
      * @param {Object} width Width of element
      */
-    UICalendarPortlet.prototype.setWidth = function(element, width){
+    UICalendarPortlet.prototype.setWidth = function(element, width) {
         element.style.width = width + "%";
     };
 
@@ -810,7 +670,7 @@
      * @param {Object} el A calendar event element
      * @return A array includes two elements that are start and end time
      */
-    UICalendarPortlet.prototype.getSize = function(el){
+    UICalendarPortlet.prototype.getSize = function(el) {
         var start = parseInt(el.getAttribute("startTime"));
         var end = parseInt(el.getAttribute("endTime"));
         var delta = end - start ;
@@ -823,7 +683,7 @@
      * @param {Object} el Array of calendar events
      * @return An array of intervals
      */
-    UICalendarPortlet.prototype.getInterval = function(el){
+    UICalendarPortlet.prototype.getInterval = function(el) {
         var bottom = new Array();
         var interval = new Array();
         var size = null;
@@ -844,257 +704,10 @@
     };
 
     /**
-     * Sets dimension for event elements
-     * @param {Object} el An array of calendar events
-     * @param {Object} totalWidth Width of calendar event container
-     */
-    UICalendarPortlet.prototype.adjustWidth = function(el, totalWidth){
-        var UICalendarPortlet = _module.UICalendarPortlet;
-        var inter = UICalendarPortlet.getInterval(el);
-        if (el.length <= 0)
-            return;
-        var width = "";
-        for (var i = 0; i < inter.length; i++) {
-            var totalWidth = (arguments.length > 1) ? arguments[1] : parseFloat(100);
-            totalWidth -= 2 ;
-            var offsetLeft = parseFloat(0);
-            var left = parseFloat(0);
-            if (arguments.length > 2) {
-                offsetLeft = parseFloat(arguments[2]);
-                left = arguments[2];
-            }
-            var len = (inter[i + 1] - inter[i]);
-            if (isNaN(len))
-                continue;
-            var mark = null;
-            if (i > 0) {
-                for (var l = 0; l < inter[i]; l++) {
-                    if ((el[inter[i]].offsetTop > el[l].offsetTop) && (el[inter[i]].offsetTop < (el[l].offsetTop + el[l].offsetHeight))) {
-                        mark = l;
-                    }
-                }
-                if (mark != null) {
-                    offsetLeft = parseFloat(el[mark].style.left) + parseFloat(el[mark].style.width);
-                }
-            }
-            var n = 0;
-            for (var j = inter[i]; j < inter[i + 1]; j++) {
-
-                if (mark != null) {
-                    width = parseFloat((totalWidth + left - parseFloat(el[mark].style.left) - parseFloat(el[mark].style.width)) / len - 1);
-                }
-                else {
-                    width = parseFloat(totalWidth / len - 1);
-                }
-                gj(el[j]).css('overflow','hidden');
-
-                UICalendarPortlet.setWidth(el[j], width);
-
-                if (el[j - 1] && (len > 1))
-                    setLeft(el[j],offsetLeft + (parseFloat(el[j - 1].style.width) + 1) * n);
-                else {
-                    setLeft(el[j],offsetLeft);
-                }
-                n++;
-            }
-        }
-        function setLeft(obj,left){
-            obj.style.left = left + "%";
-            if(base.I18n.isRT()){
-                obj.style.right = left + "%";
-            }
-        }
-    };
-
-    /**
-     * Sort event elements in time table - day view
-     */
-    UICalendarPortlet.prototype.showEvent = function(){
-        this.init();
-        var EventDayContainer = gj(this.viewer).parents(".eventDayContainer")[0];
-        if (this.originalHeightOfEventDayContent === null) {
-            this.originalHeightOfEventDayContent = gj(EventDayContainer).height();
-        }
-
-        if (!EventDayContainer) return ;
-        this.editAlldayEvent(EventDayContainer);
-        if (!this.init())
-            return;
-        this.viewType = "UIDayView";
-        var el = this.getElements(this.viewer);
-        el = this.sortByAttribute(el, "startTime");
-        if (el.length <= 0) {
-            this.resizeHeightForDayView(EventDayContainer, this.originalHeightOfEventDayContent);
-            return;
-        }
-
-        var marker = null;
-        for (var i = 0; i < el.length; i++) {
-            this.setSize(el[i]);
-            var isEditable = gj(el[i]).attr('isEditable');
-
-            if (isEditable && (isEditable == "true")) {
-                gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
-                    'mouseout':eXo.calendar.EventTooltip.hide,
-                    'mousedown':_module.UICalendarPortlet.initDND,
-                    'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-                marker = gj(el[i]).children("div.resizeEventContainer")[0];
-                gj(marker).on('mousedown', UIResizeEvent.init);
-            }
-
-            if (isEditable && (isEditable == "false")) {
-                gj(el[i]).off('dblclick').on({'mouseover':eXo.calendar.EventTooltip.show,
-                    'mouseout':eXo.calendar.EventTooltip.hide,
-                    'mousedown': false,
-                    'dblclick':_module.UICalendarPortlet.ondblclickCallback});
-                gj(el[i]).find('.eventContainerBar').css('cursor', 'default');
-                marker = gj(el[i]).find('div.resizeEventContainer')[0];
-                gj(marker).hide();
-            }
-        }
-
-        this.items = el;
-        this.adjustWidth(this.items);
-        for(var i = 0; i < el.length; i++) {
-            gj(el[i]).css('display','block');
-        }
-
-        this.resizeHeightForDayView(EventDayContainer, this.originalHeightOfEventDayContent);
-
-        this.items = null;
-        this.viewer = null;
-    };
-
-    /**
-     * resize height for day view to stop at bottom of the page
-     * @param {Object} contentContainer DOM element
-     * @param {int}    originalHeight   original height of content container
-     */
-    UICalendarPortlet.prototype.resizeHeightForDayView = function(contentContainer, originalHeight) {
-        this.resizeHeight(contentContainer, 6, originalHeight);
-
-        gj(window).resize(function() {
-            _module.UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
-        });
-    };
-
-
-    /**
-     * Resize content container to stop at the bottom of the page
-     * @param {Object} contentContainer DOM element to be resized
-     * @param {int}    deltaHeight      additional height to add
-     * @param {int}    originalHeight   original height of content container
-     */
-    UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeight, originalHeight) {
-        var viewPortHeight    = gj(window).height(),
-            positionYofContentContainer = gj(contentContainer).offset().top,
-            height,
-            totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
-            originalTotalY    = gj(contentContainer).offset().top + originalHeight;
-        var actionBarHeight = 70 ;
-        if(gj("#LeftNavigation") != null && gj("#LeftNavigation").offset() != null) {
-            var leftNavigationY   = gj("#LeftNavigation").height() + gj("#LeftNavigation").offset().top,
-                maxHeight         = (leftNavigationY > viewPortHeight) ? leftNavigationY : viewPortHeight;
-            if (maxHeight > originalTotalY) {
-                gj(contentContainer).css("height", originalHeight);
-            }
-            else {
-                height =  maxHeight - positionYofContentContainer - deltaHeight;
-                gj(contentContainer).css("height", height);
-                gj(contentContainer).css("overflow", "auto");
-
-                if (gj.browser.mozilla) {
-                    gj(contentContainer).css("overflow-x", "hidden");
-                    if(gj("#LeftNavigation").height() > viewPortHeight) { //CAL-541
-                        gj(contentContainer).css('height', height - 15);
-                    }
-                }
-            }
-        } else {
-            maxHeight = (gj("form#UIMiniCalendar").height() + gj("form#UICalendars").height()) - actionBarHeight;
-            gj(".eventWeekContent").css("height", maxHeight);
-            gj(contentContainer).css("overflow", "auto");
-            if (gj.browser.mozilla) {
-                gj(contentContainer).css("overflow-x", "hidden");
-            }
-        }
-    };
-
-
-    UICalendarPortlet.prototype.editAlldayEvent = function(cont){
-        cont = gj(cont).prevAll("div")[0];
-        var events = gj(cont).find("div.eventContainerBorder");
-        var i = events.length ;
-        if(!events || (i <= 0)) return ;
-        while(i--){
-            gj(events[i]).off('dblclick').off('mouseover').off('mouseout').on('dblclick',_module.UICalendarPortlet.ondblclickCallback)
-                .on('mouseover',eXo.calendar.EventTooltip.show).on('mouseout',eXo.calendar.EventTooltip.hide);
-        }
-    }
-
-
-    /**
      * Deal with incorrect event sorting when portlet loads in the first times
      */
     UICalendarPortlet.prototype.onLoad = function(){
         window.setTimeout("eXo.calendar.UICalendarPortlet.checkFilter() ;", 2000);
-    };
-
-    /**
-     * Callback method when browser resizes
-     */
-    UICalendarPortlet.prototype.browserResizeCallback = function(){
-        if (!_module.UICalendarPortlet.items)
-            return;
-        _module.UICalendarPortlet.adjustWidth(_module.UICalendarPortlet.items);
-    }
-
-    /**
-     * Callback method when double click on a calendar event
-     */
-    UICalendarPortlet.prototype.ondblclickCallback = function(evt){
-        evt.stopPropagation();
-        var eventId = this.getAttribute("eventId");
-        var calendarId = this.getAttribute("calid");
-        var calendarType = this.getAttribute("caltype");
-        var isOccur = this.getAttribute("isOccur");
-        var recurId = this.getAttribute("recurId");
-        if (recurId == "null") recurId = "";
-        uiForm.submitEvent(_module.UICalendarPortlet.portletId + '#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isOccur + '&recurId=' + recurId);
-    }
-
-    /**
-     * Sorts calendar event by their attribute
-     * @param {Object} obj An array of calendar events
-     * @param {Object} attribute A attribute to sort
-     * @return An sorted array of calendar event
-     */
-    UICalendarPortlet.prototype.sortByAttribute = function(obj, attribute){
-        var len = obj.length;
-        var tmp = null;
-        var attribute1 = null;
-        var attribute2 = null;
-        for (var i = 0; i < len; i++) {
-            for (var j = i + 1; j < len; j++) {
-                attribute1 = parseInt(obj[i].getAttribute(attribute));
-                attribute2 = parseInt(obj[j].getAttribute(attribute));
-                if (attribute2 < attribute1) {
-                    tmp = obj[i];
-                    obj[i] = obj[j];
-                    obj[j] = tmp;
-                }
-                if (attribute2 == attribute1) {
-                    var end1 = parseInt(obj[i].getAttribute("endTime"));
-                    var end2 = parseInt(obj[j].getAttribute("endTime"));
-                    if (end2 > end1) {
-                        tmp = obj[i];
-                        obj[i] = obj[j];
-                        obj[j] = tmp;
-                    }
-                }
-            }
-        }
-        return obj;
     };
 
     /**
@@ -1131,73 +744,12 @@
         $notif.show().delay(5000).fadeOut();
     };
 
-    
-
-    /**
-     * Resets z-Index of DOM element when drag and drop calendar event
-     * @param {Object} obj DOM element
-     */
-    UICalendarPortlet.prototype.resetZIndex = function(obj){
-        try {
-            var maxZIndex = parseInt(obj.style.zIndex);
-            var items = gj(obj.parentNode).children("div");
-            var len = items.length;
-            for (var i = 0; i < len; i++) {
-                if (!items[i].style.zIndex)
-                    items[i].style.zIndex = 1;
-                if (parseInt(items[i].style.zIndex) > maxZIndex) {
-                    maxZIndex = parseInt(items[i].style.zIndex);
-                }
-            }
-            obj.style.zIndex = maxZIndex + 1;
-        }
-        catch (e) {
-        }
-    };
-
-    /**
-     * Initializes drag and drop actions
-     * @param {Object} evt Mouse event
-     */
-    UICalendarPortlet.prototype.initDND = function(evt) {
-        eXo.calendar.EventTooltip.disable(evt);
-        evt.stopPropagation();
-        if(evt.button == 2) return;
-        var UICalendarPortlet = _module.UICalendarPortlet;
-        UICalendarPortlet.dragObject = this;
-        UICalendarPortlet.resetZIndex(UICalendarPortlet.dragObject);
-        UICalendarPortlet.dragContainer = gj(UICalendarPortlet.dragObject).parents(".eventDayContainer")[0];
-        UICalendarPortlet.resetZIndex(UICalendarPortlet.dragObject);
-        UICalendarPortlet.eventY = evt.clientY;
-        UICalendarPortlet.eventTop = UICalendarPortlet.dragObject.offsetTop;
-        gj(UICalendarPortlet.dragContainer).on({'mousemove':UICalendarPortlet.dragStart,
-            'mouseup':UICalendarPortlet.dragEnd});
-        UICalendarPortlet.title = gj(UICalendarPortlet.dragObject).find("span")[0].innerHTML;
-        UICalendarPortlet.dropCallback = UICalendarPortlet.dayviewDropCallback;
-        UICalendarPortlet.setPosition(UICalendarPortlet.dragObject);
-        return false; // prevent default drag event of browser.
-    };
-
-    /**
-     * Processes when dragging object
-     * @param {Object} evt Mouse event
-     */
-    UICalendarPortlet.prototype.dragStart = function(evt){
-        evt.preventDefault();
-        var UICalendarPortlet = _module.UICalendarPortlet;
-        var mouseY = base.Browser.findMouseRelativeY(UICalendarPortlet.dragContainer, evt) + UICalendarPortlet.dragContainer.scrollTop;
-        var posY = UICalendarPortlet.dragObject.offsetTop;
-        UICalendarPortlet.updateTitle(UICalendarPortlet.dragObject, posY);
-        var delta = parseInt((mouseY - posY) - (mouseY - posY) % UICalendarPortlet.interval);
-        UICalendarPortlet.dragObject.style.top = posY + delta  + "px";
-    };
-
     /**
      * Updates title of event when dragging calendar event
      * @param {Object} events DOM element contains a calendar event
      * @param {Object} posY Position of the event
      */
-    UICalendarPortlet.prototype.updateTitle = function(events, posY, type){
+    UICalendarPortlet.prototype.updateTitle = function(events, posY, type) {
         var min = this.pixelsToMins(posY);
         var timeFormat = events.getAttribute("timeFormat");
         var title = gj(events).find("div.eventTitle")[0];
@@ -1236,62 +788,10 @@
     };
 
     /**
-     * End calendar event dragging, this method clean up some unused properties and execute callback function
-     */
-    UICalendarPortlet.prototype.dragEnd = function(){
-        gj(this).off('mousemove');
-        var me = _module.UICalendarPortlet;
-        var dragObject = me.dragObject;
-        var eventTop = me.eventTop ;
-        if (dragObject.offsetTop != eventTop) {
-            me.checkPermission(dragObject);
-        }
-        eXo.calendar.EventTooltip.enable();
-    };
-
-    UICalendarPortlet.prototype.dayviewDropCallback = function(){
-        var UICalendarPortlet = _module.UICalendarPortlet;
-        var dragObject = UICalendarPortlet.dragObject;
-
-        if (!dragObject) { return; }
-
-        var calType = dragObject.getAttribute("caltype");
-        var start = parseInt(dragObject.getAttribute("starttime"));
-        var end = parseInt(dragObject.getAttribute("endTime"));
-        var isOccur = dragObject.getAttribute("isoccur");
-        var eventId = dragObject.getAttribute("eventid");
-        var recurId = dragObject.getAttribute("recurid");
-        if (recurId == "null") recurId = "";
-        var title = gj(dragObject).find("p")[0];
-        var titleName = UICalendarPortlet.title;
-        if (end == 0)
-            end = 1440;
-        var delta = end - start;
-        var currentStart = UICalendarPortlet.pixelsToMins(dragObject.offsetTop);
-        var currentEnd = currentStart + delta;
-        var eventDayContainer = gj(dragObject).parents(".eventDayContainer")[0];
-        gj(eventDayContainer).off("mousemove mouseup");
-        UICalendarPortlet.dragObject = null;
-        UICalendarPortlet.eventTop = null;
-        UICalendarPortlet.eventY = null;
-        UICalendarPortlet.dragContainer = null;
-        UICalendarPortlet.title = null;
-        var actionLink = dragObject.getAttribute("actionLink");
-        var form = gj(dragObject).parents("form")[0];
-        form.elements[eventId + "startTime"].value = currentStart;
-        form.elements[eventId + "finishTime"].value = currentEnd;
-        form.elements[eventId + "isOccur"].value = isOccur;
-        form.elements[eventId + "recurId"].value = recurId;
-        _module.UICalendarPortlet.setTimeValue(dragObject,currentStart,currentEnd);
-        _module.UICalendarPortlet.showEvent();
-        gj.globalEval(actionLink);
-    };
-
-    /**
      * Callback method when right click in list view
      * @param {Object} evt Mouse event
      */
-    UICalendarPortlet.prototype.listViewCallback = function(evt){
+    UICalendarPortlet.prototype.listViewCallback = function(evt) {
         var _e = window.event || evt;
         var src = _e.srcElement || _e.target;
         if (!gj(src).hasClass("uiListViewRow"))
@@ -1347,7 +847,7 @@
      * Callback method when right click in day view
      * @param {Object} evt Mouse event
      */
-    UICalendarPortlet.prototype.dayViewCallback = function(evt){
+    UICalendarPortlet.prototype.dayViewCallback = function(evt) {
 
         var _e = window.event || evt;
         var src = _e.srcElement || _e.target;
@@ -1531,7 +1031,7 @@
      * Callback method when right click in month view
      * @param {Object} evt Mouse event
      */
-    UICalendarPortlet.prototype.monthViewCallback = function(evt){
+    UICalendarPortlet.prototype.monthViewCallback = function(evt) {
         var _e = window.event || evt;
         var src = _e.srcElement || _e.target;
         var objvalue = "";
@@ -1647,7 +1147,7 @@
      * @return All events of certain calendar
      * @deprecated not used anymore
      */
-    UICalendarPortlet.prototype.getEventsByCalendar = function(events, calid){
+    UICalendarPortlet.prototype.getEventsByCalendar = function(events, calid) {
         var calendarid = null;
         var len = events.length;
         var event = new Array();
@@ -1799,7 +1299,7 @@
             if (_module.UICalendarPortlet.getElementById("UIMonthView"))
                 _module.UICalendarMan.initMonth();
             if (_module.UICalendarPortlet.getElementById("UIDayViewGrid"))
-                _module.UICalendarPortlet.showEvent();
+                UIDayView.showEvent();
             if (_module.UICalendarPortlet.getElementById("UIWeekViewGrid")) {
                 _module.UICalendarMan.initWeek();
                 _module.UIWeekView.init();
@@ -1834,7 +1334,7 @@
         }
 
         if ((!events || events.length == 0) && _module.UICalendarPortlet.getElementById("UIListView")) {
-            uiForm.submitForm('UICalendars','Tick', true)
+            uiForm.submitForm('UICalendars','Tick', true);
         }
         if (!events) return;
         var len = events.length;
@@ -1910,14 +1410,12 @@
         }
     };
 
-
     UICalendarPortlet.prototype.runAction = function(obj){
         var actionLink = obj.getAttribute("actionLink");
         var categoryId = this.filterSelect.options[this.filterSelect.selectedIndex].value;
         actionLink = actionLink.replace("')","&categoryId="+categoryId+"')");
         gj.globalEval(actionLink);
     };
-
 
     /**
      * Gets the <select> element that contains event category and sets up onchange action
@@ -2596,6 +2094,57 @@
             }
         }
     };
+    
+    /**
+     * Callback method when double click on a calendar event
+     */
+    UICalendarPortlet.prototype.ondblclickCallback = function(evt) {
+      evt.stopPropagation();
+      var UICalendarPortlet = _module.UICalendarPortlet;
+      var eventId = this.getAttribute("eventId");
+      var calendarId = this.getAttribute("calid");
+      var calendarType = this.getAttribute("caltype");
+      var isOccur = this.getAttribute("isOccur");
+      var recurId = this.getAttribute("recurId");
+      if (recurId == "null") recurId = "";
+      uiForm.submitEvent(UICalendarPortlet.portletId + '#' + UICalendarPortlet.viewType, 
+          'Edit', '&subComponentId=' + UICalendarPortlet.viewType + '&objectId=' + eventId + 
+          '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isOccur + '&recurId=' + recurId);
+    }
+    
+    /**
+     * Sets size for a DOM element that includes height and top properties
+     * @param {Object} obj Calendar event element
+     */
+    UICalendarPortlet.prototype.setSize = function(obj) {
+      var UICalendarPortlet = _module.UICalendarPortlet;
+      var start = parseInt(obj.getAttribute("startTime"));
+      var topY = UICalendarPortlet.minsToPixels(start);
+      var end = parseInt(obj.getAttribute("endTime"));
+      var eventContainer = gj(obj).find('div.eventContainer')[0];
+      if (end == 0)
+        end = 1440;
+      end = (end != 0) ? end : 1440;
+      height = UICalendarPortlet.minsToPixels(Math.abs(start - end));
+      if (height <= UICalendarPortlet.CELL_HEIGHT) {
+        height = UICalendarPortlet.CELL_HEIGHT;
+      }
+      var styles = {
+          "top": topY + "px",
+          "height": height + "px"
+      };
+      gj(obj).css(styles);
+      var busyIcon = gj(obj).children("div")[0] ;
+      if(!busyIcon ||  (busyIcon.offsetHeight <= 5))
+        busyIcon = gj(obj).find("div.eventContainerBar")[0] ;
+      var extraHeight = busyIcon.offsetHeight + gj(obj).find("div.resizeEventContainer")[0].offsetHeight;
+      height -= (extraHeight + 5);
+      
+      // IE8 fix - does not allow negative height
+      if (height > 0) {
+        eventContainer.style.height = height + "px";
+      }
+    }
 
     UICalendarPortlet.prototype.isAllday = function(eventObject) {
         var startDate = new Date(parseInt(eventObject.startDateTime) + parseInt(eventObject.startTimeOffset));
@@ -3015,6 +2564,99 @@
         var value = CalDateTimePicker.getDateTimeString();
         eToDate.val(value);
     }
+    
+    /**
+     * Resize content container to stop at the bottom of the page
+     * @param {Object} contentContainer DOM element to be resized
+     * @param {int}    deltaHeight      additional height to add
+     * @param {int}    originalHeight   original height of content container
+     */
+    UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeight, originalHeight) {
+      var viewPortHeight    = gj(window).height(),
+      positionYofContentContainer = gj(contentContainer).offset().top,
+      height,
+      totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
+      originalTotalY    = gj(contentContainer).offset().top + originalHeight;
+      var actionBarHeight = 70 ;
+      if(gj("#LeftNavigation") != null && gj("#LeftNavigation").offset() != null) {
+        var leftNavigationY   = gj("#LeftNavigation").height() + gj("#LeftNavigation").offset().top,
+        maxHeight         = (leftNavigationY > viewPortHeight) ? leftNavigationY : viewPortHeight;
+        if (maxHeight > originalTotalY) {
+          gj(contentContainer).css("height", originalHeight);
+        }
+        else {
+          height =  maxHeight - positionYofContentContainer - deltaHeight;
+          gj(contentContainer).css("height", height);
+          gj(contentContainer).css("overflow", "auto");
+          
+          if (gj.browser.mozilla) {
+            gj(contentContainer).css("overflow-x", "hidden");
+            if(gj("#LeftNavigation").height() > viewPortHeight) { //CAL-541
+              gj(contentContainer).css('height', height - 15);
+            }
+          }
+        }
+      } else {
+        maxHeight = (gj("form#UIMiniCalendar").height() + gj("form#UICalendars").height()) - actionBarHeight;
+        gj(".eventWeekContent").css("height", maxHeight);
+        gj(contentContainer).css("overflow", "auto");
+        if (gj.browser.mozilla) {
+          gj(contentContainer).css("overflow-x", "hidden");
+        }
+      }
+    }
+    
+    UICalendarPortlet.prototype.setPosition = function(eventObj) {
+      this.activeEventObject = eventObj;
+      var cTop = gj(eventObj).top;
+      var cLeft = gj(eventObj).offset().left;
+      var cWdith = gj(eventObj).width();
+      var cHeight =gj(eventObj).height();
+      var cTitle = gj(eventObj).find('div.eventTitle')[0].innerHTML;
+      var cInnerHeight = gj(eventObj).find('div.eventContainer').height();
+      this.restoreTitle = cTitle;
+      this.restoreContainerHeight = cInnerHeight;
+      this.restoreSize = {
+          "top": cTop,
+          "left": cLeft,
+          "width": cWdith,
+          "height": cHeight
+      };
+    }
+    
+    UICalendarPortlet.prototype.checkPermission = function(eventObj) {
+      var calId = eventObj.getAttribute("calid");
+      var calType = eventObj.getAttribute("calType");
+      var baseURL  = (_module.restContext)?eXo.env.portal.context+ '/' + _module.restContext +'/cs/calendar/checkPermission/':'portal/rest/cs/calendar/checkPermission/';
+      var url = baseURL + cometd.exoId +"/"+ calId +"/"+ calType +"/";
+      _module.UICalendarPortlet.makeRequest(url,this.postCheck);
+    }
+    
+    UICalendarPortlet.prototype.restorePosition = function(eventObj) {
+      gj(eventObj).css(this.restoreSize);
+      var eventTitle = gj(eventObj).find('div.eventTitle')[0];
+      var eventContainer = gj(eventObj).find('div.eventContainer')[0];
+      if(this.restoreTitle && eventTitle) eventTitle.innerHTML = this.restoreTitle;
+      if(this.restoreContainerHeight && eventContainer) eventContainer.style.height = this.restoreContainerHeight;
+      this.restoreSize = null;
+      this.activeEventObject = null;
+      this.dropCallback = null;
+      this.restoreTitle = null;
+    }
+    
+    UICalendarPortlet.prototype.postCheck = function(response) {
+      var UICalendarPortlet = _module.UICalendarPortlet;
+      gj.globalEval("var data = " + response.responseText);
+      var isEdit = data.permission;
+      if(!isEdit){
+        UICalendarPortlet.notify(UICalendarPortlet.activeEventObject);
+        UICalendarPortlet.restorePosition(UICalendarPortlet.activeEventObject);
+      } else{
+        if(UICalendarPortlet.dropCallback) UICalendarPortlet.dropCallback();
+        delete UICalendarPortlet.activeEventObject ;
+        delete UICalendarPortlet.restoreSize;
+      }
+    };
 
     UICalendarPortlet.prototype.addHour = function(input, interval) {
         var hourStr =  input.split(':')[0];
@@ -3121,4 +2763,4 @@
     var uiPopup = uiPopupWindow ;
     return _module;
 })(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
-		uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UIResizeEvent, UISelection);
+		uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, cometd);

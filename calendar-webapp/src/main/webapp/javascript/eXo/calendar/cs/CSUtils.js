@@ -493,10 +493,83 @@ var Utils = {
       //eXo.cs.CSCometd = eXo.core.Cometd;
       if(_module.CSCometd) return;  
       _module.CSCometd = cometd;
-    }
+    },
+    
     /**
-     * TODO: remove method call when portal remove Cometd.js file
+     * Get all event element
+     * @param {Object} viewer DOM element contains all calendar events
+     * @return All event from container
      */
+    getElements : function(viewer) {
+      var className = (arguments.length > 1) ? arguments[1] : "eventContainerBorder";
+      var elements = gj(viewer).find("div." + className);
+      var len = elements.length;
+      var elems = new Array();
+      for (var i = 0; i < len; i++) {
+        if (elements[i].style.display != "none") {
+          elements[i].style.left = "0%";
+          elements[i].style.zIndex = 1;
+          elems.push(elements[i]);
+        }
+      }
+      return elems;
+    },
+    
+    /**
+     * Resets z-Index of DOM element when drag and drop calendar event
+     * @param {Object} obj DOM element
+     */
+    resetZIndex : function(obj) {
+      try {
+        var maxZIndex = parseInt(obj.style.zIndex);
+        var items = gj(obj.parentNode).children("div");
+        var len = items.length;
+        for (var i = 0; i < len; i++) {
+          if (!items[i].style.zIndex)
+            items[i].style.zIndex = 1;
+          if (parseInt(items[i].style.zIndex) > maxZIndex) {
+            maxZIndex = parseInt(items[i].style.zIndex);
+          }
+        }
+        obj.style.zIndex = maxZIndex + 1;
+      }
+      catch (e) {
+      }
+    },
+    
+    /**
+     * Sorts calendar event by their attribute
+     * @param {Object} obj An array of calendar events
+     * @param {Object} attribute A attribute to sort
+     * @return An sorted array of calendar event
+     */
+    sortByAttribute : function(obj, attribute) {
+      var len = obj.length;
+      var tmp = null;
+      var attribute1 = null;
+      var attribute2 = null;
+      for (var i = 0; i < len; i++) {
+        for (var j = i + 1; j < len; j++) {
+          attribute1 = parseInt(obj[i].getAttribute(attribute));
+          attribute2 = parseInt(obj[j].getAttribute(attribute));
+          if (attribute2 < attribute1) {
+            tmp = obj[i];
+            obj[i] = obj[j];
+            obj[j] = tmp;
+          }
+          if (attribute2 == attribute1) {
+            var end1 = parseInt(obj[i].getAttribute("endTime"));
+            var end2 = parseInt(obj[j].getAttribute("endTime"));
+            if (end2 > end1) {
+              tmp = obj[i];
+              obj[i] = obj[j];
+              obj[j] = tmp;
+            }
+          }
+        }
+      }
+      return obj;
+    }   
 };
 
 return Utils;
