@@ -1,4 +1,4 @@
-(function(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent, CSUtils) {	
+(function(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent, CSUtils, dateUtils) {	
   var UIWeekView = {	
     originalHeightOfEventWeekContent : null,
     
@@ -777,7 +777,7 @@
 
     getMinutes : function(millisecond) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
-      return UICalendarPortlet.timeToMin(millisecond) ;
+      return dateUtils.timeToMin(millisecond) ;
     },
 
     sortEventsInCol : function(events) {
@@ -944,4 +944,4 @@
   eXo.calendar = eXo.calendar || {} ;
   eXo.calendar.UIWeekView = UIWeekView;
   return UIWeekView;
-})(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent, CSUtils);
+})(base, gj, common, DateTimeFormatter, Highlighter, UIHSelection, UIHorizontalResize, UIResizeEvent, CSUtils, DateUtils);

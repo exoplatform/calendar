@@ -1,4 +1,4 @@
-(function(DOMUtil, gj, Highlighter, UIHSelection, UICalendarDragDrop, EventMan) {
+(function(DOMUtil, gj, Highlighter, UIHSelection, UICalendarDragDrop, EventMan, dateUtils) {
 var GUIMan = {
   EVENT_BAR_HEIGH : 17,
   
@@ -441,7 +441,7 @@ var GUIMan = {
      var leftPos = dayInfo.left ;
      var cellWidth = dayInfo.width;
      var beginId = "r" + dayInfo.rindex + "c"+dayInfo.rindex;
-     var delta = eXo.calendar.UICalendarPortlet.dateDiff(startTime, endTime);
+     var delta = dateUtils.dateDiff(startTime, endTime);
      if (delta != 0) {
          delta ++ ;
      }
@@ -521,7 +521,7 @@ var GUIMan = {
 
  isMultiWeek : function(eventObj) {
    var startIndex = (new Date(eventObj.startTime)).getDay();
-   var diff = eXo.calendar.UICalendarPortlet.dateDiff(eventObj.startTime,eventObj.endTime) - 1;
+   var diff = dateUtils.dateDiff(eventObj.startTime,eventObj.endTime) - 1;
    var weekIndex = parseInt(eventObj.rootNode.getAttribute("startIndex"));
    if((diff > (7 - startIndex)) && (weekIndex < this.tableData.length) && (weekIndex != 1)) return true ;
    return false;
@@ -579,4 +579,4 @@ eXo = eXo || {};
 eXo.calendar = eXo.calendar || {};
 eXo.calendar.GUIMan = GUIMan;
 return GUIMan;
-})(DOMUtil, gj, Highlighter, UIHSelection, UICalendarDragDrop, EventMan);
+})(DOMUtil, gj, Highlighter, UIHSelection, UICalendarDragDrop, EventMan, DateUtils);

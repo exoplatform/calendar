@@ -569,7 +569,47 @@ var Utils = {
         }
       }
       return obj;
-    }   
+    },
+    
+    attachSwapClass : function(compId,className,hoverClass) {
+      var component = document.getElementById(compId);
+      var items = gj(component).find('div.' + className);
+      var i = items.length;
+      while(i--){
+          gj(items[i]).on({'mouseover':function(){
+            Utils.swapClass(this,hoverClass);
+          },
+              'mouseout':function(){
+                Utils.swapClass(this,hoverClass);
+              }});
+      };
+  },
+  
+  makeRequest : function(url,callback) {
+      gj.ajax({
+          type: "get",
+          url: url,
+          cache: false,
+          success: function(data, status, jqXHR) {
+              if (callback) {
+                  callback(jqXHR);
+              }
+          }
+      });
+  },
+  
+  /**
+   * Ceiling round number
+   * @param {Object} number Original number
+   * @param {Object} dividend Divided end
+   * @return rounded number
+   */
+  ceil : function(number, dividend) {
+      var mod = number % dividend;
+      if (mod != 0)
+          number += dividend - mod;
+      return number;
+  }
 };
 
 return Utils;

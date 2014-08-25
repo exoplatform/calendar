@@ -8,8 +8,8 @@
   def startTime = CalendarUtils.getInstanceOfCurrentCalendar().getTimeInMillis();
     
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
-  requireJS.require("SHARED/jquery","gj");
-  requireJS.addScripts('cal.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
+  requireJS.require("SHARED/jquery","gj").require("SHARED/CSUtils","csUtils");  
+  requireJS.addScripts('csUtils.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover");') ;
   requireJS.addScripts("cal.UICalendarPortlet.loadMenu();");
   requireJS.addScripts("gj('button#UIActionBarQuickAddEvent').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1, $startTime);});")
   requireJS.addScripts("gj('button#UIActionBarQuickAddTask').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2, $startTime); });")

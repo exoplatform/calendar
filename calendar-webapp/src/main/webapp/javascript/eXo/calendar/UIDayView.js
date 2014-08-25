@@ -1,4 +1,4 @@
-(function(gj, EventTooltip, UIResizeEvent, uiForm, base, CSUtils) {
+(function(gj, EventTooltip, UIResizeEvent, base, CSUtils) {
   var uiDayView = null;
 
   function UIDayView() {}
@@ -55,7 +55,7 @@
           'mousedown': this.initDND,
           'dblclick': UICalendarPortlet.ondblclickCallback});
         marker = gj(el[i]).children("div.resizeEventContainer")[0];
-        gj(marker).on('mousedown', UIResizeEvent.init);
+        gj(marker).off().on('mousedown', UIResizeEvent.init);
       }
       
       if (isEditable && (isEditable == "false")) {
@@ -270,4 +270,4 @@
   
   uiDayView = new UIDayView();
   return uiDayView;
-})($, EventTooltip, UIResizeEvent, uiForm, base, CSUtils);
+})($, EventTooltip, UIResizeEvent, base, CSUtils);
