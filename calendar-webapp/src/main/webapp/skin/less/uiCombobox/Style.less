@@ -18,8 +18,8 @@
 			  margin-left: 10px ;
 			}
 			.UIComboboxList .UIComboboxSelectedItem{
-			  	 .buttonBackground(@blueLighter, @blue);
-					  color: @white;
+			  	.buttonBackground(@primaryLighterColor, @primaryColor);
+				color: @white;
 			}
 			.UIComboboxItem {
 			  display: block ;
@@ -27,12 +27,12 @@
 			   color: @textColor;
 			  outline:none;
 			  &:hover{
-				  .buttonBackground(@blueLighter, @blue);
+				  .buttonBackground(@primaryLighterColor, @primaryColor);
 				  color: @white ;
 				}
 				&:visit{
 				   background: @white;
-					 color: @textColor;
+					color: @textColor;
 				}
 			}
 			iframe {

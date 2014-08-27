@@ -29,7 +29,7 @@
 	position :absolute;
 	padding : 0px;
 	margin : 0px;
-} 
+}
 
 .uiCalendarViewContainer {
 		 .uiBox .uiGrid.table tr td:first-child{
@@ -101,8 +101,8 @@
 			}
 		}
 	}
-	
-	
+
+
 	.eventContainerBar{
 	    -moz-user-select: none;
 	    cursor: move;
@@ -111,7 +111,7 @@
 	    white-space: nowrap;
 	    padding-right: 5px;
 	}
-	
+
 	.resizeEventContainer{
 	    background: none;
 	    border-bottom: 1px solid @white;
@@ -126,7 +126,7 @@
 	.eventContainer + .resizeEventContainer {
 		margin-top: 0;
 	}
-	
+
 }
 
 .uiDayView, .uiWeekView {
@@ -139,7 +139,7 @@
 
 .uiWeekView {
 	.today {
-		background: @grayWhiteSmoke;
+		background: @componentBackground;
 		a{
 			line-height: 32px;
 			font-size: @baseFontSize - 1;
@@ -156,17 +156,17 @@
 
 .eventWeekBar{
 	> table {
-		background: @grayLighter;
-		tr td{ 
-			border-bottom: solid 1px @grayMediumWhiteSmoke;
+		background: @componentBackgroundLight;
+		tr td{
+			border-bottom: solid 1px @componentBackgroundHover;
 			&.today{
-			background: @grayWhiteSmoke;
+			background: @componentBackground;
 				}
 				a{
 					color: @textColor;
 				}
 		}
-			
+
 	}
 }
 
@@ -176,8 +176,8 @@
 
 
 
-.UICalendarViewContainer, .uiCalendarViewContainer{	
-	.uiGrid.table tr td {					
+.UICalendarViewContainer, .uiCalendarViewContainer{
+	.uiGrid.table tr td {
 		font-size: 12px;
 	}
 	.uiBox {
