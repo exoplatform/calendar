@@ -506,27 +506,29 @@ public class Utils {
   }
 
   public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
-    for (String savePer : savePerms) {
-      PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
-      
-      if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
-        if (savePer.equals(username)) {
-          return true;
-        }
-      } else {
-        String groupId = permission.getGroupId();
-        String membershipType = permission.getMembership();
-        MembershipEntry expected = new MembershipEntry(groupId, membershipType);
-        
-        Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
-        for (Membership ms : memberships) {
-          //Core project care about * membership type
-          MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
-          if (userMS.equals(expected)) {
-              return true;
-          }
-        }
-      }
+    if (savePerms != null) {
+        for (String savePer : savePerms) {
+            PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+            
+            if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+                if (permission.getMeaningfulPermissionOwnerStatement().equals(username)) {
+                    return true;
+                }
+            } else {
+                String groupId = permission.getGroupId();
+                String membershipType = permission.getMembership();
+                MembershipEntry expected = new MembershipEntry(groupId, membershipType);
+                
+                Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
+                for (Membership ms : memberships) {
+                    //Core project care about * membership type
+                    MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
+                    if (userMS.equals(expected)) {
+                        return true;
+                    }
+                }
+            }
+        }        
     }
     return false;
   }
@@ -534,19 +536,23 @@ public class Utils {
   public static boolean canEdit(String[] savePerms) throws Exception {
     Identity identity = ConversationState.getCurrent().getIdentity();
 
-    for (String savePer : savePerms) {
-      PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
-
-      if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
-        if (savePer.equals(identity.getUserId())) {
-          return true;
+    if (savePerms != null) {
+        for (String savePer : savePerms) {
+            PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+            
+            if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+                if (permission.getMeaningfulPermissionOwnerStatement().equals(identity.getUserId())) {
+                    return true;
+                }
+            } else {
+                String groupId = permission.getGroupId();
+                String membershipType = permission.getMembership();
+                
+                if (identity.isMemberOf(groupId, membershipType)) {
+                    return true;       
+                }
+            }
         }
-      } else {
-        String groupId = permission.getGroupId();
-        String membershipType = permission.getMembership();
-
-        return identity.isMemberOf(groupId, membershipType);
-      }
     }
     return false;
   }

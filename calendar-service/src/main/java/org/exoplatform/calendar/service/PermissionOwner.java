@@ -76,18 +76,23 @@ public class PermissionOwner {
   }
 
   /**
-   * example of permission statement - membership: /platform/users/:*.manager -
-   * user: demo - group: /organization/management/executive-board/:*.*
+   * example of permission statement <br/>
+   * - membership: /platform/users/:*.manager <br/> 
+   * - user: demo <br/>
+   * - user: /platform/users/:demo <br/>
+   * - group: /organization/management/executive-board/:*.*
    */
   public static PermissionOwner createPermissionOwnerFrom(String permissionStatement) {
     PermissionOwner owner = new PermissionOwner();
     owner.setId(permissionStatement);
 
     /* user permission */
-    if (permissionStatement.indexOf(Utils.SLASH_COLON) == -1) {
+    if (permissionStatement.indexOf(Utils.SLASH_COLON) == -1 || 
+            permissionStatement.indexOf(Utils.ANY_OF) == -1) {
       owner.setGroupId("");
       owner.setMembership("");
       owner.setOwnerType(USER_OWNER);
+      owner.setId(owner.getMeaningfulPermissionOwnerStatement());
       return owner;
     }
 
@@ -95,6 +100,7 @@ public class PermissionOwner {
     owner.setGroupId(permissionStatement.substring(0, indexOfSlashColon));
 
     /* membership permission */
+    
     if (permissionStatement.indexOf(Utils.ANY) == -1) {
       int indexAnyOf = permissionStatement.indexOf(Utils.ANY_OF);
       owner.setMembership(permissionStatement.substring(indexAnyOf + 2,
@@ -147,9 +153,14 @@ public class PermissionOwner {
    * @return
    */
   public String getMeaningfulPermissionOwnerStatement() {
-    if (ownerType.equals(USER_OWNER))
-      return id;
-    else if (ownerType.equals(GROUP_OWNER))
+    if (ownerType.equals(USER_OWNER)) {
+        int slashIdx = id.indexOf(Utils.SLASH_COLON); 
+        if (slashIdx == -1) {
+            return id;
+        } else {
+            return id.substring(slashIdx + Utils.SLASH_COLON.length(), id.length());
+        }
+    } else if (ownerType.equals(GROUP_OWNER))
       return "Anybody in " + truncateGroupId();
     return getMeaningfulMembership() + " in " + truncateGroupId();
   }
