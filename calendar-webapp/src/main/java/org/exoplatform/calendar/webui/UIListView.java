@@ -21,6 +21,7 @@ import java.util.*;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
@@ -260,12 +261,7 @@ public class UIListView extends UICalendarView {
     List<CalendarEvent> allEvents = new LinkedList<CalendarEvent>();
     List<CalendarEvent> originalRecurEvents = new LinkedList<CalendarEvent>();
     if (isDisplaySearchResult()) {
-      eventQuery.setExcludeRepeatEvent(false);
-      UIMiniCalendar uiMiniCalendar = this.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;            
-      Calendar fromDate = CalendarUtils.getBeginDay(uiMiniCalendar.getCurrentCalendar());      
-      eventQuery.setFromDate(fromDate);
-      Calendar toDate = CalendarUtils.getEndDay(uiMiniCalendar.getEndDateOfMonth());
-      eventQuery.setToDate(toDate);
+      eventQuery.setExcludeRepeatEvent(false);      
       originalRecurEvents.addAll(calendarService.getEvents(username, eventQuery, publicCalendars.toArray(new String[publicCalendars.size()])));
       for (CalendarEvent evt : originalRecurEvents) {
         if (CalendarEvent.RP_NOREPEAT.equals(evt.getRepeatType())) {
@@ -287,12 +283,27 @@ public class UIListView extends UICalendarView {
                                                                                                         emptyRecurrentEventCalendars));      
     }
         
-    String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
+    CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
+    String timezone = setting.getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
+      
       while (recurEventsIter.hasNext()) {
         CalendarEvent recurEvent = recurEventsIter.next();
-        Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(recurEvent, eventQuery.getFromDate(), eventQuery.getToDate(), timezone);
+        Calendar fromDate = eventQuery.getFromDate();
+        if (fromDate == null) {
+          fromDate = CalendarUtils.getCalendarInstanceBySetting(setting);
+          fromDate.setTime(recurEvent.getFromDateTime());          
+        }
+        Calendar toDate = eventQuery.getToDate();
+        if (toDate == null) {
+          toDate = CalendarUtils.getCalendarInstanceBySetting(setting);
+          if (fromDate.after(toDate)) {
+            toDate = (Calendar)fromDate.clone();
+          }
+          toDate.add(Calendar.YEAR, 2);
+        }
+        Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(recurEvent, fromDate, toDate, timezone);
         if (tempMap != null) {
           recurrenceEventsMap.put(recurEvent.getId(), tempMap);
           allEvents.addAll(tempMap.values());
@@ -301,16 +312,33 @@ public class UIListView extends UICalendarView {
     }
 
     final String orderType = eventQuery.getOrderType();
-    Collections.sort(allEvents, new Comparator<CalendarEvent>() {
-      @Override
-      public int compare(CalendarEvent o1, CalendarEvent o2) {
-        if (Utils.DESCENDING.equals(orderType)) {
-          return o2.getFromDateTime().compareTo(o1.getFromDateTime());          
-        } else {
-          return o1.getFromDateTime().compareTo(o2.getFromDateTime());
+    final String[] orderBys = eventQuery.getOrderBy();
+    if (orderBys != null && orderBys.length > 0) {
+      final String orderBy = orderBys[0];
+      
+      Collections.sort(allEvents, new Comparator<CalendarEvent>() {
+        @Override
+        public int compare(CalendarEvent o1, CalendarEvent o2) {
+          CalendarEvent tmp;
+          if (Utils.DESCENDING.equals(orderType)) {
+            tmp = o1;
+            o1 = o2;
+            o2 = tmp;
+          }
+          
+          if (UIListView.EVENT_START.equals(orderBy)) {
+            return o1.getFromDateTime().compareTo(o2.getFromDateTime());
+          } else if (UIListView.EVENT_END.equals(orderBy)) {
+            return o1.getToDateTime().compareTo(o2.getToDateTime());
+          } else if (UIListView.EVENT_SUMMARY.equals(orderBy)) {
+            return o1.getSummary().compareTo(o2.getSummary());
+          } else if (UIListView.EVENT_DESCRIPTION.equals(orderBy)) {
+            return o1.getDescription().compareTo(o2.getDescription());
+          }
+          return 0;
         }
-      }
-    });
+      });      
+    } 
     return allEvents;
   }
 
