@@ -310,22 +310,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Import versions of core modules to use -->
-      <dependency>
-        <groupId>org.exoplatform.core</groupId>
-        <artifactId>core-parent</artifactId>
-        <version>${org.exoplatform.core.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <!-- Import versions of kernel modules to use -->
-      <dependency>
-        <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>kernel-parent</artifactId>
-        <version>${org.exoplatform.kernel.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
       <!-- Use to generate some documentation -->
       <dependency>
         <groupId>org.exoplatform.doc</groupId>
