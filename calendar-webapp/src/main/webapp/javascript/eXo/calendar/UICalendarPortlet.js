@@ -1547,7 +1547,7 @@
         UISelection.container.appendChild(UISelection.block);
         gj(UISelection.container).on('mousedown',UISelection.start);
         UISelection.relativeObject = gj(UISelection.container).parents(".eventDayContainer")[0];
-        UISelection.viewType = "UIDayView";
+        UICalendarPortlet.viewType = "UIDayView";
     };
 
     /**

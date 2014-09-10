@@ -911,7 +911,7 @@
       gj(UISelection.container).off('mousedown').on('mousedown',UISelection.start);
 //      UISelection.container.onmousedown = UISelection.start ;
       UISelection.relativeObject = gj(UISelection.container).parents('.eventWeekContent')[0]; 
-      UISelection.viewType = "UIWeekView" ;
+      UICalendarPortlet.viewType = "UIWeekView" ;
     },
 
     initSelectionX : function() {

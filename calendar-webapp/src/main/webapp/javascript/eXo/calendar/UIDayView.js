@@ -35,8 +35,8 @@
     this.editAlldayEvent(EventDayContainer);
     if (!this.init())
       return;
-    this.viewType = "UIDayView";
     var UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
+    UICalendarPortlet.viewType = "UIDayView";
     var el = CSUtils.getElements(this.viewer);
     el = CSUtils.sortByAttribute(el, "startTime");
     if (el.length <= 0) {
