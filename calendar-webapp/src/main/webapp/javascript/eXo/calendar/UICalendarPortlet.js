@@ -1836,21 +1836,6 @@
         return gj(this.portletNode).find('#' + id)[0];
     }
     _module.UICalendarPortlet = _module.UICalendarPortlet || new UICalendarPortlet();
-
-    UICalendarPortlet.prototype.fixForMaximize = function(){
-        var obj = _module.UICalendarPortlet.portletNode ;
-        var uiWindow = gj(obj).parents(".UIWindow")[0];
-        if(uiWindow.style.display == "none") return ;
-        if ((base.Browser.browserType != "ie")) {
-            if (_module.UICalendarPortlet.getElementById("UIWeekView")) {
-                _module.UICalendarMan.initWeek();
-                _module.UIWeekView.setSize();
-            }
-            if (_module.UICalendarPortlet.getElementById("UIMonthView")) {
-                _module.UICalendarMan.initMonth();
-            }
-        }
-    };
     
     /**
      * Callback method when double click on a calendar event
