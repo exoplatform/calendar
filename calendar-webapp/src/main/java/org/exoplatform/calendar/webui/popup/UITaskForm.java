@@ -42,7 +42,6 @@ import org.exoplatform.calendar.webui.UIListContainer;
 import org.exoplatform.calendar.webui.UIListView;
 import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.calendar.webui.UIPreview;
-import org.exoplatform.calendar.webui.popup.UIAddressForm.ContactData;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -747,21 +746,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
       }
     }
     return null;
-  }
-  
-  public static void showAddressForm(UIAddressForm uiAddressForm, String oldAddress) throws Exception {
-    List<ContactData> contacts = uiAddressForm.getContactList() ;
-    if(!CalendarUtils.isEmpty(oldAddress)) {
-      for(String address : oldAddress.split(",")) {
-        for(ContactData c : contacts){
-          if(!CalendarUtils.isEmpty(c.getEmail())) {
-            if(Arrays.asList(c.getEmail().split(";")).contains(address.trim())) {
-              if (!uiAddressForm.checkedList_.contains(c.getId())) uiAddressForm.checkedList_.add(c.getId()) ;
-            }
-          }
-        }
-      }
-    }
   }
 
 

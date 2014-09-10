@@ -51,7 +51,6 @@ import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
-import org.exoplatform.calendar.webui.popup.UIAddressForm.ContactData;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
@@ -619,14 +618,6 @@ public class CalendarUtils {
     public int compare(Object o1, Object o2) throws ClassCastException {
       String name1 = ((SelectItemOption) o1).getLabel() ;
       String name2 = ((SelectItemOption) o2).getLabel() ;
-      return name1.compareToIgnoreCase(name2) ;
-    }
-  }
-  static public class ContactComparator implements Comparator{
-    @Override
-    public int compare(Object o1, Object o2) throws ClassCastException {
-      String name1 = ((ContactData) o1).getFullName() ;
-      String name2 = ((ContactData) o2).getFullName() ;
       return name1.compareToIgnoreCase(name2) ;
     }
   }
