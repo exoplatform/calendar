@@ -514,8 +514,9 @@
     /**
      * Deal with incorrect event sorting when portlet loads in the first times
      */
-    UICalendarPortlet.prototype.onLoad = function(){
-        window.setTimeout("eXo.calendar.UICalendarPortlet.checkFilter() ;", 2000);
+    UICalendarPortlet.prototype.onLoad = function() {
+        eXo.calendar.UICalendarPortlet.checkFilter() ;
+//        window.setTimeout("eXo.calendar.UICalendarPortlet.checkFilter() ;", 2000);
     };
 
     /**
@@ -1159,7 +1160,6 @@
         }
 
         _module.UICalendarPortlet.filterEvents();
-        _module.UICalendarPortlet.resortEvents();
     };
 
     /**
@@ -1305,7 +1305,6 @@
         }
 
         _module.UICalendarPortlet.filterEvents();
-        _module.UICalendarPortlet.resortEvents();
         UICalendarPortlet.setFocus();
         if (_module.UICalendarPortlet.firstLoadTimeout) {
             delete _module.UICalendarPortlet.firstLoadTimeout;
@@ -2103,8 +2102,6 @@
             //re-filter
             if(gj('#UIListContainer').size() > 0) {//list view
                 uiForm.submitEvent(_module.UICalendarPortlet.portletId +'#UIListView','Onchange','&objectId=eventCategories');
-            } else {//other views
-                _module.UICalendarPortlet.filterEvents();
             }
         }
     }

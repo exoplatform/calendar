@@ -45,7 +45,7 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
 	<%=uicomponent.renderAllDayGrid() %>
   </div>
   
-  <div class="eventWeekContent eventWeekContent mainWorkingPanel" style="position: relative;" onresize="eXo.calendar.UIWeekView.onResize() ;">
+  <div class="eventWeekContent eventWeekContent mainWorkingPanel" style="position: relative;">
   	<%=uicomponent.renderEventBoard() %>
   </div>
 </div>

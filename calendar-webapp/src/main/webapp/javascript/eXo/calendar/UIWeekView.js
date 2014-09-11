@@ -47,13 +47,7 @@
             this.increaseWidth(EventWeekContent);
 
             this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
-            var originalHeight = this.originalHeightOfEventWeekContent;
-            /* resize content each time the window is resized */
-            gj(window).resize(function() {
-                UIWeekView.resizeHeight(EventWeekContent, originalHeight);
-      
-                UIWeekView.resizeWidth(EventWeekContent);
-            });
+            this.resizeWidth(EventWeekContent);
         
           return;
       }
@@ -99,14 +93,7 @@
 
         /*=== resize height ===*/
         this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
-
-        /* resize content each time the window is resized */
-        var originalHeight = this.originalHeightOfEventWeekContent;
-        gj(window).resize(function() {
-            UIWeekView.resizeHeight(EventWeekContent, originalHeight);
-
-            UIWeekView.resizeWidth(EventWeekContent);
-        });
+        this.resizeWidth(EventWeekContent);
 
       this.distributeEvent() ;
       this.setSize() ;

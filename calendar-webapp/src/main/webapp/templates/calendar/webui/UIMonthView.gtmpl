@@ -18,7 +18,8 @@
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.require("SHARED/GUIMan","GUIMan");
   requireJS.require("SHARED/UICalendarMan","UICalendarMan");
-  requireJS.addScripts('cal.UICalendarPortlet.onLoad() ;') ;   
+  def onloadId = Integer.toString(Math.abs(new String("cal.UICalendarPortlet.onLoad").hashCode()));
+  requireJS.addScripts("base.Browser.addOnLoadCallback('mid"+onloadId+"',cal.UICalendarPortlet.onLoad);") ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
   requireJS.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIMonthView\');');
