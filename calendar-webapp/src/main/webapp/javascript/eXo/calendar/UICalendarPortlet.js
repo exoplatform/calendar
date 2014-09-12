@@ -2153,7 +2153,7 @@
         if(!form) return ;
         var tr = gj(form).find("tr.uiListViewRow");
         var i = tr.length ;
-        _module.UICalendarPortlet.viewType = "uiListView";
+        _module.UICalendarPortlet.viewType = "UIListView";
         var chk = null ;
         while(i--){
             tr[i].ondblclick = this.listViewDblClickCallback;
