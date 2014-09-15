@@ -92,12 +92,13 @@
 		        if(mDelta > maxDelta) {
 		            return;
 		        }
-		        if (mDelta % UIResizeEvent.interval == 0) {
-		            UIResizeEvent.outerElement.style.height = UIResizeEvent.beforeHeight - 2 + mDelta + "px";
-		            UIResizeEvent.innerElement.style.height = UIResizeEvent.innerElementHeight + mDelta + "px";
-		        }
+		        
+		        var interval = UIResizeEvent.interval;
+		        mDelta = (mDelta / interval) * interval;
+            
+		        UIResizeEvent.outerElement.style.height = UIResizeEvent.beforeHeight - 2 + mDelta + "px";
+		        UIResizeEvent.innerElement.style.height = UIResizeEvent.innerElementHeight + mDelta + "px";
 		    }
-		    var min = (base.Browser.isIE6())?(UIResizeEvent.outerElement.offsetTop - 1) : UIResizeEvent.outerElement.offsetTop;
 		    _module.UICalendarPortlet.updateTitle(UIResizeEvent.outerElement, UIResizeEvent.outerElement.offsetTop, 1);
 		},
 
