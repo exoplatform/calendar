@@ -183,6 +183,7 @@
         <supported-locale>el</supported-locale>
         <supported-locale>ro</supported-locale>
         <supported-locale>pl</supported-locale>
+        <supported-locale>ca</supported-locale>
         <script>
             <path>/javascript/eXo/cs/UIDateTimePicker.js</path>
             <resource-bundle>eXo.calendar.DateTimePicker</resource-bundle>
