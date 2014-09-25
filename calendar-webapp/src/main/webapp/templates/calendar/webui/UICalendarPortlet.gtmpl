@@ -4,12 +4,25 @@
   import org.exoplatform.calendar.webui.popup.UIPopupAction ;
   import org.exoplatform.calendar.service.CalendarSetting;
   import org.exoplatform.webui.core.UIConfirmation;
-  try {
-    def rcontext = _ctx.getRequestContext() ;
-	def jsManager = rcontext.getJavascriptManager();	
-  } catch (Exception e) {
-    e.printStackTrace();
-  }
+  import javax.portlet.PortletMode;
+  import org.exoplatform.calendar.webui.UICalendarPortletEditMode;
+  
+  PortletMode appMode = _ctx.getRequestContext().getApplicationMode();
+  if (PortletMode.EDIT.equals(appMode)) {
+%>
+<div class="UICalendarPortlet" id="$uicomponent.id">
+<%    
+    uicomponent.renderChild(UICalendarPortletEditMode.class);
+%>
+</div>
+<%
+  } else {
+	  try {
+	    def rcontext = _ctx.getRequestContext() ;
+		def jsManager = rcontext.getJavascriptManager();	
+	  } catch (Exception e) {
+	    e.printStackTrace();
+	  }
 %>
 <style type="text/css">
 #CalendarApplicationMinWidth
@@ -140,7 +153,7 @@
     %>
       <div class="calendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>
-        <%uicomponent.renderChild(UICalendarWorkingContainer.class)%>
+        <%uicomponent.renderChild(UICalendarWorkingContainer.class)%>        
       </div>
     
     </div>
@@ -151,3 +164,6 @@
   uicomponent.renderChild(UIConfirmation.class) ;
 %>
 </div>
+<%
+  }
+%>

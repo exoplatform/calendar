@@ -16,7 +16,10 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.NumberList;
+import net.fortuna.ical4j.model.Period;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.WeekDayList;
@@ -543,14 +546,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return rb_;
   }
 
-  public EventCategory getEventCategoryByName(String username, String eventCategoryName) throws Exception {   
-    ResourceBundle rb = getResourceBundle(); 
+  public EventCategory getEventCategoryByName(String username, String eventCategoryName) throws Exception {
     for (EventCategory ev : storage_.getEventCategories(username)) {
       if (ev.getName().equalsIgnoreCase(eventCategoryName)) {
         return ev;
-      }  else if (rb != null && eventCategoryName.equalsIgnoreCase(rb.getString("UICalendarView.label." + ev.getId()))) {
-        return ev;
-      } 
+      }
     }
     return null;
   }
@@ -1079,13 +1079,13 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         if (Utils.isExceptionOccurrence(selectedOccurrence)) {
           storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, false);
         } else {
+          storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, true);
           //create activity for the exception event
           if(fromType == Calendar.TYPE_PUBLIC) {
             for(CalendarEventListener cel : eventListeners_) {
               cel.savePublicEvent(selectedOccurrence, selectedOccurrence.getCalendarId());
             }
           }
-          storage_.saveOccurrenceEvent(username, toCalendar, selectedOccurrence, true);
         }
       } else { //this case is when the exception event is moved to another calendar
 
@@ -1127,7 +1127,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       updateOriginFromToTime(originEvent, occurrence);
       fillOriginFromOccurrence(originEvent, occurrence);
-      updateOriginDate(originEvent, tz);
+      Utils.updateOriginDate(originEvent, tz);
 
       int fromType = Integer.parseInt(originEvent.getCalType());
       int toType = Integer.parseInt(occurrence.getCalType());
@@ -1214,6 +1214,32 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       String calendarId = originEvent.getCalendarId();
       if(!isFirstOccurrence) {
+        //
+        if (selectedOccurrence.getRepeatUntilDate() == null && selectedOccurrence.getRepeatCount() != 0) {
+          Recur recur = Utils.getICalendarRecur(originEvent);
+          
+          DateTime ical4jEventFrom = new DateTime(originEvent.getFromDateTime());//the date time of the first occurrence of the series
+          net.fortuna.ical4j.model.TimeZone tz = Utils.getICalTimeZone(TimeZone.getTimeZone(timezone));
+          ical4jEventFrom.setTimeZone(tz);
+          
+          TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+          SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+          format.setTimeZone(userTimeZone);
+          
+          Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
+
+          DateTime ical4jFrom = new DateTime(originEvent.getFromDateTime());
+          DateTime ical4jTo = new DateTime(selectedOccurrence.getFromDateTime());
+          Period period = new Period(ical4jFrom, ical4jTo);
+          period.setTimeZone(tz);
+          // get list of occurrences in a period
+          DateList list = recur.getDates(ical4jEventFrom,
+                                         period,
+                                         net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
+          long count = selectedOccurrence.getRepeatCount();
+          selectedOccurrence.setRepeatCount(count - list.size());
+        }
+        
         //if selected occurrence is not the first occurrence, update the origin event and set new id for
         //the selected occurrence
         originEvent.setRepeatUntilDate(stopDate);
@@ -1481,47 +1507,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     newToDate.setTime(fromDate.getTime());
     newToDate.add(java.util.Calendar.MINUTE, diffMinutes);
     originEvent.setToDateTime(newToDate.getTime());
-  }
-
-  /*
-   * updates the origin date in case the repeat rule is changed
-   * for ex: Every Tuesday -> Every Wednesday, the origin date
-   * should be updated (+1 in this case).
-   */
-  private void updateOriginDate(CalendarEvent event, TimeZone tz) throws Exception {
-    //distance between from-end of event
-    long diff = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
-
-    java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
-    calendar.setTime(event.getFromDateTime());
-
-    Recur recur = Utils.getICalendarRecur(event);
-
-    WeekDayList weekDayList = recur.getDayList();
-
-    if("WEEKLY".equals(recur.getFrequency())) {
-      if(weekDayList.size() > 0) {
-        calendar.set(java.util.Calendar.DAY_OF_WEEK, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
-      }
-    }
-
-    if("MONTHLY".equals(recur.getFrequency())) {
-      if(weekDayList.size() > 0) {
-        if(weekDayList.size() > 0) {
-          calendar.set(java.util.Calendar.DAY_OF_WEEK_IN_MONTH, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
-        }
-
-        NumberList monthDayList = recur.getMonthDayList();
-
-        if(monthDayList.size() > 0) {
-          calendar.set(java.util.Calendar.DAY_OF_MONTH, ((Integer) monthDayList.get(0)).intValue());
-        }
-      }
-    }
-    event.setFromDateTime(calendar.getTime());
-
-    calendar.setTimeInMillis(calendar.getTimeInMillis() + diff);
-    event.setToDateTime(calendar.getTime());
   }
 
   private void fillOriginFromOccurrence(CalendarEvent originEvent, CalendarEvent occurrence) {

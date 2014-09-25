@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
@@ -35,6 +36,8 @@ import org.exoplatform.calendar.webui.CalendarView;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.calendar.webui.UIFormDateTimePicker;
+import org.exoplatform.calendar.webui.UIListContainer;
+import org.exoplatform.calendar.webui.UIListView;
 import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.log.ExoLogger;
@@ -412,6 +415,10 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
 
         calendarView.setLastUpdatedEventId(calEvent.getId()) ; 
         uiContainer.refresh() ;
+        UIListContainer uiListView = uiPortlet.findFirstComponentOfType(UIListContainer.class);
+        if (uiListView != null && uiListView.isRendered() && uiListView.isDisplaySearchResult()) {
+          uiListView.findFirstComponentOfType(UIListView.class).refreshSearch();
+        }
         uiForm.reset() ;
         
         UIPopupWindow popupWindow = uiForm.getAncestorOfType(UIPopupWindow.class);

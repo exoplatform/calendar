@@ -18,6 +18,10 @@
       <mime-type>text/html</mime-type>
       <portlet-mode>help</portlet-mode>
     </supports>
+    <supports>
+      <mime-type>text/html</mime-type>
+      <portlet-mode>edit</portlet-mode>
+    </supports>
     <supported-locale>en</supported-locale>
     <resource-bundle>locale.portlet.calendar.CalendarPortlet</resource-bundle>
     <portlet-info>

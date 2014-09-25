@@ -62,8 +62,13 @@ ScheduleSupport = {
 			end = UIComboboxInputs[0].value;
 		    }
 
-		    var startIndex = _module.ScheduleSupport.indexFromTime(start);
-		    var endIndex = _module.ScheduleSupport.indexFromTime(end);
+		    var startIndex, endIndex;
+		    try {
+		    	startIndex = _module.ScheduleSupport.indexFromTime(start);
+		    	endIndex = _module.ScheduleSupport.indexFromTime(end);		    	
+		    } catch (e) {
+		    	return;
+		    }
 
 		    // add UserSelection class to have green color
 		    for(var i = 1; i < cells.length; i++) {

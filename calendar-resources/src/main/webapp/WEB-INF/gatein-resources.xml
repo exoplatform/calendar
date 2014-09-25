@@ -160,8 +160,33 @@
     </module>
     <module>
         <name>CalDateTimePicker</name>
+        <supported-locale>de</supported-locale>
+        <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+        <supported-locale>vi</supported-locale>
+        <supported-locale>ru</supported-locale>
+        <supported-locale>es-ES</supported-locale>
+        <supported-locale>sv-SE</supported-locale>
+        <supported-locale>ja</supported-locale>
+        <supported-locale>ar</supported-locale>
+        <supported-locale>pt-BR</supported-locale>
+        <supported-locale>it</supported-locale>
+        <supported-locale>tr</supported-locale>
+        <supported-locale>zh-CN</supported-locale>
+        <supported-locale>fi</supported-locale>
+        <supported-locale>lt</supported-locale>
+        <supported-locale>no</supported-locale>
+        <supported-locale>zh-TW</supported-locale>
+        <supported-locale>cs</supported-locale>
+        <supported-locale>uk</supported-locale>
+        <supported-locale>fa</supported-locale>
+        <supported-locale>el</supported-locale>
+        <supported-locale>ro</supported-locale>
+        <supported-locale>pl</supported-locale>
+        <supported-locale>ca</supported-locale>
         <script>
             <path>/javascript/eXo/cs/UIDateTimePicker.js</path>
+            <resource-bundle>eXo.calendar.DateTimePicker</resource-bundle>
         </script>
         <depends>
             <module>base</module>

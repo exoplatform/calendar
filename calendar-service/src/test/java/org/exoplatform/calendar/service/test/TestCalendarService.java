@@ -68,6 +68,8 @@ import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.Membership;
+import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.MembershipType;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
@@ -105,7 +107,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   private CalendarSearchServiceConnector eventSearchConnector_ ;
   private static String   username = "root";
   private SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT) ;
-  public Collection<MembershipEntry> membershipEntries = new ArrayList<MembershipEntry>();
 
   public void setUp() throws Exception {
     super.setUp();
@@ -119,7 +120,23 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
   }
 
   private void loginUser(String userId) {
-    Identity identity = new Identity(userId, membershipEntries);
+    List<MembershipEntry> entries = new LinkedList<MembershipEntry>();
+    
+    MembershipHandler mHandler = organizationService_.getMembershipHandler();
+    try {
+      Collection<Membership> memberships = mHandler.findMembershipsByUser(userId);
+      for (Membership m : memberships) {
+        entries.add(new MembershipEntry(m.getGroupId(), m.getMembershipType()));
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    };
+    loginUser(userId, entries);
+  }
+  
+  private void loginUser(String userId, Collection<MembershipEntry> entries) {
+    Identity identity = new Identity(userId, entries);
     ConversationState state = new ConversationState(identity);
     ConversationState.setCurrent(state);
   }
@@ -818,7 +835,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     //site name null
     sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), null);
-    //siteName = Utils.DEFAULT_SITENAME;
+    siteName = Utils.DEFAULT_SITENAME;
     spaceGroupId = null;
     url = unifiedSearchService_.getUrl(rt, portalName, siteName, spaceGroupId, Utils.PAGE_NAGVIGATION);
     assertEquals("/"+portalName+"/"+siteName+"/" + Utils.PAGE_NAGVIGATION, url);
@@ -828,8 +845,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals("/"+portalName+"/g/"+ spaceGroupId.replaceAll(Utils.SLASH, ":")+"/space1/" + Utils.PAGE_NAGVIGATION, url);
     result = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(1, result.size());
-    url = unifiedSearchService_.getUrl(rt, portalName, siteName, null, Utils.PAGE_NAGVIGATION);
-    for( SearchResult sr : result){
+    url = unifiedSearchService_.getUrl(rt, portalName, siteName, null, "");
+    for( SearchResult sr : result) {
       checkFields(sr);
       assertEquals(url + Utils.SLASH + Utils.DETAIL_PATH + Utils.SLASH + sr.getUrl().split(Utils.SLASH)[sr.getUrl().split(Utils.SLASH).length-1], sr.getUrl());
     }
@@ -909,7 +926,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(username, cal.getId(), task, true);
 
     cal.setViewPermission(new String[]{john});
-    cal.setEditPermission(null);
     calendarService_.saveUserCalendar(username, cal, false);
 
     calendarService_.shareCalendar(username, cal.getId(), Arrays.asList(new String[]{john}));
@@ -922,14 +938,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     loginUser(john);
     result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
-    assertEquals(2, result.size());
-
-    cal.setEditPermission(new String[]{john}) ;
-    calendarService_.saveUserCalendar(username, cal, false);
-
-    result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(3, result.size());
-
 
     // Clean up data 
     calendarService_.removeUserEvent(username, ids[0], calEvent.getId());
@@ -2191,6 +2200,10 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       assertEquals(publicEvent.getSummary(), resultEvent.getSummary());
 
       //Test search space event
+//      List<MembershipEntry> entries = new LinkedList<MembershipEntry>();
+//      entries.add(new MembershipEntry("/platform/users"));
+//      entries.add(new MembershipEntry("/organization/management/executive-board"));
+      
       loginUser("john");
       EventQuery query = new UnifiedQuery();
       query.setText("  \" a meeting\" ");
@@ -2247,7 +2260,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       calendarService_.savePublicEvent(spaceCal.getId(), publicEvent, true);
       query.setText("\"space event\"");
       loginUser("raul");
-      SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), "");
+      SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), "classic");
       assertNotNull(sc);
 
       //Case build url for event detail in calendar
@@ -2256,27 +2269,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       SearchResult item = rs.iterator().next();
       checkFields(item);
       assertEquals("/portal/classic/calendar/details/" + publicEvent.getId(), item.getUrl());
-
-      //Case event is private but user have edit permission on group calendar
-      publicEvent.setPrivate(true);
-      calendarService_.savePublicEvent(spaceCal.getId(), publicEvent, false);
-      rs = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
-      assertEquals(0, rs.size());
-
-      spaceCal.setEditPermission(new String[]{"raul"});
-      calendarService_.savePublicCalendar(spaceCal, false);
-      rs = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
-      assertEquals(1, rs.size());
-
-      spaceCal.setEditPermission(new String[]{"/spaces/spacetest/:*.*"});
-      calendarService_.savePublicCalendar(spaceCal, false);
-      rs = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
-      assertEquals(1, rs.size());
-
-      spaceCal.setEditPermission(new String[]{"/spaces/spacetest/:*.manager"});
-      calendarService_.savePublicCalendar(spaceCal, false);
-      rs = eventSearchConnector_.search(sc, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
-      assertEquals(0, rs.size());
 
       calendarService_.removePublicEvent(publicCalendar.getId(), publicEvent.getId());
       calendarService_.removeEventCategory(username, eventCategory.getId());

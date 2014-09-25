@@ -136,17 +136,18 @@
         <tbody>
         <%
             for (event in uicomponent.getEvents()) {
+            Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
+            String recurId = event.getRecurrenceId();            
             rowStyle = "" ;
             if (event.getId().equals(uicomponent.getLastUpdatedEventId())) { rowStyle = "background:#F5F5F5;"; }
-            String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;
+            String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+
+                    "&calType="+event.getCalType() + "&isOccur=" + isOccur + "&recurId=" + recurId);
             def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
             boolean isEditable;
             if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
             else isEditable = "true";
-            UICheckBoxInput checkbox = uicomponent.getChildById(event.getId());
+            UICheckBoxInput checkbox = uicomponent.getChildById(event.getId() + ((recurId == null || !uicomponent.isDisplaySearchResult()) ? "" : "-" + recurId));
             if (isEditable == false) checkbox.setDisabled(true);
-            Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
-            String recurId = event.getRecurrenceId();
         %>
         <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=event.getCalType()%> isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
         <% if (!searchDisplay) { %>
@@ -215,13 +216,13 @@
 <div class="uiRightClickPopupMenu dropdown-menu uiDropdownWithIcon" id="uiListViewEventRightMenu" exocallback="eXo.calendar.UICalendarPortlet.listViewCallback" style="display: none ;" >
     <ul class="uiDropDownCal" style="display:block;">
         <li>
-            <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+            <a class="eventAction" href="<%= uicomponent.event("View",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
                 <i class="uiIconPreview uiIconLightGray"></i>
                 <%=_ctx.appRes("ContextMenu.label.View")%>
             </a>
         </li>
         <li>
-            <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype") ; %>">
+            <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
                 <i class="uiIconEdit uiIconLightGray"></i>
                 <%=_ctx.appRes("ContextMenu.label.Edit")%>
             </a>
@@ -235,7 +236,7 @@
             </a>
         </li>
         <li>
-            <a class="eventAction" class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+            <a class="eventAction" class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype&isOccur=isOccur&recurId=recurId")%>">
                 <i class="uiIconCalExportCalendar uiIconLightGray"></i>
                 <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
             </a>

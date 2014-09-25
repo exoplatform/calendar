@@ -3418,6 +3418,10 @@
             if(!onfocus) gj(comboList[i]).on('focus.tryShow', uiCombobox.tryShow);
             if(!onclick) gj(comboList[i]).on('click.tryShow', uiCombobox.tryShow);
 
+            //workround to clear registered event in combobox template
+            comboList[i].onkeyup = null;
+            //register by jquery instead
+            gj(comboList[i]).off('keyup').on('keyup.combo', uiCombobox.onKeyUp);
             gj(comboList[i]).data("initialized", true);
           }
         }
@@ -3425,9 +3429,59 @@
 
     wx.UICombobox.tryShow = function() {
       if (gj(this).parent().find(".UIComboboxContainer").css('display') === 'none') {
-    	wx.UICombobox.show.apply(this, arguments);
+        wx.UICombobox.show.apply(this, arguments);
       }
     };
+
+    wx.UICombobox.onKeyUp = function(e) {
+      if (e.keyCode == 38 || e.keyCode == 40) {
+//        wx.UICombobox.tryShow.call(this);
+        
+        var jInput = gj(this);
+        var hiddenInput = jInput.prev('input');      
+        var data = eval(this.getAttribute("options"));
+        
+        var idx = 0;
+        var val = hiddenInput.val();
+        if (val && val !== '') {
+          idx = gj.inArray(val, data);
+        }
+        idx = idx != -1 ? idx : 0;
+        
+        if(e.keyCode == 38) {
+          //Up arrow key
+          idx = idx > 0 ? idx - 1 : 0;
+        } else if(e.keyCode = 40) {
+          //Down arrow key
+          idx = idx < data.length - 1 ? idx + 1 : idx;
+        }
+        
+        var item = jInput.parent().find('.UIComboboxLabel').get(idx);
+        jInput.attr('value', gj(item).html());
+        wx.UICombobox.setSelectedItem(jInput.get(0));
+      } else {
+        wx.UICombobox.complete(this, e);
+      }
+      
+    };
+    
+    wx.UICombobox.setSelectedItem = function (textbox) {
+      if (this.lastSelectedItem)
+          gj(this.lastSelectedItem).removeClass("UIComboboxSelectedItem");
+      var selectedIndex = parseInt(this.getSelectedItem(textbox));
+      if (selectedIndex >= 0) {
+          gj(this.items[selectedIndex]).addClass("UIComboboxSelectedItem");
+          this.lastSelectedItem = this.items[selectedIndex];
+          
+          var container = gj(this.list).find('.UIComboboxItemContainer'); 
+          var currPos = gj(this.lastSelectedItem).height() * selectedIndex;
+          if (currPos < container.scrollTop() || currPos > container.scrollTop() + container.height()) {
+            container.scrollTop(currPos);
+          }
+          var hidden = gj(textbox).prev("input")[0];
+          hidden.value = this.items[selectedIndex].getAttribute("value");
+      }
+  };
 
     /**
      Override combobox onchange
@@ -3525,9 +3579,10 @@
         var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
         var arr = eval(values);
         if(isNew == "false") this.dayDiff = this.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
-        if(compid == "UIEventForm"){
-            var fromIndex = arr.indexOf(eFromTime.val());
-            var toIndex = arr.indexOf(eToTime.val()) ;
+        if(compid == "UIEventForm") {        	
+            var fromIndex = this.getTimeIndex(eFromTime.val());
+            var toIndex = this.getTimeIndex(eToTime.val(), true);
+            
             this.timeShiftE = toIndex - fromIndex ;
         } else if(compid == "UITaskForm") {
             var fromIndex = arr.indexOf(eFromTime.val());
@@ -3546,6 +3601,16 @@
         gj(eToTime).prev().on('click','a.UIComboboxItem', function(){_module.UICalendarPortlet.updateShifTime(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift)});
         gj(eToTime).next().on('keydown', function(event){_module.UICalendarPortlet.updateShifTime(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift, event)});
     }
+    
+    UICalendarPortlet.prototype.getTimeIndex = function(time, roundUp) {
+    	var t = time.split(":");
+    	var minutes = parseInt(gj.trim(t[0])) * 60 + parseInt(gj.trim(t[1]));
+    	if (roundUp) {
+    		return Math.ceil(minutes/30);
+    	} else {
+    		return Math.floor(minutes/30);
+    	}
+    }
 
     UICalendarPortlet.prototype.suggestTime = function(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift, event){
         if(event != null) {
@@ -3556,7 +3621,7 @@
         var arr = eval(values);
         var start = eFromTime.val();
         var size = arr.length ;
-        var index = arr.indexOf(start);
+        var index = this.getTimeIndex(start);
         if(compid == "UIEventForm"){
             if((index + this.timeShiftE)>= size){
                 this.addDay(eFromDate, this.dayDiff + 1, eToDate, format);
@@ -3605,9 +3670,9 @@
         var arr = eval(values);
         var start = eFromTime.val();
         var size = arr.length ;
-        var indexs = arr.indexOf(start);
+        var indexs = this.getTimeIndex(start);
         var end = eToTime.val();
-        var indexe = arr.indexOf(end);
+        var indexe = this.getTimeIndex(end, true);
         if(compid == "UIEventForm"){
             if((indexe - indexs) > 0) {
                 this.timeShiftE = indexe - indexs;
@@ -3627,14 +3692,44 @@
         }
     };
 
+  /**
+   * When user input an incorrect date, we will set current date for that field.
+   * @param $eDate
+   */
+    UICalendarPortlet.prototype.correctDate = function($eDate) {
+        $eDate = gj($eDate);
+        var format = $eDate.attr("format");
+        var val = $eDate.val();
+        var pattern = format;
+        pattern = pattern.replace('dd', '\\d{1,2}');
+        pattern = pattern.replace('MM', '\\d{1,2}');
+        pattern = pattern.replace('yyyy', '\\d{4}');
+        var p = new RegExp('^'+pattern+'$');
+        var valid = p.test(val);
+        if(valid) {
+            var date = this.dateParses(val, format);
+            valid = !isNaN(date.getTime());
+        }
+
+        // If it is not validate set the date is current date
+        if(!valid) {
+            cs.CalDateTimePicker.currentDate = new Date();
+            cs.CalDateTimePicker.datePattern = format;
+            var value = cs.CalDateTimePicker.getDateTimeString();
+            $eDate.val(value);
+        }
+    }
+
     UICalendarPortlet.prototype.suggestDate = function(eFromDate, eToDate){
         var divCal = gj('div.uiCalendarComponent[relId="'+gj(eFromDate).attr('name')+'"]');
         if(divCal.length > 0){
             var format = gj(eFromDate).attr("format");
+            this.correctDate(eFromDate);
             this.addDay(eFromDate,this.dayDiff, eToDate, format);
         }
         var endDivCal = gj('div.uiCalendarComponent[relId="'+gj(eToDate).attr('name')+'"]');
         if (endDivCal.length > 0) {
+            this.correctDate(eToDate);
             var dayDiff = this.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
             if(dayDiff >= 0) this.dayDiff = dayDiff;
         };

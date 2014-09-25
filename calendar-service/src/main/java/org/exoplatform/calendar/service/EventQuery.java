@@ -61,6 +61,28 @@ public class EventQuery {
 
   private long               limitedItems       = 0;
 
+  public EventQuery() {}
+  
+  public EventQuery(EventQuery eventQuery) {
+    this.setCalendarId(eventQuery.getCalendarId());
+    this.setCalendarPath(eventQuery.getCalendarPath());
+    this.setCategoryId(eventQuery.getCategoryId());
+    this.setEventType(eventQuery.getEventType());
+    this.setExcludeRepeatEvent(eventQuery.getExcludeRepeatEvent());
+    this.setFilterCalendarIds(eventQuery.getFilterCalendarIds());
+    this.setFromDate(eventQuery.getFromDate());
+    this.setLimitedItems(eventQuery.getLimitedItems());
+    this.setNodeType(eventQuery.getNodeType());
+    this.setOrderBy(eventQuery.getOrderBy());
+    this.setOrderType(eventQuery.getOrderType());
+    this.setParticipants(eventQuery.getParticipants());
+    this.setPriority(eventQuery.getPriority());
+    this.setQueryType(eventQuery.getQueryType());
+    this.setState(eventQuery.getState());
+    this.setText(eventQuery.getText());
+    this.setToDate(eventQuery.getToDate());    
+  }
+  
   public String getNodeType() {
     return nodeType;
   }
@@ -329,12 +351,6 @@ public class EventQuery {
         else
           stringBuffer.append("(");
         stringBuffer.append("(");
-        /*
-         * stringBuffer.append("@exo:fromDateTime >= xs:dateTime('"+ISO8601.format(fromDate)+"') and ") ; stringBuffer.append("@exo:toDateTime <= xs:dateTime('"+ISO8601.format(toDate)+"')") ; stringBuffer.append(") or (") ; stringBuffer.append("@exo:fromDateTime < xs:dateTime('"+ISO8601.format(fromDate)+"') and ") ; stringBuffer.append("@exo:toDateTime > xs:dateTime('"+ISO8601.format(toDate)+"')")
-         * ; stringBuffer.append(") or (") ; stringBuffer.append("@exo:fromDateTime < xs:dateTime('"+ISO8601.format(fromDate)+"') and ") ; stringBuffer.append("@exo:toDateTime > xs:dateTime('"+ISO8601.format(fromDate)+"') and ") ; stringBuffer.append("@exo:toDateTime <= xs:dateTime('"+ISO8601.format(toDate)+"')") ; stringBuffer.append(") or (") ;
-         * stringBuffer.append("@exo:fromDateTime >= xs:dateTime('"+ISO8601.format(fromDate)+"') and ") ; stringBuffer.append("@exo:fromDateTime < xs:dateTime('"+ISO8601.format(toDate)+"') and ") ; stringBuffer.append("@exo:toDateTime > xs:dateTime('"+ISO8601.format(toDate)+"')") ;
-         */
-
         // case where the event span fully the interval (starts before and ends after)
         stringBuffer.append("@exo:fromDateTime <= xs:dateTime('").append(ISO8601.format(fromDate)).append("') and ");
         stringBuffer.append("@exo:toDateTime >= xs:dateTime('").append(ISO8601.format(toDate)).append("')");
@@ -348,8 +364,12 @@ public class EventQuery {
         // case where the event ends in the interval
         stringBuffer.append("@exo:toDateTime >= xs:dateTime('").append(ISO8601.format(fromDate)).append("') and ");
         stringBuffer.append("@exo:toDateTime <= xs:dateTime('").append(ISO8601.format(toDate)).append("')");
-
+        stringBuffer.append(") or (");        
+        stringBuffer.append("(not(@exo:repeatUntil) or @exo:repeatUntil >=  xs:dateTime('" + ISO8601.format(fromDate) +  "'))");
+        stringBuffer.append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >=  xs:dateTime('" + ISO8601.format(fromDate) +  "'))");
+        stringBuffer.append(" and @exo:repeat != 'norepeat'");
         stringBuffer.append(")");
+        
         stringBuffer.append(")");
         hasConjuntion = true;
       } else if (fromDate != null) {

@@ -202,7 +202,7 @@
 	  	String recurId = event.getRecurrenceId();
     %>
 	<div class="uiActionContainer">
-		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType())%>">
+		<a class="btn " href="<%=uicomponent.event("Edit",event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType()+"&isOccur=$isOccur"+"&recurId=$recurId")%>">
 		<i class="uiIconEdit uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('EditEvent')%></a>
 		<a class="btn " href="<%=uicomponent.event("Delete",uicomponent.id,event.getId()+"&"+uicomponent.CALENDARID+"="+event.getCalendarId()+"&calType=" +event.getCalType()+"&isOccur=$isOccur"+"&recurId=$recurId")%>">
 		<i class="uiIconDelete uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('DeleteEvent')%></a>
