@@ -19,15 +19,7 @@ package org.exoplatform.calendar.webui;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import javax.jcr.PathNotFoundException;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -38,7 +30,6 @@ import org.exoplatform.calendar.webui.popup.UIConfirmForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.JavascriptManager;
 import org.exoplatform.web.application.RequireJS;
@@ -147,7 +138,8 @@ public class UIWeekView extends UICalendarView {
     eventData_.clear() ;
     allDayEvent.clear();
     int i = 0 ;
-    Calendar c = getBeginDateOfWeek() ;
+    Calendar c = getBeginDateOfWeek();
+    int beginMonth = c.get(Calendar.MONTH);
     int maxDay = 7 ;
     if(isShowCustomView_) maxDay = 5 ;
     while(i++ <maxDay) {
@@ -155,6 +147,12 @@ public class UIWeekView extends UICalendarView {
       String key = keyGen(c.get(Calendar.DATE), c.get(Calendar.MONTH), c.get(Calendar.YEAR)) ;
       eventData_.put(key, list) ;
       c.add(Calendar.DATE, 1) ;
+    }
+    // If this week is in 2 month (for example from 29/09/2014 to 04/10/2014)
+    // We should not use emptyEventCalendars and emptyRecurrentEvents calendar set by UIMiniCalendar
+    if(beginMonth < c.get(Calendar.MONTH)) {
+        this.setEmptyEventCalendars(Collections.EMPTY_LIST);
+        this.setEmptyRecurrentEventCalendars(Collections.EMPTY_LIST);
     }
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
