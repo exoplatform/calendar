@@ -209,19 +209,27 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
 
   @Override
   public Calendar importRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception {
-    Calendar eXoCalendar = storage_.createRemoteCalendar(remoteCalendar);
-    CalendarService calService = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+    Calendar eXoCalendar;
+    CalendarService calService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
 
     if (CalendarService.ICALENDAR.equals(remoteCalendar.getType())) {
+      InputStream icalInputStream = connectToRemoteServer(remoteCalendar);
+
+      eXoCalendar = storage_.createRemoteCalendar(remoteCalendar);
       remoteCalendar.setCalendarId(eXoCalendar.getId());
       remoteCalendar.setLastUpdated(Utils.getGreenwichMeanTime());
-      InputStream icalInputStream = connectToRemoteServer(remoteCalendar);
       calService.getCalendarImportExports(CalendarService.ICALENDAR).importCalendar(remoteCalendar.getUsername(), icalInputStream, remoteCalendar.getCalendarId(), null, remoteCalendar.getBeforeTime(), remoteCalendar.getAfterTime(), false);
       calService.saveUserCalendar(remoteCalendar.getUsername(), eXoCalendar, false);
       return eXoCalendar;
+
     } else {
       if (CalendarService.CALDAV.equals(remoteCalendar.getType())) {
         MultiStatus multiStatus = connectToCalDavServer(remoteCalendar);
+        if(multiStatus == null) {
+          throw new Exception("Can not fetch data from CalDAV Server");
+        } else {
+          eXoCalendar = storage_.createRemoteCalendar(remoteCalendar);
+        }
         String href;
         for (int i = 0; i < multiStatus.getResponses().length; i++) {
           MultiStatusResponse multiRes = multiStatus.getResponses()[i];
