@@ -1,17 +1,19 @@
 <% 
   import org.exoplatform.web.application.Parameter;
   import org.exoplatform.calendar.webui.UISearchForm;
+  import org.exoplatform.calendar.CalendarUtils;
    
   def rcontext = _ctx.getRequestContext() ;
   def requireJS = rcontext.getJavascriptManager().getRequireJS();
+  def startTime = CalendarUtils.getInstanceOfCurrentCalendar().getTimeInMillis();
     
   requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
   requireJS.require("SHARED/jquery","gj");
   requireJS.addScripts('cal.UICalendarPortlet.attachSwapClass("'+ uicomponent.id +'","ControlButton","ControlButtonHover") ;') ;
   //requireJS.addScripts('cal.CalendarScrollManager.load() ;') ;
   requireJS.addScripts("cal.UICalendarPortlet.loadMenu();");
-  requireJS.addScripts("gj('button#UIActionBarQuickAddEvent').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1);});")
-  requireJS.addScripts("gj('button#UIActionBarQuickAddTask').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2); });")
+  requireJS.addScripts("gj('button#UIActionBarQuickAddEvent').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 1, $startTime);});")
+  requireJS.addScripts("gj('button#UIActionBarQuickAddTask').click(function() {cal.UICalendarPortlet.addQuickShowHidden(this, 2, $startTime); });")
   %>
 <div id="$uicomponent.id" class="uiActionBar uiGrayLightBox clearfix" morelabel="<%=_ctx.appRes('UIActionBar.label.More')%>"> 
 	<div class="pull-right btnRight">
