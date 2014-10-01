@@ -167,8 +167,15 @@
      * Show Quick add event and task form
      * @param {obj, type} has action object, type of form : event 1 | task 2
      */
-    UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type){
-        var startTime = _module.UICalendarPortlet.getCurrenTimeWithTimeZone();
+    UICalendarPortlet.prototype.addQuickShowHidden = function(obj, type, startTime){
+        if(startTime == undefined || startTime <= 0) {
+            startTime = _module.UICalendarPortlet.getCurrenTimeWithTimeZone();
+        } else {
+            //Correct startTime with user's timezone
+            var d = new Date();
+            startTime = startTime + d.getTimezoneOffset() * 60 * 1000  + _module.UICalendarPortlet.settingTimezone * 60 * 1000;
+            startTime = _module.UICalendarPortlet.ceil(startTime, 30 * 60 * 1000);
+        }
         if(parseInt(type) ==1) {
             this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeshift"));
             this.addQuickShowHiddenWithTime(obj, type, startTime, startTime + 30 * this.timeShiftE * 60 * 1000) ;
