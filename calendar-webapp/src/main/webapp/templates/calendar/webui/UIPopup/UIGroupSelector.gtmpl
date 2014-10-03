@@ -49,7 +49,7 @@
               if(even) rowCssClass = "EvenRow" ;
               even                 = !even ;
               String groupId       = group.getId();
-              String groupName     = group.getGroupName();
+              String groupName     = group.getLabel();
               String selectGroupLink = uicomponent.event('SelectMembership', groupId);
           %>
               <li>
