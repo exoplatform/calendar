@@ -31,6 +31,7 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.bench.DataInjector;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -126,11 +127,21 @@ public class CalendarDataInjector extends DataInjector {
   }
 
   private boolean getParam(InitParams initParams, String param) {
-    return Boolean.parseBoolean(initParams.getValueParam(param).getValue());
+    ValueParam p = initParams.getValueParam(param);
+    if(p != null) {
+        return Boolean.parseBoolean(p.getValue());
+    } else {
+        return false;
+    }
   }
 
   private String getParam(InitParams initParams, String param, String df) {
-    return String.valueOf(initParams.getValueParam(param).getValue());
+    ValueParam p = initParams.getValueParam(param);
+    if(p != null) {
+        return p.getValue();
+    } else {
+        return df;
+    }
   }
 
   public void initParams(InitParams initParams) {
@@ -141,7 +152,7 @@ public class CalendarDataInjector extends DataInjector {
     maxTasks = getParam(initParams, "mTa", maxTasks);
     baseURL = getParam(initParams, "baseURL", baseURL);
     typeOfInject = getParam(initParams, "typeOfInject", typeOfInject);
-    randomize =(boolean)getParam(initParams, "rand");
+    randomize = getParam(initParams, "rand");
   }
 
   @Override
