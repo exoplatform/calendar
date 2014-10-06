@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.service;
 
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -77,13 +78,19 @@ public class ReminderJob extends MultiTenancyJob {
           long fromTime = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
           long remindTime = reminder.getProperty(Utils.EXO_REMINDER_DATE).getDate().getTimeInMillis();
           long interval = reminder.getProperty(Utils.EXO_TIME_INTERVAL).getLong() * 60 * 1000;
+          TimeZone fromDateTimezone = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeZone();          
+          String userTimezoneId = fromDateTimezone.getID();
+          int userTimezone = fromDateTimezone.getRawOffset()/3600000;
+          
           String to = reminder.getProperty(Utils.EXO_EMAIL).getString();
           if (to != null && to.length() > 0) {
             message = new Message();
             message.setMimeType(MediaType.TEXT_HTML);
             message.setTo(to);
             message.setSubject("[reminder] eXo calendar notify mail !");
-            message.setBody(reminder.getProperty(Utils.EXO_DESCRIPTION).getString());
+            message.setBody(reminder.getProperty(Utils.EXO_DESCRIPTION).getString() 
+                            + "(GMT" + ((userTimezone >= 0) ? "+" : "") + userTimezone   
+                            + " - " + userTimezoneId + ")");
             message.setFrom(jdatamap.getString("account"));
             if (isRepeat) {
               if (fromCalendar.getTimeInMillis() >= fromTime) {
