@@ -61,6 +61,7 @@ import org.exoplatform.calendar.service.impl.TaskSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -118,6 +119,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     eventSearchConnector_ = getService(EventSearchConnector.class);
     storage_ = ((CalendarServiceImpl)calendarService_).getDataStorage();
   }
+
 
   private void loginUser(String userId) {
     List<MembershipEntry> entries = new LinkedList<MembershipEntry>();
@@ -912,7 +914,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calEvent2.setDescription("I am not search able event with john");
     calEvent2.setCalendarId(cal.getId());
     calEvent2.setEventCategoryId(eventCategory.getId());
-    calEvent2.setPrivate(true);
+    calEvent2.setPrivate(false);
     calendarService_.saveUserEvent(username, cal.getId(), calEvent2, true);
 
     CalendarEvent task = new CalendarEvent() ;
@@ -922,6 +924,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     task.setSummary("are you here?");
     task.setDescription("I am search able task with john");
     task.setCalendarId(cal.getId());
+    task.setPrivate(false);
     task.setEventCategoryId(eventCategory.getId());
     calendarService_.saveUserEvent(username, cal.getId(), task, true);
 
@@ -1011,7 +1014,215 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendarService_.removeEventCategory(username, eventCategory.getId());
     assertNotNull(calendarService_.removeUserCalendar(username, ids[0]));
   }
-  
+
+  public void testUnifiedSearchInReadOnlySharedCalendar() throws Exception {
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 5);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.MINUTE, 65);
+
+    String keyword = "search this event" ;
+    String publicEventTitle = "UnifiedSearchWithPublicEventInReadonlySharedCalendar";
+    String privateEventTitle = "UnifiedSearchWithPrivateEventInReadonlySharedCalendar";
+
+    //. Create shared calendar
+    loginUser(username);
+
+    // Create calendar and share with John
+    Calendar cal = new Calendar() ;
+    cal.setName("root shared calendar as readonly");
+    calendarService_.saveUserCalendar(username, cal, true);
+    calendarService_.shareCalendar(username, cal.getId(), Arrays.asList("john"));
+
+    //. Create public event
+    CalendarEvent pubEvent = new CalendarEvent();
+    pubEvent.setFromDateTime(fromCal.getTime());
+    pubEvent.setToDateTime(toCal.getTime());
+    pubEvent.setSummary(publicEventTitle);
+    pubEvent.setDescription("you can search this event");
+    pubEvent.setCalendarId(cal.getId());
+    pubEvent.setPrivate(false);
+    calendarService_.saveUserEvent(username, cal.getId(),pubEvent, true);
+
+    // Create private event
+    CalendarEvent priEvent = new CalendarEvent();
+    priEvent.setFromDateTime(fromCal.getTime());
+    priEvent.setToDateTime(toCal.getTime());
+    priEvent.setSummary(privateEventTitle);
+    priEvent.setDescription("you can not search this event");
+    priEvent.setCalendarId(cal.getId());
+    priEvent.setPrivate(true);
+    calendarService_.saveUserEvent(username, cal.getId(), priEvent, true);
+
+    loginUser("john");
+    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    assertNotFoundInSearchResults(privateEventTitle, result);
+    assertFoundInSearchResults(publicEventTitle, result);
+  }
+
+  public void testUnifiedSearchInEditableSharedCalendar() throws Exception {
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 5);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.MINUTE, 65);
+
+    String keyword = "search this event";
+    String publicEventTitle = "UnifiedSearchWithPublicEventInEditableSharedCalendar";
+    String privateEventTitle = "UnifiedSearchWithPrivateEventInEditableSharedCalendar";
+
+    //. Create shared calendar
+    loginUser(username);
+
+    // Create calendar and share with John
+    Calendar cal = new Calendar() ;
+    cal.setName("root shared calendar as editable");
+    calendarService_.saveUserCalendar(username, cal, true);
+    calendarService_.shareCalendar(username, cal.getId(), Arrays.asList("john"));
+    // User John have permission on this calendar
+    cal.setEditPermission(new String[]{"john"});
+    calendarService_.saveUserCalendar(username, cal, false);
+
+
+    //. Create public event
+    CalendarEvent pubEvent = new CalendarEvent();
+    pubEvent.setFromDateTime(fromCal.getTime());
+    pubEvent.setToDateTime(toCal.getTime());
+    pubEvent.setSummary(publicEventTitle);
+    pubEvent.setDescription("you can search this event");
+    pubEvent.setCalendarId(cal.getId());
+    pubEvent.setPrivate(false);
+    calendarService_.saveUserEvent(username, cal.getId(),pubEvent, true);
+
+    // Create private event
+    CalendarEvent priEvent = new CalendarEvent();
+    priEvent.setFromDateTime(fromCal.getTime());
+    priEvent.setToDateTime(toCal.getTime());
+    priEvent.setSummary(privateEventTitle);
+    priEvent.setDescription("you can still search this event");
+    priEvent.setCalendarId(cal.getId());
+    priEvent.setPrivate(true);
+    calendarService_.saveUserEvent(username, cal.getId(), priEvent, true);
+
+    loginUser("john");
+    Collection<SearchResult> results = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    assertFoundInSearchResults(privateEventTitle, results);
+    assertFoundInSearchResults(publicEventTitle, results);
+  }
+
+  public void testUnifiedSearchInReadOnlyGroupCalendar() throws Exception {
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 5);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.MINUTE, 65);
+
+    String keyword = "search this event";
+    String publicEventTitle = "UnifiedSearchWithPublicEventInReadonlyGroupCalendar";
+    String privateEventTitle = "UnifiedSearchWithPrivateEventInReadonlyGroupCalendar";
+
+    //. Create shared calendar
+    loginUser(username);
+
+    // Create group calendar
+    Calendar cal = new Calendar();
+    cal.setName("Group calendar");
+    cal.setDescription("user group calendar");
+    cal.setPublic(true);
+    cal.setGroups(new String[]{"/platform/users"});
+    calendarService_.savePublicCalendar(cal, true);
+
+
+    //. Create public event
+    CalendarEvent pubEvent = new CalendarEvent();
+    pubEvent.setFromDateTime(fromCal.getTime());
+    pubEvent.setToDateTime(toCal.getTime());
+    pubEvent.setSummary(publicEventTitle);
+    pubEvent.setDescription("you can search this event");
+    pubEvent.setCalendarId(cal.getId());
+    pubEvent.setPrivate(false);
+    calendarService_.savePublicEvent(cal.getId(), pubEvent, true);
+
+    // Create private event
+    CalendarEvent priEvent = new CalendarEvent();
+    priEvent.setFromDateTime(fromCal.getTime());
+    priEvent.setToDateTime(toCal.getTime());
+    priEvent.setSummary(privateEventTitle);
+    priEvent.setDescription("you can not search this event");
+    priEvent.setCalendarId(cal.getId());
+    priEvent.setPrivate(true);
+    calendarService_.savePublicEvent(cal.getId(), priEvent, true);
+
+    loginUser("john");
+    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    assertNotFoundInSearchResults(privateEventTitle, result);
+    assertFoundInSearchResults(publicEventTitle, result);
+  }
+
+  public void testUnifiedSearchInEditableGroupCalendar() throws Exception {
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.MINUTE, 5);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.MINUTE, 65);
+
+    String keyword = "search this event";
+    String publicEventTitle = "UnifiedSearchWithPublicEventInEditableGroupCalendar";
+    String privateEventTitle = "UnifiedSearchWithPrivateEventInEditableGroupCalendar";
+
+    //. Create shared calendar
+    loginUser(username);
+
+    // Create group calendar
+    Calendar cal = new Calendar();
+    cal.setName("Group calendar");
+    cal.setDescription("user group calendar");
+    cal.setPublic(true);
+    cal.setGroups(new String[]{"/platform/users"});
+    calendarService_.savePublicCalendar(cal, true);
+    cal.setEditPermission(new String[]{"john"});
+    calendarService_.savePublicCalendar(cal, false);
+
+
+    //. Create public event
+    CalendarEvent pubEvent = new CalendarEvent();
+    pubEvent.setFromDateTime(fromCal.getTime());
+    pubEvent.setToDateTime(toCal.getTime());
+    pubEvent.setSummary(publicEventTitle);
+    pubEvent.setDescription("you can search this event");
+    pubEvent.setCalendarId(cal.getId());
+    pubEvent.setPrivate(false);
+    calendarService_.savePublicEvent(cal.getId(), pubEvent, true);
+
+    // Create private event
+    CalendarEvent priEvent = new CalendarEvent();
+    priEvent.setFromDateTime(fromCal.getTime());
+    priEvent.setToDateTime(toCal.getTime());
+    priEvent.setSummary(privateEventTitle);
+    priEvent.setDescription("you can still search this event");
+    priEvent.setCalendarId(cal.getId());
+    priEvent.setPrivate(true);
+    calendarService_.savePublicEvent(cal.getId(), priEvent, true);
+
+    loginUser("john");
+    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    assertFoundInSearchResults(privateEventTitle, result);
+    assertFoundInSearchResults(publicEventTitle, result);
+  }
+
+  public void assertNotFoundInSearchResults(String eventTitle, Collection<SearchResult> results) {
+    for(SearchResult result : results) {
+      if(result.getTitle().equals(eventTitle)) {
+        fail("The event with title " + eventTitle + " should not found in search");
+      }
+    }
+  }
+  public void assertFoundInSearchResults(String eventTitle, Collection<SearchResult> results) {
+    for(SearchResult result : results) {
+      if(result.getTitle().equals(eventTitle)) {
+        return;
+      }
+    }
+    fail("The event with title " + eventTitle + " should be returned in search");
+  }
+
   private Router loadConfiguration(String path) throws IOException{
     InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
     try {

@@ -16,10 +16,7 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.jcr.query.Query;
@@ -35,8 +32,17 @@ import org.exoplatform.commons.utils.ISO8601;
  * Jan 23, 2013  
  */
 public class UnifiedQuery extends EventQuery {
+    private Set<String> excludePrivateEventInCalendars = Collections.EMPTY_SET;
 
-  public String getQueryStatement() throws Exception {
+    public Set<String> getExcludePrivateEventInCalendars() {
+        return Collections.unmodifiableSet(excludePrivateEventInCalendars);
+    }
+
+    public void setExcludePrivateEventInCalendars(Set<String> excludePrivateEventInCalendars) {
+        this.excludePrivateEventInCalendars = excludePrivateEventInCalendars;
+    }
+
+    public String getQueryStatement() throws Exception {
     StringBuffer queryString = new StringBuffer("");
 
     if (getQueryType().equals(Query.SQL)) {
@@ -51,11 +57,17 @@ public class UnifiedQuery extends EventQuery {
         
         if (getCalendarId() != null && getCalendarId().length > 0) {
           queryString.append("(");
-          for (int i = 0; i < getCalendarId().length; i++) { 
+          String[] calendarIds = getCalendarId();
+          for (int i = 0; i < calendarIds.length; i++) {
             if (i != 0) {
               queryString.append(" OR ");
             }
-            queryString.append(Utils.EXO_CALENDAR_ID).append(" = '").append(getCalendarId()[i]).append("'");
+            String calendarId = calendarIds[i];
+            queryString.append("(").append(Utils.EXO_CALENDAR_ID).append(" = '").append(calendarId).append("'");
+            if(excludePrivateEventInCalendars != null && excludePrivateEventInCalendars.contains(calendarId)) {
+                queryString.append(" AND ").append(Utils.EXO_IS_PRIVATE).append(" = 'false' ");
+            }
+            queryString.append(")");
           }
           queryString.append(") AND ");
         }
