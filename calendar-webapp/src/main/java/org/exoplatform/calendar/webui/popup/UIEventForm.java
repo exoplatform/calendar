@@ -1597,6 +1597,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
 
         TimeZone tz = TimeZone.getTimeZone(calSetting.getTimeZone());
         Utils.updateOriginDate(calendarEvent, tz);
+        Utils.adaptRepeatRule(calendarEvent, tz, TimeZone.getTimeZone("GMT"));
       }
     } else {
       calendarEvent.setRepeatType(CalendarEvent.RP_NOREPEAT);

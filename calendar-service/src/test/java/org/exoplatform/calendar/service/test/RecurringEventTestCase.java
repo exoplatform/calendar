@@ -31,7 +31,6 @@ import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import sun.util.calendar.CalendarUtils;
 
 public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
 
@@ -213,14 +212,14 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     String recurrenceId2 = sf.format(fromCal.getTime());
     CalendarEvent occEvent2 = occMap.get(recurrenceId2);
 
-    Collection<CalendarEvent> list = calendarService_.getExceptionEvents(username,recurEvent);
-    assertEquals(0,list.size());
+    Collection<CalendarEvent> list = calendarService_.getExceptionEvents(username, recurEvent);
+    assertEquals(0, list.size());
 
     occEvent1.setSummary("broken series event");
     //breaks 1 from the series
     calendarService_.saveOneOccurrenceEvent(recurEvent, occEvent1, username);
     occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
-    list = calendarService_.getExceptionEvents(username,recurEvent);
+    list = calendarService_.getExceptionEvents(username, recurEvent);
     assertNotNull(list);
     assertEquals(1,list.size());
     assertEquals(4, occMap.size());  //5 - 1
@@ -309,6 +308,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     from.set(2013, 2, 1, 0, 0, 0);
     to.set(2013, 2, 12, 0, 0, 0);
 
+    Utils.adaptRepeatRule(recurEvent, tz, TimeZone.getTimeZone("GMT"));
     calendarService_.saveUserEvent(username, calendar.getId(), recurEvent, true);
     Map<String, CalendarEvent> occMap = calendarService_.getOccurrenceEvents(recurEvent, from, to, timeZone);
 
@@ -548,10 +548,10 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     //get occurrence right before 09 Feb
     Date expectedDate = Utils.getPreviousOccurrenceDate(recurEvent, calendar.getTime(), tz);
     calendar.setTime(expectedDate);
-    assertEquals(9,calendar.get(java.util.Calendar.DATE));
+    assertEquals(9, calendar.get(java.util.Calendar.DATE));
 
     fromCal.set(2013, java.util.Calendar.SEPTEMBER, 10, 22, 30);
-    toCal.set(2013,java.util.Calendar.SEPTEMBER, 10, 23, 30);
+    toCal.set(2013, java.util.Calendar.SEPTEMBER, 10, 23, 30);
     recurEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
     recurEvent.setFromDateTime(fromCal.getTime());
     recurEvent.setToDateTime(toCal.getTime());
@@ -631,6 +631,11 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     event.setRepeatByDay(new String[]{"MO", "TU", "WE", "TH"});
     event.setRepeatCount(10);
     event.setRepeatUntilDate(null);
+
+    Utils.updateOriginDate(event, userTimezone);
+
+    //Adjust recurring info
+    Utils.adaptRepeatRule(event, userTimezone, TimeZone.getTimeZone("GMT"));
 
     calendarService_.saveUserEvent(username, calendar.getId(), event, true);
 
@@ -780,6 +785,9 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     event.setRepeatCount(10);
     event.setRepeatUntilDate(null);
 
+    Utils.updateOriginDate(event, userTimezone);
+    Utils.adaptRepeatRule(event, userTimezone, TimeZone.getTimeZone("GMT"));
+
     calendarService_.saveUserEvent(username, calendar.getId(), event, true);
 
     //. Get occurrenceEvent
@@ -793,6 +801,67 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     assertContain("20141024T100000Z", keys);
     assertNotContain("20141025T100000Z", keys);
     assertNotContain("20141026T100000Z", keys);
+  }
+
+  public void testCreateRecurringEventStartAtSunday() throws Exception {
+    CalendarSetting setting = calendarService_.getCalendarSetting(username);
+    setting.setDateFormat("MMddyyyy");
+    setting.setTimeFormat("H:m");
+
+    // Set current user timezone is GTM+7
+    setting.setTimeZone("Asia/Saigon");
+    calendarService_.saveCalendarSetting(username, setting);
+    setting = calendarService_.getCalendarSetting(username);
+    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+
+    Calendar calendar = createPrivateCalendar(username, "test recurring calendar", "description");
+
+
+    //. 22 Oct 2014 (Wednesday)
+    String startTime = "10192014 10:00";
+    String endTime = "10192014 11:00";
+
+    Date start = getDate(setting, startTime);
+    Date end = getDate(setting, endTime);
+
+    java.util.Calendar from = java.util.Calendar.getInstance();
+    from.setTimeZone(userTimezone);
+    from.setTime(start);
+    from.add(java.util.Calendar.DATE, -2);
+    java.util.Calendar to = java.util.Calendar.getInstance();
+    to.setTime(end);
+    to.setTimeZone(userTimezone);
+    to.add(java.util.Calendar.MONTH, 2);
+
+    // Create recuring event
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary("test recurring");
+    event.setFromDateTime(start);
+    event.setToDateTime(end);
+
+    //. Create event on Wednesday but repeat weekly on Thursday and Friday
+    event.setRepeatType(CalendarEvent.RP_WEEKLY);
+    event.setRepeatInterval(1);
+    event.setRepeatByDay(new String[]{"MO", "SU"});
+    event.setRepeatCount(10);
+    event.setRepeatUntilDate(null);
+
+    Utils.updateOriginDate(event, userTimezone);
+    Utils.adaptRepeatRule(event, userTimezone, TimeZone.getTimeZone("GMT"));
+
+    calendarService_.saveUserEvent(username, calendar.getId(), event, true);
+
+    //. Get occurrenceEvent
+    Map<String, CalendarEvent> events = calendarService_.getOccurrenceEvents(event, from, to, setting.getTimeZone());
+    assertEquals(10, events.size());
+    Set<String> keys = events.keySet();
+    assertNotContain("20141017T100000Z", keys);
+    assertNotContain("20141018T100000Z", keys);
+    assertContain("20141019T100000Z", keys);
+    assertContain("20141020T100000Z", keys);
+    assertNotContain("20141021T100000Z", keys);
+    assertContain("20141026T100000Z", keys);
+    assertContain("20141027T100000Z", keys);
   }
 
   private Date getDate(CalendarSetting setting, String datetime) throws Exception {

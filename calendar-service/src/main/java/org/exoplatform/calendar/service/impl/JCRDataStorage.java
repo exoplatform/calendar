@@ -897,6 +897,10 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    //TODO: adjust recurring info
+
+
+
     Node calendarNode = getUserCalendarHome(username).getNode(calendarId);
     event.setCalendarId(calendarId); // make sur the event is attached to the
     if (event.getReminders() != null && event.getReminders().size() > 0) {
@@ -1390,6 +1394,11 @@ public class JCRDataStorage implements DataStorage {
         if (log.isDebugEnabled())
           log.debug(e);
       }
+    }
+
+    //TODO: Adjust repeat info here?
+    if(isRepeatNode) {
+
     }
 
     eventNode.setProperty(Utils.EXO_SUMMARY, event.getSummary());
@@ -4585,10 +4594,10 @@ public class JCRDataStorage implements DataStorage {
     int diffMinutes = (int) ((recurEvent.getToDateTime().getTime() - recurEvent.getFromDateTime()
         .getTime()) / (60 * 1000));
 
-    List<String> excludeIds = null;
-    if (recurEvent.getExcludeId() != null && recurEvent.getExcludeId().length > 0) {
-      excludeIds = new ArrayList<String>(Arrays.asList(recurEvent.getExcludeId()));
-    }
+//    List<String> excludeIds = null;
+//    if (recurEvent.getExcludeId() != null && recurEvent.getExcludeId().length > 0) {
+//      excludeIds = new ArrayList<String>(Arrays.asList(recurEvent.getExcludeId()));
+//    }
 
     Recur recur = Utils.getICalendarRecur(recurEvent);
     if (recur == null)
@@ -4598,7 +4607,7 @@ public class JCRDataStorage implements DataStorage {
     net.fortuna.ical4j.model.TimeZone tz = Utils.getICalTimeZone(TimeZone.getTimeZone(timezone));
     ical4jEventFrom.setTimeZone(tz);
 
-    Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
+    Utils.adaptRepeatRule(recur, recurEvent.getFromDateTime(), TimeZone.getTimeZone("GMT"), userTimeZone);
 
     java.util.Calendar occurenceFrom = java.util.Calendar.getInstance();
     occurenceFrom.setTime(from.getTime());
