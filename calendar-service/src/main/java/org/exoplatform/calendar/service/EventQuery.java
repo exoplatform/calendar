@@ -453,7 +453,11 @@ public class EventQuery {
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {
         char ch = s.charAt(i);
-        if (ch == '"' || ch == '-' || ch == '\\') {
+        if (ch == '"' || ch == '-' || ch == '\\'
+                || ch == '{' || ch == '}'
+                || ch == '(' || ch == ')'
+                || ch == '[' || ch == ']'
+                || ch == ':' || ch == '^') {
             buffer.append('\\').append(ch);
         }  else if (ch == '\'') {
           buffer.append("''");
