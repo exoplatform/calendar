@@ -37,6 +37,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.MultiListAccess;
@@ -251,10 +252,12 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         detail.append(buildDetail(iter, cal.getTimeZone()));
         if(detail.length() > 0) detailValue = detail.toString();
         long relevancy = buildScore(iter);
-        long date = buildDate(iter) ;
+        long date = buildDate(iter);
+        TimeZone userTimezone = TimeZone.getTimeZone(cal.getTimeZone());
         CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
         result.setDataType(dataType);
         result.setTimeZoneName(cal.getTimeZone());
+        result.setTimeZoneOffset(userTimezone.getOffset(date));
         if(CalendarEvent.TYPE_EVENT.equals(dataType)) {
           result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
         } else if (CalendarEvent.TYPE_TASK.equals(dataType)) {

@@ -35,6 +35,7 @@ public class CalendarSearchResult extends SearchResult {
   private long fromDateTime;
   private String dataType;
   private String zoneName;
+  private long zoneOffset;
   private String taskStatus;
   public CalendarSearchResult(String url,
                               String title,
@@ -78,6 +79,14 @@ public class CalendarSearchResult extends SearchResult {
 
   public String getTimeZoneName() {
     return zoneName;
+  }
+
+  public long getTimeZoneOffset() {
+    return zoneOffset;
+  }
+
+  public void setTimeZoneOffset(long zoneOffset) {
+    this.zoneOffset = zoneOffset;
   }
 
 
