@@ -43,6 +43,8 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.RootContainer;
+import org.exoplatform.services.cache.CacheService;
+import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.core.ManageableRepository;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
@@ -430,6 +432,9 @@ public class Utils {
   public static final String ERROR_SHARE = "errorShare";
   
   public static final String ERROR_UN_SHARE = "errorUnShare";
+
+  //Cache
+  private static final String CALENDAR_DST_CACHE_REGION = "calendar.DaylightSavingTime";
   
   //Unified search
   public static final String DETAIL_PATH = "details";
@@ -755,7 +760,13 @@ public class Utils {
    * @throws ParseException
    */
   public static net.fortuna.ical4j.model.TimeZone getICalTimeZone(TimeZone jTz) throws ParseException {
-    
+    ExoCache<String, net.fortuna.ical4j.model.TimeZone> dstCache = getDaylightTimeCache();
+    String key = jTz.getID();
+    net.fortuna.ical4j.model.TimeZone tz = dstCache.get(key);
+    if(tz != null) {
+      return tz;
+    }
+
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
     Calendar calendar = Calendar.getInstance();
     String dtStartValue = dateFormat.format(calendar.getTime());
@@ -765,7 +776,12 @@ public class Utils {
     TzName standardTzName = new TzName(new ParameterList(), jTz.getDisplayName(false,TimeZone.SHORT));
     
     DtStart standardTzStart = new DtStart();
-    standardTzStart.setValue(dtStartValue);
+    if(jTz.useDaylightTime()) {
+      Date date = getDaylightEnd(jTz);
+      standardTzStart.setValue(dateFormat.format(date));
+    } else {
+      standardTzStart.setValue(dtStartValue);
+    }
     
     TzOffsetTo standardTzOffsetTo = new TzOffsetTo();
     standardTzOffsetTo.setOffset(new UtcOffset(jTz.getRawOffset()));
@@ -790,10 +806,11 @@ public class Utils {
       PropertyList daylightTzProps = new PropertyList();
       
       TzName daylightTzName = new TzName(jTz.getDisplayName(true, TimeZone.SHORT));
-      
+
+      Date start = getDaylightStart(jTz);
       DtStart daylightDtStart = new DtStart();
-      daylightDtStart.setValue(dtStartValue);
-      
+      daylightDtStart.setValue(dateFormat.format(start));
+
       TzOffsetTo daylightTzOffsetTo = new TzOffsetTo();
       daylightTzOffsetTo.setOffset(new UtcOffset(jTz.getRawOffset() +  jTz.getDSTSavings()));
       
@@ -819,12 +836,87 @@ public class Utils {
     VTimeZone vTz = new VTimeZone(tzProps, tzComponents);
     try {
       vTz.validate();
-      return new net.fortuna.ical4j.model.TimeZone(vTz);
+      tz = new net.fortuna.ical4j.model.TimeZone(vTz);
+      dstCache.put(key, tz);
+      return tz;
     } catch (ValidationException e) {
       return null;
     }
   }
-  
+
+  /**
+   * Determines the first start date of daylight savings for the specified
+   * timezone since January 1, 1970.
+   *
+   * @param timezone
+   * a timezone to determine the start of daylight savings for
+   * @return a date
+   */
+  public static Date getDaylightStart(final TimeZone timezone) {
+    Calendar calendar = Calendar.getInstance(timezone);
+    calendar.set(Calendar.DAY_OF_YEAR, 0);
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    // first find the start of standard time..
+    while (timezone.inDaylightTime(calendar.getTime())) {
+      calendar.set(Calendar.DAY_OF_YEAR, calendar
+              .get(Calendar.DAY_OF_YEAR) + 1);
+    }
+    // then find the first daylight time after that..
+    while (!timezone.inDaylightTime(calendar.getTime())) {
+      calendar.set(Calendar.DAY_OF_YEAR, calendar
+              .get(Calendar.DAY_OF_YEAR) + 1);
+    }
+
+    // Find hour
+    while(timezone.inDaylightTime(calendar.getTime())) {
+      calendar.add(Calendar.HOUR_OF_DAY, -1);
+    }
+    calendar.add(Calendar.HOUR_OF_DAY, 1);
+
+    return calendar.getTime();
+  }
+  /**
+   * Determines the first end date of daylight savings for the specified
+   * timezone since January 1, 1970.
+   *
+   * @param timezone
+   * a timezone to determine the end of daylight savings for
+   * @return a date
+   */
+  public static Date getDaylightEnd(final TimeZone timezone) {
+    Calendar calendar = Calendar.getInstance(timezone);
+    calendar.set(Calendar.DAY_OF_YEAR, 0);
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    // first find the start of daylight time..
+    while (!timezone.inDaylightTime(calendar.getTime())) {
+      calendar.set(Calendar.DAY_OF_YEAR, calendar
+              .get(Calendar.DAY_OF_YEAR) + 1);
+    }
+    // then find the first standard time after that..
+    while (timezone.inDaylightTime(calendar.getTime())) {
+      calendar.set(Calendar.DAY_OF_YEAR, calendar
+              .get(Calendar.DAY_OF_YEAR) + 1);
+    }
+
+    // Find hour
+    while(!timezone.inDaylightTime(calendar.getTime())) {
+      calendar.add(Calendar.HOUR_OF_DAY, -1);
+    }
+    calendar.add(Calendar.HOUR_OF_DAY, 1);
+
+    return calendar.getTime();
+  }
+
+  public static ExoCache<String, net.fortuna.ical4j.model.TimeZone> getDaylightTimeCache() {
+    CacheService cacheService = (CacheService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CacheService.class);
+    ExoCache<String, net.fortuna.ical4j.model.TimeZone> dstCache = cacheService.getCacheInstance(CALENDAR_DST_CACHE_REGION);
+    return dstCache;
+  }
+
   /**
    * adapts the repeat rule
    * because of different time zones, the repeated day of a repetitive event can be different 

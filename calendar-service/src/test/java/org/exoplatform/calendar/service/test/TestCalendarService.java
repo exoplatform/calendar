@@ -20,16 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -406,6 +399,186 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
     calendarService_.removeUserEvent(username, recurEvent.getCalendarId(), recurEvent.getId());
     calendarService_.removeUserCalendar(username, recurEvent.getCalendarId());
+  }
+
+  /**
+   * * This test now only failure if:
+   * - Default timezone (timezone set up on computer) is GMT +7
+   * - Time in GMT +7 is afternoon (after 3:00 PM)
+   * @throws Exception
+   */
+  public void testRecurringEventStartFromToday() throws Exception {
+    CalendarSetting setting = calendarService_.getCalendarSetting(username);
+    String originUserTimezone = setting.getTimeZone();
+    setting.setDateFormat("MMddyyyy");
+    setting.setTimeFormat("H:m");
+    // Set current user timezone is GTM +1
+    setting.setTimeZone("Europe/Brussels");
+    calendarService_.saveCalendarSetting(username, setting);
+    setting = calendarService_.getCalendarSetting(username);
+    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    // Build startTime and endTime string
+    // startTime == nextHour from current hour
+    // endTime = next hour from start time
+    java.util.Calendar from = java.util.Calendar.getInstance();
+    from.add(java.util.Calendar.HOUR_OF_DAY, 1);
+    from.set(java.util.Calendar.MINUTE, 0);
+    from.set(java.util.Calendar.SECOND, 0);
+    java.util.Calendar fromCalendar = (java.util.Calendar)from.clone();
+    java.util.Calendar to = java.util.Calendar.getInstance();
+    to.setTime(from.getTime());
+    to.add(java.util.Calendar.HOUR_OF_DAY, 1);
+    String startTime = formatDate(setting, from.getTime());
+    String endTime = formatDate(setting, to.getTime());
+    //. Rebuild fromDate and toDate from user time
+    Date fromDate = getDate(setting, startTime);
+    Date toDate = getDate(setting, endTime);
+    //. Create calendar
+    Calendar cal = createCalendar(username, "testGetOccurrenceEvent");
+    //. Create recurring event
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary("test previous");
+    event.setFromDateTime(fromDate);
+    event.setToDateTime(toDate);
+    event.setRepeatType(CalendarEvent.RP_DAILY);
+    event.setRepeatInterval(1);
+    event.setRepeatCount(10);
+    event.setRepeatByDay(null);
+    event.setRepeatUntilDate(null);
+    calendarService_.saveUserEvent(username, cal.getId(), event, true);
+    from.setTimeZone(userTimezone);
+    from.add(java.util.Calendar.DATE, -2);
+    to.setTimeZone(userTimezone);
+    to.add(java.util.Calendar.DATE, 20);
+    Map<String, CalendarEvent> events = calendarService_.getOccurrenceEvents(event, from, to, setting.getTimeZone());
+    Set<String> keys = events.keySet();
+    assertEquals(10, keys.size());
+    SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    format.setCalendar(fromCalendar);
+    from = (java.util.Calendar)fromCalendar.clone();
+    for(int i = 0; i < 10; i++) {
+      assertContain(format.format(from.getTime()), keys);
+      from.add(java.util.Calendar.HOUR_OF_DAY, 1);
+      assertNotContain(format.format(from.getTime()), keys);
+      from.add(java.util.Calendar.HOUR_OF_DAY, -2);
+      assertNotContain(format.format(from.getTime()), keys);
+      from.setTimeZone(userTimezone);
+      from.add(java.util.Calendar.HOUR_OF_DAY, 1);
+      from.add(java.util.Calendar.DAY_OF_YEAR, 1);
+      from.setTimeZone(fromCalendar.getTimeZone());
+    }
+
+    calendarService_.removeAllSeriesEvents(event, username);
+    // Reset user timezone
+    setting.setTimeZone(originUserTimezone);
+    calendarService_.saveCalendarSetting(username, setting);
+  }
+  /**
+   * This test now only failure if:
+   * - Default timezone (timezone set up on computer) is GMT +7
+   * - Time in GMT +7 is afternoon (after 3:00 PM)
+   * @throws Exception
+   */
+  public void testRecurringEventStartFromYesterday() throws Exception {
+    CalendarSetting setting = calendarService_.getCalendarSetting(username);
+    String originUserTimezone = setting.getTimeZone();
+    setting.setDateFormat("MMddyyyy");
+    setting.setTimeFormat("H:m");
+    // Set current user timezone is GTM +1
+    setting.setTimeZone("Europe/Brussels");
+    calendarService_.saveCalendarSetting(username, setting);
+    setting = calendarService_.getCalendarSetting(username);
+    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    // Build startTime and endTime string
+    // startTime == nextHour from current hour
+    // endTime = next hour from start time
+    java.util.Calendar from = java.util.Calendar.getInstance();
+    from.add(java.util.Calendar.DATE, -1);
+    from.add(java.util.Calendar.HOUR_OF_DAY, 1);
+    from.set(java.util.Calendar.MINUTE, 0);
+    from.set(java.util.Calendar.SECOND, 0);
+    java.util.Calendar fromCalendar = (java.util.Calendar)from.clone();
+    java.util.Calendar to = java.util.Calendar.getInstance();
+    to.setTime(from.getTime());
+    to.add(java.util.Calendar.HOUR_OF_DAY, 1);
+    String startTime = formatDate(setting, from.getTime());
+    String endTime = formatDate(setting, to.getTime());
+    //. Rebuild fromDate and toDate from user time
+    Date fromDate = getDate(setting, startTime);
+    Date toDate = getDate(setting, endTime);
+    //. Create calendar
+    Calendar cal = createCalendar(username, "testGetOccurrenceEvent1");
+    //. Create recurring event
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary("test previous");
+    event.setFromDateTime(fromDate);
+    event.setToDateTime(toDate);
+    event.setRepeatType(CalendarEvent.RP_DAILY);
+    event.setRepeatInterval(1);
+    event.setRepeatCount(10);
+    event.setRepeatByDay(null);
+    event.setRepeatUntilDate(null);
+    calendarService_.saveUserEvent(username, cal.getId(), event, true);
+    from.setTimeZone(userTimezone);
+    from.add(java.util.Calendar.DATE, -2);
+    to.setTimeZone(userTimezone);
+    to.add(java.util.Calendar.DATE, 20);
+    Map<String, CalendarEvent> events = calendarService_.getOccurrenceEvents(event, from, to, setting.getTimeZone());
+    Set<String> keys = events.keySet();
+    assertEquals(10, keys.size());
+    SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    format.setCalendar(fromCalendar);
+    from = (java.util.Calendar)fromCalendar.clone();
+    for(int i = 0; i < 10; i++) {
+      assertContain(format.format(from.getTime()), keys);
+      from.add(java.util.Calendar.HOUR_OF_DAY, 1);
+      assertNotContain(format.format(from.getTime()), keys);
+      from.add(java.util.Calendar.HOUR_OF_DAY, -2);
+      assertNotContain(format.format(from.getTime()), keys);
+      from.setTimeZone(userTimezone);
+      from.add(java.util.Calendar.HOUR_OF_DAY, 1);
+      from.add(java.util.Calendar.DAY_OF_YEAR, 1);
+      from.setTimeZone(fromCalendar.getTimeZone());
+    }
+
+    calendarService_.removeAllSeriesEvents(event, username);
+    // Reset user timezone
+    setting.setTimeZone(originUserTimezone);
+    calendarService_.saveCalendarSetting(username, setting);
+  }
+  private Date getDate(CalendarSetting setting, String datetime) throws Exception {
+    String format = setting.getDateFormat() + " " + setting.getTimeFormat();
+    DateFormat df = new SimpleDateFormat(format);
+    df.setCalendar(getCalendarInstanceBySetting(setting));
+    return df.parse(datetime);
+  }
+  private String formatDate(CalendarSetting setting, Date date) {
+    String format = setting.getDateFormat() + " " + setting.getTimeFormat();
+    DateFormat df = new SimpleDateFormat(format);
+    return df.format(date);
+  }
+  private java.util.Calendar getCalendarInstanceBySetting(final CalendarSetting calendarSetting) {
+    java.util.Calendar calendar = java.util.Calendar.getInstance() ;
+    calendar.setLenient(false);
+    calendar.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
+    calendar.setFirstDayOfWeek(Integer.parseInt(calendarSetting.getWeekStartOn()));
+    calendar.setMinimalDaysInFirstWeek(4);
+    return calendar;
+  }
+  private void assertContain(String key, Set<String> keys) {
+    for(String k : keys) {
+      if(k.equals(key)) {
+        return;
+      }
+    }
+    fail("Event at " + key + " should be found");
+  }
+  private void assertNotContain(String key, Set<String> keys) {
+    for(String k : keys) {
+      if(k.equals(key)) {
+        fail("Event at " + key + " should not be found");
+      }
+    }
   }
 
   public void testGetRepetitiveEvent() throws Exception {
