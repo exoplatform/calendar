@@ -1247,7 +1247,11 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           UIListView uiListView = (UIListView) uiCalendarView;
           UIListContainer uiListContainer = uiListView.getParent();
           uiListView.setLastUpdatedEventId(eventId);
-          uiListView.setSelectedEvent(selectedId);
+          if(uiListView.isDisplaySearchResult()) {
+            uiListView.setSelectedEvent(selectedId);
+          } else {
+            uiListView.setSelectedEvent(eventId);
+          }
           UIPreview uiPreview = uiListContainer.getChild(UIPreview.class);
           uiPreview.setEvent(eventCalendar);
           event.getRequestContext().addUIComponentToUpdateByAjax(uiListContainer);
@@ -1307,8 +1311,11 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         if (!listContainer.isDisplaySearchResult()) {
           listContainer.refresh();
           uiListView.updateCurrentPage(pageNum);
+          uiListView.setSelectedEvent(eventId);
+        } else {
+          uiListView.setSelectedEvent(selectedId);
         }
-        uiListView.setSelectedEvent(selectedId);
+
       } else if (uiCalendarView instanceof UIPreview) {
         UIPreview uiPreview = (UIPreview) uiCalendarView;
         UIListContainer listContainer = uiCalendarView.getAncestorOfType(UIListContainer.class);

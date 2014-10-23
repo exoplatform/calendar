@@ -2186,7 +2186,9 @@
         var eventId = obj.getAttribute("eventid");
         var calendarId = obj.getAttribute("calid");
         var calendarType = obj.getAttribute("caltype");
-        uiForm.submitEvent(_module.UICalendarPortlet.portletId+'#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType);
+        var recurid = obj.getAttribute("recurid");
+        var isoccur = obj.getAttribute('isoccur');
+        uiForm.submitEvent(_module.UICalendarPortlet.portletId+'#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isoccur + '&recurId='+recurid);
     };
 
     UICalendarPortlet.prototype.listViewDblClickCallback = function(){

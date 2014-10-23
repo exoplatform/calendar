@@ -463,7 +463,11 @@ public class UIListView extends UICalendarView {
         }
         if(calendarEvent != null) {
           uiListView.setLastUpdatedEventId(eventId) ;
-          uiListView.setSelectedEvent(selectedId);
+          if(uiListView.isDisplaySearchResult()) {
+            uiListView.setSelectedEvent(selectedId);
+          } else {
+            uiListView.setSelectedEvent(eventId);
+          }
           uiPreview.setEvent(calendarEvent);
         } else {
           uiListView.setLastUpdatedEventId(eventId) ;
