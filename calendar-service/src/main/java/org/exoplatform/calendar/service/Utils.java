@@ -353,7 +353,7 @@ public class Utils {
 
   final public static String EMPTY_STR                  = "";
 
-  final public static String STATUS_PENDING             = "pending";
+  final public static String STATUS_MAYBE               = "maybe";
 
   final public static String STATUS_YES                 = "yes";
 

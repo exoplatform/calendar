@@ -5340,7 +5340,7 @@ public class JCRDataStorage implements DataStorage {
           status = Utils.STATUS_YES;
           break;
         case Utils.NOTSURE:
-          status = Utils.STATUS_PENDING;
+          status = Utils.STATUS_MAYBE;
           break;
         default:
           break;

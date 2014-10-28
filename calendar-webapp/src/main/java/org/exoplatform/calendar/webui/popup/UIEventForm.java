@@ -177,7 +177,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   final public static String ACT_ADDCATEGORY = "AddCategory".intern() ;
   final public static String ACT_EDITREPEAT = "EditRepeat".intern();
   final public static String STATUS_EMPTY = "".intern();
-  final public static String STATUS_PENDING = "pending".intern();
+  final public static String STATUS_MAYBE = "maybe".intern();
   final public static String STATUS_YES = "yes".intern();
   final public static String STATUS_NO = "no".intern();
   public final static String RP_END_BYDATE = "endByDate";
@@ -1365,7 +1365,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
           if (entry.length > 1)
             parsUpdated.add(entry[0] + ":" + entry[1]);
           else
-            parsUpdated.add(entry[0] + ":" + STATUS_PENDING);
+            parsUpdated.add(entry[0] + ":" + STATUS_MAYBE);
         }
         calendarEvent.setParticipantStatus(parsUpdated.toArray(new String[parsUpdated.size()]));
       }
