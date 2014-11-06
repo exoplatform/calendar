@@ -92,8 +92,14 @@ public class ReminderJob extends MultiTenancyJob {
                 if ((remindTime + interval) > fromTime) {
                   reminder.setProperty(Utils.EXO_IS_OVER, true);
                 } else {
+                  long currentTime = fromCalendar.getTimeInMillis();
+                  long nextReminderTime = remindTime + interval;
+                  while(nextReminderTime <= currentTime) {
+                    nextReminderTime += interval;
+                  }
+
                   java.util.Calendar cal = new GregorianCalendar();
-                  cal.setTimeInMillis(remindTime + interval);
+                  cal.setTimeInMillis(nextReminderTime);
                   reminder.setProperty(Utils.EXO_REMINDER_DATE, cal);
                   reminder.setProperty(Utils.EXO_IS_OVER, false);
                 }
