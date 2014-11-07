@@ -1037,6 +1037,73 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(calendarService_.removeUserCalendar(user2, johnCalendar.getId()));
   }
 
+  //mvn test -Dtest=TestCalendarService#testUnifiedSeachWitchSpecialCharacter
+  public void testUnifiedSeachWitchSpecialCharacter() throws Exception {
+    final String specialCharacter = "!.,:;\"'()\"-@#$%^~*<>?/}{[]-=|\\";
+
+    loginUser(username);
+
+    // Create calendar
+    Calendar calendar = new Calendar();
+    calendar.setName("testUnifiedSeachWitchSpecialCharacter");
+    calendar.setDescription("testUnifiedSeachWitchSpecialCharacter");
+    calendar.setPublic(false);
+    calendarService_.saveUserCalendar(username, calendar, true);
+
+    // Create category
+    EventCategory category = new EventCategory();
+    category.setName("testUnifiedSeachWitchSpecialCharacter");
+    calendarService_.saveEventCategory(username, category, true);
+
+    // Create event with special character
+    CalendarEvent event = newEvent("" + specialCharacter);
+    calendarService_.saveUserEvent(username, calendar.getId(), event, true);
+
+    EventQuery query = new UnifiedQuery();
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+
+    // Search with with all special key
+    String keyword = specialCharacter + "~0.5" ;
+    query.setText(keyword);
+    Collection<SearchResult> results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(0, results.size());
+
+    // Search with 1 special character
+    for(int i = 0; i < specialCharacter.length(); i++) {
+      keyword = specialCharacter.charAt(i) + "~0.5";
+      query.setText(keyword) ;
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      // I can not assert here because some special character like * is accepted and it will return all existing event
+      //assertEquals(0, results.size());
+    }
+
+    //
+    for(int i = 0; i < specialCharacter.length(); i++) {
+      keyword = "gatein" + specialCharacter.charAt(i) + "~0.5";
+      query.setText(keyword) ;
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      assertEquals(0, results.size());
+    }
+
+    //
+    for(int i = 0; i < specialCharacter.length(); i++) {
+      keyword = "gatein3" + specialCharacter.charAt(i) + "5~0.5";
+      query.setText(keyword) ;
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      assertEquals(0, results.size());
+    }
+
+    //
+    for(int i = 0; i < specialCharacter.length(); i++) {
+      keyword = "3" + specialCharacter.charAt(i) + "5~0.5";
+      query.setText(keyword) ;
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      assertEquals(0, results.size());
+    }
+  }
+
   //mvn test -Dtest=TestCalendarService#testUnifiedSeachEx
   public void testUnifiedSeachEx() throws Exception{
     java.util.Calendar fromCal = java.util.Calendar.getInstance();
