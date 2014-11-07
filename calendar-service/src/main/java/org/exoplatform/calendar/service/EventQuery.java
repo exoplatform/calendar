@@ -453,14 +453,31 @@ public class EventQuery {
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {
         char ch = s.charAt(i);
-        if (ch == '"' || ch == '-' || ch == '\\'
+        if(ch == '~') {
+            if(i < s.length() - 1 && s.charAt(i + 1) == '~') {
+                // If there are many continuous character '~', we can not add slash to escape them.
+                // So we should remove them and keep 1
+            } else {
+                String subString = s.substring(i + 1);
+                try {
+                    float f = Float.parseFloat(subString);
+                    if(f >= 0.0f && f <= 1.0f) {
+                        buffer.append(ch);
+                    } else {
+                        buffer.append('\\').append(ch);
+                    }
+                } catch (Exception ex) {
+                    buffer.append('\\').append(ch);
+                }
+            }
+        } else if (ch == '"' || ch == '-' || ch == '\\'
                 || ch == '{' || ch == '}'
                 || ch == '(' || ch == ')'
                 || ch == '[' || ch == ']'
-                || ch == ':' || ch == '^') {
+                || ch == ':' || ch == '^' || ch == '!') {
             buffer.append('\\').append(ch);
         }  else if (ch == '\'') {
-          buffer.append("''");
+            buffer.append("''");
         } else {
             buffer.append(ch);
         }
