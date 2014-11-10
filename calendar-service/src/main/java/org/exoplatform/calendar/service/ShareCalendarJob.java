@@ -20,7 +20,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -51,6 +54,13 @@ public class ShareCalendarJob implements Job, InterruptableJob {
   public void execute(JobExecutionContext context) throws JobExecutionException {
     log.info("Starting sharing calendar for groups");
 
+    OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
+    //We have JobEnvironmentConfigListener call request lifecycle methods
+    //But it's run in difference thread that create bug with PicketlinkIDM using hibernate session (CAL-1031)
+    if (oService instanceof ComponentRequestLifecycle) {
+      ((ComponentRequestLifecycle)oService).startRequest(ExoContainerContext.getCurrentContainer());          
+    }
+    
     try {
       JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
       
@@ -58,7 +68,6 @@ public class ShareCalendarJob implements Job, InterruptableJob {
       String calendarId = jobDataMap.getString(Utils.CALENDAR_ID);
       List<String> sharedGroups = (List<String>) jobDataMap.get(Utils.SHARED_GROUPS);
 
-      OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
       CalendarService calendarService = (CalendarService) PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
       
       Calendar cal = calendarService.getUserCalendar(user, calendarId);
@@ -103,6 +112,10 @@ public class ShareCalendarJob implements Job, InterruptableJob {
     } catch (Exception e) {
       if (log.isDebugEnabled())
         log.debug("Cant share calendar by job:" + e);
+    } finally {
+      if (oService instanceof ComponentRequestLifecycle) {
+        ((ComponentRequestLifecycle)oService).endRequest(ExoContainerContext.getCurrentContainer());          
+      }
     }
 
   }

@@ -19,7 +19,10 @@ package org.exoplatform.calendar.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
@@ -46,11 +49,17 @@ public class DeleteShareJob implements Job, InterruptableJob{
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
     log.info("Start un-sharing job");
+
+    OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
+    //We have JobEnvironmentConfigListener call request lifecycle methods
+    //But it's run in difference thread that create bug with PicketlinkIDM using hibernate session (CAL-1031)
+    if (oService instanceof ComponentRequestLifecycle) {
+      ((ComponentRequestLifecycle)oService).startRequest(ExoContainerContext.getCurrentContainer());          
+    }
     
     try {
       ContinuationService continuation = (ContinuationService) PortalContainer.getInstance()
           .getComponentInstanceOfType(ContinuationService.class);
-      OrganizationService oService = (OrganizationService)PortalContainer.getInstance().getComponentInstance(OrganizationService.class) ;
       CalendarService calendarService = (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class) ;
 
       JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
@@ -97,6 +106,10 @@ public class DeleteShareJob implements Job, InterruptableJob{
       log.info("Finish un-sharing job");
     } catch (Exception e) {
       log.debug("Error while un-sharing calendar for groups",e);
+    } finally {
+      if (oService instanceof ComponentRequestLifecycle) {
+        ((ComponentRequestLifecycle)oService).endRequest(ExoContainerContext.getCurrentContainer());          
+      }
     }
   }
 
