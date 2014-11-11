@@ -19,7 +19,6 @@ package org.exoplatform.calendar.webui.popup;
 import java.util.LinkedHashMap;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.webui.validator.EventParticipantValidator;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -105,7 +104,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
       }
     }
 
-    addUIFormInput(new UIFormTextAreaInput(FIELD_PARTICIPANT, FIELD_PARTICIPANT, null).addValidator(EventParticipantValidator.class));
+    addUIFormInput(new UIFormTextAreaInput(FIELD_PARTICIPANT, FIELD_PARTICIPANT, null)) ;
     addUIFormInput(new UIFormTextAreaInput(FIELD_INVITATION_MSG, FIELD_INVITATION_MSG, defaul_msg)) ;
 
 
@@ -206,16 +205,41 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
       }
       uiEventForm.participantList_ = builder.toString();
 
-      if(uiEventForm.participantList_!= null){
-        uiEventForm.setParticipant(uiEventForm.participantList_);
-        uiEventForm.setParticipantStatus(uiEventForm.participantList_);
-        uiEventShareTab.setParticipantStatusList(uiEventForm.getParticipantStatusList());
-        uiEventShareTab.updateCurrentPage(currentPage.intValue());
+      // contains both invalid userId and email
+      StringBuilder invalidParticipants = new StringBuilder();
+      int invalidParticipantsNumber = 0;
+
+      // filter userId and userEmails to different list
+      for (String participant: uiEventForm.participantList_.split(NEW_LINE)) {
+        participant = participant.trim();
+        if (participant.length() == 0) continue;
+
+        if (CalendarUtils.isAValidEmailAddress(participant) || CalendarUtils.isUserExisted(CalendarUtils.getOrganizationService(), participant)) continue;
+        if (invalidParticipants.length() > 0) invalidParticipants.append(", ");
+        invalidParticipants.append(participant);
+        invalidParticipantsNumber ++;
       }
-      UIPopupAction uiPopup = uiParentPopup.getAncestorOfType(UIPopupAction.class) ;
-      uiPopup.deActivate() ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopup) ;
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiEventForm) ;
+
+      if (invalidParticipantsNumber == 0) {
+        if(uiEventForm.participantList_!= null){
+          uiEventForm.setParticipant(uiEventForm.participantList_);
+          uiEventForm.setParticipantStatus(uiEventForm.participantList_);
+          uiEventShareTab.setParticipantStatusList(uiEventForm.getParticipantStatusList());
+          uiEventShareTab.updateCurrentPage(currentPage.intValue());
+          }
+          UIPopupAction uiPopup = uiParentPopup.getAncestorOfType(UIPopupAction.class) ;
+          uiPopup.deActivate() ;
+          event.getRequestContext().addUIComponentToUpdateByAjax(uiPopup) ;
+          event.getRequestContext().addUIComponentToUpdateByAjax(uiEventForm) ;
+      }
+      else {
+        String msg = "UIEventForm.msg.event-participant-invalid";
+        if (invalidParticipantsNumber > 1) msg = "UIEventForm.msg.events-participants-invalid";
+
+        event.getRequestContext().getUIApplication()
+             .addMessage(new ApplicationMessage(msg, new String[] { invalidParticipants.toString() },
+                                                AbstractApplicationMessage.WARNING));
+      }
     }
   }
 

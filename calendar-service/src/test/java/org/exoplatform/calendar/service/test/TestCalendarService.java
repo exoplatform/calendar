@@ -1461,6 +1461,7 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       }
     }
     fail("The event with title " + eventTitle + " should be returned in search");
+  }
   
   public void testUnifiedSeachDetail() throws Exception {
     loginUser(username);

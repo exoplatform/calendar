@@ -210,7 +210,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
   @Override
   public Calendar importRemoteCalendar(RemoteCalendar remoteCalendar) throws Exception {
     Calendar eXoCalendar;
-    CalendarService calService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+    CalendarService calService = (CalendarService)ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
 
     if (CalendarService.ICALENDAR.equals(remoteCalendar.getType())) {
       InputStream icalInputStream = connectToRemoteServer(remoteCalendar);
