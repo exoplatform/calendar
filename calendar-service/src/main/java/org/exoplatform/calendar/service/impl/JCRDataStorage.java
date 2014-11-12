@@ -90,6 +90,7 @@ import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
@@ -4619,11 +4620,6 @@ public class JCRDataStorage implements DataStorage {
     int diffMinutes = (int) ((recurEvent.getToDateTime().getTime() - recurEvent.getFromDateTime()
         .getTime()) / (60 * 1000));
 
-    List<String> excludeIds = null;
-    if (recurEvent.getExcludeId() != null && recurEvent.getExcludeId().length > 0) {
-      excludeIds = new ArrayList<String>(Arrays.asList(recurEvent.getExcludeId()));
-    }
-
     Recur recur = Utils.getICalendarRecur(recurEvent);
     if (recur == null)
       return null;
@@ -4632,7 +4628,7 @@ public class JCRDataStorage implements DataStorage {
     net.fortuna.ical4j.model.TimeZone tz = Utils.getICalTimeZone(TimeZone.getTimeZone(timezone));
     ical4jEventFrom.setTimeZone(tz);
 
-    Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
+    Utils.adaptRepeatRule(recur, recurEvent.getFromDateTime(), CalendarService.PERSISTED_TIMEZONE, userTimeZone);
 
     java.util.Calendar occurenceFrom = java.util.Calendar.getInstance();
     occurenceFrom.setTime(from.getTime());
@@ -6132,7 +6128,7 @@ public class JCRDataStorage implements DataStorage {
     }
     ical4jEventFrom.setTimeZone(tz);
 
-    Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
+    Utils.adaptRepeatRule(recur, recurEvent.getFromDateTime(), CalendarService.PERSISTED_TIMEZONE, userTimeZone);
 
     java.util.Calendar occurenceFrom = java.util.Calendar.getInstance();
     occurenceFrom.setTime(from.getTime());

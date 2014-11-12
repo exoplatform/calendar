@@ -917,7 +917,82 @@ public class Utils {
     return dstCache;
   }
 
+  public static CalendarEvent adaptRepeatRule(CalendarEvent event, TimeZone fromTimezone, TimeZone toTimeZone) {
+    Recur recur;
+    try {
+      recur = Utils.getICalendarRecur(event);
+    } catch (Exception ex) {
+      return event;
+    }
+    if(recur == null) {
+      return event;
+    }
+    adaptRepeatRule(recur, event.getFromDateTime(), fromTimezone, toTimeZone);
+    // Set recur info to event
+    // WeekDay
+    WeekDayList dayList = recur.getDayList();
+    if(dayList != null && dayList.size() > 0) {
+      List<String> days = new ArrayList<String>();
+      for(int i = 0; i < dayList.size(); i++) {
+        days.add(((WeekDay)dayList.get(i)).getDay());
+      }
+      event.setRepeatByDay(days.toArray(new String[days.size()]));
+    }
+    // Month day
+    NumberList list = recur.getMonthDayList();
+    if(list != null && list.size() > 0) {
+      long[] array = new long[list.size()];
+      for(int i = 0; i < list.size(); i++) {
+        Integer day = (Integer)list.get(i);
+        array[i] = day.intValue();
+      }
+      event.setRepeatByMonthDay(array);
+    }
+    return event;
+  }
+
+  public static void adaptRepeatRule(Recur recur, Date firstOccurDate, TimeZone fromTimezone, TimeZone toTimezone) {
+    WeekDay[] weekdays = {WeekDay.SU, WeekDay.MO, WeekDay.TU, WeekDay.WE, WeekDay.TH, WeekDay.FR, WeekDay.SA};
+    int delta;
+    WeekDayList weekdayList = recur.getDayList();
+    NumberList numberList = recur.getMonthDayList();
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(firstOccurDate);
+    calendar.setTimeZone(fromTimezone);
+    int date = calendar.get(Calendar.DAY_OF_WEEK);
+    calendar.setTimeZone(toTimezone);
+    delta = calendar.get(Calendar.DAY_OF_WEEK) - date;
+    if(delta != 0) {
+      if(weekdayList != null && weekdayList.size() > 0) {
+        WeekDayList newWeekDayList = new WeekDayList();
+        for(int i = 0; i < weekdayList.size(); i ++) {
+          WeekDay weekdayI = (WeekDay) weekdayList.get(i);
+          int index = (WeekDay.getCalendarDay(weekdayI) - 1 + delta) % 7;
+          if(index < 0) {
+            index += 7;
+          }
+          newWeekDayList.add(weekdays[index]);
+        }
+        recur.getDayList().removeAll(weekdayList);
+        recur.getDayList().addAll(newWeekDayList);
+      }
+      if(numberList != null && numberList.size() > 0) {
+        NumberList newNumberList = new NumberList();
+        for(int j = 0; j < numberList.size(); j++) {
+          Integer numberI = (Integer)numberList.get(j);
+          newNumberList.add(new Integer(numberI.intValue() + delta));
+        }
+        recur.getMonthDayList().removeAll(numberList);
+        recur.getMonthDayList().addAll(newNumberList);
+      }
+    }
+  }
+
   /**
+   * This method is deprecated because it is a wrong way to fix problem about different timezone.
+   * We should use method {@link #adaptRepeatRule(Recur recur, Date firstOccurDate, TimeZone fromTimezone, TimeZone toTimezone)}
+   * to convert recurring info to GMT+0 when we save and reconvert it to user's timezone when we generate series of events.
+   *
    * adapts the repeat rule
    * because of different time zones, the repeated day of a repetitive event can be different 
    * in each user's setting time zone. We need to take into account this one.
@@ -927,6 +1002,7 @@ public class Utils {
    * @param tz User time zone
    */
   @SuppressWarnings("unchecked")
+  @Deprecated
   public static void adaptRepeatRule(Recur recur, DateTime firstOccurDate, TimeZone tz) {
     WeekDay[] weekdays = {WeekDay.SU, WeekDay.MO, WeekDay.TU, WeekDay.WE, WeekDay.TH, WeekDay.FR, WeekDay.SA};
     int delta;
@@ -1139,6 +1215,8 @@ public class Utils {
     long diff = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
 
     java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
+    java.util.Calendar date = java.util.Calendar.getInstance(tz);
+    date.setTime(event.getFromDateTime());
     calendar.setTime(event.getFromDateTime());
 
     Recur recur = Utils.getICalendarRecur(event);
@@ -1150,7 +1228,19 @@ public class Utils {
 
     if("WEEKLY".equals(recur.getFrequency())) {
       if(weekDayList.size() > 0) {
-        calendar.set(java.util.Calendar.DAY_OF_WEEK, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < weekDayList.size(); i++) {
+          WeekDay wd = (WeekDay)weekDayList.get(i);
+          int cd = WeekDay.getCalendarDay(wd);
+          if(cd >= dayOfWeek) {
+            if(min > cd - dayOfWeek) {
+              min = cd - dayOfWeek;
+              calendar.set(Calendar.DAY_OF_WEEK, cd);
+            }
+          }
+        }
+        //calendar.set(java.util.Calendar.DAY_OF_WEEK, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
       }
     }
 

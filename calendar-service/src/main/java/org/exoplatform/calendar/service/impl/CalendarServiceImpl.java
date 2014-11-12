@@ -1226,7 +1226,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
           format.setTimeZone(userTimeZone);
           
-          Utils.adaptRepeatRule(recur, ical4jEventFrom, userTimeZone);
+          Utils.adaptRepeatRule(recur, originEvent.getFromDateTime(), CalendarService.PERSISTED_TIMEZONE, userTimeZone);
 
           DateTime ical4jFrom = new DateTime(originEvent.getFromDateTime());
           DateTime ical4jTo = new DateTime(selectedOccurrence.getFromDateTime());

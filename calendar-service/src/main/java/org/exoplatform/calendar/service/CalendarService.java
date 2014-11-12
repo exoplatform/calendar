@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL
@@ -39,6 +40,8 @@ import java.util.ResourceBundle;
  */
 
 public interface CalendarService {
+
+  public static final TimeZone PERSISTED_TIMEZONE = TimeZone.getTimeZone("GMT");
 
   final public static String ICALENDAR   = "ICalendar(.ics)";
 
