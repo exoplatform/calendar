@@ -903,8 +903,8 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     fail("The event with title " + eventTitle + " should be returned in search");
   }
 
-  //mvn test -Dtest=TestCalendarService#testUnifiedSeachWitchSpecialCharacter
-  public void testUnifiedSeachWitchSpecialCharacter() throws Exception {
+  //mvn test -Dtest=TestCalendarService#testUnifiedSearchWithSpecialCharacter
+  public void testUnifiedSearchWithSpecialCharacter() throws Exception {
     final String specialCharacter = "!.,:;\"'()\"-@#$%^~*<>?/}{[]-=|\\";
 
     login(username);
@@ -968,6 +968,30 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
       results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
       assertEquals(0, results.size());
     }
+  }
+
+  //mvn test -Dtest=TestCalendarService#testUnifiedSearchWithEmptyKeyword
+  public void testUnifiedSearchWithEmptyKeyword() throws Exception {
+    //. Create calendar and event
+    Calendar calendar = createPrivateCalendar(username, "testUnifiedSeachWithEmptyKeyword", "testUnifiedSeachWithEmptyKeyword");
+    createUserEvent(username, calendar.getId(), "testUnifiedSeachWithEmptyKeyword", "testUnifiedSeachWithEmptyKeyword", false);
+
+    EventQuery query = new UnifiedQuery();
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+
+    // keyword is empty string
+    String keyword = "";
+    query.setText(keyword);
+    Collection<SearchResult> results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(0, results.size());
+
+    // keyword contains only space character
+    keyword = "  ";
+    query.setText(keyword);
+    results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(0, results.size());
   }
 
   private CalendarEvent createUserEvent(String username, String calId, String summary, String desc, boolean isPrivate) throws Exception {

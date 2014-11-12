@@ -20,6 +20,7 @@
 package org.exoplatform.calendar.service.impl;
 
 import javax.jcr.Session;
+import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
@@ -68,6 +69,11 @@ public class EventListAccess implements ListAccess<Row> {
       this.size = queryResult.getTotalSize();
       
       return results.toArray(new Row[results.size()]);
+    } catch (InvalidQueryException ex) {
+      if(log.isDebugEnabled()) {
+        log.debug("JCRQuery is invalid", ex);
+      }
+      return null;
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
       return null;
