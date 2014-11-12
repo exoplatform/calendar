@@ -1037,8 +1037,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertNotNull(calendarService_.removeUserCalendar(user2, johnCalendar.getId()));
   }
 
-  //mvn test -Dtest=TestCalendarService#testUnifiedSeachWitchSpecialCharacter
-  public void testUnifiedSeachWitchSpecialCharacter() throws Exception {
+  //mvn test -Dtest=TestCalendarService#testUnifiedSearchWithSpecialCharacter
+  public void testUnifiedSearchWithSpecialCharacter() throws Exception {
     final String specialCharacter = "!.,:;\"'()\"-@#$%^~*<>?/}{[]-=|\\";
 
     loginUser(username);
@@ -1049,11 +1049,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     calendar.setDescription("testUnifiedSeachWitchSpecialCharacter");
     calendar.setPublic(false);
     calendarService_.saveUserCalendar(username, calendar, true);
-
-    // Create category
-    EventCategory category = new EventCategory();
-    category.setName("testUnifiedSeachWitchSpecialCharacter");
-    calendarService_.saveEventCategory(username, category, true);
 
     // Create event with special character
     CalendarEvent event = newEvent("" + specialCharacter);
@@ -1102,6 +1097,52 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
       assertEquals(0, results.size());
     }
+
+    // Clean data
+    calendarService_.removeUserEvent(username, calendar.getId(), event.getId());
+    calendarService_.removeUserCalendar(username, calendar.getId());
+  }
+
+  //mvn test -Dtest=TestCalendarService#testUnifiedSearchWithEmptyKeyword
+  public void testUnifiedSearchWithEmptyKeyword() throws Exception {
+    //. Create calendar and event
+    Calendar calendar = new Calendar();
+    calendar.setName("testUnifiedSeachWithEmptyKeyword");
+    calendar.setDescription("testUnifiedSeachWithEmptyKeyword");
+    calendar.setPublic(false);
+    calendarService_.saveUserCalendar(username, calendar, true);
+
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary("testUnifiedSeachWithEmptyKeyword");
+    java.util.Calendar from = java.util.Calendar.getInstance();
+    from.add(java.util.Calendar.MINUTE, 60);
+    event.setFromDateTime(from.getTime());
+    from.add(java.util.Calendar.HOUR, 1);
+    event.setToDateTime(from.getTime());
+    event.setDescription("testUnifiedSeachWithEmptyKeyword");
+    event.setPrivate(true);
+    calendarService_.saveUserEvent(username, calendar.getId(), event, true);
+
+    EventQuery query = new UnifiedQuery();
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+
+    // keyword is empty string
+    String keyword = "";
+    query.setText(keyword);
+    Collection<SearchResult> results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(0, results.size());
+
+    // keyword contains only space character
+    keyword = "  ";
+    query.setText(keyword);
+    results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(0, results.size());
+
+    //. Clean data
+    calendarService_.removeUserEvent(username, calendar.getId(), event.getId());
+    calendarService_.removeUserCalendar(username, calendar.getId());
   }
 
   //mvn test -Dtest=TestCalendarService#testUnifiedSeachEx

@@ -107,6 +107,9 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
                                                 String sort,
                                                 String order) {
     List<SearchResult> events = new ArrayList<SearchResult>();
+    if(Utils.isEmpty(query)) {
+      return events;
+    }
     SessionProvider provider = SessionProvider.createSystemProvider();
 
     OrganizationService orgService = (OrganizationService)ExoContainerContext.getCurrentContainer()
