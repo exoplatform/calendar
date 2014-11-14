@@ -405,6 +405,12 @@ public class EventQuery {
         // stringBuffer.append("@exo:fromDateTime < xs:dateTime('"+ISO8601.format(fromDate)+"') and ") ;
         stringBuffer.append("@exo:fromDateTime >= xs:dateTime('").append(ISO8601.format(fromDate)).append("')");
         // stringBuffer.append(")") ;
+        stringBuffer.append(" or (");
+        stringBuffer.append("(not(@exo:repeatUntil) or @exo:repeatUntil >=  xs:dateTime('" + ISO8601.format(fromDate) +  "'))");
+        stringBuffer.append(" and (not(@exo:repeatFinishDate) or @exo:repeatFinishDate >=  xs:dateTime('" + ISO8601.format(fromDate) +  "'))");
+        stringBuffer.append(" and @exo:repeat != 'norepeat'");
+        stringBuffer.append(")");
+
         stringBuffer.append(")");
         hasConjuntion = true;
       } else if (toDate != null) {
