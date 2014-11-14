@@ -396,6 +396,11 @@ public interface CalendarService {
   public EventPageList searchEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
   /**
+   * We do not use this method anymore, so i mark this method as deprecated
+   * to notify other team do not use this method any more and we do not need to maintain this method.
+   * use {@link #searchHightLightEventSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars)}
+   *
+   *
    * Gets the day in month on which there are events.
    * <p> This method is used when UIMiniCalendar is loaded or updated. We need to know on which day there are events <br>
    * to add  class 'highlight' for that day in the template.
@@ -407,6 +412,7 @@ public interface CalendarService {
    * @return a <code>Map</code> with key set is the days having events. Ex: <code>{<14,"value">, <15,"value">}</code>
    * @throws Exception
    */
+  @Deprecated
   public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
 
@@ -449,6 +455,9 @@ public interface CalendarService {
   public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
   /**
+   * We do not use this method anymore, so i mark this method as deprecated
+   * to notify other team do not use this method any more and we do not need to maintain this method.
+   * use {@link #getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars)}
    * A faster version of getEvents used for UIWeekview
    *
    * @param username
@@ -457,6 +466,7 @@ public interface CalendarService {
    * @return
    * @throws Exception
    */
+  @Deprecated
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
 
@@ -946,6 +956,13 @@ public interface CalendarService {
   public List<Map<Integer, String>> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
                                                                       String[] privateCalendars, String[] publicCalendars) throws Exception;
 
+  /**
+   * We do not use this method anymore, so i mark this method as deprecated
+   * to notify other team do not use this method any more and we do not need to maintain this method.
+   *
+   * use {@link #getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars)}
+   */
+  @Deprecated
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
 
   public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery,

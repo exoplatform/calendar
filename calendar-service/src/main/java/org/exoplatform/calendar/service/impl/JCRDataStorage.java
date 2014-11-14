@@ -2293,6 +2293,7 @@ public class JCRDataStorage implements DataStorage {
   /**
    * {@inheritDoc}
    */
+  @Deprecated
   public Map<Integer, String> searchHightLightEvent(String username,
                                                     EventQuery eventQuery,
                                                     String[] publicCalendarIds) throws Exception {
@@ -2493,8 +2494,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
@@ -2543,8 +2544,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
@@ -2620,8 +2621,8 @@ public class JCRDataStorage implements DataStorage {
           }
 
           /** event category */
-          String[] categoryIds = eventQuery.getCategoryId();
-          if (categoryIds != null && categoryIds.length > 0) {
+          if (!eventQuery.isSearchInAllCategories()) {
+            String[] categoryIds = eventQuery.getCategoryId();
             queryEventsStatementSQL.append(" AND (");
             for (int i = 0; i < categoryIds.length; i++) {
               if (i == 0)
@@ -3343,8 +3344,11 @@ public class JCRDataStorage implements DataStorage {
   }
 
   /**
+   * We do not use this method anymore, so i mark this method as deprecated
+   * to notify other team do not use this method any more and we do not need to maintain this method.
    * {@inheritDoc}
    */
+  @Deprecated
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
 
     List<CalendarEvent> allEvents = new ArrayList<CalendarEvent>();
@@ -3599,8 +3603,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
@@ -3650,8 +3654,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
@@ -3729,8 +3733,9 @@ public class JCRDataStorage implements DataStorage {
           }
 
           /** event category */
-          String[] categoryIds = eventQuery.getCategoryId();
-          if (categoryIds != null && categoryIds.length > 0) {
+
+          if (!eventQuery.isSearchInAllCategories()) {
+            String[] categoryIds = eventQuery.getCategoryId();
             queryEventsStatementSQL.append(" AND (");
             for (int i = 0; i < categoryIds.length; i++) {
               if (i == 0)
@@ -3895,8 +3900,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
@@ -3966,8 +3971,8 @@ public class JCRDataStorage implements DataStorage {
         }
 
         /** event category */
-        String[] categoryIds = eventQuery.getCategoryId();
-        if (categoryIds != null && categoryIds.length > 0) {
+        if (!eventQuery.isSearchInAllCategories()) {
+          String[] categoryIds = eventQuery.getCategoryId();
           queryEventsStatementSQL.append(" AND (");
           for (int i = 0; i < categoryIds.length; i++) {
             if (i == 0)
@@ -4032,8 +4037,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
@@ -4088,8 +4093,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)
@@ -4170,8 +4175,8 @@ public class JCRDataStorage implements DataStorage {
         }
 
         /** event category */
-        String[] categoryIds = eventQuery.getCategoryId();
-        if (categoryIds != null && categoryIds.length > 0) {
+        if (!eventQuery.isSearchInAllCategories()) {
+          String[] categoryIds = eventQuery.getCategoryId();
           queryEventsStatementSQL.append(" AND (");
           for (int i = 0; i < categoryIds.length; i++) {
             if (i == 0)
@@ -4392,8 +4397,8 @@ public class JCRDataStorage implements DataStorage {
       }
 
       /** event category */
-      String[] categoryIds = eventQuery.getCategoryId();
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!eventQuery.isSearchInAllCategories()) {
+        String[] categoryIds = eventQuery.getCategoryId();
         queryEventsStatementSQL.append(" AND (");
         for (int i = 0; i < categoryIds.length; i++) {
           if (i == 0)

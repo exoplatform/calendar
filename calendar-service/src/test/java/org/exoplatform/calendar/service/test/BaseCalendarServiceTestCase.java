@@ -222,7 +222,31 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
       calendarService_.saveUserEvent(username, calendarId, calendarEvent, true);
       return calendarEvent;
     } catch (Exception e) {
-      fail();
+      fail("Exception while create user event", e);
+      return null;
+    }
+  }
+
+  protected CalendarEvent createUserEvent(String username, String calendarId,
+                                          EventCategory eventCategory,
+                                          String summary,
+                                          boolean isPrivate,
+                                          java.util.Calendar fromCal,
+                                          java.util.Calendar toCal) {
+    try {
+      CalendarEvent calendarEvent = new CalendarEvent();
+      if (eventCategory != null) {
+        calendarEvent.setEventCategoryId(eventCategory.getId());
+        calendarEvent.setEventCategoryName(eventCategory.getName());
+      }
+      calendarEvent.setSummary(summary);
+      calendarEvent.setFromDateTime(fromCal.getTime());
+      calendarEvent.setToDateTime(toCal.getTime());
+      calendarEvent.setPrivate(isPrivate);
+      calendarService_.saveUserEvent(username, calendarId, calendarEvent, true);
+      return calendarEvent;
+    } catch (Exception e) {
+      fail("Exception while create user event", e);
       return null;
     }
   }

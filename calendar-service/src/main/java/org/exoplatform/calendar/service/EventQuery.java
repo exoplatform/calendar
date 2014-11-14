@@ -17,6 +17,8 @@
 package org.exoplatform.calendar.service;
 
 import javax.jcr.query.Query;
+
+import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.commons.utils.XPathUtils;
 
@@ -109,6 +111,20 @@ public class EventQuery {
 
   public String[] getCategoryId() {
     return categoryIds;
+  }
+
+  public boolean isSearchInAllCategories() {
+    if(categoryIds == null || categoryIds.length == 0) {
+      return true;
+    }
+
+    for(String id : categoryIds) {
+      if(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL.equals(id)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public void setCategoryId(String[] categoryIds) {
@@ -226,10 +242,16 @@ public class EventQuery {
       if (!Utils.isEmpty(state)) {
         queryString.append(" and ").append(Utils.EXO_EVENT_STATE).append(" = '").append(state).append("'");
       }
-      if (categoryIds != null && categoryIds.length > 0) {
-        for (String category : categoryIds) {
-          queryString.append(" and ").append(Utils.EXO_EVENT_CATEGORYID).append(" = '").append(category).append("'");
+      if (!isSearchInAllCategories()) {
+        queryString.append(" and (");
+        String[] categoryIds = getCategoryId();
+        for (int i = 0; i < categoryIds.length; i++) {
+          if(i > 0) {
+            queryString.append(" or ");
+          }
+          queryString.append(Utils.EXO_EVENT_CATEGORYID).append(" = '").append(categoryIds[i]).append("'");
         }
+        queryString.append(" )");
       }
       if (calendarIds != null && calendarIds.length > 0) {
         for (String calendarId : calendarIds) {
@@ -285,7 +307,7 @@ public class EventQuery {
         hasConjuntion = true;
       }
       // desclared category query
-      if (categoryIds != null && categoryIds.length > 0) {
+      if (!isSearchInAllCategories()) {
         if (hasConjuntion)
           stringBuffer.append(" and (");
         else
