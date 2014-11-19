@@ -244,8 +244,7 @@
           <groupId>javax.xml.stream</groupId>
           <artifactId>stax-api</artifactId>
         </exclusion>
-      </exclusions>      
-      <scope>test</scope>
+      </exclusions>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
