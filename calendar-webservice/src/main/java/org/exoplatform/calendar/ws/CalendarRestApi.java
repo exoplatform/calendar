@@ -216,6 +216,7 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getCalendars(@QueryParam("type") String type,
                                                 @QueryParam("offset") int offset, 
                                                 @QueryParam("limit") int limit,
+                                                @QueryParam("returnSize") boolean returnSize,
                                                 @QueryParam("fields") String fields,
                                                 @QueryParam("jsonp") String jsonp,
                                                 @Context UriInfo uri) {
@@ -242,19 +243,26 @@ public class CalendarRestApi implements ResourceContainer {
          data.add(extractObject(new CalendarResource(cal, basePath), fields));
       }
       
-      CollectionResource calData = new CollectionResource(data, cals.getFullSize());
+      CollectionResource calData = new CollectionResource(data, returnSize ? cals.getFullSize() : -1);
       calData.setOffset(offset);
       calData.setLimit(limit);
       
+      ResponseBuilder okResult;
       if (jsonp != null) {
         JsonValue value = new JsonGeneratorImpl().createJsonObject(calData);
         StringBuilder sb = new StringBuilder(jsonp);
         sb.append('(').append(value).append(");");
-        return Response.ok(sb.toString(), new MediaType("text", "javascript")).header(HEADER_LINK, buildFullUrl(uri, offset, limit, calData.getSize())).cacheControl(nc).build();
+        okResult = Response.ok(sb.toString(), new MediaType("text", "javascript"));
+      } else {
+        okResult = Response.ok(calData, MediaType.APPLICATION_JSON);
+      }
+      
+      if (returnSize) {
+        okResult.header(HEADER_LINK, buildFullUrl(uri, offset, limit, calData.getSize()));
       }
       
       //
-      return Response.ok(calData, MediaType.APPLICATION_JSON).header(HEADER_LINK, buildFullUrl(uri, offset, limit, calData.getSize())).cacheControl(nc).build();
+      return okResult.cacheControl(nc).build();
     } catch (Exception e) {
       if(log.isDebugEnabled()) log.debug(e.getMessage());
     }
