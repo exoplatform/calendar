@@ -47,7 +47,7 @@
          <init-params>
             <properties-param>
             	<name>permissions</name>
-            	<property name="/v1/calendar" value="*:/platform/administrators"/>
+            	<property name="/v1/calendar" value="*:/platform/administrators, *:/platform/editors"/>
         		</properties-param>
          </init-params>
       </component-plugin>

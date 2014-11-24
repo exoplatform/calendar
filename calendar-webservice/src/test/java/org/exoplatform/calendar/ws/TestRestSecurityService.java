@@ -34,6 +34,12 @@ public class TestRestSecurityService extends AbstractKernelTest {
     
     login("john", "*:/platform/administrators");
     assertTrue(service.hasPermission("/v1/calendar"));
+    
+    login("john", "*:/platform/users");
+    assertFalse(service.hasPermission("/v1/calendar"));
+    
+    login("john", "*:/platform/editors");
+    assertTrue(service.hasPermission("/v1/calendar"));
   }
   
   public void testComplex() {

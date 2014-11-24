@@ -38,7 +38,7 @@ public class RestSecurityServiceImpl implements RestSecurityService {
 
   private UserACL userACL;
 
-  public static String NOBODY = "Nobody";
+  public static String NOBODY = "NOBODY";
 
   public RestSecurityServiceImpl(UserACL userACL) {
     this.userACL = userACL;
@@ -46,11 +46,21 @@ public class RestSecurityServiceImpl implements RestSecurityService {
 
   public boolean hasPermission(String requestPath) {
     if (requestPath != null) {      
-      for (String permission : config.getPermission(requestPath)) {
-        //Remove nobody permission checking after upgrading to gatein 3.7.x
-        permission = NOBODY.equalsIgnoreCase(permission) ? null : permission;
+      for (Set<String> permissions : config.getPermission(requestPath)) {
+        boolean hasPermission = false;
         
-        if (!userACL.hasPermission(permission)) {
+        for (String per : permissions) {
+          //Remove nobody permission checking after upgrading to gatein 3.7.x
+          per = NOBODY.equalsIgnoreCase(per) ? null : per;          
+          if (userACL.hasPermission(per)) {
+            hasPermission = true;
+            break;
+          }
+        }
+        
+        //user don't have permission to access a fragment will
+        //not be allowed to access the whole path
+        if (permissions.size() > 0 && !hasPermission) {
           return false;
         }
       }
@@ -69,29 +79,25 @@ public class RestSecurityServiceImpl implements RestSecurityService {
   
   public void addPermission(String path, String permission) {
     synchronized (config) {
-      config.addConfig(path, permission);      
+      config.addConfig(path, permission);
     }
   }
   
   public static class PermissionConfig {
     private Map<String, PermissionConfig> childs = new HashMap<String, PermissionConfig>();
-    private String permission;
+    private Set<String> permission = new HashSet<String>();
     
-    public Set<String> getPermission(String path) {
+    public List<Set<String>> getPermission(String path) {
       List<String> fragments = getFragments(path);
       
-      Set<String> result = new HashSet<String>();
-      if (this.permission != null) {
-        result.add(this.permission);        
-      }
+      List<Set<String>> result = new LinkedList<Set<String>>();
+      result.add(this.permission);
 
       PermissionConfig current = this;
       for (String fragment : fragments) {
         current = current.childs.get(fragment);        
         if (current != null) {
-          if (current.permission != null) {
-            result.add(current.permission);            
-          }
+          result.add(current.permission);
         } else {
           break;
         }
@@ -99,7 +105,7 @@ public class RestSecurityServiceImpl implements RestSecurityService {
       return result;
     }
     
-    public void addConfig(String path, String permission) {
+    public void addConfig(String path, String permission) {      
       List<String> fragments = getFragments(path);
       PermissionConfig current = this;
       
@@ -113,7 +119,12 @@ public class RestSecurityServiceImpl implements RestSecurityService {
           current = child;
         }
       }
-      current.permission = permission;      
+      for (String per : permission.split(",")) {
+        per = per.trim();
+        if (!per.isEmpty()) {
+          current.permission.add(per);
+        }
+      }
     }
     
     private List<String> getFragments(String path) {
