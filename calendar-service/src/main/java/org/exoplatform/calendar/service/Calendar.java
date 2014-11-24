@@ -26,7 +26,7 @@ import org.exoplatform.services.jcr.util.IdGenerator;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-public class Calendar {
+public class Calendar extends AbstractBean {
 
   public enum Type {
 
@@ -120,8 +120,6 @@ public class Calendar {
     N_MOSS_GREEN, N_POWDER_BLUE, N_LIGHT_BLUE, N_PINK, N_ORANGE, N_GRAY,
     N_GREEN, N_BABY_BLUE, N_LIGHT_GRAY, N_BEIGE, N_YELLOW, N_PLUM_PURPLE };
 
-  private String               id;
-
   private String               name;
 
   private String               calendarColor = N_POWDER_BLUE;
@@ -155,17 +153,9 @@ public class Calendar {
   public static final String   CALENDAR_PREF = "calendar";
 
   public Calendar() {
-    id = CALENDAR_PREF + IdGenerator.generate();
+    setId(CALENDAR_PREF + IdGenerator.generate());
     timeZone = TimeZone.getDefault().getID();
     locale = Locale.getDefault().getISO3Country();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getName() {
@@ -299,13 +289,13 @@ public class Calendar {
   public boolean equals(Object o)
   {
     if (!(o instanceof Calendar)) return false;
-    return id.equals(((Calendar) o).getId());
+    return getId().equals(((Calendar) o).getId());
   }
 
   @Override
   public int hashCode()
   {
-    return id.hashCode();
+    return getId().hashCode();
   }
 
   public int getCalType() {

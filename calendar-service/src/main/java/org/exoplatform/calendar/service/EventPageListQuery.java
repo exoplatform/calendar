@@ -156,7 +156,7 @@ public class EventPageListQuery extends JCRPageList {
       } else if (name.equals(Utils.EXO_MESSAGE)) {
         event.setMessage(p.getString());
       } else if (name.equals(Utils.EXO_DATE_MODIFIED)) {
-        event.setLastUpdatedTime(p.getDate().getTime());
+        event.setLastModified(p.getDate().getTimeInMillis());
       } else if (name.equals(Utils.EXO_INVITATION)) {
         Value[] values = p.getValues();
         if (values.length == 1) {
@@ -229,8 +229,8 @@ public class EventPageListQuery extends JCRPageList {
             attachment.setName(attchmentNode.getProperty(Utils.EXO_FILE_NAME).getString());
           Node contentNode = attchmentNode.getNode(Utils.JCR_CONTENT);
           if (contentNode != null) {
-            if (contentNode.hasProperty(Utils.JCR_LASTMODIFIED))
-              attachment.setLastModified(contentNode.getProperty(Utils.JCR_LASTMODIFIED).getDate());
+            if (contentNode.hasProperty(Utils.JCR_LASTMODIFIED))              
+              attachment.setLastModified(contentNode.getProperty(Utils.JCR_LASTMODIFIED).getDate().getTimeInMillis());
             if (contentNode.hasProperty(Utils.JCR_MIMETYPE))
               attachment.setMimeType(contentNode.getProperty(Utils.JCR_MIMETYPE).getString());
             if (contentNode.hasProperty(Utils.JCR_DATA)) {

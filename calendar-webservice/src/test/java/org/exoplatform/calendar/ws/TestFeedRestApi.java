@@ -39,7 +39,6 @@ import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.rest.impl.ContainerResponse;
-import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
@@ -120,6 +119,10 @@ public class TestFeedRestApi extends TestRestApi {
     assertNotNull(calR);
     assertEquals(rssData.getTitle(), calR.getName());
     assertTrue(calR.getCalendars().iterator().next() instanceof String);
+    
+    //cache control    
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("etag").size() > 0);
     
     //get fields "name", "calendars"
     response = service(HTTPMethods.GET, CAL_BASE_URI + FEED_URI + calendarFeedNane + "?fields=name,calendars", baseURI, headers, null, writer);
@@ -226,6 +229,10 @@ public class TestFeedRestApi extends TestRestApi {
     assertNotNull(response);
     assertEquals(HTTPStatus.OK, response.getStatus());
     assertEquals(MediaType.APPLICATION_XML_TYPE, response.getContentType());
+    
+    //cache control    
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("etag").size() > 0);
     
     this.login("john");
     response = service(HTTPMethods.GET, CAL_BASE_URI + FEED_URI + calendarFeedNane + RSS_URI, baseURI, headers, null, writer);

@@ -46,8 +46,6 @@ public class LastUpdateAction implements Action {
     } catch (ClassCastException e){
       PropertyImpl property = (PropertyImpl)context.get("currentItem");
       NodeImpl parent = (NodeImpl)property.getParent();
-      if(!parent.isNodeType("exo:calendarEvent"))
-        throw new RuntimeException("incoming node is not exo:calendarEvent");
       parent.setProperty("exo:dateModified",new GregorianCalendar());
     }
     return false;

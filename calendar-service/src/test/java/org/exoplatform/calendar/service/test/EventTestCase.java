@@ -126,6 +126,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
     CalendarEvent event = createUserEvent("Have a meeting");    
     Date createdDate = calendarService_.getEventById(event.getId()).getLastUpdatedTime();
     assertNotNull(createdDate);
+    Thread.sleep(1000);
     event.setSummary("Have a new meeting");
     calendarService_.saveUserEvent(username, event.getCalendarId(), event, false);
     Date modifiedDate = calendarService_.getEventById(event.getId())

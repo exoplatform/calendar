@@ -23,6 +23,10 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
 import static org.exoplatform.calendar.ws.CalendarRestApi.ICS_URI;
 
+import javax.ws.rs.core.MultivaluedMap;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import org.exoplatform.calendar.service.Calendar;
@@ -31,7 +35,10 @@ import org.exoplatform.calendar.ws.bean.CalendarResource;
 import org.exoplatform.calendar.ws.bean.CollectionResource;
 import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
+import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.services.rest.impl.ContainerResponse;
+import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
+import org.exoplatform.services.rest.impl.header.HeaderHelper;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
@@ -166,10 +173,22 @@ public class TestCalendarRestApi extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());
     calR = (CalendarResource)response.getEntity();
     assertEquals(sharedCalendar.getId(), calR.getId());
+
+    //cache control    
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("last-modified").size() > 0);
+    //Can't test this now due to bug of exo rest framework:  
+    //org.exoplatform.services.rest.impl.ContainerRequest.evaluateIfUnmodified
+//    Date lastModifed = (Date)response.getHttpHeaders().get("last-modified").get(0);
+//    SimpleDateFormat dateFormat = HeaderHelper.getDateFormats().get(0);
+//    MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+//    h.add("If-Modified-Since", dateFormat.format(lastModifed));
+//    response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + sharedCalendar.getId(), baseURI, h, null, writer);    
+//    assertEquals(HTTPStatus.NOT_MODIFIED, response.getStatus());
     
     //not found
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + "notExists", baseURI, headers, null, writer);
-    assertEquals(HTTPStatus.NOT_FOUND, response.getStatus());
+    assertEquals(HTTPStatus.NOT_FOUND, response.getStatus());   
   }
 
   public void testUpdateCalendarById() throws Exception {
@@ -248,6 +267,10 @@ public class TestCalendarRestApi extends TestRestApi {
     //john can read shared calendar ics 
     assertEquals(HTTPStatus.OK, response.getStatus());
     assertEquals(CalendarRestApi.TEXT_ICS_TYPE, response.getContentType());
+    
+    //cache control
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("etag").size() > 0);
     
     login("root");
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + sharedCalendar.getId() + ICS_URI, baseURI, headers, null, writer);

@@ -195,6 +195,10 @@ public class TestInvitationRestApi extends TestRestApi {
     String eventHref = "/v1/calendar/events/" + gEvt.getId();
     assertEquals(eventHref, invitation.getEvent());
     
+    //cache control    
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("etag").size() > 0);
+    
     //expand=event
     response = service(HTTPMethods.GET, CAL_BASE_URI + INVITATION_URI + gEvt.getId() + ":mary" + "?expand=event"
                        , baseURI, headers, null, writer);

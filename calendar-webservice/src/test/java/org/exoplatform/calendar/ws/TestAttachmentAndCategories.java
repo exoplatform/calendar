@@ -97,6 +97,10 @@ public class TestAttachmentAndCategories extends TestRestApi {
     atId = URLEncoder.encode(atId.toString(), "ISO-8859-1");
     response = service(HTTPMethods.GET, CAL_BASE_URI + ATTACHMENT_URI + atId, baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
+    
+    //cache control    
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("last-modified").size() > 0);
 
     login("john", "/platform/users:member");
     response = service(HTTPMethods.GET, CAL_BASE_URI + ATTACHMENT_URI + atId, baseURI, headers, null, writer);
@@ -166,5 +170,9 @@ public class TestAttachmentAndCategories extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());
     assertNotNull(resource);
     assertEquals(category.getName(), resource.getName());
+    
+    //cache control    
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("last-modified").size() > 0);
   }
 }

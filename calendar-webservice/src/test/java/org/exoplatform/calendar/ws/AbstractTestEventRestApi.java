@@ -192,7 +192,11 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());
     Resource calR0 = (Resource)response.getEntity();
     assertNotNull(calR0);
-    assertEquals(uEvt.getId(), calR0.getId());    
+    assertEquals(uEvt.getId(), calR0.getId());
+    
+    //cache control    
+    assertEquals("[private, no-transform, 604800, 604800]", response.getHttpHeaders().get("cache-control").toString());
+    assertTrue(response.getHttpHeaders().get("last-modified").size() > 0);
     
     login("john");
     //

@@ -546,7 +546,7 @@ public class JCRDataStorage implements DataStorage {
     .append(Utils.EXO_TIMEZONE).append('|').append(Utils.EXO_SHARED_COLOR).append('|')
     .append(Utils.EXO_CALENDAR_COLOR).append('|').append(Utils.EXO_CALENDAR_OWNER).append('|')
     .append(Utils.EXO_PUBLIC_URL).append('|').append(Utils.EXO_PRIVATE_URL).append('|').append(Utils.EXO_GROUPS)
-    .append('|').append(Utils.EXO_VIEW_PERMISSIONS).append('|').append(Utils.EXO_EDIT_PERMISSIONS);
+    .append('|').append(Utils.EXO_VIEW_PERMISSIONS).append('|').append(Utils.EXO_EDIT_PERMISSIONS).append("|").append(Utils.EXO_DATE_MODIFIED);
     PropertyIterator it = calNode.getProperties(namePattern.toString());
     List<String> groups = null;
     String[] viewPermission = null, editPermission = null;
@@ -573,6 +573,8 @@ public class JCRDataStorage implements DataStorage {
         calendar.setPublicUrl(p.getString());
       } else if (name.equals(Utils.EXO_PRIVATE_URL)) {
         calendar.setPrivateUrl(p.getString());
+      } else if (name.equals(Utils.EXO_DATE_MODIFIED)) {
+        calendar.setLastModified(p.getDate().getTimeInMillis());
       } else if (name.equals(Utils.EXO_GROUPS)) {
         Value[] values = p.getValues();
         groups = new ArrayList<String>();
@@ -733,7 +735,8 @@ public class JCRDataStorage implements DataStorage {
   public EventCategory getEventCategory(Node eventCatNode) throws Exception {
     EventCategory eventCategory = new EventCategory();
     StringBuilder namePattern = new StringBuilder(128);
-    namePattern.append(Utils.EXO_ID).append('|').append(Utils.EXO_NAME).append('|').append(Utils.EXO_DESCRIPTION);
+    namePattern.append(Utils.EXO_ID).append('|').append(Utils.EXO_NAME).append('|').append(Utils.EXO_DESCRIPTION).append("|")
+      .append(Utils.EXO_DATE_MODIFIED);
     PropertyIterator it = eventCatNode.getProperties(namePattern.toString());
     while (it.hasNext()) {
       Property p = it.nextProperty();
@@ -742,8 +745,10 @@ public class JCRDataStorage implements DataStorage {
         eventCategory.setId(p.getString());
       } else if (name.equals(Utils.EXO_NAME)) {
         eventCategory.setName(p.getString());
-      } 
-    } 
+      } else if (name.equals(Utils.EXO_DATE_MODIFIED)) {
+        eventCategory.setLastModified(p.getDate().getTimeInMillis());
+      }
+    }
     return eventCategory;
   }
 

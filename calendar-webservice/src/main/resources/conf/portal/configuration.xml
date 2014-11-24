@@ -31,7 +31,7 @@
               <value>
                 <object type="org.exoplatform.services.jcr.impl.ext.action.ActionConfiguration">
                   <field  name="eventTypes"><string>addNode,changeProperty</string></field>
-                  <field  name="nodeTypes"><string>exo:calendarEvent</string></field>
+                  <field  name="nodeTypes"><string>exo:calendarEvent,exo:eventCategory,exo:calendar</string></field>
                   <field  name="actionClassName"><string>org.exoplatform.webservice.cs.LastUpdateAction</string></field>
                 </object>
               </value>

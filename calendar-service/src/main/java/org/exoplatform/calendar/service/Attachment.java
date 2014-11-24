@@ -18,7 +18,6 @@ package org.exoplatform.calendar.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Calendar;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -36,11 +35,9 @@ import org.exoplatform.services.log.Log;
  * Sep 28, 2007  
  */
 
-public class Attachment {
+public class Attachment extends AbstractBean {
   
   private static final Log log = ExoLogger.getExoLogger(Attachment.class);
-
-  private String   id;
 
   private String   name;
 
@@ -49,8 +46,6 @@ public class Attachment {
   private long     size;
 
   private byte[]   imageBytes;
-
-  private Calendar lastModified;
 
   private String   workspace;
 
@@ -61,15 +56,7 @@ public class Attachment {
    * the id will automatic generate when create new object
    */
   public Attachment() {
-    id = "Attachment" + IdGenerator.generate();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
+    setId("Attachment" + IdGenerator.generate());
   }
 
   public String getMimeType() {
@@ -138,14 +125,6 @@ public class Attachment {
       return null;
     }
     return attachment.getNode("jcr:content").getProperty("jcr:data").getStream();
-  }
-
-  public void setLastModified(Calendar lastModified) {
-    this.lastModified = lastModified;
-  }
-
-  public Calendar getLastModified() {
-    return lastModified;
   }
 
   public void setWorkspace(String workspace) {
