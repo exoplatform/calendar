@@ -74,7 +74,7 @@ public class EventResource extends Resource {
     from = ISO8601.format(fromCal);
     
     Calendar toCal = Utils.getInstanceTempCalendar();
-    toCal.setTime(data.getFromDateTime());
+    toCal.setTime(data.getToDateTime());
     to = ISO8601.format(toCal);
     
     calendar = new StringBuilder(basePath).append(CALENDAR_URI)
