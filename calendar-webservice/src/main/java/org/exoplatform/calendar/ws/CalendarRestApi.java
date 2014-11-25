@@ -1200,6 +1200,7 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getAttachmentById(@PathParam("id") String id, @QueryParam("fields") String fields, 
                                     @QueryParam("jsonp") String jsonp, @Context UriInfo uriInfo, @Context Request request) {
     try {
+      id = AttachmentResource.decode(id);
       CalendarEvent ev = this.findEventAttachment(id);
       if (ev == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
       Calendar cal = calendarServiceInstance().getCalendarById(ev.getCalendarId());
@@ -1258,6 +1259,7 @@ public class CalendarRestApi implements ResourceContainer {
   @Path("/attachments/{id}")
   public Response deleteAttachmentById(@PathParam("id") String id) {
     try {
+      id = AttachmentResource.decode(id);
       CalendarEvent ev = this.findEventAttachment(id);
       if (ev == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
       Calendar cal = calendarServiceInstance().getCalendarById(ev.getCalendarId());

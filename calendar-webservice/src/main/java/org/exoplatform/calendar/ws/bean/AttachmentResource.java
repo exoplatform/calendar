@@ -19,7 +19,8 @@ package org.exoplatform.calendar.ws.bean;
 
 import static org.exoplatform.calendar.ws.CalendarRestApi.ATTACHMENT_URI;
 
-import java.net.URLEncoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.ws.common.Resource;
@@ -40,12 +41,12 @@ public class AttachmentResource extends Resource {
   } 
 
   public AttachmentResource(Attachment data, String basePath) {
-    super(data.getDataPath());
+    super(encode(data.getDataPath()));
     
     StringBuilder path = new StringBuilder(basePath);
     path.append(ATTACHMENT_URI);
-    try {
-      setHref(path.toString() + (URLEncoder.encode(getId(), "ISO-8859-1")).toString());
+    try {      
+      setHref(path.toString() + getId());
     } catch (Exception e) {
       LOG.error(e);
     }
@@ -53,6 +54,33 @@ public class AttachmentResource extends Resource {
     name = data.getName();
     mimeType = data.getMimeType();
     weight = data.getSize();
+  }
+
+  /**
+   * we can't use / character in the path due the the bug of tomcat 
+   * that doesn't allow %2F 
+   */
+  public static String encode(String id) {
+    id = id.replace("/", "?");
+    URI uri;
+    try {
+      uri = new URI("http", "", "/" + id, "");
+      /*
+       * http:///{id}
+       */
+      return uri.toASCIIString().substring(8);
+    } catch (URISyntaxException e) {
+      LOG.error(e.getMessage(), e);
+      return null;
+    }    
+  }
+  
+  /**
+   * we can't use / character in the path due the the bug of tomcat 
+   * that doesn't allow %2F
+   */
+  public static String decode(String path) {
+    return path.replace("?", "/");
   }
 
   public String getName() {

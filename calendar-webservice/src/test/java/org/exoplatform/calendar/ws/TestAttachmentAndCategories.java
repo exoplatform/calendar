@@ -31,6 +31,7 @@ import java.util.List;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.ws.bean.AttachmentResource;
 import org.exoplatform.calendar.ws.bean.CategoryResource;
 import org.exoplatform.calendar.ws.bean.CollectionResource;
 import org.exoplatform.common.http.HTTPMethods;
@@ -86,7 +87,7 @@ public class TestAttachmentAndCategories extends TestRestApi {
 
     String atId = ev.getAttachment().get(0).getId();
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-    atId = URLEncoder.encode(atId.toString(), "ISO-8859-1");
+    atId = AttachmentResource.encode(atId.toString());
     
     login("root", "/platform/administrators:member");
     ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + ATTACHMENT_URI + atId, baseURI, headers, null, writer);
@@ -94,7 +95,7 @@ public class TestAttachmentAndCategories extends TestRestApi {
     
     calendarService.savePublicEvent(groupCalendar.getId(), ev, true);
     atId = calendarService.getEventById(ev.getId()).getAttachment().get(0).getId();
-    atId = URLEncoder.encode(atId.toString(), "ISO-8859-1");
+    atId = AttachmentResource.encode(atId.toString());
     response = service(HTTPMethods.GET, CAL_BASE_URI + ATTACHMENT_URI + atId, baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     
@@ -125,7 +126,7 @@ public class TestAttachmentAndCategories extends TestRestApi {
 
     String atId = calendarService.getEventById(ev.getId()).getAttachment().get(0).getId();
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-    atId = URLEncoder.encode(atId.toString(), "ISO-8859-1");
+    atId = AttachmentResource.encode(atId.toString());
     ContainerResponse response = service(HTTPMethods.DELETE, CAL_BASE_URI + ATTACHMENT_URI + atId, baseURI, headers, null, writer);
     assertNotNull(response);
     assertEquals(HTTPStatus.OK, response.getStatus());

@@ -128,9 +128,8 @@ public class EventResource extends Resource {
       List<String> atts = new LinkedList<String>();
       
       for (Attachment att : data.getAttachment()) {
-        atts.add(new StringBuilder(basePath).append(CalendarRestApi.ATTACHMENT_URI)
-                 .append(URLEncoder.encode(att.getDataPath(), "ISO-8859-1"))
-                 .toString());
+        AttachmentResource attRs = new AttachmentResource(att, basePath);
+        atts.add(attRs.getHref());
       }
       attachments = atts.toArray(new String[atts.size()]);
     }
