@@ -463,7 +463,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     from.set(2013, 2, 1, 0, 0, 0);
     to.set(2013, 2, 12, 0, 0, 0);
 
-    String queryParams ="?start="+ISO8601.format(from)+"&end="+ISO8601.format(to)+"&offset=0&limit=4";
+    String queryParams ="?start="+ISO8601.format(from)+"&end="+ISO8601.format(to)+"&offset=0&limit=4&returnSize=true";
 
     login("john");
     //
