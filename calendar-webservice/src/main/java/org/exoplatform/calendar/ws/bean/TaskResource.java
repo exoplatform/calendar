@@ -49,6 +49,7 @@ public class TaskResource extends Resource {
   private Reminder[] reminder;
   private Serializable[] attachments;
   private String status;  
+  private String categoryId;
 
   public TaskResource() {
     super(null);
@@ -174,4 +175,11 @@ public class TaskResource extends Resource {
     this.status = status;
   }
 
+  public String getCategoryId() {
+    return categoryId;
+  }
+
+  public void setCategoryId(String categoryId) {
+    this.categoryId = categoryId;
+  }
 }

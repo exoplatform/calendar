@@ -22,7 +22,6 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.CATEGORY_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.EVENT_URI;
 
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +31,6 @@ import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.ws.CalendarRestApi;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.webservice.cs.bean.End;
@@ -56,6 +54,7 @@ public class EventResource extends Resource {
   private String[]                  participants;
   private String                    privacy;
   private String                    availability;  
+  private String                categoryId;
   
   public EventResource() {
     super(null);
@@ -265,5 +264,13 @@ public class EventResource extends Resource {
 
   public void setAvailability(String availability) {
     this.availability = availability;
-  }  
+  }
+
+  public String getCategoryId() {
+    return categoryId;
+  }
+
+  public void setCategoryId(String categoryId) {
+    this.categoryId = categoryId;
+  }
 }

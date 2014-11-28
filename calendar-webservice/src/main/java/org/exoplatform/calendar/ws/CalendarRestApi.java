@@ -851,17 +851,17 @@ public class CalendarRestApi implements ResourceContainer {
    * - the calendar of the event has been shared with a group of the authenticated user, with modification rights
    * 
    * This entry point only allow http PUT request, with json object (evObject) in the request body, and event id in the path.
-   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href* can't
-   * be updated, they also be ignored.
+   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. 
+   * Or read-only attributes: *id* and *href*, *originalEvent*, *calendar* can't be updated, they also be ignored.
    * For example:
    * {
    *      subject: '..', description: '...',
+   *      categoryId: '',
    *      from: '...', to: '...',
    *      location: '', priority: '', 
    *      repeat: {...},
-   *      recurrenceId: '...', 
    *      reminder: [],
-   *      privacy: '', availability: '' 
+   *      privacy: '', availability: ''
    * }
    *  
    * @param id             identity of the event to update
@@ -1313,11 +1313,11 @@ public class CalendarRestApi implements ResourceContainer {
    * This entry point only allow http POST request, with json object (evObject) in the request body. Example:
    *    {
    *      id: 'myEventId',
+   *      categoryId: '',
    *      subject: '..', description: '...',
    *      from: '...', to: '...',
    *      location: '', priority: '', 
    *      repeat: {...},
-   *      recurrenceId: '...',
    *      reminder: [],
    *      privacy: '', availability: '' 
    *   }
@@ -1738,6 +1738,7 @@ public class CalendarRestApi implements ResourceContainer {
    * For example:
    *   {
    *      name: '..', note: '...',
+   *      categoryId: '...',
    *      from: '...', to: '...',
    *      delegation: ['...', ''], priority: '', 
    *      reminder: [],
@@ -3113,6 +3114,8 @@ public class CalendarRestApi implements ResourceContainer {
   }
   
   private void buildEvent(CalendarEvent old, EventResource evObject) {
+    String catId = evObject.getCategoryId(); 
+    setEventCategory(old, catId);
     old.setDescription(evObject.getDescription());
     old.setEventState(evObject.getAvailability());
     if (evObject.getRepeat() != null) {
@@ -3174,6 +3177,8 @@ public class CalendarRestApi implements ResourceContainer {
   }
   
   private void buildEventFormTask(CalendarEvent old, TaskResource evObject) {
+    String catId = evObject.getCategoryId(); 
+    setEventCategory(old, catId);
     old.setDescription(evObject.getNote());  
     old.setFromDateTime(ISO8601.parse(evObject.getFrom()).getTime());
     old.setPriority(evObject.getPriority());
@@ -3192,6 +3197,20 @@ public class CalendarRestApi implements ResourceContainer {
     }
   }
   
+  private void setEventCategory(CalendarEvent old, String catId) {
+    if (catId != null) {
+      try {
+        EventCategory cat = calendarServiceInstance().getEventCategory(currentUserId(), catId);
+        if (cat != null) {
+          old.setEventCategoryId(cat.getId());
+          old.setEventCategoryName(cat.getName());
+        }
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+      }
+    }
+  }
+
   private void buildCalendar(Calendar cal, CalendarResource calR) {
     cal.setCalendarColor(calR.getColor());
     cal.setCalendarOwner(calR.getOwner());    
