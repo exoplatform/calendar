@@ -507,7 +507,7 @@ public class CalendarEvent extends AbstractBean {
    */
   public void setExceptionIds(Collection<String> ids){
     if(ids != null)
-    this.excludeId = ids.toArray(this.excludeId);
+    this.excludeId = ids.toArray(new String[ids.size()]);
     else this.excludeId = null;
   }
   /**

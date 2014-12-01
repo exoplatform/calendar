@@ -851,7 +851,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * This entry point only allow http PUT request, with json object (evObject) in the request body, and event id in the path.
    * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. 
-   * Or read-only attributes: *id* and *href*, *originalEvent*, *calendar* can't be updated, they also be ignored.
+   * Or read-only attributes: *id* and *href*, *originalEvent*, *calendar*, *recurrentId* can't be updated, they also be ignored.
    * For example:
    * {
    *      subject: '..', description: '...',
@@ -1731,7 +1731,7 @@ public class CalendarRestApi implements ResourceContainer {
    * {@link #updateEventById(String, CalendarEvent)}
    * 
    * This entry point only allow http PUT request, with json object (evObject) in the request body, and task id in the path.
-   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href* can't
+   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href*, *calendar* can't
    * be updated, they also be ignored.
    * For example:
    *   {
@@ -2220,7 +2220,7 @@ public class CalendarRestApi implements ResourceContainer {
    * Updates the feed if the authenticated user is the owner of the feed 
    * 
    * This entry point only allow http PUT request, with json object (feedResource) in the request body, and feed id in the path.
-   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href* can't
+   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href* attributes can't
    * be updated, they also be ignored.
    * For example:
    *   {
@@ -2257,10 +2257,11 @@ public class CalendarRestApi implements ResourceContainer {
       if (feed == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
 
       LinkedHashMap<String, Calendar> calendars = new LinkedHashMap<String, Calendar>();
-      for (String calendarId : feedResource.getCalendarIds()) {
-        Calendar calendar = calendarServiceInstance().getCalendarById(calendarId);
-        int calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), calendarId);
-        switch (calType) {
+      if (feedResource.getCalendarIds() != null) {
+        for (String calendarId : feedResource.getCalendarIds()) {
+          Calendar calendar = calendarServiceInstance().getCalendarById(calendarId);
+          int calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), calendarId);
+          switch (calType) {
           case Calendar.TYPE_PRIVATE:
             calendars.put(Calendar.TYPE_PRIVATE + Utils.COLON + calendarId, calendar);
             break;
@@ -2272,17 +2273,20 @@ public class CalendarRestApi implements ResourceContainer {
             break;
           default:
             break;
-        }
+          }
+        }        
       }
       
       //
       calendarServiceInstance().removeFeedData(currentUserId(),id);
       
       RssData rssData = new RssData();      
-      rssData.setName(feedResource.getName() + Utils.RSS_EXT) ;
+      if (feedResource.getName() != null) {
+        rssData.setName(feedResource.getName() + Utils.RSS_EXT) ;
+        rssData.setTitle(feedResource.getName()) ;
+        rssData.setDescription(feedResource.getName());        
+      }
       rssData.setUrl(feed.getUrl()) ;
-      rssData.setTitle(feedResource.getName()) ;
-      rssData.setDescription(feedResource.getName());
       rssData.setLink(feed.getUrl());
       rssData.setVersion("rss_2.0") ;
       //
@@ -2623,7 +2627,7 @@ public class CalendarRestApi implements ResourceContainer {
    *  
    * @param id             identity of the invitation to update
    * 
-   * @param status      new status to update ('', 'maybe', 'yes', 'no')
+   * @param status      new status to update ('', 'maybe', 'yes', 'no'). Default value is : empty string
    * 
    * @request 
    * PUT: http://localhost:8080/portal/rest/v1/calendar/invitations/evt123:root
@@ -2638,6 +2642,7 @@ public class CalendarRestApi implements ResourceContainer {
   @RolesAllowed("users")
   @Path("/invitations/{id}")
   public Response updateInvitationById(@PathParam("id") String id, @QueryParam("status") String status) {
+    status = status == null ? "" : status;
     CalendarService service = calendarServiceInstance();
     EventDAO evtDAO = service.getEventDAO();
     String username = currentUserId();
@@ -2818,9 +2823,9 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param id                       identity of the *event* to create invitation
    * 
-   * @param participant        name of participant (userId)
+   * @param participant        name of participant (userId). If not provided or empty, return 400 status code
    * 
-   * @param status               status of invitation ('', 'maybe', 'yes', 'no')
+   * @param status               status of invitation ('', 'maybe', 'yes', 'no'). If not provided or empty, return 400 status code
    * 
    * @request 
    * POST: http://localhost:8080/portal/rest/v1/calendar/events/evt123/invitations
@@ -3114,19 +3119,19 @@ public class CalendarRestApi implements ResourceContainer {
   private void buildEvent(CalendarEvent old, EventResource evObject) {
     String catId = evObject.getCategoryId(); 
     setEventCategory(old, catId);
-    old.setDescription(evObject.getDescription());
-    old.setEventState(evObject.getAvailability());
+    if (evObject.getDescription() != null) {
+      old.setDescription(evObject.getDescription());      
+    }
+    if (evObject.getAvailability() != null) {
+      old.setEventState(evObject.getAvailability());      
+    }
     if (evObject.getRepeat() != null) {
       RepeatResource repeat = evObject.getRepeat();
       if (repeat.getExclude() != null) {
-        old.setExcludeId(repeat.getExclude());        
-      } else {
-        old.setExceptionIds(null);
+        old.setExceptionIds(Arrays.asList(repeat.getExclude()));        
       }
       if (repeat.getRepeatOn() != null) {
         old.setRepeatByDay(repeat.getRepeatOn().split(","));        
-      } else {
-        old.setRepeatByDay(null);
       }
       if (repeat.getRepeateBy() != null) {
         String[] repeatBy = repeat.getRepeateBy().split(",");
@@ -3138,8 +3143,6 @@ public class CalendarRestApi implements ResourceContainer {
           }
         }
         old.setRepeatByMonthDay(by);        
-      } else {
-        old.setRepeatByMonthDay(null);
       }
       
       if (repeat.getEnd() != null) {
@@ -3154,44 +3157,57 @@ public class CalendarRestApi implements ResourceContainer {
             } catch (Exception ex) {}
           }          
         }
-        old.setRepeatType(end.getType());        
+        if (end.getType() != null) {
+          old.setRepeatType(end.getType());          
+        }
       }
-      
+
       old.setRepeatInterval(repeat.getEvery());
-    } else {
-      old.setRepeatType(null);
     }
-    old.setFromDateTime(ISO8601.parse(evObject.getFrom()).getTime());
-    old.setLocation(evObject.getLocation());
-    old.setPriority(evObject.getPriority());
+    
+    java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());    
+    old.setFromDateTime(fromTo[0].getTime());
+    if (evObject.getLocation() != null) {
+      old.setLocation(evObject.getLocation());      
+    }
+    if (evObject.getPriority() != null) {
+      old.setPriority(evObject.getPriority());      
+    }
     if (evObject.getReminder() != null) {
       old.setReminders(Arrays.asList(evObject.getReminder()));      
-    } else {
-      old.setReminders(null);
     }
-    old.setStatus(evObject.getPrivacy());
-    old.setSummary(evObject.getSubject());
-    old.setToDateTime(ISO8601.parse(evObject.getTo()).getTime());
+    if (evObject.getPrivacy() != null) {
+      old.setStatus(evObject.getPrivacy());      
+    }
+    if (evObject.getSubject() != null) {
+      old.setSummary(evObject.getSubject());      
+    }
+    old.setToDateTime(fromTo[1].getTime());
   }
   
   private void buildEventFormTask(CalendarEvent old, TaskResource evObject) {
     String catId = evObject.getCategoryId(); 
     setEventCategory(old, catId);
-    old.setDescription(evObject.getNote());  
-    old.setFromDateTime(ISO8601.parse(evObject.getFrom()).getTime());
-    old.setPriority(evObject.getPriority());
+    if (evObject.getNote() != null) {
+      old.setDescription(evObject.getNote());        
+    }
+    java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());    
+    old.setFromDateTime(fromTo[0].getTime());
+    if (evObject.getPriority() != null) {
+      old.setPriority(evObject.getPriority());      
+    }
     if (evObject.getReminder() != null) {
       old.setReminders(Arrays.asList(evObject.getReminder()));      
-    } else {
-      evObject.setReminder(null);
     }
-    old.setStatus(evObject.getStatus());
-    old.setSummary(evObject.getName());
-    old.setToDateTime(ISO8601.parse(evObject.getTo()).getTime());
+    if (evObject.getStatus() != null) {
+      old.setStatus(evObject.getStatus());      
+    }
+    if (evObject.getName() != null) {
+      old.setSummary(evObject.getName());      
+    }
+    old.setToDateTime(fromTo[1].getTime());
     if (evObject.getDelegation() != null) {
       old.setTaskDelegator(StringUtils.join(evObject.getDelegation(), ","));
-    } else {
-      old.setTaskDelegator(null);
     }
   }
   
@@ -3210,23 +3226,35 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   private void buildCalendar(Calendar cal, CalendarResource calR) {
-    cal.setCalendarColor(calR.getColor());
-    cal.setCalendarOwner(calR.getOwner());    
-    cal.setDescription(calR.getDescription());
+    if (calR.getColor() != null) {
+      cal.setCalendarColor(calR.getColor());      
+    }
+    if (calR.getOwner() != null) {
+      cal.setCalendarOwner(calR.getOwner());          
+    }
+    if (calR.getDescription() != null) {
+      cal.setDescription(calR.getDescription());      
+    }
     if (calR.getEditPermission() != null) {
       cal.setEditPermission(calR.getEditPermission().split(Utils.SEMICOLON));      
-    } else {
-      cal.setEditPermission(null);
     }
-    cal.setGroups(calR.getGroups());
-    cal.setName(calR.getName());
-    cal.setPrivateUrl(calR.getPrivateURL());
-    cal.setPublicUrl(calR.getPublicURL());
-    cal.setTimeZone(calR.getTimeZone());
+    if (calR.getGroups() != null) {
+      cal.setGroups(calR.getGroups());      
+    }
+    if (calR.getName() != null) {
+      cal.setName(calR.getName());      
+    }
+    if (calR.getPrivateURL() != null) {
+      cal.setPrivateUrl(calR.getPrivateURL());      
+    }
+    if (calR.getPublicURL() != null) {
+      cal.setPublicUrl(calR.getPublicURL());      
+    }
+    if (calR.getTimeZone() != null) {
+      cal.setTimeZone(calR.getTimeZone());      
+    }
     if (calR.getViewPermision() != null) {
-      cal.setViewPermission(calR.getViewPermision().split(Utils.SEMICOLON));         
-    } else {
-      cal.setViewPermission(null);
+      cal.setViewPermission(calR.getViewPermision().split(Utils.SEMICOLON));
     }
   }
   
