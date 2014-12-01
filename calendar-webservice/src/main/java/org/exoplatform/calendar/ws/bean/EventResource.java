@@ -83,6 +83,7 @@ public class EventResource extends Resource {
       categories = new String[] { new StringBuilder(basePath).append(CATEGORY_URI)
           .append(data.getEventCategoryId())
           .toString() };      
+      categoryId = data.getEventCategoryId();
     }
     location = data.getLocation();
     this.priority = data.getPriority();

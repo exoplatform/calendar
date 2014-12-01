@@ -366,12 +366,15 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     assertTrue(entity.matches("callback\\(\\{.+\"id\":\"" + event.get("id") + "\".+\\}\\);"));
   }
 
-  public void testCreateEventForCalendar() throws Exception {
+  public void testCreateEventForCalendar() throws Exception {    
+    EventCategory cat = createEventCategory("root", "testCat");
     CalendarEvent uEvt = createEvent(userCalendar);
     uEvt.setSummary("test");
+    uEvt.setEventCategoryId(cat.getId());
     
     JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
     JsonValue json = generatorImpl.createJsonObject(new EventResource(uEvt, ""));
+    
     byte[] data = json.toString().getBytes("UTF-8");
 
     headers.putSingle("content-type", "application/json");
@@ -389,11 +392,16 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
                        EVENT_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.UNAUTHORIZED, response.getStatus());
 
-    login("root");
+    login("root");    
     response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId() + 
                        EVENT_URI, baseURI, headers, data, writer);
-    assertEquals(HTTPStatus.CREATED, response.getStatus()); 
-    assertNotNull(response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION).toString());
+    assertEquals(HTTPStatus.CREATED, response.getStatus());
+    List<Object> location = response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION);
+    assertNotNull(location);
+    
+    String evtHref = location.get(0).toString();
+    CalendarEvent evt  = calendarService.getEventById(evtHref.substring(evtHref.lastIndexOf("/") + 1));
+    assertEquals("testCat", evt.getEventCategoryName());
   }
   
   public void testCreateEventForCalendar_Group() throws Exception {

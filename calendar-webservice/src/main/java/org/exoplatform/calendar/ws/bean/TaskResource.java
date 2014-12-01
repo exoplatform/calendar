@@ -70,7 +70,11 @@ public class TaskResource extends Resource {
    to = ISO8601.format(toCal);
    
    calendar = new StringBuilder(basePath).append(CALENDAR_URI).append(data.getCalendarId()).toString();
-   categories = new String[]{new StringBuilder(basePath).append(CATEGORY_URI).append(data.getEventCategoryId()).toString()};
+   if (data.getEventCategoryId() != null) {
+     categories = new String[]{new StringBuilder(basePath).append(CATEGORY_URI).append(data.getEventCategoryId()).toString()};
+     categoryId = data.getEventCategoryId();
+   }
+   
    if(data.getTaskDelegator() != null) delegation = data.getTaskDelegator().split(Utils.COLON);   
    this.priority = data.getPriority(); 
    if(data.getReminders() != null) reminder = data.getReminders().toArray(new Reminder[]{});

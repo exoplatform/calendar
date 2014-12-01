@@ -335,7 +335,6 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * This entry point only allow http POST request, with json object (cal) in the request body. Example:
    *    {
-   *      id: 'calendarc6d95dae7f00010149faa69ed4757731',
    *      name: 'calName',
    *      description: '...',
    *      timezone: '...',
@@ -346,7 +345,7 @@ public class CalendarRestApi implements ResourceContainer {
    *   }
    * 
    * @param cal json object contains attributes of calendar object to create.
-   * All attribute are optional, except *id*, this attribute must be an uuid
+   * All attributes are optional
    * 
    * @request POST: http://localhost:8080/portal/rest/v1/calendar/calendars
    * @response HTTP status code: 
@@ -1312,7 +1311,6 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * This entry point only allow http POST request, with json object (evObject) in the request body. Example:
    *    {
-   *      id: 'myEventId',
    *      categoryId: '',
    *      subject: '..', description: '...',
    *      from: '...', to: '...',
@@ -1323,7 +1321,7 @@ public class CalendarRestApi implements ResourceContainer {
    *   }
    * 
    * @param evObject    json object contains attributes of event object to create.
-   * All attribute are optional, except *id*, this attribute must be an uuid
+   * All attribute are optional.
    * 
    * @param id                identity of the *calendar* to create event
    * 
@@ -3206,7 +3204,7 @@ public class CalendarRestApi implements ResourceContainer {
           old.setEventCategoryName(cat.getName());
         }
       } catch (Exception e) {
-        log.error(e.getMessage(), e);
+        log.debug(e.getMessage(), e);
       }
     }
   }

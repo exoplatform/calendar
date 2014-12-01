@@ -270,12 +270,17 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     CalendarEvent uEvt = createEvent(userCalendar);
     uEvt.setEventType(eventType);
     calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
+    assertNull(uEvt.getEventCategoryId());
 
+    EventCategory cat = createEventCategory("root", "testCat");
+    
     Resource resource = null;
     if (CalendarEvent.TYPE_EVENT.equals(eventType)) {
       resource = new EventResource(uEvt, "");      
+      ((EventResource)resource).setCategoryId(cat.getId());
     } else {
       resource = new TaskResource(uEvt, ""); 
+      ((TaskResource)resource).setCategoryId(cat.getId());
     }
     JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
     JsonValue json = generatorImpl.createJsonObject(resource);
@@ -295,6 +300,9 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     //
     response = service(HTTPMethods.PUT, uri + uEvt.getId(), baseURI, headers, data, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
+    
+    uEvt = calendarService.getEventById(uEvt.getId());
+    assertEquals("testCat", uEvt.getEventCategoryName());
   }
   
   public void runTestDeleteEventById(String uri, String eventType) throws Exception {
