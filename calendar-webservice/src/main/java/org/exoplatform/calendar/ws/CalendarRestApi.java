@@ -160,12 +160,16 @@ public class CalendarRestApi implements ResourceContainer {
   
   /**
    * Contructor help to configure the rest service with parameters.
-   * 
-   * @param orgService   exo organization service implementation
-   * @param params        object contains the configuration parameters.
+   *
    * Here is the configuration parameters:
    * - query_limit        maximum objects returned for a collection query, default value: 10.
    * - cache_maxage  time in miliseconds return in the cache-control header, default value:  604800
+   *
+   * @param  orgService
+   *         exo organization service implementation
+   *
+   * @param  params
+   *         Object contains the configuration parameters.
    */
   public CalendarRestApi(OrganizationService orgService, InitParams params) {
     this.orgService = orgService;
@@ -191,11 +195,13 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * base URI of each eXo module, this entry point return all the available subresources as json,
+   * The base URI of Calendar Rest API, this entry point return all the available subresources as json,
    * in order to navigate easily in the REST API.
-   * 
-   * @request GET: http://localhost:8080/portal/rest/v1/calendar
-   * @format json
+   *
+   * @request  GET: http://localhost:8080/portal/rest/v1/calendar
+   *
+   * @format  json
+   *
    * @response
    *    {
    *        "subResourcesHref": [
@@ -204,9 +210,12 @@ public class CalendarRestApi implements ResourceContainer {
    *            "http://localhost:8080/rest/calendar/tasks"
    *         ]
    *     }
-   * @return all hrefs of available entry-point of calendar service
-   * @authentication 
-   * @anchor CalendarRestApi.getSubResources
+   *
+   * @return  All hrefs of available entry-point of calendar service
+   *
+   * @authentication
+   *
+   * @anchor  CalendarRestApi.getSubResources
    */
   @GET
   @RolesAllowed("users")
@@ -223,28 +232,36 @@ public class CalendarRestApi implements ResourceContainer {
    * - the authenticated user is the owner of the calendar.
    * - the authenticated user belongs to the group of the calendar.
    * - the calendar has been shared with the authenticated user or with a group of the authenticated user.
-   * 
-   * @param type    The calendar type to search for. It can be one of *personal, group, shared*.
-   *                If this is omitted OR an unknown type is specified, it will search for *all* types.
    *
-   * @param offset  The starting point when paging through a list of entities. Defaults to *0*.
-   * 
-   * @param limit   The maximum number of results when paging through a list of entities, if not specify or exceed
-   * the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   * (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
-   * 
-   * @param resturnSize  tell the service if it must return the total size of the returned collection result, 
-   * and the *link* http headers. 
-   * It can be true or false, by default, it's *false* 
-   * 
-   * @param fields  This is a list of comma-separated property's names of response json object,
-   * if not specified, it return the json will all available properties.
-   * 
-   * @param jsonp   The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   * json object is returned. 
-   * 
-   * @request GET: http://localhost:8080/portal/rest/v1/calendar/calendars?type=personal&fields=id,name
-   * @format JSON
+   * @param  type
+   *         The calendar type to search for. It can be one of *personal, group, shared*.
+   *         If this is omitted OR an unknown type is specified, it will search for *all* types.
+   *
+   * @param  offset
+   *         The starting point when paging through a list of entities. Defaults to *0*.
+   *
+   * @param  limit
+   *         The maximum number of results when paging through a list of entities, if not specify or exceed
+   *         the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
+   *         (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   *
+   * @param  resturnSize
+   *         Tell the service if it must return the total size of the returned collection result, 
+   *         and the *link* http headers. 
+   *         It can be true or false, by default, it's *false* 
+   *
+   * @param  fields
+   *         This is a list of comma-separated property's names of response json object,
+   *         if not specified, it return the json will all available properties.
+   *
+   * @param  jsonp
+   *         The name of a JavaScript function to be used as the JSONP callback, if not specified, only
+   *         json object is returned. 
+   *
+   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/calendars?type=personal&fields=id,name
+   *
+   * @format  JSON
+   *
    * @response 
    * [
    *   {
@@ -262,9 +279,11 @@ public class CalendarRestApi implements ResourceContainer {
    *   }, 
    *   {id...}
    * ]
-   * @return        List of calendars
-   * @authentication 
-   * @anchor CalendarRestApi.getCalendars
+   * @return  List of calendars
+   *
+   * @authentication
+   *
+   * @anchor  CalendarRestApi.getCalendars
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @GET
@@ -344,16 +363,21 @@ public class CalendarRestApi implements ResourceContainer {
    *      publicURL: '', privateURL: ''
    *   }
    * 
-   * @param cal json object contains attributes of calendar object to create.
-   * All attributes are optional
-   * 
-   * @request POST: http://localhost:8080/portal/rest/v1/calendar/calendars
-   * @response HTTP status code: 
+   * @param  cal
+   *         JSON object contains attributes of calendar object to create.
+   *         All attributes are optional
+   *
+   * @request  POST: http://localhost:8080/portal/rest/v1/calendar/calendars
+   *
+   * @response  HTTP status code: 
    * * 201 if created successfully, and http header *location* href point to the newly created calendar.
    * * 401 if user don't have create permission, 503 if there is any error during the save process
-   * @return http status code
+   *
+   * @return  http status code
+   *
    * @authentication
-   * @anchor CalendarRestApi.createCalendar
+   *
+   * @anchor  CalendarRestApi.createCalendar
    */
   @POST
   @RolesAllowed("users")
@@ -382,22 +406,27 @@ public class CalendarRestApi implements ResourceContainer {
 	}
 
   /**
-   * Returns the calendar if:
-   * - the authenticated user is the owner of the calendar
-   * - the authenticated user belongs to the group of the calendar
-   * - the calendar has been shared with the authenticated user or with a group of the authenticated user
+   * Returns the calendar with the specified id parameter if:
+   * - The authenticated user is the owner of the calendar
+   * - The authenticated user belongs to the group of the calendar
+   * - The calendar has been shared with the authenticated user or with a group of the authenticated user
    * 
-   * @param id           identity of the calendar to retrieve
+   * @param  id
+   *         identity of the calendar to retrieve
    * 
-   * @param fields     This is a list of comma-separated property's names of response json object,
-   * if not specified, it return the json will all available properties (id, href, name, description, type, timezone, 
-   * color, owner, viewPermission, editPermision, groups, publicURL, privateURL, icsURL)
+   * @param  fields
+   *         This is a list of comma-separated property's names of response json object,
+   *         if not specified, it return the json will all available properties (id, href, name, description, type, timezone, 
+   *         color, owner, viewPermission, editPermision, groups, publicURL, privateURL, icsURL)
    * 
-   * @param jsonp      The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   * json object is returned 
+   * @param  jsonp
+   *         The name of a JavaScript function to be used as the JSONP callback, if not specified, only
+   *         json object is returned 
    * 
-   * @request GET: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
-   * @format JSON
+   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/calendars/{id}
+   *
+   * @format  JSON
+   *
    * @response
    *  {
    *      id: 'demo-defaultCalendarId',
@@ -413,8 +442,10 @@ public class CalendarRestApi implements ResourceContainer {
    *      icsURL: ''
    *   }
    * @return  calendar as JSON object
-   * @authentication 
-   * @anchor CalendarRestApi.getCalendarById
+   *
+   * @authentication
+   * 
+   * @anchor  CalendarRestApi.getCalendarById
    */
   @GET
   @RolesAllowed("users")
@@ -483,8 +514,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param calObj  json object contains attributes of calendar object to update, all the attributes are optional 
    * 
-   * @request 
-   * PUT: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
+   * @request  PUT: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
    * @response 
    * HTTP status code: 200 if updated successfully, 404 if calendar with provided id doesnt exists,
    * 401 if user don't have create permission, 503 if there is any error during the save process
@@ -517,15 +547,14 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Delete the calendar if:
+   * Delete the calendar with the specified id if:
    * - the authenticated user is the owner of the calendar.
    * - for group calendars, the authenticated user has edit rights on the calendar.
    * - If it is a shared calendar the calendar is not shared anymore (but the original calendar is not deleted).
    * 
    * @param id  identity of the calendar to delete
    * 
-   * @request 
-   * DELETE: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
+   * @request  DELETE: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
    * @response
    * HTTP status code: 200 if updated successfully, 404 if calendar with provided id doesnt exists,
    * 401 if user don't have create permission, 503 if there is any error during the save process
