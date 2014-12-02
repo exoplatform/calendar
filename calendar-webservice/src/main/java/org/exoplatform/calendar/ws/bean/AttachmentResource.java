@@ -61,7 +61,7 @@ public class AttachmentResource extends Resource {
    * that doesn't allow %2F 
    */
   public static String encode(String id) {
-    id = id.replace("/", "?");
+    id = id.replace("/", "::");
     URI uri;
     try {
       uri = new URI("http", "", "/" + id, "");
@@ -73,14 +73,14 @@ public class AttachmentResource extends Resource {
       LOG.error(e.getMessage(), e);
       return null;
     }    
-  }
+  }  
   
   /**
    * we can't use / character in the path due the the bug of tomcat 
    * that doesn't allow %2F
    */
   public static String decode(String path) {
-    return path.replace("?", "/");
+    return path.replace("::", "/");
   }
 
   public String getName() {
