@@ -74,6 +74,7 @@ import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.ws.bean.AttachmentResource;
 import org.exoplatform.calendar.ws.bean.CalendarResource;
 import org.exoplatform.calendar.ws.bean.CategoryResource;
@@ -148,7 +149,31 @@ public class CalendarRestApi implements ResourceContainer {
   private SubResourceHrefBuilder subResourcesBuilder = new SubResourceHrefBuilder(this);
 
   private final static CacheControl nc = new CacheControl();
+
+  public static final String DEFAULT_CAL_NAME = "calendar";
   
+  public static final String DEFAULT_EVENT_NAME = "default";
+  
+  public static final String[] RP_WEEKLY_BYDAY = CalendarEvent.RP_WEEKLY_BYDAY.clone();
+  
+  public static final String[] EVENT_AVAILABILITY = {CalendarEvent.ST_AVAILABLE, CalendarEvent.ST_BUSY, CalendarEvent.ST_OUTSIDE};
+  
+  public static final String[] REPEATTYPES = CalendarEvent.REPEATTYPES.clone();
+  
+  public static final String[] PRIORITY = CalendarEvent.PRIORITY.clone();
+  
+  public static final String[] TASK_STATUS = CalendarEvent.TASK_STATUS.clone();
+
+  private static final String[] INVITATION_STATUS = {"", "maybe", "yes", "no"};
+  
+  static {
+    Arrays.sort(RP_WEEKLY_BYDAY);
+    Arrays.sort(EVENT_AVAILABILITY);
+    Arrays.sort(REPEATTYPES);
+    Arrays.sort(PRIORITY);
+    Arrays.sort(TASK_STATUS);
+  }
+
   private final CacheControl cc = new CacheControl();
   
   static {
@@ -365,7 +390,8 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param  cal
    *         JSON object contains attributes of calendar object to create.
-   *         All attributes are optional
+   *         All attributes are optional. If specified explicitly, calendar name must not empty, 
+   *         contains only letter, digit, space, '-', '_' characters. Default value of calendar name is: calendar.
    *
    * @request  POST: http://localhost:8080/portal/rest/v1/calendar/calendars
    *
@@ -384,7 +410,13 @@ public class CalendarRestApi implements ResourceContainer {
   @Path("/calendars/")
   public Response createCalendar(CalendarResource cal, @Context UriInfo uriInfo) {
     Calendar calendar = new Calendar();
-    buildCalendar(calendar, cal);
+    if (cal.getName() == null) {
+      cal.setName(DEFAULT_CAL_NAME);
+    }
+    Response error = buildCalendar(calendar, cal);
+    if (error != null) {
+      return error;
+    }
     
 		if (cal.getGroups() != null && cal.getGroups().length > 0) {
 			// Create a group calendar
@@ -512,7 +544,8 @@ public class CalendarRestApi implements ResourceContainer {
    *  
    * @param id         identity of the calendar to update
    * 
-   * @param calObj  json object contains attributes of calendar object to update, all the attributes are optional 
+   * @param calObj  json object contains attributes of calendar object to update, all the attributes are optional. 
+   * The calendar name must not empty, contains only letter, digit, space, '-', '_' characters
    * 
    * @request  PUT: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
    * @response 
@@ -533,9 +566,13 @@ public class CalendarRestApi implements ResourceContainer {
       //don't allow to edit shared calendar, or remote calendar
       if ((currentUserId().equals(cal.getCalendarOwner()) || cal.getGroups() != null) &&
           Utils.isCalendarEditable(currentUserId(), cal)) {
-        buildCalendar(cal, calObj);
-        calendarServiceInstance().saveCalendar(cal.getCalendarOwner(), cal, Integer.valueOf(cal.getCalType()), false);
-        return Response.ok().cacheControl(nc).build();
+        Response error = buildCalendar(cal, calObj);
+        if (error != null) {
+          return error;
+        } else {
+          calendarServiceInstance().saveCalendar(cal.getCalendarOwner(), cal, Integer.valueOf(cal.getCalType()), false);
+          return Response.ok().cacheControl(nc).build();          
+        }
       }
       
       //
@@ -894,7 +931,16 @@ public class CalendarRestApi implements ResourceContainer {
    *  
    * @param id             identity of the event to update
    * 
-   * @param evObject  json object contains attributes of event object to update, all the attributes are optional 
+   * @param evObject  json object contains attributes of event object to update, all the attributes are optional.
+   * If provided explitly (not null), attributes are checked with some rules:
+   * 1. subject must not be empty
+   * 2. availability can only be one of "available", "busy", "outside"
+   * 3. repeat.repeatOn can only be one of"MO", "TU", "WE", "TH", "FR", "SA", "SU"
+   * 4. repeat.repeatBy must be >= 1 and <= 31
+   * 5. repeat.repeatType must be one of "norepeat", "daily", "weekly", "monthly", "yearly"
+   * 6. "from" date must be before "to" date
+   * 7. priority must be one of "none", "high", "normal", "low"
+   * 8. privacy can only be public or private
    * 
    * @request 
    * PUT: http://localhost:8080/portal/rest/v1/calendar/events/Event123
@@ -915,7 +961,10 @@ public class CalendarRestApi implements ResourceContainer {
 
       Calendar cal = calendarServiceInstance().getCalendarById(old.getCalendarId());
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
-        buildEvent(old, evObject);
+        Response error = buildEvent(old, evObject);
+        if (error != null) {
+          return error;
+        }
         
         int calType = -1;
         try {
@@ -1350,7 +1399,15 @@ public class CalendarRestApi implements ResourceContainer {
    *   }
    * 
    * @param evObject    json object contains attributes of event object to create.
-   * All attribute are optional.
+   * All attribute are optional. If provided explitly (not null), attributes are checked with some rules:
+   * 1. subject must not be empty, default value is: default
+   * 2. availability can only be one of "available", "busy", "outside"
+   * 3. repeat.repeatOn can only be one of"MO", "TU", "WE", "TH", "FR", "SA", "SU"
+   * 4. repeat.repeatBy must be >= 1 and <= 31
+   * 5. repeat.repeatType must be one of "norepeat", "daily", "weekly", "monthly", "yearly"
+   * 6. "from" date must be before "to" date
+   * 7. priority must be one of "none", "high", "normal", "low"
+   * 8. privacy can only be public or private
    * 
    * @param id                identity of the *calendar* to create event
    * 
@@ -1358,6 +1415,7 @@ public class CalendarRestApi implements ResourceContainer {
    * POST: http://localhost:8080/portal/rest/v1/calendar/calendars/myCalId/events
    * @response HTTP status code: 
    * * 201 if created successfully, and http header *location* href point to the newly created event.
+   * * 400 if provided attributes are not valid (not following the rule of evObject)
    * * 404 if no calendar found with provided id.
    * * 401 if user don't have create permission, 503 if there is any error during the save process.
    * @return http status code
@@ -1370,10 +1428,18 @@ public class CalendarRestApi implements ResourceContainer {
   public Response createEventForCalendar(@PathParam("id") String id, EventResource evObject, @Context UriInfo uriInfo) {
     try {
       Calendar cal = calendarServiceInstance().getCalendarById(id);
-      if (cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
-      
+      if (cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();      
       CalendarEvent evt = new CalendarEvent();
-      buildEvent(evt, evObject);
+      if (evObject.getSubject() == null) {
+        evObject.setSubject(DEFAULT_EVENT_NAME);        
+      }
+      if (evObject.getCategoryId() == null) {
+        evObject.setCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+      }
+      Response error = buildEvent(evt, evObject);
+      if (error != null) {
+        return error;
+      }
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
         int calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), id);      
         switch (calType) {
@@ -1774,12 +1840,18 @@ public class CalendarRestApi implements ResourceContainer {
    *  
    * @param id             identity of the task to update
    * 
-   * @param evObject  json object contains attributes of task object to update, all the attributes are optional 
+   * @param evObject  json object contains attributes of task object to update, all the attributes are optional.
+   * If provided explitly (not null), attributes are checked with some rules:
+   * 1. name must not be empty
+   * 2. "from" date must be before "to" date
+   * 3. priority must be one of "none", "high", "normal", "low"
+   * 4. status must be one of "needs-action", "completed", "in-progress", "canceled" 
    * 
    * @request 
    * PUT: http://localhost:8080/portal/rest/v1/calendar/tasks/Task123
    * @response 
    * HTTP status code: 200 if updated successfully, 404 if task with provided id doesnt exists,
+   * 400 if provided attributes are not valid, 
    * 401 if user don't have create permission, 503 if there is any error during the save process
    * @return status code
    * @authentication 
@@ -1802,7 +1874,7 @@ public class CalendarRestApi implements ResourceContainer {
         }catch (NumberFormatException e) {
           calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), old.getCalendarId());
         } 
-        buildEventFormTask(old, evObject);     
+        buildEventFromTask(old, evObject);
         switch (calType) {
         case Calendar.TYPE_PRIVATE:
           calendarServiceInstance().saveUserEvent(currentUserId(), old.getCalendarId(), old, false);
@@ -2656,12 +2728,13 @@ public class CalendarRestApi implements ResourceContainer {
    *  
    * @param id             identity of the invitation to update
    * 
-   * @param status      new status to update ('', 'maybe', 'yes', 'no'). Default value is : empty string
+   * @param status      new status to update ('', 'maybe', 'yes', 'no')
    * 
    * @request 
    * PUT: http://localhost:8080/portal/rest/v1/calendar/invitations/evt123:root
    * @response 
    * HTTP status code: 200 if updated successfully, 404 if invitation with provided id doesnt exists,
+   * 400 if status is not valid,
    * 401 if user don't have create permission, 503 if there is any error during the save process
    * @return status code
    * @authentication 
@@ -2671,7 +2744,9 @@ public class CalendarRestApi implements ResourceContainer {
   @RolesAllowed("users")
   @Path("/invitations/{id}")
   public Response updateInvitationById(@PathParam("id") String id, @QueryParam("status") String status) {
-    status = status == null ? "" : status;
+    if (Arrays.binarySearch(INVITATION_STATUS, status) == -1) {
+      return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+    }
     CalendarService service = calendarServiceInstance();
     EventDAO evtDAO = service.getEventDAO();
     String username = currentUserId();
@@ -2854,13 +2929,13 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param participant        name of participant (userId). If not provided or empty, return 400 status code
    * 
-   * @param status               status of invitation ('', 'maybe', 'yes', 'no'). If not provided or empty, return 400 status code
+   * @param status               status of invitation ('', 'maybe', 'yes', 'no')
    * 
    * @request 
    * POST: http://localhost:8080/portal/rest/v1/calendar/events/evt123/invitations
    * @response HTTP status code: 
    * * 201 if created successfully, and http header *location* href point to the newly created event.
-   * * 400 if participant or status is not provided.
+   * * 400 if participant or status is not valid.
    * * 404 if event not found with provided id.
    * * 401 if user don't have create permission, 503 if there is any error during the save process.
    * @return http status code
@@ -2872,7 +2947,7 @@ public class CalendarRestApi implements ResourceContainer {
   @Path("/events/{id}/invitations/")
   public Response createInvitationForEvent(@PathParam("id") String id, @QueryParam("participant") String participant, 
                                            @QueryParam("status") String status, @Context UriInfo uriInfo) throws Exception {
-    if (participant == null || participant.trim().isEmpty() || status == null) {
+    if (participant == null || participant.trim().isEmpty() || Arrays.binarySearch(INVITATION_STATUS, status) == -1) {
       return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
     }
 
@@ -3145,14 +3220,19 @@ public class CalendarRestApi implements ResourceContainer {
     return ConversationState.getCurrent().getIdentity().getUserId();
   }
   
-  private void buildEvent(CalendarEvent old, EventResource evObject) {
+  private Response buildEvent(CalendarEvent old, EventResource evObject) {
     String catId = evObject.getCategoryId(); 
     setEventCategory(old, catId);
     if (evObject.getDescription() != null) {
       old.setDescription(evObject.getDescription());      
     }
-    if (evObject.getAvailability() != null) {
-      old.setEventState(evObject.getAvailability());      
+    String eventState = evObject.getAvailability();
+    if (eventState != null) {
+      if (Arrays.binarySearch(EVENT_AVAILABILITY, eventState) == -1) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        old.setEventState(eventState);
+      }
     }
     if (evObject.getRepeat() != null) {
       RepeatResource repeat = evObject.getRepeat();
@@ -3160,7 +3240,13 @@ public class CalendarRestApi implements ResourceContainer {
         old.setExceptionIds(Arrays.asList(repeat.getExclude()));        
       }
       if (repeat.getRepeatOn() != null) {
-        old.setRepeatByDay(repeat.getRepeatOn().split(","));        
+        String[] reptOns = repeat.getRepeatOn().split(",");
+        for (String on : reptOns) {
+          if (Arrays.binarySearch(RP_WEEKLY_BYDAY, on) == -1) {
+            return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+          }
+        }
+        old.setRepeatByDay(reptOns);
       }
       if (repeat.getRepeateBy() != null) {
         String[] repeatBy = repeat.getRepeateBy().split(",");
@@ -3168,6 +3254,9 @@ public class CalendarRestApi implements ResourceContainer {
         for (int i = 0; i < repeatBy.length; i++) {
           try {
             by[i] = Integer.parseInt(repeatBy[i]);
+            if (by[i] < 1 || by[i] > 31) {
+              return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+            }
           } catch (Exception e) {
           }
         }
@@ -3184,60 +3273,108 @@ public class CalendarRestApi implements ResourceContainer {
             try {
               old.setRepeatCount(Long.parseLong(end.getValue()));                        
             } catch (Exception ex) {}
-          }          
+          }
         }
-        if (end.getType() != null) {
-          old.setRepeatType(end.getType());          
+        String reptType = end.getType();
+        if (reptType != null) {
+          if (Arrays.binarySearch(REPEATTYPES, reptType) == -1) {
+            return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+          } else {
+            old.setRepeatType(end.getType());            
+          }
         }
       }
 
+      int every = repeat.getEvery();
+      if (every < 1 || every > 30) {
+        every = 1;
+      }
       old.setRepeatInterval(repeat.getEvery());
     }
     
     java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());    
+    if (fromTo[0].after(fromTo[1]) || fromTo[0].equals(fromTo[1])) {
+      return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+    }
     old.setFromDateTime(fromTo[0].getTime());
     if (evObject.getLocation() != null) {
       old.setLocation(evObject.getLocation());      
     }
-    if (evObject.getPriority() != null) {
-      old.setPriority(evObject.getPriority());      
+    String priority = evObject.getPriority();
+    if (priority != null) {
+      if (Arrays.binarySearch(PRIORITY, priority) == -1) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        old.setPriority(evObject.getPriority());        
+      }
     }
     if (evObject.getReminder() != null) {
       old.setReminders(Arrays.asList(evObject.getReminder()));      
     }
-    if (evObject.getPrivacy() != null) {
-      old.setStatus(evObject.getPrivacy());      
+    String privacy = evObject.getPrivacy();
+    if (privacy != null) {
+      if (!CalendarEvent.IS_PRIVATE.equals(privacy) && !CalendarEvent.IS_PUBLIC.equals(privacy)) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        old.setPrivate(CalendarEvent.IS_PRIVATE.equals(privacy));
+      }
     }
-    if (evObject.getSubject() != null) {
-      old.setSummary(evObject.getSubject());      
+    String subject = evObject.getSubject();
+    if (subject != null) {
+      subject = subject.trim();
+      if (subject.isEmpty()) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        old.setSummary(subject);
+      }
     }
     old.setToDateTime(fromTo[1].getTime());
+    return null;
   }
   
-  private void buildEventFormTask(CalendarEvent old, TaskResource evObject) {
+  private Response buildEventFromTask(CalendarEvent old, TaskResource evObject) {
     String catId = evObject.getCategoryId(); 
     setEventCategory(old, catId);
     if (evObject.getNote() != null) {
       old.setDescription(evObject.getNote());        
     }
     java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());    
+    if (fromTo[0].after(fromTo[1]) || fromTo[0].equals(fromTo[1])) {
+      return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+    }
     old.setFromDateTime(fromTo[0].getTime());
-    if (evObject.getPriority() != null) {
-      old.setPriority(evObject.getPriority());      
+    String priority = evObject.getPriority();
+    if (priority != null) {
+      if (Arrays.binarySearch(PRIORITY, priority) == -1) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        old.setPriority(evObject.getPriority());        
+      }
     }
     if (evObject.getReminder() != null) {
       old.setReminders(Arrays.asList(evObject.getReminder()));      
     }
     if (evObject.getStatus() != null) {
-      old.setStatus(evObject.getStatus());      
+      if (Arrays.binarySearch(TASK_STATUS, evObject.getStatus()) == -1) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        old.setStatus(evObject.getStatus());
+      }
     }
-    if (evObject.getName() != null) {
-      old.setSummary(evObject.getName());      
+    String name = evObject.getName();
+    if (name != null) {
+      name = name.trim();
+      if (name.isEmpty()) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        old.setSummary(evObject.getName());
+      }
     }
     old.setToDateTime(fromTo[1].getTime());
     if (evObject.getDelegation() != null) {
       old.setTaskDelegator(StringUtils.join(evObject.getDelegation(), ","));
     }
+    return null;
   }
   
   private void setEventCategory(CalendarEvent old, String catId) {
@@ -3254,12 +3391,12 @@ public class CalendarRestApi implements ResourceContainer {
     }
   }
 
-  private void buildCalendar(Calendar cal, CalendarResource calR) {
+  private Response buildCalendar(Calendar cal, CalendarResource calR) {    
     if (calR.getColor() != null) {
-      cal.setCalendarColor(calR.getColor());      
+      cal.setCalendarColor(calR.getColor());
     }
     if (calR.getOwner() != null) {
-      cal.setCalendarOwner(calR.getOwner());          
+      cal.setCalendarOwner(calR.getOwner());
     }
     if (calR.getDescription() != null) {
       cal.setDescription(calR.getDescription());      
@@ -3270,8 +3407,14 @@ public class CalendarRestApi implements ResourceContainer {
     if (calR.getGroups() != null) {
       cal.setGroups(calR.getGroups());      
     }
-    if (calR.getName() != null) {
-      cal.setName(calR.getName());      
+    String name = calR.getName();
+    if (name != null) {
+      name = name.trim();
+      if (name.isEmpty() || containSpecialChar(name)) {
+        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      } else {
+        cal.setName(calR.getName());
+      }
     }
     if (calR.getPrivateURL() != null) {
       cal.setPrivateUrl(calR.getPrivateURL());      
@@ -3285,8 +3428,20 @@ public class CalendarRestApi implements ResourceContainer {
     if (calR.getViewPermision() != null) {
       cal.setViewPermission(calR.getViewPermision().split(Utils.SEMICOLON));
     }
+    return null;
   }
   
+  private boolean containSpecialChar(String value) {
+    for (int i = 0; i < value.length(); i++) {
+      char c = value.charAt(i);
+      if (Character.isLetter(c) || Character.isDigit(c) || c == '_' || c == '-' || Character.isSpaceChar(c)) {
+        continue;
+      }
+      return true;
+    }
+    return false;
+  }
+
   private ResponseBuilder buildJsonP(Object resource, String jsonp) throws Exception {
     ResponseBuilder response = null;
     if (jsonp != null) {

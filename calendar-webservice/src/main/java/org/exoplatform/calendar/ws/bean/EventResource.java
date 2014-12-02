@@ -134,7 +134,7 @@ public class EventResource extends Resource {
       attachments = atts.toArray(new String[atts.size()]);
     }
     participants = data.getParticipant();
-    privacy = data.getStatus();
+    privacy = data.isPrivate() ? CalendarEvent.IS_PRIVATE : CalendarEvent.IS_PUBLIC;
     availability = data.getEventState();
   }
 
