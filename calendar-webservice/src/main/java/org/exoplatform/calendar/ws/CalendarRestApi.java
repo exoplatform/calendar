@@ -79,6 +79,7 @@ import org.exoplatform.calendar.ws.bean.AttachmentResource;
 import org.exoplatform.calendar.ws.bean.CalendarResource;
 import org.exoplatform.calendar.ws.bean.CategoryResource;
 import org.exoplatform.calendar.ws.bean.CollectionResource;
+import org.exoplatform.calendar.ws.bean.ErrorResource;
 import org.exoplatform.calendar.ws.bean.EventResource;
 import org.exoplatform.calendar.ws.bean.FeedResource;
 import org.exoplatform.calendar.ws.bean.InvitationResource;
@@ -172,6 +173,7 @@ public class CalendarRestApi implements ResourceContainer {
     Arrays.sort(REPEATTYPES);
     Arrays.sort(PRIORITY);
     Arrays.sort(TASK_STATUS);
+    Arrays.sort(INVITATION_STATUS);
   }
 
   private final CacheControl cc = new CacheControl();
@@ -2964,8 +2966,8 @@ public class CalendarRestApi implements ResourceContainer {
   @RolesAllowed("users")
   @Path("/invitations/{id}")
   public Response updateInvitationById(@PathParam("id") String id, @QueryParam("status") String status) {
-    if (Arrays.binarySearch(INVITATION_STATUS, status) == -1) {
-      return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+    if (Arrays.binarySearch(INVITATION_STATUS, status) < 0) {
+      return buildBadResponse(new ErrorResource("status must be one of: " + StringUtils.join(INVITATION_STATUS, ","), "status"));
     }
     CalendarService service = calendarServiceInstance();
     EventDAO evtDAO = service.getEventDAO();
@@ -3167,8 +3169,11 @@ public class CalendarRestApi implements ResourceContainer {
   @Path("/events/{id}/invitations/")
   public Response createInvitationForEvent(@PathParam("id") String id, @QueryParam("participant") String participant, 
                                            @QueryParam("status") String status, @Context UriInfo uriInfo) throws Exception {
-    if (participant == null || participant.trim().isEmpty() || Arrays.binarySearch(INVITATION_STATUS, status) == -1) {
-      return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+    if (participant == null || participant.trim().isEmpty()) {
+      return buildBadResponse(new ErrorResource("participant must not null or empty", "participant"));
+    }
+    if (Arrays.binarySearch(INVITATION_STATUS, status) < 0) {
+      return buildBadResponse(new ErrorResource("status must be one of: " + StringUtils.join(INVITATION_STATUS, ","), "status"));
     }
 
     CalendarService service = calendarServiceInstance();
@@ -3187,11 +3192,16 @@ public class CalendarRestApi implements ResourceContainer {
         String location = new StringBuilder(getBasePath(uriInfo)).append(INVITATION_URI).append(invite.getId()).toString();
         return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, location).cacheControl(nc).build();
       } else {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+        return buildBadResponse(new ErrorResource(participant + " has already been participant, can't create more", "participant"));
       }
     } else {
       return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
     }
+  }
+
+  private Response buildBadResponse(ErrorResource error) {    
+    return Response.status(HTTPStatus.BAD_REQUEST).entity(error).type(MediaType.APPLICATION_JSON)
+        .cacheControl(nc).build();
   }
 
   /**
@@ -3448,8 +3458,8 @@ public class CalendarRestApi implements ResourceContainer {
     }
     String eventState = evObject.getAvailability();
     if (eventState != null) {
-      if (Arrays.binarySearch(EVENT_AVAILABILITY, eventState) == -1) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      if (Arrays.binarySearch(EVENT_AVAILABILITY, eventState) < 0) {
+        return buildBadResponse(new ErrorResource("availability must be one of " + StringUtils.join(EVENT_AVAILABILITY, ","), "availability"));
       } else {
         old.setEventState(eventState);
       }
@@ -3462,8 +3472,8 @@ public class CalendarRestApi implements ResourceContainer {
       if (repeat.getRepeatOn() != null) {
         String[] reptOns = repeat.getRepeatOn().split(",");
         for (String on : reptOns) {
-          if (Arrays.binarySearch(RP_WEEKLY_BYDAY, on) == -1) {
-            return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+          if (Arrays.binarySearch(RP_WEEKLY_BYDAY, on) < 0) {
+            return buildBadResponse(new ErrorResource("repeatOn can only contains " + StringUtils.join(RP_WEEKLY_BYDAY, ","), "repeatOn"));
           }
         }
         old.setRepeatByDay(reptOns);
@@ -3475,7 +3485,7 @@ public class CalendarRestApi implements ResourceContainer {
           try {
             by[i] = Integer.parseInt(repeatBy[i]);
             if (by[i] < 1 || by[i] > 31) {
-              return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+              return buildBadResponse(new ErrorResource("repeatBy must be >= 1 and <= 31", "repeatBy"));
             }
           } catch (Exception e) {
           }
@@ -3497,8 +3507,8 @@ public class CalendarRestApi implements ResourceContainer {
         }
         String reptType = end.getType();
         if (reptType != null) {
-          if (Arrays.binarySearch(REPEATTYPES, reptType) == -1) {
-            return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+          if (Arrays.binarySearch(REPEATTYPES, reptType) < 0) {
+            return buildBadResponse(new ErrorResource("repeat type must be one of " + StringUtils.join(REPEATTYPES, ","), "end.type"));
           } else {
             old.setRepeatType(end.getType());            
           }
@@ -3512,9 +3522,9 @@ public class CalendarRestApi implements ResourceContainer {
       old.setRepeatInterval(repeat.getEvery());
     }
     
-    java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());    
+    java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());
     if (fromTo[0].after(fromTo[1]) || fromTo[0].equals(fromTo[1])) {
-      return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      return buildBadResponse(new ErrorResource("\"from\" date must be before \"to\" date", "from"));
     }
     old.setFromDateTime(fromTo[0].getTime());
     if (evObject.getLocation() != null) {
@@ -3522,8 +3532,8 @@ public class CalendarRestApi implements ResourceContainer {
     }
     String priority = evObject.getPriority();
     if (priority != null) {
-      if (Arrays.binarySearch(PRIORITY, priority) == -1) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      if (Arrays.binarySearch(PRIORITY, priority) < 0) {
+        return buildBadResponse(new ErrorResource("priority must be one of " + StringUtils.join(PRIORITY, ","), "priority"));
       } else {
         old.setPriority(evObject.getPriority());        
       }
@@ -3534,7 +3544,7 @@ public class CalendarRestApi implements ResourceContainer {
     String privacy = evObject.getPrivacy();
     if (privacy != null) {
       if (!CalendarEvent.IS_PRIVATE.equals(privacy) && !CalendarEvent.IS_PUBLIC.equals(privacy)) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+        return buildBadResponse(new ErrorResource("privacy can only be public or private", "privacy"));
       } else {
         old.setPrivate(CalendarEvent.IS_PRIVATE.equals(privacy));
       }
@@ -3543,7 +3553,7 @@ public class CalendarRestApi implements ResourceContainer {
     if (subject != null) {
       subject = subject.trim();
       if (subject.isEmpty()) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+        return buildBadResponse(new ErrorResource("subject must not be empty", "subject"));
       } else {
         old.setSummary(subject);
       }
@@ -3560,13 +3570,13 @@ public class CalendarRestApi implements ResourceContainer {
     }
     java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());    
     if (fromTo[0].after(fromTo[1]) || fromTo[0].equals(fromTo[1])) {
-      return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      return buildBadResponse(new ErrorResource("\"from\" date must be before \"to\" date", "from"));
     }
     old.setFromDateTime(fromTo[0].getTime());
     String priority = evObject.getPriority();
     if (priority != null) {
-      if (Arrays.binarySearch(PRIORITY, priority) == -1) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      if (Arrays.binarySearch(PRIORITY, priority) < 0) {
+        return buildBadResponse(new ErrorResource("priority must be one of " + StringUtils.join(PRIORITY, ","), "priority"));
       } else {
         old.setPriority(evObject.getPriority());        
       }
@@ -3576,8 +3586,8 @@ public class CalendarRestApi implements ResourceContainer {
     }
     String status = evObject.getStatus(); 
     if (status != null && !status.isEmpty()) {
-      if (Arrays.binarySearch(TASK_STATUS, status) == -1) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+      if (Arrays.binarySearch(TASK_STATUS, status) < 0) {
+        return buildBadResponse(new ErrorResource("status must be one of " + StringUtils.join(TASK_STATUS, ","), "status"));
       } else {
         old.setStatus(status);
       }
@@ -3586,7 +3596,7 @@ public class CalendarRestApi implements ResourceContainer {
     if (name != null) {
       name = name.trim();
       if (name.isEmpty()) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+        return buildBadResponse(new ErrorResource("name must not be empty", "name"));
       } else {
         old.setSummary(evObject.getName());
       }
@@ -3632,7 +3642,7 @@ public class CalendarRestApi implements ResourceContainer {
     if (name != null) {
       name = name.trim();
       if (name.isEmpty() || containSpecialChar(name)) {
-        return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
+        return buildBadResponse(new ErrorResource("calendar name is empty or contains special characters", "name"));
       } else {
         cal.setName(calR.getName());
       }
@@ -3644,7 +3654,7 @@ public class CalendarRestApi implements ResourceContainer {
       cal.setPublicUrl(calR.getPublicURL());      
     }
     if (calR.getTimeZone() != null) {
-      cal.setTimeZone(calR.getTimeZone());      
+      cal.setTimeZone(calR.getTimeZone());
     }
     if (calR.getViewPermision() != null) {
       cal.setViewPermission(calR.getViewPermision().split(Utils.SEMICOLON));

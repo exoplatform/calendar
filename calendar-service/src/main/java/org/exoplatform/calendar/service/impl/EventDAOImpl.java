@@ -54,18 +54,10 @@ public class EventDAOImpl implements EventDAO {
   private CalendarService calService;
 
   private JCRDataStorage  storage;
-  
-  private String pubCalendarQuery;
 
   public EventDAOImpl(CalendarService calService, JCRDataStorage storage_) {
     this.calService = calService;
-    this.storage = storage_;
-    
-    //Remove this after we have CalendarDAO that support to find all public calendars
-    StringBuilder stm = new StringBuilder("SELECT ").append(Utils.EXO_ID).append(" FROM ");
-    stm.append(Utils.EXO_CALENDAR).append(" WHERE ").append(Utils.EXO_PUBLIC_URL);
-    stm.append(" IS NOT NULL");
-    pubCalendarQuery = stm.toString();
+    this.storage = storage_;    
   }
 
   @Override

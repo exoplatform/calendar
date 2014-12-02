@@ -232,21 +232,21 @@ public class TestInvitationRestApi extends TestRestApi {
     InvitationResource invite = (InvitationResource)response.getEntity();
     assertEquals("no", invite.getStatus());
 
-    response = service(HTTPMethods.PUT, CAL_BASE_URI + INVITATION_URI + uEvt.getId() + ":john?status=pending", baseURI, headers, null, writer);
+    response = service(HTTPMethods.PUT, CAL_BASE_URI + INVITATION_URI + uEvt.getId() + ":john?status=maybe", baseURI, headers, null, writer);
     //root has edit permission, but he's not the participant
     assertEquals(HTTPStatus.UNAUTHORIZED, response.getStatus());
 
     login("john");
-    response = service(HTTPMethods.PUT, CAL_BASE_URI + INVITATION_URI + uEvt.getId() + ":john?status=pending", baseURI, headers, null, writer);
+    response = service(HTTPMethods.PUT, CAL_BASE_URI + INVITATION_URI + uEvt.getId() + ":john?status=yes", baseURI, headers, null, writer);
     //john doesn't has edit permission, but he's participant
     assertEquals(HTTPStatus.OK, response.getStatus());
     
     response = service(HTTPMethods.GET, CAL_BASE_URI + INVITATION_URI + uEvt.getId() + ":john", baseURI, headers, null, writer);
     invite = (InvitationResource)response.getEntity();
-    assertEquals("pending", invite.getStatus());
+    assertEquals("yes", invite.getStatus());
     
     //try to update non-exists invitation
-    response = service(HTTPMethods.PUT, CAL_BASE_URI + INVITATION_URI + uEvt.getId() + ":root?status=pending", baseURI, headers, null, writer);
+    response = service(HTTPMethods.PUT, CAL_BASE_URI + INVITATION_URI + uEvt.getId() + ":root?status=no", baseURI, headers, null, writer);
     assertEquals(HTTPStatus.NOT_FOUND, response.getStatus());
   }
 
@@ -349,7 +349,7 @@ public class TestInvitationRestApi extends TestRestApi {
 
   public void testCreateInvitationForEvent() throws Exception {
     login("john");
-    String queryParams = "?participant=john&status=pending";
+    String queryParams = "?participant=john&status=maybe";
     
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service(HTTPMethods.POST, CAL_BASE_URI + EVENT_URI + "notExistsEvent" + 
