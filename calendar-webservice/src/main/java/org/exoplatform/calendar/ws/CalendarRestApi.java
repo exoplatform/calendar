@@ -1612,6 +1612,226 @@ public class CalendarRestApi implements ResourceContainer {
     }
     return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
   }
+  
+  /**
+   * Returns a task in the list when:
+   * - the calendar is public
+   * - the authenticated user is the owner of the calendar of the task
+   * - the authenticated user belongs to the group of the calendar of the task
+   * - the authenticated user is delegated by the task
+   * - the calendar of the task has been shared with the authenticated user or with a group of the authenticated user
+   * 
+   * @param id              identity of a calendar to search for tasks
+   * 
+   * @param start         date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
+   * Default: current server time.
+   * 
+   * @param end           date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date
+   * Default: current server time + 1 week.
+   * 
+   * @param category  search for this category only. If not specify, search task of any category
+   *
+   * @param offset       The starting point when paging through a list of entities. Defaults to *0*.
+   * 
+   * @param limit         The maximum number of results when paging through a list of entities, if not specify or exceed
+   * the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
+   * (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   * 
+   * @param resturnSize  tell the service if it must return the total size of the returned collection result, and the *link* http headers. 
+   * It can be true or false, by default, it's *false*
+   * 
+   * @param fields        This is a list of comma separated property's names of response json object,
+   * if not specified, it return the json will all available properties.
+   * 
+   * @param jsonp        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
+   * json object is returned.
+   * 
+   * @param expand     used to ask for a full representation of a subresource, instead of only its link. 
+   * This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
+   * you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=categories(1,5).
+   * Instead of: 
+   * {
+   *    id: '...', 
+   *    calendar: 'http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId'
+   *    ....
+   * }
+   * It returns:
+   * {
+   *    id: '...', 
+   *    calendar: {
+   *      id: '...',
+   *      name:'demo-defaultId',
+   *      ....
+   *    }
+   *    ....
+   * }
+   * 
+   * @request 
+   * GET: http://localhost:8080/portal/rest/v1/calendar/myCalId/tasks?category=meeting&expand=calendar,categories(1,5)
+   * @format JSON
+   * @response 
+   * [
+   *   {
+   *      id: 'Task123',
+   *      href: 'http://localhost:8080/portal/rest/v1/calendar/tasks/Task123',
+   *      name: '..', note: '...',
+   *      from: '...', to: '...',
+   *      calendar: '...', categories: ['...', ''],
+   *      delegation: ['...', ''], priority: '', 
+   *      reminder: [], attachment: [],
+   *      status: ''
+   *   }, 
+   *   {id...}
+   * ]
+   * @return        List of tasks of a specific calendar
+   * @authentication 
+   * @anchor CalendarRestApi.getTasksByCalendar
+   */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @GET
+  @RolesAllowed("users")
+  @Path("/calendars/{id}/tasks")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getTasksByCalendar(@PathParam("id") String id,
+                                                             @QueryParam("startTime") String start,
+                                                             @QueryParam("endTime") String end,
+                                                             @QueryParam("category") String category,
+                                                             @QueryParam("offset") int offset,
+                                                             @QueryParam("limit") int limit,
+                                                             @QueryParam("fields") String fields,
+                                                             @QueryParam("jsonp") String jsonp,
+                                                             @QueryParam("expand") String expand,
+                                                             @QueryParam("returnSize") boolean returnSize,
+                                                             @Context UriInfo uri) throws Exception {
+    limit = parseLimit(limit);
+    String username = currentUserId();
+
+    CalendarService service = calendarServiceInstance();
+    EventDAO evtDAO = service.getEventDAO();
+
+    long fullSize = returnSize ? 0 : -1;
+    List data = new LinkedList();
+    Calendar calendar = service.getCalendarById(id);
+
+    if (calendar != null) {
+      String participant = null;
+      if (calendar.getPublicUrl() == null && !hasViewCalendarPermission(calendar, username)) {
+        participant = username;
+      }
+
+      EventQuery eventQuery = buildEventQuery(start, end, category, new String[] {id}, 
+                                              id, participant, CalendarEvent.TYPE_TASK, returnSize);
+      ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
+
+      //
+      for (CalendarEvent event : events.load(offset, limit)) {
+        data.add(buildTaskResource(event, uri, expand, fields));
+      }
+      if (returnSize) {
+        fullSize = events.getSize();
+      }
+    } else {
+      return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+    }
+    //
+    CollectionResource evData = new CollectionResource(data, fullSize);
+    evData.setOffset(offset);
+    evData.setLimit(limit);
+    
+    ResponseBuilder response = buildJsonP(evData, jsonp);
+    
+    if (returnSize) {
+      response.header(HEADER_LINK, buildFullUrl(uri, offset, limit, fullSize));
+    }
+    
+    //
+    return response.build();
+  }
+  
+  /**
+   * Creates a task for a specified calendar only if:
+   * - the authenticated user is the owner of the calendar
+   * - for group calendars, the authenticated user has edit rights on the calendar
+   * - the calendar has been shared with the authenticated user, with modification rights
+   * - the calendar has been shared with a group of the authenticated user, with modification rights
+   * 
+   * This entry point only allow http POST request, with json object (evObject) in the request body. Example:
+   *    {
+   *      name: '..', note: '...',
+   *      categoryId: "",
+   *      from: '...', to: '...',
+   *      delegation: ['...', ''], priority: '', 
+   *      reminder: [],
+   *      status: ''
+   *   }
+   * 
+   * @param evObject    json object contains attributes of task object to create.
+   * All attribute are optional. If provided explitly (not null), attributes are checked with some rules:
+   * 1. name must not be empty, default value is: "default".
+   * 2. "from" date must be before "to" date
+   * 3. priority must be one of "none", "high", "normal", "low"
+   * 4. status must be one of "needs-action", "completed", "in-progress", "canceled"
+   * 
+   * @param id                identity of the *calendar* to create task
+   * 
+   * @request 
+   * POST: http://localhost:8080/portal/rest/v1/calendar/calendars/myCalId/tasks
+   * @response HTTP status code: 
+   * * 201 if created successfully, and http header *location* href point to the newly created task.
+   * * 400 if provided attributes are not valid (not following the rule of evObject)
+   * * 404 if no calendar found with provided id.
+   * * 401 if user don't have create permission, 503 if there is any error during the save process.
+   * @return http status code
+   * @authentication
+   * @anchor CalendarRestApi.createTaskForCalendar
+   */
+  @POST
+  @RolesAllowed("users")
+  @Path("/calendars/{id}/tasks")
+  public Response createTaskForCalendar(@PathParam("id") String id, TaskResource evObject, @Context UriInfo uriInfo) {
+    try {
+      Calendar cal = calendarServiceInstance().getCalendarById(id);
+      if (cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();      
+      
+      CalendarEvent evt = new CalendarEvent();
+      evt.setEventType(CalendarEvent.TYPE_TASK);
+      if (evObject.getName() == null) {
+        evObject.setName(DEFAULT_EVENT_NAME);        
+      }
+      if (evObject.getCategoryId() == null) {
+        evObject.setCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+      }
+      Response error = buildEventFromTask(evt, evObject);
+      if (error != null) {
+        return error;
+      }
+      if (Utils.isCalendarEditable(currentUserId(), cal)) {
+        int calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), id);      
+        switch (calType) {
+        case Calendar.TYPE_PRIVATE:
+          calendarServiceInstance().saveUserEvent(currentUserId(), id, evt, true);
+          break;
+        case Calendar.TYPE_PUBLIC:
+          calendarServiceInstance().savePublicEvent(id, evt, true);
+          break;
+        case Calendar.TYPE_SHARED:
+          calendarServiceInstance().saveEventToSharedCalendar(currentUserId(), id, evt, true);
+          break;
+        default:
+          break;
+        }
+        
+        String location = new StringBuilder(getBasePath(uriInfo)).append(TASK_URI).append(evt.getId()).toString();
+        return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, location).cacheControl(nc).build();
+      } else {
+        return Response.status(HTTPStatus.UNAUTHORIZED).cacheControl(nc).build();
+      }
+    } catch (Exception e) {
+      if(log.isDebugEnabled()) log.debug(e.getMessage());
+    }
+    return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
+
+  }
 
   /**
    * Returns an task in the list when :
@@ -3173,7 +3393,7 @@ public class CalendarRestApi implements ResourceContainer {
     if (participant != null) {
       uQuery.setParticipants(new String[] {participant});      
     }
-    uQuery.setEventType(eventType);
+    uQuery.setEventType(eventType);    
     uQuery.setFromDate(dates[0]);
     uQuery.setToDate(dates[1]);
     uQuery.setOrderType(Utils.ORDER_TYPE_ASCENDING);
@@ -3354,11 +3574,12 @@ public class CalendarRestApi implements ResourceContainer {
     if (evObject.getReminder() != null) {
       old.setReminders(Arrays.asList(evObject.getReminder()));      
     }
-    if (evObject.getStatus() != null) {
-      if (Arrays.binarySearch(TASK_STATUS, evObject.getStatus()) == -1) {
+    String status = evObject.getStatus(); 
+    if (status != null && !status.isEmpty()) {
+      if (Arrays.binarySearch(TASK_STATUS, status) == -1) {
         return Response.status(HTTPStatus.BAD_REQUEST).cacheControl(nc).build();
       } else {
-        old.setStatus(evObject.getStatus());
+        old.setStatus(status);
       }
     }
     String name = evObject.getName();

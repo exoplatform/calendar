@@ -18,6 +18,7 @@
 package org.exoplatform.calendar.ws;
 
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ISO8601;
@@ -49,10 +50,16 @@ public class RestEventQuery extends EventQuery {
           } else {
             sql.append(" OR ");
           }
-          sql.append(Utils.EXO_PARTICIPANT)
-             .append(" = '")
-             .append(participant)
-             .append("'");
+          
+          if (CalendarEvent.TYPE_TASK.equals(getEventType())) {
+            sql.append("CONTAINS(").append(Utils.EXO_TASK_DELEGATOR);
+            sql.append(",'").append(participant).append("')");
+          } else {
+            sql.append(Utils.EXO_PARTICIPANT)
+            .append(" = '")
+            .append(participant)
+            .append("'");            
+          }
         }
       }
       sql.append(")");

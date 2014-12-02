@@ -18,9 +18,14 @@
  */
 package org.exoplatform.calendar.ws;
 
+import static org.exoplatform.calendar.ws.CalendarRestApi.CALENDAR_URI;
+import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
+import static org.exoplatform.calendar.ws.CalendarRestApi.EVENT_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
+import static org.exoplatform.calendar.ws.CalendarRestApi.TASK_URI;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -84,7 +89,11 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     //john is participant now
     CalendarEvent uEvt = createEvent(userCalendar);
     uEvt.setEventType(eventType);
-    uEvt.addParticipant("john", "");
+    if (CalendarEvent.TYPE_EVENT.equals(eventType)) {
+      uEvt.addParticipant("john", "");      
+    } else {
+      uEvt.setTaskDelegator("john");
+    }
     calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
     //john can read event that he is participant
     response = service(HTTPMethods.GET, uri, baseURI, headers, null, writer);
@@ -322,4 +331,96 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());
     assertNull(calendarService.getEventById(uEvt.getId()));
   }  
+
+  public void runTestCreateEventForCalendar(String uri, String eventType) throws Exception {
+    EventCategory cat = createEventCategory("root", "testCat");
+    CalendarEvent uEvt = createEvent(userCalendar);
+    uEvt.setEventType(eventType);
+    uEvt.setSummary("test");
+    uEvt.setEventCategoryId(cat.getId());
+        
+    Resource resource = null;
+    if (CalendarEvent.TYPE_TASK.equals(eventType)) {
+      resource = new TaskResource(uEvt, "");
+    } else {
+      resource = new EventResource(uEvt, "");
+    }
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+    JsonValue json = generatorImpl.createJsonObject(resource);
+    
+    byte[] data = json.toString().getBytes("UTF-8");
+
+    headers.putSingle("content-type", "application/json");
+    headers.putSingle("content-length", "" + data.length);
+    
+    login("john");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI + "nonExists"
+                                         + uri, baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.NOT_FOUND, response.getStatus());
+
+    //john doens't has edit permission on root calendar
+    response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId() + 
+                       uri, baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.UNAUTHORIZED, response.getStatus());
+
+    login("root");    
+    response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId() + 
+                       uri, baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.CREATED, response.getStatus());
+    List<Object> location = response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION);
+    assertNotNull(location);
+    
+    String evtHref = location.get(0).toString();
+    CalendarEvent evt  = calendarService.getEventById(evtHref.substring(evtHref.lastIndexOf("/") + 1));
+    assertEquals("testCat", evt.getEventCategoryName());
+  }
+  
+  public void runTestGetEventsByCalendar(String uri, String eventType) throws Exception {
+    login("john");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + 
+                                         "notExists" + uri , baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.NOT_FOUND, response.getStatus());
+
+    CalendarEvent uEvt = createEvent(userCalendar);
+    uEvt.setEventType(eventType);
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
+
+    login("john");
+    //john can't read private calendar
+    response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId() + 
+                       uri , baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    CollectionResource calR = (CollectionResource)response.getEntity();  
+    assertEquals(0, calR.getData().size());
+    assertEquals(-1, calR.getSize());
+    assertNull(response.getHttpHeaders().get(HEADER_LINK));
+
+    login("root");
+    String queryParams = "?returnSize=true";
+    response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId() + 
+                       uri + queryParams , baseURI, headers, null, writer);
+    calR = (CollectionResource)response.getEntity();
+    assertEquals(1, calR.getData().size());
+    assertEquals(1, calR.getSize());
+    assertNotNull(response.getHttpHeaders().get(HEADER_LINK));
+    
+    if (CalendarEvent.TYPE_EVENT.equals(eventType)) {
+      uEvt.addParticipant("john", "");
+    } else {
+      uEvt.setTaskDelegator("john");
+    }
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, false);
+    
+    login("john");
+    //john can read private event because he's event participant or task delegator
+    response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId() +
+                       uri , baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    calR = (CollectionResource)response.getEntity();
+    assertEquals(1, calR.getData().size());
+  }
 }

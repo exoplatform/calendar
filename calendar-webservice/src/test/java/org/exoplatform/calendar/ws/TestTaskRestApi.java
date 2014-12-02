@@ -18,9 +18,12 @@
  */
 package org.exoplatform.calendar.ws;
 
+import static org.exoplatform.calendar.ws.CalendarRestApi.CALENDAR_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.EVENT_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.TASK_URI;
+
+import java.util.List;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventCategory;
@@ -33,6 +36,8 @@ import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
+import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
+import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
@@ -114,5 +119,13 @@ public class TestTaskRestApi extends AbstractTestEventRestApi {
 
   public void testDeleteTaskById() throws Exception {
     runTestDeleteEventById(CAL_BASE_URI + TASK_URI, CalendarEvent.TYPE_TASK);
+  }
+  
+  public void testCreateTaskForCalendar() throws Exception {
+    runTestCreateEventForCalendar(TASK_URI, CalendarEvent.TYPE_TASK);
+  }
+  
+  public void testGetTasksByCalendar() throws Exception {
+    runTestGetEventsByCalendar(TASK_URI, CalendarEvent.TYPE_TASK);
   }
 }
