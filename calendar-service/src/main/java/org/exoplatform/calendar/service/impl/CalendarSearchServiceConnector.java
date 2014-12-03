@@ -20,31 +20,32 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.Row;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.TimeZone;
+
 import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -88,7 +89,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     jcrDataStorage = ((CalendarServiceImpl)calendarService_).getDataStorage();
   }
 
-
   @Override
   public Collection<SearchResult> search(SearchContext context,
                                          String query,
@@ -114,18 +114,15 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     }
 
     SessionProvider provider = SessionProvider.createSystemProvider();
-
     OrganizationService orgService = (OrganizationService)ExoContainerContext.getCurrentContainer()
-              .getComponentInstanceOfType(OrganizationService.class);
-
-    List<String> gCals = new LinkedList<String>();
-    Map<String, List<Calendar>> sCals = new HashMap<String, List<Calendar>>();
+              .getComponentInstanceOfType(OrganizationService.class);    
     Set<String> readOnlyCalendars = new HashSet<String>();
     
     try {
       getCalendarMap().clear();
       Identity currentUser = ConversationState.getCurrent().getIdentity(); 
       final String userId = currentUser.getUserId();
+      
       List<String> uCals = new LinkedList<String>();
       List<Calendar> privateCalendars = calendarService_.getUserCalendars(userId, true);
       for(Calendar cal : privateCalendars) {
@@ -133,25 +130,22 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         uCals.add(cal.getId());
       }
 
+      List<String> sCals = new LinkedList<String>();
       GroupCalendarData sharedCalendar = calendarService_.getSharedCalendars(userId, true) ;
       if(sharedCalendar != null) {
         List<Calendar> shareCalendars = sharedCalendar.getCalendars();
         for(Calendar cal : shareCalendars){
-          getCalendarMap().put(cal.getId(), cal);
+          getCalendarMap().put(cal.getId(), cal);          
+          sCals.add(cal.getId());
           
-          List<Calendar> ls = sCals.get(cal.getCalendarOwner());
-          if (ls == null) {
-            ls = new LinkedList<Calendar>();
-            sCals.put(cal.getCalendarOwner(), ls);
-          }
-          ls.add(cal);
           if(!Utils.canEdit(orgService, cal.getEditPermission(), userId)) {
             readOnlyCalendars.add(cal.getId());
           }
         }
       }
 
-      Set<String> groupIds = currentUser.getGroups(); 
+      List<String> gCals = new LinkedList<String>();
+      Set<String> groupIds = currentUser.getGroups();
       if(!groupIds.isEmpty()) {
         List<GroupCalendarData> groupCalendar = calendarService_.getGroupCalendars(groupIds.toArray(new String[groupIds.size()]), true, userId) ;
         if(groupCalendar != null) {
@@ -162,36 +156,21 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           for(Calendar cal : spaceCalendars) {
             getCalendarMap().put(cal.getId(), cal);
             gCals.add(cal.getId());
+            
             if(!Utils.canEdit(orgService, cal.getEditPermission(), userId)) {
               readOnlyCalendars.add(cal.getId());
             }
           }
         }
       }
-
-      MultiListAccess listAccess = new MultiListAccess();
       
-      Node uHome = jcrDataStorage.getUserCalendarHome(userId);
-      EventQuery uEventQuery = createQuery(dataType, query, sort, order, uHome.getPath(), uCals.toArray(new String[uCals.size()]), null);
-      listAccess.add(new EventListAccess(jcrDataStorage, uEventQuery));
+      List<String> calIds = new LinkedList<String>();
+      calIds.addAll(uCals);
+      calIds.addAll(gCals);
+      calIds.addAll(sCals);
       
-      if (gCals.size() > 0) {
-        Node gHome = jcrDataStorage.getPublicCalendarHome();
-        EventQuery gEventQuery = createQuery(dataType, query, sort, order, gHome.getPath(), gCals.toArray(new String[gCals.size()]), readOnlyCalendars);
-        listAccess.add(new EventListAccess(jcrDataStorage, gEventQuery));        
-      }
-      
-      for (String u : sCals.keySet()) {
-        List<Calendar> ls = sCals.get(u);
-        String[] ids = new String[ls.size()];
-        for (int i = 0; i < ls.size(); i++) {
-          ids[i] = ls.get(i).getId();
-        }
-        
-        Node sHome = jcrDataStorage.getUserCalendarHome(u);
-        EventQuery sEventQuery = createQuery(dataType, query, sort, order, sHome.getPath(), ids, readOnlyCalendars);
-        listAccess.add(new EventListAccess(jcrDataStorage, sEventQuery));
-      }
+      EventQuery uEventQuery = createQuery(dataType, query, sort, order, calIds.toArray(new String[calIds.size()]), readOnlyCalendars);
+      ListAccess<?> listAccess = new EventListAccess(jcrDataStorage, uEventQuery);      
 
       Object[] rows = listAccess.load(offset, limit);
       for (Object row : rows) {
@@ -207,7 +186,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     return events;
   }
 
-  private EventQuery createQuery(String dataType, String queryText, String sort, String order, String calendarPath, String[] calendarIds, Set<String> excludePrivateEventInCalendars) throws Exception {
+  private EventQuery createQuery(String dataType, String queryText, String sort, String order, String[] calendarIds, Set<String> excludePrivateEventInCalendars) throws Exception {
     UnifiedQuery eventQuery = new UnifiedQuery();
     eventQuery.setExcludePrivateEventInCalendars(excludePrivateEventInCalendars);
     java.util.Calendar today = java.util.Calendar.getInstance();
@@ -225,7 +204,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     eventQuery.setOrderType(order);
     if(CalendarEvent.TYPE_TASK.equals(dataType))
       eventQuery.setState(CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED);
-    eventQuery.setCalendarPath(calendarPath);
     eventQuery.setCalendarId(calendarIds);
     
     return eventQuery;

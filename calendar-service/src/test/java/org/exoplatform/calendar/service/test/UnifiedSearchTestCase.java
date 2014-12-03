@@ -502,7 +502,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     CalendarSearchResult calSerResult2 = (CalendarSearchResult) result.toArray()[1];
     checkFields(calSerResult2);
     checkFieldsValueWithType(cal.getName(), calEvent2, calSerResult2);
-    assertEquals(false, item.getDate() < item2.getDate());
+    assertEquals(true, item.getDate() < item2.getDate());
   }
 
   public void testUnifiedSeachEx() throws Exception {
