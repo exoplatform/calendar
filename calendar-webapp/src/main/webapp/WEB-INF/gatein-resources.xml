@@ -298,7 +298,7 @@
     <supported-locale>pl</supported-locale>
     <supported-locale>ca</supported-locale>        
     <script>
-        <path>/javascript/eXo/cs/UIDateTimePicker.js</path>
+        <path>/javascript/eXo/calendar/cs/UIDateTimePicker.js</path>
         <resource-bundle>eXo.calendar.DateTimePicker</resource-bundle>
     </script>
     <depends>

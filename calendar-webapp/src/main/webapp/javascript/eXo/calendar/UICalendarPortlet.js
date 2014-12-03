@@ -74,7 +74,7 @@
             //Correct startTime with user's timezone
             var d = new Date();
             startTime = startTime + d.getTimezoneOffset() * 60 * 1000  + _module.UICalendarPortlet.settingTimezone * 60 * 1000;
-            startTime = _module.UICalendarPortlet.ceil(startTime, 30 * 60 * 1000);
+            startTime = CSUtils.ceil(startTime, 30 * 60 * 1000);
         }
         if(parseInt(type) ==1) {
             this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeshift"));

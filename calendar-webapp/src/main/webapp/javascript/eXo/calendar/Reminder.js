@@ -1,6 +1,8 @@
 (function(gj, cometd) {
   var Reminder = {
 	  init : function(eXoUser, eXoToken, cometdContextName) {
+		eXo = eXo || {};
+		eXo.cs = eXo.cs || {};
 	    if(!eXo.cs.CSCometd) eXo.cs.CSCometd = cometd;
 	    eXo.cs.CSCometd.exoId = eXoUser;
 	    eXo.cs.CSCometd.exoToken = eXoToken;
