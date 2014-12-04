@@ -37,15 +37,15 @@
             isOccur + '&recurId=' + recurId);
       },
       show: function(evt) {
-        var _module = window.require("PORTLET/calendar/CalendarPortlet");
-        var UICalendarPortlet = _module.UICalendarPortlet;
+        var portletModule = window.require("PORTLET/calendar/CalendarPortlet");
+        var UICalendarPortlet = portletModule.UICalendarPortlet;
         var self = eXo.calendar.EventTooltip;
         self.currentEvent = this;
         self.cleanupTimer(evt);
         if(eXo.calendar.EventTooltip.isDnD == true) return;
         self.getContainer(evt);
         self.overTimer = setTimeout(function() {
-          var url = eXo.env.portal.context + "/" + _module.restContext;
+          var url = eXo.env.portal.context + "/" + portletModule.restContext;
           var eventId = self.currentEvent.getAttribute("eventid");
           var recurId = self.currentEvent.getAttribute("recurid");
           var isOccur = self.currentEvent.getAttribute("isoccur");

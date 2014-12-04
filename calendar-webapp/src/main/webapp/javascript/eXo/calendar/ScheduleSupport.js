@@ -60,8 +60,8 @@ var ScheduleSupport = {
 
 		    var startIndex, endIndex;
 		    try {
-		    	startIndex = _module.ScheduleSupport.indexFromTime(start);
-		    	endIndex = _module.ScheduleSupport.indexFromTime(end);		    	
+		    	startIndex = ScheduleSupport.indexFromTime(start);
+		    	endIndex = ScheduleSupport.indexFromTime(end);		    	
 		    } catch (e) {
 		    	return;
 		    }

@@ -1,5 +1,4 @@
 (function(base, gj, common, CSUtils) {
-var _module = {};
 eXo.calendar = eXo.calendar || {};
 var DragDrop = common.DragDrop;
 

@@ -13,7 +13,7 @@
 	color = uicomponent.getColors().get(task.getCalType() + CalendarUtils.COLON + task.getCalendarId()) ;
 	def rcontext = _ctx.getRequestContext();
 	def requireJS = rcontext.getJavascriptManager().getRequireJS();
-	requireJS.require("SHARED/jquery","gj").require("SHARED/csResource","cs");
+	requireJS.require("SHARED/jquery","gj");
 	requireJS.require("PORTLET/CalendarPortlet","cal");
 	requireJS.require("SHARED/UIEventPreview","UIEventPreview");
 	requireJS.addScripts("gj('#maximizeDetails').click(function() { cal.UICalendarPortlet.toggleEventPreview(this); });");

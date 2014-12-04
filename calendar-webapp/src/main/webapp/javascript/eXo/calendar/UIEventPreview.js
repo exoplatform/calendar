@@ -1,6 +1,6 @@
 (function(gj) {
 	
-function UIEventPreview() {
+var UIEventPreview = {
   hiddenThumbnail : null,
   
   /**
@@ -11,10 +11,10 @@ function UIEventPreview() {
    **/
   showImagePreview : function(thumbnail) { 
     // show the hidden thumbnail 
-    if (this.hiddenThumbnail !== null) {  gj(this.hiddenThumbnail).parent('.thumbnailContainer').show(); }
+    if (UIEventPreview.hiddenThumbnail !== null) {  gj(UIEventPreview.hiddenThumbnail).parent('.thumbnailContainer').show(); }
     // hide the clicked thumbnail
     gj(thumbnail).parent('.thumbnailContainer').hide();
-    this.hiddenThumbnail = thumbnail;
+    UIEventPreview.hiddenThumbnail = thumbnail;
     gj('#imagePreview').attr('src', gj(thumbnail).attr('originalsrc'));
     // center the image 
     var marginLeft = Math.round( (gj('#downloadImage').parent('#imagePreviewContainer').parent('td').attr('width') - gj(thumbnail).attr('previewWidth')) / 2);
@@ -34,7 +34,7 @@ function UIEventPreview() {
     gj('#imagePreviewContainer').hide();
     gj('#imagePreview').hide();
     gj(closeButton).hide();
-    gj(this.hiddenThumbnail).parent('.thumbnailContainer').show();  
+    gj(UIEventPreview.hiddenThumbnail).parent('.thumbnailContainer').show();  
   },
 
   /**
@@ -42,7 +42,7 @@ function UIEventPreview() {
    **/
   clickOnViewIconContainer : function(viewIconContainer) {
     var thumbnail = gj(viewIconContainer).parent('.thumbnailContainer').children('.thumbnail');
-    this.showImagePreview(thumbnail);
+    UIEventPreview.showImagePreview(thumbnail);
   }
 };
 
