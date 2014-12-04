@@ -187,7 +187,7 @@
   
   <module>
     <name>DOMUtil</name>
-    <load-group>CalendarUtil</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/core/DOMUtil.js</path>
     </script>
@@ -198,7 +198,7 @@
   </module>    
   <module>
     <name>CSUtils</name>
-    <load-group>CalendarUtil</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/cs/CSUtils.js</path>
     </script>
@@ -209,7 +209,7 @@
   </module>
   <module>
     <name>CheckBox</name>
-    <load-group>CalendarUtil</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/cs/CheckBox.js</path>
     </script>
@@ -220,7 +220,7 @@
   </module>
   <module>
     <name>Spliter</name>
-    <load-group>CalendarUtil</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/cs/Spliter.js</path>
     </script>
@@ -231,7 +231,7 @@
   </module>
   <module>
     <name>LayoutManager</name>
-    <load-group>CalendarUI</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/cs/LayoutManager.js</path>
     </script>
@@ -245,14 +245,14 @@
   </module>
   <module>
     <name>DateTimeFormatter</name>
-    <load-group>CalendarUI</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/cs/DateTimeFormatter.js</path>
     </script>
   </module>
   <module>
     <name>CalContextMenu</name>
-    <load-group>CalendarUI</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/cs/UIContextMenu.js</path>
     </script>
@@ -272,7 +272,7 @@
   </module>    
   <module>
     <name>CalDateTimePicker</name>
-    <load-group>CalendarUI</load-group>
+    <load-group>calendar</load-group>
     <supported-locale>de</supported-locale>
     <supported-locale>en</supported-locale>
     <supported-locale>fr</supported-locale>
@@ -311,7 +311,7 @@
   </module>
   <module>
     <name>TimePicker</name>
-    <load-group>CalendarUI</load-group>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/cs/TimePicker.js</path>
     </script>
@@ -665,6 +665,7 @@
   <!-- Jquery placeholder plugin -->
   <module>
     <name>placeholder</name>
+    <load-group>calendar</load-group>
     <script>
       <adapter>
         (function($) {

@@ -1331,6 +1331,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           uiPreview.refresh();
       } else
         uiCalendarView.refresh();
+      
       String username = CalendarUtils.getCurrentUser();
       String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
       String calType = event.getRequestContext().getRequestParameter(CALTYPE);
