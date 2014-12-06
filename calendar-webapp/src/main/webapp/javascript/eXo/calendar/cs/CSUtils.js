@@ -523,15 +523,18 @@ var Utils = {
       try {
         var maxZIndex = parseInt(obj.style.zIndex);
         var items = gj(obj.parentNode).children("div");
-        var len = items.length;
+        var len = items.length, maxObj = obj;
         for (var i = 0; i < len; i++) {
           if (!items[i].style.zIndex)
             items[i].style.zIndex = 1;
           if (parseInt(items[i].style.zIndex) > maxZIndex) {
             maxZIndex = parseInt(items[i].style.zIndex);
+            maxObj = items[i];
           }
         }
-        obj.style.zIndex = maxZIndex + 1;
+        if (obj != maxObj)  {
+        	obj.style.zIndex = maxZIndex + 1;        	
+        }
       }
       catch (e) {
       }
