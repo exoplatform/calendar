@@ -129,7 +129,7 @@ public class UnifiedQuery extends EventQuery {
    */
   private String queryStringForFromTime(java.util.Calendar cal) {
     StringBuilder sb = new StringBuilder("(");
-    sb.append(Utils.EXO_FROM_DATE_TIME).append(" >= TIMESTAMP '").append(ISO8601.format(cal)).append("'"); // from date is after cal
+    sb.append(Utils.EXO_TO_DATE_TIME).append(" >= TIMESTAMP '").append(ISO8601.format(cal)).append("'"); // to date is after cal
     sb.append(" OR ").append("(");
     sb.append(Utils.EXO_REPEAT).append(" <> '").append(CalendarEvent.RP_NOREPEAT).append("'"); // if event is repeated
     sb.append(" AND ").append("(");

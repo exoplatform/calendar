@@ -23,17 +23,12 @@ import javax.jcr.query.Query;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.impl.CalendarSearchResult;
 import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
 import org.exoplatform.calendar.service.impl.EventSearchConnector;
@@ -345,8 +340,10 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     Calendar cal = createPrivateCalendar(username, "root calendar", "");
     CalendarEvent inPassEvent = createUserEvent(username, cal.getId(), "Summary CEO", "Hanoi", true);
     java.util.Calendar current = java.util.Calendar.getInstance();
-    current.add(java.util.Calendar.MINUTE, -1);
+    current.add(java.util.Calendar.HOUR_OF_DAY, -1);
     inPassEvent.setFromDateTime(current.getTime());
+    current.add(java.util.Calendar.MINUTE, 30);
+    inPassEvent.setToDateTime(current.getTime());
     calendarService_.saveUserEvent(username, cal.getId(), inPassEvent, false);
 
     List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username,
@@ -372,6 +369,8 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     current = java.util.Calendar.getInstance();
     current.add(java.util.Calendar.MINUTE, 1);
     inPassEvent.setFromDateTime(current.getTime());
+    current.add(java.util.Calendar.MINUTE, 30);
+    inPassEvent.setToDateTime(current.getTime());
     calendarService_.saveUserEvent(username, cal.getId(), inPassEvent, false);
     result = eventSearchConnector_.search(null,
                                           query.getText(),
@@ -992,6 +991,26 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     query.setText(keyword);
     results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
     assertEquals(0, results.size());
+  }
+
+  public void testSearchEventEndInFuture() throws Exception {
+    Calendar calendar = createPrivateCalendar(username, "testSearchEventEndInFuture", "");
+    //. Create event start from past and end in future
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    fromCal.add(java.util.Calendar.HOUR_OF_DAY, -1);
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.HOUR_OF_DAY, 2);
+
+    CalendarEvent event = createUserEvent(calendar.getId(), null, "testSearchEventEndInFuture", true, fromCal, toCal);
+
+    EventQuery query = new UnifiedQuery();
+    query.setText("testSearchEventEndInFuture~0.5");
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+
+    Collection<SearchResult> results = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertFoundInSearchResults(event.getSummary(), results);
   }
 
   private CalendarEvent createUserEvent(String username, String calId, String summary, String desc, boolean isPrivate) throws Exception {
