@@ -17,9 +17,8 @@
   <UserPref name="setting" default_value="/calendar;/rest/cs/calendar/getissues;10;AM/PM;Default" datatype="hidden" />
   <Content type="html">
     <![CDATA[
-      <link rel="stylesheet" type="text/css" href="/eXoResources/skin/bootstrap/css/bootstrap.css" />    
-      <link rel="stylesheet" type="text/css" href="/eXoResources/skin/css/Core.css" />
-      <link type="text/css" rel="stylesheet" href="/exo-gadget-resources/skin/exo-gadget/gadget-common.css" />
+      <link rel="stylesheet" type="text/css" href="/eXoSkin/skin/css/Core.css" />
+      <link rel="stylesheet" type="text/css" href="/eXoSkin/skin/css/platform/portlets/samples/gadgets-sample/exo-gadget-resources/gadget-common.css" />
       <link rel="stylesheet" href="skin/events.css" type="text/css"/>
       <script type="text/javascript" src="skin/events.js"></script>
       <form id="Setting" onSubmit="return eXoEventGadget.saveSetting();" action="#" style="display:none;">
