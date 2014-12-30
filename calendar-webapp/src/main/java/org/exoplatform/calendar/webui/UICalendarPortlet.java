@@ -46,7 +46,6 @@ import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.mortbay.cometd.AbstractBayeux;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.servlet.http.HttpServletRequest;
@@ -140,7 +139,7 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   protected String getCometdContextName() {
     EXoContinuationBayeux bayeux = (EXoContinuationBayeux) PortalContainer.getInstance()
-        .getComponentInstanceOfType(AbstractBayeux.class);
+        .getComponentInstanceOfType(EXoContinuationBayeux.class);
     return (bayeux == null ? "cometd" : bayeux.getCometdContextName());
   }
 
