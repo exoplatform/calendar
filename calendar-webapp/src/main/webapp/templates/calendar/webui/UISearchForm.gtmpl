@@ -12,7 +12,9 @@ uiform.begin();
   requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
   requirejs.addScripts('CSUtils.captureInput("value");');
 %>
-<div class="uiSearchForm uiSearchInput pull-right"  onclick="$action">
-    <div onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
+<div class="uiSearchForm uiSearchInput pull-right searchWithIcon"  onclick="$action">
+    <div onclick="event.cancelBubble=true;">
+    <a href="javascript:void(0)"  data-placement="bottom" rel="tooltip" class="advancedSearch" data-original-title="<%=searchPlaceHolder%>"><i class="uiIconSearch uiIconLightGray"></i></a>
+    <%uiform.renderChild("value")%></div>
 </div>
 <%uiform.end();%>
