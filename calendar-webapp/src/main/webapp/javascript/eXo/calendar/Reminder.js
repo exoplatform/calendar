@@ -14,34 +14,27 @@
 	    if (gj.cometd.isDisconnected()) {
 	      eXo.cs.CSCometd.handshake(eXoProps, function(reply) {
 	        if (reply.successful) {
-	          eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', null, function(eventObj) {    
-	            eXo.calendar.Reminder.alarm(eventObj) ;
-	          }, eXoProps);
-	          
-	          eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyShareCalendar',
-	              function(eventObj) {
-	            eXo.calendar.Reminder.notifyShareCalendar(eventObj);
-	          }, eXoProps);
-	          
-	          eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyImportCalendar', function(eventObj){
-	            eXo.calendar.Reminder.notifyImportCalendar(eventObj);
-	          }, eXoProps);         
+	          reminder.initCometd(eXoProps);
 	        }
 	      });
+	    } else {
+	      reminder.initCometd(eXoProps);
 	    }
 	  },
 
-	  initCometd : function() {
-	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {    
-	      Reminder.alarm(eventObj) ;
-	    });
+	  initCometd : function(eXoProps) {
+	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', null, function(eventObj) {    
+	      eXo.calendar.Reminder.alarm(eventObj) ;
+	    }, eXoProps);
+	    
 	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyShareCalendar',
 	        function(eventObj) {
-	      Reminder.notifyShareCalendar(eventObj);
-	    });
+	      eXo.calendar.Reminder.notifyShareCalendar(eventObj);
+	    }, eXoProps);
+	    
 	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyImportCalendar', function(eventObj){
-	      Reminder.notifyImportCalendar(eventObj);
-	    });
+	      eXo.calendar.Reminder.notifyImportCalendar(eventObj);
+	    }, eXoProps);
 	  },
 
 	  notifyImportCalendar : function(eventObj) {
