@@ -139,14 +139,14 @@ var UIContextMenu = {
 	},
 
 	getSource : function(evt) {
-		var _e = window.event || evt ;
+		var _e = evt || window.event;
 		var src = _e.target || _e.srcElement ;
 		return src ;
 	},
 
 	autoHide : function(evt) {
 		Utils = window.require("SHARED/CSUtils");
-		var _e = window.event || evt ;
+		var _e = evt || window.event;
 		var eventType = _e.type ;
 		if (eventType == 'mouseout' && (this.style.display != "none")) {
 			Utils.contextMenuTimeout = window.setTimeout("document.getElementById('" + this.id + "').style.display='none'", 5000) ;
@@ -267,7 +267,7 @@ var UIContextMenu = {
 	},
 
 	show : function(evt) {
-		var _e = window.event || evt;
+		var _e = evt || window.event;
 		UIContextMenu.attachedElement = UIContextMenu.getSource(_e) ;
 		var menuPos = {
 			"x": _e.pageX,
