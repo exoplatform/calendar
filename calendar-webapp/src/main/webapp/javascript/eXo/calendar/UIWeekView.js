@@ -286,16 +286,15 @@
     dragStart : function(evt) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
       eXo.calendar.EventTooltip.disable(evt);
-      var _e = evt ;
-      _e.stopPropagation();
-      //_e.cancelBubble = true ;
-      if (_e.button == 2) return ;
+      evt.stopPropagation();
+      //evt.cancelBubble = true ;
+      if (evt.button == 2) return ;
       UIWeekView.dragElement = this ;
       CSUtils.resetZIndex(UIWeekView.dragElement) ;
       UIWeekView.objectOffsetLeft = base.Browser.findPosX(UIWeekView.dragElement) ;
-      UIWeekView.offset = UIWeekView.getOffset(UIWeekView.dragElement, _e) ;
-      UIWeekView.mouseY = _e.clientY ;
-      UIWeekView.mouseX = _e.clientX ;
+      UIWeekView.offset = UIWeekView.getOffset(UIWeekView.dragElement, evt) ;
+      UIWeekView.mouseY = evt.clientY ;
+      UIWeekView.mouseX = evt.clientX ;
       UIWeekView.eventY = UIWeekView.dragElement.offsetTop ;
       UIWeekView.containerOffset = {
         "x" : base.Browser.findPosX(UIWeekView.container.parentNode),
@@ -311,18 +310,17 @@
     drag : function(evt) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
       eXo.calendar.EventTooltip.disable(evt);
-      var _e = window.event || evt ;
-      var src = _e.srcElement || _e.target ;
-      var mouseY = base.Browser.findMouseRelativeY(UIWeekView.container,_e) - UIWeekView.container.scrollTop ;
+      var src = evt.srcElement || evt.target ;
+      var mouseY = base.Browser.findMouseRelativeY(UIWeekView.container,evt) - UIWeekView.container.scrollTop ;
       var posY = UIWeekView.dragElement.offsetTop ;
       var height =  UIWeekView.dragElement.offsetHeight ;
       var deltaY = null ;
-      deltaY = _e.clientY - UIWeekView.mouseY ;
-      var currentTop =  UIWeekView.mousePos(_e).y - UIWeekView.offset.y - UIWeekView.containerOffset.y;
+      deltaY = evt.clientY - UIWeekView.mouseY ;
+      var currentTop =  UIWeekView.mousePos(evt).y - UIWeekView.offset.y - UIWeekView.containerOffset.y;
       var maxTop = UIWeekView.dragElement.offsetParent.scrollHeight - height; 
       if(currentTop >= 0 && currentTop <= maxTop){
         UIWeekView.dragElement.style.top = (currentTop - currentTop % UICalendarPortlet.interval) + "px" ;
-        if (UIWeekView.isCol(_e)) {
+        if (UIWeekView.isCol(evt)) {
           var posX = base.Browser.findPosXInContainer(UIWeekView.currentCol, UIWeekView.dragElement.offsetParent) ;
           UIWeekView.dragElement.style.left = posX + "px" ;
         }
@@ -367,13 +365,12 @@
     drop : function(evt) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
       gj(document).off("mousemove mouseup");
-      var _e = window.event || evt ;
       var isEventbox = UIWeekView.dragElement;
-        if (!UIWeekView.isCol(_e) || !isEventbox) return ;
+        if (!UIWeekView.isCol(evt) || !isEventbox) return ;
       var currentCol = UIWeekView.currentCol ;
       var sourceCol = UIWeekView.dragElement.parentNode ;
       var eventY = UIWeekView.eventY ;
-      if((UIWeekView.mouseY != _e.clientY) || (UIWeekView.mouseX != _e.clientX)) {
+      if((UIWeekView.mouseY != evt.clientY) || (UIWeekView.mouseX != evt.clientX)) {
             UICalendarPortlet.checkPermission(UIWeekView.dragElement);
             var repeatIcon = gj(isEventbox).find("i.uiIconCalRecurring") ;
             if(repeatIcon.length != 0){
@@ -473,10 +470,9 @@
     initResize : function(evt) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
       eXo.calendar.EventTooltip.disable(evt);
-      var _e = evt ;
-      _e.stopPropagation();
-      //_e.cancelBubble = true ;
-      if(_e.button == 2) return ;
+      evt.stopPropagation();
+      //evt.cancelBubble = true ;
+      if(evt.button == 2) return ;
       // this : the marker - div tag with class resizeEventContainer
       var eventContainer = gj(this).parents('.eventContainerBorder')[0]; 
       var siblingOfMarker = gj(this).prevAll('div')[0];
@@ -490,7 +486,7 @@
             'user-select'        :'none'}).bind('selectstart', function(){ return false; });
       var minHeight = 15 ; // minimum height is 15 px
       var interval = UICalendarPortlet.interval ;
-      UIResizeEvent.start(_e, siblingOfMarker, eventContainer, container, minHeight, interval) ;
+      UIResizeEvent.start(evt, siblingOfMarker, eventContainer, container, minHeight, interval) ;
       UICalendarPortlet.dropCallback = UIWeekView.resizeCallback;
       UICalendarPortlet.setPosition(eventContainer);
     },
@@ -527,12 +523,11 @@
 
     initAllDayRightResize : function(evt) {
       eXo.calendar.EventTooltip.disable(evt);
-      var _e = window.event || evt ;
-      _e.cancelBubble = true ;
-      if (_e.button == 2) return ;
+      evt.cancelBubble = true ;
+      if (evt.button == 2) return ;
       var outerElement = gj(this).parents('.weekViewEventBoxes')[0];
       var innerElement = gj(outerElement).find('div.eventAlldayContent')[0];
-      UIHorizontalResize.start(_e, outerElement, innerElement) ;
+      UIHorizontalResize.start(evt, outerElement, innerElement) ;
       UIHorizontalResize.dragCallback = UIWeekView.rightDragResizeCallback ;
       UIHorizontalResize.callback = UIWeekView.rightResizeCallback ;
       UIWeekView.createTooltip();
@@ -540,12 +535,11 @@
 
     initAllDayLeftResize : function(evt) {
       eXo.calendar.EventTooltip.disable(evt);
-      var _e = window.event || evt ;
-      _e.cancelBubble = true ;
-      if (_e.button == 2) return ;  
+      evt.cancelBubble = true ;
+      if (evt.button == 2) return ;  
       var outerElement = gj(this).parents('.weekViewEventBoxes')[0];
       var innerElement = gj(outerElement).find("div.eventAlldayContent")[0];
-      UIHorizontalResize.start(_e, outerElement, innerElement, true) ;
+      UIHorizontalResize.start(evt, outerElement, innerElement, true) ;
       UIHorizontalResize.dragCallback = UIWeekView.leftDragResizeCallback ;
       UIHorizontalResize.callback = UIWeekView.leftResizeCallback ;
       UIWeekView.createTooltip();

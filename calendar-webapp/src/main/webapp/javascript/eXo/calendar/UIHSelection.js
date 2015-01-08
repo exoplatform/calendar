@@ -108,7 +108,7 @@ var UIHSelection = {
    * Executes horizontal dragging selection
    */
   execute : function(evt) {
-    var _e = window.event || evt ;
+    var _e = evt || window.event ;
     _e.preventDefault();
     var sIndex = UIHSelection.startIndex ;
     var eIndex = UIHSelection.getCurrentIndex(_e) ;

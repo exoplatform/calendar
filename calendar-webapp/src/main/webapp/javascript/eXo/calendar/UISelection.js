@@ -42,7 +42,7 @@
 	 */
 	UISelection.prototype.execute = function(evt) {
 		var UISelection = eXo.calendar.UISelection;
-		var _e = window.event || evt;
+		var _e = evt || window.event;
 		var containerHeight = UISelection.container.offsetHeight;
 		var scrollTop = gj(UISelection.block).scrollTop();
 		var mouseY = base.Browser.findMouseRelativeY(UISelection.container, _e);// + UISelection.relativeObject.scrollTop;

@@ -347,7 +347,7 @@
      * @param {Object} evt Mouse event
      */
     UICalendarPortlet.prototype.autoHide = function(evt) {
-        var _e = window.event || evt;
+        var _e = evt || window.event;
         var eventType = _e.type;
         var UICalendarPortlet = _module.UICalendarPortlet;
         if (eventType == 'mouseout') {
@@ -601,7 +601,7 @@
      * @param {Object} evt Mouse event
      */
     UICalendarPortlet.prototype.listViewCallback = function(evt) {
-        var _e = window.event || evt;
+        var _e = evt || window.event;
         var src = _e.srcElement || _e.target;
         if (!gj(src).hasClass("uiListViewRow"))
             src = gj(src).parents(".uiListViewRow")[0];
@@ -658,7 +658,7 @@
      */
     UICalendarPortlet.prototype.dayViewCallback = function(evt) {
 
-        var _e = window.event || evt;
+        var _e = evt || window.event;
         var src = _e.srcElement || _e.target;
         var isEditable;
         var map = null;
@@ -841,7 +841,7 @@
      * @param {Object} evt Mouse event
      */
     UICalendarPortlet.prototype.monthViewCallback = function(evt) {
-        var _e = window.event || evt;
+        var _e = evt || window.event;
         var src = _e.srcElement || _e.target;
         var objvalue = "";
         var links = gj(UIContextMenu.menuElement).find("a");

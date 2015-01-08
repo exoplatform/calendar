@@ -2,7 +2,7 @@
 
 var UIHorizontalResize = {
   start : function(evt, outer, inner) {
-    var _e = window.event || evt ;
+    var _e = evt || window.event ;
     this.outerElement = outer ;
     this.innerElement = inner ;
     if(arguments.length > 3) {
@@ -21,7 +21,7 @@ var UIHorizontalResize = {
   },
 
   execute : function(evt) {
-    var _e = window.event || evt ;
+    var _e = evt || window.event ;
     var delta = _e.clientX - UIHorizontalResize.mouseX ;
     if(UIHorizontalResize.isLeft == true) {
       UIHorizontalResize.outerElement.style.left = UIHorizontalResize.beforeLeft + delta + "px" ;

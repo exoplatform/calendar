@@ -42,7 +42,7 @@ var Highlighter = {
    * @param {Object} evt Mouse event
    */
   getMousePos : function(evt) {
-    var _e = window.event || evt ;
+    var _e = evt || window.event;
     var cell = Highlighter.cell ;
     var len = cell.length ;
     for(var i = 0 ; i < len ; i ++) {
@@ -119,7 +119,7 @@ var Highlighter = {
    */
   start : function(evt) {
     try {    
-    var _e = window.event || evt ;
+    var _e = evt || window.event;
     if(_e.button == 2) return ;
     _e.cancelBubble = true ;
     Highlighter.startCell = this ;
@@ -163,7 +163,7 @@ var Highlighter = {
    * @param {Object} evt Mouse event
    */
   execute : function(evt) {
-    var _e = window.event || evt ;  
+    var _e = evt || window.event;  
     var sPos = Highlighter.getPos(Highlighter.startCell) ;
     var fixleftIE = (document.all && document.getElementById("UIWeekView"))? 6 : 0 ; //TODO : No hard code 
     try{

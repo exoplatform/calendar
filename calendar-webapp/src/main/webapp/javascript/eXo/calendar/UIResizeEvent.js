@@ -7,7 +7,7 @@
 		 */
 		init : function(evt) {
 		  var UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-		    var _e = window.event || evt;
+		    var _e = evt || window.event;
 		    if (_e.stopPropagation) {
 		        _e.stopPropagation();
 		    } else {
@@ -53,7 +53,7 @@
 		 * @param {Object} interval Resizing step( default is 30 minutes)
 		 */
 		start : function(evt, innerElement, outerElement, container, minHeight, interval) {
-		    var _e = window.event || evt;
+		    var _e = evt || window.event;
 		    this.innerElement = innerElement;
 		    this.outerElement = outerElement;
 		    this.container = container;
@@ -79,7 +79,7 @@
 		execute : function(evt) {
 		    var UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 		    eXo.calendar.EventTooltip.disable(evt);
-		    var _e = window.event || evt;
+		    var _e = evt || window.event;
 		    var mouseY = base.Browser.findMouseRelativeY(UIResizeEvent.container, _e);
 		    var mDelta = _e.clientY - UIResizeEvent.posY;
 		    if (mouseY <= UIResizeEvent.uppermost) {
@@ -107,7 +107,7 @@
 		end : function(evt) {
 		    var UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
 		    gj(document).off("mousemove mouseup");
-		    var _e = window.event || evt;
+		    var _e = evt || window.event;
 		    UICalendarPortlet.checkPermission(UIResizeEvent.outerElement) ;
 		    eXo.calendar.EventTooltip.enable();
 		},
