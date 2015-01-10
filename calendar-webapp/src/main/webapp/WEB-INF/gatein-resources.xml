@@ -431,6 +431,9 @@
       <module>jquery</module>
       <as>gj</as>
     </depends>
+    <depends>
+      <module>commons-cometd3</module>
+    </depends>
   </module>
   
   <module>
