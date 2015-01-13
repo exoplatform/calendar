@@ -76,36 +76,6 @@
     </dependency>
     <dependency>
       <groupId>org.gatein.portal</groupId>
-      <artifactId>exo.portal.component.identity</artifactId>
-      <exclusions>
-        <exclusion>          
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>          
-          <groupId>xpp3</groupId>
-          <artifactId>xpp3_min</artifactId>
-        </exclusion>
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-        </exclusion>
-      </exclusions>   
-    </dependency>
-    <dependency>
-      <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.framework</artifactId>
       <exclusions>
         <exclusion>          
