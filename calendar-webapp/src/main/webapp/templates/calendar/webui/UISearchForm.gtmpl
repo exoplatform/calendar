@@ -10,11 +10,10 @@ uiform.begin();
   requirejs.require("SHARED/placeholder","placeholder");
   requirejs.addScripts("gj('#UISearchForm input#value').attr('placeholder','" + searchPlaceHolder +"').placeholder();");
   requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
-  requirejs.addScripts('CSUtils.captureInput("value");');
+  requirejs.addScripts("cs.CSUtils.Utils.captureInput('value');gj('#value').click(false);");
 %>
 <div class="uiSearchForm uiSearchInput pull-right searchWithIcon"  onclick="$action">
-    <div onclick="event.cancelBubble=true;">
-    <a href="javascript:void(0)"  data-placement="bottom" rel="tooltip" class="advancedSearch" data-original-title="<%=searchPlaceHolder%>"><i class="uiIconSearch uiIconLightGray"></i></a>
-    <%uiform.renderChild("value")%></div>
+    <a href="javascript:void(0)"  data-placement="bottom" rel="tooltip" class="advancedSearch" title="<%=searchPlaceHolder%>"><i class="uiIconSearch uiIconLightGray"></i></a>
+    <%uiform.renderChild("value")%>
 </div>
 <%uiform.end();%>
