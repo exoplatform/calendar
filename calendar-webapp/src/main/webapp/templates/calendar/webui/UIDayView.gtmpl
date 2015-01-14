@@ -43,9 +43,10 @@
   boolean isShowWorkingTime = uicomponent.isShowWorkingTime() ;
   
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
-  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.require("PORTLET/calendar/CalendarPortlet","cal")
+  				.require("SHARED/UIDayView","uiDayView");
   requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
-  requirejs.addScripts('cal.UICalendarPortlet.showEvent() ;') ;
+  requirejs.addScripts('uiDayView.showEvent();');
   requirejs.addScripts('cal.UICalendarPortlet.initSelection() ;') ;
   rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;  
   rcontext.getJavascriptManager().addOnResizeJavascript('cal.UICalendarPortlet.browserResizeCallback') ;

@@ -11,13 +11,14 @@
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+  requirejs.require("SHARED/UICalendars","UICalendars");
   requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts('cal.UICalendars.init("' + uiform.id + '") ;') ;
-  requirejs.addScripts("gj('div#UICalendars_calendarActions').click(function(event) {cal.UICalendars.showMenu(this, event, 'CalendarMainPopupMenu'); });");
-  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu1').click(function(event) {cal.UICalendars.showMenu(this, event, 'CalendarPopupMenu', cal.UICalendars.calendarMenuCallback); });");
-  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu2').click(function(event) {cal.UICalendars.showMenu(this, event, 'CalendarPopupMenu', cal.UICalendars.calendarMenuCallback); });");
-  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu3').click(function(event) {cal.UICalendars.showMenu(this, event, 'CalendarPopupMenu', cal.UICalendars.calendarMenuCallback); });");
+  requirejs.addScripts('UICalendars.init("' + uiform.id + '") ;') ;
+  requirejs.addScripts("gj('div#UICalendars_calendarActions').click(function(event) {UICalendars.showMenu(this, event, 'CalendarMainPopupMenu'); });");
+  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu1').click(function(event) {UICalendars.showMenu(this, event, 'CalendarPopupMenu', UICalendars.calendarMenuCallback); });");
+  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu2').click(function(event) {UICalendars.showMenu(this, event, 'CalendarPopupMenu', UICalendars.calendarMenuCallback); });");
+  requirejs.addScripts("gj('div#UICalendars_CalendarPopupMenu3').click(function(event) {UICalendars.showMenu(this, event, 'CalendarPopupMenu', UICalendars.calendarMenuCallback); });");
   requirejs.addScripts("gj('div#UICalendars_toggle-calendars').click(function() {cal.UICalendarPortlet.switchLayout(3);});");
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
 

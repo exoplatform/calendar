@@ -163,12 +163,12 @@ public class UIFormDateTimePicker extends UIFormInputBase<String>  {
     w.write("/>") ;
     
     RequireJS requirejs = context.getJavascriptManager().getRequireJS();    
-    requirejs.require("SHARED/csResources","cs");
+    requirejs.require("SHARED/CalDateTimePicker","timePicker");
     requirejs.require("SHARED/jquery","gj");
     
     String obj = "input#"+input_id;
-    String onfocusFunc = "cs.CalDateTimePicker.init(this,"+String.valueOf(isDisplayTime_)+");";
-    String onkeyupFunc = "cs.CalDateTimePicker.show();";
+    String onfocusFunc = "timePicker.init(this,"+String.valueOf(isDisplayTime_)+");";
+    String onkeyupFunc = "timePicker.show();";
     String onmousedownFunc = "event.cancelBubble = true";
     
     requirejs.addScripts("gj('"+obj+"').focus(function(){"+onfocusFunc+"});");

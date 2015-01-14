@@ -35,6 +35,8 @@ import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UITaskForm;
+import org.exoplatform.portal.application.PortalRequestContext;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -51,6 +53,7 @@ import org.exoplatform.webui.form.UIFormRadioBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 
 import javax.jcr.PathNotFoundException;
+
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -1292,45 +1295,16 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         isOccur = Boolean.parseBoolean(event.getRequestContext().getRequestParameter(ISOCCUR));
       }
       // need to get recurrence-id
-      String recurId = null, selectedId = eventId;
+      String recurId = null;
       if (isOccur) {
-        recurId = event.getRequestContext().getRequestParameter(RECURID);
-        selectedId = eventId + "-" + recurId;            
+        recurId = event.getRequestContext().getRequestParameter(RECURID);  
       }
       if (isOccur && !Utils.isEmpty(recurId)) {          
         eventCalendar = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
       } else {
         eventCalendar = uiCalendarView.getDataMap().get(eventId);
       }
-
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
-      if (uiCalendarView instanceof UIListView) {
-        UIListContainer listContainer = uiCalendarView.getAncestorOfType(UIListContainer.class);
-        UIListView uiListView = listContainer.findFirstComponentOfType(UIListView.class);
-        long pageNum = uiListView.getCurrentPage();
-        if (!listContainer.isDisplaySearchResult()) {
-          listContainer.refresh();
-          uiListView.updateCurrentPage(pageNum);
-          uiListView.setSelectedEvent(eventId);
-        } else {
-          uiListView.setSelectedEvent(selectedId);
-        }
-
-      } else if (uiCalendarView instanceof UIPreview) {
-        UIPreview uiPreview = (UIPreview) uiCalendarView;
-        UIListContainer listContainer = uiCalendarView.getAncestorOfType(UIListContainer.class);
-        UIListView uiListView = listContainer.findFirstComponentOfType(UIListView.class);
-        long pageNum = uiListView.getCurrentPage();
-        if (!listContainer.isDisplaySearchResult()) {
-          listContainer.refresh();
-          uiListView.updateCurrentPage(pageNum);
-        }
-        uiListView.setSelectedEvent(selectedId);        
-        uiPreview.setEvent(eventCalendar);
-        if (!listContainer.isDisplaySearchResult())
-          uiPreview.refresh();
-      } else
-        uiCalendarView.refresh();
+      
       String username = CalendarUtils.getCurrentUser();
       String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
       String calType = event.getRequestContext().getRequestParameter(CALTYPE);
@@ -1358,6 +1332,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             }
           }
         }
+        
         if (canEdit) {
           if (CalendarEvent.TYPE_EVENT.equals(eventCalendar.getEventType())) {
             if (isOccur && !Utils.isEmpty(recurId)) {
@@ -1402,13 +1377,13 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           return;
         }
       } else {
+        PortalRequestContext pcontext = Util.getPortalRequestContext();
         UICalendarWorkingContainer uiWorkingContainer = uiCalendarView.getAncestorOfType(UICalendarWorkingContainer.class);
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiWorkingContainer);
+        pcontext.addUIComponentToUpdateByAjax(uiWorkingContainer);
+        pcontext.ignoreAJAXUpdateOnPortlets(true);
 
-        event.getRequestContext()
-                .getUIApplication()
+        pcontext.getUIApplication()
                 .addMessage(new ApplicationMessage("UICalendarView.msg.event-not-found", null));
-
       }
     }
   }

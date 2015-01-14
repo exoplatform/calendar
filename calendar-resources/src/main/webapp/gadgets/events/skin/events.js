@@ -103,22 +103,20 @@ DateTimeFormater.prototype.format = function (date, mask, utc) {
 
 DateTimeFormater = new DateTimeFormater();
 
-function DOMUtil(){	
+var DOMUtil = {
+	findNextElementByTagName : function(element, tagName) {
+		var nextElement = element.nextSibling;
+		if(!nextElement) return null;
+		var nodeName = nextElement.nodeName.toLowerCase();
+		if(nodeName != tagName) return null;
+		return nextElement;
+	}
 };
 
-DOMUtil.prototype.findNextElementByTagName = function(element, tagName) {
-	var nextElement = element.nextSibling ;
-	if(!nextElement) return null;
-	var nodeName = nextElement.nodeName.toLowerCase();
-	if(nodeName != tagName) return null;
-	return nextElement ;
-} ;
+function eXoEventGadget() {
+};
 
-DOMUtil = new DOMUtil();
-function eXoEventGadget(){	
-} ;
-
-eXoEventGadget.prototype.getPrefs = function(){
+eXoEventGadget.prototype.getPrefs = function() {
 	var setting = (new gadgets.Prefs()).getString("setting");
 	if(setting =="") setting = ["","/rest/cs/calendar/getissues","10","AM/PM","defaultCalendarName"];
 	else {

@@ -1,4 +1,4 @@
-(function($, document, window) {
+(function($) {
   var defaultSettings = {
       ulContainerClass: 'containerMoreItem',
       liMoreClass : 'moreItem',
@@ -140,4 +140,4 @@
     });
   };
   
-})(gj, document, window);
+})($);

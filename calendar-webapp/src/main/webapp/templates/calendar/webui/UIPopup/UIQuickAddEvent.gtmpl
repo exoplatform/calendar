@@ -4,6 +4,7 @@ def requireJS = rcontext.getJavascriptManager().getRequireJS();
 requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
 requireJS.require("SHARED/jquery","gj");
 requireJS.addScripts("cal.UICalendarPortlet.isAllday('QuickAddEventContainer','');");
+requireJS.addScripts("cal.UICalendarPortlet.overidePopUpClose();");
 requireJS.addScripts("gj('input#"+uicomponent.FIELD_ALLDAY+"').click(function() {cal.UICalendarPortlet.showHideTime(this) ; });");
 //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.isAllday("QuickAddEventContainer","") ;') ; 
 def timeshift = uicomponent.getTimeShift();

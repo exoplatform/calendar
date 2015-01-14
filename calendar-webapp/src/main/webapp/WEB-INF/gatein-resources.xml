@@ -10,89 +10,323 @@
     <css-path>/skin/css/calendar.css</css-path>
     <css-priority>1</css-priority>
   </portlet-skin>
-
+  
   <portlet>
     <name>CalendarPortlet</name>
     <module>
+      <load-group>calendar</load-group>
       <script>
         <path>/javascript/eXo/calendar/UICalendarPortlet.js</path>
       </script>
       <depends>
         <module>bts_tooltip</module>
       </depends>
+	   <depends>
+	     <module>LoadMorePlugin</module>
+	   </depends>
+	   <depends>
+	     <module>Highlighter</module>
+	   </depends>
+	   <depends>
+	     <module>CalendarLayout</module>
+	   </depends>
+	   <depends>
+	     <module>Reminder</module>
+	   </depends>
+	   <depends>
+	     <module>UIWeekView</module>
+	   </depends>
+	   <depends>
+	     <module>UICalendarMan</module>
+	   </depends>
+	   <depends>
+	     <module>common</module>
+	   </depends>
+	   <depends>
+	     <module>base</module>
+	   </depends>
+	   <depends>
+	     <module>uiPopup</module>
+	   </depends>	   
+	   <depends>
+	     <module>uiForm</module>
+	   </depends>
+	   <depends>
+	     <module>uiPopupWindow</module>
+	   </depends>	   
+	   <depends>
+	     <module>DOMUtil</module>
+	   </depends>
+	   <depends>
+	     <module>jquery</module>
+	     <as>gj</as>
+	   </depends>
+	   <depends>
+	     <module>UICalendars</module>
+	   </depends>
+	   <depends>
+	     <module>ScheduleSupport</module>
+	   </depends>
+	   <depends>
+	     <module>CSUtils</module>
+	   </depends>
+	   <depends>
+	     <module>CalContextMenu</module>
+	     <as>UIContextMenu</as>
+	   </depends>
+	   <depends>
+	     <module>CalDateTimePicker</module>
+	   </depends>
+	   <depends>
+	     <module>DateTimeFormatter</module>
+	   </depends>
+	   <depends>
+	     <module>UIHSelection</module>
+	   </depends>
+	   <depends>
+	     <module>UISelection</module>
+	   </depends>
+	   <depends>
+	     <module>EventTooltip</module>
+	   </depends>
+	   <depends>
+	     <module>UICombobox</module>
+	   </depends>
+	   <depends>
+	     <module>UIDayView</module>
+	   </depends>
+	   <depends>
+	     <module>DateUtils</module>
+	   </depends>	   
+		<depends>
+		 <module>commons-cometd</module>
+		 <as>cometd</as>
+		</depends>
+    </module>
+  </portlet>
+  
+  <module>
+    <name>UICombobox</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UICombobox.js</path>
+    </script>
     <depends>
-      <module>LoadMorePlugin</module>
+      <module>jquery</module>
     </depends>
     <depends>
-      <module>Highlighter</module>
+     <module>webui-ext</module>
+     <as>wx</as>
     </depends>
     <depends>
-      <module>CalendarLayout</module>
+     <module>ScheduleSupport</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>UIDayView</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UIDayView.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
     </depends>
     <depends>
-      <module>Reminder</module>
+      <module>EventTooltip</module>
     </depends>
     <depends>
-      <module>UICalendarDragDrop</module>
-    </depends>
-    <depends>
-      <module>UIWeekView</module>
-    </depends>
-    <depends>
-      <module>UICalendarMan</module>
-    </depends>
-    <depends>
-      <module>common</module>
+      <module>UIResizeEvent</module>
     </depends>
     <depends>
       <module>base</module>
-      <as>base</as>
+    </depends>    
+    <depends>
+      <module>CSUtils</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>UIResizeEvent</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UIResizeEvent.js</path>
+    </script>
+    <depends>
+      <module>base</module>
     </depends>
     <depends>
-      <module>uiPopup</module>
+      <module>jquery</module>
     </depends>
     <depends>
-      <module>navigation</module>
-      <as>gtnav</as>
+      <module>CSUtils</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>DateUtils</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/DateUtils.js</path>
+    </script>
+  </module>
+  
+  <module>
+    <name>EventTooltip</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/EventTooltip.js</path>
+    </script>
+    <depends>
+      <module>base</module>
     </depends>
     <depends>
-      <module>commons-cometd</module>
-      <as>cometd</as>
+      <module>jquery</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>DOMUtil</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/core/DOMUtil.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>    
+  <module>
+    <name>CSUtils</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/CSUtils.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
+  <module>
+    <name>CheckBox</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/CheckBox.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
+  <module>
+    <name>Spliter</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/Spliter.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
+  <module>
+    <name>LayoutManager</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/LayoutManager.js</path>
+    </script>
+    <depends>
+      <module>base</module>
     </depends>
     <depends>
-      <module>uiForm</module>
+      <module>jquery</module>
+      <as>gj</as>
     </depends>
+  </module>
+  <module>
+    <name>DateTimeFormatter</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/DateTimeFormatter.js</path>
+    </script>
+  </module>
+  <module>
+    <name>CalContextMenu</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/UIContextMenu.js</path>
+    </script>
     <depends>
-      <module>uiPopupWindow</module>
-    </depends>
-    <depends>
-      <module>webui-ext</module>
-      <as>wx</as>
-    </depends>
-    <depends>
-      <module>csResources</module>
-      <as>cs</as>
+      <module>base</module>
     </depends>
     <depends>
       <module>jquery</module>
       <as>gj</as>
     </depends>
     <depends>
-      <module>UICalendars</module>
+      <module>DOMUtil</module>
     </depends>
     <depends>
-      <module>ScheduleSupport</module>
+      <module>uiRightClickPopupMenu</module>
+    </depends>
+  </module>    
+  <module>
+    <name>CalDateTimePicker</name>
+    <load-group>calendar</load-group>
+    <supported-locale>de</supported-locale>
+    <supported-locale>en</supported-locale>
+    <supported-locale>fr</supported-locale>
+    <supported-locale>vi</supported-locale>
+    <supported-locale>ru</supported-locale>
+    <supported-locale>es-ES</supported-locale>
+    <supported-locale>sv-SE</supported-locale>
+    <supported-locale>ja</supported-locale>
+    <supported-locale>ar</supported-locale>
+    <supported-locale>pt-BR</supported-locale>
+    <supported-locale>it</supported-locale>
+    <supported-locale>tr</supported-locale>
+    <supported-locale>zh-CN</supported-locale>
+    <supported-locale>fi</supported-locale>
+    <supported-locale>lt</supported-locale>
+    <supported-locale>no</supported-locale>
+    <supported-locale>zh-TW</supported-locale>
+    <supported-locale>cs</supported-locale>
+    <supported-locale>uk</supported-locale>
+    <supported-locale>fa</supported-locale>
+    <supported-locale>el</supported-locale>
+    <supported-locale>ro</supported-locale>
+    <supported-locale>pl</supported-locale>
+    <supported-locale>ca</supported-locale>        
+    <script>
+        <path>/javascript/eXo/calendar/cs/UIDateTimePicker.js</path>
+        <resource-bundle>eXo.calendar.DateTimePicker</resource-bundle>
+    </script>
+    <depends>
+        <module>jquery</module>
+        <as>gj</as>
     </depends>
     <depends>
-      <module>UIEventPreview</module>
+        <module>uiCalendar</module>
+    </depends>
+  </module>
+  <module>
+    <name>TimePicker</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/cs/TimePicker.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
     </depends>
     <depends>
-      <module>UIColorPicker</module>
+      <module>uiCalendar</module>
     </depends>
-    </module>
-  </portlet>
+  </module>
+     
   <module>
     <name>ScheduleSupport</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/ScheduleSupport.js</path>
     </script>
@@ -101,6 +335,7 @@
       <as>gj</as>
     </depends>
   </module>
+  
   <module>
     <name>UIEventPreview</name>
     <script>
@@ -111,7 +346,8 @@
       <as>gj</as>
     </depends>
   </module>
-    <module>
+  
+  <module>
     <name>UICalendarSettingForm</name>
     <script>
       <path>/javascript/eXo/calendar/UICalendarSettingForm.js</path>
@@ -121,8 +357,10 @@
       <as>gj</as>
     </depends>
   </module>
+  
   <module>
     <name>Highlighter</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/Highlighter.js</path>
     </script>
@@ -131,22 +369,19 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
-    <depends>
       <module>base</module>
     </depends>
-  </module>
-  <module>
-    <name>CalendarLayout</name>
-    <script>
-      <path>/javascript/eXo/calendar/CalendarLayout.js</path>
-    </script>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
+      <module>CSUtils</module>
     </depends>
+  </module>
+  
+  <module>
+    <name>UIHSelection</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UIHSelection.js</path>
+    </script>
     <depends>
       <module>jquery</module>
       <as>gj</as>
@@ -154,9 +389,50 @@
     <depends>
       <module>base</module>
     </depends>
+    <depends>
+      <module>CSUtils</module>
+    </depends>
   </module>
+  
+  <module>
+    <name>UISelection</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UISelection.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>DOMUtil</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>CalendarLayout</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/CalendarLayout.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>base</module>
+    </depends>
+    <depends>
+      <module>LayoutManager</module>
+    </depends>
+  </module>
+  
   <module>
     <name>Reminder</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/Reminder.js</path>
     </script>
@@ -168,13 +444,11 @@
       <module>jquery</module>
       <as>gj</as>
     </depends>
-    <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
   </module>
+  
   <module>
     <name>UICalendars</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UICalendars.js</path>
     </script>
@@ -183,15 +457,13 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
-    <depends>
       <module>base</module>
     </depends>
   </module>
+  
   <module>
     <name>UICalendarDragDrop</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UICalendarDragDrop.js</path>
     </script>
@@ -200,19 +472,19 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
-    <depends>
-      <module>jquery</module>
-      <as>gj</as>
-    </depends>
-    <depends>
       <module>base</module>
     </depends>
+    <depends>
+        <module>CSUtils</module>
+    </depends>
+    <depends>
+        <module>common</module>
+    </depends>
   </module>
+  
   <module>
     <name>UIWeekView</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UIWeekView.js</path>
     </script>
@@ -221,18 +493,48 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
-    </depends>
-    <depends>
-      <module>UICalendarMan</module>
-    </depends>
-    <depends>
       <module>base</module>
     </depends>
+    <depends>
+      <module>common</module>
+    </depends>
+    <depends>
+      <module>DateTimeFormatter</module>
+    </depends>
+    <depends>
+      <module>Highlighter</module>
+    </depends>
+    <depends>
+      <module>UIHSelection</module>
+    </depends>
+    <depends>
+      <module>UIHorizontalResize</module>
+    </depends>
+    <depends>
+      <module>UIResizeEvent</module>
+    </depends>
+    <depends>
+      <module>CSUtils</module>
+    </depends>
+    <depends>
+      <module>DateUtils</module>
+    </depends>
   </module>
+  
+  <module>
+    <name>UIHorizontalResize</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/UIHorizontalResize.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+    </depends>
+  </module>
+  
   <module>
     <name>UICalendarMan</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/UICalendarMan.js</path>
     </script>
@@ -241,13 +543,103 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>csResources</module>
-      <as>cs</as>
+      <module>GUIMan</module>
+    </depends>
+    <depends>
+      <module>EventMan</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>GUIMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/GUIMan.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>DOMUtil</module>
     </depends>
     <depends>
       <module>Highlighter</module>
     </depends>
+    <depends>
+      <module>UIHSelection</module>
+    </depends>
+    <depends>
+      <module>UICalendarDragDrop</module>
+    </depends>
+    <depends>
+      <module>EventMan</module>
+    </depends>
+    <depends>
+      <module>DateUtils</module>
+    </depends>
   </module>
+  
+  <module>
+    <name>QuickSortObject</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/QuickSortObject.js</path>
+    </script>
+  </module>
+  
+  <module>
+    <name>EventObject</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/EventObject.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+  </module>
+  
+  <module>
+    <name>DayMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/DayMan.js</path>
+    </script>
+  </module>
+  
+  <module>
+    <name>WeekMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/WeekMan.js</path>
+    </script>
+    <depends>
+      <module>QuickSortObject</module>
+    </depends>
+    <depends>
+      <module>DayMan</module>
+    </depends>
+  </module>
+  
+  <module>
+    <name>EventMan</name>
+    <load-group>calendar</load-group>
+    <script>
+      <path>/javascript/eXo/calendar/EventMan.js</path>
+    </script>
+    <depends>
+      <module>jquery</module>
+      <as>gj</as>
+    </depends>
+    <depends>
+      <module>EventObject</module>
+    </depends>
+    <depends>
+      <module>WeekMan</module>
+    </depends>
+  </module>
+  
   <module>
     <name>UIColorPicker</name>
     <script>
@@ -258,20 +650,22 @@
       <as>gj</as>
     </depends>
   </module>
+  
   <module>
     <name>LoadMorePlugin</name>
+    <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/LoadMoreActionPlugin.js</path>
     </script>
     <depends>
       <module>jquery</module>
-      <as>gj</as>
     </depends>
   </module>
 
   <!-- Jquery placeholder plugin -->
   <module>
     <name>placeholder</name>
+    <load-group>calendar</load-group>
     <script>
       <adapter>
         (function($) {
@@ -287,4 +681,3 @@
   </module>
 
 </gatein-resources>
-
