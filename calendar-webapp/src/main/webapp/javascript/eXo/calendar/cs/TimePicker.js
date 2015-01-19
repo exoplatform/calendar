@@ -1,7 +1,7 @@
 (function(uiCalendar, gj) {
 	var TimePicker = {
 	    // init the form
-	    init : function(id) {
+	    init : function(id, currentTime) {
 	      var createForm = gj('#' + id);
 
 	      TimePicker.startDateInput = createForm.find('input[name="StartEvent"]');
@@ -13,12 +13,17 @@
 	      TimePicker.startTimeInput.change(TimePicker.selectTime);
 	      TimePicker.startDateInput.on('click',TimePicker.selectDate);
 	      // auto input FromTime and ToTime
-	      TimePicker.initTime(id);
+	      TimePicker.initTime(id, currentTime);
 	    },
 
 	    // take current time, round it, and auto input to FromTime the rounded time and ToTime 1 hour later 
-	    initTime : function(id) {
-	      var currentTime = new Date();
+	    initTime : function(id, time) {
+          var currentTime;
+          if(time != undefined && time > 0){
+              currentTime = new Date(time);
+          } else {
+              currentTime = new Date();
+          }
 	      var timeInterval = 30;
 	      var hour =  currentTime.getHours();
 	      var minute = currentTime.getMinutes();

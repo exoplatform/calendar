@@ -1,10 +1,11 @@
  <%
  def rcontext = _ctx.getRequestContext() ;
+ def currentTime = uicomponent.getInstanceOfCurrentCalendar().getTimeInMillis();
  def requireJS = rcontext.getJavascriptManager().getRequireJS();
  requireJS.require("SHARED/uiForm");
  requireJS.require("SHARED/TimePicker", "picker");
  requireJS.addScripts('picker.datePattern="'+uicomponent.getDateTimeFormat()+'";');
- requireJS.addScripts('picker.init("'+ uicomponent.id +'");');
+ requireJS.addScripts('picker.init("'+ uicomponent.id +'",' + currentTime + ');');
  
  %>
  <script>
