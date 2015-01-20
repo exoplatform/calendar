@@ -153,7 +153,7 @@ public class UIWeekView extends UICalendarView {
     }
     // If this week is in 2 month (for example from 29/09/2014 to 04/10/2014)
     // We should not use emptyEventCalendars and emptyRecurrentEvents calendar set by UIMiniCalendar
-    if(beginMonth < c.get(Calendar.MONTH)) {
+    if(beginMonth != c.get(Calendar.MONTH)) {
         this.setEmptyEventCalendars(Collections.EMPTY_LIST);
         this.setEmptyRecurrentEventCalendars(Collections.EMPTY_LIST);
     }
