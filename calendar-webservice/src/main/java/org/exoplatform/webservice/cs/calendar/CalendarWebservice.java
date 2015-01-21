@@ -846,7 +846,7 @@ public class CalendarWebservice implements ResourceContainer{
       response.append("<body>");
       response.append(message);
       response.append("</body></html>");
-      return Response.ok(response.toString(), MediaType.TEXT_HTML).cacheControl(cc).build();
+      return Response.ok(response.toString(), MediaType.TEXT_HTML).header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_HTML+"; charset=UTF-8").cacheControl(cc).build();
     } catch (Exception e) {
       if(log.isDebugEnabled()) log.debug(e.getMessage());
       return Response.status(HTTPStatus.INTERNAL_ERROR).cacheControl(cc).build();
