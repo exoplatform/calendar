@@ -11,7 +11,6 @@
   <name>eXo Calendar Extension</name>
   <description>Calendar Extension Root Pom</description>
   <modules>
-    <module>calendar-extension-config</module>
     <module>calendar-extension-webapp</module>
   </modules>
 </project>
