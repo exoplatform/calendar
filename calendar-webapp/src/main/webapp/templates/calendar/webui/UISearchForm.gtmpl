@@ -1,18 +1,19 @@
 <%
-uiform.begin();
-  def rcontext = _ctx.getRequestContext();
-  def searchPlaceHolder = _ctx.appRes("UISearch.label.Search");
-  action = uicomponent.event("Search") ;
-  def requirejs = rcontext.getJavascriptManager().getRequireJS();
-  requirejs.require("SHARED/CSUtils","CSUtils");
-  requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
-  requirejs.require("SHARED/jquery","gj");
-  requirejs.require("SHARED/placeholder","placeholder");
-  requirejs.addScripts("gj('#UISearchForm input#value').attr('placeholder','" + searchPlaceHolder +"').placeholder();");
-  requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
-  requirejs.addScripts('CSUtils.captureInput("value");');
-%>
-<div class="uiSearchForm uiSearchInput pull-right"  onclick="$action">
-    <div onclick="event.cancelBubble=true;"><%uiform.renderChild("value")%></div>
-</div>
-<%uiform.end();%>
+                 uiform.begin();
+                   def rcontext = _ctx.getRequestContext();
+                   def searchPlaceHolder = _ctx.appRes("UISearch.label.Search");
+                   action = uicomponent.event("Search") ;
+                   def requirejs = rcontext.getJavascriptManager().getRequireJS();
+                   requirejs.require("SHARED/CSUtils","CSUtils");
+                   requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
+                   requirejs.require("SHARED/jquery","gj");
+                   requirejs.require("SHARED/placeholder","placeholder");
+                   requirejs.addScripts("gj('#UISearchForm input#value').attr('placeholder','" + searchPlaceHolder +"').placeholder();");
+                   requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
+                   requirejs.addScripts("CSUtils.captureInput('value');gj('#value').click(false);");
+                 %>
+                 <div class="uiSearchForm uiSearchInput pull-right searchWithIcon"  onclick="$action">
+                     <a href="javascript:void(0)"  data-placement="bottom" rel="tooltip" class="advancedSearch" title="<%=searchPlaceHolder%>"><i class="uiIconSearch uiIconLightGray"></i></a>
+                     <%uiform.renderChild("value")%>
+                 </div>
+                 <%uiform.end();%>

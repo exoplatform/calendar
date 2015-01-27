@@ -463,7 +463,7 @@ public class Utils {
   
   public static String[] SEARCH_FIELDS = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
   public static String EVENT_ICON_URL = null;
-  public static String TASK_ICON_URL = "/social-resources/skin/images/Activity/status-task.png";
+  public static String TASK_ICON_URL = "/eXoSkin/skin/images/system/unified-search/status-task.png";
   
   public static final String DEFAULT_SITENAME = "intranet";
   public static final String PAGE_NAGVIGATION = "calendar";
