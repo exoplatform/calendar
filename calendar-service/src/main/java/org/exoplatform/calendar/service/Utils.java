@@ -38,6 +38,7 @@ import net.fortuna.ical4j.model.property.TzId;
 import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
+
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -54,11 +55,15 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
 
 import javax.jcr.Node;
 import javax.jcr.Session;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -496,6 +501,19 @@ public class Utils {
   public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
     StringBuffer sb = new StringBuffer(username);
     if (oService != null) {
+      ConversationState state = ConversationState.getCurrent();
+      if (state != null && username.equals(state.getIdentity().getUserId())) {
+        Identity identity = state.getIdentity();
+        Set<String> groupsId = identity.getGroups();
+        for (String groupId : groupsId) {
+          sb.append(COMMA).append(groupId).append(SLASH_COLON).append(ANY);
+          sb.append(COMMA).append(groupId).append(SLASH_COLON).append(identity.getUserId());
+        }
+        Collection<MembershipEntry> memberships = identity.getMemberships();
+        for (MembershipEntry membership : memberships) {
+          sb.append(COMMA).append(membership.getGroup()).append(SLASH_COLON).append(ANY_OF + membership.getMembershipType());
+        }
+      } else {
       Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
       for (Group g : groups) {
         sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY);
@@ -505,6 +523,7 @@ public class Utils {
           sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY_OF + mp.getMembershipType());
         }
       }
+    }
     }
     return hasEditPermission(savePerms, sb.toString().split(Utils.COMMA));
   }

@@ -46,6 +46,7 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.services.resources.LocaleContextInfo;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -350,7 +351,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       setEventCheckTime(cal.getTime()) ;
       setEventToDate(cal.getTime(),calSetting.getDateFormat(), calSetting.getTimeFormat()) ;
       StringBuffer pars = new StringBuffer(CalendarUtils.getCurrentUser()) ;
-      setMeetingInvitation(new String[] { CalendarUtils.getOrganizationService().getUserHandler().findUserByName(pars.toString()).getEmail() }) ;
+      setMeetingInvitation(new String[] { ((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail() }) ;
       setParticipant(pars.toString()) ;
       setSendOption(calSetting.getSendOption());
       getChild(UIEventShareTab.class).setParticipantStatusList(participantStatusList_);
@@ -1124,7 +1125,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   }
 
   protected void sendMail(MailService svr, OrganizationService orSvr, CalendarSetting setting, String fromId,  String toId, CalendarEvent event) throws Exception {
-    User invitor = orSvr.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()) ;
+    User invitor = (User)ConversationState.getCurrent().getAttribute("UserProfile");
     List<Attachment> atts = getAttachments(null, false);
 
     Map<String, String> eXoIdMap = new HashMap<String, String>();
