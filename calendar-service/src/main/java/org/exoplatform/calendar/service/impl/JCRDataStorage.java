@@ -65,6 +65,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
@@ -115,7 +116,10 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.IdentityConstants;
+import org.exoplatform.services.security.MembershipEntry;
 
 
 /**
@@ -3269,18 +3273,27 @@ public class JCRDataStorage implements DataStorage {
         .getComponentInstanceOfType(OrganizationService.class);
     StringBuilder sb = new StringBuilder(username);
     if (oService != null) {
+      ConversationState state = ConversationState.getCurrent();
+      if (state != null && username.equals(state.getIdentity().getUserId())) {
+        Identity identity = state.getIdentity();
+        Set<String> groupsId = identity.getGroups();
+        for (String groupId : groupsId) {
+          sb.append(Utils.COMMA).append(groupId).append(Utils.SLASH_COLON).append(Utils.ANY);
+          sb.append(Utils.COMMA).append(groupId).append(Utils.SLASH_COLON).append(identity.getUserId());
+        }
+        Collection<MembershipEntry> memberships = identity.getMemberships();
+        for (MembershipEntry membership : memberships) {
+          sb.append(Utils.COMMA).append(membership.getGroup()).append(Utils.SLASH_COLON).append(Utils.ANY_OF + membership.getMembershipType());
+        }
+      } else {
       Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
       for (Group g : groups) {
         sb.append(Utils.COMMA).append(g.getId()).append(Utils.SLASH_COLON).append(Utils.ANY);
         sb.append(Utils.COMMA).append(g.getId()).append(Utils.SLASH_COLON).append(username);
-        Collection<Membership> memberShipsType = oService.getMembershipHandler()
-            .findMembershipsByUserAndGroup(username,
-                                           g.getId());
+          Collection<Membership> memberShipsType = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, g.getId());
         for (Membership mp : memberShipsType) {
-          sb.append(Utils.COMMA)
-          .append(g.getId())
-          .append(Utils.SLASH_COLON)
-          .append(Utils.ANY_OF + mp.getMembershipType());
+            sb.append(Utils.COMMA).append(g.getId()).append(Utils.SLASH_COLON).append(Utils.ANY_OF + mp.getMembershipType());
+          }
         }
       }
     }
