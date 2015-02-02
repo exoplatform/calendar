@@ -42,6 +42,8 @@ import org.exoplatform.calendar.webui.UIMiniCalendar;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
@@ -471,7 +473,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         uiEventForm.setParticipant(username) ;
         uiEventForm.setParticipantStatus(username) ;
         uiEventForm.getChild(UIEventShareTab.class).setParticipantStatusList(uiEventForm.getParticipantStatusList());
-        uiEventForm.setEmailAddress(CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail()) ;
+        uiEventForm.setEmailAddress(((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail()) ;
         uiEventForm.setEmailRemindBefore(String.valueOf(5));
         uiEventForm.setEmailReminder(true) ;
         uiEventForm.setEmailRepeat(false) ;
@@ -483,8 +485,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         String calId = uiForm.getEventCalendar();
         uiTaskForm.update(uiForm.calType_, uiForm.getUIFormSelectBoxGroup(FIELD_CALENDAR).getOptions()) ;
         uiTaskForm.initForm(calendarSetting, null, null) ;
-        String username = CalendarUtils.getCurrentUser() ;
-        uiTaskForm.setEmailAddress(CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail()) ;
+        uiTaskForm.setEmailAddress(((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail()) ;
         Date to = uiForm.getEventToDate(dateFormat, timeFormat) ;
         if(uiForm.getIsAllDay()) {
           java.util.Calendar tempCal = CalendarUtils.getInstanceOfCurrentCalendar() ;
@@ -498,7 +499,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         uiTaskForm.setEventToDate(to, dateFormat, timeFormat) ;
         uiTaskForm.setEventAllDate(uiForm.getIsAllDay()) ;
         uiTaskForm.setSelectedCategory(uiForm.getEventCategory()) ;
-        uiTaskForm.setEmailAddress(CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail()) ;
+        uiTaskForm.setEmailAddress(((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail()) ;
         uiTaskForm.setEmailRemindBefore(String.valueOf(5));
         uiTaskForm.setEmailReminder(true) ;
         uiTaskForm.setEmailRepeat(false) ;
@@ -527,7 +528,12 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
     }
   }
   public void autoAddReminder(CalendarEvent calEvent, Date from, String username) throws Exception{
-    String emailAddress = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail() ;
+    String emailAddress = null;
+    if (username.equals(CalendarUtils.getCurrentUser())) {
+      emailAddress = ((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail();
+    } else {
+      emailAddress= CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username).getEmail();
+    }
     if(CalendarUtils.isEmailValid(emailAddress)) {
       List<Reminder> reminders = new ArrayList<Reminder>() ;
       Reminder email = new Reminder(Reminder.TYPE_EMAIL) ;

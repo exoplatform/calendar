@@ -19,6 +19,8 @@ package org.exoplatform.calendar.webui.popup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
@@ -28,6 +30,7 @@ import org.exoplatform.commons.utils.ListAccessImpl;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -81,9 +84,9 @@ public class UIAddressForm extends UIForm implements UIPopupComponent {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
     OrganizationService oService = getApplicationComponent(OrganizationService.class);
     options.add(new SelectItemOption<String>("all", Utils.EMPTY_STR)) ;
-   Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(CalendarUtils.getCurrentUser());
-    for( Group g : groups) {
-      ListAccess<User> users = oService.getUserHandler().findUsersByGroupId(g.getId()) ;
+    Set<String> groups = ConversationState.getCurrent().getIdentity().getGroups();
+    for( String g : groups) {
+      ListAccess<User> users = oService.getUserHandler().findUsersByGroupId(g) ;
       for(User u : users.load(0, users.getSize())) {
         options.add(new SelectItemOption<String>(u.getUserName(), u.getUserName())) ;
       } 
