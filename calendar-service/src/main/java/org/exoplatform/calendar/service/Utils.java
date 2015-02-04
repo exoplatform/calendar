@@ -500,28 +500,26 @@ public class Utils {
   @SuppressWarnings("unchecked")
   public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
     StringBuffer sb = new StringBuffer(username);
-    if (oService != null) {
-      ConversationState state = ConversationState.getCurrent();
-      if (state != null && username.equals(state.getIdentity().getUserId())) {
-        Identity identity = state.getIdentity();
-        Set<String> groupsId = identity.getGroups();
-        for (String groupId : groupsId) {
-          sb.append(COMMA).append(groupId).append(SLASH_COLON).append(ANY);
-          sb.append(COMMA).append(groupId).append(SLASH_COLON).append(identity.getUserId());
-        }
-        Collection<MembershipEntry> memberships = identity.getMemberships();
-        for (MembershipEntry membership : memberships) {
-          sb.append(COMMA).append(membership.getGroup()).append(SLASH_COLON).append(ANY_OF + membership.getMembershipType());
-        }
-      } else {
-        Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
-        for (Group g : groups) {
-          sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY);
-          sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(username);
-          Collection<Membership> memberShipsType = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, g.getId());
-          for (Membership mp : memberShipsType) {
-            sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY_OF + mp.getMembershipType());
-          }
+    ConversationState state = ConversationState.getCurrent();
+    if (state != null && username.equals(state.getIdentity().getUserId())) {
+      Identity identity = state.getIdentity();
+      Set<String> groupsId = identity.getGroups();
+      for (String groupId : groupsId) {
+        sb.append(COMMA).append(groupId).append(SLASH_COLON).append(ANY);
+        sb.append(COMMA).append(groupId).append(SLASH_COLON).append(identity.getUserId());
+      }
+      Collection<MembershipEntry> memberships = identity.getMemberships();
+       for (MembershipEntry membership : memberships) {
+         sb.append(COMMA).append(membership.getGroup()).append(SLASH_COLON).append(ANY_OF + membership.getMembershipType());
+       }
+    } else if (oService != null) {
+      Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
+      for (Group g : groups) {
+        sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY);
+        sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(username);
+        Collection<Membership> memberShipsType = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, g.getId());
+        for (Membership mp : memberShipsType) {
+          sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY_OF + mp.getMembershipType());
         }
       }
     }
