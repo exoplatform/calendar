@@ -16,10 +16,7 @@
     def actions = uicomponent.getActionField(fieldKey) ;
     if(actions != null) {
       for(action in actions) {
-        String actionLabel = parent.getLabel("action." + action.actionName)  ;
-        if(actionLabel.equals("action." + action.actionName)) {
-          actionLabel = action.actionName ;
-        }
+        String actionLabel = parent.getLabel(action.actionName);
         String actionLink ="";
         if(action.actionParameter != null) {
           actionLink = (parent.event(action.actionListener, action.actionParameter)) ;
@@ -35,7 +32,7 @@
         }
         
         %>
-        <a class="actionIcon" rel="tooltip" data-placement="bottom" title="$action.actionName" href="$actionLink">
+        <a class="actionIcon" rel="tooltip" data-placement="bottom" data-original-title="$actionLabel" onclick="$actionLink">
         <%
         if(action.actionType == action.TYPE_ICON) {
         %>
