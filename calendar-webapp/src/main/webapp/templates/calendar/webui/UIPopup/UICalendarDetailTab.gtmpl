@@ -3,6 +3,7 @@
   import java.util.Map.Entry;
   import org.exoplatform.calendar.CalendarUtils;
   import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
+  import org.apache.commons.lang.StringEscapeUtils;
 
   def rcontext = _ctx.getRequestContext() ;
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
@@ -16,7 +17,7 @@
     def actions = uicomponent.getActionField(fieldKey) ;
     if(actions != null) {
       for(action in actions) {
-        String actionLabel = parent.getLabel(action.actionName);
+        String actionLabel = StringEscapeUtils.escapeHtml(parent.getLabel(action.actionName));
         String actionLink ="";
         if(action.actionParameter != null) {
           actionLink = (parent.event(action.actionListener, action.actionParameter)) ;
@@ -91,7 +92,7 @@
 		<div class="controls">
 			<% if (!CalendarUtils.isEmpty(parent.calendar_.getPublicUrl())) { %>
 			
-			<a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%= parent.getLabel(parent.ACT_OPEN)%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">
+			<a class="actionIcon" rel="tooltip" data-placement="bottom" title="<%= StringEscapeUtils.escapeHtml(parent.getLabel(parent.ACT_OPEN))%>" onclick="<%=parent.event("ShowPublicURL",parent.calendar_.getPublicUrl())%>">
 			  <i class="uiIconCalICal uiIconLightGray"></i>
 			</a>
 			<span>
