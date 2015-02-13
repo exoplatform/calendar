@@ -228,7 +228,7 @@ public class NewUserListener extends UserEventListener {
     try {
       cservice_.initNewUser(user.getUserName(), defaultCalendarSetting_);
     } catch (Exception e) {
-      LOG.error("Failed to initialize calendar account for " + user.getUserName());
+      LOG.error("Failed to initialize calendar account for " + user.getUserName(),e);
     }
   }
   
