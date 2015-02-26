@@ -406,7 +406,9 @@ public class CalendarUtils {
           locale = l;
           break;
         }
-      } catch (MissingResourceException ex) {}
+      } catch (MissingResourceException ex) {
+        log.debug("Three-letter country abbreviation is not available for locale: " + l.getDisplayName(), ex);
+      }
     }      
 
     if (locale != null) {

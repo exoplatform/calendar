@@ -41,7 +41,6 @@ import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.UIConfirmation;
-import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
@@ -384,17 +383,21 @@ public class UICalendarPortlet extends UIPortletApplication {
   }
   public void createActionConfirms(UIConfirmation uiConfirmation) {
     ResourceBundle resourceBundle = WebuiRequestContext.getCurrentInstance().getApplicationResourceBundle();
-    String yes = null;
+    String yes;
     try {
       yes = resourceBundle.getString("UICalendarPortlet.confirm.yes");
-    } catch (Exception ex) {}
-    if(yes == null) yes = "UICalendarPortlet.confirm.yes";
+    } catch (Exception ex) {
+      log.warn("Can not find resource bundle for key: UICalendarPortlet.confirm.yes");
+      yes = "UICalendarPortlet.confirm.yes";
+    }
 
-    String no = null;
+    String no;
     try {
       no = resourceBundle.getString("UICalendarPortlet.confirm.no");
-    } catch (Exception ex) {}
-    if(no == null) no = "UICalendarPortlet.confirm.no";
+    } catch (Exception ex) {
+      log.warn("Can not find resource bundle for key: UICalendarPortlet.confirm.no");
+      no = "UICalendarPortlet.confirm.no";
+    }
 
     List<UIConfirmation.ActionConfirm> actionConfirms = new ArrayList<UIConfirmation.ActionConfirm>();
     actionConfirms.add(new UIConfirmation.ActionConfirm("ConfirmClose", yes));

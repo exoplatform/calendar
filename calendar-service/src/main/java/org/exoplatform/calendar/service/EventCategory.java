@@ -21,6 +21,8 @@ import java.util.ResourceBundle;
 
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.services.jcr.util.IdGenerator;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 
@@ -31,6 +33,7 @@ import org.exoplatform.webui.application.WebuiRequestContext;
  * Jul 11, 2007  
  */
 public class EventCategory {
+  private static final Log log = ExoLogger.getLogger(EventCategory.class);
   private String  id;
 
   private String  name;
@@ -61,6 +64,7 @@ public class EventCategory {
             return res.getString("UICalendarView.label." + getId());            
           }
         } catch (MissingResourceException e) {
+            log.debug("Can not find resource bundle for key: UICalendarView.label." + getId());
         }
       }
     }

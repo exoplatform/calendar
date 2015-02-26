@@ -191,7 +191,9 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
           ListAccess<User> users = null;
           try {
             users = userHandler.findUsersByQuery(query);
-          } catch (Exception ex) {}
+          } catch (Exception ex) {
+              LOG.debug("Exception when find user by email", ex);
+          }
 
           if(users != null && users.getSize() > 0) {
             participant = users.load(0, 1)[0].getUserName();

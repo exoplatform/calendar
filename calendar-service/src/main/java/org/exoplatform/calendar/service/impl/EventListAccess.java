@@ -83,7 +83,7 @@ public class EventListAccess implements ListAccess<Row> {
   @Override
   public int getSize() throws Exception {
     if (size == null) {
-      System.out.println("Querying to get Size");
+      log.debug("Querying to get Size");
       load(0, 0);
     }
     return size;
