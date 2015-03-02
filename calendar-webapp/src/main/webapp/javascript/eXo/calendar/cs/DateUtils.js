@@ -213,10 +213,7 @@
         var monthValue = parseInt(dateFieldValue.substring(monthIndex,monthIndex + 2) - 1, 10);
         var yearIndex =   pattern.indexOf("yyyy");
         var yearValue = parseInt(dateFieldValue.substring(yearIndex,yearIndex + 4), 10);
-        var currentDate = new Date();
-        currentDate.setDate(dateValue);
-        currentDate.setMonth(monthValue);
-        currentDate.setYear(yearValue);
+        var currentDate = new Date(yearValue, monthValue, dateValue);
         return currentDate;
       }
   };
