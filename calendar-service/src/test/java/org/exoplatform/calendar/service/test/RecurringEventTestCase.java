@@ -961,6 +961,125 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     assertContain("20141026T100000Z", keys);
     assertContain("20141027T100000Z", keys);
   }
+
+  public void testEventRecurringMonthlyByDayOfWeek() throws Exception {
+    CalendarSetting setting = calendarService_.getCalendarSetting(username);
+    setting.setDateFormat("MMddyyyy");
+    setting.setTimeFormat("H:m");
+    // Set current user timezone is GTM+7
+    String oldTimeZone = setting.getTimeZone();
+    setting.setTimeZone("Asia/Saigon");
+    calendarService_.saveCalendarSetting(username, setting);
+    setting = calendarService_.getCalendarSetting(username);
+
+    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    Calendar calendar = createPrivateCalendar(username, "calendar for testing monthly recurring", "description");
+    //. 09 Mar 2015 (Monday)
+    String startTime = "03092015 03:00";
+    String endTime = "03092015 04:00";
+    Date start = getDate(setting, startTime);
+    Date end = getDate(setting, endTime);
+
+    java.util.Calendar from = java.util.Calendar.getInstance(userTimezone);
+    from.setTime(start);
+    from.add(java.util.Calendar.DATE, -2);
+    java.util.Calendar to = java.util.Calendar.getInstance(userTimezone);
+    to.setTime(end);
+    to.add(java.util.Calendar.MONTH, 6);
+
+    // Create recuring event
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary("test monthly recurring event");
+    event.setFromDateTime(start);
+    event.setToDateTime(end);
+    //. Create event on Wednesday but repeat weekly on Thursday and Friday
+    event.setRepeatType(CalendarEvent.RP_MONTHLY);
+    event.setRepeatInterval(1);
+    // Repeat monthly on the second Monday
+    event.setRepeatByDay(new String[]{"2MO"});
+    event.setRepeatCount(5);
+    event.setRepeatUntilDate(null);
+    Utils.updateOriginDate(event, userTimezone);
+    Utils.adaptRepeatRule(event, userTimezone, CalendarService.PERSISTED_TIMEZONE);
+    calendarService_.saveUserEvent(username, calendar.getId(), event, true);
+    //. Get occurrenceEvent
+    Map<String, CalendarEvent> events = calendarService_.getOccurrenceEvents(event, from, to, setting.getTimeZone());
+
+    //. Reset old timezone in setting
+    setting.setTimeZone(oldTimeZone);
+    calendarService_.saveCalendarSetting(username, setting);
+
+    //. Assert result
+    assertEquals(5, events.size());
+    Set<String> keys = events.keySet();
+    assertContain("20150309T030000Z", keys);
+    assertNotContain("20150316T030000Z", keys);
+    assertContain("20150413T030000Z", keys);
+    assertContain("20150511T030000Z", keys);
+    assertContain("20150608T030000Z", keys);
+    assertContain("20150713T030000Z", keys);
+    assertNotContain("20150810T030000Z", keys);
+  }
+
+  public void testEventRecurringMonthlyByDayOfMonth() throws Exception {
+    CalendarSetting setting = calendarService_.getCalendarSetting(username);
+    setting.setDateFormat("MMddyyyy");
+    setting.setTimeFormat("H:m");
+    // Set current user timezone is GTM+7
+    String oldTimeZone = setting.getTimeZone();
+    setting.setTimeZone("Asia/Saigon");
+    calendarService_.saveCalendarSetting(username, setting);
+    setting = calendarService_.getCalendarSetting(username);
+
+    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    Calendar calendar = createPrivateCalendar(username, "calendar for testing monthly recurring", "description");
+    //. 09 Mar 2015 (Monday)
+    String startTime = "03092015 03:00";
+    String endTime = "03092015 04:00";
+    Date start = getDate(setting, startTime);
+    Date end = getDate(setting, endTime);
+
+    java.util.Calendar from = java.util.Calendar.getInstance(userTimezone);
+    from.setTime(start);
+    from.add(java.util.Calendar.DATE, -2);
+    java.util.Calendar to = java.util.Calendar.getInstance(userTimezone);
+    to.setTime(end);
+    to.add(java.util.Calendar.MONTH, 6);
+
+    // Create recuring event
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary("test monthly recurring event");
+    event.setFromDateTime(start);
+    event.setToDateTime(end);
+    //. Create event on Wednesday but repeat weekly on Thursday and Friday
+    event.setRepeatType(CalendarEvent.RP_MONTHLY);
+    event.setRepeatInterval(1);
+    //Repeat at 09th every month
+    event.setRepeatByMonthDay(new long[]{9L});
+    event.setRepeatCount(5);
+    event.setRepeatUntilDate(null);
+    Utils.updateOriginDate(event, userTimezone);
+    Utils.adaptRepeatRule(event, userTimezone, CalendarService.PERSISTED_TIMEZONE);
+    calendarService_.saveUserEvent(username, calendar.getId(), event, true);
+    //. Get occurrenceEvent
+    Map<String, CalendarEvent> events = calendarService_.getOccurrenceEvents(event, from, to, setting.getTimeZone());
+
+    //. Reset old timezone in setting
+    setting.setTimeZone(oldTimeZone);
+    calendarService_.saveCalendarSetting(username, setting);
+
+    //. Assert result
+    assertEquals(5, events.size());
+    Set<String> keys = events.keySet();
+    assertContain("20150309T030000Z", keys);
+    assertNotContain("20150316T030000Z", keys);
+    assertContain("20150409T030000Z", keys);
+    assertContain("20150509T030000Z", keys);
+    assertContain("20150609T030000Z", keys);
+    assertContain("20150709T030000Z", keys);
+    assertNotContain("20150809T030000Z", keys);
+  }
+
   private Date getDate(CalendarSetting setting, String datetime) throws Exception {
     String format = setting.getDateFormat() + " " + setting.getTimeFormat();
     DateFormat df = new SimpleDateFormat(format);

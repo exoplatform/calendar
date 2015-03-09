@@ -932,11 +932,11 @@ public class Utils {
     // WeekDay
     WeekDayList dayList = recur.getDayList();
     if(dayList != null && dayList.size() > 0) {
-      List<String> days = new ArrayList<String>();
+      String[] days = new String[dayList.size()];
       for(int i = 0; i < dayList.size(); i++) {
-        days.add(((WeekDay)dayList.get(i)).getDay());
+        days[i] = dayList.get(i).toString();
       }
-      event.setRepeatByDay(days.toArray(new String[days.size()]));
+      event.setRepeatByDay(days);
     }
     // Month day
     NumberList list = recur.getMonthDayList();
@@ -971,7 +971,7 @@ public class Utils {
           if(index < 0) {
             index += 7;
           }
-          newWeekDayList.add(weekdays[index]);
+          newWeekDayList.add(new WeekDay(weekdays[index], weekdayI.getOffset()));
         }
         recur.getDayList().removeAll(weekdayList);
         recur.getDayList().addAll(newWeekDayList);
@@ -1215,8 +1215,6 @@ public class Utils {
     long diff = event.getToDateTime().getTime() - event.getFromDateTime().getTime();
 
     java.util.Calendar calendar = java.util.Calendar.getInstance(tz);
-    java.util.Calendar date = java.util.Calendar.getInstance(tz);
-    date.setTime(event.getFromDateTime());
     calendar.setTime(event.getFromDateTime());
 
     Recur recur = Utils.getICalendarRecur(event);
@@ -1225,40 +1223,21 @@ public class Utils {
     }
 
     WeekDayList weekDayList = recur.getDayList();
-
-    if("WEEKLY".equals(recur.getFrequency())) {
-      if(weekDayList.size() > 0) {
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        int min = Integer.MAX_VALUE;
-        for(int i = 0; i < weekDayList.size(); i++) {
-          WeekDay wd = (WeekDay)weekDayList.get(i);
-          int cd = WeekDay.getCalendarDay(wd);
-          if(cd >= dayOfWeek) {
-            if(min > cd - dayOfWeek) {
-              min = cd - dayOfWeek;
-              calendar.set(Calendar.DAY_OF_WEEK, cd);
-            }
-          }
-        }
-        //calendar.set(java.util.Calendar.DAY_OF_WEEK, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
-      }
+    if(weekDayList.size() == 0) {
+      return;
+    }
+    Set<Integer> days = new HashSet<Integer>();
+    for(int i = 0; i < weekDayList.size(); i++) {
+      WeekDay wd = (WeekDay)weekDayList.get(i);
+      days.add(WeekDay.getCalendarDay(wd));
+    }
+    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+    while(!days.contains(dayOfWeek)) {
+      calendar.add(Calendar.DATE, 1);
+      dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
     }
 
-    if("MONTHLY".equals(recur.getFrequency())) {
-      if(weekDayList.size() > 0) {
-        if(weekDayList.size() > 0) {
-          calendar.set(java.util.Calendar.DAY_OF_WEEK_IN_MONTH, WeekDay.getCalendarDay((WeekDay) weekDayList.get(0)));
-        }
-
-        NumberList monthDayList = recur.getMonthDayList();
-
-        if(monthDayList.size() > 0) {
-          calendar.set(java.util.Calendar.DAY_OF_MONTH, ((Integer) monthDayList.get(0)).intValue());
-        }
-      }
-    }
     event.setFromDateTime(calendar.getTime());
-
     calendar.setTimeInMillis(calendar.getTimeInMillis() + diff);
     event.setToDateTime(calendar.getTime());
   }
