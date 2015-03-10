@@ -3432,8 +3432,12 @@ public class CalendarRestApi implements ResourceContainer {
   @POST
   @RolesAllowed("users")
   @Path("/events/{id}/invitations/")
-  public Response createInvitationForEvent(@PathParam("id") String id, @QueryParam("participant") String participant, 
-                                           @QueryParam("status") String status, @Context UriInfo uriInfo) throws Exception {
+  public Response createInvitationForEvent(@PathParam("id") String id, InvitationResource invitation, @Context UriInfo uriInfo) throws Exception {
+    if(invitation == null) {
+      return buildBadResponse(new ErrorResource("Invitation information must not null", "invitation"));
+    }
+    String participant = invitation.getParticipant();
+    String status = invitation.getStatus();
     if (participant == null || participant.trim().isEmpty()) {
       return buildBadResponse(new ErrorResource("participant must not null or empty", "participant"));
     }

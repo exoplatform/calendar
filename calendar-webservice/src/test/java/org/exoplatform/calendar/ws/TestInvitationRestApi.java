@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.ws.bean.CollectionResource;
 import org.exoplatform.calendar.ws.bean.EventResource;
 import org.exoplatform.calendar.ws.bean.InvitationResource;
@@ -35,6 +36,7 @@ import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
+import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
@@ -349,25 +351,49 @@ public class TestInvitationRestApi extends TestRestApi {
 
   public void testCreateInvitationForEvent() throws Exception {
     login("john");
-    String queryParams = "?participant=john&status=maybe";
-    
+
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    headers.putSingle("content-type", "application/json");
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+
+    Invitation invite = new Invitation(uEvt.getId(), "john", "maybe");
+    InvitationResource invitationResource = new InvitationResource(invite, "");
+    JsonValue json = generatorImpl.createJsonObject(invitationResource);
+    byte[] data = json.toString().getBytes("UTF-8");
+    headers.putSingle("content-length", "" + data.length);
+
     ContainerResponse response = service(HTTPMethods.POST, CAL_BASE_URI + EVENT_URI + "notExistsEvent" + 
-                                         INVITATION_URI + queryParams, baseURI, headers, null, writer);
+                                         INVITATION_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.NOT_FOUND, response.getStatus());
 
+    //. No participant and no status
+    invite = new Invitation(uEvt.getId(), null, null);
+    invitationResource = new InvitationResource(invite, "");
+    json = generatorImpl.createJsonObject(invitationResource);
+    data = json.toString().getBytes("UTF-8");
+    headers.putSingle("content-length", "" + data.length);
     response = service(HTTPMethods.POST, CAL_BASE_URI + EVENT_URI + uEvt.getId() +
-                       INVITATION_URI, baseURI, headers, null, writer);
-    //no query params
+                       INVITATION_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.BAD_REQUEST, response.getStatus());
-    
+
+
+    invite = new Invitation(uEvt.getId(), "john", "maybe");
+    invitationResource = new InvitationResource(invite, "");
+    json = generatorImpl.createJsonObject(invitationResource);
+    data = json.toString().getBytes("UTF-8");
+    headers.putSingle("content-length", "" + data.length);
     response = service(HTTPMethods.POST, CAL_BASE_URI + EVENT_URI + uEvt.getId() +
-                       INVITATION_URI + queryParams, baseURI, headers, null, writer);
+                       INVITATION_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.UNAUTHORIZED, response.getStatus());
 
     login("root");
+    invite = new Invitation(uEvt.getId(), "john", "maybe");
+    invitationResource = new InvitationResource(invite, "");
+    json = generatorImpl.createJsonObject(invitationResource);
+    data = json.toString().getBytes("UTF-8");
+    headers.putSingle("content-length", "" + data.length);
     response = service(HTTPMethods.POST, CAL_BASE_URI + EVENT_URI + uEvt.getId() +
-                                         INVITATION_URI + queryParams, baseURI, headers, null, writer);
+                                         INVITATION_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.CREATED, response.getStatus());
     String location = "[/v1/calendar/invitations/" + uEvt.getId() + ":john]";
     assertEquals(location, response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION).toString());

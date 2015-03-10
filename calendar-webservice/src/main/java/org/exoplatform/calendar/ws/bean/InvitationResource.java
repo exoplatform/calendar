@@ -62,4 +62,11 @@ public class InvitationResource extends Resource {
     return status;
   }
 
+  public void setParticipant(String participant) {
+    this.participant = participant;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
 }
