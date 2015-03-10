@@ -380,6 +380,11 @@ public class Utils {
   public static int          EVENT_NUMBER               = -1;
 
   /**
+   * These constants are used in reminding via mail  
+   */
+  public static final String LANGUAGE                  = "en";
+
+  /**
    * These constants were used to determine synchronization period of remote calendar
    */
   public static final String SYNC_AUTO                  = "auto";
