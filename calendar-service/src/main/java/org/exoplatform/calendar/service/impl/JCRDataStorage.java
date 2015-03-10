@@ -1578,34 +1578,8 @@ public class JCRDataStorage implements DataStorage {
       remindTime.setTimeInMillis(time);
       reminderNode.setProperty(Utils.EXO_REMINDER_DATE, remindTime);
     }
-    StringBuilder summary = new StringBuilder("Type      : ");
-    summary.append(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString()).append("<br>");
-    summary.append("Summary: ");
-    summary.append(eventNode.getProperty(Utils.EXO_SUMMARY).getString()).append("<br>");
-    summary.append("Description: ");
-    if (eventNode.hasProperty(Utils.EXO_DESCRIPTION))
-      summary.append(eventNode.getProperty(Utils.EXO_DESCRIPTION).getString());
-    summary.append("<br>");
-    summary.append("Location   : ");
-    if (eventNode.hasProperty(Utils.EXO_LOCATION))
-      summary.append(eventNode.getProperty(Utils.EXO_LOCATION).getString());
-    summary.append("<br>");
-    if (!Utils.isEmpty(reminder.getReminderOwner())) {
-      try {
-        remindTime.setTimeZone(TimeZone.getTimeZone(getCalendarSetting(reminder.getReminderOwner()).getTimeZone()));
-      } catch (Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug(e);
-        }
-      }
-    }
-    fromTime.setTime(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTime());
-    appendDateToSummary("From       : ", fromTime, summary);
 
-    toTime.setTime(eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTime());
-    appendDateToSummary("To         : ", toTime, summary);
-
-    reminderNode.setProperty(Utils.EXO_DESCRIPTION, summary.toString());
+    reminderNode.setProperty(Utils.EXO_DESCRIPTION, "");
     reminderNode.setProperty(Utils.EXO_SUMMARY, eventNode.getProperty(Utils.EXO_SUMMARY)
                              .getString());
     if (!reminderFolder.isNew())
@@ -1614,14 +1588,6 @@ public class JCRDataStorage implements DataStorage {
       reminderFolder.getSession().save();
     
     eventCache.remove(eventNode.getProperty(Utils.EXO_ID).getString());
-  }
-
-  private void appendDateToSummary(String label, java.util.Calendar cal, StringBuilder summary) {
-    summary.append(label).append(cal.get(java.util.Calendar.HOUR_OF_DAY)).append(Utils.COLON);
-    summary.append(cal.get(java.util.Calendar.MINUTE)).append(" - ");
-    summary.append(cal.get(java.util.Calendar.DATE)).append(Utils.SLASH);
-    summary.append(cal.get(java.util.Calendar.MONTH) + 1).append(Utils.SLASH);
-    summary.append(cal.get(java.util.Calendar.YEAR)).append("<br>");
   }
 
   /**
