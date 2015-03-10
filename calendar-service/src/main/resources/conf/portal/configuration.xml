@@ -14,7 +14,7 @@
       <init-params>
         <values-param>
           <name>classpath.resources</name>
-          <description>The resources that start with the following package name should be load from file system</description>
+          <description>The resources that start with the following package name should be loaded from file system</description>
           <value>locale.service.calendar.CalendarService</value>
         </values-param>
       </init-params>
