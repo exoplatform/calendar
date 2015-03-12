@@ -14,4 +14,5 @@
     <filter-name>ResourceRequestFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  <absolute-ordering/>
 </web-app>
