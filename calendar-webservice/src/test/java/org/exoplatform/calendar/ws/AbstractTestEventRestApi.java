@@ -153,7 +153,7 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     gEvt.setEventType(eventType);
     calendarService.savePublicEvent(groupCalendar.getId(), gEvt, false);
     
-    login("john");    
+    login("john", "/platform/administrators:*");    
     //
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service(HTTPMethods.GET, uri, baseURI, headers, null, writer);

@@ -308,8 +308,8 @@ public class EventDAOImpl implements EventDAO {
     public CalendarEvent[] load(int offset, int limit) throws Exception, IllegalArgumentException {
       Node[] results = list.load(offset, limit);
       List<CalendarEvent> events = new LinkedList<CalendarEvent>();
-      for (Node node : results) {
-        events.add(getEventFromNode(node));
+      for (Node node : results) {         
+        events.add(storage.getEventById(node.getProperty(Utils.EXO_ID).getString()));
       }
       
       return events.toArray(new CalendarEvent[events.size()]);

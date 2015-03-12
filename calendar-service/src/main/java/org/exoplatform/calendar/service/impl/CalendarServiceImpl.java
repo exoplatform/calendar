@@ -1809,14 +1809,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
   
   public void removeAttachmentById(String attId) {
-    try {
-      Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
-      Node parentNode =  calendarApp.getSession().getItem(attId).getParent();
-      calendarApp.getSession().getItem(attId).remove();
-      parentNode.save();
-    } catch (Exception e) {
-      if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());
-    }
+    storage_.removeAttachmentById(attId);
   }
 
   @Override

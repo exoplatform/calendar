@@ -157,6 +157,7 @@ public class JCRDataStorage implements DataStorage {
   /** cache for event categories of users - store username as key */
   private final ExoCache<String, List<EventCategory>> userEventCategories;
   
+  private FutureExoCache<String, CalendarEvent, JCRDataStorage> eventCache;
   private FutureExoCache<String, List<Calendar>, JCRDataStorage> userCalendarCache;
   private FutureExoCache<String, List<Calendar>, JCRDataStorage> groupCalendarCache;
   private FutureExoCache<String, CalendarSetting, JCRDataStorage> calendarSettingCache;
@@ -174,6 +175,9 @@ public class JCRDataStorage implements DataStorage {
     repoService_ = repoService;
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     sessionProviderService_ = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);    
+    
+    ExoCache<String, CalendarEvent> eXoEventCache       = cservice.getCacheInstance("calendar.CalendarEvent");
+    eventCache = new FutureExoCache<String, CalendarEvent, JCRDataStorage>(new CalendarEventLoader(), eXoEventCache);
     
     ExoCache<String, List<Calendar>> eXoUserCalendarCache       = cservice.getCacheInstance("calendar.UserCalendar");
     userCalendarCache = new FutureExoCache<String, List<Calendar>, JCRDataStorage>(new UserCalendarLoader(), eXoUserCalendarCache);
@@ -411,7 +415,7 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         log.error("Exception occurred when removing calendar " + calendarId, e);
       }
-
+      eventCache.clear();
       userCalendarCache.remove(username);
 
       try {
@@ -519,6 +523,7 @@ public class JCRDataStorage implements DataStorage {
       }
       calNode.remove();
       calendarHome.getSession().save();
+      eventCache.clear();
       // Clear the cache to avoid inconsistency
       groupCalendarCache.clear(); 
       return calendar;
@@ -683,6 +688,7 @@ public class JCRDataStorage implements DataStorage {
           }
         }
       }
+      eventCache.clear();
     }
     eventCategoryNode.setProperty(Utils.EXO_ID, eventCategory.getId());
     eventCategoryNode.setProperty(Utils.EXO_NAME, eventCategory.getName());
@@ -1102,6 +1108,7 @@ public class JCRDataStorage implements DataStorage {
       Node eventNode = nodesIt.nextNode();
       eventNode.setProperty(Utils.EXO_ORIGINAL_REFERENCE, (Value)null);
       eventNode.getSession().save();
+      eventCache.remove(eventNode.getProperty(Utils.EXO_ID).getString());
     }
   }
 
@@ -1193,6 +1200,7 @@ public class JCRDataStorage implements DataStorage {
               reminders.getSession().save();
           }
         }
+        eventCache.remove(eventNode.getProperty(Utils.EXO_ID).getString());
       } catch (Exception e) {
         if (log.isDebugEnabled())
           log.debug(e);
@@ -1526,6 +1534,7 @@ public class JCRDataStorage implements DataStorage {
     if(CalendarEvent.TYPE_EVENT.equals(event.getEventType())) {
       addEvent(event);
     }
+    eventCache.remove(event.getId());
   }
 
   /**
@@ -1599,6 +1608,8 @@ public class JCRDataStorage implements DataStorage {
       reminderFolder.save();
     else
       reminderFolder.getSession().save();
+    
+    eventCache.remove(eventNode.getProperty(Utils.EXO_ID).getString());
   }
 
   private void appendDateToSummary(String label, java.util.Calendar cal, StringBuilder summary) {
@@ -1711,6 +1722,7 @@ public class JCRDataStorage implements DataStorage {
     while (it.hasNext()) {
       it.nextNode().remove();
     }
+    eventCache.remove(rootEventId);
     eventFolder.getSession().save();
     eventFolder.refresh(true);
   }
@@ -1822,7 +1834,20 @@ public class JCRDataStorage implements DataStorage {
                             .getTimeInMillis());
     nodeContent.setProperty(Utils.JCR_MIMETYPE, attachment.getMimeType());
     nodeContent.setProperty(Utils.JCR_DATA, attachment.getInputStream());
+    eventCache.remove(eventNode.getProperty(Utils.EXO_ID).getString());
   }
+  
+  public void removeAttachmentById(String attId) {
+      try {
+        Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+        Node parentNode =  calendarApp.getSession().getItem(attId).getParent();
+        calendarApp.getSession().getItem(attId).remove();
+        parentNode.save();
+        eventCache.remove(parentNode.getParent().getProperty(Utils.EXO_ID).getString());
+      } catch (Exception e) {
+        if(log.isDebugEnabled()) log.debug(e.getMessage());
+      }
+    }
 
   /**
    * {@inheritDoc}
@@ -5955,16 +5980,7 @@ public class JCRDataStorage implements DataStorage {
   }
 
   public CalendarEvent getEventById(String eventId) throws Exception {
-    QueryManager queryManager = getSession(createSessionProvider()).getWorkspace().getQueryManager();
-    String sql = "select * from exo:calendarEvent where exo:id=" + "\'" + eventId + "\'";
-    Query query = queryManager.createQuery(sql, Query.SQL);
-    QueryResult result = query.execute();
-    NodeIterator nodesIt = result.getNodes();
-    if(nodesIt.hasNext()) {
-      return getEvent(nodesIt.nextNode());
-    } else {
-      return null;
-    }
+    return eventCache.get(this, eventId);
   }
 
   @Override
@@ -6027,6 +6043,22 @@ public class JCRDataStorage implements DataStorage {
       return calendarList;
     }
   };
+  
+  private static class CalendarEventLoader implements Loader<String, CalendarEvent, JCRDataStorage> {
+      @Override
+      public CalendarEvent retrieve(JCRDataStorage context, String key) throws Exception {
+          QueryManager queryManager = context.getSession(context.createSessionProvider()).getWorkspace().getQueryManager();
+          String sql = "select * from exo:calendarEvent where exo:id=" + "\'" + key + "\'";
+          Query query = queryManager.createQuery(sql, Query.SQL);
+          QueryResult result = query.execute();
+          NodeIterator nodesIt = result.getNodes();
+          if(nodesIt.hasNext()) {
+            return context.getEvent(nodesIt.nextNode());
+          } else {
+            return null;
+          }
+      }
+    };
   
   /**
    * This kind of locks can self unregister from the map of locks

@@ -55,6 +55,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.apache.commons.fileupload.FileItem;
@@ -70,6 +71,7 @@ import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventDAO;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.RssData;
@@ -3628,16 +3630,31 @@ public class CalendarRestApi implements ResourceContainer {
   
   private String[] findViewableCalendars(String username) throws Exception {
     CalendarService service = calendarServiceInstance();
-    CalendarCollection<Calendar> calendars = service.getAllCalendars(username, Calendar.TYPE_ALL, 0, -1);
-    List<String> calIds = new LinkedList<String>();
-    for (Calendar cal : calendars) {
-      calIds.add(cal.getId());
+    //private calendar
+    List<Calendar> uCals = service.getUserCalendars(username, true);
+    //group calendar
+    Set<String> groupIds = ConversationState.getCurrent().getIdentity().getGroups();
+    List<GroupCalendarData> gCals = service.getGroupCalendars(groupIds.toArray(new String[groupIds.size()]), true, username);
+    //shared calendar
+    GroupCalendarData sCals = service.getSharedCalendars(username, true);
+    if (sCals != null) {
+        gCals.add(sCals);
     }
+    //public calendar
+    uCals.addAll(Arrays.asList(service.getPublicCalendars().load(0, -1))); 
     
-    Calendar[] pubCals = service.getPublicCalendars().load(0, -1); 
-    for (Calendar cal : pubCals) {
+    List<String> calIds = new LinkedList<String>();
+    for (Calendar cal : uCals) {
       calIds.add(cal.getId());
     }
+    for (GroupCalendarData data : gCals) {
+        if (data.getCalendars() != null) {
+            for (Calendar cal : data.getCalendars()) {
+                calIds.add(cal.getId());
+            }            
+        }
+    }
+
     return calIds.toArray(new String[calIds.size()]);
   }
   
