@@ -607,8 +607,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       if (NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL.equals(id)) continue;
       String savingCategoryName = NewUserListener.defaultEventCategoryNames[id];
       if (getEventCategoryByName(userName, savingCategoryName) != null) {
-        if (LOG.isWarnEnabled()) {
-          LOG.warn("Cannot initialize calendar data for " + userName + " because it already exists!");
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Calendar data for " + userName + " already exist.");
         }
         return;
       }
