@@ -29,7 +29,7 @@ public class RestEventQuery extends EventQuery {
   public String getQueryStatement() throws Exception {
     // events from user, groups, public calendars, and events that contains
     // specific participant
-    StringBuilder sql = new StringBuilder("SELECT * FROM ");
+    StringBuilder sql = new StringBuilder("SELECT " + Utils.EXO_ID + " FROM ");
     sql.append(Utils.EXO_CALENDAR_EVENT);
     sql.append(" WHERE");
 
