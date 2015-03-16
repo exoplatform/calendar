@@ -53,7 +53,7 @@ public class EventDAOImpl implements EventDAO {
 
   private CalendarService calService;
 
-  private JCRDataStorage  storage;
+  protected JCRDataStorage  storage;
 
   public EventDAOImpl(CalendarService calService, JCRDataStorage storage_) {
     this.calService = calService;

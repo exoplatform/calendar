@@ -32,64 +32,71 @@ import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
+import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 public class InvitationListAccess implements ListAccess<Invitation> {
+
+  private static Log   log = ExoLogger.getLogger(InvitationListAccess.class);
 
   private EventDAOImpl evtDAO;
 
   private EventQuery   query;
-  
-  private Invitation[] fullData;
+
+  private Integer      size;
 
   public InvitationListAccess(EventDAOImpl evtDAO, EventQuery query) {
     this.evtDAO = evtDAO;
     this.query = query;
   }
-  
+
   @Override
   public int getSize() throws Exception {
-    if (fullData == null) {
-      load(0, -1);
+    if (size == null) {
+      log.debug("Querying to get Size");
+      load(0, 0);
     }
-    if (fullData != null) {
-      return fullData.length;      
-    } else {
-      return 0;
-    }
+    return size;
   }
 
   @Override
   public Invitation[] load(int offset, int limit) throws Exception, IllegalArgumentException {
-    if (fullData == null) {
-      try {
-        QueryImpl jcrQuery = evtDAO.createJCRQuery(query.getQueryStatement(), query.getQueryType());        
-//      if (limit > 0) {
-//        jcrQuery.setOffset(offset);
-//        jcrQuery.setLimit(limit);
-//      }
-        
-        NodeIterator events = jcrQuery.execute().getNodes();
-        List<Invitation> invitations = new LinkedList<Invitation>();
-        
-        while (events.hasNext()) {
-          CalendarEvent event = evtDAO.getEventFromNode(events.nextNode());
-          if (query.getParticipants() != null && query.getParticipants().length > 0) {
-            Arrays.sort(query.getParticipants());          
-            for (Invitation ivt : event.getInvitations()) {            
-              if (Arrays.binarySearch(query.getParticipants(), ivt.getParticipant()) >= 0) {
-                invitations.add(ivt);
-              }
+    try {
+      QueryImpl jcrQuery = evtDAO.createJCRQuery(query.getQueryStatement(), query.getQueryType());
+      if (limit > 0) {
+        jcrQuery.setOffset(offset);
+        jcrQuery.setLimit(limit);
+      }
+
+      QueryResultImpl queryResult = (QueryResultImpl)jcrQuery.execute();
+      NodeIterator events = queryResult.getNodes();
+      this.size = queryResult.getTotalSize();
+
+      List<Invitation> invitations = new LinkedList<Invitation>();
+
+      String[] calIds = query.getCalendarId() == null ? new String[0] : query.getCalendarId();
+      Arrays.sort(calIds);        
+      String[] pars = query.getParticipants() == null ? new String[0] : query.getParticipants();
+      Arrays.sort(pars);
+      
+      while (events.hasNext()) {
+        CalendarEvent event = evtDAO.storage.getEventById(events.nextNode().getProperty(Utils.EXO_ID).getString());
+        if (Arrays.binarySearch(calIds, event.getCalendarId()) >= 0) {
+          invitations.addAll(Arrays.asList(event.getInvitations()));
+        } else {
+          for (Invitation ivt : event.getInvitations()) {
+            if (Arrays.binarySearch(pars, ivt.getParticipant()) >= 0) {
+              invitations.add(ivt);
             }
-          } else {
-            invitations.addAll(Arrays.asList(event.getInvitations()));          
-          }
+          }          
         }
-        fullData = invitations.toArray(new Invitation[invitations.size()]);
-      } catch (Exception ex) {
-        throw new CalendarException(null, ex);
-      }      
+      }
+      
+      return invitations.toArray(new Invitation[invitations.size()]);
+    } catch (Exception ex) {
+      throw new CalendarException(null, ex);
     }
-    return Utils.subArray(fullData, offset, limit);        
   }
 
 }

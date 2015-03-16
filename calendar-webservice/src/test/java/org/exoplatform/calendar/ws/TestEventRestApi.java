@@ -348,7 +348,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
                                          + EVENT_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.UNAUTHORIZED, response.getStatus());
     
-    login("root");
+    login("root", "/platform/administrators:*");
     response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI + groupCalendar.getId() + 
                        EVENT_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.CREATED, response.getStatus()); 

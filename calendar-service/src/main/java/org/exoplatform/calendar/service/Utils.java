@@ -84,6 +84,8 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
 
 /**
@@ -514,6 +516,31 @@ public class Utils {
    */
   public static boolean isEmpty(String string) {
     return string == null || string.trim().length() == 0;
+  }
+  
+  public static boolean canEdit(String[] savePerms, Identity user) throws Exception {
+    if (savePerms != null) {
+      for (String savePer : savePerms) {
+        PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+        
+        if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+          if (savePer.equals(user.getUserId())) {
+            return true;
+          }
+        } else {
+          String groupId = permission.getGroupId();
+          String membershipType = permission.getMembership();
+          MembershipEntry expected = new MembershipEntry(groupId, membershipType);
+          
+          for (MembershipEntry ms : user.getMemberships()) {
+            if (ms.equals(expected)) {
+              return true;
+            }
+          }
+        }
+      }  
+    }
+    return false;
   }
 
   @SuppressWarnings("unchecked")
@@ -1387,13 +1414,17 @@ public class Utils {
     }
     
     ExoContainer container = ExoContainerContext.getCurrentContainer();
-    CalendarService service = (CalendarService)container.getComponentInstanceOfType(CalendarService.class);
-    OrganizationService oService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);
-    
+    OrganizationService oService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);    
     try {      
-      if(service.getUserCalendar(username, cal.getId()) != null) {
-        return !service.isRemoteCalendar(username, cal.getId());
+      if(username.equals(cal.getCalendarOwner())) {
+        return !cal.isRemote();
       } else {
+        if (ConversationState.getCurrent() != null) {
+          Identity curr = ConversationState.getCurrent().getIdentity();
+          if (curr != null && curr.getUserId().equals(username)) {
+            return Utils.canEdit(cal.getEditPermission(), curr);
+          }
+        }
         return Utils.canEdit(oService, cal.getEditPermission(), username);    
       }
     } catch (Exception ex) {

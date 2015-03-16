@@ -73,7 +73,6 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Invitation;
-import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
@@ -833,8 +832,8 @@ public class CalendarRestApi implements ResourceContainer {
     EventDAO evtDAO = service.getEventDAO();
     
     //find all viewable calendars of user: public, user, group, shared calendars,
-    String[] calIds = findViewableCalendars(username);
-    EventQuery eventQuery = buildEventQuery(start, end, category, calIds, null, username, CalendarEvent.TYPE_EVENT, returnSize);
+    List<Calendar> cals = findViewableCalendars(username);
+    EventQuery eventQuery = buildEventQuery(start, end, category, cals, null, username, CalendarEvent.TYPE_EVENT);
     ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
     
     List data = new LinkedList();
@@ -1450,8 +1449,8 @@ public class CalendarRestApi implements ResourceContainer {
         participant = username;
       }
 
-      EventQuery eventQuery = buildEventQuery(start, end, category, new String[] {id}, 
-                                              id, participant, CalendarEvent.TYPE_EVENT, returnSize);
+      EventQuery eventQuery = buildEventQuery(start, end, category, Arrays.asList(calendar), 
+                                              id, participant, CalendarEvent.TYPE_EVENT);
       ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
 
       //
@@ -1849,8 +1848,8 @@ public class CalendarRestApi implements ResourceContainer {
         participant = username;
       }
 
-      EventQuery eventQuery = buildEventQuery(start, end, category, new String[] {id}, 
-                                              id, participant, CalendarEvent.TYPE_TASK, returnSize);
+      EventQuery eventQuery = buildEventQuery(start, end, category, Arrays.asList(calendar), 
+                                              id, participant, CalendarEvent.TYPE_TASK);
       ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
 
       //
@@ -2075,8 +2074,8 @@ public class CalendarRestApi implements ResourceContainer {
     EventDAO evtDAO = service.getEventDAO();
     
     //find all viewable calendars of user: public, user, group, shared calendars,
-    String[] calIds = findViewableCalendars(username);
-    EventQuery eventQuery = buildEventQuery(start, end, category, calIds, null, username, CalendarEvent.TYPE_TASK, returnSize);
+    List<Calendar> cals = findViewableCalendars(username);
+    EventQuery eventQuery = buildEventQuery(start, end, category, cals, null, username, CalendarEvent.TYPE_TASK);
     ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
     
     List data = new LinkedList();
@@ -3043,50 +3042,29 @@ public class CalendarRestApi implements ResourceContainer {
                                                   @QueryParam("expand") String expand,
                                                   @QueryParam("returnSize") boolean returnSize,
                                                   @Context UriInfo uri) throws Exception {
-    java.util.Calendar[] dates = parseDate(start, end);
     limit = parseLimit(limit);
-    //uInvites and eInvites currently load duplicated results
-    MultiListAccess invitations = new MultiListAccess(true);
     String username = currentUserId();
 
     CalendarService service = calendarServiceInstance();
-    EventDAO evtDAO = service.getEventDAO();
-    //Find all invitations that user is participant
-    EventQuery uQuery = new EventQuery();
-    uQuery.setFromDate(dates[0]);
-    uQuery.setToDate(dates[1]);
-    uQuery.setParticipants(new String[] {username});
-    ListAccess<Invitation> uInvites = evtDAO.findInvitationsByQuery(uQuery);
-    //
-    invitations.add(uInvites);
+    EventDAO evtDAO = service.getEventDAO();    
+    List<Calendar> calendarIds = findEditableCalendars(username);
+    EventQuery evtQuery = buildEventQuery(start, end, null, calendarIds, null, username, CalendarEvent.TYPE_EVENT);
+    ListAccess<Invitation> invites = evtDAO.findInvitationsByQuery(evtQuery);
 
-    //Find invitations of editable calendars    
-    String[] calendarIds = findEditableCalendars(username);
-    if (calendarIds.length > 0) {
-      EventQuery eQuery = new EventQuery();
-      eQuery.setFromDate(dates[0]);
-      eQuery.setToDate(dates[1]);
-      eQuery.setCalendarId(calendarIds);
-      ListAccess<Invitation> eInvites = evtDAO.findInvitationsByQuery(eQuery);
-      //
-      invitations.add(eInvites);
-    }
-    
     List data = new LinkedList();
-    for (Object invitation : invitations.load(offset, limit)) {
+    for (Object invitation : invites.load(offset, limit)) {
       data.add(buildInvitationResource((Invitation)invitation, uri, expand, fields));
     }
-    long fullSize = returnSize ? invitations.getSize() : -1;
+
+    long fullSize = returnSize ? invites.getSize() : -1;
     CollectionResource ivData = new CollectionResource(data, fullSize);    
     ivData.setOffset(offset);
     ivData.setLimit(limit);
-
-    ResponseBuilder response = buildJsonP(ivData, jsonp);
-    
+    //
+    ResponseBuilder response = buildJsonP(ivData, jsonp);    
     if (returnSize) {
       response.header(HEADER_LINK, buildFullUrl(uri, offset, limit, fullSize));
-    }
-    
+    }    
     //
     return response.build();
   }
@@ -3628,7 +3606,7 @@ public class CalendarRestApi implements ResourceContainer {
     return false;
   }
   
-  private String[] findViewableCalendars(String username) throws Exception {
+  private List<Calendar> findViewableCalendars(String username) throws Exception {
     CalendarService service = calendarServiceInstance();
     //private calendar
     List<Calendar> uCals = service.getUserCalendars(username, true);
@@ -3643,46 +3621,46 @@ public class CalendarRestApi implements ResourceContainer {
     //public calendar
     uCals.addAll(Arrays.asList(service.getPublicCalendars().load(0, -1))); 
     
-    List<String> calIds = new LinkedList<String>();
-    for (Calendar cal : uCals) {
-      calIds.add(cal.getId());
-    }
+    List<Calendar> results = new LinkedList<Calendar>();
+    results.addAll(uCals);
+    
     for (GroupCalendarData data : gCals) {
         if (data.getCalendars() != null) {
             for (Calendar cal : data.getCalendars()) {
-                calIds.add(cal.getId());
+                results.add(cal);
             }            
         }
     }
 
-    return calIds.toArray(new String[calIds.size()]);
+    return results;
   }
   
-  private String[] findEditableCalendars(String username) {
-    CalendarCollection<Calendar> calendars = calendarServiceInstance().getAllCalendars(username, Calendar.TYPE_ALL, 0, -1);
+  private List<Calendar> findEditableCalendars(String username) throws Exception {
+    List<Calendar> calendars = findViewableCalendars(username);
     Iterator<Calendar> iter = calendars.iterator();
     while (iter.hasNext()) {
       if (!Utils.isCalendarEditable(username, iter.next())) {
         iter.remove();
       }
     }
-    String[] calendarIds = new String[calendars.size()];
-    int i = 0;
-    for (Calendar cal : calendars) {
-      calendarIds[i++] = cal.getId();
-    }
-    return calendarIds;
+    return calendars;
   }
   
-  private EventQuery buildEventQuery(String start, String end, String category, String[] calIds, String calendarPath,
-                                               String participant, String eventType, boolean returnSize) {
+  private EventQuery buildEventQuery(String start, String end, String category, List<Calendar> calendars, String calendarPath,
+                                               String participant, String eventType) {
     java.util.Calendar[] dates = parseDate(start, end);    
     
     //Find all invitations that user is participant
     EventQuery uQuery = new RestEventQuery();
     uQuery.setQueryType(Query.SQL);
     uQuery.setCalendarPath(calendarPath);
-    uQuery.setCalendarId(calIds);
+    List<String> calIds = new LinkedList<String>();
+    if (calendars != null) {
+      for (Calendar cal : calendars) {
+        calIds.add(cal.getId());
+      }
+      uQuery.setCalendarId(calIds.toArray(new String[calIds.size()]));
+    }
     if (category != null) {
       uQuery.setCategoryId(new String[] {category});      
     }

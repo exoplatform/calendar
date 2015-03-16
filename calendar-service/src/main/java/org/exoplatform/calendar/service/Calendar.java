@@ -149,6 +149,8 @@ public class Calendar extends AbstractBean {
   private boolean              _isPublic      = false;
 
   private int                  _calType;
+  
+  private boolean       remote = false;
 
   public static final String   CALENDAR_PREF = "calendar";
 
@@ -304,5 +306,13 @@ public class Calendar extends AbstractBean {
 
   public void setCalType(int calType) {
     this._calType = calType;
+  }
+
+  public boolean isRemote() {
+    return remote;
+  }
+
+  public void setRemote(boolean remote) {
+    this.remote = remote;
   }
 }

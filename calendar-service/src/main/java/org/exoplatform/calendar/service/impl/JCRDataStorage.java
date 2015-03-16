@@ -385,6 +385,7 @@ public class JCRDataStorage implements DataStorage {
       calendarNode = calendarHome.getNode(calendar.getId());
     }
     calendar.setCalendarOwner(username);
+    calendar.setGroups(null);
     setCalendarProperties(calendarNode, calendar);
     Session session = calendarHome.getSession();
     session.save();
@@ -498,6 +499,7 @@ public class JCRDataStorage implements DataStorage {
     } else {
       calendarNode = calendarHome.getNode(calendar.getId());
     }
+    calendar.setCalendarOwner(null);
     setCalendarProperties(calendarNode, calendar);
     calendarHome.getSession().save();
     // Clear the cache to avoid inconsistency
@@ -592,6 +594,7 @@ public class JCRDataStorage implements DataStorage {
         editPermission = ValuesToStrings(p.getValues());
       }
     }
+    calendar.setRemote(calNode.isNodeType(Utils.EXO_REMOTE_MIXIN));
     if (!calendar.isPublic()) {
       if (groups != null) {
         calendar.setGroups(groups.toArray(new String[groups.size()]));

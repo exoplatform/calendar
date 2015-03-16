@@ -221,7 +221,7 @@ public class TestCalendarRestApi extends TestRestApi {
     response = service(HTTPMethods.PUT, CAL_BASE_URI + CALENDAR_URI + groupCalendar.getId(), baseURI, headers, data, writer);
     assertEquals(HTTPStatus.UNAUTHORIZED, response.getStatus());
     
-    login("root");
+    login("root", "/platform/administrators:*");
     response = service(HTTPMethods.PUT, CAL_BASE_URI + CALENDAR_URI + groupCalendar.getId(), baseURI, headers, data, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
   }
@@ -236,7 +236,7 @@ public class TestCalendarRestApi extends TestRestApi {
     response = service(HTTPMethods.DELETE, CAL_BASE_URI + CALENDAR_URI + groupCalendar.getId(), baseURI, headers, null, writer);
     assertEquals(HTTPStatus.UNAUTHORIZED, response.getStatus());
 
-    login("root");
+    login("root", "/platform/administrators:*");
     response = service(HTTPMethods.DELETE, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId(), baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     assertNull(calendarService.getCalendarById(userCalendar.getId()));
