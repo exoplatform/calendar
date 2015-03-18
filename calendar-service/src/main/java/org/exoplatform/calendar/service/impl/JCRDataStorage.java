@@ -777,7 +777,7 @@ public class JCRDataStorage implements DataStorage {
       Node calendarNode = getUserCalendarHome(username).getNode(calendarId);
       NodeIterator it = calendarNode.getNodes();
       while (it.hasNext()) {
-        events.add(getEvent(it.nextNode()));
+        events.add(this.getEventById(it.nextNode().getProperty(Utils.EXO_ID).getString()));
       }
     }
     return events;
@@ -1238,7 +1238,7 @@ public class JCRDataStorage implements DataStorage {
       Node calendarNode = getPublicCalendarHome().getNode(calendarId);
       NodeIterator it = calendarNode.getNodes();
       while (it.hasNext()) {
-        CalendarEvent event = getEvent(it.nextNode());
+        CalendarEvent event = this.getEventById(it.nextNode().getProperty(Utils.EXO_ID).getString());
         event.setCalType(String.valueOf(Calendar.TYPE_PUBLIC));
         events.add(event);
       }
@@ -3233,7 +3233,7 @@ public class JCRDataStorage implements DataStorage {
           if (calendarIds.contains(calendar.getProperty(Utils.EXO_ID).getString())) {
             NodeIterator it = calendar.getNodes();
             while (it.hasNext()) {
-              events.add(getEvent(it.nextNode()));
+              events.add(this.getEventById(it.nextNode().getProperty(Utils.EXO_ID).getString()));
             }
           }
         } catch (Exception e) {
