@@ -424,7 +424,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     from.add(java.util.Calendar.HOUR_OF_DAY, 1);
     from.set(java.util.Calendar.MINUTE, 0);
     from.set(java.util.Calendar.SECOND, 0);
-    java.util.Calendar fromCalendar = (java.util.Calendar)from.clone();
     java.util.Calendar to = java.util.Calendar.getInstance();
     to.setTime(from.getTime());
     to.add(java.util.Calendar.HOUR_OF_DAY, 1);
@@ -433,6 +432,10 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //. Rebuild fromDate and toDate from user time
     Date fromDate = getDate(setting, startTime);
     Date toDate = getDate(setting, endTime);
+
+    java.util.Calendar fromCalendar = java.util.Calendar.getInstance(userTimezone);
+    fromCalendar.setTime(fromDate);
+
     //. Create calendar
     Calendar cal = createCalendar(username, "testGetOccurrenceEvent");
     //. Create recurring event
@@ -462,10 +465,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       assertNotContain(format.format(from.getTime()), keys);
       from.add(java.util.Calendar.HOUR_OF_DAY, -2);
       assertNotContain(format.format(from.getTime()), keys);
-      from.setTimeZone(userTimezone);
       from.add(java.util.Calendar.HOUR_OF_DAY, 1);
       from.add(java.util.Calendar.DAY_OF_YEAR, 1);
-      from.setTimeZone(fromCalendar.getTimeZone());
     }
 
     calendarService_.removeAllSeriesEvents(event, username);
@@ -497,7 +498,6 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     from.add(java.util.Calendar.HOUR_OF_DAY, 1);
     from.set(java.util.Calendar.MINUTE, 0);
     from.set(java.util.Calendar.SECOND, 0);
-    java.util.Calendar fromCalendar = (java.util.Calendar)from.clone();
     java.util.Calendar to = java.util.Calendar.getInstance();
     to.setTime(from.getTime());
     to.add(java.util.Calendar.HOUR_OF_DAY, 1);
@@ -506,6 +506,10 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     //. Rebuild fromDate and toDate from user time
     Date fromDate = getDate(setting, startTime);
     Date toDate = getDate(setting, endTime);
+
+    java.util.Calendar fromCalendar = java.util.Calendar.getInstance(userTimezone);
+    fromCalendar.setTime(fromDate);
+
     //. Create calendar
     Calendar cal = createCalendar(username, "testGetOccurrenceEvent1");
     //. Create recurring event
@@ -535,10 +539,8 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
       assertNotContain(format.format(from.getTime()), keys);
       from.add(java.util.Calendar.HOUR_OF_DAY, -2);
       assertNotContain(format.format(from.getTime()), keys);
-      from.setTimeZone(userTimezone);
       from.add(java.util.Calendar.HOUR_OF_DAY, 1);
       from.add(java.util.Calendar.DAY_OF_YEAR, 1);
-      from.setTimeZone(fromCalendar.getTimeZone());
     }
 
     calendarService_.removeAllSeriesEvents(event, username);
