@@ -88,7 +88,7 @@ public abstract class TestRestApi extends AbstractResourceTest {
     TimeZone tz = java.util.Calendar.getInstance().getTimeZone();
     java.util.Calendar from = java.util.Calendar.getInstance(tz);
     java.util.Calendar to = java.util.Calendar.getInstance(tz);
-    to.add(java.util.Calendar.WEEK_OF_MONTH, 1);
+    to.add(java.util.Calendar.DAY_OF_MONTH, 1);
 
     CalendarEvent ev = new CalendarEvent();
     ev.setSummary(sum);

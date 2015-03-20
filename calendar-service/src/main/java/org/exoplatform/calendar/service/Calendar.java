@@ -151,6 +151,8 @@ public class Calendar extends AbstractBean {
   private int                  _calType;
   
   private boolean       remote = false;
+  
+  private boolean hasChildren = false;
 
   public static final String   CALENDAR_PREF = "calendar";
 
@@ -314,5 +316,13 @@ public class Calendar extends AbstractBean {
 
   public void setRemote(boolean remote) {
     this.remote = remote;
+  }
+
+  public boolean hasChildren() {
+    return hasChildren;
+  }
+
+  public void setHasChildren(boolean children) {
+    this.hasChildren = children;
   }
 }

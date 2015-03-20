@@ -595,6 +595,7 @@ public class JCRDataStorage implements DataStorage {
       }
     }
     calendar.setRemote(calNode.isNodeType(Utils.EXO_REMOTE_MIXIN));
+    calendar.setHasChildren(calNode.hasNodes());
     if (!calendar.isPublic()) {
       if (groups != null) {
         calendar.setGroups(groups.toArray(new String[groups.size()]));

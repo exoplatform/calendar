@@ -1435,7 +1435,7 @@ public class CalendarRestApi implements ResourceContainer {
                                                              @Context UriInfo uri) throws Exception {
     limit = parseLimit(limit);
     String username = currentUserId();
-    
+
     CalendarService service = calendarServiceInstance();
     EventDAO evtDAO = service.getEventDAO();
     
@@ -1444,21 +1444,23 @@ public class CalendarRestApi implements ResourceContainer {
     Calendar calendar = service.getCalendarById(id);
     
     if (calendar != null) {
-      String participant = null;
-      if (calendar.getPublicUrl() == null && !hasViewCalendarPermission(calendar, username)) {
-        participant = username;
-      }
-
-      EventQuery eventQuery = buildEventQuery(start, end, category, Arrays.asList(calendar), 
-                                              id, participant, CalendarEvent.TYPE_EVENT);
-      ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
-
-      //
-      for (CalendarEvent event : events.load(offset, limit)) {
-        data.add(buildEventResource(event, uri, expand, fields));
-      }        
-      if (returnSize) {
-        fullSize = events.getSize();
+      if (calendar.hasChildren()) {
+        String participant = null;
+        if (calendar.getPublicUrl() == null && !hasViewCalendarPermission(calendar, username)) {
+          participant = username;
+        }
+        
+        EventQuery eventQuery = buildEventQuery(start, end, category, Arrays.asList(calendar), 
+                                                calendar.getCalendarPath(), participant, CalendarEvent.TYPE_EVENT);
+        ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
+        
+        //
+        for (CalendarEvent event : events.load(offset, limit)) {
+          data.add(buildEventResource(event, uri, expand, fields));
+        }
+        if (returnSize) {
+          fullSize = events.getSize();
+        }        
       }
     } else {
       return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
@@ -3475,6 +3477,10 @@ public class CalendarRestApi implements ResourceContainer {
     }
     if(Utils.isEmpty(end)) {
       to.add(java.util.Calendar.WEEK_OF_MONTH, 1);
+      to.set(java.util.Calendar.HOUR, 0);
+      to.set(java.util.Calendar.MINUTE, 0);
+      to.set(java.util.Calendar.SECOND, 0);
+      to.set(java.util.Calendar.MILLISECOND, 0);
     } else {
       to = ISO8601.parse(end);
     }

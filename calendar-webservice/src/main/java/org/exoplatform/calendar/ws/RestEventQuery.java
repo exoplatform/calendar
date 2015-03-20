@@ -33,6 +33,11 @@ public class RestEventQuery extends EventQuery {
     sql.append(Utils.EXO_CALENDAR_EVENT);
     sql.append(" WHERE");
 
+//    if (getCalendarPath() != null) {
+//      sql.append(" jcr:path LIKE '").append(getCalendarPath()).append("/%' AND NOT jcr:path LIKE '");
+//      sql.append(getCalendarPath()).append("/%/%'");
+//    }
+
     if (getCalendarId() != null || getParticipants() != null) {
       sql.append(" AND (");
       // calendarIds: public and groups, shared calendars
@@ -105,6 +110,9 @@ public class RestEventQuery extends EventQuery {
     }
     if ((i = sql.indexOf("( OR")) != -1) {
       sql.replace(i, i + 4, "(");
+    }
+    if ((i = sql.indexOf("( AND")) != -1) {
+      sql.replace(i, i + 5, "(");
     }
     
     String[] orderBy = getOrderBy();
