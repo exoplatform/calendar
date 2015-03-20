@@ -1336,7 +1336,7 @@ public class Utils {
         editPermission = ValuesToStrings(p.getValues());
       }
     }
-
+    calendar.setHasChildren(calNode.hasNodes());
     if (!calendar.isPublic()) {
       if (groups != null) {
         calendar.setGroups(groups.toArray(new String[groups.size()]));

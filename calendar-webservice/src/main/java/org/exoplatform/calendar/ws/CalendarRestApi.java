@@ -833,7 +833,13 @@ public class CalendarRestApi implements ResourceContainer {
     
     //find all viewable calendars of user: public, user, group, shared calendars,
     List<Calendar> cals = findViewableCalendars(username);
-    EventQuery eventQuery = buildEventQuery(start, end, category, cals, null, username, CalendarEvent.TYPE_EVENT);
+    List<Calendar> hasChild = new LinkedList<Calendar>();
+    for (Calendar cal : cals) {
+      if (cal.hasChildren()) {
+        hasChild.add(cal);
+      }
+    }
+    EventQuery eventQuery = buildEventQuery(start, end, category, hasChild, null, username, CalendarEvent.TYPE_EVENT);
     ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
     
     List data = new LinkedList();
@@ -1451,7 +1457,7 @@ public class CalendarRestApi implements ResourceContainer {
         }
         
         EventQuery eventQuery = buildEventQuery(start, end, category, Arrays.asList(calendar), 
-                                                calendar.getCalendarPath(), participant, CalendarEvent.TYPE_EVENT);
+                                                id, participant, CalendarEvent.TYPE_EVENT);
         ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
         
         //
@@ -3049,8 +3055,14 @@ public class CalendarRestApi implements ResourceContainer {
 
     CalendarService service = calendarServiceInstance();
     EventDAO evtDAO = service.getEventDAO();    
-    List<Calendar> calendarIds = findEditableCalendars(username);
-    EventQuery evtQuery = buildEventQuery(start, end, null, calendarIds, null, username, CalendarEvent.TYPE_EVENT);
+    List<Calendar> cals = findEditableCalendars(username);
+    List<Calendar> hasChild = new LinkedList<Calendar>();
+    for (Calendar cal : cals) {
+      if (cal.hasChildren()) {
+        hasChild.add(cal);
+      }
+    }
+    EventQuery evtQuery = buildEventQuery(start, end, null, hasChild, null, username, CalendarEvent.TYPE_EVENT);
     ListAccess<Invitation> invites = evtDAO.findInvitationsByQuery(evtQuery);
 
     List data = new LinkedList();
@@ -3625,18 +3637,18 @@ public class CalendarRestApi implements ResourceContainer {
         gCals.add(sCals);
     }
     //public calendar
-    uCals.addAll(Arrays.asList(service.getPublicCalendars().load(0, -1))); 
+    Calendar[] publicCals = service.getPublicCalendars().load(0, -1);
     
-    List<Calendar> results = new LinkedList<Calendar>();
-    results.addAll(uCals);
-    
+    List<Calendar> results = new LinkedList<Calendar>();    
+    results.addAll(Arrays.asList(publicCals));
     for (GroupCalendarData data : gCals) {
         if (data.getCalendars() != null) {
             for (Calendar cal : data.getCalendars()) {
                 results.add(cal);
-            }            
+            }
         }
     }
+    results.addAll(uCals);
 
     return results;
   }

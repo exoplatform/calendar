@@ -106,7 +106,7 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     Calendar pubCal = createPersonalCalendar("test", "root");
     pubCal.setPublicUrl("test");
     calendarService.saveUserCalendar("root", pubCal, false);
-    uEvt = createEvent(userCalendar);
+    uEvt = createEvent(pubCal);
     uEvt.setEventType(eventType);
     calendarService.saveUserEvent("root", pubCal.getId(), uEvt, true);
     //john should be able to see event in public calendar
