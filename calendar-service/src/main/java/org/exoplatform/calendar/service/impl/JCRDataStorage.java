@@ -1307,7 +1307,7 @@ public class JCRDataStorage implements DataStorage {
                                                 eventNode,
                                                 getReminderFolder(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME)
                                                                   .getDate()
-                                                                  .getTime()));
+                                                                  .getTime(), false));
     StringBuilder namePattern = new StringBuilder(128);
     namePattern.append(Utils.EXO_RECURRENCE_ID).append('|').append(Utils.EXO_IS_EXCEPTION).append('|').append(Utils.EXO_REPEAT_UNTIL)
     .append('|').append(Utils.EXO_REPEAT_COUNT).append('|').append(Utils.EXO_ORIGINAL_REFERENCE).append('|')
@@ -1730,25 +1730,40 @@ public class JCRDataStorage implements DataStorage {
     eventFolder.getSession().save();
     eventFolder.refresh(true);
   }
+  
+  public Node getReminderFolder(Date fromDate) throws Exception {
+    return getReminderFolder(fromDate, true);
+  }
 
   /**
    * {@inheritDoc}
    */
-  public Node getReminderFolder(Date fromDate) throws Exception {
+  public Node getReminderFolder(Date fromDate, boolean create) throws Exception {
     Node publicApp = getPublicCalendarServiceHome();
     Node dateFolder = getDateFolder(publicApp, fromDate);
     try {
       return dateFolder.getNode(Utils.CALENDAR_REMINDER);
     } catch (PathNotFoundException pnfe) {
-      try {
-        dateFolder.addNode(Utils.CALENDAR_REMINDER, Utils.NT_UNSTRUCTURED);
-        if (dateFolder.isNew())
-          dateFolder.getSession().save();
-        else
-          dateFolder.save();
-      } catch (Exception e) {
-        dateFolder.refresh(false);
+      if (create) {
+        Lock lock = getLock("RemiderFolder", dateFolder.getPath());
+        lock.lock();
+        try {
+          if (!dateFolder.hasNode(Utils.CALENDAR_REMINDER)) {
+            dateFolder.addNode(Utils.CALENDAR_REMINDER, Utils.NT_UNSTRUCTURED);
+            if (dateFolder.isNew())
+              dateFolder.getSession().save();
+            else
+              dateFolder.save();
+          }
+        } catch (Exception e) {
+          dateFolder.refresh(false);
+        } finally {
+          lock.unlock();
+        }        
+      } else {
+        return null;
       }
+      
       return dateFolder.getNode(Utils.CALENDAR_REMINDER);
     }
   }
