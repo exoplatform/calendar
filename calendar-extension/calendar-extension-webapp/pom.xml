@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar-extension</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.2.x-cal-user-profile-redesign-SNAPSHOT</version>
+    <version>4.2.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-extension-webapp</artifactId>
   <packaging>war</packaging>
