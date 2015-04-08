@@ -426,14 +426,13 @@
     <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/Reminder.js</path>
-    </script>
-    <depends>
-      <module>commons-cometd</module>
-      <as>cometd</as>
-    </depends>
+    </script>    
     <depends>
       <module>jquery</module>
       <as>gj</as>
+    </depends>
+    <depends>
+      <module>commons-cometd3</module>
     </depends>
   </module>
   

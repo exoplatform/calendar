@@ -12,5 +12,6 @@
   <listener>
     <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
   </listener>
-  
+
+  <absolute-ordering/>
 </web-app>

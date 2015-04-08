@@ -1,38 +1,30 @@
-(function(gj, cometd) {
+(function(gj, cCometD) {
   var Reminder = {
 	  init : function(eXoUser, eXoToken, cometdContextName) {
-		eXo = eXo || {};
-		eXo.cs = eXo.cs || {};
-	    if(!eXo.cs.CSCometd) eXo.cs.CSCometd = cometd;
-	    eXo.cs.CSCometd.exoId = eXoUser;
-	    eXo.cs.CSCometd.exoToken = eXoToken;
-	    if(cometdContextName)
-	      eXo.cs.CSCometd.url = '/' + cometdContextName + '/cometd';
-	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {    
-	      Reminder.alarm(eventObj) ;
+	    eXo = eXo || {};
+	    eXo.cs = eXo.cs || {};
+
+      if(!eXo.cs.CSCometd) eXo.cs.CSCometd = cCometD;	      		
+	    var loc = window.location;
+	    eXo.cs.CSCometd.configure({
+	        url: loc.protocol + '//' + loc.hostname + (loc.port ? ':' + loc.port : '')  + '/' + cometdContextName + '/cometd',
+	        'exoId': eXoUser, 'exoToken': eXoToken
 	    });
-	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyShareCalendar',
-	        function(eventObj) {
-	      Reminder.notifyShareCalendar(eventObj);
-	    });
-	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyImportCalendar', function(eventObj){
-	      Reminder.notifyImportCalendar(eventObj);
-	    });
-	    if (!eXo.cs.CSCometd.isConnected()) {
-	      eXo.cs.CSCometd.init();
-	    }
+	    this.initCometd();
 	  },
 
 	  initCometd : function() {
-	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', function(eventObj) {    
-	      Reminder.alarm(eventObj) ;
+	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', null, function(eventObj) {    
+	      eXo.calendar.Reminder.alarm(eventObj) ;
 	    });
+	    
 	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyShareCalendar',
 	        function(eventObj) {
-	      Reminder.notifyShareCalendar(eventObj);
+	      eXo.calendar.Reminder.notifyShareCalendar(eventObj);
 	    });
+	    
 	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyImportCalendar', function(eventObj){
-	      Reminder.notifyImportCalendar(eventObj);
+	      eXo.calendar.Reminder.notifyImportCalendar(eventObj);
 	    });
 	  },
 
@@ -121,4 +113,4 @@
 	};
   
 	return Reminder;
-})(gj,cometd);
+})(gj, cCometD);
