@@ -25,8 +25,6 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.EVENT_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
 import static org.exoplatform.calendar.ws.CalendarRestApi.OCCURRENCE_URI;
 
-import javax.ws.rs.core.MultivaluedMap;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -52,12 +50,9 @@ import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.services.rest.impl.ContainerResponse;
-import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
-
-import com.googlecode.mp4parser.boxes.ultraviolet.AssetInformationBox;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
@@ -65,18 +60,6 @@ import com.googlecode.mp4parser.boxes.ultraviolet.AssetInformationBox;
  * Mar 21, 2014
  */
 public class TestEventRestApi extends AbstractTestEventRestApi {
-   
-  public void testGetEvents() throws Exception {
-    runTestGetEvents(CAL_BASE_URI + EVENT_URI, CalendarEvent.TYPE_EVENT);
-  }
-  
-  public void testGetEvents_Public() throws Exception {
-    runTestGetEvents_Public(CAL_BASE_URI + EVENT_URI, CalendarEvent.TYPE_EVENT);
-  }
-  
-  public void testGetEvents_Group() throws Exception {
-    runTestGetEvents_Group(CAL_BASE_URI + EVENT_URI, CalendarEvent.TYPE_EVENT);
-  }
   
   public void testGetEvents_Shared() throws Exception {
     runTestGetEventById_Shared(CAL_BASE_URI + EVENT_URI, CalendarEvent.TYPE_EVENT);

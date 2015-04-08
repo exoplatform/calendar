@@ -723,144 +723,6 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Returns an event in the list when :
-   * - the calendar of the event is public
-   * - the authenticated user is the owner of the calendar of the event
-   * - the authenticated user belongs to the group of the calendar of the event
-   * - the authenticated user is a participant of the event
-   * - the calendar of the event has been shared with the authenticated user or with a group of the authenticated user
-   * 
-   * @param start         
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
-   *        Default: current server time.
-   * 
-   * @param end           
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date
-   *        Default: current server time + 1 week.
-   * 
-   * @param category  
-   *        search for this category only. If not specify, search event of any category
-   *
-   * @param offset       
-   *        The starting point when paging through a list of entities. Defaults to *0*.
-   * 
-   * @param limit         
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
-   * 
-   * @param resturnSize 
-   *        tell the service if it must return the total size of the returned collection result, and the *link* http headers. 
-   *        It can be true or false, by default, it's *false*
-   * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
-   * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
-   * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=categories(1,5).
-   *        
-   *        Instead of: 
-   *        {
-   *            id: "...", 
-   *            calendar: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *            ....
-   *        }
-   *        It returns:
-   *        {
-   *            id: "...", 
-   *            calendar: {
-   *            id: "...",
-   *            name:"demo-defaultId",
-   *            ....
-   *            }
-   *            ....
-   *        }
-   * 
-   * @request GET: http://localhost:8080/portal/rest/v1/calendar/events?category=meeting&expand=calendar,categories(1,5)
-   * 
-   * @format JSON
-   * 
-   * @response 
-   * [
-   *   {
-   *      id: "myEventId",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/events/myEventId",
-   *      subject: "..", description: "...",
-   *      from: "...", to: "...",
-   *      calendar: "...", categories: ["...", ""],
-   *      location: "", priority: "", 
-   *      repeat: {...},
-   *      recurrenceId: "...", originalEvent: "...",
-   *      reminder: [], attachment: [], participants: [],
-   *      privacy: "", availability: '" 
-   *   }, 
-   *   {id...}
-   * ]
-   * 
-   * @return        List of events
-   * 
-   * @authentication
-   *  
-   * @anchor CalendarRestApi.getEvents
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  @GET
-  @RolesAllowed("users")
-  @Path("/events/")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getEvents(@QueryParam("startTime") String start,
-                                           @QueryParam("endTime") String end,
-                                           @QueryParam("category") String category,
-                                           @QueryParam("offset") int offset,
-                                           @QueryParam("limit") int limit, 
-                                           @QueryParam("returnSize") boolean returnSize,
-                                           @QueryParam("fields") String fields,
-                                           @QueryParam("jsonp") String jsonp,
-                                           @QueryParam("expand") String expand,
-                                           @Context UriInfo uri) throws Exception {
-    limit = parseLimit(limit);
-    String username = currentUserId();
-    
-    CalendarService service = calendarServiceInstance();
-    EventDAO evtDAO = service.getEventDAO();
-    
-    //find all viewable calendars of user: public, user, group, shared calendars,
-    List<Calendar> cals = findViewableCalendars(username);
-    List<Calendar> hasChild = new LinkedList<Calendar>();
-    for (Calendar cal : cals) {
-      if (cal.hasChildren()) {
-        hasChild.add(cal);
-      }
-    }
-    EventQuery eventQuery = buildEventQuery(start, end, category, hasChild, null, username, CalendarEvent.TYPE_EVENT);
-    ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
-    
-    List data = new LinkedList();
-    for (CalendarEvent event : events.load(offset, limit)) {
-      data.add(buildEventResource(event, uri, expand, fields));
-    }
-    long fullSize = returnSize ? events.getSize() : -1;
-    CollectionResource evData = new CollectionResource(data, fullSize);    
-    evData.setOffset(offset);
-    evData.setLimit(limit);
-    
-    ResponseBuilder response = buildJsonP(evData, jsonp);    
-    if (returnSize) {
-      response.header(HEADER_LINK, buildFullUrl(uri, offset, limit, fullSize));
-    }
-    
-    //
-    return response.build();
-  }  
-
-  /**
    * Returns an event with specified id parameter if:
    * - the calendar of the event is public
    * - the authenticated user is the owner of the calendar of the event
@@ -1976,136 +1838,6 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Returns an task in the list when :
-   * - the calendar of the task is public
-   * - the authenticated user is the owner of the calendar of the task
-   * - the authenticated user belongs to the group of the calendar of the task
-   * - the authenticated user is a participant of the task
-   * - the calendar of the task has been shared with the authenticated user or with a group of the authenticated user
-   * 
-   * @param start         
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *from* this date.
-   *        Default: current server time.
-   * 
-   * @param end           
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *to* this date
-   *        Default: current server time + 1 week.
-   * 
-   * @param category  
-   *        search for this category only. If not specify, search task of any category
-   *
-   * @param offset       
-   *        The starting point when paging through a list of entities. Defaults to *0*.
-   * 
-   * @param limit         
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
-   * 
-   * @param resturnSize  
-   *        tell the service if it must return the total size of the returned collection result, and the *link* http headers. 
-   *        It can be true or false, by default, it's *false*
-   * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
-   * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
-   * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=categories(1,5).
-   *        Instead of: 
-   *        {
-   *            id: "...", 
-   *            calendar: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *            ....
-   *        }
-   *        It returns:
-   *        {
-   *            id: "...", 
-   *            calendar: {
-   *            id: "...",
-   *            name:"demo-defaultId",
-   *            ....
-   *            }
-   *            ....
-   *        }
-   * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/tasks?category=meeting&expand=calendar,categories(1,5)
-   * 
-   * @format JSON
-   * 
-   * @response 
-   * [
-   *   {
-   *      id: "myTaskId",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/tasks/myTaskId",
-   *      name: "..", note: "...",
-   *      from: "...", to: "...",
-   *      calendar: "...", categories: ["...", ""],
-   *      delegation: ["...", ""], priority: "", 
-   *      reminder: [], attachment: [],
-   *      status: ""
-   *   }, 
-   *   {id...}
-   * ]
-   * 
-   * @return  List of tasks
-   * 
-   * @authentication
-   *  
-   * @anchor CalendarRestApi.getTasks
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  @GET
-  @RolesAllowed("users")
-  @Path("/tasks/")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getTasks(@QueryParam("startTime") String start,
-                                          @QueryParam("endTime") String end,
-                                          @QueryParam("category") String category,
-                                          @QueryParam("offset") int offset,
-                                          @QueryParam("limit") int limit,
-                                          @QueryParam("fields") String fields,
-                                          @QueryParam("jsonp") String jsonp,
-                                          @QueryParam("expand") String expand,
-                                          @QueryParam("returnSize") boolean returnSize,
-                                          @Context UriInfo uriInfo) throws Exception {
-    limit = parseLimit(limit);
-    String username = currentUserId();
-    
-    CalendarService service = calendarServiceInstance();
-    EventDAO evtDAO = service.getEventDAO();
-    
-    //find all viewable calendars of user: public, user, group, shared calendars,
-    List<Calendar> cals = findViewableCalendars(username);
-    EventQuery eventQuery = buildEventQuery(start, end, category, cals, null, username, CalendarEvent.TYPE_TASK);
-    ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
-    
-    List data = new LinkedList();
-    for (CalendarEvent event : events.load(offset, limit)) {
-      data.add(buildTaskResource(event, uriInfo, expand, fields));
-    }
-    long fullSize = returnSize ? events.getSize() : -1;
-    CollectionResource evData = new CollectionResource(data, fullSize);    
-    evData.setOffset(offset);
-    evData.setLimit(limit);
-    
-    ResponseBuilder response = buildJsonP(evData, jsonp);
-    
-    if (returnSize) {
-      response.header(HEADER_LINK, buildFullUrl(uriInfo, offset, limit, fullSize));
-    }
-    
-    //
-    return response.build();
-  }  
-
-  /**
    *
    * Returns a task with specified id if: same rules as /events/{id}
    * {@link #getEventById(String, String, String, String)}
@@ -2963,127 +2695,6 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Returns a list of invitations if:
-   * - the authenticated user is the participant of the invitation.
-   * - the authenticated user has edit rights on the calendar of the event of the invitation.
-   * 
-   * @param start         
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for invitations *from* this date.
-   *        Default: current server time.
-   * 
-   * @param end           
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for invitations *to* this date
-   *        Default: current server time + 1 week.
-   *
-   * @param offset       
-   *        The starting point when paging through a list of entities. Defaults to *0*.
-   * 
-   * @param limit         
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
-   * 
-   * @param resturnSize  
-   *        tell the service if it must return the total size of the returned collection result, and the *link* http headers. 
-   *        It can be true or false, by default, it's *false*
-   * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
-   * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
-   * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=event
-   *        Instead of: 
-   *        {
-   *            id: "...", 
-   *            event: "http://localhost:8080/portal/rest/v1/calendar/events/evt123"
-   *            ....
-   *        }
-   *        It returns:
-   *        {
-   *            id: "...", 
-   *            event: {
-   *                id: "...",
-   *                name:"myEvent",
-   *                ....
-   *            }
-   *            ....
-   *        }
-   * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/invitations?expand=event
-   * 
-   * @format JSON
-   * 
-   * @response 
-   * [
-   *   {
-   *      id: "evt123:root",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/events/evt123",
-   *      event: "..", participant: "...",
-   *      status: ""
-   *   }, 
-   *   {id...}
-   * ]
-   * 
-   * @return  List of invitations
-   * 
-   * @authentication
-   *  
-   * @anchor CalendarRestApi.getInvitations
-   */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
-  @GET
-  @RolesAllowed("users")
-  @Path("/invitations")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response getInvitations(@QueryParam("startTime") String start,
-                                                  @QueryParam("endTime") String end,
-                                                  @QueryParam("offset") int offset,
-                                                  @QueryParam("limit") int limit,
-                                                  @QueryParam("fields") String fields,
-                                                  @QueryParam("jsonp") String jsonp,
-                                                  @QueryParam("expand") String expand,
-                                                  @QueryParam("returnSize") boolean returnSize,
-                                                  @Context UriInfo uri) throws Exception {
-    limit = parseLimit(limit);
-    String username = currentUserId();
-
-    CalendarService service = calendarServiceInstance();
-    EventDAO evtDAO = service.getEventDAO();    
-    List<Calendar> cals = findEditableCalendars(username);
-    List<Calendar> hasChild = new LinkedList<Calendar>();
-    for (Calendar cal : cals) {
-      if (cal.hasChildren()) {
-        hasChild.add(cal);
-      }
-    }
-    EventQuery evtQuery = buildEventQuery(start, end, null, hasChild, null, username, CalendarEvent.TYPE_EVENT);
-    ListAccess<Invitation> invites = evtDAO.findInvitationsByQuery(evtQuery);
-
-    List data = new LinkedList();
-    for (Object invitation : invites.load(offset, limit)) {
-      data.add(buildInvitationResource((Invitation)invitation, uri, expand, fields));
-    }
-
-    long fullSize = returnSize ? invites.getSize() : -1;
-    CollectionResource ivData = new CollectionResource(data, fullSize);    
-    ivData.setOffset(offset);
-    ivData.setLimit(limit);
-    //
-    ResponseBuilder response = buildJsonP(ivData, jsonp);    
-    if (returnSize) {
-      response.header(HEADER_LINK, buildFullUrl(uri, offset, limit, fullSize));
-    }    
-    //
-    return response.build();
-  }
-
-  /**
    * Returns an invitation with specified id if:
    * - the authenticated user is the participant of the invitation
    * - the authenticated user has edit rights on the calendar of the event of the invitation
@@ -3340,6 +2951,7 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getInvitationsFromEvent(@PathParam("id") String id,
                                                                   @QueryParam("offset") int offset, 
                                                                   @QueryParam("limit") int limit,
+                                                                  @QueryParam("returnSize") boolean returnSize,
                                                                   @QueryParam("status") String status, 
                                                                   @QueryParam("fields") String fields,
                                                                   @QueryParam("jsonp") String jsonp,
@@ -3385,12 +2997,14 @@ public class CalendarRestApi implements ResourceContainer {
     }
     int fullSize = invitations.size();
     
-    CollectionResource ivData = new CollectionResource(data, fullSize);    
+    CollectionResource ivData = new CollectionResource(data, returnSize ? fullSize : -1);    
     ivData.setOffset(offset);
     ivData.setLimit(limit);
 
     ResponseBuilder response = buildJsonP(ivData, jsonp);
-    response.header(HEADER_LINK, buildFullUrl(uriInfo, offset, limit, fullSize));
+    if (returnSize) {
+      response.header(HEADER_LINK, buildFullUrl(uriInfo, offset, limit, fullSize));
+    }
     return response.build();
   }  
 

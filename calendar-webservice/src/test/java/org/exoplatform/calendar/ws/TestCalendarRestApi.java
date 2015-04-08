@@ -23,10 +23,6 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
 import static org.exoplatform.calendar.ws.CalendarRestApi.ICS_URI;
 
-import javax.ws.rs.core.MultivaluedMap;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
 import org.exoplatform.calendar.service.Calendar;
@@ -35,10 +31,7 @@ import org.exoplatform.calendar.ws.bean.CalendarResource;
 import org.exoplatform.calendar.ws.bean.CollectionResource;
 import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
-import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.services.rest.impl.ContainerResponse;
-import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
-import org.exoplatform.services.rest.impl.header.HeaderHelper;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
@@ -54,7 +47,7 @@ public class TestCalendarRestApi extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());    
     Map<String, String[]> subResources = (Map<String, String[]>)response.getEntity();
     String[] resources = subResources.get("subResourcesHref");
-    assertEquals(35, resources.length);
+    assertEquals(32, resources.length);
     System.out.println(resources[0]);
   }
   

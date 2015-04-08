@@ -18,26 +18,18 @@
  */
 package org.exoplatform.calendar.ws;
 
-import static org.exoplatform.calendar.ws.CalendarRestApi.CALENDAR_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
-import static org.exoplatform.calendar.ws.CalendarRestApi.EVENT_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.TASK_URI;
-
-import java.util.List;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.ws.bean.CalendarResource;
 import org.exoplatform.calendar.ws.bean.CategoryResource;
-import org.exoplatform.calendar.ws.bean.EventResource;
 import org.exoplatform.calendar.ws.bean.TaskResource;
-import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
-import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
-import org.exoplatform.ws.frameworks.json.value.JsonValue;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
@@ -45,18 +37,6 @@ import org.exoplatform.ws.frameworks.json.value.JsonValue;
  * Mar 21, 2014
  */
 public class TestTaskRestApi extends AbstractTestEventRestApi {
-  
-  public void testGetTasks() throws Exception {
-    runTestGetEvents(CAL_BASE_URI + TASK_URI, CalendarEvent.TYPE_TASK);
-  }
-
-  public void testGetTasks_Public() throws Exception {
-    runTestGetEvents_Public(CAL_BASE_URI + TASK_URI, CalendarEvent.TYPE_TASK);
-  }
-
-  public void testGetTasks_Group() throws Exception {
-    runTestGetEvents_Group(CAL_BASE_URI + TASK_URI, CalendarEvent.TYPE_TASK);
-  }
   
   public void testGetTasks_Shared() throws Exception {
     runTestGetEventById_Shared(CAL_BASE_URI + TASK_URI, CalendarEvent.TYPE_TASK);
