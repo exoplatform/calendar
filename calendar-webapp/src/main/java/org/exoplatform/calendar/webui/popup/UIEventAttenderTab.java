@@ -123,6 +123,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
 
   public static String getFullname(String username) throws Exception {
     User u = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username);
+    if (u == null) return null;
     String fullName = u.getDisplayName();
     if(fullName == null) fullName = u.getFirstName();
     if (u.getLastName() != null && fullName != null) {

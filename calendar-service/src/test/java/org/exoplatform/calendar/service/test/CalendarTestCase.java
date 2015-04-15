@@ -50,6 +50,7 @@ import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserStatus;
 
 public class CalendarTestCase extends BaseCalendarServiceTestCase {
   private RepositoryService repositoryService_ ;
@@ -70,7 +71,7 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getDefaultWorkspaceName(), "portal-test");
     assertNotNull(organizationService_) ;
 
-    assertEquals(9, organizationService_.getUserHandler().findAllUsers().getSize());
+    assertEquals(9, organizationService_.getUserHandler().findAllUsers(UserStatus.ANY).getSize());
 
     assertNotNull(storage_);
 
@@ -91,6 +92,90 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     assertEquals(Calendar.TYPE_PRIVATE, calendarService_.getTypeOfCalendar(username, calSave.getId()));
     assertEquals("myCalendar", calSave.getName());
     assertEquals("Desscription", calSave.getDescription());
+  }
+  
+  public void testGetCalendarOfDisabledUser() throws Exception{
+    Calendar cal = new Calendar();
+    cal.setName("myCalendar");
+    cal.setPublic(true);
+    cal.setViewPermission(new String[] { "*.*" });
+    cal.setEditPermission(new String[] { "*.*", "john" });
+
+    calendarService_.saveUserCalendar(username, cal, true);
+
+    // Share calendar
+    List<String> receiverUser = new ArrayList<String>();
+    receiverUser.add("john");
+    calendarService_.shareCalendar(username, cal.getId(), receiverUser);
+    Calendar sharedCalendar = calendarService_.getSharedCalendars("john", true).getCalendarById(cal.getId());
+    assertEquals("myCalendar", sharedCalendar.getName());
+
+    sharedCalendar.setDescription("shared description");
+    calendarService_.saveSharedCalendar("john", sharedCalendar);
+    Calendar editedCalendar = calendarService_.getSharedCalendars("john", true).getCalendarById(cal.getId());
+    assertEquals("shared description", editedCalendar.getDescription());
+
+
+
+    CalendarEvent calendarEvent = new CalendarEvent();
+    calendarEvent.setCalendarId(cal.getId());
+    calendarEvent.setSummary("calendarEvent");
+    calendarEvent.setEventType(CalendarEvent.TYPE_EVENT);
+    java.util.Calendar current = java.util.Calendar.getInstance() ;
+    current.add(java.util.Calendar.MINUTE, 10);
+
+    calendarEvent.setFromDateTime(current.getTime());
+    current.add(java.util.Calendar.MINUTE, 30);
+    calendarEvent.setToDateTime(current.getTime());
+
+    calendarService_.saveEventToSharedCalendar("john", cal.getId(), calendarEvent, true);
+
+    List<String> calendarIds = new ArrayList<String>();
+    calendarIds.add(cal.getId());
+    assertEquals(1, calendarService_.getSharedEventByCalendars("john", calendarIds).size());
+    assertNotNull(calendarService_.getSharedEvent("john", cal.getId(), calendarEvent.getId()));
+    CalendarEvent event = calendarService_.getUserEventByCalendar(username, calendarIds).get(0);
+    assertEquals("calendarEvent", event.getSummary());
+
+    //Test search shared event
+    login("john");
+    EventQuery query = new UnifiedQuery();
+    query.setText("calendarEvent");
+    query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
+    query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
+    Collection<String> params = new ArrayList<String>();
+    Collection<SearchResult> rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, rs.size());
+
+    login(username);
+
+    rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    assertEquals(1, rs.size());
+
+    receiverUser.add("mary");
+    calendarService_.shareCalendar(username, cal.getId(), receiverUser);
+    login("mary");
+    assertEquals(1, calendarService_.getSharedCalendars("mary", true).getCalendars().size());
+    assertEquals(1, calendarService_.getSharedEventByCalendars("mary", calendarIds).size());
+    EventQuery eq = new EventQuery();
+    eq.setText("calendarEvent");
+    assertEquals(1, calendarService_.getEvents("john", eq, null).size());
+    assertEquals(1, calendarService_.getEvents("mary", eq, null).size());
+
+    //Disable john (calendar of root is shared
+    organizationService_.getUserHandler().setEnabled("john", false, false);
+    assertNull(calendarService_.getSharedCalendars("john", true));
+    assertEquals(0, calendarService_.getSharedEventByCalendars("john", calendarIds).size());
+    assertEquals(0, calendarService_.getEvents("john", eq, null).size());
+
+
+
+    calendarService_.removeSharedEvent("john", cal.getId(), calendarEvent.getId());
+    List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username, calendarIds);
+    assertEquals(0, events.size());
+
+    calendarService_.removeSharedCalendar("john", cal.getId());
+    assertNull(calendarService_.getSharedCalendars("john", true));
   }
 
   public void testDefaultData() throws Exception {

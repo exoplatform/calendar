@@ -18,17 +18,25 @@ package org.exoplatform.calendar.service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+
 import org.exoplatform.commons.utils.ISO8601;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.organization.UserHandler;
+import org.exoplatform.services.organization.UserStatus;
+import org.exoplatform.services.organization.idm.PicketLinkIDMOrganizationServiceImpl;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 import org.quartz.JobExecutionContext;
 
@@ -50,11 +58,19 @@ public class PopupReminderJob extends MultiTenancyJob {
     public void run() {
       super.run();
       SessionProvider provider = SessionProvider.createSystemProvider();
+      OrganizationService orgService = container.getComponentInstanceOfType(OrganizationService.class);
+      //We have JobEnvironmentConfigListener call request lifecycle methods
+      //But it's run in difference thread that create bug with PicketlinkIDM using hibernate session (CAL-1031)
+      if (orgService instanceof ComponentRequestLifecycle) {
+        ((ComponentRequestLifecycle)orgService).startRequest(ExoContainerContext.getCurrentContainer());          
+      }
+      
       try {
         if (log_.isDebugEnabled())
           log_.debug("Calendar popup reminder service");
         java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
         ContinuationService continuation = (ContinuationService) container.getComponentInstanceOfType(ContinuationService.class);
+        UserHandler userHandler = orgService.getUserHandler();
         Node calendarHome = Utils.getPublicServiceHome(provider);
         if (calendarHome == null)
           return;
@@ -107,18 +123,18 @@ public class PopupReminderJob extends MultiTenancyJob {
         if (!popupReminders.isEmpty()) {
           for (Reminder rmdObj : popupReminders) {
             for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
-              continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
+              if (userHandler.findUserByName(user, UserStatus.DISABLED) == null) { 
+                continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
+              }  
             }
           }
         }
-      } catch (RepositoryException e) {
-        if (log_.isDebugEnabled())
-          log_.debug("Data base not ready!");
       } catch (Exception e) {
-        if (log_.isDebugEnabled()) {
-          log_.debug("Exception in method execute", e);
-        }
+        log_.error(e.getMessage(), e);
       } finally {
+        if (orgService instanceof ComponentRequestLifecycle) {
+          ((ComponentRequestLifecycle)orgService).endRequest(ExoContainerContext.getCurrentContainer());          
+        }
         provider.close();
       }
       if (log_.isDebugEnabled())

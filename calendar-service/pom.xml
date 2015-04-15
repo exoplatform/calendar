@@ -135,12 +135,6 @@
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.ext</artifactId>
     </dependency>
-      <!-- remove it after migration to jcr 1.16.x-->
-      <dependency>
-          <groupId>org.exoplatform.kernel</groupId>
-          <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
-      </dependency>
-      <!-- End remove-->
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.commons</artifactId>
@@ -175,8 +169,12 @@
       <exclusions>  
         <exclusion>          
           <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
+          <artifactId>javax.servlet-api</artifactId>
         </exclusion>
+        <exclusion>          
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>	
       </exclusions> 
     </dependency>
     <dependency>
@@ -207,6 +205,10 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
+          <exclusion>
+              <groupId>jdom</groupId>
+              <artifactId>jdom</artifactId>
+          </exclusion>
         <exclusion>          
           <groupId>xpp3</groupId>
           <artifactId>xpp3_min</artifactId>
@@ -268,7 +270,7 @@
     </dependency>
     <dependency>
       <groupId>rome</groupId>
-      <artifactId>rome</artifactId>   
+      <artifactId>rome</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

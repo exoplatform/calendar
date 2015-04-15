@@ -44,10 +44,10 @@
     <!-- **************************************** -->
     <org.exoplatform.depmgt.version>11-SNAPSHOT</org.exoplatform.depmgt.version>
     <!-- JCR Project Dependencies -->
-    <org.exoplatform.kernel.version>2.5.0-Alpha4</org.exoplatform.kernel.version>
-    <org.exoplatform.core.version>2.6.0-Alpha4</org.exoplatform.core.version>
-    <org.exoplatform.ws.version>2.4.0-Alpha4</org.exoplatform.ws.version>
-    <org.exoplatform.jcr.version>1.16.0-Alpha4</org.exoplatform.jcr.version>
+    <org.exoplatform.kernel.version>2.5.1-GA</org.exoplatform.kernel.version>
+    <org.exoplatform.core.version>2.6.1-GA</org.exoplatform.core.version>
+    <org.exoplatform.ws.version>2.4.1-GA</org.exoplatform.ws.version>
+    <org.exoplatform.jcr.version>1.16.1-GA</org.exoplatform.jcr.version>
     <!-- GateIn Project Dependencies -->
     <org.gatein.portal.version>4.3.x-PLF-SNAPSHOT</org.gatein.portal.version>
     <org.gatein.wci.version>2.3.0.Final</org.gatein.wci.version>
@@ -73,6 +73,31 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <!-- Import versions of core modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.core</groupId>
+        <artifactId>core-parent</artifactId>
+        <version>${org.exoplatform.core.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Import versions of kernel modules to use -->
+      <dependency>
+        <groupId>org.exoplatform.kernel</groupId>
+        <artifactId>kernel-parent</artifactId>
+        <version>${org.exoplatform.kernel.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+        <!-- This artifact isn't declared in kernel parent -->
+        <!-- We enforce it to have the good version in our packaging -->
+        <!-- remove it after migration to jcr 1.16.x-->
+        <dependency>
+            <groupId>org.exoplatform.kernel</groupId>
+            <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
+            <version>${org.exoplatform.kernel.version}</version>
+        </dependency>
+      <!-- Our own project modules -->
       <!-- Declare our own artifacts -->
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -292,14 +317,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-        <!-- This artifact isn't declared in kernel parent -->
-        <!-- We enforce it to have the good version in our packaging -->
-        <!-- remove it after migration to jcr 1.16.x-->
-        <dependency>
-            <groupId>org.exoplatform.kernel</groupId>
-            <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
-            <version>${org.exoplatform.kernel.version}</version>
-        </dependency>
       <!-- Use to generate some documentation -->
       <dependency>
         <groupId>org.exoplatform.doc</groupId>

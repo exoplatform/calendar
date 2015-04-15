@@ -44,6 +44,7 @@ import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
@@ -100,14 +101,13 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
 
     // Login user
     login(username);
-
-    /*
-     * ListAccess<User> users =
-     * organizationService_.getUserHandler().findAllUsers(UserStatus.DISABLED);
-     * if (users != null) { for (User user : users.load(0, users.getSize())) {
-     * organizationService_.getUserHandler().setEnabled(user.getUserName(),
-     * true, false); } }
-     */
+    
+    ListAccess<User> users = organizationService_.getUserHandler().findAllUsers(UserStatus.DISABLED);
+    if (users != null) {
+      for (User user : users.load(0, users.getSize())) {
+        organizationService_.getUserHandler().setEnabled(user.getUserName(), true, false);
+      }
+    }   
   }
 
   @Override
