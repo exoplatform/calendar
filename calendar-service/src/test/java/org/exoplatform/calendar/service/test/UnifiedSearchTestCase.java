@@ -670,6 +670,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     cal.setName("root calendar");
     cal.setTimeZone(TimeZone.getAvailableIDs(0)[0]); //GMT+0
     calendarService_.saveUserCalendar(username, cal, true);
+    CalendarSetting calSetting = calendarService_.getCalendarSetting(username);
 
     String keyword = "test";
     CalendarEvent calEvent = createUserEvent(username, cal.getId(), keyword, "", true);
@@ -689,7 +690,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     assertEquals(keyword, r.getTitle());
     
     SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT);
-    df.setTimeZone(TimeZone.getTimeZone(cal.getTimeZone()));
+    df.setTimeZone(TimeZone.getTimeZone(calSetting.getTimeZone()));
     String detail = "root calendar - " + df.format(fromCal.getTime());
     assertEquals(detail, r.getDetail());
   }

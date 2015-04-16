@@ -42,6 +42,7 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
@@ -173,8 +174,10 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       ListAccess<?> listAccess = new EventListAccess(jcrDataStorage, uEventQuery);      
 
       Object[] rows = listAccess.load(offset, limit);
+      CalendarSetting calSetting = calendarService_.getCalendarSetting(userId);
+
       for (Object row : rows) {
-        SearchResult rs = buildResult(context, sites, dataType, row);
+        SearchResult rs = buildResult(context, sites, dataType, row, calSetting);
         if(rs != null) events.add(rs);
       }
     }
@@ -210,7 +213,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   }
 
 
-  private SearchResult buildResult(SearchContext sc, Collection<String> siteKeys, String dataType, Object iter) {
+  private SearchResult buildResult(SearchContext sc, Collection<String> siteKeys, String dataType, Object iter, CalendarSetting calSeting) {
     try {
       String calId = null;
       if(iter instanceof Row) {
@@ -231,14 +234,14 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
         String detailValue = Utils.EMPTY_STR;
         String imageUrl = buildImageUrl(iter);
-        detail.append(buildDetail(iter, cal.getTimeZone()));
+        detail.append(buildDetail(iter, calSeting.getTimeZone()));
         if(detail.length() > 0) detailValue = detail.toString();
         long relevancy = buildScore(iter);
         long date = buildDate(iter);
-        TimeZone userTimezone = TimeZone.getTimeZone(cal.getTimeZone());
+        TimeZone userTimezone = TimeZone.getTimeZone(calSeting.getTimeZone());
         CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
         result.setDataType(dataType);
-        result.setTimeZoneName(cal.getTimeZone());
+        result.setTimeZoneName(calSeting.getTimeZone());
         result.setTimeZoneOffset(userTimezone.getOffset(date));
         if(CalendarEvent.TYPE_EVENT.equals(dataType)) {
           result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
