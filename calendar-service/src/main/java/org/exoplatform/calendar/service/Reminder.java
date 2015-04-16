@@ -18,6 +18,7 @@ package org.exoplatform.calendar.service;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import org.exoplatform.services.jcr.util.IdGenerator;
 
 /**
@@ -27,7 +28,7 @@ import org.exoplatform.services.jcr.util.IdGenerator;
  * Jul 16, 2007  
  */
 public class Reminder implements Serializable {
-
+  
   private static final long serialVersionUID = -2265815245058343089L;
 
   final public static String   REPEAT         = "1".intern();

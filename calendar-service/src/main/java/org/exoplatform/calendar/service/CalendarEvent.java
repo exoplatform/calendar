@@ -16,8 +16,6 @@
  **/
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.services.jcr.util.IdGenerator;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.exoplatform.services.jcr.util.IdGenerator;
+
 /**
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen Quang
@@ -37,6 +37,9 @@ import java.util.Set;
  * Jul 11, 2007  
  */
 public class CalendarEvent extends AbstractBean {
+
+  private static final long serialVersionUID = 908458203599863175L;
+
   final public static String   TYPE_EVENT      = "Event".intern();
 
   final public static String   TYPE_TASK       = "Task".intern();

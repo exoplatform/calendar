@@ -18,6 +18,7 @@ package org.exoplatform.calendar.service;
 
 import java.util.Locale;
 import java.util.TimeZone;
+
 import org.exoplatform.services.jcr.util.IdGenerator;
 
 /**
@@ -27,6 +28,8 @@ import org.exoplatform.services.jcr.util.IdGenerator;
  * Jul 11, 2007  
  */
 public class Calendar extends AbstractBean {
+
+  private static final long serialVersionUID = 2638692203625602436L;
 
   public enum Type {
 
