@@ -2755,11 +2755,13 @@ public class JCRDataStorage implements DataStorage {
     List<CalendarEvent> originalRecurEvents = searchHighLightOriginalRecurrenceEventsSQL(username,
         eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars);
 
-    CalendarEvent calEvent = originalRecurEvents.get(0);
     String[] emptyCalsId = new String[]{};
-    if (calEvent.getCalendarId().equals("-1")) {
-      emptyCalsId = calEvent.getSummary().split(";");
-      originalRecurEvents.remove(0);
+    if(originalRecurEvents != null && originalRecurEvents.size() > 0) {
+      CalendarEvent calEvent = originalRecurEvents.get(0);
+      if (calEvent.getCalendarId().equals("-1")) {
+        emptyCalsId = calEvent.getSummary().split(";");
+        originalRecurEvents.remove(0);
+      }
     }
 
     boolean isVictory = false;

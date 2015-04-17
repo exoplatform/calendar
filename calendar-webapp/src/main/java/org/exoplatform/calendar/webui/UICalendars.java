@@ -299,6 +299,29 @@ public class UICalendars extends UIForm  {
     return false;
   }
 
+  private boolean hasNoSpaceCalendarShown() {
+    try {
+      UICalendarPortlet calendarPortlet = getAncestorOfType(UICalendarPortlet.class);
+      if(!calendarPortlet.isInSpaceContext()) {
+        return false;
+      }
+
+      List<Calendar> publicCalendars = getAllPublicCalendars();
+      if(publicCalendars.size() == 0) {
+        return true;
+      }
+      for(Calendar c : publicCalendars) {
+        // Check if this public calendar belong to current space
+        if(isCalendarOfSpace1(c.getGroups())) {
+          return false;
+        }
+      }
+      return true;
+    } catch (Exception ex) {
+      return false;
+    }
+  }
+
   /**
    * get all private calendars for current user
    * if no calendar is found, return a zero length list of calendar

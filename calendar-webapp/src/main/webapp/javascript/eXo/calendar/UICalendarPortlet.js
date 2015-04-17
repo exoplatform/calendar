@@ -42,6 +42,13 @@
         return ;
     };
 
+    UICalendarPortlet.prototype.notifyAllCalendarHidden = function(actionURL) {
+        var popup = gj('#hideAllCalendarsNotification');
+        popup.find('.notificationBox a').attr('href', actionURL);
+        popup.css('display','block');
+        setTimeout(function(){popup.css('display','none')},10000);
+    };
+
     UICalendarPortlet.prototype.getOrginalPosition = function(eventObj) {
         if(eventObj.getAttribute("orginalSize")){
             return eventObj.getAttribute("orginalSize");

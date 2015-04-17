@@ -75,7 +75,15 @@
         <div class="startUnShare"><%=_ctx.appRes("UICalendarPortlet.label.start-unsharing")%></div>
         <div class="finishUnShare"><%=_ctx.appRes("UICalendarPortlet.label.finish-unsharing")%></div>
       </div>
-    </div>   
+    </div>
+
+    <div id="hideAllCalendarsNotification" class="alert uiNotification uiCalNotification" style="display:none;">
+        <a data-dismiss="alert" href="#" class="close " data-placement="top" rel="tooltip"  data-original-title="close" style="right: -15px;"><i class="uiIconClose uiIconLightGray"></i></a>
+        <div class="notificationBox">
+            <%=_ctx.appRes("UICalendars.msg.no-shown-space-calendar")%>
+            <a href="#" style="color: #2f5e92;"><%=_ctx.appRes("UICalendars.msg.show-calendar")%></a>
+        </div>
+    </div>
 
     <div id="editCalendarNotification" class="alert uiNotification uiCalNotification" style="display:none; width:200px;">
     	

@@ -226,6 +226,11 @@
     <% renderPublicCalendarGroup(); %>
 
     <% if (uicomponent.hasNoCalendarShown()) renderNoCalendarNote(); %>
+    <% if(uicomponent.hasNoSpaceCalendarShown()) {
+        UIActionBar uiActionBar = uicomponent.getUIActionBar();
+        def showOneLink    = uiActionBar.event('Setting');
+        requirejs.addScripts('cal.UICalendarPortlet.notifyAllCalendarHidden("'+showOneLink+'");');
+    }%>
   </div>
 
 	<% /*Begin Popup Menu - Calendar Actions */ %>
