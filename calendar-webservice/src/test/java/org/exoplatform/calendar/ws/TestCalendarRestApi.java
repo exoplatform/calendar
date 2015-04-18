@@ -218,6 +218,41 @@ public class TestCalendarRestApi extends TestRestApi {
     response = service(HTTPMethods.PUT, CAL_BASE_URI + CALENDAR_URI + groupCalendar.getId(), baseURI, headers, data, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
   }
+  
+  public void testUpdateGroupCalendar() throws Exception {
+    Calendar gCal = calendarService.getCalendarById(groupCalendar.getId());
+    gCal.setCalendarColor(groupCalendar.getCalendarColor() + "1");
+    gCal.setDescription(groupCalendar.getDescription() + "1");
+    gCal.setName(groupCalendar.getName() + "1");
+    gCal.setTimeZone(groupCalendar.getTimeZone() + "1");
+    gCal.setEditPermission(new String[] {"test edit permission"});
+    gCal.setViewPermission(new String[] {"test view permission"});
+    gCal.setGroups(new String[] {"test group"});
+    gCal.setPrivateUrl(groupCalendar.getPrivateUrl() + "1");
+    gCal.setPublicUrl(groupCalendar.getPublicUrl() + "1");
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+    JsonValue json = generatorImpl.createJsonObject(new CalendarResource(gCal, CAL_BASE_URI + "/"));
+    byte[] data = json.toString().getBytes("UTF-8");
+
+    headers.putSingle("content-type", "application/json");
+    headers.putSingle("content-length", "" + data.length);
+    
+    login("root", "/platform/administrators:*");
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.PUT, CAL_BASE_URI + CALENDAR_URI + gCal.getId(), baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    
+    Calendar result = calendarService.getCalendarById(groupCalendar.getId());
+    assertEquals(gCal.getCalendarColor(), result.getCalendarColor());
+    assertEquals(gCal.getDescription(), result.getDescription());
+    assertEquals(gCal.getName(), result.getName());
+    assertEquals(gCal.getTimeZone(), result.getTimeZone());
+    assertEquals(gCal.getEditPermission()[0], result.getEditPermission()[0]);    
+    assertEquals(gCal.getViewPermission()[0], result.getViewPermission()[0]);
+    assertEquals(gCal.getGroups()[0], gCal.getGroups()[0]);
+    assertEquals(gCal.getPrivateUrl(), result.getPrivateUrl());
+    assertEquals(gCal.getPublicUrl(), result.getPublicUrl());
+  }
 
   public void testDeleteCalendarById() throws Exception {
     login("john");

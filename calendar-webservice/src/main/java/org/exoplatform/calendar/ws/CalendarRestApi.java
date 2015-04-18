@@ -496,8 +496,10 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getCalendarById(@PathParam("id") String id, @QueryParam("fields") String fields, 
                                   @QueryParam("jsonp") String jsonp, @Context UriInfo uriInfo, @Context Request request) {
     try {
-      Calendar cal = calendarServiceInstance().getCalendarById(id);
+      CalendarService service = calendarServiceInstance();
+      Calendar cal = service.getCalendarById(id);
       if(cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+      cal.setCalType(service.getTypeOfCalendar(currentUserId(), cal.getId()));
 
       Date lastModified = new Date(cal.getLastModified());
       ResponseBuilder preCondition = request.evaluatePreconditions(lastModified);
@@ -579,7 +581,8 @@ public class CalendarRestApi implements ResourceContainer {
   public Response updateCalendarById(@PathParam("id") String id, CalendarResource calObj) {
     try {
       Calendar cal = calendarServiceInstance().getCalendarById(id);
-      if(cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+      if(cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();      
+
       //Only allow to edit if user is owner of calendar, or have edit permission on group calendar
       //don't allow to edit shared calendar, or remote calendar
       if ((currentUserId().equals(cal.getCalendarOwner()) || cal.getGroups() != null) &&
@@ -588,7 +591,8 @@ public class CalendarRestApi implements ResourceContainer {
         if (error != null) {
           return error;
         } else {
-          calendarServiceInstance().saveCalendar(cal.getCalendarOwner(), cal, Integer.valueOf(cal.getCalType()), false);
+          int type = calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId());
+          calendarServiceInstance().saveCalendar(cal.getCalendarOwner(), cal, type, false);
           return Response.ok().cacheControl(nc).build();          
         }
       }
@@ -3600,6 +3604,7 @@ public class CalendarRestApi implements ResourceContainer {
     for (Expand exp : expands) {
       if ("calendar".equals(exp.getField())) {
         Calendar cal = service.getCalendarById(event.getCalendarId());
+        cal.setCalType(calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId()));
         evtResource.setCal(new CalendarResource(cal, basePath));
       } else if ("categories".equals(exp.getField())) {
         String categoryId = event.getEventCategoryId();
@@ -3634,6 +3639,7 @@ public class CalendarRestApi implements ResourceContainer {
     for (Expand exp : expands) {
       if ("calendar".equals(exp.getField())) {
         Calendar cal = service.getCalendarById(ev.getCalendarId());
+        cal.setCalType(calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId()));
         evtResource.setCal(new CalendarResource(cal, basePath));
       } else if ("categories".equals(exp.getField())) {
         String categoryId = ev.getEventCategoryId();
