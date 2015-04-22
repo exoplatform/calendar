@@ -21,9 +21,13 @@ import org.exoplatform.services.jcr.util.IdGenerator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,7 +37,6 @@ import java.util.Set;
  * Jul 11, 2007  
  */
 public class CalendarEvent {
-
   final public static String   TYPE_EVENT      = "Event".intern();
 
   final public static String   TYPE_TASK       = "Task".intern();
@@ -749,5 +752,78 @@ public class CalendarEvent {
 
   public void setActivityId(String activityId) {
     this.activityId = activityId;
+  }
+  
+  public void addParticipant(String parName, String status) {
+    List<String> pars = new LinkedList<String>();
+    if (this.getParticipant() != null) {
+      pars.addAll(Arrays.asList(this.getParticipant()));
+    }
+    
+    if (!pars.contains(parName)) {
+      pars.add(parName);
+      setParticipant(pars.toArray(new String[pars.size()]));
+      
+      Map<String, String> statusMap = getStatusMap();
+      if (statusMap.isEmpty()) {
+        statusMap = new HashMap<String, String>();
+      }
+      statusMap.put(parName, status);
+      setStatusMap(statusMap);
+    }
+  }
+  
+  public void removeParticipant(String parName) {
+    if (this.getParticipant() == null) {
+      return;
+    }
+    
+    List<String> parList = new LinkedList<String>(Arrays.asList(this.getParticipant()));
+    parList.remove(parName);
+    this.setParticipant(parList.toArray(new String[parList.size()]));
+    
+    Map<String, String> statusMap = getStatusMap();
+    statusMap.remove(parName);
+    this.setStatusMap(statusMap);
+  }
+  
+  public Invitation[] getInvitations() {
+    if (this.getParticipant() == null) {
+      return new Invitation[0];
+    }
+    Invitation[] invitations = new Invitation[this.getParticipant().length];
+    
+    int i = 0;
+    Map<String, String> parStatus = getStatusMap();
+    for (String par : this.getParticipant()) {
+      invitations[i++] = new Invitation(this.getId(), par, parStatus.get(par));
+    }
+    return invitations;
+  }
+  
+  public void setStatusMap(Map<String, String> statusMap) {
+    String[] status = new String[statusMap.values().size()];
+    int i = 0;
+    for (String name : statusMap.keySet()) {
+      status[i++] = String.format("%s:%s", name, statusMap.get(name));
+    }
+    this.setParticipantStatus(status);
+  }
+  
+  public Map<String, String> getStatusMap() {
+    if (getParticipantStatus() == null) {
+      return Collections.emptyMap();
+    }
+    Map<String, String> status = new HashMap<String, String>();
+
+    for (String s : getParticipantStatus()) {
+      String[] tmp = s.split(":");
+      if (tmp.length == 2) {
+        status.put(tmp[0], tmp[1]);
+      } else {
+        status.put(tmp[0], "");
+      }
+    }
+    return status;
   }
 }

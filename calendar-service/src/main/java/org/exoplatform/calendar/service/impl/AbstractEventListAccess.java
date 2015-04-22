@@ -19,14 +19,7 @@
 
 package org.exoplatform.calendar.service.impl;
 
-import javax.jcr.Session;
 import javax.jcr.query.InvalidQueryException;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.Row;
-import javax.jcr.query.RowIterator;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.commons.utils.ListAccess;
@@ -35,50 +28,43 @@ import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-public class EventListAccess implements ListAccess<Row> {
+public abstract class AbstractEventListAccess<T> implements ListAccess<T> {
 
-  private static Log log = ExoLogger.getLogger(EventListAccess.class);
+  private static Log log = ExoLogger.getLogger(AbstractEventListAccess.class);
   
-  private JCRDataStorage storage;
+  private EventDAOImpl evtDAO;
   private EventQuery query;
   
   private Integer size;
 
-  public EventListAccess(JCRDataStorage storage, EventQuery eventQuery) {
+  public AbstractEventListAccess(EventDAOImpl evtDAO, EventQuery eventQuery) {
     this.query = eventQuery;
-    this.storage = storage;
+    this.evtDAO = evtDAO;
   }
-
-  public Row[] load(int offset, int limit) {
+  
+  protected QueryResultImpl loadData(int offset, int limit) {
     try {
-      Session session = storage.getSession(storage.createSystemProvider());
-      QueryManager queryMan = session.getWorkspace().getQueryManager();
-      QueryImpl jcrQuery = (QueryImpl)queryMan.createQuery(query.getQueryStatement(), query.getQueryType());
+      QueryImpl jcrQuery = evtDAO.createJCRQuery(query.getQueryStatement(), query.getQueryType());
       if (limit > 0) {
         jcrQuery.setOffset(offset);
         jcrQuery.setLimit(limit);
       }
 
       QueryResultImpl queryResult = (QueryResultImpl)jcrQuery.execute();
-      RowIterator rows = jcrQuery.execute().getRows();
-      
-      List<Row> results = new LinkedList<Row>();
-      while (rows.hasNext()) {
-        results.add(rows.nextRow());
-      }
       this.size = queryResult.getTotalSize();
       
-      return results.toArray(new Row[results.size()]);
+      return queryResult;
     } catch (InvalidQueryException ex) {
       if(log.isDebugEnabled()) {
         log.debug("JCRQuery is invalid", ex);
       }
-      return null;
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
-      return null;
     }
+    return null;
   }
+
+  public abstract T[] load(int offset, int limit);
   
   @Override
   public int getSize() throws Exception {

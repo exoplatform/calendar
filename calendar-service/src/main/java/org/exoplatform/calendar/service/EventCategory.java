@@ -34,6 +34,7 @@ import org.exoplatform.webui.application.WebuiRequestContext;
  */
 public class EventCategory {
   private static final Log log = ExoLogger.getLogger(EventCategory.class);
+
   private String  id;
 
   private String  name;

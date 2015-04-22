@@ -28,11 +28,44 @@ import org.exoplatform.services.jcr.util.IdGenerator;
  */
 public class Calendar {
 
+  public enum Type {
+
+    PERSONAL(0),
+
+    SHARED(1),
+
+    GROUP(2),
+
+    UNDEFINED(-1);
+
+    private final int type;
+
+    Type(int type) {
+      this.type = type;
+    }
+
+    public int type() {
+      return type;
+    }
+
+    public Type getType(int type) {
+      for (Type t : Type.values()) {
+        if (t.type() == type) {
+          return t;
+        }
+      }
+
+      return UNDEFINED;
+    }
+  }
+
   public static final int      TYPE_PRIVATE  = 0;
 
   public static final int      TYPE_SHARED   = 1;
 
   public static final int      TYPE_PUBLIC   = 2;
+  
+  public static final int      TYPE_ALL   = -1;
 
   public static final String N_ASPARAGUS = "asparagus";
 
@@ -91,8 +124,6 @@ public class Calendar {
 
   private String               name;
 
-  private String               calendarPath;
-
   private String               calendarColor = N_POWDER_BLUE;
 
   private String               description;
@@ -107,20 +138,21 @@ public class Calendar {
 
   private String[]             editPermission;
 
-  private boolean              isDataInit    = false;
-
-  private boolean              isPublic      = false;
-
-  @Deprecated
-  private String               categoryId;
-
   private String[]             groups;
 
   private String               publicUrl;
 
   private String               privateUrl;
 
-  public static final String   CALENDAR_PREF = "calendar".intern();
+  private String               _calendarPath;
+
+  private boolean              _isDataInit    = false;
+
+  private boolean              _isPublic      = false;
+
+  private int                  _calType;
+
+  public static final String   CALENDAR_PREF = "calendar";
 
   public Calendar() {
     id = CALENDAR_PREF + IdGenerator.generate();
@@ -145,11 +177,11 @@ public class Calendar {
   }
 
   public String getCalendarPath() {
-    return calendarPath;
+    return _calendarPath;
   }
 
   public void setCalendarPath(String path) {
-    this.calendarPath = path;
+    this._calendarPath = path;
   }
 
   public String getDescription() {
@@ -184,22 +216,12 @@ public class Calendar {
     this.groups = groups;
   }
 
-  @Deprecated
-  public String getCategoryId() {
-    return categoryId;
-  }
-
-  @Deprecated
-  public void setCategoryId(String categoryId) {
-    this.categoryId = categoryId;
-  }
-
   public boolean isPublic() {
-    return isPublic;
+    return _isPublic;
   }
 
   public void setPublic(boolean isPublic) {
-    this.isPublic = isPublic;
+    this._isPublic = isPublic;
   }
 
   public void setTimeZone(String timeZone) {
@@ -227,11 +249,11 @@ public class Calendar {
   }
 
   public void setDataInit(boolean isDataInit) {
-    this.isDataInit = isDataInit;
+    this._isDataInit = isDataInit;
   }
 
   public boolean isDataInit() {
-    return isDataInit;
+    return _isDataInit;
   }
 
   public void setCalendarOwner(String calendarOwner) {
@@ -284,5 +306,13 @@ public class Calendar {
   public int hashCode()
   {
     return id.hashCode();
+  }
+
+  public int getCalType() {
+    return _calType;
+  }
+
+  public void setCalType(int calType) {
+    this._calType = calType;
   }
 }

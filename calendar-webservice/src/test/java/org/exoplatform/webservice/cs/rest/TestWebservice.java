@@ -18,8 +18,6 @@
 package org.exoplatform.webservice.cs.rest;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -35,9 +33,6 @@ import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.impl.RuntimeDelegateImpl;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
-import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.webservice.cs.calendar.CalendarWebservice;
 
 /**
@@ -47,21 +42,20 @@ import org.exoplatform.webservice.cs.calendar.CalendarWebservice;
 
 public class TestWebservice extends AbstractResourceTest {
 
-  CalendarWebservice calendarWebservice;
-  CalendarService calendarService;
-  private Collection<MembershipEntry> membershipEntries = new ArrayList<MembershipEntry>();
+	protected CalendarWebservice calendarWebservice;
+  protected CalendarService calendarService;
 
-  static final String             baseURI = "";
-  String username = "root";
+  protected static final String             baseURI = "";
+  protected String username = "root";
   
-  MultivaluedMap<String, String> h = new MultivaluedMapImpl();
+  protected MultivaluedMap<String, String> h = new MultivaluedMapImpl();
   
 
   public void setUp() throws Exception {
     RuntimeDelegate.setInstance(new RuntimeDelegateImpl());
     super.setUp();
     calendarWebservice = (CalendarWebservice) container.getComponentInstanceOfType(CalendarWebservice.class);
-    calendarService = (MockCalendarService) container.getComponentInstanceOfType(MockCalendarService.class);
+    calendarService = (CalendarService) container.getComponentInstanceOfType(CalendarService.class);
     binder.addResource(calendarWebservice, null);
     login() ;
     h.putSingle("username", username);
@@ -72,12 +66,22 @@ public class TestWebservice extends AbstractResourceTest {
     
   }
 
-  private Calendar createCalendar(String name) {
+  protected Calendar createCalendar(String name) {
     Calendar cal = new Calendar() ;
     cal.setName(name) ;
     cal.setDescription("Desscription") ;
     cal.setPublic(true) ;
+    cal.setCalType(Calendar.TYPE_PRIVATE);
     return cal;
+  }
+  protected Calendar createPublicCalendar(String name, String description) {
+      Calendar publicCalendar = new Calendar();
+      publicCalendar.setName(name);
+      publicCalendar.setDescription(description);
+      publicCalendar.setPublic(true);
+      publicCalendar.setGroups(new String[]{"/platform/users","/organization/management/executive-board"});
+      publicCalendar.setCalType(Calendar.TYPE_PUBLIC);
+      return publicCalendar;
   }
   
   private CalendarEvent createEvent(String summary, String calendarId, Date from, Date to, String calType) {
@@ -143,7 +147,7 @@ public class TestWebservice extends AbstractResourceTest {
     calendarService.saveUserCalendar(username, cal, true);
     
     CalendarEvent calE = createEvent("newEvent", cal.getId(), new Date(), new Date(), CalendarEvent.TYPE_EVENT);
-    calendarService.saveUserEvent(extURI, cal.getId(), calE, true);
+    calendarService.saveUserEvent(username, cal.getId(), calE, true);
     
     
     //ArrayList<String> calIds = new ArrayList<String>() ;
@@ -172,7 +176,7 @@ public class TestWebservice extends AbstractResourceTest {
     calendarService.saveUserCalendar(username, cal, true);
     
     CalendarEvent calE = createEvent("newTask", cal.getId(), new Date(), new Date(), CalendarEvent.TYPE_TASK);
-    calendarService.saveUserEvent(extURI, cal.getId(), calE, true);
+    calendarService.saveUserEvent(username, cal.getId(), calE, true);
     
      
     
@@ -186,6 +190,7 @@ public class TestWebservice extends AbstractResourceTest {
     //deleteData(username, calCate.getId());
   }
   
+  //mvn test -Dtest=TestWebservice#testGetEvent
   public void testGetEvent() throws Exception {
 
     //create/get calendar in private folder
@@ -199,7 +204,7 @@ public class TestWebservice extends AbstractResourceTest {
     calendarService.saveUserCalendar(username, cal, true);
     
     CalendarEvent calE = createEvent("newEvent", cal.getId(), new Date(), new Date(), CalendarEvent.TYPE_EVENT);
-    calendarService.saveUserEvent(extURI, cal.getId(), calE, true);
+    calendarService.saveUserEvent(username, cal.getId(), calE, true);
     
     String eventURI = "/cs/calendar/getevent/" + calE.getId();
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
@@ -224,7 +229,7 @@ public class TestWebservice extends AbstractResourceTest {
     calendarService.saveUserCalendar(username, cal, true);
     
     CalendarEvent calE = createEvent("newEvent", cal.getId(), new Date(), new Date(), CalendarEvent.TYPE_EVENT);
-    calendarService.saveUserEvent(extURI, cal.getId(), calE, true);
+    calendarService.saveUserEvent(username, cal.getId(), calE, true);
     
     String eventURI = "/cs/calendar/geteventbyid/" + calE.getId();
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
@@ -252,7 +257,7 @@ public class TestWebservice extends AbstractResourceTest {
     
     CalendarEvent event = createEvent("newEvent", cal.getId(), fromTime.getTime(), toTime.getTime(), CalendarEvent.TYPE_EVENT);
     event.setRepeatType(CalendarEvent.RP_DAILY);
-    calendarService.saveUserEvent(extURI, cal.getId(), event, true);
+    calendarService.saveUserEvent(username, cal.getId(), event, true);
 
     SimpleDateFormat sdf = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
     sdf.setTimeZone(TimeZone.getDefault());
@@ -288,21 +293,7 @@ public class TestWebservice extends AbstractResourceTest {
     //deleteData(username, calCate.getId());
   }
   
-  private void login() {
-    
-    setMembershipEntry("/platform/users", "member", true);
-    Identity identity = new Identity(username, membershipEntries);
-    ConversationState state = new ConversationState(identity);
-    ConversationState.setCurrent(state);
+  private void login() {    
+    login(username, "member:/platform/users");
   }
-
-  private void setMembershipEntry(String group, String membershipType, boolean isNew) {
-    MembershipEntry membershipEntry = new MembershipEntry(group, membershipType);
-    if (isNew) {
-      membershipEntries.clear();
-    }
-    membershipEntries.add(membershipEntry);
-  }
-
-
 }

@@ -37,8 +37,9 @@ import org.exoplatform.services.log.Log;
  */
 
 public class Attachment {
-  private static final Log log = ExoLogger.getExoLogger(Attachment.class);
   
+  private static final Log log = ExoLogger.getExoLogger(Attachment.class);
+
   private String   id;
 
   private String   name;
@@ -95,17 +96,21 @@ public class Attachment {
     this.name = name_;
   }
 
-  public String getDataPath() throws Exception {
-    Node attachmentData;
+  public String getDataPath() {
     try {
-      attachmentData = (Node) getSesison().getItem(getId());
-    } catch (ItemNotFoundException e) {
+      if(getSesison() != null) {
+        Node attachmentData = (Node) getSesison().getItem(getId());
+        if(attachmentData != null) {
+          return attachmentData.getPath();
+        }
+      }
+    } catch (Exception e) {
       if (log.isDebugEnabled()) {
         log.debug("The attachment note is not exist", e);
       }
-      return null;
+
     }
-    return attachmentData.getPath();
+    return null;
   }
 
   private Session getSesison() throws Exception {
@@ -153,14 +158,14 @@ public class Attachment {
 
   /**
    * keep id to make sure temp file will be removed after use uploaded file
-  */
+   */
   public void setResourceId(String resourceId) {
     this.resourceId = resourceId;
   }
 
   /**
    * get id to call download service remove temp file
-  */
+   */
   public String getResourceId() {
     return resourceId;
   }
