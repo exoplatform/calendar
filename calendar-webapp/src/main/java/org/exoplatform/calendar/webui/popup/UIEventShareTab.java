@@ -159,8 +159,8 @@ public class UIEventShareTab extends UIFormInputWithActions {
         uiEventForm.participants_.remove(parStatus);
         tabAttender.parMap_.remove(parStatus) ;
       }
-      uiEventForm.participantStatus_.remove(parStatus);
-      for(Iterator<ParticipantStatus> i = uiEventForm.participantStatusList_.iterator(); i.hasNext();){
+       uiEventForm.participantStatus_.remove(parStatus);
+       for(Iterator<ParticipantStatus> i = uiEventForm.participantStatusList_.iterator(); i.hasNext();) {
         ParticipantStatus participantStatus = i.next();
         if(parStatus.equalsIgnoreCase(participantStatus.getParticipant()))
           i.remove();

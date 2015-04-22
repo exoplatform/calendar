@@ -18,7 +18,6 @@ package org.exoplatform.calendar.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Calendar;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -36,10 +35,9 @@ import org.exoplatform.services.log.Log;
  * Sep 28, 2007  
  */
 
-public class Attachment {
-  private static final Log log = ExoLogger.getExoLogger(Attachment.class);
+public class Attachment extends AbstractBean {
   
-  private String   id;
+  private static final Log log = ExoLogger.getExoLogger(Attachment.class);
 
   private String   name;
 
@@ -48,8 +46,6 @@ public class Attachment {
   private long     size;
 
   private byte[]   imageBytes;
-
-  private Calendar lastModified;
 
   private String   workspace;
 
@@ -60,15 +56,7 @@ public class Attachment {
    * the id will automatic generate when create new object
    */
   public Attachment() {
-    id = "Attachment" + IdGenerator.generate();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
+    setId("Attachment" + IdGenerator.generate());
   }
 
   public String getMimeType() {
@@ -95,17 +83,21 @@ public class Attachment {
     this.name = name_;
   }
 
-  public String getDataPath() throws Exception {
-    Node attachmentData;
+  public String getDataPath() {
     try {
-      attachmentData = (Node) getSesison().getItem(getId());
-    } catch (ItemNotFoundException e) {
+      if(getSesison() != null) {
+        Node attachmentData = (Node) getSesison().getItem(getId());
+        if(attachmentData != null) {
+          return attachmentData.getPath();
+        }
+      }
+    } catch (Exception e) {
       if (log.isDebugEnabled()) {
         log.debug("The attachment note is not exist", e);
       }
-      return null;
+
     }
-    return attachmentData.getPath();
+    return null;
   }
 
   private Session getSesison() throws Exception {
@@ -135,14 +127,6 @@ public class Attachment {
     return attachment.getNode("jcr:content").getProperty("jcr:data").getStream();
   }
 
-  public void setLastModified(Calendar lastModified) {
-    this.lastModified = lastModified;
-  }
-
-  public Calendar getLastModified() {
-    return lastModified;
-  }
-
   public void setWorkspace(String workspace) {
     this.workspace = workspace;
   }
@@ -153,14 +137,14 @@ public class Attachment {
 
   /**
    * keep id to make sure temp file will be removed after use uploaded file
-  */
+   */
   public void setResourceId(String resourceId) {
     this.resourceId = resourceId;
   }
 
   /**
    * get id to call download service remove temp file
-  */
+   */
   public String getResourceId() {
     return resourceId;
   }

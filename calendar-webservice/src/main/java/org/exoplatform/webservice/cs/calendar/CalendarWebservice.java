@@ -92,7 +92,7 @@ import com.sun.syndication.io.XmlReader;
  * @anchor CalendarApplication
  */
 @Path("/cs/calendar")
-public class CalendarWebservice implements ResourceContainer{
+public class CalendarWebservice implements ResourceContainer {
   public final static String PRIVATE = "/private";
   public final static String BASE_URL = "/cs/calendar".intern();
   public final static String BASE_RSS_URL = BASE_URL + "/feed".intern();
@@ -101,13 +101,18 @@ public class CalendarWebservice implements ResourceContainer{
   final public static String BASE_URL_PRIVATE = PRIVATE + BASE_URL + "/".intern();
   private Log log = ExoLogger.getExoLogger(CalendarWebservice.class);
 
-  static CacheControl cc = new CacheControl();
+  protected final static CacheControl cc = new CacheControl();
   static {
     cc.setNoCache(true);
     cc.setNoStore(true);
   }
 
   private static CalendarService calendarService = null;
+  public static CalendarService calendarServiceInstance(){
+	  if(calendarService == null) calendarService = (CalendarService)ExoContainerContext.getCurrentContainer()
+              .getComponentInstanceOfType(CalendarService.class);
+	  return calendarService;
+  }
   private Object getCalendarService() {
     calendarService = (CalendarService)ExoContainerContext.getCurrentContainer()
                                           .getComponentInstanceOfType(CalendarService.class);
@@ -311,7 +316,7 @@ public class CalendarWebservice implements ResourceContainer{
    * @return
    * @throws Exception
    */
-  private String makeFeed(String author, List<CalendarEvent> events, FeedData feedData, UriInfo uri) throws Exception{
+  protected String makeFeed(String author, List<CalendarEvent> events, FeedData feedData, UriInfo uri) throws Exception{
     URI baseUri = uri.getBaseUri();
     String baseURL = baseUri.getScheme() + "://" + baseUri.getHost() + ":" + Integer.toString(baseUri.getPort());
     String baseRestURL = baseUri.toString();

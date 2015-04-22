@@ -16,6 +16,7 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -24,7 +25,12 @@ import java.util.Date;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-public class RssData {
+public class RssData implements Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 3904037990844881907L;
+
   private String name;
 
   private String version;

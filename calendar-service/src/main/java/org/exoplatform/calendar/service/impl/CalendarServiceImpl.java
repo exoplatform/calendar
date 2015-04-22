@@ -16,22 +16,53 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.NumberList;
 import net.fortuna.ical4j.model.Period;
 import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.WeekDay;
-import net.fortuna.ical4j.model.WeekDayList;
+
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarCollection;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarImportExport;
+import org.exoplatform.calendar.service.CalendarIterator;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
 import org.exoplatform.calendar.service.DeleteShareJob;
 import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.EventDAO;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
@@ -44,12 +75,15 @@ import org.exoplatform.calendar.service.ShareCalendarJob;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ExoProperties;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
+import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -67,24 +101,6 @@ import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
-
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -109,14 +125,17 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   private RemoteCalendarService               remoteCalendarService;
 
-  private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);
+  private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);  
+  
+  private EventDAO eventDAO;
 
   public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs, CacheService cservice) throws Exception {
     storage_ = new JCRDataStorage(nodeHierarchyCreator, reposervice, cservice);
     calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(storage_));
     calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(storage_));
     remoteCalendarService = new RemoteCalendarServiceImpl(storage_);
-    rbs_ = rbs;
+    eventDAO = new EventDAOImpl(this, storage_);
+    rbs_ = rbs;    
     ExoProperties props = params.getPropertiesParam("eventNumber.info").getProperties();
     String eventNumber = props.getProperty("eventNumber");
     Utils.EVENT_NUMBER = Integer.parseInt(eventNumber);
@@ -144,8 +163,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  public void saveUserCalendar(String username, Calendar calendar, boolean isNew) throws Exception {
-    storage_.saveUserCalendar(username, calendar, isNew);
+  public void saveUserCalendar(String username, Calendar calendar, boolean isNew) {
+		try {
+			storage_.saveUserCalendar(username, calendar, isNew);
+		} catch (Exception e) {
+			throw new CalendarException();
+		}
   }
 
   /**
@@ -172,8 +195,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   /**
    * {@inheritDoc}
    */
-  public void savePublicCalendar(Calendar calendar, boolean isNew) throws Exception {
-    storage_.savePublicCalendar(calendar, isNew, null);
+  public void savePublicCalendar(Calendar calendar, boolean isNew) {
+    try {
+			storage_.savePublicCalendar(calendar, isNew, null);
+		} catch (Exception e) {
+			throw new CalendarException();
+		}
   }
 
   /**
@@ -188,6 +215,16 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public List<EventCategory> getEventCategories(String username) throws Exception {
     return storage_.getEventCategories(username);
+  }
+  
+  public CalendarCollection<EventCategory> getEventCategories(String username, int offset, int limit) throws Exception {
+    if (username == null) {
+      throw new IllegalArgumentException("username must not null");
+    }
+    List<EventCategory> categories = storage_.getEventCategories(username);
+    int fullSize = categories.size();
+    
+    return new CalendarCollection<EventCategory>(Utils.subList(categories, offset, limit), fullSize);
   }
 
   /**
@@ -1150,19 +1187,19 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       if (!fromCalendar.equals(toCalendar)) {
         // remove original event from old calendar
         switch (fromType) {
-          case Calendar.TYPE_PRIVATE:
-            removeUserEvent(username, fromCalendar, originEvent.getId());
-            break;
+        case Calendar.TYPE_PRIVATE:
+          removeUserEvent(username, fromCalendar, originEvent.getId());
+          break;
 
-          case Calendar.TYPE_PUBLIC:
-            removePublicEvent(fromCalendar, originEvent.getId());
-            break;
+        case Calendar.TYPE_PUBLIC:
+          removePublicEvent(fromCalendar, originEvent.getId());
+          break;
 
-          case Calendar.TYPE_SHARED:
-            removeSharedEvent(username, fromCalendar, originEvent.getId());
-            break;
-          default:
-            break;
+        case Calendar.TYPE_SHARED:
+          removeSharedEvent(username, fromCalendar, originEvent.getId());
+          break;
+        default:
+          break;
         }
         // save new original event to new calendar
         CalendarEvent newEvent = new CalendarEvent(originEvent);
@@ -1170,36 +1207,36 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         newEvent.setExceptionIds(originEvent.getExceptionIds());
 
         switch (toType) {
-          case Calendar.TYPE_PRIVATE:
-            saveUserEvent(username, toCalendar, newEvent, false);
-            break;
+        case Calendar.TYPE_PRIVATE:
+          saveUserEvent(username, toCalendar, newEvent, false);
+          break;
 
-          case Calendar.TYPE_PUBLIC:
-            savePublicEvent(toCalendar, newEvent, false);
-            break;
+        case Calendar.TYPE_PUBLIC:
+          savePublicEvent(toCalendar, newEvent, false);
+          break;
 
-          case Calendar.TYPE_SHARED:
-            saveEventToSharedCalendar(username, toCalendar, newEvent, false);
-            break;
-          default:
-            break;
+        case Calendar.TYPE_SHARED:
+          saveEventToSharedCalendar(username, toCalendar, newEvent, false);
+          break;
+        default:
+          break;
         }
       } else {
         // save original event
         switch (fromType) {
-          case Calendar.TYPE_PRIVATE:
-            saveUserEvent(username, fromCalendar, originEvent, false);
-            break;
+        case Calendar.TYPE_PRIVATE:
+          saveUserEvent(username, fromCalendar, originEvent, false);
+          break;
 
-          case Calendar.TYPE_PUBLIC:
-            savePublicEvent(fromCalendar, originEvent, false);
-            break;
+        case Calendar.TYPE_PUBLIC:
+          savePublicEvent(fromCalendar, originEvent, false);
+          break;
 
-          case Calendar.TYPE_SHARED:
-            saveEventToSharedCalendar(username, fromCalendar, originEvent, false);
-            break;
-          default:
-            break;
+        case Calendar.TYPE_SHARED:
+          saveEventToSharedCalendar(username, fromCalendar, originEvent, false);
+          break;
+        default:
+          break;
         }
       }
 
@@ -1216,7 +1253,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     try {
       String timezone = getCalendarSetting(username).getTimeZone();
       Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),
-              TimeZone.getTimeZone(timezone));
+                                                      TimeZone.getTimeZone(timezone));
       Boolean isFirstOccurrence = (stopDate == null);
 
       String calendarId = originEvent.getCalendarId();
@@ -1259,40 +1296,40 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       //if the selected occurrence is the first occurrence, save the selected occurrence as if
       //it is the origin event, otherwise update the origin and save new series from the selected occurrence
       switch (Integer.parseInt(originEvent.getCalType())) {
-        case Calendar.TYPE_PRIVATE:
-          if(isFirstOccurrence) {
-            saveUserEvent(username, calendarId, selectedOccurrence, false);
-          } else {
-            saveUserEvent(username, calendarId, selectedOccurrence, true);
-            saveUserEvent(username, calendarId, originEvent, false);
-          }
-          break;
+      case Calendar.TYPE_PRIVATE:
+        if(isFirstOccurrence) {
+          saveUserEvent(username, calendarId, selectedOccurrence, false);
+        } else {
+          saveUserEvent(username, calendarId, selectedOccurrence, true);
+          saveUserEvent(username, calendarId, originEvent, false);
+        }
+        break;
 
-        case Calendar.TYPE_PUBLIC:
-          if(isFirstOccurrence) {
-            savePublicEvent(calendarId, selectedOccurrence, false);
-          } else {
-            //we don't want to add old-content comment to origin event's activity, so we call the method from storage
-            storage_.savePublicEvent(calendarId, originEvent, false);
-            for(CalendarEventListener listener : eventListeners_) {
-              //add comment (with new content format) to the activity of the origin repetitive event
+      case Calendar.TYPE_PUBLIC:
+        if(isFirstOccurrence) {
+          savePublicEvent(calendarId, selectedOccurrence, false);
+        } else {
+          //we don't want to add old-content comment to origin event's activity, so we call the method from storage
+          storage_.savePublicEvent(calendarId, originEvent, false);
+          for(CalendarEventListener listener : eventListeners_) {
+            //add comment (with new content format) to the activity of the origin repetitive event
 
-              listener.updateFollowingOccurrences(originEvent, stopDate);
-            }
-            savePublicEvent(calendarId, selectedOccurrence, true);//publish event to create activity
+            listener.updateFollowingOccurrences(originEvent, stopDate);
           }
-          break;
+          savePublicEvent(calendarId, selectedOccurrence, true);//publish event to create activity
+        }
+        break;
 
-        case Calendar.TYPE_SHARED:
-          if(isFirstOccurrence) {
-            saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
-          } else {
-            saveEventToSharedCalendar(username, calendarId, originEvent, false);
-            saveEventToSharedCalendar(username, calendarId, selectedOccurrence, true);
-          }
-          break;
-        default:
-          break;
+      case Calendar.TYPE_SHARED:
+        if(isFirstOccurrence) {
+          saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
+        } else {
+          saveEventToSharedCalendar(username, calendarId, originEvent, false);
+          saveEventToSharedCalendar(username, calendarId, selectedOccurrence, true);
+        }
+        break;
+      default:
+        break;
       }
       //get all exception events in the future and remove them
       List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
@@ -1320,38 +1357,38 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       String calendarId = originEvent.getCalendarId();
       boolean isException = false;
       if(originEvent.getExceptionIds() != null &&
-              originEvent.getExceptionIds().contains(removedOccurence.getRecurrenceId())){
+          originEvent.getExceptionIds().contains(removedOccurence.getRecurrenceId())){
         isException = true;
       } else {
         originEvent.addExceptionId(removedOccurence.getRecurrenceId());
       }
       switch (Integer.parseInt(originEvent.getCalType())) {
-        case Calendar.TYPE_PRIVATE:
-          if(isException) {
-            removeUserEvent(username, calendarId, removedOccurence.getId());
-          }
-          saveUserEvent(username, calendarId, originEvent, false);
-          break;
+      case Calendar.TYPE_PRIVATE:
+        if(isException) {
+          removeUserEvent(username, calendarId, removedOccurence.getId());
+        }
+        saveUserEvent(username, calendarId, originEvent, false);
+        break;
 
-        case Calendar.TYPE_PUBLIC:
-          if(isException) {
-            removePublicEvent(calendarId, removedOccurence.getId());
-          } else
+      case Calendar.TYPE_PUBLIC:
+        if(isException) {
+          removePublicEvent(calendarId, removedOccurence.getId());
+        } else
           savePublicEvent(calendarId, originEvent, false);
-          for(CalendarEventListener cel : eventListeners_) {
-            cel.removeOneOccurrence(originEvent, removedOccurence );
-          }
-          break;
+        for(CalendarEventListener cel : eventListeners_) {
+          cel.removeOneOccurrence(originEvent, removedOccurence );
+        }
+        break;
 
-        case Calendar.TYPE_SHARED:
-          if(isException) {
-            removeSharedEvent(username, calendarId, removedOccurence.getId());
-          }
-          saveEventToSharedCalendar(username, calendarId, originEvent, false);
-          break;
+      case Calendar.TYPE_SHARED:
+        if(isException) {
+          removeSharedEvent(username, calendarId, removedOccurence.getId());
+        }
+        saveEventToSharedCalendar(username, calendarId, originEvent, false);
+        break;
 
-        default:
-          break;
+      default:
+        break;
       }
     } catch(Exception e) {
       if(LOG.isDebugEnabled()) {
@@ -1392,24 +1429,24 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         //otherwise, update the origin event and remove all the following
         originEvent.setRepeatUntilDate(stopDate);
         switch (Integer.parseInt(originEvent.getCalType())) {
-          case Calendar.TYPE_PRIVATE:
-            saveUserEvent(username, calendarId, originEvent, false);
-            break;
+        case Calendar.TYPE_PRIVATE:
+          saveUserEvent(username, calendarId, originEvent, false);
+          break;
 
-          case Calendar.TYPE_PUBLIC:
-            //we don't want to add old-content comment for origin event's activity
-            storage_.savePublicEvent(calendarId, originEvent, false);
-            for(CalendarEventListener listener : eventListeners_) {
-              //add new comment to the origin event's activity (with new content format)
-              listener.updateFollowingOccurrences(originEvent, stopDate);
-            }
-            break;
+        case Calendar.TYPE_PUBLIC:
+          //we don't want to add old-content comment for origin event's activity
+          storage_.savePublicEvent(calendarId, originEvent, false);
+          for(CalendarEventListener listener : eventListeners_) {
+            //add new comment to the origin event's activity (with new content format)
+            listener.updateFollowingOccurrences(originEvent, stopDate);
+          }
+          break;
 
-          case Calendar.TYPE_SHARED:
-            saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
-            break;
-          default:
-            break;
+        case Calendar.TYPE_SHARED:
+          saveEventToSharedCalendar(username, calendarId, selectedOccurrence, false);
+          break;
+        default:
+          break;
         }
 
         List<CalendarEvent> exceptionEvents = getExceptionEventsFromDate(username, originEvent, selectedOccurrence.getFromDateTime());
@@ -1475,7 +1512,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     t.setTime(to);
     return storage_.buildSeriesByTime(originEvent,f ,t , userId) ;
   }
-  
+
   @Override
   public String buildRecurrenceId(Date formTime, String username) {
     String timezone = TimeZone.getDefault().getID();
@@ -1546,20 +1583,20 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     try {
       for(CalendarEvent event : events) {
         switch(Integer.parseInt(event.getCalType())) {
-          case Calendar.TYPE_PRIVATE :
-            removeUserEvent(username,event.getCalendarId(),event.getId());
-            break;
-          case Calendar.TYPE_PUBLIC :
-            if(isBroadcast) removePublicEvent(event.getCalendarId(), event.getId());
-            else {
-              for (CalendarEventListener cel : eventListeners_) {
-                cel.deletePublicEvent(event, event.getCalendarId());
-              }
-              storage_.removePublicEvent(event.getCalendarId(), event.getId());
+        case Calendar.TYPE_PRIVATE :
+          removeUserEvent(username,event.getCalendarId(),event.getId());
+          break;
+        case Calendar.TYPE_PUBLIC :
+          if(isBroadcast) removePublicEvent(event.getCalendarId(), event.getId());
+          else {
+            for (CalendarEventListener cel : eventListeners_) {
+              cel.deletePublicEvent(event, event.getCalendarId());
             }
-            break;
-          case Calendar.TYPE_SHARED :
-            removeSharedEvent(username, event.getCalendarId(), event.getId());
+            storage_.removePublicEvent(event.getCalendarId(), event.getId());
+          }
+          break;
+        case Calendar.TYPE_SHARED :
+          removeSharedEvent(username, event.getCalendarId(), event.getId());
         }
       }
     } catch (Exception e) {
@@ -1567,5 +1604,216 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         LOG.debug("Exception when removing events",e);
       }
     }
+  }
+  
+  @Override
+  public ListAccess<Calendar> getPublicCalendars() throws Exception {
+    StringBuffer sql = new StringBuffer("SELECT * FROM ");
+    sql.append(Utils.EXO_CALENDAR).append(" WHERE ");
+    sql.append(Utils.EXO_PUBLIC_URL).append(" IS NOT NULL");
+       
+    QueryManager queryManager = storage_.getSystemSession().getWorkspace().getQueryManager();
+    final QueryImpl jcrQuery = (QueryImpl)queryManager.createQuery(sql.toString(), Query.SQL);    
+    
+    return new ListAccess<Calendar>() {
+      private int size = -1;
+      
+      @Override
+      public int getSize() throws Exception {
+        return size;
+      }
+
+      @Override
+      public Calendar[] load(int offset, int limit) throws Exception, IllegalArgumentException {
+        List<Calendar> cals = new LinkedList<Calendar>();
+        
+        if (limit > 0) {
+          jcrQuery.setOffset(offset);
+          jcrQuery.setLimit(limit);
+        }
+        
+        QueryResultImpl result = (QueryResultImpl)jcrQuery.execute();
+        NodeIterator iter = result.getNodes();
+        while (iter.hasNext()) {
+          cals.add(Utils.loadCalendar(iter.nextNode()));
+        }
+        this.size = result.getTotalSize();
+        return cals.toArray(new Calendar[cals.size()]);
+      }
+    };
+  }
+
+  @Override
+  public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit) {
+    Collection<Calendar> cals = new ArrayList<Calendar>();
+    int fullSize = 0;
+    try {
+      QueryManager queryManager = null ;
+      StringBuffer sql = new StringBuffer("SELECT * FROM ");
+      sql.append(Utils.EXO_CALENDAR);
+      switch (calType) {
+      case Calendar.TYPE_PRIVATE:
+        Node userNode = storage_.getUserCalendarHome(username);
+        sql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(userNode.getPath()).append("/%'")
+        .append("AND NOT jcr:path LIKE '").append(userNode.getPath()).append("/%/%'");
+        queryManager = userNode.getSession().getWorkspace().getQueryManager();
+        break;
+      case Calendar.TYPE_SHARED:
+        int counter = 0;
+        Node sharedHomeNode =  storage_.getSharedCalendarHome();
+        if(sharedHomeNode.hasNode(username)) {
+          Node sharedNode = sharedHomeNode.getNode(username);
+          PropertyIterator iter = sharedNode.getReferences();
+          fullSize += iter.getSize();
+          Utils.skip(iter, offset);
+          while (iter.hasNext()) {
+            Calendar cal = Utils.loadCalendar(iter.nextProperty().getParent()); 
+            cals.add(cal);
+            if (++counter == limit) {
+              break;
+            }
+          }
+        }
+        break;
+      case Calendar.TYPE_PUBLIC:
+        OrganizationService orgService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
+        Collection<Group> groups = orgService.getGroupHandler().findGroupsOfUser(username);
+        if (groups == null || groups.isEmpty()) return new CalendarCollection<Calendar>(Collections.<Calendar>emptyList(), 0);
+        
+        Node node =  storage_.getPublicCalendarHome();
+        sql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(node.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
+        .append(node.getPath()).append("/%/%'");
+        sql.append(" AND (");
+        for (Iterator<Group> i = groups.iterator(); i.hasNext();) {
+          sql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next().getId()).append("')");
+          if (i.hasNext()) sql.append(" OR ");
+        }
+        sql.append(")");
+        queryManager = node.getSession().getWorkspace().getQueryManager();
+        break;
+
+      case Calendar.TYPE_ALL:
+        Node uNode = storage_.getUserCalendarHome(username);
+        Node pNode =  storage_.getPublicCalendarHome();
+        Node sHome =  storage_.getSharedCalendarHome();
+        CalendarIterator rIt = new CalendarIterator();
+        if(sHome.hasNode(username)) {
+          Node sNode = sHome.getNode(username);
+          PropertyIterator pIt = sNode.getReferences();
+          rIt.addShareIterator(pIt);
+        }
+        StringBuffer pSql = new StringBuffer(sql.toString());
+
+        pSql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(uNode.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
+        .append(uNode.getPath()).append("/%/%'");	
+        queryManager = uNode.getSession().getWorkspace().getQueryManager();
+        QueryImpl jcrquery = (QueryImpl)queryManager.createQuery(pSql.toString(), Query.SQL);
+        QueryResult result = jcrquery.execute();
+        NodeIterator nIt1 = result.getNodes();
+        rIt.addPeronalIterator(nIt1);
+
+        orgService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
+        groups = orgService.getGroupHandler().findGroupsOfUser(username);
+        if (groups != null) {
+          StringBuffer gSql = new StringBuffer(sql.toString());
+          gSql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(pNode.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
+          .append(pNode.getPath()).append("/%/%'");
+          gSql.append(" AND (");
+          for (Iterator<Group> i = groups.iterator(); i.hasNext();) {
+            gSql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next().getId()).append("')");
+            if (i.hasNext()) gSql.append(" OR ");
+          }
+          gSql.append(")");
+          queryManager = pNode.getSession().getWorkspace().getQueryManager();
+          
+          QueryImpl jcrquery2 = (QueryImpl)queryManager.createQuery(gSql.toString(), Query.SQL);
+          QueryResult result2 = jcrquery2.execute();
+          NodeIterator nIt2 = result2.getNodes();
+          rIt.addPublicIterator(nIt2);
+          fullSize += rIt.getSize();
+          Utils.skip(rIt, offset);
+          counter = 0;
+          while (rIt.hasNext()) {
+            Calendar cal = null;
+            Object it = rIt.next();
+            if(it != null){
+              if(rIt.isNode()) cal = Utils.loadCalendar(((Node)it));
+              else cal = Utils.loadCalendar(((Property)it).getParent());
+            }
+            if(cal != null) cals.add(cal);
+            if (++counter == limit) {
+              break;
+            }
+          }
+        }
+        break;
+      default:
+        break;
+      }
+      if(queryManager != null && Calendar.TYPE_ALL != calType) {
+
+        QueryImpl jcrquery = (QueryImpl)queryManager.createQuery(sql.toString(), Query.SQL);
+        jcrquery.setOffset(offset);
+        //jcrquery.setLimit(limit);
+        QueryResult result = jcrquery.execute();
+        NodeIterator rIt  = result.getNodes();
+        fullSize += rIt.getSize();
+        int counter = 0;
+        while (rIt.hasNext()) {
+          Calendar cal = Utils.loadCalendar(rIt.nextNode());
+          if(cal != null) cals.add(cal);
+          if (++counter == limit) {
+            break;
+          }
+        }
+      }
+    } catch (Exception e) {
+      if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());
+    }
+    return new CalendarCollection<Calendar>(cals, fullSize);
+  }
+  public Calendar saveCalendar(String username, Calendar calendar, int caltype , boolean isNew){
+    Calendar instance = null;
+    try {
+      switch (caltype) {
+      case Calendar.TYPE_PRIVATE:
+        storage_.saveUserCalendar(username, calendar, isNew);
+        break;
+
+      case Calendar.TYPE_PUBLIC:
+        storage_.savePublicCalendar(calendar, isNew, username);
+        break;
+      case Calendar.TYPE_SHARED:
+        storage_.saveSharedCalendar(username, calendar);
+        break;
+      default:
+        break;
+      }
+      instance = storage_.getCalendarById(calendar.getId());
+    } catch (Exception e) {
+      if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());
+    }
+
+    return instance;
+  }
+  
+  public Attachment getAttachmentById(String attId){
+    Attachment att = null;
+    try {
+      Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+      att = Utils.loadAttachment((Node)calendarApp.getSession().getItem(attId));
+    } catch (Exception e) {
+      if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());
+    }
+    return att;
+  }
+  
+  public void removeAttachmentById(String attId) {
+    storage_.removeAttachmentById(attId);
+  }
+
+  @Override
+  public EventDAO getEventDAO() {
+    return eventDAO;
   }
 }

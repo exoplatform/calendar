@@ -20,15 +20,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
+
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -107,89 +111,95 @@ public class EventPageListQuery extends JCRPageList {
   }
 
   public static CalendarEvent getEventFromNode(CalendarEvent event, Node eventNode, Node reminderFolder) throws Exception {
-    StringBuilder namePattern = new StringBuilder(512);
-    namePattern.append(Utils.EXO_ID).append('|').append(Utils.EXO_CALENDAR_ID).append('|').append(Utils.EXO_SUMMARY)
-         .append('|').append(Utils.EXO_EVENT_CATEGORYID).append('|').append(Utils.EXO_EVENT_CATEGORY_NAME).append('|')
-         .append(Utils.EXO_LOCATION).append('|').append(Utils.EXO_TASK_DELEGATOR).append('|').append(Utils.EXO_REPEAT)
-         .append('|').append(Utils.EXO_DESCRIPTION).append('|').append(Utils.EXO_FROM_DATE_TIME).append('|')
-         .append(Utils.EXO_TO_DATE_TIME).append('|').append(Utils.EXO_EVENT_TYPE).append('|')
-         .append(Utils.EXO_PRIORITY).append('|').append(Utils.EXO_IS_PRIVATE).append('|').append(Utils.EXO_EVENT_STATE).append('|')
-         .append(Utils.EXO_SEND_OPTION).append('|').append(Utils.EXO_MESSAGE).append('|').append(Utils.EXO_DATE_MODIFIED)
-         .append('|').append(Utils.EXO_INVITATION).append('|').append(Utils.EXO_PARTICIPANT).append('|')
-         .append(Utils.EXO_PARTICIPANT_STATUS);
-    PropertyIterator it = eventNode.getProperties(namePattern.toString());
-    while (it.hasNext()) {
-      Property p = it.nextProperty();
-      String name = p.getName();
-      if (name.equals(Utils.EXO_ID)) {
-        event.setId(p.getString());
-      } else if (name.equals(Utils.EXO_CALENDAR_ID)) {
-        event.setCalendarId(p.getString());
-      } else if (name.equals(Utils.EXO_SUMMARY)) {
-        event.setSummary(p.getString());
-      } else if (name.equals(Utils.EXO_EVENT_CATEGORYID)) {
-        event.setEventCategoryId(p.getString());
-      } else if (name.equals(Utils.EXO_EVENT_CATEGORY_NAME)) {
-        event.setEventCategoryName(p.getString());
-      } else if (name.equals(Utils.EXO_LOCATION)) {
-        event.setLocation(p.getString());
-      } else if (name.equals(Utils.EXO_TASK_DELEGATOR)) {
-        event.setTaskDelegator(p.getString());
-      } else if (name.equals(Utils.EXO_REPEAT)) {
-        event.setRepeatType(p.getString());
-      } else if (name.equals(Utils.EXO_DESCRIPTION)) {
-        event.setDescription(p.getString());
-      } else if (name.equals(Utils.EXO_FROM_DATE_TIME)) {
-        event.setFromDateTime(p.getDate().getTime());
-      } else if (name.equals(Utils.EXO_TO_DATE_TIME)) {
-        event.setToDateTime(p.getDate().getTime());
-      } else if (name.equals(Utils.EXO_EVENT_TYPE)) {
-        event.setEventType(p.getString());
-      } else if (name.equals(Utils.EXO_PRIORITY)) {
-        event.setPriority(p.getString());
-      } else if (name.equals(Utils.EXO_IS_PRIVATE)) {
-        event.setPrivate(p.getBoolean());
-      } else if (name.equals(Utils.EXO_EVENT_STATE)) {
-        event.setEventState(p.getString());
-      } else if (name.equals(Utils.EXO_SEND_OPTION)) {
-        event.setSendOption(p.getString());
-      } else if (name.equals(Utils.EXO_MESSAGE)) {
-        event.setMessage(p.getString());
-      } else if (name.equals(Utils.EXO_DATE_MODIFIED)) {
-        event.setLastUpdatedTime(p.getDate().getTime());
-      } else if (name.equals(Utils.EXO_INVITATION)) {
-        Value[] values = p.getValues();
-        if (values.length == 1) {
-          event.setInvitation(new String[] { values[0].getString() });
-        } else {
-          String[] invites = new String[values.length];
-          for (int i = 0; i < values.length; i++) {
-            invites[i] = values[i].getString();
-          }
-          event.setInvitation(invites);
+    Property p;
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_ID)) != null) {
+      event.setId(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_CALENDAR_ID)) != null) {
+      event.setCalendarId(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_SUMMARY)) != null) {
+      event.setSummary(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_EVENT_CATEGORYID)) != null) {
+      event.setEventCategoryId(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_EVENT_CATEGORY_NAME)) != null) {
+      event.setEventCategoryName(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_LOCATION)) != null) {
+      event.setLocation(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_TASK_DELEGATOR)) != null) {
+      event.setTaskDelegator(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_REPEAT)) != null) {
+      event.setRepeatType(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_DESCRIPTION)) != null) {
+      event.setDescription(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_FROM_DATE_TIME)) != null) {
+      event.setFromDateTime(p.getDate().getTime());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_TO_DATE_TIME)) != null) {
+      event.setToDateTime(p.getDate().getTime());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_EVENT_TYPE)) != null) {
+      event.setEventType(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_PRIORITY)) != null) {
+      event.setPriority(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_IS_PRIVATE)) != null) {
+      event.setPrivate(p.getBoolean());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_EVENT_STATE)) != null) {
+      event.setEventState(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_SEND_OPTION)) != null) {
+      event.setSendOption(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_MESSAGE)) != null) {
+      event.setMessage(p.getString());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_DATE_MODIFIED)) != null) {
+      event.setLastModified(p.getDate().getTimeInMillis());
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_INVITATION)) != null) {
+      Value[] values = p.getValues();
+      if (values.length == 1) {
+        event.setInvitation(new String[] { values[0].getString() });
+      } else {
+        String[] invites = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+          invites[i] = values[i].getString();
         }
-      } else if (name.equals(Utils.EXO_PARTICIPANT)) {
-        Value[] values = p.getValues();
-        if (values.length == 1) {
-          event.setParticipant(new String[] { values[0].getString() });
-        } else {
-          String[] participant = new String[values.length];
-          for (int i = 0; i < values.length; i++) {
-            participant[i] = values[i].getString();
-          }
-          event.setParticipant(participant);
+        event.setInvitation(invites);
+      }
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_PARTICIPANT)) != null) {
+      Value[] values = p.getValues();
+      if (values.length == 1) {
+        event.setParticipant(new String[] { values[0].getString() });
+      } else {
+        String[] participant = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+          participant[i] = values[i].getString();
         }
-      } else if (name.equals(Utils.EXO_PARTICIPANT_STATUS)) {
-        Value[] values = p.getValues();
-        if (values.length == 1) {
-          event.setParticipantStatus(new String[] { values[0].getString() });
-        } else {
-          String[] participantStatus = new String[values.length];
-          for (int i = 0; i < values.length; i++) {
-            participantStatus[i] = values[i].getString();
-          }
-          event.setParticipantStatus(participantStatus);
+        event.setParticipant(participant);
+      }
+    }
+    if ((p = getPropertyFromNode(eventNode, Utils.EXO_PARTICIPANT_STATUS)) != null) {
+      Value[] values = p.getValues();
+      if (values.length == 1) {
+        event.setParticipantStatus(new String[] { values[0].getString() });
+      } else {
+        String[] participantStatus = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+          participantStatus[i] = values[i].getString();
         }
+        event.setParticipantStatus(participantStatus);
       }
     }
     try {
@@ -202,6 +212,17 @@ public class EventPageListQuery extends JCRPageList {
     event.setAttachment(getAttachments(eventNode));
     return event;
   }
+  
+  private static Property getPropertyFromNode(Node node, String property) throws RepositoryException {
+      if(node == null || property == null) {
+        return null;
+      }
+      try {
+        return node.getProperty(property);
+      } catch (PathNotFoundException ex) {
+        return null;
+      }
+    }
 
   private CalendarEvent getEvent(Node eventNode) throws Exception {
     CalendarEvent event = new CalendarEvent();
@@ -229,8 +250,8 @@ public class EventPageListQuery extends JCRPageList {
             attachment.setName(attchmentNode.getProperty(Utils.EXO_FILE_NAME).getString());
           Node contentNode = attchmentNode.getNode(Utils.JCR_CONTENT);
           if (contentNode != null) {
-            if (contentNode.hasProperty(Utils.JCR_LASTMODIFIED))
-              attachment.setLastModified(contentNode.getProperty(Utils.JCR_LASTMODIFIED).getDate());
+            if (contentNode.hasProperty(Utils.JCR_LASTMODIFIED))              
+              attachment.setLastModified(contentNode.getProperty(Utils.JCR_LASTMODIFIED).getDate().getTimeInMillis());
             if (contentNode.hasProperty(Utils.JCR_MIMETYPE))
               attachment.setMimeType(contentNode.getProperty(Utils.JCR_MIMETYPE).getString());
             if (contentNode.hasProperty(Utils.JCR_DATA)) {

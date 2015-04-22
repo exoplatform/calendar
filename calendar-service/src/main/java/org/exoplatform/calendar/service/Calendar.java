@@ -26,13 +26,46 @@ import org.exoplatform.services.jcr.util.IdGenerator;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-public class Calendar {
+public class Calendar extends AbstractBean {
+
+  public enum Type {
+
+    PERSONAL(0),
+
+    SHARED(1),
+
+    GROUP(2),
+
+    UNDEFINED(-1);
+
+    private final int type;
+
+    Type(int type) {
+      this.type = type;
+    }
+
+    public int type() {
+      return type;
+    }
+
+    public Type getType(int type) {
+      for (Type t : Type.values()) {
+        if (t.type() == type) {
+          return t;
+        }
+      }
+
+      return UNDEFINED;
+    }
+  }
 
   public static final int      TYPE_PRIVATE  = 0;
 
   public static final int      TYPE_SHARED   = 1;
 
   public static final int      TYPE_PUBLIC   = 2;
+  
+  public static final int      TYPE_ALL   = -1;
 
   public static final String N_ASPARAGUS = "asparagus";
 
@@ -87,11 +120,7 @@ public class Calendar {
     N_MOSS_GREEN, N_POWDER_BLUE, N_LIGHT_BLUE, N_PINK, N_ORANGE, N_GRAY,
     N_GREEN, N_BABY_BLUE, N_LIGHT_GRAY, N_BEIGE, N_YELLOW, N_PLUM_PURPLE };
 
-  private String               id;
-
   private String               name;
-
-  private String               calendarPath;
 
   private String               calendarColor = N_POWDER_BLUE;
 
@@ -107,33 +136,30 @@ public class Calendar {
 
   private String[]             editPermission;
 
-  private boolean              isDataInit    = false;
-
-  private boolean              isPublic      = false;
-
-  @Deprecated
-  private String               categoryId;
-
   private String[]             groups;
 
   private String               publicUrl;
 
   private String               privateUrl;
 
-  public static final String   CALENDAR_PREF = "calendar".intern();
+  private String               _calendarPath;
+
+  private boolean              _isDataInit    = false;
+
+  private boolean              _isPublic      = false;
+
+  private int                  _calType;
+  
+  private boolean       remote = false;
+  
+  private boolean hasChildren = false;
+
+  public static final String   CALENDAR_PREF = "calendar";
 
   public Calendar() {
-    id = CALENDAR_PREF + IdGenerator.generate();
+    setId(CALENDAR_PREF + IdGenerator.generate());
     timeZone = TimeZone.getDefault().getID();
     locale = Locale.getDefault().getISO3Country();
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getName() {
@@ -145,11 +171,11 @@ public class Calendar {
   }
 
   public String getCalendarPath() {
-    return calendarPath;
+    return _calendarPath;
   }
 
   public void setCalendarPath(String path) {
-    this.calendarPath = path;
+    this._calendarPath = path;
   }
 
   public String getDescription() {
@@ -184,22 +210,12 @@ public class Calendar {
     this.groups = groups;
   }
 
-  @Deprecated
-  public String getCategoryId() {
-    return categoryId;
-  }
-
-  @Deprecated
-  public void setCategoryId(String categoryId) {
-    this.categoryId = categoryId;
-  }
-
   public boolean isPublic() {
-    return isPublic;
+    return _isPublic;
   }
 
   public void setPublic(boolean isPublic) {
-    this.isPublic = isPublic;
+    this._isPublic = isPublic;
   }
 
   public void setTimeZone(String timeZone) {
@@ -227,11 +243,11 @@ public class Calendar {
   }
 
   public void setDataInit(boolean isDataInit) {
-    this.isDataInit = isDataInit;
+    this._isDataInit = isDataInit;
   }
 
   public boolean isDataInit() {
-    return isDataInit;
+    return _isDataInit;
   }
 
   public void setCalendarOwner(String calendarOwner) {
@@ -277,12 +293,36 @@ public class Calendar {
   public boolean equals(Object o)
   {
     if (!(o instanceof Calendar)) return false;
-    return id.equals(((Calendar) o).getId());
+    return getId().equals(((Calendar) o).getId());
   }
 
   @Override
   public int hashCode()
   {
-    return id.hashCode();
+    return getId().hashCode();
+  }
+
+  public int getCalType() {
+    return _calType;
+  }
+
+  public void setCalType(int calType) {
+    this._calType = calType;
+  }
+
+  public boolean isRemote() {
+    return remote;
+  }
+
+  public void setRemote(boolean remote) {
+    this.remote = remote;
+  }
+
+  public boolean hasChildren() {
+    return hasChildren;
+  }
+
+  public void setHasChildren(boolean children) {
+    this.hasChildren = children;
   }
 }

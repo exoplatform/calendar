@@ -16,6 +16,30 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.Session;
+import javax.jcr.Value;
+
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.NumberList;
@@ -39,6 +63,9 @@ import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
 
+import org.quartz.JobExecutionContext;
+import org.quartz.impl.JobDetailImpl;
+
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -51,6 +78,8 @@ import org.exoplatform.services.jcr.core.ManageableRepository;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
@@ -58,26 +87,6 @@ import org.exoplatform.services.organization.User;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
-import org.quartz.JobExecutionContext;
-import org.quartz.impl.JobDetailImpl;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL
@@ -276,7 +285,7 @@ public class Utils {
   public static final String EXO_REPEAT_BYMONTHDAY      = "exo:repeatByMonthDay";
 
   public static final String EXO_REPEAT_FINISH_DATE     = "exo:repeatFinishDate";
-  
+
   public static final String EXO_DATE_CREATED           = "exo:dateCreated";
 
   public static final String X_STATUS                   = "X-STATUS";
@@ -302,7 +311,7 @@ public class Utils {
   public static final String JCR_DATA                   = "jcr:data";
 
   public static final String JCR_SCORE                  = "jcr:score";
-  
+
   public static final String MIMETYPE_TEXTPLAIN         = "text/plain";
 
   public static final String MIMETYPE_ICALENDAR         = "TEXT/CALENDAR";
@@ -314,6 +323,8 @@ public class Utils {
   public static final String COMMA                      = ",";
 
   public static final String COLON                      = ":";
+  
+  public static final String SEMICOLON                  = ";";
 
   public static final String SLASH                      = "/";
 
@@ -411,7 +422,7 @@ public class Utils {
    * constants for sharing and deleting job
    */
   public static final String SHARE_CALENDAR_GROUP = "CS-ShareCalenar";
-  
+
   public static final String DELETE_SHARED_GROUP = "CS-DeleteShare";
 
   public static final String SHARED_GROUPS        = "sharedGroups";
@@ -423,19 +434,19 @@ public class Utils {
   public static final String JCR_DATA_STORAGE     = "JCRDataStorage";
 
   public static final String SHARE_CAL_CHANEL     = "/eXo/Application/Calendar/notifyShareCalendar";
-  
+
   public static final String REMOVED_USERS = "removedUsers";
-  
+
   public static final String START_SHARE = "startShare";
-  
+
   public static final String FINISH_SHARE = "finishShare";
-  
+
   public static final String START_UN_SHARE = "startUnShare";
-  
+
   public static final String FINISH_UN_SHARE = "finishUnShare";
-  
+
   public static final String ERROR_SHARE = "errorShare";
-  
+
   public static final String ERROR_UN_SHARE = "errorUnShare";
 
   //Cache
@@ -454,7 +465,7 @@ public class Utils {
   public static String  DATE_TIME_FORMAT = "EEEEE, MMMMMMMM d, yyyy K:mm a";
   public static String  JCR_EXCERPT = "excerpt(.)";
   public static String  JCR_EXCERPT_ROW = "rep:excerpt(.)";
-  
+
   public static String DATE_FORMAT_RECUR_ID = "yyyyMMdd'T'HHmmss'Z'";
   
   public final static Map<String, String> SORT_FIELD_MAP = new LinkedHashMap<String, String>(){{
@@ -462,14 +473,14 @@ public class Utils {
     put(ORDERBY_DATE, EXO_DATE_CREATED);
     put(ORDERBY_TITLE, EXO_SUMMARY);
   }};
-  
+
   public final static String[] SELECT_FIELDS =  {JCR_EXCERPT, EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION,
     EXO_FROM_DATE_TIME, EXO_TO_DATE_TIME, EXO_EVENT_STATE,EXO_IS_PRIVATE, EXO_DATE_CREATED, JCR_SCORE, EXO_ID, EXO_CALENDAR_ID, EXO_EVENT_TYPE};
-  
+
   public static String[] SEARCH_FIELDS = {EXO_SUMMARY, EXO_DESCRIPTION, EXO_LOCATION} ;
   public static String EVENT_ICON_URL = null;
   public static String TASK_ICON_URL = "/eXoSkin/skin/images/system/unified-search/status-task.png";
-  
+
   public static final String DEFAULT_SITENAME = "intranet";
   public static final String PAGE_NAGVIGATION = "calendar";
   public static final String NONE_NAGVIGATION = "#";
@@ -477,6 +488,16 @@ public class Utils {
   public static final String SPACES_GROUP = "spaces";
   public static final String SPACES_GROUP_ID_PREFIX = "/spaces/";
   public static final String SPACE_CALENDAR_ID_SUFFIX = "_space_calendar";
+
+  public static OrganizationService getOrganizationService(){
+    return (OrganizationService)ExoContainerContext.getCurrentContainer().getComponentInstance(OrganizationService.class) ;
+  }
+
+  public static final Object JCR_PATH = "jcr:path";
+
+  public static final int UNLIMITED = -1;
+  
+  private static Log log = ExoLogger.getLogger(Utils.class);
 
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
@@ -496,54 +517,59 @@ public class Utils {
   public static boolean isEmpty(String string) {
     return string == null || string.trim().length() == 0;
   }
-
-  @SuppressWarnings("unchecked")
-  public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
-    StringBuffer sb = new StringBuffer(username);
-    if (oService != null) {
-      ConversationState state = ConversationState.getCurrent();
-      if (state != null && username.equals(state.getIdentity().getUserId())) {
-        Identity identity = state.getIdentity();
-        Set<String> groupsId = identity.getGroups();
-        for (String groupId : groupsId) {
-          sb.append(COMMA).append(groupId).append(SLASH_COLON).append(ANY);
-          sb.append(COMMA).append(groupId).append(SLASH_COLON).append(identity.getUserId());
-        }
-        Collection<MembershipEntry> memberships = identity.getMemberships();
-        for (MembershipEntry membership : memberships) {
-          sb.append(COMMA).append(membership.getGroup()).append(SLASH_COLON).append(ANY_OF + membership.getMembershipType());
-        }
-      } else {
-      Collection<Group> groups = oService.getGroupHandler().findGroupsOfUser(username);
-      for (Group g : groups) {
-        sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY);
-        sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(username);
-        Collection<Membership> memberShipsType = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, g.getId());
-        for (Membership mp : memberShipsType) {
-          sb.append(COMMA).append(g.getId()).append(SLASH_COLON).append(ANY_OF + mp.getMembershipType());
-        }
-      }
-    }
-    }
-    return hasEditPermission(savePerms, sb.toString().split(Utils.COMMA));
-  }
-
-  public static boolean isMemberShipType(Collection<Membership> mbsh, String value) {
-    if (!isEmpty(value))
-      for (String check : value.split(COMMA)) {
-        check = check.trim();
-        if (check.lastIndexOf(ANY_OF) > -1) {
-          if (ANY.equals(check))
+  
+  public static boolean canEdit(String[] savePerms, Identity user) throws Exception {
+    if (savePerms != null) {
+      for (String savePer : savePerms) {
+        PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+        
+        if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+          if (savePer.equals(user.getUserId())) {
             return true;
-          value = check.substring(check.lastIndexOf(ANY_OF) + ANY_OF.length());
-          if (mbsh != null && !mbsh.isEmpty()) {
-            for (Membership mb : mbsh) {
-              if (mb.getMembershipType().equals(value))
-                return true;
+          }
+        } else {
+          String groupId = permission.getGroupId();
+          String membershipType = permission.getMembership();
+          MembershipEntry expected = new MembershipEntry(groupId, membershipType);
+          
+          for (MembershipEntry ms : user.getMemberships()) {
+            if (ms.equals(expected)) {
+              return true;
             }
           }
         }
-      }
+      }  
+    }
+    return false;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
+
+    if (savePerms != null) {
+      for (String savePer : savePerms) {
+        PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+        
+        if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+          if (savePer.equals(username)) {
+            return true;
+          }
+        } else {
+          String groupId = permission.getGroupId();
+          String membershipType = permission.getMembership();
+          MembershipEntry expected = new MembershipEntry(groupId, membershipType);
+          
+          Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
+          for (Membership ms : memberships) {
+            //Core project care about * membership type
+            MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
+            if (userMS.equals(expected)) {
+              return true;
+            }
+          }
+        }
+      }      
+    }
     return false;
   }
 
@@ -572,7 +598,7 @@ public class Utils {
     if (portalName.indexOf(COLON) > 0)
       portalName = portalName.substring(0, portalName.indexOf(COLON));
     return RootContainer.getInstance().getPortalContainer(portalName);
-  
+
   }
 
   public static String getDisplaySharedCalendar(String sharedUserId, String calName) {
@@ -605,7 +631,7 @@ public class Utils {
     calendar.setTimeInMillis(System.currentTimeMillis() - gmtoffset);
     return calendar;
   }
-  
+
   /**
    * Check two dates are in the same day in GMT time zone  
    * @param value1
@@ -618,9 +644,9 @@ public class Utils {
     Calendar date2 = getInstanceTempCalendar();
     date2.setTime(value2);
     return (date1.get(java.util.Calendar.DATE) == date2.get(java.util.Calendar.DATE) &&
-            date1.get(java.util.Calendar.MONTH) == date2.get(java.util.Calendar.MONTH) &&
-            date1.get(java.util.Calendar.YEAR) == date2.get(java.util.Calendar.YEAR)
-           );
+        date1.get(java.util.Calendar.MONTH) == date2.get(java.util.Calendar.MONTH) &&
+        date1.get(java.util.Calendar.YEAR) == date2.get(java.util.Calendar.YEAR)
+        );
   }
 
   public static boolean isRepeatEvent(CalendarEvent event) throws Exception {
@@ -650,12 +676,12 @@ public class Utils {
     ManageableRepository currentRepo = repositoryService.getCurrentRepository();
     return sprovider.getSession(currentRepo.getConfiguration().getDefaultWorkspaceName(), currentRepo);
   }
-  
+
   public static SessionProvider createSystemProvider() {
     SessionProviderService sessionProviderService = (SessionProviderService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SessionProviderService.class);
     return sessionProviderService.getSystemSessionProvider(null);
   }
-  
+
   /**
    * build message about job sharing calendar for groups
    * @param type The type can be: share,un-share,finishShare,finishUnShare
@@ -677,7 +703,7 @@ public class Utils {
     }
     return sb.toString();
   }
-  
+
   public static Calendar getBeginDay(Calendar cal) {
     Calendar newCal = (Calendar) cal.clone();
 
@@ -687,7 +713,7 @@ public class Utils {
     newCal.set(Calendar.MILLISECOND, 0) ;
     return newCal ;
   }
-  
+
   public static Calendar getEndDay(Calendar cal)  {
     Calendar newCal = (Calendar) cal.clone();    
     newCal.set(Calendar.HOUR_OF_DAY, 0) ;
@@ -697,7 +723,7 @@ public class Utils {
     newCal.add(Calendar.HOUR_OF_DAY, 24) ;
     return newCal ;
   }
-  
+
   /**
    * get list of user by membership id and group id
    * example of membership id: validator, group id: /platform/users
@@ -759,7 +785,7 @@ public class Utils {
     sb.append(SPACE_CALENDAR_ID_SUFFIX);
     return sb.toString();
   }
-  
+
   /**
    * Gets space group id from calendar id of a space calendar
    * 
@@ -771,7 +797,7 @@ public class Utils {
     sb.append(calendarId.split(SPACE_CALENDAR_ID_SUFFIX)[0]);
     return sb.toString();
   }
-  
+
   /**
    * Gets an ical4j TimeZone object from a java.util.TimeZone object
    * @param jTz a java.util.TimeZone object
@@ -791,9 +817,9 @@ public class Utils {
     String dtStartValue = dateFormat.format(calendar.getTime());
     //Properties for Standard component
     PropertyList standardTzProps = new PropertyList();
-    
+
     TzName standardTzName = new TzName(new ParameterList(), jTz.getDisplayName(false,TimeZone.SHORT));
-    
+
     DtStart standardTzStart = new DtStart();
     if(jTz.useDaylightTime()) {
       Date date = getDaylightEnd(jTz);
@@ -801,10 +827,10 @@ public class Utils {
     } else {
       standardTzStart.setValue(dtStartValue);
     }
-    
+
     TzOffsetTo standardTzOffsetTo = new TzOffsetTo();
     standardTzOffsetTo.setOffset(new UtcOffset(jTz.getRawOffset()));
-    
+
     TzOffsetFrom standardTzOffsetFrom = new net.fortuna.ical4j.model.property.TzOffsetFrom();
     standardTzOffsetFrom.setOffset(new UtcOffset(jTz.getRawOffset() +  jTz.getDSTSavings()));
 
@@ -812,18 +838,18 @@ public class Utils {
     standardTzProps.add(standardTzStart);
     standardTzProps.add(standardTzOffsetTo);
     standardTzProps.add(standardTzOffsetFrom);
-    
+
     //Standard Component for VTimeZone
     Standard standardTz = new Standard(standardTzProps);
-    
+
     //Components for VTimeZone
     ComponentList tzComponents = new ComponentList();
     tzComponents.add(standardTz);
-    
+
     if(jTz.useDaylightTime()) {
       //Properties for DayLight component
       PropertyList daylightTzProps = new PropertyList();
-      
+
       TzName daylightTzName = new TzName(jTz.getDisplayName(true, TimeZone.SHORT));
 
       Date start = getDaylightStart(jTz);
@@ -832,10 +858,10 @@ public class Utils {
 
       TzOffsetTo daylightTzOffsetTo = new TzOffsetTo();
       daylightTzOffsetTo.setOffset(new UtcOffset(jTz.getRawOffset() +  jTz.getDSTSavings()));
-      
+
       TzOffsetFrom daylightTzOffsetFrom = new TzOffsetFrom();
       daylightTzOffsetFrom.setOffset(new UtcOffset(jTz.getRawOffset()));
-      
+
       daylightTzProps.add(daylightTzOffsetFrom);
       daylightTzProps.add(daylightTzOffsetTo);
       daylightTzProps.add(daylightDtStart);
@@ -846,11 +872,11 @@ public class Utils {
       //add daylight component to VTimeZone
       tzComponents.add(daylightTz);
     }
-    
+
     PropertyList tzProps = new PropertyList();
     TzId tzId = new TzId(null, jTz.getID());
     tzProps.add(tzId);
-    
+
     //Construct the VTimeZone object
     VTimeZone vTz = new VTimeZone(tzProps, tzComponents);
     try {
@@ -1026,12 +1052,12 @@ public class Utils {
     WeekDay[] weekdays = {WeekDay.SU, WeekDay.MO, WeekDay.TU, WeekDay.WE, WeekDay.TH, WeekDay.FR, WeekDay.SA};
     int delta;
     WeekDayList weekdayList = recur.getDayList();
-    
+
     NumberList numberList = recur.getMonthDayList();
-    
+
     Calendar calendar = Calendar.getInstance(tz);
     calendar.setTimeInMillis(firstOccurDate.getTime());
-    
+
     // repeated weekly/monthly, by day of week
     if(weekdayList != null && weekdayList.size() > 0) {
       WeekDay expectedFirstWeekday = WeekDay.getWeekDay(calendar);
@@ -1048,7 +1074,7 @@ public class Utils {
         recur.getDayList().addAll(newWeekDayList);
       }
     }
-    
+
     // repeated monthly, by day in month
     if(numberList != null && numberList.size() > 0) {
       Integer firstDayOfRule = (Integer)numberList.get(0);
@@ -1260,4 +1286,176 @@ public class Utils {
     calendar.setTimeInMillis(calendar.getTimeInMillis() + diff);
     event.setToDateTime(calendar.getTime());
   }
+
+  public static org.exoplatform.calendar.service.Calendar loadCalendar(Node calNode) throws Exception {
+    org.exoplatform.calendar.service.Calendar calendar = new org.exoplatform.calendar.service.Calendar();
+    StringBuilder namePattern = new StringBuilder(256);
+    namePattern.append(Utils.EXO_ID).append('|').append(Utils.EXO_NAME).append('|').append(Utils.EXO_DESCRIPTION)
+    .append('|').append(Utils.EXO_LOCALE).append('|')
+    .append(Utils.EXO_TIMEZONE).append('|').append(Utils.EXO_SHARED_COLOR).append('|')
+    .append(Utils.EXO_CALENDAR_COLOR).append('|').append(Utils.EXO_CALENDAR_OWNER).append('|')
+    .append(Utils.EXO_PUBLIC_URL).append('|').append(Utils.EXO_PRIVATE_URL).append('|').append(Utils.EXO_GROUPS)
+    .append('|').append(Utils.EXO_VIEW_PERMISSIONS).append('|').append(Utils.EXO_EDIT_PERMISSIONS).append("|").append(Utils.EXO_DATE_MODIFIED);
+    PropertyIterator it = calNode.getProperties(namePattern.toString());
+    List<String> groups = null;
+    String[] viewPermission = null, editPermission = null;
+    while (it.hasNext()) {
+      Property p = it.nextProperty();
+      String name = p.getName();
+      if (name.equals(Utils.EXO_ID)) {
+        calendar.setId(p.getString());
+      } else if (name.equals(Utils.EXO_NAME)) {
+        calendar.setName(p.getString());
+      } else if (name.equals(Utils.EXO_DESCRIPTION)) {
+        calendar.setDescription(p.getString());
+      } else if (name.equals(Utils.EXO_LOCALE)) {
+        calendar.setLocale(p.getString());
+      } else if (name.equals(Utils.EXO_TIMEZONE)) {
+        calendar.setTimeZone(p.getString());
+      } else if (name.equals(Utils.EXO_SHARED_COLOR)) {
+        calendar.setCalendarColor(p.getString());
+      } else if (name.equals(Utils.EXO_CALENDAR_COLOR)) {
+        calendar.setCalendarColor(p.getString());
+      } else if (name.equals(Utils.EXO_CALENDAR_OWNER)) {
+        calendar.setCalendarOwner(p.getString());
+      } else if (name.equals(Utils.EXO_PUBLIC_URL)) {
+        calendar.setPublicUrl(p.getString());
+      } else if (name.equals(Utils.EXO_PRIVATE_URL)) {
+        calendar.setPrivateUrl(p.getString());
+      } else if (name.equals(Utils.EXO_DATE_MODIFIED)) {
+        calendar.setLastModified(p.getDate().getTimeInMillis());
+      } else if (name.equals(Utils.EXO_GROUPS)) {
+        Value[] values = p.getValues();
+        groups = new ArrayList<String>();
+        for (Value v : values) {
+          groups.add(v.getString());
+        }
+      } else if (name.equals(Utils.EXO_VIEW_PERMISSIONS)) {
+        viewPermission = ValuesToStrings(p.getValues());
+      } else if (name.equals(Utils.EXO_EDIT_PERMISSIONS)) {
+        editPermission = ValuesToStrings(p.getValues());
+      }
+    }
+    calendar.setHasChildren(calNode.hasNodes());
+    if (!calendar.isPublic()) {
+      if (groups != null) {
+        calendar.setGroups(groups.toArray(new String[groups.size()]));
+      }
+      if (viewPermission != null) {
+        calendar.setViewPermission(viewPermission);
+      }
+      if (editPermission != null) {
+        calendar.setEditPermission(editPermission);
+      }
+    }
+    return calendar;
+  }
+  
+  public static String[] ValuesToStrings(Value[] Val) throws Exception {
+    if (Val.length == 1)
+      return new String[] { Val[0].getString() };
+    String[] Str = new String[Val.length];
+    for (int i = 0; i < Val.length; ++i) {
+      Str[i] = Val[i].getString();
+    }
+    return Str;
+  }
+  public static void skip(Iterator<?> it, long offset) {
+    while (it.hasNext()) {
+      if (offset == 0) {
+        return;
+      }
+      else {
+        it.next();
+        --offset;
+      }
+    }
+  }
+  
+  public static <T> List<T> subList(List<T> it, int offset, int limit) {    
+    if (it == null) {
+      return it;
+    }
+    if (it.size() <= offset) {
+      return Collections.emptyList();
+    }
+    if (limit < 0) {
+      limit = it.size();
+    }
+    if (offset < 0) {
+      offset = 0;
+    }    
+    limit = offset + limit > it.size() ? it.size() - offset : limit;    
+    return (limit == it.size() && offset == 0) ? it : it.subList(offset, offset + limit);    
+  }
+  
+  public static <T> T[] subArray(T[] t, int offset, int limit) {
+    if (t == null) {
+      return t;
+    }
+    if (limit < 0) {
+      limit = t.length;
+    }
+    if (offset >= t.length) {
+      //return empty array
+      offset = t.length;
+    }
+    if (offset < 0) {
+      offset = 0;
+    }
+    
+    limit = offset + limit > t.length ? t.length - offset : limit;
+    return Arrays.copyOfRange(t, offset, offset + limit);
+  }
+  
+  public static boolean isCalendarEditable(String username, org.exoplatform.calendar.service.Calendar cal) {
+    if (cal == null || username == null) {
+      throw new IllegalArgumentException("username and cal parameter must not be null");
+    }
+    
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    OrganizationService oService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);    
+    try {      
+      if(username.equals(cal.getCalendarOwner())) {
+        return !cal.isRemote();
+      } else {
+        if (ConversationState.getCurrent() != null) {
+          Identity curr = ConversationState.getCurrent().getIdentity();
+          if (curr != null && curr.getUserId().equals(username)) {
+            return Utils.canEdit(cal.getEditPermission(), curr);
+          }
+        }
+        return Utils.canEdit(oService, cal.getEditPermission(), username);    
+      }
+    } catch (Exception ex) {
+      log.error("Exception raised during checking for calendar editable", ex);
+    }
+    
+    return false;
+  }
+  
+  public static Attachment loadAttachment(Node attchmentNode) throws Exception{
+    Attachment attachment = null;
+    if (attchmentNode.isNodeType(Utils.EXO_EVEN_TATTACHMENT)) {
+      attachment = new Attachment();
+      attachment.setId(attchmentNode.getPath());
+      if (attchmentNode.hasProperty(Utils.EXO_FILE_NAME))
+        attachment.setName(attchmentNode.getProperty(Utils.EXO_FILE_NAME).getString());
+      Node contentNode = attchmentNode.getNode(Utils.JCR_CONTENT);
+      if (contentNode != null) {
+        if (contentNode.hasProperty(Utils.JCR_LASTMODIFIED))
+          attachment.setLastModified(contentNode.getProperty(Utils.JCR_LASTMODIFIED).getDate().getTimeInMillis());
+        if (contentNode.hasProperty(Utils.JCR_MIMETYPE))
+          attachment.setMimeType(contentNode.getProperty(Utils.JCR_MIMETYPE).getString());
+        if (contentNode.hasProperty(Utils.JCR_DATA)) {
+          InputStream inputStream = contentNode.getProperty(Utils.JCR_DATA).getStream();
+          attachment.setSize(inputStream.available());
+          attachment.setInputStream(inputStream);
+        }
+      }
+      attachment.setWorkspace(attchmentNode.getSession().getWorkspace().getName());
+    }
+    return attachment;
+  }
+
 }

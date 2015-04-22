@@ -78,7 +78,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   private CalendarService calendarService_;
   private SpaceService spaceService_;
-  private JCRDataStorage jcrDataStorage;
 
   private static final Log     log                 = ExoLogger.getLogger(CalendarSearchServiceConnector.class);
   private ThreadLocal<Map<String, Calendar>> calendarMap = new ThreadLocal<Map<String, Calendar>>();
@@ -87,7 +86,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     super(initParams);
     calendarService_  = (CalendarService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarServiceImpl.class);
     spaceService_ = (SpaceService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(SpaceService.class);
-    jcrDataStorage = ((CalendarServiceImpl)calendarService_).getDataStorage();
   }
 
   @Override
@@ -171,7 +169,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       calIds.addAll(sCals);
       
       EventQuery uEventQuery = createQuery(dataType, query, sort, order, calIds.toArray(new String[calIds.size()]), readOnlyCalendars);
-      ListAccess<?> listAccess = new EventListAccess(jcrDataStorage, uEventQuery);      
+      ListAccess<?> listAccess = new EventRowListAccess((EventDAOImpl)calendarService_.getEventDAO(), uEventQuery);
 
       Object[] rows = listAccess.load(offset, limit);
       CalendarSetting calSetting = calendarService_.getCalendarSetting(userId);
@@ -331,7 +329,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     }
   }
 
-  private long buildScore(Object iter){
+  private long buildScore(Object iter) {
     try {
       if(iter instanceof Row){
         Row row = (Row) iter;
