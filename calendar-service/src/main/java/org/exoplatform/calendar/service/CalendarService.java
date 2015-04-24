@@ -19,11 +19,13 @@ package org.exoplatform.calendar.service;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
 import org.exoplatform.calendar.service.impl.NewMembershipListener;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 import org.quartz.JobDetail;
 
 import javax.jcr.Node;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -75,16 +77,26 @@ public interface CalendarService {
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception;
 
-
   /**
    * Saves an user's private calendar to storage
    * 
    * @param username current user name(or user id)
    * @param calendar Calendar object that will be stored
    * @param isNew Boolean value to know adding a new calendar or just updating this calendar
-   * @throws Exception
+   * @throws CalendarException if there is any error
    */
-  public void saveUserCalendar(String username, Calendar calendar, boolean isNew) throws Exception;
+  public void saveUserCalendar(String username, Calendar calendar, boolean isNew);
+
+  /**
+   * Saves an calendar to storage with given type
+   * 
+   * @param username current user name(or user id)
+   * @param calendar Calendar object that will be stored
+   * @param caltype the type of calendar
+   * @param isNew Boolean value to know adding a new calendar or just updating this calendar
+   * @return instance calendar object
+   */
+  public Calendar saveCalendar(String username, Calendar calendar, int caltype , boolean isNew);
 
   /**
    * Removes private calendar by given id, all events and tasks belong to this calendar will be removed
@@ -131,7 +143,7 @@ public interface CalendarService {
   * @param isNew If <code>true</code>, a new calendar will be saved. If <code>false</code>, an existing calendar will be updated.
   * @throws Exception
   */
-  public void savePublicCalendar(Calendar calendar, boolean isNew) throws Exception;
+  public void savePublicCalendar(Calendar calendar, boolean isNew);
 
   /**
    * Removes the group calendar form data base, every events, tasks inside this calendar will be removed too
@@ -149,6 +161,8 @@ public interface CalendarService {
    * @see EventCategory
    */
   public List<EventCategory> getEventCategories(String username) throws Exception;
+  
+  public CalendarCollection<EventCategory> getEventCategories(String username, int offset, int limit) throws Exception;
 
   /**
    * Saves an event category to data base
@@ -363,7 +377,10 @@ public interface CalendarService {
    * @return 1 if succeed, -1 if fail
    * @throws Exception
    * @see RssData
+   * 
+   * @deprecated This method currently does not work properly. User <code>generateRss(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData)</code> to instead of.
    */
+  @Deprecated
   public int generateRss(String username, List<String> calendarIds, RssData rssData) throws Exception;
 
   /**
@@ -1053,6 +1070,35 @@ public interface CalendarService {
   public String buildRecurrenceId(Date formTime, String username);
 
   public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception;
+  
+  /**
+   * Return all calendar of given user
+   * @param username current user id
+   * @param calType type of calendar to filter 
+   * @param offset offset to continue to return data
+   * @param limit limit item will be returned
+   * @param fullSize reference full size of data list 
+   * @return collection of Calendar object
+   */
+  public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit);
+  
+  /**
+   * Get specified attachment object by given attachment id
+   * @param attId given attachment id ( now we store this by using node path)
+   * @return Attachment object with input stream
+   */
+  public Attachment getAttachmentById(String attId);
+  
+  public void removeAttachmentById(String attId);
+  
+  public EventDAO getEventDAO();
+
+  /**
+   * Return calendars that have publicUrl enabled
+   * @return
+   * @throws Exception 
+   */
+  ListAccess<Calendar> getPublicCalendars() throws Exception;
 }
 
 

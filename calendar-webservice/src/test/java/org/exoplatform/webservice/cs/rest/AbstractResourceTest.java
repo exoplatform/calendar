@@ -19,8 +19,12 @@ package org.exoplatform.webservice.cs.rest;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MultivaluedMap;
+
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.rest.ContainerResponseWriter;
 import org.exoplatform.services.rest.impl.ContainerRequest;
@@ -29,6 +33,9 @@ import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.rest.impl.InputHeadersMap;
 import org.exoplatform.services.rest.impl.MultivaluedMapImpl;
 import org.exoplatform.services.rest.tools.DummyContainerResponseWriter;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.MembershipEntry;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
@@ -36,6 +43,7 @@ import org.exoplatform.services.rest.tools.DummyContainerResponseWriter;
  */
 public abstract class AbstractResourceTest extends BaseTest {
 
+  private Collection<MembershipEntry> membershipEntries = new ArrayList<MembershipEntry>();
 
   public ContainerResponse service(String method,
                                    String requestURI,
@@ -78,4 +86,21 @@ public abstract class AbstractResourceTest extends BaseTest {
 
   }
 
+  protected void login(String username, String ...memberships) {
+    setMembershipEntry(memberships, true);
+    Identity identity = new Identity(username, membershipEntries);
+    ConversationState state = new ConversationState(identity);
+    ConversationState.setCurrent(state);
+  }
+
+  private void setMembershipEntry(String[] memberships, boolean isNew) {
+    if (isNew) {
+      membershipEntries.clear();
+    }
+    for (String ms : memberships) {
+      String[] tmp = ms.split(":");
+      MembershipEntry membershipEntry = new MembershipEntry(tmp[0], tmp[1]);
+      membershipEntries.add(membershipEntry);      
+    }
+  }
 }

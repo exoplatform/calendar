@@ -126,6 +126,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
     CalendarEvent event = createUserEvent("Have a meeting");    
     Date createdDate = calendarService_.getEventById(event.getId()).getLastUpdatedTime();
     assertNotNull(createdDate);
+    Thread.sleep(1000);
     event.setSummary("Have a new meeting");
     calendarService_.saveUserEvent(username, event.getCalendarId(), event, false);
     Date modifiedDate = calendarService_.getEventById(event.getId())
@@ -390,6 +391,53 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
     CalendarEvent publicEvent = calendarService_.getGroupEvent(publicCalendar.getId(),
                                                                userEvent.getId());
     assertNotNull(publicEvent);    
+  }
+  
+  public void testDeleteAttachment() throws Exception{
+    CalendarEvent ev = createUserEvent("event with attachment");
+    List<Attachment> att = new ArrayList<Attachment>();
+    for (int i = 0; i < 12; i++) {
+      Attachment file = new Attachment();
+      InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("png_attachment.ics");
+      file.setName("attachement-" + i + ".ics");
+      file.setInputStream(input);
+      file.setMimeType("text/calendar");
+      att.add(file);
+    }
+    ev.setAttachment(att);
+    //Create event with attachment
+    calendarService_.saveUserEvent(username, ev.getCalendarId(), ev, false);
+    
+    String attId = calendarService_.getEventById(ev.getId()).getAttachment().get(0).getId();
+    calendarService_.removeAttachmentById(attId);
+    Attachment a = calendarService_.getAttachmentById(attId);
+    assertNull(a);
+    assertEquals(11, calendarService_.getEventById(ev.getId()).getAttachment().size());
+    
+    attId = calendarService_.getEventById(ev.getId()).getAttachment().get(0).getId();
+    calendarService_.removeAttachmentById(attId);
+    a = calendarService_.getAttachmentById(attId);
+    assertNull(a);
+    assertEquals(10, calendarService_.getEventById(ev.getId()).getAttachment().size());
+  }
+  
+  public void testAttachment() throws Exception{
+    CalendarEvent ev = createUserEvent("event with attachment");
+    List<Attachment> att = new ArrayList<Attachment>();
+    for (int i = 0; i < 12; i++) {
+      Attachment file = new Attachment();
+      InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("png_attachment.ics");
+      file.setName("attachement-" + i + ".ics");
+      file.setInputStream(input);
+      file.setMimeType("text/calendar");
+      att.add(file);
+    }
+    ev.setAttachment(att);
+    calendarService_.saveUserEvent(username, ev.getCalendarId(), ev, false);
+    String attId = calendarService_.getEventById(ev.getId()).getAttachment().get(0).getId();
+
+    Attachment a = calendarService_.getAttachmentById(attId);
+    assertNotNull(a);
   }
 
   private void checkFields(SearchResult item) {

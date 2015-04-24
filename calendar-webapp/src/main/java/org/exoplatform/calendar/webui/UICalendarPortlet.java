@@ -31,6 +31,7 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.social.common.router.ExoRouter;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
@@ -45,10 +46,10 @@ import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.mortbay.cometd.AbstractBayeux;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -138,7 +139,7 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   protected String getCometdContextName() {
     EXoContinuationBayeux bayeux = (EXoContinuationBayeux) PortalContainer.getInstance()
-        .getComponentInstanceOfType(AbstractBayeux.class);
+        .getComponentInstanceOfType(EXoContinuationBayeux.class);
     return (bayeux == null ? "cometd" : bayeux.getCometdContextName());
   }
 
@@ -211,7 +212,7 @@ public class UICalendarPortlet extends UIPortletApplication {
     String isAjax = pContext.getRequestParameter("ajaxRequest");
     if(isAjax != null && Boolean.parseBoolean(isAjax)) return;
     String username = CalendarUtils.getCurrentUser();
-    User user = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username);
+    User user = (User)ConversationState.getCurrent().getAttribute("UserProfile");;
     String formTime = CalendarUtils.getCurrentTime(this) ;
     CalendarService calService = CalendarUtils.getCalendarService();
     if (url.contains(CalendarUtils.INVITATION_IMPORT_URL)) {

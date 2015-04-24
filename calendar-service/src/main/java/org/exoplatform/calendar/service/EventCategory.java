@@ -32,16 +32,15 @@ import org.exoplatform.webui.application.WebuiRequestContext;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-public class EventCategory {
+public class EventCategory extends AbstractBean {
   private static final Log log = ExoLogger.getLogger(EventCategory.class);
-  private String  id;
 
   private String  name;
 
   private boolean isDataInit = false;
 
   public EventCategory() {
-    id = "eventCategory" + IdGenerator.generate();
+    setId("eventCategory" + IdGenerator.generate());
   }
 
   public String getName() {
@@ -78,13 +77,4 @@ public class EventCategory {
   public boolean isDataInit() {
     return isDataInit;
   }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getId() {
-    return id;
-  }
-
 }

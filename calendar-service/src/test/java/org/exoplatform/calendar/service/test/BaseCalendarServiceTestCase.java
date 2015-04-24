@@ -17,17 +17,17 @@
 package org.exoplatform.calendar.service.test;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarCollection;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
@@ -38,7 +38,6 @@ import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.OrganizationService;
@@ -118,24 +117,7 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
   }
 
   protected void cleanData(User user) throws Exception {
-    // . Get all private calendar of user
-    List<Calendar> cals = calendarService_.getUserCalendars(user.getUserName(), true);
-
-    // . Load all group calendar
-    List<Group> groups = new ArrayList<Group>();
-    groups.addAll(organizationService_.getGroupHandler().findGroupsOfUser(user.getUserName()));
-    String[] groupIds = new String[groups.size()];
-    for (int i = 0; i < groups.size(); i++) {
-      groupIds[i] = groups.get(i).getId();
-    }
-    for (GroupCalendarData g : calendarService_.getGroupCalendars(groupIds, true, user.getUserName())) {
-      cals.addAll(g.getCalendars());
-    }
-
-    // . Find all shared calendar
-    GroupCalendarData gData = calendarService_.getSharedCalendars(user.getUserName(), true);
-    if (gData != null)
-      cals.addAll(gData.getCalendars());
+    CalendarCollection<Calendar> cals = calendarService_.getAllCalendars(username, Calendar.TYPE_ALL,0, 500);
 
     // . Remove all calendar
     for (int i = 0; i < cals.size(); i++) {
@@ -169,6 +151,25 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
     calendar.setGroups(groups);
     calendarService_.savePublicCalendar(calendar, true);
     return calendar;
+  }
+  
+  protected Calendar createSharedCalendar(String name, String description, String[] shared) {
+    try {
+      Calendar sharedCalendar = new Calendar();
+      sharedCalendar.setName(name);
+      sharedCalendar.setDescription(description);
+      sharedCalendar.setPublic(true);
+      sharedCalendar.setViewPermission(shared);
+      sharedCalendar.setEditPermission(shared);
+      calendarService_.saveUserCalendar(username, sharedCalendar, true);
+
+      calendarService_.shareCalendar(username, sharedCalendar.getId(), Arrays.asList(shared));
+
+      return sharedCalendar;
+    } catch (Exception e) {
+      fail();
+      return null;
+    }
   }
 
   protected EventCategory createUserEventCategory(String username, String name) throws Exception {

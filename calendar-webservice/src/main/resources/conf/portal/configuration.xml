@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd http://www.exoplaform.org/xml/ns/kernel_1_0.xsd"
   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
-
+  
   <component>
     <type>org.exoplatform.webservice.cs.calendar.CalendarWebservice</type>
+  </component>
+  <component>
+    <type>org.exoplatform.calendar.ws.CalendarRestApi</type>
+    <init-params>
+    	<value-param>
+    		<name>query_limit</name>
+    		<value>10</value>
+    	</value-param>
+    </init-params>
   </component>
   <component>
     <type>org.exoplatform.services.jcr.impl.ext.action.SessionActionCatalog</type>
@@ -22,7 +31,7 @@
               <value>
                 <object type="org.exoplatform.services.jcr.impl.ext.action.ActionConfiguration">
                   <field  name="eventTypes"><string>addNode,changeProperty</string></field>
-                  <field  name="nodeTypes"><string>exo:calendarEvent</string></field>
+                  <field  name="nodeTypes"><string>exo:calendarEvent,exo:eventCategory,exo:calendar</string></field>
                   <field  name="actionClassName"><string>org.exoplatform.webservice.cs.LastUpdateAction</string></field>
                 </object>
               </value>
@@ -34,6 +43,12 @@
     </component-plugin>
     </component-plugins>
   </component>
+  
+  <component>
+    <key>org.exoplatform.calendar.ws.common.RestSecurityService</key>
+    <type>org.exoplatform.calendar.ws.common.RestSecurityServiceImpl</type>
+  </component>
+  
   <external-component-plugins>
     <!-- The full qualified name of the ResourceBundleService -->
     <target-component>org.exoplatform.services.resources.ResourceBundleService</target-component>
@@ -53,4 +68,35 @@
       </init-params>
     </component-plugin>
   </external-component-plugins>
+
+  <!-- 
+  <external-component-plugins>
+      <target-component>org.exoplatform.calendar.ws.common.RestSecurityService</target-component>     
+      <component-plugin>
+         <name>add.config.permission</name>
+         <set-method>addPermission</set-method>
+         <type>org.exoplatform.calendar.ws.common.RestSecurityServiceImpl$PermissionPlugin</type>
+         <init-params>
+            <properties-param>
+            	<name>permissions</name>
+            	<property name="/v1/calendar" value="*:/platform/administrator"/>
+        		</properties-param>
+         </init-params>
+      </component-plugin>
+  </external-component-plugins>
+  -->
+  <external-component-plugins>
+      <target-component>org.exoplatform.services.rest.impl.RequestHandlerImpl</target-component>     
+      <component-plugin>
+         <name>ws.rs.request.filter</name>
+         <set-method>addPlugin</set-method>
+         <type>org.exoplatform.services.rest.impl.RequestFilterComponentPlugin</type>
+         <init-params>
+            <value-param>
+               <name>ws.rs.request.security-filter</name>
+               <value>org.exoplatform.calendar.ws.common.RestSecurityFilter</value>
+            </value-param>
+         </init-params>
+      </component-plugin>
+   </external-component-plugins>
 </configuration>
