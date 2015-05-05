@@ -680,9 +680,9 @@
     },
 
     allDayDropCallback : function(evt) {
-      var dragObject = this;  
+      var dragObject = this, jDragObj = gj(this);
       var totalWidth = dragObject.parentNode.offsetWidth ;
-      var delta = dragObject.offsetLeft - UIWeekView.beforeStart ;
+      var delta = jDragObj.position().left - UIWeekView.beforeStart;
       UIWeekView.elementLeft = null ;
       UIWeekView.elementTop = null ;
       UIWeekView.beforeStart = null ;
@@ -697,7 +697,7 @@
         var recurId = dragObject.getAttribute("recurid");
         if (recurId == "null") recurId = "";
         var actionLink = dragObject.getAttribute("actionLink");
-        var form = gj(dragObject).parents('form')[0]; 
+        var form = jDragObj.parents('form')[0]; 
         form.elements[eventId + "startTime"].value = start;
         form.elements[eventId + "finishTime"].value = end;
         form.elements[eventId + "isOccur"].value = isOccur;
