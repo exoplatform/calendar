@@ -1,5 +1,5 @@
 (function(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, 
-		ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, dateUtils, cometd) {
+		ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, dateUtils) {
     var _module = {};
     eXo.calendar = eXo.calendar || {};
     function UICalendarPortlet() {
@@ -285,6 +285,7 @@
         this.timeFormat = (arguments.length > 2) ? gj.trim(new String(arguments[2])) : null;
         this.portletName = arguments[3];
         this.portletNode = gj("#" + this.portletName).parents(".PORTLET-FRAGMENT")[0];
+        this.eXoId = (arguments.length > 4) && (arguments[4] != "null") ? arguments[4] : null;
     };
 
     /**
@@ -2373,7 +2374,7 @@
       var calId = eventObj.getAttribute("calid");
       var calType = eventObj.getAttribute("calType");
       var baseURL  = (_module.restContext)?eXo.env.portal.context+ '/' + _module.restContext +'/cs/calendar/checkPermission/':'portal/rest/cs/calendar/checkPermission/';
-      var url = baseURL + cometd.exoId +"/"+ calId +"/"+ calType +"/";
+      var url = baseURL + this.eXoId +"/"+ calId +"/"+ calType +"/";
       CSUtils.makeRequest(url,this.postCheck);
     }
     
@@ -2494,4 +2495,4 @@
     var uiPopup = uiPopupWindow ;
     return _module;
 })(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
-		uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, DateUtils, cometd);
+		uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, DateUtils);
