@@ -16,7 +16,7 @@ init : function(field, isDisplayTime) {
   }
   UIDateTimePicker.dateField = field ;
   if (!document.getElementById(UIDateTimePicker.calendarId)) {
-	  UIDateTimePicker.create();
+    UIDateTimePicker.create();
   }
   UIDateTimePicker.show() ;
 
@@ -81,11 +81,12 @@ show : function() {
   clndr.firstChild.lastChild.innerHTML = UIDateTimePicker.renderCalendar() ;
   var x = 0 ;
   var y = UIDateTimePicker.dateField.offsetHeight ;
-  with (clndr.firstChild.style) {
-    display = 'block' ;
-    left = x + "px" ;
-    top = y + "px" ;
-  }
+  gj(clndr.firstChild).css( {
+    'display' : 'block',
+    'left' : x,
+    'top' : y
+  })
+  gj(clndr).css('top', gj(UIDateTimePicker.dateField).position().top);
 },
 
 getTypeFormat : function() {
