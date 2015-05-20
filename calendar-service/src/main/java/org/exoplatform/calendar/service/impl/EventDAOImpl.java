@@ -369,6 +369,7 @@ public class EventDAOImpl implements EventDAO {
     try {
       session = storage.getSession(storage.createSessionProvider());
     } catch (Exception ex) {
+        log.error("Can not get JCR session", ex);
     }
     return session;
   }
