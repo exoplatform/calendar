@@ -40,8 +40,6 @@ import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.User;
-import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
@@ -930,7 +928,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP);
         UITaskForm uiTaskForm = uiPopupContainer.addChild(UITaskForm.class, null, null);
         uiTaskForm.initForm(uiPortlet.getCalendarSetting(), null, formTime);
-        uiTaskForm.setEmailAddress(((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail());
+        uiTaskForm.setEmailAddress(CalendarUtils.getOrganizationService()
+                .getUserHandler()
+                .findUserByName(username)
+                .getEmail());
         uiTaskForm.update(CalendarUtils.PRIVATE_TYPE, CalendarUtils.getCalendarOption());
         if (CalendarUtils.isEmpty(value))
           uiTaskForm.setSelectedCategory("All");
@@ -946,7 +947,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         uiEventForm.setParticipantStatus(username);
         uiEventForm.getChild(UIEventShareTab.class)
                 .setParticipantStatusList(uiEventForm.getParticipantStatusList());
-        uiEventForm.setEmailAddress(((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail());
+        uiEventForm.setEmailAddress(CalendarUtils.getOrganizationService()
+                .getUserHandler()
+                .findUserByName(username)
+                .getEmail());
         uiEventForm.setEmailRemindBefore(String.valueOf(5));
         uiEventForm.setEmailReminder(true);
         uiEventForm.setEmailRepeat(false);
@@ -1342,7 +1346,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiEventForm.update(calType, CalendarUtils.getCalendarOption());
             uiEventForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
             if (!uiEventForm.isAddNew_ && !uiEventForm.isReminderByEmail(eventCalendar.getReminders())) {
-              String email = ((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail();
+              OrganizationService orgService = CalendarUtils.getOrganizationService();
+              String email = orgService.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()).getEmail();
               uiEventForm.setEmailAddress(email);
             }
             uiEventForm.setSelectedCalendarId(calendarId);
@@ -1355,7 +1360,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             uiTaskForm.update(calType, CalendarUtils.getCalendarOption());
             uiTaskForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
             if (!uiTaskForm.isAddNew_ && !uiTaskForm.isReminderByEmail(eventCalendar.getReminders())) {
-              String email = ((User)ConversationState.getCurrent().getAttribute("UserProfile")).getEmail();
+              OrganizationService orgService = CalendarUtils.getOrganizationService();
+              String email = orgService.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()).getEmail();
               uiTaskForm.setEmailAddress(email);
             }
             uiTaskForm.setSelectedCalendarId(calendarId);

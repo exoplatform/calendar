@@ -88,11 +88,7 @@
 	   </depends>
 	   <depends>
 	     <module>DateUtils</module>
-	   </depends>	   
-		<depends>
-		 <module>commons-cometd</module>
-		 <as>cometd</as>
-		</depends>
+	   </depends>
     </module>
   </portlet>
   

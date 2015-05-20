@@ -150,7 +150,7 @@
 	  requireJS.addScripts("cal.restContext = \""+ uicomponent.getRestContextName() +"\";") ;
 	  requireJS.addScripts("cal.settingTimezone = \""+ uicomponent.getSettingTimeZone() +"\";") ;
 	  
-      requireJS.addScripts('cal.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'") ;') ;
+      requireJS.addScripts('cal.UICalendarPortlet.setting(' + timeStep + ', "' + workingStart + '", "' + timeFormat +'", "'+uicomponent.id+'", "' + uicomponent.getRemoteUser() + '") ;') ;
       requireJS.addScripts('uiContextMenu.showContextMenu("'+ uicomponent.id +'") ;') ;            
       requireJS.addScripts('Reminder.init("'+uicomponent.getRemoteUser()+'","'+uicomponent.getUserToken()+ '","' + uicomponent.getCometdContextName() + '");') ;
       requireJS.addScripts('cal.UICalendarPortlet.weekStartOn = "' + weekStartOn + '";');

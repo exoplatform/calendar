@@ -184,7 +184,7 @@ public class CalendarRestApi implements ResourceContainer {
     nc.setNoStore(true);    
   }
 
-  private Log log = ExoLogger.getExoLogger(CalendarRestApi.class);
+  private static final Log log = ExoLogger.getExoLogger(CalendarRestApi.class);
   
   /**
    * Contructor help to configure the rest service with parameters.
@@ -336,6 +336,7 @@ public class CalendarRestApi implements ResourceContainer {
           calType = Calendar.Type.valueOf(type.toUpperCase());
         } catch (IllegalArgumentException ex) {
           // Use default Type.UNDEFINED in any case of exception
+          log.debug(ex);
         }
       }
       
@@ -3388,6 +3389,7 @@ public class CalendarRestApi implements ResourceContainer {
               return buildBadResponse(new ErrorResource("repeatBy must be >= 1 and <= 31", "repeatBy"));
             }
           } catch (Exception e) {
+              log.debug(e);
           }
         }
         old.setRepeatByMonthDay(by);        
@@ -3402,7 +3404,9 @@ public class CalendarRestApi implements ResourceContainer {
           } catch (Exception e) {
             try {
               old.setRepeatCount(Long.parseLong(end.getValue()));                        
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+                log.debug(ex);
+            }
           }
         }
         String reptType = end.getType();
@@ -3757,7 +3761,8 @@ public class CalendarRestApi implements ResourceContainer {
               try {
                 offset = Integer.parseInt(exp.substring(exp.indexOf("offset:") + "offset:".length(), exp.indexOf(",")).trim());
                 limit = Integer.parseInt(exp.substring(exp.indexOf("limit:") + "limit:".length(), exp.indexOf(")")).trim());
-              } catch (Exception ex) {            
+              } catch (Exception ex) {
+                  log.debug(ex);
               }
             } else {
               fieldName = exp;
