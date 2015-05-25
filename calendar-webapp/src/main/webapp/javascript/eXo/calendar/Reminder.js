@@ -15,16 +15,16 @@
 
 	  initCometd : function() {
 	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/messages', null, function(eventObj) {    
-	      eXo.calendar.Reminder.alarm(eventObj) ;
+	      Reminder.alarm(eventObj) ;
 	    });
 	    
 	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyShareCalendar',
 	        function(eventObj) {
-	      eXo.calendar.Reminder.notifyShareCalendar(eventObj);
+	      Reminder.notifyShareCalendar(eventObj);
 	    });
 	    
 	    eXo.cs.CSCometd.subscribe('/eXo/Application/Calendar/notifyImportCalendar', function(eventObj){
-	      eXo.calendar.Reminder.notifyImportCalendar(eventObj);
+	      Reminder.notifyImportCalendar(eventObj);
 	    });
 	  },
 

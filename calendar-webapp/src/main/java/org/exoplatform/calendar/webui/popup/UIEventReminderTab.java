@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.webui.UIEmailInput;
+import org.exoplatform.services.organization.User;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
@@ -164,7 +165,9 @@ public class UIEventReminderTab extends UIFormInputWithActions {
       String values = uiUserSelector.getSelectedUsers();
       List<String> newEmails = new ArrayList<String>() ;
       for (String value : values.split(CalendarUtils.COMMA)) {
-        String email = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(value).getEmail() ;
+        User u = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(value);
+        if (u == null) continue;
+        String email = u.getEmail() ;
         if (!newEmails.contains(email)) {
           newEmails.add(email) ;
         }

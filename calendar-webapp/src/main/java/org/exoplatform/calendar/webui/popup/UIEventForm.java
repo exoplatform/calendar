@@ -46,6 +46,8 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.services.resources.LocaleContextInfo;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -997,7 +999,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     OrganizationService orgService = CalendarUtils.getOrganizationService() ;
 
     for(String s : values.split("[\\r\\n]+")) {
-      User user = orgService.getUserHandler().findUserByName(s) ;
+      User user = orgService.getUserHandler().findUserByName(s, UserStatus.ANY) ;
       if(user != null) {
         participants_.put(s.trim(), user.getEmail()) ;
       }
@@ -1124,7 +1126,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   }
 
   protected void sendMail(MailService svr, OrganizationService orSvr, CalendarSetting setting, String fromId,  String toId, CalendarEvent event) throws Exception {
-    User invitor = orSvr.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()) ;
+    User invitor = (User)ConversationState.getCurrent().getAttribute("UserProfile");
+    if (invitor == null) return;
     List<Attachment> atts = getAttachments(null, false);
 
     Map<String, String> eXoIdMap = new HashMap<String, String>();
@@ -1357,7 +1360,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
 
     try {
-      if (toId != null) {
+      if (toId != null && !toId.isEmpty()) {
         sendMail(CalendarUtils.getMailService(), CalendarUtils.getOrganizationService(), calSetting, username, toId, calendarEvent);
         List<String> parsUpdated = new LinkedList<String>();
         for (String parSt : calendarEvent.getParticipantStatus()) {
@@ -1512,10 +1515,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
     boolean canEdit = false ;
     if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)) {
-      canEdit = CalendarUtils.canEdit(null, org.exoplatform.calendar.service.Utils.getEditPerUsers(currentCalendar), username) ;
+      canEdit = Utils.canEdit(org.exoplatform.calendar.service.Utils.getEditPerUsers(currentCalendar)) ;
     } else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)) {
-      canEdit = CalendarUtils.canEdit(
-                                      CalendarUtils.getOrganizationService(), currentCalendar.getEditPermission(), username) ;
+      canEdit = Utils.canEdit(currentCalendar.getEditPermission()) ;
     }
     if(!canEdit && !uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE) ) {
       uiPopupAction.deActivate() ;
@@ -1986,7 +1988,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       String [] invitors = uiEventForm.getMeetingInvitation() ;
       if (invitors != null) currentEmails.addAll(Arrays.asList(invitors)) ;
       for (String value : values.split(CalendarUtils.COMMA)) {
-        String email = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(value).getEmail() ;
+        User u = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(value);
+        if (u == null) continue;
+        String email = u.getEmail() ;
         if (!currentEmails.contains(email)) currentEmails.add(email) ;
         if (!uiEventForm.participants_.keySet().contains(value)) {
           uiEventForm.participants_.put(value, email) ;

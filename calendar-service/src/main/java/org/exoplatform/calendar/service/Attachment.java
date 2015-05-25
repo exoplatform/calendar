@@ -16,12 +16,14 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.util.IdGenerator;
@@ -35,8 +37,10 @@ import org.exoplatform.services.log.Log;
  * Sep 28, 2007  
  */
 
-public class Attachment extends AbstractBean {
-  
+public class Attachment extends AbstractBean {  
+
+  private static final long serialVersionUID = -1104737448010961448L;
+
   private static final Log log = ExoLogger.getExoLogger(Attachment.class);
 
   private String   name;

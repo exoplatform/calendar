@@ -16,6 +16,11 @@
  **/
 package org.exoplatform.calendar;
 
+import javax.jcr.PathNotFoundException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.portlet.PortletPreferences;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -24,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -38,10 +42,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.jcr.PathNotFoundException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.portlet.PortletPreferences;
+
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -60,11 +61,9 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webservice.cs.calendar.CalendarWebservice;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -557,7 +556,7 @@ public class CalendarUtils {
     String portalName = pContext.getPortalOwner();
     if (url.indexOf(portalName) > 0) {
       String s = new StringBuilder().append(portalName).append("/").append(selectedNode).toString();  
-      if(url.indexOf(s) < 0){
+      if(url.indexOf(s) < 0) {
         url = url.replaceFirst(portalName, s) ;
       } 
       selectedNode = s;
@@ -567,52 +566,6 @@ public class CalendarUtils {
     return url;
   }
 
-  public static boolean hasEditPermission(String[] savePerms, String[] checkPerms) {
-    if(savePerms != null)
-      for(String sp : savePerms) {
-        for (String cp : checkPerms) {
-          if(sp.equals(cp)) {return true ;}      
-        }
-      }
-    return false ;
-  } 
-
-  public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
-    String checkPerms = getCheckPermissionString();
-    return CalendarUtils.hasEditPermission(savePerms, checkPerms.toString().split(CalendarUtils.COMMA)) ;
-  }
-
-  public static String getCheckPermissionString() throws Exception {
-    Identity identity = ConversationState.getCurrent().getIdentity();
-    StringBuffer sb = new StringBuffer(identity.getUserId());
-    Set<String> groupsId = identity.getGroups();
-    for (String groupId : groupsId) {
-      sb.append(CalendarUtils.COMMA).append(groupId).append(SLASH_COLON).append(ANY);
-      sb.append(CalendarUtils.COMMA).append(groupId).append(SLASH_COLON).append(identity.getUserId());
-    }
-    Collection<MembershipEntry> memberships = identity.getMemberships();
-    for (MembershipEntry membership : memberships) {
-      sb.append(CalendarUtils.COMMA).append(membership.getGroup()).append(SLASH_COLON).append(ANY_OF + membership.getMembershipType());
-    }
-    return sb.toString();
-  }
-
-  public static boolean isMemberShipType(Collection<Membership> mbsh, String value) {
-    if(!isEmpty(value))
-      for (String check : value.split(COMMA)) { 
-        check = check.trim() ;
-        if(check.lastIndexOf(ANY_OF) > -1) {
-          if(ANY.equals(check)) return true ;
-          value = check.substring(check.lastIndexOf(ANY_OF) + ANY_OF.length()) ;
-          if(mbsh!= null && !mbsh.isEmpty()) {
-            for(Membership mb : mbsh) {
-              if(mb.getMembershipType().equals(value)) return true ; 
-            }
-          }
-        }
-      }
-    return false ;
-  }
   static public class SelectComparator implements Comparator{
     @Override
     public int compare(Object o1, Object o2) throws ClassCastException {
@@ -657,7 +610,7 @@ public class CalendarUtils {
     if(gcd != null) {
       SelectOptionGroup sharedGrp = new SelectOptionGroup(CalendarUtils.SHARED_CALENDARS);
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
-        if(CalendarUtils.canEdit(null, Utils.getEditPerUsers(c), username)){
+        if(Utils.canEdit(Utils.getEditPerUsers(c))){
           if (!hash.containsKey(c.getId())) {
             hash.put(c.getId(), "");
             sharedGrp.addOption(new SelectOption(c.getName(), CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + c.getId())) ;
@@ -670,12 +623,10 @@ public class CalendarUtils {
     List<GroupCalendarData> lgcd = calendarService.getGroupCalendars(CalendarUtils.getUserGroups(username), true, username) ;
 
     if(lgcd != null) {
-      SelectOptionGroup pubGrp = new SelectOptionGroup(CalendarUtils.PUBLIC_CALENDARS);      
-      String[] checkPerms = getCheckPermissionString().split(CalendarUtils.COMMA);
+      SelectOptionGroup pubGrp = new SelectOptionGroup(CalendarUtils.PUBLIC_CALENDARS);
       for(GroupCalendarData g : lgcd) {
-        String groupName = g.getName();
-        for(org.exoplatform.calendar.service.Calendar c : g.getCalendars()){
-          if(hasEditPermission(c.getEditPermission(), checkPerms)){
+        for(org.exoplatform.calendar.service.Calendar c : g.getCalendars()) {
+          if(Utils.canEdit(c.getEditPermission())) {
             if (!hash.containsKey(c.getId())) {
               hash.put(c.getId(), "");
               pubGrp.addOption(new SelectOption(c.getName(), CalendarUtils.PUBLIC_TYPE + CalendarUtils.COLON + c.getId())) ;
@@ -703,17 +654,16 @@ public class CalendarUtils {
     GroupCalendarData gcd = calendarService.getSharedCalendars(username, true);
     if(gcd != null) {
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
-        if(CalendarUtils.canEdit(null, Utils.getEditPerUsers(c), username)){
+        if(Utils.canEdit(Utils.getEditPerUsers(c))){
           list.add(c) ;
         }
       }
     }
     List<GroupCalendarData> lgcd = calendarService.getGroupCalendars(CalendarUtils.getUserGroups(username), true, username) ;
     if(lgcd != null) {
-      OrganizationService oService = (OrganizationService)PortalContainer.getComponent(OrganizationService.class) ;
       for(GroupCalendarData g : lgcd) {
-        for(org.exoplatform.calendar.service.Calendar c : g.getCalendars()){
-          if(CalendarUtils.canEdit(oService, c.getEditPermission(), username)){
+        for(org.exoplatform.calendar.service.Calendar c : g.getCalendars()) {
+          if(Utils.canEdit(c.getEditPermission())) {
             list.add(c) ; 
           }
         }

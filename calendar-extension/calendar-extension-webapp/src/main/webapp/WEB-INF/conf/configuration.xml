@@ -4,7 +4,6 @@
   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_0.xsd">
 
   <!-- cs workspace and load nodetypes -->
-  <import>war:/cs-extension/jcr/jcr-configuration.xml</import> 
   <import>war:/cs-extension/cs/cs-nodetypes-configuration.xml</import>
 
   <!-- CS data storage tree -->

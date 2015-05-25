@@ -16,6 +16,7 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -27,7 +28,10 @@ import java.util.TimeZone;
  *          hung.nguyen@exoplatform.com
  * Jul 16, 2007  
  */
-public class CalendarSetting {
+public class CalendarSetting implements Serializable {
+
+  private static final long serialVersionUID = 1620512378382132299L;
+
   // view types
   public static String     DAY_VIEW              = "0";
 

@@ -110,7 +110,6 @@
     def user = CalendarUtils.getCurrentUser();
     UICalendarPortlet uiCalendarPortlet = uicomponent.getAncestorOfType(UICalendarPortlet.class);
     def isInSpaceContext = uiCalendarPortlet.isInSpaceContext();
-    String[] checkPerms = uicomponent.getCheckPermissionString().split(CalendarUtils.COMMA);
 
     %>
     <div class="myCalendar">
@@ -124,7 +123,6 @@
                 def calendarId   = calendar.id ;
 		        def calendarName = calendar.name ;
 		        def color        = uicomponent.getColorMap().get("1" + ":" + calendarId) ;
-		        //def isEditable   = uicomponent.canEdit(Utils.getEditPerUsers(calendar), checkPerms);
 		        def isEditable   = UISharedForm.canUserEditCalendar(user, calendar);
 		        def css          = "iconCheckBox checkbox";
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId);
@@ -156,7 +154,6 @@
     List calendarList = uicomponent.getAllPublicCalendars() ;
     if (calendarList.size() == 0) return;
     def publicCalendarTitle = _ctx.appRes("UICalendarSettingForm.label.publicCalendar");
-    String[] checkPerms = uicomponent.getCheckPermissionString().split(CalendarUtils.COMMA);
 
     UICalendarPortlet uiCalendarPortlet = uicomponent.getAncestorOfType(UICalendarPortlet.class);
     def isInSpaceContext = uiCalendarPortlet.isInSpaceContext();
@@ -174,7 +171,7 @@
 		        def calendarName = calendar.name;
 		        def css          = "iconCheckBox checkbox" ;
 		        def color        = calendar.calendarColor ;
-		        def isEditable   = uicomponent.canEdit(calendar.getEditPermission(), checkPerms) ;
+		        def isEditable   = Utils.canEdit(calendar.getEditPermission()) ;
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
 
 		        StringBuffer groupList = new StringBuffer();

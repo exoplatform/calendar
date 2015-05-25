@@ -16,6 +16,12 @@
  **/
 package org.exoplatform.calendar.service;
 
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.Session;
+import javax.jcr.Value;
+
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,12 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-
-import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.Session;
-import javax.jcr.Value;
 
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
@@ -63,9 +63,6 @@ import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
 
-import org.quartz.JobExecutionContext;
-import org.quartz.impl.JobDetailImpl;
-
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -84,9 +81,12 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.MembershipEntry;
+import org.quartz.JobExecutionContext;
+import org.quartz.impl.JobDetailImpl;
 
 /**
  * Created by The eXo Platform SARL
@@ -467,7 +467,7 @@ public class Utils {
   public static String  JCR_EXCERPT_ROW = "rep:excerpt(.)";
 
   public static String DATE_FORMAT_RECUR_ID = "yyyyMMdd'T'HHmmss'Z'";
-  
+
   public final static Map<String, String> SORT_FIELD_MAP = new LinkedHashMap<String, String>(){{
     put(ORDERBY_RELEVANCY, JCR_SCORE);
     put(ORDERBY_DATE, EXO_DATE_CREATED);
@@ -498,6 +498,10 @@ public class Utils {
   public static final int UNLIMITED = -1;
   
   private static Log log = ExoLogger.getLogger(Utils.class);
+
+  public static boolean isUserEnabled(String userId) throws Exception{
+    return getOrganizationService().getUserHandler().findUserByName(userId, UserStatus.ANY).isEnabled();
+  }
 
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
@@ -543,45 +547,55 @@ public class Utils {
     return false;
   }
 
-  @SuppressWarnings("unchecked")
   public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
-
     if (savePerms != null) {
-      for (String savePer : savePerms) {
-        PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
-        
-        if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
-          if (savePer.equals(username)) {
-            return true;
-          }
-        } else {
-          String groupId = permission.getGroupId();
-          String membershipType = permission.getMembership();
-          MembershipEntry expected = new MembershipEntry(groupId, membershipType);
-          
-          Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
-          for (Membership ms : memberships) {
-            //Core project care about * membership type
-            MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
-            if (userMS.equals(expected)) {
-              return true;
+        for (String savePer : savePerms) {
+            PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+            
+            if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+                if (permission.getMeaningfulPermissionOwnerStatement().equals(username)) {
+                    return true;
+                }
+            } else {
+                String groupId = permission.getGroupId();
+                String membershipType = permission.getMembership();
+                MembershipEntry expected = new MembershipEntry(groupId, membershipType);
+                
+                Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
+                for (Membership ms : memberships) {
+                    //Core project care about * membership type
+                    MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
+                    if (userMS.equals(expected)) {
+                        return true;
+                    }
+                }
             }
-          }
-        }
-      }      
+        }        
     }
     return false;
   }
+  
+  public static boolean canEdit(String[] savePerms) throws Exception {
+    Identity identity = ConversationState.getCurrent().getIdentity();
 
-  public static boolean hasEditPermission(String[] savePerms, String[] checkPerms) {
-    if (savePerms != null)
-      for (String sp : savePerms) {
-        for (String cp : checkPerms) {
-          if (sp.equals(cp)) {
-            return true;
-          }
+    if (savePerms != null) {
+        for (String savePer : savePerms) {
+            PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
+            
+            if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
+                if (permission.getMeaningfulPermissionOwnerStatement().equals(identity.getUserId())) {
+                    return true;
+                }
+            } else {
+                String groupId = permission.getGroupId();
+                String membershipType = permission.getMembership();
+                
+                if (identity.isMemberOf(groupId, membershipType)) {
+                    return true;       
+                }
+            }
         }
-      }
+    }
     return false;
   }
 
@@ -611,7 +625,6 @@ public class Utils {
 
   public static String[] getEditPerUsers(org.exoplatform.calendar.service.Calendar calendar) throws Exception {
     List<String> sharedUsers = new ArrayList<String>();
-    OrganizationService organizationService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
     if (calendar.getEditPermission() != null)
       for (String editPer : calendar.getEditPermission()) {
         if (editPer.contains(Utils.SLASH)) {
@@ -740,23 +753,21 @@ public class Utils {
     Set<String> userIds = new HashSet<String>();
     
     if (usersInGroup == null) return userIds;
-    
-    if("*".equals(membershipId)) { // if membership id is "*" that means we get all users in the group
-      for(User user : usersInGroup.toArray(new User[]{})) {
-        userIds.add(user.getUserName());
-      }
-      return userIds;
-    } else {
-      for (User user : usersInGroup.toArray(new User[]{}))
-      {
-        Membership membership = organizationService.getMembershipHandler().findMembershipByUserGroupAndType(user.getUserName(),
-            groupId, membershipId);
-        if (membership != null) {
-          userIds.add(user.getUserName());
+
+    MembershipEntry expected = new MembershipEntry(groupId, membershipId);
+    for (User user : usersInGroup)
+    {        
+        Collection<Membership> membership = organizationService.getMembershipHandler().findMembershipsByUserAndGroup(user.getUserName(), groupId);
+        for (Membership ms : membership) {
+            //Core project care about * membership type
+            MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
+            if (userMS.equals(expected)) {
+                userIds.add(user.getUserName());
+                break;
+            }
         }
-      }
-      return userIds;
     }
+    return userIds;
     
   }
   /**
