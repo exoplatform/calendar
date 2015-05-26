@@ -48,9 +48,21 @@ public interface CalendarService extends LegacyCalendarService {
    * Gets a calendar by its id
    * @param calId Id of the calendar
    * @return a {@link Calendar}
-   * @throws Exception
    */
-  public Calendar getCalendarById(String calId) throws Exception;
+  public Calendar getCalendarById(String calId);
+  
+  /**
+   * @param calId
+   * @param calType
+   * @return
+   */
+  Calendar getCalendarById(String calId, int calType);
+  
+  /**
+   * @param query
+   * @return
+   */
+  ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query);
   
   /**
    * Return all calendar of given user
@@ -62,6 +74,12 @@ public interface CalendarService extends LegacyCalendarService {
    * @return collection of Calendar object
    */
   public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit);
+  
+  /**
+   * @param calendar
+   * @param isNew
+   */
+  Calendar saveCalendar(Calendar calendar, boolean isNew);
   
   /**
    * Return calendars that have publicUrl enabled
@@ -862,5 +880,11 @@ public interface CalendarService extends LegacyCalendarService {
    * @throws Exception
    */
   boolean isValidRemoteUrl(String url, String type, String remoteUser, String remotePassword) throws Exception;
+
+  /**
+   * @param calendarId
+   * @param calType
+   */
+  void removeCalendar(String calendarId, int calType);
 
 }

@@ -20,11 +20,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+
 import javax.jcr.PathNotFoundException;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -46,6 +49,7 @@ import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UIRemoteCalendar;
 import org.exoplatform.calendar.webui.popup.UISharedForm;
 import org.exoplatform.calendar.webui.popup.UISubscribeForm;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -119,6 +123,7 @@ public class UICalendars extends UIForm  {
 
   private GroupCalendarData sharedCalendars;
 
+  private Map<Integer, List<Calendar>> calendars = new HashMap<Integer, List<Calendar>>();
 
   public UICalendars() throws Exception { }
 
@@ -157,6 +162,21 @@ public class UICalendars extends UIForm  {
       if (color == null) color = calendar.getCalendarColor() ;
       colorMap_.put(buildId(Calendar.TYPE_SHARED, calendar.getId()), color) ;
       initCheckBox(calendar);
+    }
+    
+    calendars.clear();
+    CalendarService service = CalendarUtils.getCalendarService();
+    ListAccess tmp = service.findCalendarsByQuery(null);
+    for (Object cal : tmp.load(0, -1)) {
+      Calendar c = (Calendar)cal;
+      List<Calendar> cals = calendars.get(c.getCalType()); 
+      if (cals == null) {
+        cals = new LinkedList<Calendar>();
+        calendars.put(c.getCalType(), cals);
+      }
+      cals.add(c);
+      colorMap_.put(buildId(c.getCalType(), c.getId()), c.getCalendarColor()) ;
+      initCheckBox(c);
     }
   }
 

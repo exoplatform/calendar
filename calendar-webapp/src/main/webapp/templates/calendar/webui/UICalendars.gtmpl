@@ -203,6 +203,48 @@
   <%
   }
 
+  private void renderOtherGroup()
+  {
+    def others = uicomponent.calendars.get(3);
+    if (others == null || others.size() == 0) return;
+    def otherTitle = "Others";
+    %>
+	  <div class="myCalendar">
+	    <h6 class="calendarTitle">$otherTitle</h6>
+	    <div class="myCalendarContainer">
+	      <ul class="uiVTabContent" >
+	      <%
+	        for (calendar in others)
+	        {
+		        if (uicomponent.getChildById(calendar.getId()) == null) continue;
+                def calendarId   = calendar.id ;
+		        def calendarName = calendar.name;
+		        def color        = calendar.calendarColor ;
+		        def icon         = "CalendarIcon" ;
+		        def isRemote     = uicomponent.isRemoteCalendar(calendarId) ;
+		        def css          = "iconCheckBox checkbox" ;
+		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
+
+		        if (calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) icon = "SharedCalendarIcon";
+		    %>
+		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="true" id="$calendarId" calType="0" isRemote="$isRemote">
+		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
+              <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
+                <a href="javascript:void(0);" class="$color">
+                  <span class="colorOpacity">
+                    <span class="$css"></span>
+		              </span>
+                </a>
+		            <a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendarName">$calendarName</a>
+                <span style="display:none"><%uiform.renderField(calendarId)%></span>
+		          </div>
+            </li>
+		      <% } %>
+	      </ul>
+      </div>
+	  </div>
+  <%
+  }
 %>
 <%uiform.begin()%>
 <div class="uiBox uiCalendars">
@@ -221,6 +263,8 @@
     <% renderSharedCalendarGroup(); %>
 
     <% renderPublicCalendarGroup(); %>
+    
+    <% renderOtherGroup(); %>
 
     <% if (uicomponent.hasNoCalendarShown()) renderNoCalendarNote(); %>
     <% if(uicomponent.hasNoSpaceCalendarShown()) {

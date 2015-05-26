@@ -22,7 +22,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -53,10 +52,12 @@ import net.fortuna.ical4j.model.Recur;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarCollection;
+import org.exoplatform.calendar.service.CalendarDAO;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarIterator;
+import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
@@ -68,6 +69,7 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.ImportCalendarJob;
+import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
@@ -78,7 +80,10 @@ import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.container.component.BaseComponentPlugin;
+import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
+import org.exoplatform.portal.config.NewPortalConfigListener;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
@@ -128,6 +133,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);  
   
+  private List<CalendarDAO> calendarDAOs = new LinkedList<CalendarDAO>();
+  
   private EventDAO eventDAO;
 
   public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs, CacheService cservice) throws Exception {
@@ -141,11 +148,92 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     String eventNumber = props.getProperty("eventNumber");
     Utils.EVENT_NUMBER = Integer.parseInt(eventNumber);
   }
+  
+  @Override
+  public Calendar getCalendarById(String calId) {
+    Calendar cal = null;
+    
+    for (CalendarDAO dao : calendarDAOs) {
+      cal = dao.getCalendarById(calId);
+      if (cal != null) break;
+    }
+    return cal;
+  }
 
-  public JCRDataStorage getDataStorage() {
-    return storage_;
-  } 
+  @Override
+  public Calendar getCalendarById(String calId, int calType) {
+    for (CalendarDAO dao : calendarDAOs) {
+      if (dao.getCalendarTypes().contains(calType)) {
+        return dao.getCalendarById(calId, calType);
+      }
+    }
+    return null;
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public ListAccess findCalendarsByQuery(CalendarQuery query) {
+    MultiListAccess lists = new MultiListAccess();
+    if (query == null || query.getCalType() == Calendar.TYPE_ALL) {
+      for (CalendarDAO dao : calendarDAOs) {
+        lists.add(dao.findCalendarsByQuery(query));
+      }
+    } else {
+      for (CalendarDAO dao : calendarDAOs) {
+        if (dao.getCalendarTypes().contains(query.getCalType())) {
+          return dao.findCalendarsByQuery(query);
+        }
+      }
+    }
 
+    return lists;
+  }
+  
+  @Override
+  public Calendar saveCalendar(Calendar calendar, boolean isNew) {
+    for (CalendarDAO dao : calendarDAOs) {
+      if (dao.getCalendarTypes().contains(calendar.getCalType())) {
+        return dao.saveCalendar(calendar, isNew);
+      }
+    }
+    
+    return null;
+  }
+  
+  public Calendar saveCalendar(String username, Calendar calendar, int caltype , boolean isNew){
+    Calendar instance = null;
+    try {
+      switch (caltype) {
+      case Calendar.TYPE_PRIVATE:
+        storage_.saveUserCalendar(username, calendar, isNew);
+        break;
+
+      case Calendar.TYPE_PUBLIC:
+        storage_.savePublicCalendar(calendar, isNew, username);
+        break;
+      case Calendar.TYPE_SHARED:
+        storage_.saveSharedCalendar(username, calendar);
+        break;
+      default:
+        break;
+      }
+      instance = storage_.getCalendarById(calendar.getId());
+    } catch (Exception e) {
+      if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());
+    }
+
+    return instance;
+  }
+
+  @Override
+  public void removeCalendar(String calendarId, int calType) {
+    for (CalendarDAO dao : calendarDAOs) {
+      if (dao.getCalendarTypes().contains(calType)) {
+        dao.removeCalendar(calendarId, calType);
+      }
+    }
+  }
+ 
   /**
    * {@inheritDoc}
    */
@@ -1063,11 +1151,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return storage_.getEventById(eventId);
   }
 
-
-  @Override
-  public Calendar getCalendarById(String calId) throws Exception {
-    return storage_.getCalendarById(calId);
-  }  
   /**
    * {@inheritDoc}
    */
@@ -1782,30 +1865,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     }
     return new CalendarCollection<Calendar>(cals, fullSize);
   }
-  public Calendar saveCalendar(String username, Calendar calendar, int caltype , boolean isNew){
-    Calendar instance = null;
-    try {
-      switch (caltype) {
-      case Calendar.TYPE_PRIVATE:
-        storage_.saveUserCalendar(username, calendar, isNew);
-        break;
-
-      case Calendar.TYPE_PUBLIC:
-        storage_.savePublicCalendar(calendar, isNew, username);
-        break;
-      case Calendar.TYPE_SHARED:
-        storage_.saveSharedCalendar(username, calendar);
-        break;
-      default:
-        break;
-      }
-      instance = storage_.getCalendarById(calendar.getId());
-    } catch (Exception e) {
-      if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());
-    }
-
-    return instance;
-  }
   
   public Attachment getAttachmentById(String attId){
     Attachment att = null;
@@ -1821,9 +1880,21 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void removeAttachmentById(String attId) {
     storage_.removeAttachmentById(attId);
   }
+  
+  public void addDAOPlugin(ComponentPlugin dao) {
+    if (dao instanceof CalendarDAO) {
+      synchronized (this) {
+          calendarDAOs.add((CalendarDAO)dao);
+      }
+    }
+  }
 
   @Override
   public EventDAO getEventDAO() {
     return eventDAO;
+  }
+  
+  public JCRDataStorage getDataStorage() {
+    return storage_;
   }
 }
