@@ -181,6 +181,70 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     assertEquals(0,exceptions.size());//the exception occEvent2 should be removed now
   }
 
+  public void testSaveFollowingOccurrenceEventWithChangeTime() throws Exception {
+    CalendarSetting setting = calendarService_.getCalendarSetting(username);
+    setting.setDateFormat("MMddyyyy");
+    setting.setTimeFormat("H:m");
+    calendarService_.saveCalendarSetting(username, setting);
+    setting = calendarService_.getCalendarSetting(username);
+    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+
+    Calendar calendar = createPrivateCalendar(username, "testSaveFollowingOccurrenceEventWithChangeTime calendar", "description");
+
+    String startTime = "05252015 10:00";
+    String endTime = "05252015 11:00";
+    Date start = getDate(setting, startTime);
+    Date end = getDate(setting, endTime);
+
+    java.util.Calendar from = java.util.Calendar.getInstance();
+    from.setTime(start);
+    from.add(java.util.Calendar.DATE, -2);
+    java.util.Calendar to = java.util.Calendar.getInstance();
+    to.setTime(end);
+    to.add(java.util.Calendar.DATE, 10);
+
+    // Create recuring event
+    CalendarEvent event = new CalendarEvent();
+    event.setSummary("testSaveFollowingOccurrenceEventWithChangeTime event");
+    event.setFromDateTime(start);
+    event.setToDateTime(end);
+    event.setRepeatType(CalendarEvent.RP_DAILY);
+    event.setRepeatInterval(1);
+    event.setRepeatCount(5);
+    event.setRepeatUntilDate(null);
+    Utils.updateOriginDate(event, userTimezone);
+    Utils.adaptRepeatRule(event, userTimezone, CalendarService.PERSISTED_TIMEZONE);
+    calendarService_.saveUserEvent(username, calendar.getId(), event, true);
+
+    event = calendarService_.getEvent(username, event.getId());
+
+    Map<String, CalendarEvent> events = calendarService_.getOccurrenceEvents(event, from, to, setting.getTimeZone());
+    assertEquals(5, events.size());
+
+    CalendarEvent occurence = events.get("20150527T100000Z");
+    assertNotNull(occurence);
+
+    java.util.Calendar newFromCal = java.util.Calendar.getInstance(userTimezone);
+    newFromCal.setTime(occurence.getFromDateTime());
+    java.util.Calendar newToCal = java.util.Calendar.getInstance(userTimezone);
+    newFromCal.setTime(occurence.getToDateTime());
+    newFromCal.add(java.util.Calendar.MINUTE, 30);
+    newToCal.add(java.util.Calendar.MINUTE, 30);
+    occurence.setFromDateTime(newFromCal.getTime());
+    occurence.setToDateTime(newToCal.getTime());
+
+    calendarService_.saveFollowingSeriesEvents(event, occurence, username);
+
+    event = calendarService_.getEvent(username, event.getId());
+    occurence = calendarService_.getEvent(username, occurence.getId());
+
+    events = calendarService_.getOccurrenceEvents(event, from, to, setting.getTimeZone());
+    assertEquals(2, events.size());
+
+    events = calendarService_.getOccurrenceEvents(occurence, from, to, setting.getTimeZone());
+    assertEquals(3, events.size());
+  }
+
   public void testSaveOneOccurrenceEvent() throws Exception {
 
     CalendarEvent recurEvent = createRepetitiveEventForTest();

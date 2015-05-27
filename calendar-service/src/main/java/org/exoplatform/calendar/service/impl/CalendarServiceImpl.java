@@ -1273,7 +1273,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           Utils.adaptRepeatRule(recur, originEvent.getFromDateTime(), CalendarService.PERSISTED_TIMEZONE, userTimeZone);
 
           DateTime ical4jFrom = new DateTime(originEvent.getFromDateTime());
-          DateTime ical4jTo = new DateTime(selectedOccurrence.getFromDateTime());
+          java.util.Calendar toCal = java.util.Calendar.getInstance();
+          toCal.setTime(stopDate);
+          toCal.add(java.util.Calendar.MINUTE, 5);
+          DateTime ical4jTo = new DateTime(toCal.getTime());
           Period period = new Period(ical4jFrom, ical4jTo);
           period.setTimeZone(tz);
           // get list of occurrences in a period
