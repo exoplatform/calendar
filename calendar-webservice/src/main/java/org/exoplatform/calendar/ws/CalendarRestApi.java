@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -73,6 +74,7 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Invitation;
+import org.exoplatform.calendar.service.PermissionOwner;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
@@ -439,7 +441,50 @@ public class CalendarRestApi implements ResourceContainer {
 		    return Response.status(HTTPStatus.UNAUTHORIZED).cacheControl(nc).build();
 		  } else {
 		    // Create a personal calendar
-		    calendarServiceInstance().saveUserCalendar(currentUserId(), calendar, true);
+            final String username = currentUserId();
+		    calendarServiceInstance().saveUserCalendar(username, calendar, true);
+
+            // Share calendar if user set edit or view permission
+            String[] viewPermissions = calendar.getViewPermission();
+            if (viewPermissions != null && viewPermissions.length > 0) {
+              Set<String> sharedUsers = new HashSet<String>();
+              Set<String> sharedGroups = new HashSet<String>();
+
+              for (String permission : viewPermissions) {
+                PermissionOwner perm = PermissionOwner.createPermissionOwnerFrom(permission);
+                if (PermissionOwner.USER_OWNER.equals(perm.getOwnerType())) {
+                  sharedUsers.add(perm.getId());
+
+                } else if (PermissionOwner.GROUP_OWNER.equals(perm.getOwnerType())) {
+                  sharedGroups.add(perm.getGroupId());
+
+                } else if (PermissionOwner.MEMBERSHIP_OWNER.equals(perm.getOwnerType())) {
+                  try {
+                    sharedUsers.addAll(Utils.getUserByMembershipId(perm.getMembership(), perm.getGroupId()));
+
+                  } catch (Exception ex) {
+                    log.warn("Can not share calendar to Membership: " + permission, ex);
+                  }
+                }
+              }
+
+              if (sharedGroups.size() > 0) {
+                try {
+                  calendarServiceInstance().shareCalendarByRunJob(username, calendar.getId(), new ArrayList<String>(sharedGroups));
+                } catch (Exception ex) {
+                  log.warn("Exception while share calendar to groups", ex);
+                }
+              }
+
+              if (sharedUsers.size() > 0) {
+                try {
+                  calendarServiceInstance().shareCalendar(username, calendar.getId(), new ArrayList<String>(sharedUsers));
+                } catch (Exception ex) {
+                  log.warn("Exception while share calendar to users", ex);
+                }
+              }
+
+            }
 		  }
 		}
 		
@@ -590,12 +635,108 @@ public class CalendarRestApi implements ResourceContainer {
       //don't allow to edit shared calendar, or remote calendar
       if ((currentUserId().equals(cal.getCalendarOwner()) || cal.getGroups() != null) &&
           Utils.isCalendarEditable(currentUserId(), cal)) {
+
+        final List<String> oldViewPermissions;
+        if (cal.getViewPermission() != null) {
+          oldViewPermissions = Collections.unmodifiableList(Arrays.<String>asList(cal.getViewPermission()));
+        } else {
+          oldViewPermissions = Collections.<String>emptyList();
+        }
+
         Response error = buildCalendar(cal, calObj);
         if (error != null) {
           return error;
         } else {
           int type = calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId());
           calendarServiceInstance().saveCalendar(cal.getCalendarOwner(), cal, type, false);
+
+          if (type == Calendar.TYPE_PRIVATE) {
+            final List<String> viewPermissions;
+            if (cal.getViewPermission() != null) {
+              viewPermissions = Arrays.asList(cal.getViewPermission());
+            } else {
+              viewPermissions = Collections.emptyList();
+            }
+
+            //. Only update when new viewPermission is different with old viewPermission
+            boolean needUpdateShare = false;
+            if (oldViewPermissions.size() != viewPermissions.size()) {
+              needUpdateShare = true;
+            } else {
+              for (String p : oldViewPermissions) {
+                if (!viewPermissions.contains(p)) {
+                  needUpdateShare = true;
+                  break;
+                }
+              }
+            }
+
+            if (needUpdateShare) {
+              final String username = currentUserId();
+              final String calendarId = cal.getId();
+              Set<String> newSharedUsers = new HashSet<String>();
+              Set<String> newSharedGroups = new HashSet<String>();
+              for (String p : viewPermissions) {
+                PermissionOwner perm = PermissionOwner.createPermissionOwnerFrom(p);
+                String ownerType = perm.getOwnerType();
+                if (PermissionOwner.USER_OWNER.equals(ownerType)) {
+                  newSharedUsers.add(perm.getId());
+                } else if (PermissionOwner.GROUP_OWNER.equals(ownerType)) {
+                  newSharedGroups.add(perm.getGroupId());
+                } else if (PermissionOwner.MEMBERSHIP_OWNER.equals(ownerType)) {
+                  try {
+                    newSharedUsers.addAll(Utils.getUserByMembershipId(perm.getMembership(), perm.getGroupId()));
+                  } catch (Exception ex) {
+                    log.warn("Exception while try to share calendar to Membership: " + p, ex);
+                  }
+                }
+              }
+
+              Set<String> removeShareUsers = new HashSet<String>();
+              Set<String> removeShareGroups = new HashSet<String>();
+              if (oldViewPermissions.size() > 0) {
+                for (String p : oldViewPermissions) {
+                  if (viewPermissions.contains(p)) {
+                    continue;
+                  }
+
+                  PermissionOwner perm = PermissionOwner.createPermissionOwnerFrom(p);
+                  String ownerType = perm.getOwnerType();
+                  if (PermissionOwner.USER_OWNER.equals(ownerType)) {
+                    removeShareUsers.add(perm.getId());
+                  } else if (PermissionOwner.GROUP_OWNER.equals(ownerType)) {
+                    removeShareGroups.add(perm.getGroupId());
+                  } else if (PermissionOwner.MEMBERSHIP_OWNER.equals(ownerType)) {
+                    try {
+                      removeShareUsers.addAll(Utils.getUserByMembershipId(perm.getMembership(), perm.getGroupId()));
+                    } catch (Exception ex) {
+                      log.error("Exception when try unshare calendar to Membership: " + p, ex);
+                    }
+                  }
+                }
+              }
+
+              // Remove all who shared before but not share any more
+              for (String user : removeShareUsers) {
+                calendarServiceInstance().removeSharedCalendar(user, calendarId);
+              }
+              if (removeShareGroups.size() > 0) {
+                calendarServiceInstance().removeSharedCalendarByJob(username,
+                                                       new ArrayList<String>(removeShareGroups), calendarId);
+              }
+
+              // Share to new user or group
+              if (newSharedUsers.size() > 0) {
+                newSharedUsers.remove(username);
+                calendarServiceInstance().shareCalendar(username, calendarId, new ArrayList<String>(newSharedUsers));
+              }
+              if (newSharedGroups.size() > 0) {
+                calendarServiceInstance().shareCalendarByRunJob(username,
+                                                        calendarId, new ArrayList<String>(newSharedGroups));
+              }
+            }
+          }
+
           return Response.ok().cacheControl(nc).build();          
         }
       }
@@ -3538,9 +3679,23 @@ public class CalendarRestApi implements ResourceContainer {
     if (calR.getDescription() != null) {
       cal.setDescription(calR.getDescription());      
     }
+    Set<String> viewPermissions = new HashSet<String>();
     if (calR.getEditPermission() != null) {
-      cal.setEditPermission(calR.getEditPermission().split(Utils.SEMICOLON));      
+      cal.setEditPermission(calR.getEditPermission().split(Utils.SEMICOLON));
+      for (String permission : cal.getEditPermission()) {
+        viewPermissions.add(permission);
+      }
     }
+
+    if (calR.getViewPermision() != null) {
+      for (String permission : calR.getViewPermision().split(Utils.SEMICOLON)) {
+        viewPermissions.add(permission);
+      }
+    }
+    if (viewPermissions.size() > 0) {
+      cal.setViewPermission(viewPermissions.toArray(new String[viewPermissions.size()]));
+    }
+
     if (calR.getGroups() != null) {
       cal.setGroups(calR.getGroups());      
     }
@@ -3561,9 +3716,6 @@ public class CalendarRestApi implements ResourceContainer {
     }
     if (calR.getTimeZone() != null) {
       cal.setTimeZone(calR.getTimeZone());
-    }
-    if (calR.getViewPermision() != null) {
-      cal.setViewPermission(calR.getViewPermision().split(Utils.SEMICOLON));
     }
     return null;
   }
