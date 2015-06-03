@@ -1414,9 +1414,14 @@ public class Utils {
     }
     
     ExoContainer container = ExoContainerContext.getCurrentContainer();
+    CalendarService service = (CalendarService)container.getComponentInstanceOfType(CalendarService.class);
     OrganizationService oService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);    
-    try {      
-      if(username.equals(cal.getCalendarOwner())) {
+    try {
+      // To fix issue CAL-1119 we have to bring calendarOwner back to group calendar
+      // And the field "calendarOwner" always set to current user when he add/edit calendar via UICalendarForm
+      // So, we can not use "calendarOwner" to check this is personal calendar or not
+      // => I have to revert a part of CAL-1090 commit
+      if (service.getUserCalendar(username, cal.getId()) != null) {
         return !cal.isRemote();
       } else {
         if (ConversationState.getCurrent() != null) {
