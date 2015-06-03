@@ -145,7 +145,7 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
   }
 
   @Override
-  public String[] getActions(){
+  public String[] getActions() {
     return new String[]{"Save", "Cancel"};
   }
   @Override
@@ -262,13 +262,6 @@ public class UIImportForm extends UIForm implements UIPopupComponent, UISelector
             if(CalendarUtils.isEmpty(calendarName)) {
               calendarName = resource[0].getFileName();
             } 
-            List<Calendar> pCals = calendarService.getUserCalendars(username, true);
-            for(Calendar cal : pCals) {
-              if(cal.getName().trim().equalsIgnoreCase(calendarName)) {
-                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{calendarName}, AbstractApplicationMessage.WARNING));
-                return;
-              }
-            }
             Calendar calendar = new Calendar();
             calendar.setName(calendarName);
             calendar.setDescription(uiForm.getDescription());

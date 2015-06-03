@@ -691,20 +691,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         calendar.setTimeZone(uiForm.getTimeZone());
         if(CalendarUtils.PRIVATE_TYPE.equals(uiForm.calType_))
         {
-          List<Calendar> pCals = calendarService.getUserCalendars(username, true) ;
-          for(Calendar cal : pCals) {
-            if(uiForm.isAddNew_) {
-              if(cal.getName().trim().equalsIgnoreCase(displayName.trim())) {
-                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{displayName}, AbstractApplicationMessage.WARNING)) ;
-                return ;
-              }
-            } else {
-              if(cal.getName().trim().equalsIgnoreCase(displayName.trim()) && !cal.getId().equals(calendar.getId())) {
-                event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendarForm.msg.name-exist", new Object[]{displayName}, AbstractApplicationMessage.WARNING)) ;
-                return ;
-              }
-            }
-          }
           calendarService.saveUserCalendar(username, calendar, uiForm.isAddNew_) ;
         } else if(CalendarUtils.SHARED_TYPE.equals(uiForm.calType_))
         {

@@ -33,6 +33,9 @@ import org.exoplatform.webui.application.WebuiRequestContext;
  * Jul 11, 2007  
  */
 public class EventCategory extends AbstractBean {
+  
+  private static final long serialVersionUID = 3773092354485644604L;
+
   private static final Log log = ExoLogger.getLogger(EventCategory.class);
 
   private String  name;

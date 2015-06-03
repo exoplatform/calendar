@@ -16,7 +16,10 @@
  */
 package org.exoplatform.calendar.service;
 
-public abstract class AbstractBean {
+import java.io.Serializable;
+
+@SuppressWarnings("serial")
+public abstract class AbstractBean implements Serializable {
 
   private String             id;
 
