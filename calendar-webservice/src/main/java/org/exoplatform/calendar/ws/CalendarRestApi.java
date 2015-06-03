@@ -347,7 +347,8 @@ public class CalendarRestApi implements ResourceContainer {
       Collection data = new LinkedList();
       Iterator<Calendar> calIterator = cals.iterator();
       while (calIterator.hasNext()) {
-         Calendar cal = calIterator.next();         
+         Calendar cal = calIterator.next();
+         setCalType(cal);
          data.add(extractObject(new CalendarResource(cal, basePath), fields));
       }
       
@@ -510,6 +511,7 @@ public class CalendarRestApi implements ResourceContainer {
       
       CalendarResource calData = null;
       if (this.hasViewCalendarPermission(cal, currentUserId())) {
+        setCalType(cal);
         calData = new CalendarResource(cal, getBasePath(uriInfo));
       }      
       if (calData == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
@@ -3608,7 +3610,7 @@ public class CalendarRestApi implements ResourceContainer {
     for (Expand exp : expands) {
       if ("calendar".equals(exp.getField())) {
         Calendar cal = service.getCalendarById(event.getCalendarId());
-        cal.setCalType(calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId()));
+        setCalType(cal);
         evtResource.setCal(new CalendarResource(cal, basePath));
       } else if ("categories".equals(exp.getField())) {
         String categoryId = event.getEventCategoryId();
@@ -3643,7 +3645,7 @@ public class CalendarRestApi implements ResourceContainer {
     for (Expand exp : expands) {
       if ("calendar".equals(exp.getField())) {
         Calendar cal = service.getCalendarById(ev.getCalendarId());
-        cal.setCalType(calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId()));
+        setCalType(cal);
         evtResource.setCal(new CalendarResource(cal, basePath));
       } else if ("categories".equals(exp.getField())) {
         String categoryId = ev.getEventCategoryId();
@@ -3688,7 +3690,9 @@ public class CalendarRestApi implements ResourceContainer {
       if ("calendars".equals(exp.getField())) {
         List<Serializable> calendars = new ArrayList<Serializable>();
         for(String calId : Utils.subList(calIds, exp.getOffset(), exp.getLimit())) {        
-          calendars.add(new CalendarResource(service.getCalendarById(calId), getBasePath(uriInfo)));
+          Calendar cal = service.getCalendarById(calId);
+          setCalType(cal);
+          calendars.add(new CalendarResource(cal, getBasePath(uriInfo)));
         }      
         feedResource.setCals(Utils.subList(calendars, exp.getOffset(), exp.getLimit()));
       }      
@@ -3721,6 +3725,14 @@ public class CalendarRestApi implements ResourceContainer {
     byte[] hashCode = md5.digest(data);
     //Can't compile if return byte[] due to the bug from eXo rest framework
     return String.valueOf(hashCode);
+  }
+  
+  private void setCalType(Calendar cal) {
+    try {
+      cal.setCalType(calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId()));
+    } catch (Exception e) {
+      log.error(e);
+    }
   }
   
   public static class Expand {

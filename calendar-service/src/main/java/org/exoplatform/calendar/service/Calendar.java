@@ -51,7 +51,7 @@ public class Calendar extends AbstractBean {
       return type;
     }
 
-    public Type getType(int type) {
+    public static Type getType(int type) {
       for (Type t : Type.values()) {
         if (t.type() == type) {
           return t;

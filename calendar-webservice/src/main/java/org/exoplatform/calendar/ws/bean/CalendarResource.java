@@ -53,7 +53,7 @@ public class CalendarResource extends Resource {
     
     name = data.getName();
     description = data.getDescription();
-    type = String.valueOf(data.getCalType());
+    type = Calendar.Type.getType(data.getCalType()).name();
     timeZone = data.getTimeZone();
     color = data.getCalendarColor();
     owner = data.getCalendarOwner();
