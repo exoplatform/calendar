@@ -32,7 +32,7 @@ public class CalendarResource extends Resource {
   private String timeZone;
   private String color;
   private String owner;
-  private String viewPermision;
+  private String viewPermission;
   private String editPermission;
   private String[] groups;
   private String publicURL;
@@ -63,7 +63,7 @@ public class CalendarResource extends Resource {
     for (String s: data.getViewPermission()) {
       sb.append(s).append(Utils.SEMICOLON);
     }
-    viewPermision = sb.toString();
+    viewPermission = sb.toString();
     
     sb = new StringBuilder();
     if(data.getEditPermission() != null)
@@ -124,12 +124,12 @@ public class CalendarResource extends Resource {
     this.owner = owner;
   }
 
-  public String getViewPermision() {
-    return viewPermision;
+  public String getViewPermission() {
+    return viewPermission;
   }
 
-  public void setViewPermision(String viewPermision) {
-    this.viewPermision = viewPermision;
+  public void setViewPermission(String viewPermission) {
+    this.viewPermission = viewPermission;
   }
 
   public String getEditPermission() {
