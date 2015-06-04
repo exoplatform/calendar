@@ -3680,14 +3680,14 @@ public class CalendarRestApi implements ResourceContainer {
       cal.setDescription(calR.getDescription());      
     }
     Set<String> viewPermissions = new HashSet<String>();
-    if (calR.getEditPermission() != null) {
+    if (calR.getEditPermission() != null && !calR.getEditPermission().isEmpty()) {
       cal.setEditPermission(calR.getEditPermission().split(Utils.SEMICOLON));
       for (String permission : cal.getEditPermission()) {
         viewPermissions.add(permission);
       }
     }
 
-    if (calR.getViewPermision() != null) {
+    if (calR.getViewPermision() != null && !calR.getViewPermision().isEmpty()) {
       for (String permission : calR.getViewPermision().split(Utils.SEMICOLON)) {
         viewPermissions.add(permission);
       }
