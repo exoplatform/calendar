@@ -43,6 +43,7 @@ import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.JavascriptManager;
@@ -831,12 +832,26 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
         continue;
       }
 
-      /* Check user exising and in group */
-      Collection<Membership> memberships = orgService.getMembershipHandler().findMembershipsByUserAndGroup(s, groupIdSelected);
-      if(memberships != null && !memberships.isEmpty()) {
-          listPermission.add(groupKey + s) ;
+      User user = orgService.getUserHandler().findUserByName(s, UserStatus.ANY);
+      if (user == null) {
+        notFoundUser.append(s + ", ");
+      } else if (!user.isEnabled()) {
+        /**
+         * We use popup warning message for disabled-user like when membership not found
+         * because it's better for UX than use notification like when user not found
+         */
+        event.getRequestContext().getUIApplication()
+                .addMessage(new ApplicationMessage("UICalendarForm.msg.disabledUser",
+                        new Object[]{s, groupKey}, AbstractApplicationMessage.WARNING));
+
       } else {
+        /* Check user exising and in group */
+        Collection<Membership> memberships = orgService.getMembershipHandler().findMembershipsByUserAndGroup(s, groupIdSelected);
+        if(memberships != null && !memberships.isEmpty()) {
+          listPermission.add(groupKey + s) ;
+        } else {
           notFoundUser.append(s + ", ");
+        }
       }
     }
 
