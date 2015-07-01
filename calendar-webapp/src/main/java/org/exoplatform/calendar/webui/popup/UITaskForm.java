@@ -765,8 +765,8 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
           if (ev.getId().equals(calendarEvent.getId())) {
             if (listView.getDataMap().containsKey(ev.getId())) {
               listView.getDataMap().put(ev.getId(), ev) ;
-              if (uiPreview.getEvent().getId().equals(ev.getId())) {
-                uiPreview.setEvent(ev) ; 
+              if (uiPreview.getEvent() != null && uiPreview.getEvent().getId().equals(ev.getId())) {
+                uiPreview.setEvent(ev) ;
               }
             }                        
             break ;

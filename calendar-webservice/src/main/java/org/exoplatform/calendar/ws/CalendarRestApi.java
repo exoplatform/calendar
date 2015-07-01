@@ -3687,8 +3687,8 @@ public class CalendarRestApi implements ResourceContainer {
       }
     }
 
-    if (calR.getViewPermision() != null && !calR.getViewPermision().isEmpty()) {
-      for (String permission : calR.getViewPermision().split(Utils.SEMICOLON)) {
+    if (calR.getViewPermission() != null && !calR.getViewPermission().isEmpty()) {
+      for (String permission : calR.getViewPermission().split(Utils.SEMICOLON)) {
         viewPermissions.add(permission);
       }
     }
@@ -3716,6 +3716,9 @@ public class CalendarRestApi implements ResourceContainer {
     }
     if (calR.getTimeZone() != null) {
       cal.setTimeZone(calR.getTimeZone());
+    }
+    if (calR.getViewPermission() != null) {
+      cal.setViewPermission(calR.getViewPermission().split(Utils.SEMICOLON));
     }
     return null;
   }

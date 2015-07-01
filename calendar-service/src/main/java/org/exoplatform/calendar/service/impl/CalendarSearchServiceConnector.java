@@ -399,10 +399,25 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         String siteName = sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME;
 
         if (calendarId.indexOf(Utils.SPACE_CALENDAR_ID_SUFFIX) > 0) {
-          spaceGroupId = getCalendarMap().get(calendarId).getCalendarOwner();
-          siteKey = SiteKey.group(spaceGroupId);
-        } else {
-          siteKey = SiteKey.portal(siteName);
+          Calendar cal = getCalendarMap().get(calendarId);
+
+          // In case of space calendar, calendarOwner always not null
+          String ownerGroup = cal.getCalendarOwner();
+          String[] groups = cal.getGroups();
+
+          // Because user can remove space-group from calendar in portal-calendar page
+          // In this case, we will redirect to portal-calendar page instead of space-calendar page when user click
+          // to view event-detail (keep siteKey = null) to avoid he can not see event detail
+          for (String g : groups) {
+            if (g.equals(ownerGroup)) {
+              spaceGroupId = ownerGroup;
+              siteKey = SiteKey.group(spaceGroupId);
+            }
+          }
+        }
+
+        if (siteKey == null) {
+            siteKey = SiteKey.portal(siteName);
         }
         
         String pageName = findCalendarPageNode(siteKey);
