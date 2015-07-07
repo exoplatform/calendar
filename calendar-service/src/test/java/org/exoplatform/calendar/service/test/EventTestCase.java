@@ -173,7 +173,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
                                                                0,
                                                                10,
                                                                query.getOrderBy()[0],
-                                                               query.getOrderType());
+                                                               query.getOrderType(), "en");
     assertEquals(1, rs.size());
     checkFields(rs.iterator().next());
 
@@ -184,7 +184,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
                                       0,
                                       10,
                                       query.getOrderBy()[0],
-                                      query.getOrderType());
+                                      query.getOrderType(), "en");
     assertEquals(1, rs.size());
     checkFields(rs.iterator().next());
 
@@ -199,7 +199,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
                                       0,
                                       10,
                                       query.getOrderBy()[0],
-                                      query.getOrderType());
+                                      query.getOrderType(), "en");
     assertEquals(0, rs.size());
     
     login("demo");
@@ -209,7 +209,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
                                       0,
                                       10,
                                       query.getOrderBy()[0],
-                                      query.getOrderType());
+                                      query.getOrderType(), "en");
     assertEquals(1, rs.size());
     
     // update to space calendar
@@ -257,7 +257,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
                                       0,
                                       10,
                                       query.getOrderBy()[0],
-                                      query.getOrderType());
+                                      query.getOrderType(), "en");
     assertEquals(1, rs.size());
     SearchResult item = rs.iterator().next();
     checkFields(item);

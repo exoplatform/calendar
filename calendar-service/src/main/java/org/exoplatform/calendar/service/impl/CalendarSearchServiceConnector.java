@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.exoplatform.calendar.service.Calendar;
@@ -61,6 +63,7 @@ import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.space.model.Space;
@@ -78,7 +81,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
 
   private CalendarService calendarService_;
   private SpaceService spaceService_;
-
+  protected String language;
   private static final Log     log                 = ExoLogger.getLogger(CalendarSearchServiceConnector.class);
   private ThreadLocal<Map<String, Calendar>> calendarMap = new ThreadLocal<Map<String, Calendar>>();
 
@@ -95,7 +98,9 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
                                          int offset,
                                          int limit,
                                          String sort,
-                                         String order) {
+                                         String order,
+                                         String language) {
+    setLanguage(language);
     return searchData(context, null, query, sites, offset, limit, sort, order);
 
   }
@@ -355,7 +360,17 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
   }
 
   private String buildDetail(Object iter, String timeZone) throws RepositoryException{
-    SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT) ;
+    ResourceBundle resourceBundle = null;
+    Locale locale = Locale.forLanguageTag(getLanguage());
+    ResourceBundleService resourceBundleService = (ResourceBundleService) ExoContainerContext.getCurrentContainer().getComponentInstance(ResourceBundleService.class);
+    String[] sharedResourceBundleNames = resourceBundleService.getSharedResourceBundleNames();
+    for (String resourceBundleName : sharedResourceBundleNames) {
+      if(resourceBundleName.equals("locale.calendar.task")){
+        resourceBundle = resourceBundleService.getResourceBundle(resourceBundleName, locale);
+        break;
+      }
+    }
+    SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT,locale);
     df.setTimeZone(TimeZone.getTimeZone(timeZone));
     StringBuffer detail = new StringBuffer();
     if(iter instanceof Row){
@@ -368,7 +383,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
             detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(row.getValue(Utils.EXO_LOCATION).getString()) ;
         } else {
           if(row.getValue(Utils.EXO_TO_DATE_TIME) != null)
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(Utils.DUE_FOR).append(df.format(row.getValue(Utils.EXO_TO_DATE_TIME).getDate().getTime()));
+            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append((resourceBundle != null ? resourceBundle.getString("CalendarSearchServiceConnector.due_for") : "Due for:")).append(Utils.SPACE).append(df.format(row.getValue(Utils.EXO_TO_DATE_TIME).getDate().getTime()));
         }
     } else {
       Node eventNode = (Node) iter;
@@ -382,7 +397,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           }
         } else {
           if(eventNode.hasProperty(Utils.EXO_TO_DATE_TIME)) {
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(Utils.DUE_FOR).append(df.format(eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTime())) ;
+            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append((resourceBundle != null ? resourceBundle.getString("CalendarSearchServiceConnector.due_for") : "Due for:")).append(Utils.SPACE).append(df.format(eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTime())) ;
           }
         }
       }
@@ -502,5 +517,13 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       calendarMap.set(map);
     }    
     return map;
+  }
+
+  public String getLanguage() {
+    return language;
+  }
+
+  public void setLanguage(String language) {
+    this.language = language;
   }
 }

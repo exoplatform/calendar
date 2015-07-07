@@ -392,7 +392,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
     query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
     Collection<String> params = new ArrayList<String>();
-    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
     assertNotNull(result) ;
     assertEquals(1, result.size());
   }

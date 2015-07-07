@@ -84,7 +84,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    query.getOrderBy()[0],
-                                                                   query.getOrderType());
+                                                                   query.getOrderType(), "en");
     assertNotNull(result);
     assertEquals(0, result.size());
 
@@ -112,7 +112,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     // Success to search
     assertEquals(1, result.size());
     for (SearchResult item : result) {
@@ -130,7 +130,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     // Success to search
     assertEquals(1, result.size());
     for (SearchResult item : result) {
@@ -149,7 +149,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     // Success to search
     assertEquals(1, result.size());
     for (SearchResult item : result) {
@@ -166,7 +166,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     assertEquals(1, result.size());
     for (SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, item);
@@ -181,7 +181,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                          0,
                                          10,
                                          query.getOrderBy()[0],
-                                         query.getOrderType());
+                                         query.getOrderType(), "en");
     assertEquals(1, result.size());
     for (SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, item);
@@ -198,7 +198,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                          0,
                                          10,
                                          query.getOrderBy()[0],
-                                         query.getOrderType());
+                                         query.getOrderType(), "en");
     assertEquals(0, result.size());
 
     // search all need action
@@ -211,7 +211,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                          0,
                                          10,
                                          query.getOrderBy()[0],
-                                         query.getOrderType());
+                                         query.getOrderType(), "en");
     assertEquals(1, result.size());
     CalendarSearchResult calItem = (CalendarSearchResult) result.toArray()[0];
     assertEquals(calEvent.getEventState(), calItem.getTaskStatus());
@@ -226,7 +226,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                          0,
                                          10,
                                          query.getOrderBy()[0],
-                                         query.getOrderType());
+                                         query.getOrderType(), "en");
     assertEquals(1, result.size());
     calItem = (CalendarSearchResult) result.toArray()[0];
     assertEquals(calEvent.getEventState(), calItem.getTaskStatus());
@@ -241,7 +241,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                          0,
                                          10,
                                          query.getOrderBy()[0],
-                                         query.getOrderType());
+                                         query.getOrderType(), "en");
     assertEquals(0, result.size());
   }
 
@@ -289,7 +289,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    query.getOrderBy()[0],
-                                                                   query.getOrderType());
+                                                                   query.getOrderType(), "en");
     assertEquals(1, result.size());
 
     url = unifiedSearchService_.getUrl(rt, portalName, siteName, null, Utils.PAGE_NAGVIGATION);
@@ -325,7 +325,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     assertEquals(1, result.size());
     url = unifiedSearchService_.getUrl(rt, portalName, siteName, null, "");
     for (SearchResult sr : result) {
@@ -363,7 +363,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    query.getOrderBy()[0],
-                                                                   query.getOrderType());
+                                                                   query.getOrderType(), "en");
     assertEquals(0, result.size());
 
     current = java.util.Calendar.getInstance();
@@ -378,7 +378,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     assertEquals(1, result.size());
 
     // Search task due for and no need check from time
@@ -393,7 +393,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                          0,
                                          10,
                                          query.getOrderBy()[0],
-                                         query.getOrderType());
+                                         query.getOrderType(), "en");
     assertEquals(1, result.size());
 
     // Search task not completed or not cancelled in pass
@@ -411,7 +411,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                          0,
                                          10,
                                          query.getOrderBy()[0],
-                                         query.getOrderType());
+                                         query.getOrderType(), "en");
     assertEquals(2, result.size());
   }
 
@@ -439,7 +439,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    query.getOrderBy()[0],
-                                                                   query.getOrderType());
+                                                                   query.getOrderType(), "en");
     assertEquals(1, result.size());
 
     login(username);
@@ -449,7 +449,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     assertEquals(0, result.size());
   }
 
@@ -477,7 +477,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    query.getOrderBy()[0],
-                                                                   query.getOrderType());
+                                                                   query.getOrderType(), "en");
     assertEquals(2, result.size());
     SearchResult item = (SearchResult) result.toArray()[0];
     checkFields(item);
@@ -493,7 +493,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     assertEquals(2, result.size());
     CalendarSearchResult calSerResult = (CalendarSearchResult) result.toArray()[0];
     checkFields(calSerResult);
@@ -528,7 +528,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    query.getOrderBy()[0],
-                                                                   query.getOrderType());
+                                                                   query.getOrderType(), "en");
     assertNotNull(result);
     assertEquals(3, result.size());
 
@@ -539,7 +539,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           0,
                                           10,
                                           query.getOrderBy()[0],
-                                          query.getOrderType());
+                                          query.getOrderType(), "en");
     assertEquals(3, result.size());
   }
 
@@ -563,7 +563,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    query.getOrderBy()[0],
-                                                                   query.getOrderType());
+                                                                   query.getOrderType(), "en");
     assertNotNull(result);
     assertEquals(result.size(), 1);
     assertEquals(keyword, result.iterator().next().getTitle());
@@ -595,7 +595,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    0,
                                                                    10,
                                                                    uQuery.getOrderBy()[0],
-                                                                   uQuery.getOrderType());
+                                                                   uQuery.getOrderType(), "en");
     assertNotNull(result);
     assertEquals(1, result.size());
   }
@@ -639,7 +639,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                        0,
                                                                        -1,
                                                                        uQuery.getOrderBy()[0],
-                                                                       uQuery.getOrderType());
+                                                                       uQuery.getOrderType(), "en");
         if (result == null || result.size() < 100) {
           fail.set(true);
         }
@@ -683,7 +683,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     Collection<String> params = new ArrayList<String>();
     query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
     query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
-    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    Collection<SearchResult> result = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
     assertNotNull(result);
     assertEquals(result.size(), 1);
     SearchResult r = result.iterator().next();
@@ -735,7 +735,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(username, cal.getId(), priEvent, true);
 
     login("john");
-    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING, "en");
     assertNotFoundInSearchResults(privateEventTitle, result);
     assertFoundInSearchResults(publicEventTitle, result);
   }
@@ -784,7 +784,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(username, cal.getId(), priEvent, true);
 
     login("john");
-    Collection<SearchResult> results = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    Collection<SearchResult> results = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING, "en");
     assertFoundInSearchResults(privateEventTitle, results);
     assertFoundInSearchResults(publicEventTitle, results);
   }
@@ -832,7 +832,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     calendarService_.savePublicEvent(cal.getId(), priEvent, true);
 
     login("john");
-    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING, "en");
     assertNotFoundInSearchResults(privateEventTitle, result);
     assertFoundInSearchResults(publicEventTitle, result);
   }
@@ -882,7 +882,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     calendarService_.savePublicEvent(cal.getId(), priEvent, true);
 
     login("john");
-    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING);
+    Collection<SearchResult> result = unifiedSearchService_.search(null, keyword, Arrays.<String>asList(), 0, 10, Utils.ORDERBY_TITLE , Utils.ORDER_TYPE_ASCENDING, "en");
     assertFoundInSearchResults(privateEventTitle, result);
     assertFoundInSearchResults(publicEventTitle, result);
   }
@@ -933,14 +933,14 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     // Search with with all special key
     String keyword = specialCharacter + "~0.5" ;
     query.setText(keyword);
-    Collection<SearchResult> results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    Collection<SearchResult> results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
     assertEquals(0, results.size());
 
     // Search with 1 special character
     for(int i = 0; i < specialCharacter.length(); i++) {
       keyword = specialCharacter.charAt(i) + "~0.5";
       query.setText(keyword) ;
-      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
       // I can not assert here because some special character like * is accepted and it will return all existing event
       //assertEquals(0, results.size());
     }
@@ -949,7 +949,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     for(int i = 0; i < specialCharacter.length(); i++) {
       keyword = "gatein" + specialCharacter.charAt(i) + "~0.5";
       query.setText(keyword) ;
-      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
       assertEquals(0, results.size());
     }
 
@@ -957,7 +957,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     for(int i = 0; i < specialCharacter.length(); i++) {
       keyword = "gatein3" + specialCharacter.charAt(i) + "5~0.5";
       query.setText(keyword) ;
-      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
       assertEquals(0, results.size());
     }
 
@@ -965,7 +965,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     for(int i = 0; i < specialCharacter.length(); i++) {
       keyword = "3" + specialCharacter.charAt(i) + "5~0.5";
       query.setText(keyword) ;
-      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+      results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
       assertEquals(0, results.size());
     }
   }
@@ -984,13 +984,13 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     // keyword is empty string
     String keyword = "";
     query.setText(keyword);
-    Collection<SearchResult> results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    Collection<SearchResult> results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
     assertEquals(0, results.size());
 
     // keyword contains only space character
     keyword = "  ";
     query.setText(keyword);
-    results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    results = unifiedSearchService_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
     assertEquals(0, results.size());
   }
 
@@ -1010,7 +1010,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
     Collection<String> params = new ArrayList<String>();
 
-    Collection<SearchResult> results = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+    Collection<SearchResult> results = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
     assertFoundInSearchResults(event.getSummary(), results);
   }
 

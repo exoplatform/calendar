@@ -39,7 +39,9 @@ public class TaskSearchConnector extends CalendarSearchServiceConnector {
                                          int offset,
                                          int limit,
                                          String sort,
-                                         String order) {
+                                         String order,
+                                         String language) {
+    setLanguage(language);
     return searchData(context, CalendarEvent.TYPE_TASK, query, sites, offset, limit, sort, order);
   }
 

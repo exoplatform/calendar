@@ -103,12 +103,12 @@ public class SharedCalendarTestCase extends BaseCalendarServiceTestCase {
         query.setOrderType(Utils.ORDER_TYPE_ASCENDING);
         query.setOrderBy(new String[]{Utils.ORDERBY_TITLE});
         Collection<String> params = new ArrayList<String>();
-        Collection<SearchResult> rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+        Collection<SearchResult> rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
         assertEquals(1, rs.size());
 
         login(username);
 
-        rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType());
+        rs = eventSearchConnector_.search(null, query.getText(), params, 0, 10, query.getOrderBy()[0] , query.getOrderType(), "en");
         assertEquals(1, rs.size());
 
         calendarService_.removeSharedEvent("john", cal.getId(), calendarEvent.getId());
