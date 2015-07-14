@@ -3717,9 +3717,6 @@ public class CalendarRestApi implements ResourceContainer {
     if (calR.getTimeZone() != null) {
       cal.setTimeZone(calR.getTimeZone());
     }
-    if (calR.getViewPermission() != null) {
-      cal.setViewPermission(calR.getViewPermission().split(Utils.SEMICOLON));
-    }
     return null;
   }
   
