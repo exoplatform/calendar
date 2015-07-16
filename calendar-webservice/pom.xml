@@ -269,6 +269,19 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Swagger -->
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-core</artifactId>
+      <version>1.5.0</version>
+      <scope>compile</scope>
+      <!-- <exclusions>
+      <exclusion>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>jsr311-api</artifactId>
+      </exclusion>
+      </exclusions> -->
+    </dependency>
   </dependencies>
   <build>
     <plugins>
