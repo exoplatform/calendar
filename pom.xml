@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
-  <version>4.3.x-SNAPSHOT</version>
+  <version>4.3.x-cal-rest-api-doc-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Calendar</name>
   <description>eXo Calendar application</description>
@@ -52,9 +52,9 @@
     <org.gatein.portal.version>4.3.x-PLF-SNAPSHOT</org.gatein.portal.version>
     <org.gatein.wci.version>2.4.1.Final</org.gatein.wci.version>
     <!-- Platform Project Dependencies -->
-    <org.exoplatform.commons.version>4.3.x-SNAPSHOT</org.exoplatform.commons.version>
-    <org.exoplatform.social.version>4.3.x-SNAPSHOT</org.exoplatform.social.version>
-    <org.exoplatform.platform-ui.version>4.3.x-SNAPSHOT</org.exoplatform.platform-ui.version>
+    <org.exoplatform.commons.version>4.3.x-commons-rest-api-doc-SNAPSHOT</org.exoplatform.commons.version>
+    <org.exoplatform.social.version>4.3.x-soc-rest-api-doc-SNAPSHOT</org.exoplatform.social.version>
+    <org.exoplatform.platform-ui.version>4.3.x-plfui-rest-api-doc-SNAPSHOT</org.exoplatform.platform-ui.version>
     <!-- Platform Project 3rd party Dependencies -->
     <org.exoplatform.doc.doc-style.version>4.3.x-SNAPSHOT</org.exoplatform.doc.doc-style.version>
   </properties>
