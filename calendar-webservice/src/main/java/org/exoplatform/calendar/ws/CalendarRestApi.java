@@ -286,7 +286,7 @@ public class CalendarRestApi implements ResourceContainer {
 		  @ApiResponse(code = 503, message = "Service Unavailable") })
   public Response getCalendars(
 		  @ApiParam(value = "The calendar type to search for. It can be one of *personal, group, shared*", required = false, allowableValues = "personal, group, shared") @QueryParam("type") String type,
-		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = ")") @QueryParam("offset") int offset, 
+		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
 		  @ApiParam(value = "The maximum number of results when paging through a list of entities", required = false, defaultValue = "*query_limit* configuration of calendar rest service") @QueryParam("limit") int limit,
 		  @ApiParam(value = "Tell the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
 		  @ApiParam(value = "This is a list of comma-separated property's names of response json object", required = false) @QueryParam("fields") String fields,
@@ -2102,7 +2102,7 @@ public class CalendarRestApi implements ResourceContainer {
   @RolesAllowed("users")
   @Path("/calendars/{id}/tasks")
   @ApiOperation(
-		  value = "",
+		  value = "Creates a task for a calendar identified by its ID",
 		  notes = "Creates a task for a calendar with specified id only if:<br/>"
 		  		+ "- the authenticated user is the owner of the calendar<br/>"
 		  		+ "- for group calendars, the authenticated user has edit rights on the calendar<br/>"
