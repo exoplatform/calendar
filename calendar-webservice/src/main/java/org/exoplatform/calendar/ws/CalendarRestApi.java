@@ -1561,10 +1561,10 @@ public class CalendarRestApi implements ResourceContainer {
 		  @ApiParam(value = "Search for this category only", required = false, defaultValue = "If not specified, search event of any category") @QueryParam("category") String category,
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
 		  @ApiParam(value = "The maximum number of results when paging through a list of entities", required = false, defaultValue = "*query_limit* configuration of calendar rest service") @QueryParam("limit") int limit,
-		  @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false, defaultValue = "") @QueryParam("fields") String fields,
+		  @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false) @QueryParam("fields") String fields,
 		  @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
 		  @ApiParam(value = "Used to ask for a full representation of a subresource, instead of only its link", required = false) @QueryParam("expand") String expand,
-		  @ApiParam(value = "", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
+		  @ApiParam(value = "Tells the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
 		  @Context UriInfo uri) throws Exception {
     limit = parseLimit(limit);
     String username = currentUserId();
