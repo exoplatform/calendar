@@ -16,16 +16,6 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +34,16 @@ import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.jcr.ItemExistsException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
 import net.fortuna.ical4j.model.DateList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Period;
@@ -57,7 +57,6 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarIterator;
-import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
@@ -69,21 +68,19 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.ImportCalendarJob;
-import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.ShareCalendarJob;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.handler.CalendarHandler;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.component.BaseComponentPlugin;
 import org.exoplatform.container.component.ComponentPlugin;
 import org.exoplatform.container.xml.InitParams;
-import org.exoplatform.portal.config.NewPortalConfigListener;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
@@ -95,7 +92,6 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
@@ -150,56 +146,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
   
   @Override
-  public Calendar getCalendarById(String calId) {
-    Calendar cal = null;
-    
-    for (CalendarDAO dao : calendarDAOs) {
-      cal = dao.getCalendarById(calId);
-      if (cal != null) break;
-    }
-    return cal;
+  public Calendar getCalendarById(String calId) throws Exception {
+    return storage_.getCalendarById(calId);
   }
 
-  @Override
-  public Calendar getCalendarById(String calId, int calType) {
-    for (CalendarDAO dao : calendarDAOs) {
-      if (dao.getCalendarTypes().contains(calType)) {
-        return dao.getCalendarById(calId, calType);
-      }
-    }
-    return null;
-  }
-  
-  @SuppressWarnings("unchecked")
-  @Override
-  public ListAccess findCalendarsByQuery(CalendarQuery query) {
-    MultiListAccess lists = new MultiListAccess();
-    if (query == null || query.getCalType() == Calendar.TYPE_ALL) {
-      for (CalendarDAO dao : calendarDAOs) {
-        lists.add(dao.findCalendarsByQuery(query));
-      }
-    } else {
-      for (CalendarDAO dao : calendarDAOs) {
-        if (dao.getCalendarTypes().contains(query.getCalType())) {
-          return dao.findCalendarsByQuery(query);
-        }
-      }
-    }
-
-    return lists;
-  }
-  
-  @Override
-  public Calendar saveCalendar(Calendar calendar, boolean isNew) {
-    for (CalendarDAO dao : calendarDAOs) {
-      if (dao.getCalendarTypes().contains(calendar.getCalType())) {
-        return dao.saveCalendar(calendar, isNew);
-      }
-    }
-    
-    return null;
-  }
-  
   public Calendar saveCalendar(String username, Calendar calendar, int caltype , boolean isNew){
     Calendar instance = null;
     try {
@@ -225,15 +175,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return instance;
   }
 
-  @Override
-  public void removeCalendar(String calendarId, int calType) {
-    for (CalendarDAO dao : calendarDAOs) {
-      if (dao.getCalendarTypes().contains(calType)) {
-        dao.removeCalendar(calendarId, calType);
-      }
-    }
-  }
- 
   /**
    * {@inheritDoc}
    */
@@ -1896,5 +1837,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   
   public JCRDataStorage getDataStorage() {
     return storage_;
+  }
+
+  /**
+   * @see org.exoplatform.calendar.service.CalendarService#getCalendarHandler()
+   */
+  @Override
+  public CalendarHandler getCalendarHandler() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

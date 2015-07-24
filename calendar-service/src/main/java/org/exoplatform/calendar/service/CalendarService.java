@@ -16,16 +16,6 @@
  **/
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.calendar.service.impl.CalendarEventListener;
-import org.exoplatform.calendar.service.impl.CsvImportExport;
-import org.exoplatform.calendar.service.impl.NewMembershipListener;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.services.scheduler.JobSchedulerService;
-import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
-import org.quartz.JobDetail;
-
-import javax.jcr.Node;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -33,6 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+
+import javax.jcr.Node;
+
+import org.exoplatform.calendar.service.handler.CalendarHandler;
+import org.exoplatform.calendar.service.impl.CalendarEventListener;
+import org.exoplatform.calendar.service.impl.CsvImportExport;
+import org.exoplatform.services.scheduler.JobSchedulerService;
+import org.quartz.JobDetail;
 
 public interface CalendarService extends LegacyCalendarService {
 
@@ -44,162 +42,8 @@ public interface CalendarService extends LegacyCalendarService {
 
   final public static String CALDAV      = "CalDAV";
 
-  /**
-   * Gets a calendar by its id
-   * @param calId Id of the calendar
-   * @return a {@link Calendar}
-   */
-  public Calendar getCalendarById(String calId);
-  
-  /**
-   * @param calId
-   * @param calType
-   * @return
-   */
-  Calendar getCalendarById(String calId, int calType);
-  
-  /**
-   * @param query
-   * @return
-   */
-  ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query);
-  
-  /**
-   * Return all calendar of given user
-   * @param username current user id
-   * @param calType type of calendar to filter 
-   * @param offset offset to continue to return data
-   * @param limit limit item will be returned
-   * @param fullSize reference full size of data list 
-   * @return collection of Calendar object
-   */
-  public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit);
-  
-  /**
-   * @param calendar
-   * @param isNew
-   */
-  Calendar saveCalendar(Calendar calendar, boolean isNew);
-  
-  /**
-   * Return calendars that have publicUrl enabled
-   * @return
-   * @throws Exception 
-   */
-  ListAccess<Calendar> getPublicCalendars() throws Exception;
-  
-  /**
-   * Saves a calendar to shared calendars section
-   * @param username current user name(or user id)
-   * @param calendar Calendar object
-   * @throws Exception
-   */
-  public void saveSharedCalendar(String username, Calendar calendar) throws Exception;
-  
-  /**
-   * Shares the private calendar to other users
-   * @param username current user name(or user id)
-   * @param calendarId Id of the shared calendar
-   * @param sharedUsers list of users with whom to share this calendar
-   * @throws Exception
-   */
-  public void shareCalendar(String username, String calendarId, List<String> sharedUsers) throws Exception;
+  public CalendarHandler getCalendarHandler();
 
-  /**
-   * Gets all calendars that are shared with the given user
-   * @param username given user name(or user id)
-   * @param isShowAll If <code>true</code>, returns all shared calendars, if <code>false</code>, returns only shared calendars
-   * that are selected in Calendar Setting.
-   * @return <code>GroupCalendarData</code> object
-   * @throws Exception
-   * @see GroupCalendarData
-   */
-  public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception;
-
-  /**
-   * Shares group calendars with an user when he is assigned a new membership
-   * <p>This method is called in {@link NewMembershipListener#postSave}.
-   * @param groupsOfUser List of group id
-   * @param receiver User id 
-   * @throws Exception
-   */
-  public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception; 
-  
-  /**
-   * Un-shares group calendars with an user when he is removed from a membership
-   * <p>This method is called in {@link NewMembershipListener#preDelete}.
-   * @param groupId
-   * @param username
-   * @throws Exception
-   */
-  public void autoRemoveShareCalendar(String groupId, String username) throws Exception;
-  
-  /**
-   * Shares Calendar with groups
-   * <p> When a calendar is selected to share with a group, the sharing process will run as job
-   * in background to avoid blocking the user. It will send notification for users about starting and finishing the job.
-   *
-   * @param username Id of current user
-   * @param calendarId Id of shared calendar
-   * @param sharedGroups List of shared groups
-   * @throws Exception
-   */
-  public void shareCalendarByRunJob(String username, String calendarId, List<String> sharedGroups) throws Exception;
-  
-  /**
-   * Un-shares a calendar with groups.
-   * <p> To avoid letting users wait too long, un-sharing with groups runs as job in background.
-   * There are notifications about job starting and finishing
-   * 
-   * @param username Id of current user
-   * @param unsharedGroups List of un-shared groups
-   * @param calendarId Id of shared calendar
-   * @throws Exception
-   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
-   */
-  public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception;
-  
-  /**
-   * Removes shared calendars of an user
-   * @param username current user name(or user id)
-   * @param calendarId given calendar id
-   * @throws Exception
-   */
-  public void removeSharedCalendar(String username, String calendarId) throws Exception;
-  
-  /**
-   * Removes the shared calendar folder of an user and all references (from shared calendars) to this folder.   
-   * @param username the username
-   * @throws Exception
-   */
-  public void removeSharedCalendarFolder(String username) throws Exception;
-  
-  /**
-   * Checks if a group is belong to a list of groups that's being shared
-   * @param group Id of the group to be checked
-   * @param schedulerService The schedule service that manages jobs
-   * @return true if this group is belong to a list of groups that is being shared, false if not.
-   * @throws Exception
-   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
-   */
-  public boolean isGroupBeingShared(String group, JobSchedulerServiceImpl schedulerService) throws Exception;
-  
-  /**
-   * Gets type of a calendar by user name and calendar id
-   * <p> There a 3 types of calendar: <br/>
-   * <ul>
-   * <li>Private calendar - returned value: 0</li>
-   * <li>Shared calendar - returned value: 1</li>
-   * <li>Group/Public calendar - returned value: 2</li>
-   * </ul>
-   * @param userName
-   * @param calendarId
-   * @return 0 if the calendar is private, 1 if the calendar is shared, 2 if the calendar is public
-   * @throws Exception
-   * @see Calendar
-   */
-  public int getTypeOfCalendar(String userName, String calendarId) throws Exception;
-  
   /**
    * Gets all event categories of an user
    * @param username current user name(or user id)
@@ -880,11 +724,5 @@ public interface CalendarService extends LegacyCalendarService {
    * @throws Exception
    */
   boolean isValidRemoteUrl(String url, String type, String remoteUser, String remotePassword) throws Exception;
-
-  /**
-   * @param calendarId
-   * @param calType
-   */
-  void removeCalendar(String calendarId, int calType);
 
 }

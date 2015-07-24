@@ -166,7 +166,7 @@ public class UICalendars extends UIForm  {
     
     calendars.clear();
     CalendarService service = CalendarUtils.getCalendarService();
-    ListAccess tmp = service.findCalendarsByQuery(null);
+    ListAccess tmp = service.getCalendarHandler().findCalendarsByQuery(null);
     for (Object cal : tmp.load(0, -1)) {
       Calendar c = (Calendar)cal;
       List<Calendar> cals = calendars.get(c.getCalType()); 

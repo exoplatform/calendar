@@ -31,7 +31,7 @@ public class Calendar extends AbstractBean {
 
   private static final long serialVersionUID = 2638692203625602436L;
 
-  public enum Type {
+  public enum Type implements CalendarType {
 
     PERSONAL(0),
 
