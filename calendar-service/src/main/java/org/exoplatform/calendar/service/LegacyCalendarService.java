@@ -347,6 +347,8 @@ public interface LegacyCalendarService {
    */
   public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception;
   
+  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception;
+  
   /**
    * Removes shared calendars of an user
    * @param username current user name(or user id)

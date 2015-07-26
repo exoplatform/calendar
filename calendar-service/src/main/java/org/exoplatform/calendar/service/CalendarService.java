@@ -689,8 +689,6 @@ public interface CalendarService extends LegacyCalendarService {
   
   public String buildRecurrenceId(Date formTime, String username);
 
-  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception;
-  
   /**
    * Get specified attachment object by given attachment id
    * @param attId given attachment id ( now we store this by using node path)

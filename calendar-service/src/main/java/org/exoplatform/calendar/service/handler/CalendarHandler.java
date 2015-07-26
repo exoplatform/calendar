@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarQuery;
+import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.commons.utils.ListAccess;
 
@@ -39,7 +40,7 @@ public interface CalendarHandler {
    * @param calType
    * @return
    */
-  Calendar getCalendarById(String calId, int calType);
+  Calendar getCalendarById(String calId, CalendarType calType);
   
   /**
    * @param query
@@ -84,5 +85,5 @@ public interface CalendarHandler {
    * @param calendarId
    * @param calType
    */
-  void removeCalendar(String calendarId, int calType);
+  void removeCalendar(String calendarId, CalendarType calType);
 }

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarQuery;
+import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.commons.utils.ListAccess;
@@ -39,7 +40,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
   
   @Override
-  public Calendar getCalendarById(String calId, int calType) {
+  public Calendar getCalendarById(String calId, CalendarType calType) {
 //    for (CalendarDAO dao : calendarDAOs) {
 //      if (dao.getCalendarTypes().contains(calType)) {
 //        return dao.getCalendarById(calId, calType);
@@ -97,7 +98,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public void removeCalendar(String calendarId, int calType) {
+  public void removeCalendar(String calendarId, CalendarType calType) {
 //    for (CalendarDAO dao : calendarDAOs) {
 //      if (dao.getCalendarTypes().contains(calType)) {
 //        dao.removeCalendar(calendarId, calType);
