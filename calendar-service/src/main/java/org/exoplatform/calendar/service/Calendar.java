@@ -153,6 +153,8 @@ public class Calendar extends AbstractBean {
 
   private int                  _calType;
   
+  private CalendarType calendarType;
+  
   private boolean       remote = false;
   
   private boolean hasChildren = false;
@@ -309,7 +311,7 @@ public class Calendar extends AbstractBean {
     return _calType;
   }
 
-  public void setCalType(int calType) {
+  public void setCalType(int calType) {    
     this._calType = calType;
   }
 
@@ -327,5 +329,13 @@ public class Calendar extends AbstractBean {
 
   public void setHasChildren(boolean children) {
     this.hasChildren = children;
+  }
+
+  public void setCalendarType(CalendarType type) {
+    this.calendarType = type;
+  }
+  
+  public CalendarType getCalendarType() {
+    return calendarType;
   }
 }

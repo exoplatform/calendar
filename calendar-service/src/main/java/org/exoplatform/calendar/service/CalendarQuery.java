@@ -20,15 +20,13 @@ package org.exoplatform.calendar.service;
 import java.util.List;
 
 public class CalendarQuery {
-  private int          calType   = -1;
+  private CalendarType          calType;
 
   private String       userName;
 
   private List<String> groups;
-
-  private boolean      isShowAll = true;
-
-  public int getCalType() {
+  
+  public CalendarType getCalType() {
     return calType;
   }
 
@@ -40,11 +38,7 @@ public class CalendarQuery {
     return groups;
   }
 
-  public boolean isShowAll() {
-    return isShowAll;
-  }
-  
-  public CalendarQuery setCalType(int calType) {
+  public CalendarQuery setCalType(CalendarType calType) {
     this.calType = calType;
     return this;
   }

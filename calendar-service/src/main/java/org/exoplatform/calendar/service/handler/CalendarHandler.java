@@ -17,12 +17,9 @@
 
 package org.exoplatform.calendar.service.handler;
 
-import java.util.List;
-
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.commons.utils.ListAccess;
 
 public interface CalendarHandler {
@@ -55,35 +52,8 @@ public interface CalendarHandler {
   Calendar saveCalendar(Calendar calendar, boolean isNew);
   
   /**
-   * Return calendars that have publicUrl enabled
-   * @return
-   * @throws Exception 
-   */
-  ListAccess<Calendar> getPublicCalendars() throws Exception;
-  
-  /**
-   * Shares the private calendar to other users
-   * @param username current user name(or user id)
-   * @param calendarId Id of the shared calendar
-   * @param sharedUsers list of users with whom to share this calendar
-   * @throws Exception
-   */
-  public void shareCalendar(String username, String calendarId, List<String> sharedUsers) throws Exception;
-  
-  /**
-   * Gets all calendars that are shared with the given user
-   * @param username given user name(or user id)
-   * @param isShowAll If <code>true</code>, returns all shared calendars, if <code>false</code>, returns only shared calendars
-   * that are selected in Calendar Setting.
-   * @return <code>GroupCalendarData</code> object
-   * @throws Exception
-   * @see GroupCalendarData
-   */
-  public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception;
-  
-  /**
    * @param calendarId
    * @param calType
    */
-  void removeCalendar(String calendarId, CalendarType calType);
+  Calendar removeCalendar(String calendarId, CalendarType calType);
 }

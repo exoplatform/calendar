@@ -18,22 +18,16 @@
 package org.exoplatform.calendar.service.impl;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
+import org.exoplatform.calendar.service.AbstractCalendarDAO;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarCollection;
-import org.exoplatform.calendar.service.CalendarDAO;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.AbstractCalendarDAO;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.ConversationState;
 
 public class JCRCalendarDAOImpl extends AbstractCalendarDAO {
 
@@ -70,79 +64,80 @@ public class JCRCalendarDAOImpl extends AbstractCalendarDAO {
   }
 
   @Override
-  public Calendar getCalendarById(String calId, int calType) {
+  public Calendar getCalendarById(String calId, CalendarType calType) {
     return getCalendarById(calId);
   }
 
   @Override
   public ListAccess<Calendar> findCalendarsByQuery(final CalendarQuery query) {
-    String userName = null;
-    if (query == null
-        || (query.getUserName() == null && (query.getCalType() == Calendar.TYPE_ALL || query.getCalType() == Calendar.TYPE_PRIVATE))) {
-      ConversationState state = ConversationState.getCurrent();
-      if (state != null) {
-        userName = state.getIdentity().getUserId();
-      }
-    } else {
-      userName = query.getUserName();
-    }
-
-    final String name = userName;
-    if (query == null || query.getCalType() == Calendar.TYPE_ALL) {
-      return new ListAccess<Calendar>() {
-        private CalendarCollection<Calendar> calendars;
-
-        @Override
-        public int getSize() throws Exception {
-          if (calendars == null) {
-            calendars = service.getAllCalendars(name, Calendar.TYPE_ALL, 0, -1);
-          }
-          return (int) calendars.getFullSize();
-        }
-
-        @Override
-        public Calendar[] load(int offset, int limit) throws Exception, IllegalArgumentException {
-          calendars = service.getAllCalendars(name, Calendar.TYPE_ALL, offset, limit);
-
-          return calendars.toArray(new Calendar[calendars.size()]);
-        }
-      };
-    } else {
-      final List<Calendar> calendars = new LinkedList<Calendar>();
-      try {
-        switch (query.getCalType()) {
-        case Calendar.TYPE_PRIVATE:
-          calendars.addAll(dataStorage.getUserCalendars(name, true));
-          break;
-        case Calendar.TYPE_PUBLIC:
-          String[] groups = new String[0];
-          if (query.getGroups() != null) {
-            groups = query.getGroups().toArray(new String[query.getGroups().size()]);
-          }
-          List<GroupCalendarData> data = dataStorage.getGroupCalendars(groups, true, name);
-          for (GroupCalendarData d : data) {
-            calendars.addAll(d.getCalendars());
-          }
-          break;
-        default:
-          throw new IllegalStateException("calendar type not support: " + query.getCalType());
-        }
-      } catch (Exception e) {
-        LOG.error(e);
-      }
-
-      return new ListAccess<Calendar>() {
-        @Override
-        public int getSize() throws Exception {
-          return calendars.size();
-        }
-
-        @Override
-        public Calendar[] load(int offset, int limit) throws Exception, IllegalArgumentException {
-          return Utils.subList(calendars, offset, limit).toArray(new Calendar[limit]);
-        }
-      };
-    }
+//    String userName = null;
+//    if (query == null
+//        || (query.getUserName() == null && (query.getCalType() == Calendar.TYPE_ALL || query.getCalType() == Calendar.TYPE_PRIVATE))) {
+//      ConversationState state = ConversationState.getCurrent();
+//      if (state != null) {
+//        userName = state.getIdentity().getUserId();
+//      }
+//    } else {
+//      userName = query.getUserName();
+//    }
+//
+//    final String name = userName;
+//    if (query == null || query.getCalType() == Calendar.TYPE_ALL) {
+//      return new ListAccess<Calendar>() {
+//        private CalendarCollection<Calendar> calendars;
+//
+//        @Override
+//        public int getSize() throws Exception {
+//          if (calendars == null) {
+//            calendars = service.getAllCalendars(name, Calendar.TYPE_ALL, 0, -1);
+//          }
+//          return (int) calendars.getFullSize();
+//        }
+//
+//        @Override
+//        public Calendar[] load(int offset, int limit) throws Exception, IllegalArgumentException {
+//          calendars = service.getAllCalendars(name, Calendar.TYPE_ALL, offset, limit);
+//
+//          return calendars.toArray(new Calendar[calendars.size()]);
+//        }
+//      };
+//    } else {
+//      final List<Calendar> calendars = new LinkedList<Calendar>();
+//      try {
+//        switch (query.getCalType()) {
+//        case Calendar.TYPE_PRIVATE:
+//          calendars.addAll(dataStorage.getUserCalendars(name, true));
+//          break;
+//        case Calendar.TYPE_PUBLIC:
+//          String[] groups = new String[0];
+//          if (query.getGroups() != null) {
+//            groups = query.getGroups().toArray(new String[query.getGroups().size()]);
+//          }
+//          List<GroupCalendarData> data = dataStorage.getGroupCalendars(groups, true, name);
+//          for (GroupCalendarData d : data) {
+//            calendars.addAll(d.getCalendars());
+//          }
+//          break;
+//        default:
+//          throw new IllegalStateException("calendar type not support: " + query.getCalType());
+//        }
+//      } catch (Exception e) {
+//        LOG.error(e);
+//      }
+//
+//      return new ListAccess<Calendar>() {
+//        @Override
+//        public int getSize() throws Exception {
+//          return calendars.size();
+//        }
+//
+//        @Override
+//        public Calendar[] load(int offset, int limit) throws Exception, IllegalArgumentException {
+//          return Utils.subList(calendars, offset, limit).toArray(new Calendar[limit]);
+//        }
+//      };
+//    }
+    return null;
   }
 
   @Override
@@ -166,28 +161,29 @@ public class JCRCalendarDAOImpl extends AbstractCalendarDAO {
   }
 
   @Override
-  public void removeCalendar(String calendarId, int calType) {
-    try {
-      switch (calType) {
-      case Calendar.TYPE_PRIVATE:
-        Calendar cal = getCalendarById(calendarId);
-        if (cal != null) {
-          dataStorage.removeUserCalendar(cal.getCalendarOwner(), calendarId);          
-        }
-        break;
-      case Calendar.TYPE_PUBLIC:
-        dataStorage.removeGroupCalendar(calendarId);
-        break;
-      default:
-        throw new IllegalStateException("calendar type not supported " + calType);
-      }      
-    } catch (Exception ex) {
-      LOG.error(ex);
-    }
+  public Calendar removeCalendar(String calendarId, CalendarType calType) {
+//    try {
+//      switch (calType) {
+//      case Calendar.TYPE_PRIVATE:
+//        Calendar cal = getCalendarById(calendarId);
+//        if (cal != null) {
+//          dataStorage.removeUserCalendar(cal.getCalendarOwner(), calendarId);          
+//        }
+//        break;
+//      case Calendar.TYPE_PUBLIC:
+//        dataStorage.removeGroupCalendar(calendarId);
+//        break;
+//      default:
+//        throw new IllegalStateException("calendar type not supported " + calType);
+//      }      
+//    } catch (Exception ex) {
+//      LOG.error(ex);
+//    }
+    return null;
   }
 
   @Override
-  public Calendar newCalendarInstance(int type) {
+  public Calendar newCalendarInstance(CalendarType type) {
     return new Calendar();
   }
 

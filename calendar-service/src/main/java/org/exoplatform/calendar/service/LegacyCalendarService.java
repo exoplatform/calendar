@@ -28,6 +28,7 @@ public interface LegacyCalendarService {
    * Gets a calendar by its id
    * @param calId Id of the calendar
    * @return a {@link Calendar}
+   * 
    */
   public Calendar getCalendarById(String calId) throws Exception;
   

@@ -34,7 +34,7 @@ public interface CalendarDAO {
    * @param params
    * @return
    */
-  Calendar getCalendarById(String calId, int calType);
+  Calendar getCalendarById(String calId, CalendarType calType);
 
   /**
    * @param query
@@ -51,14 +51,15 @@ public interface CalendarDAO {
   /**
    * @param calendarId
    * @param calType
+   * @return 
    */
-  void removeCalendar(String calendarId, int calType);
+  Calendar removeCalendar(String calendarId, CalendarType calType);
 
   /**
    * @param type
    * @return
    */
-  Calendar newCalendarInstance(int type);
+  Calendar newCalendarInstance(CalendarType type);
 
   Set<Integer> getCalendarTypes();
 }

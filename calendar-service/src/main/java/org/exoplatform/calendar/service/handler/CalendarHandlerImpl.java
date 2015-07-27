@@ -17,93 +17,86 @@
   
 package org.exoplatform.calendar.service.handler;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarDAO;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.commons.utils.ListAccess;
 
 public class CalendarHandlerImpl implements CalendarHandler {
 
+  private List<CalendarDAO> calendarDAOs;
+  
+  public CalendarHandlerImpl(List<CalendarDAO> calendarDAOs) {
+    this.calendarDAOs = calendarDAOs;
+  }
+
   @Override
   public Calendar getCalendarById(String calId) {
-    Calendar cal = null;
-    
-//    for (CalendarDAO dao : calendarDAOs) {
-//      cal = dao.getCalendarById(calId);
-//      if (cal != null) break;
-//    }
-    return cal;
+    return getCalendarById(calId, null);
   }
   
   @Override
   public Calendar getCalendarById(String calId, CalendarType calType) {
-//    for (CalendarDAO dao : calendarDAOs) {
-//      if (dao.getCalendarTypes().contains(calType)) {
-//        return dao.getCalendarById(calId, calType);
-//      }
-//    }
+    for (CalendarDAO dao : getDAOByType(calType)) {
+      return dao.getCalendarById(calId, calType);
+    }
     return null;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public ListAccess findCalendarsByQuery(CalendarQuery query) {
     MultiListAccess lists = new MultiListAccess();
-//    if (query == null || query.getCalType() == Calendar.TYPE_ALL) {
-//      for (CalendarDAO dao : calendarDAOs) {
-//        lists.add(dao.findCalendarsByQuery(query));
-//      }
-//    } else {
-//      for (CalendarDAO dao : calendarDAOs) {
-//        if (dao.getCalendarTypes().contains(query.getCalType())) {
-//          return dao.findCalendarsByQuery(query);
-//        }
-//      }
-//    }
+    List<CalendarDAO> daos = new LinkedList<CalendarDAO>();
+    
+    if (query == null) {
+      daos = calendarDAOs;
+    } else {
+      daos = getDAOByType(query.getCalType());
+    }
+    
+    for (CalendarDAO dao : daos) {
+      lists.add(dao.findCalendarsByQuery(query));
+    }
 
     return lists;
   }
   
   @Override
   public Calendar saveCalendar(Calendar calendar, boolean isNew) {
-//    for (CalendarDAO dao : calendarDAOs) {
-//      if (dao.getCalendarTypes().contains(calendar.getCalType())) {
-//        return dao.saveCalendar(calendar, isNew);
-//      }
-//    }
-//    
+    for (CalendarDAO dao : getDAOByType(calendar.getCalendarType())) {
+      return dao.saveCalendar(calendar, isNew);
+    }
+
     return null;
   }
 
   @Override
-  public ListAccess<Calendar> getPublicCalendars() throws Exception {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void shareCalendar(String username, String calendarId, List<String> sharedUsers) throws Exception {
-    // TODO Auto-generated method stub
+  public Calendar removeCalendar(String calendarId, CalendarType calType) {
+    for (CalendarDAO dao : getDAOByType(calType)) {
+      return dao.removeCalendar(calendarId, calType);
+    }
     
-  }
-
-  @Override
-  public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception {
-    // TODO Auto-generated method stub
     return null;
-  }
-
-  @Override
-  public void removeCalendar(String calendarId, CalendarType calType) {
-//    for (CalendarDAO dao : calendarDAOs) {
-//      if (dao.getCalendarTypes().contains(calType)) {
-//        dao.removeCalendar(calendarId, calType);
-//      }
-//    }
   }
   
+  private List<CalendarDAO> getDAOByType(CalendarType type) {
+    if (type == null) {
+      return calendarDAOs;
+    } else {
+      List<CalendarDAO> daos = new LinkedList<CalendarDAO>();
+      for (CalendarDAO dao : calendarDAOs) {
+        if (dao.getCalendarTypes().contains(type)) {
+          daos.add(dao);
+        }
+      }
+      
+      return daos;      
+    }
+  }
 }
