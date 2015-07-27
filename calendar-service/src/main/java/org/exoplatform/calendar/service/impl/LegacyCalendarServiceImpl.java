@@ -104,7 +104,7 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
           fullSize += iter.getSize();
           Utils.skip(iter, offset);
           while (iter.hasNext()) {
-            Calendar cal = Utils.loadCalendar(iter.nextProperty().getParent()); 
+            Calendar cal = storage_.loadCalendar(iter.nextProperty().getParent()); 
             cals.add(cal);
             if (++counter == limit) {
               break;
@@ -174,8 +174,8 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
             Calendar cal = null;
             Object it = rIt.next();
             if(it != null){
-              if(rIt.isNode()) cal = Utils.loadCalendar(((Node)it));
-              else cal = Utils.loadCalendar(((Property)it).getParent());
+              if(rIt.isNode()) cal = storage_.loadCalendar(((Node)it));
+              else cal = storage_.loadCalendar(((Property)it).getParent());
             }
             if(cal != null) cals.add(cal);
             if (++counter == limit) {
@@ -197,7 +197,7 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
         fullSize += rIt.getSize();
         int counter = 0;
         while (rIt.hasNext()) {
-          Calendar cal = Utils.loadCalendar(rIt.nextNode());
+          Calendar cal = storage_.loadCalendar(rIt.nextNode());
           if(cal != null) cals.add(cal);
           if (++counter == limit) {
             break;
@@ -253,7 +253,7 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
         QueryResultImpl result = (QueryResultImpl)jcrQuery.execute();
         NodeIterator iter = result.getNodes();
         while (iter.hasNext()) {
-          cals.add(Utils.loadCalendar(iter.nextNode()));
+          cals.add(storage_.loadCalendar(iter.nextNode()));
         }
         this.size = result.getTotalSize();
         return cals.toArray(new Calendar[cals.size()]);

@@ -1313,7 +1313,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   public CalendarHandler getCalendarHandler() {
     return calendarHandler;
   }
-  
+
   /**
    * This method is intended to used internally in implementation of handlers
    * @param type
@@ -1322,7 +1322,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   public List<CalendarDAO> getCalendarDAO(CalendarType type) {
     List<CalendarDAO> daos = new LinkedList<CalendarDAO>();
     List<Storage> tmp = new LinkedList<Storage>();
-    
+
     if (type == null) {
       tmp = storages;
     } else {

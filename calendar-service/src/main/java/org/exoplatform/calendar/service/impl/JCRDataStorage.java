@@ -540,7 +540,7 @@ public class JCRDataStorage implements DataStorage {
     return cal;
   }
 
-  private Calendar loadCalendar(Node calNode) throws Exception {
+  public Calendar loadCalendar(Node calNode) throws Exception {
     Calendar calendar = new Calendar();
     StringBuilder namePattern = new StringBuilder(256);
     namePattern.append(Utils.EXO_ID).append('|').append(Utils.EXO_NAME).append('|').append(Utils.EXO_DESCRIPTION)
@@ -601,6 +601,11 @@ public class JCRDataStorage implements DataStorage {
       if (editPermission != null) {
         calendar.setEditPermission(editPermission);
       }
+    }
+    if (calNode.getPath().startsWith(getGroupCalendarHomePath())) {
+      calendar.setCalendarType(Calendar.Type.GROUP);
+    } else {
+      calendar.setCalendarType(Calendar.Type.PERSONAL);
     }
     return calendar;
   }
