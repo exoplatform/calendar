@@ -17,28 +17,40 @@
   
 package org.exoplatform.calendar.service.storage;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarDAO;
 import org.exoplatform.calendar.service.CalendarType;
 
-public class JCRStorage implements Storage {    
-  private CalendarDAO calendarDAO;
+public interface GenericDAO<T> {
+  
+  /**
+   * @param id
+   * @return
+   */
+  T getById(String id);
 
-  public JCRStorage(CalendarDAO calDAO) {
-    this.calendarDAO = calDAO;
-  }
+  /**
+   * @param id
+   * @param calType
+   * @return
+   */
+  T getById(String id, CalendarType calType);
 
-  @Override
-  public List<CalendarType> getSupportedTypes() {
-    return Arrays.asList((CalendarType)Calendar.Type.PERSONAL, (CalendarType)Calendar.Type.GROUP);
-  }
 
-  @Override
-  public CalendarDAO getCalendarDAO() {
-    return calendarDAO;
-  }
+  /**
+   * @param object
+   * @param isNew
+   */
+  T save(T object, boolean isNew);
 
+  /**
+   * @param id
+   * @param calType
+   * @return 
+   */
+  T remove(String id, CalendarType calType);
+
+  /**
+   * @param type
+   * @return
+   */
+  T newInstance(CalendarType type);
 }

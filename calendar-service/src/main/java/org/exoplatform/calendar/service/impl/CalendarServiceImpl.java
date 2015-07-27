@@ -44,11 +44,11 @@ import net.fortuna.ical4j.model.Recur;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarCollection;
-import org.exoplatform.calendar.service.CalendarDAO;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventDAO;
@@ -62,6 +62,8 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.handler.CalendarHandler;
+import org.exoplatform.calendar.service.storage.CalendarDAO;
+import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -107,7 +109,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
 
   private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);  
   
-  private List<CalendarDAO> calendarDAOs = new LinkedList<CalendarDAO>();
+  private List<Storage> storages = new LinkedList<Storage>();
   
   private EventDAO eventDAO;
 
@@ -1285,9 +1287,9 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   }
   
   public void addDAOPlugin(ComponentPlugin dao) {
-    if (dao instanceof CalendarDAO) {
+    if (dao instanceof Storage) {
       synchronized (this) {
-          calendarDAOs.add((CalendarDAO)dao);
+          storages.add((Storage)dao);
       }
     }
   }
@@ -1308,5 +1310,30 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   public CalendarHandler getCalendarHandler() {
     // TODO Auto-generated method stub
     return null;
+  }
+  
+  /**
+   * This method is intended to used internally in implementation of handlers
+   * @param type
+   * @return
+   */
+  public List<CalendarDAO> getCalendarDAO(CalendarType type) {
+    List<CalendarDAO> daos = new LinkedList<CalendarDAO>();
+    List<Storage> tmp = new LinkedList<Storage>();
+    
+    if (type == null) {
+      tmp = storages;
+    } else {
+      for (Storage s : storages) {
+        if (s.getSupportedTypes().contains(type)) {
+          tmp.add(s);
+        }
+      }
+    }
+    
+    for (Storage s : tmp) {
+      daos.add(s.getCalendarDAO());
+    }
+    return daos;      
   }
 }

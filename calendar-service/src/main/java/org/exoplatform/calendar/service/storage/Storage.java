@@ -19,7 +19,6 @@ package org.exoplatform.calendar.service.storage;
 
 import java.util.List;
 
-import org.exoplatform.calendar.service.CalendarDAO;
 import org.exoplatform.calendar.service.CalendarType;
 
 public interface Storage {

@@ -38,12 +38,12 @@ public interface CalendarHandler {
    * @return
    */
   Calendar getCalendarById(String calId, CalendarType calType);
-  
+
   /**
    * @param query
    * @return
    */
-  ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query);
+  ListAccess findCalendarsByQuery(CalendarQuery query);
   
   /**
    * @param calendar

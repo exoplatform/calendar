@@ -15,61 +15,79 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 
-package org.exoplatform.calendar.service.impl;
+package org.exoplatform.calendar.service.storage.jcr;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.exoplatform.calendar.service.AbstractCalendarDAO;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
+import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
+import org.exoplatform.calendar.service.impl.JCRDataStorage;
+import org.exoplatform.calendar.service.storage.CalendarDAO;
+import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-public class JCRCalendarDAOImpl extends AbstractCalendarDAO {
-
-  private CalendarService           service;
-
+public class JCRCalendarDAOImpl implements CalendarDAO {
+  
+  private Storage context;
   private JCRDataStorage            dataStorage;
 
-  private static final Set<Integer> TYPES = new HashSet<Integer>();
-  static {
-    TYPES.add(Calendar.TYPE_PRIVATE);
-    TYPES.add(Calendar.TYPE_PUBLIC);
-  }
+  private static final Log          LOG   = ExoLogger.getExoLogger(JCRCalendarDAOImpl.class);  
 
-  private static final Log          LOG   = ExoLogger.getExoLogger(JCRCalendarDAOImpl.class);
-
-  public JCRCalendarDAOImpl(CalendarService service) {
-    this.service = service;
+  public JCRCalendarDAOImpl(CalendarService service, JCRStorage context) {
+    this.context = context;
     this.dataStorage = ((CalendarServiceImpl) service).getDataStorage();
   }
-
+  
   @Override
-  public Set<Integer> getCalendarTypes() {
-    return TYPES;
+  public Calendar getById(String id) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   @Override
-  public Calendar getCalendarById(String calId) {
-    try {
-      return dataStorage.getCalendarById(calId);
-    } catch (Exception e) {
-      LOG.error(e);
-      return null;
-    }
+  public Calendar getById(String id, CalendarType calType) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
+  @Override
+  public Calendar save(Calendar object, boolean isNew) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   @Override
-  public Calendar getCalendarById(String calId, CalendarType calType) {
-    return getCalendarById(calId);
+  public Calendar remove(String id, CalendarType calType) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   @Override
-  public ListAccess<Calendar> findCalendarsByQuery(final CalendarQuery query) {
+  public Calendar newInstance(CalendarType type) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+//  @Override
+//  public Calendar getCalendarById(String calId) {
+//    try {
+//      return dataStorage.getCalendarById(calId);
+//    } catch (Exception e) {
+//      LOG.error(e);
+//      return null;
+//    }
+//  }
+//
+//  @Override
+//  public Calendar getCalendarById(String calId, CalendarType calType) {
+//    return getCalendarById(calId);
+//  }
+//
+  @Override
+  public ListAccess findCalendarsByQuery(final CalendarQuery query) {
 //    String userName = null;
 //    if (query == null
 //        || (query.getUserName() == null && (query.getCalType() == Calendar.TYPE_ALL || query.getCalType() == Calendar.TYPE_PRIVATE))) {
@@ -139,29 +157,29 @@ public class JCRCalendarDAOImpl extends AbstractCalendarDAO {
 //    }
     return null;
   }
-
-  @Override
-  public Calendar saveCalendar(Calendar calendar, boolean isNew) {
-    try {
-      switch (calendar.getCalType()) {
-      case Calendar.TYPE_PRIVATE:
-        dataStorage.saveUserCalendar(calendar.getCalendarOwner(), calendar, isNew);
-        break;
-      case Calendar.TYPE_PUBLIC:
-        dataStorage.savePublicCalendar(calendar, isNew, null);
-        break;
-      default:
-        throw new IllegalStateException("calendar type not supported " + calendar.getCalType());
-      }
-      return getCalendarById(calendar.getId());
-    } catch (Exception e) {
-      LOG.error(e);
-      return null;
-    }
-  }
-
-  @Override
-  public Calendar removeCalendar(String calendarId, CalendarType calType) {
+//
+//  @Override
+//  public Calendar saveCalendar(Calendar calendar, boolean isNew) {
+//    try {
+//      switch (calendar.getCalType()) {
+//      case Calendar.TYPE_PRIVATE:
+//        dataStorage.saveUserCalendar(calendar.getCalendarOwner(), calendar, isNew);
+//        break;
+//      case Calendar.TYPE_PUBLIC:
+//        dataStorage.savePublicCalendar(calendar, isNew, null);
+//        break;
+//      default:
+//        throw new IllegalStateException("calendar type not supported " + calendar.getCalType());
+//      }
+//      return getCalendarById(calendar.getId());
+//    } catch (Exception e) {
+//      LOG.error(e);
+//      return null;
+//    }
+//  }
+//
+//  @Override
+//  public Calendar removeCalendar(String calendarId, CalendarType calType) {
 //    try {
 //      switch (calType) {
 //      case Calendar.TYPE_PRIVATE:
@@ -179,12 +197,12 @@ public class JCRCalendarDAOImpl extends AbstractCalendarDAO {
 //    } catch (Exception ex) {
 //      LOG.error(ex);
 //    }
-    return null;
-  }
-
-  @Override
-  public Calendar newCalendarInstance(CalendarType type) {
-    return new Calendar();
-  }
+//    return null;
+//  }
+//
+//  @Override
+//  public Calendar newCalendarInstance(CalendarType type) {
+//    return new Calendar();
+//  }
 
 }

@@ -151,6 +151,7 @@ public class Calendar extends AbstractBean {
 
   private boolean              _isPublic      = false;
 
+  @Deprecated
   private int                  _calType;
   
   private CalendarType calendarType;
@@ -307,10 +308,12 @@ public class Calendar extends AbstractBean {
     return getId().hashCode();
   }
 
+  @Deprecated
   public int getCalType() {
     return _calType;
   }
 
+  @Deprecated
   public void setCalType(int calType) {    
     this._calType = calType;
   }

@@ -13,13 +13,19 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
- **/
-  
-package org.exoplatform.calendar.service;
+ **/  
+package org.exoplatform.calendar.service.storage;
 
-import org.exoplatform.container.component.BaseComponentPlugin;
+import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarQuery;
+import org.exoplatform.commons.utils.ListAccess;
 
+public interface CalendarDAO extends GenericDAO<Calendar> {
 
-public abstract class AbstractCalendarDAO extends BaseComponentPlugin implements CalendarDAO {
-  
+  /**
+   * @param query
+   * @return
+   */
+  ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query);
+
 }

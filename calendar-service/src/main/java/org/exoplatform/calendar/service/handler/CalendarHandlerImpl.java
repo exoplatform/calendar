@@ -17,22 +17,22 @@
   
 package org.exoplatform.calendar.service.handler;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarDAO;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.MultiListAccess;
+import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
+import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.commons.utils.ListAccess;
 
 public class CalendarHandlerImpl implements CalendarHandler {
 
-  private List<CalendarDAO> calendarDAOs;
-  
-  public CalendarHandlerImpl(List<CalendarDAO> calendarDAOs) {
-    this.calendarDAOs = calendarDAOs;
+  private CalendarServiceImpl service;
+
+  public CalendarHandlerImpl(CalendarServiceImpl service) {
+    this.service = service;
   }
 
   @Override
@@ -42,25 +42,17 @@ public class CalendarHandlerImpl implements CalendarHandler {
   
   @Override
   public Calendar getCalendarById(String calId, CalendarType calType) {
-    for (CalendarDAO dao : getDAOByType(calType)) {
-      return dao.getCalendarById(calId, calType);
+    for (CalendarDAO dao : getCalendarDAO(calType)) {
+      return dao.getById(calId, calType);
     }
     return null;
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
   public ListAccess findCalendarsByQuery(CalendarQuery query) {
-    MultiListAccess lists = new MultiListAccess();
-    List<CalendarDAO> daos = new LinkedList<CalendarDAO>();
+    MultiListAccess lists = new MultiListAccess();    
     
-    if (query == null) {
-      daos = calendarDAOs;
-    } else {
-      daos = getDAOByType(query.getCalType());
-    }
-    
-    for (CalendarDAO dao : daos) {
+    for (CalendarDAO dao : getCalendarDAO(query.getCalType())) {
       lists.add(dao.findCalendarsByQuery(query));
     }
 
@@ -69,8 +61,8 @@ public class CalendarHandlerImpl implements CalendarHandler {
   
   @Override
   public Calendar saveCalendar(Calendar calendar, boolean isNew) {
-    for (CalendarDAO dao : getDAOByType(calendar.getCalendarType())) {
-      return dao.saveCalendar(calendar, isNew);
+    for (CalendarDAO dao : getCalendarDAO(calendar.getCalendarType())) {
+      return dao.save(calendar, isNew);
     }
 
     return null;
@@ -78,25 +70,14 @@ public class CalendarHandlerImpl implements CalendarHandler {
 
   @Override
   public Calendar removeCalendar(String calendarId, CalendarType calType) {
-    for (CalendarDAO dao : getDAOByType(calType)) {
-      return dao.removeCalendar(calendarId, calType);
+    for (CalendarDAO dao : getCalendarDAO(calType)) {
+      return dao.remove(calendarId, calType);
     }
     
     return null;
   }
   
-  private List<CalendarDAO> getDAOByType(CalendarType type) {
-    if (type == null) {
-      return calendarDAOs;
-    } else {
-      List<CalendarDAO> daos = new LinkedList<CalendarDAO>();
-      for (CalendarDAO dao : calendarDAOs) {
-        if (dao.getCalendarTypes().contains(type)) {
-          daos.add(dao);
-        }
-      }
-      
-      return daos;      
-    }
+  private List<CalendarDAO> getCalendarDAO(CalendarType type) {
+    return service.getCalendarDAO(type);
   }
 }
