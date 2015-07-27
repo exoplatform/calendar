@@ -118,7 +118,7 @@ import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.XmlReader;
 
 /**
- * This rest service class provides entry point for calendar resources
+ * This rest service class provides entry point for calendar resources.
  */
 @Path(CalendarRestApi.CAL_BASE_URI)
 public class CalendarRestApi implements ResourceContainer {
@@ -187,14 +187,14 @@ public class CalendarRestApi implements ResourceContainer {
   private Log log = ExoLogger.getExoLogger(CalendarRestApi.class);
   
   /**
-   * Contructor help to configure the rest service with parameters.
+   * Constructor helps to configure the rest service with parameters.
    *
    * Here is the configuration parameters:
-   * - query_limit        maximum objects returned for a collection query, default value: 10.
-   * - cache_maxage  time in miliseconds return in the cache-control header, default value:  604800
+   * - query_limit        maximum number of objects returned by a collection query, default value: 10.
+   * - cache_maxage       time in milliseconds returned in the cache-control header, default value:  604800.
    *
    * @param  orgService
-   *         exo organization service implementation
+   *         eXo organization service implementation.
    *
    * @param  params
    *         Object contains the configuration parameters.
@@ -213,7 +213,7 @@ public class CalendarRestApi implements ResourceContainer {
         try {
           maxAge = Integer.parseInt(cacheConfig.getValue());
         } catch (Exception ex) {
-          log.warn("Can't parse {} to maxAge, use the defalt value {}", cacheConfig, maxAge);
+          log.warn("Can't parse {} to maxAge, use the default value {}", cacheConfig, maxAge);
         }
       }
     }
@@ -223,22 +223,22 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Return all the available subresources as json, in order to navigate easily in the REST API.
+   * Returns all the available sub-resources of this API in JSON.
    *
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar
    *
-   * @format  json
+   * @format  JSON
    *
    * @response
    *    {
    *        "subResourcesHref": [
-   *            "http://localhost:8080/rest/calendar/calendars",
-   *            "http://localhost:8080/rest/calendar/events",
-   *            "http://localhost:8080/rest/calendar/tasks"
+   *            "http://localhost:8080/rest/private/v1/calendar/calendars",
+   *            "http://localhost:8080/rest/private/v1/calendar/events",
+   *            "http://localhost:8080/rest/private/v1/calendar/tasks"
    *         ]
    *     }
    *
-   * @return  All hrefs of available entry-point of calendar service
+   * @return  URLs of all REST services provided by this API, in absolute form.
    *
    * @authentication
    *
@@ -255,61 +255,71 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Search for calendars which:
-   * - the authenticated user is the owner of the calendar.
-   * - the authenticated user belongs to the group of the calendar.
-   * - the calendar has been shared with the authenticated user or with a group of the authenticated user.
+   * Searches for calendars by a type (personal/group/shared), returns calendars that the user has access permission.
    *
-   * @param  type
-   *         The calendar type to search for. It can be one of *personal, group, shared*.
-   *         If this is omitted OR an unknown type is specified, it will search for *all* types.
-   *
-   * @param  offset
-   *         The starting point when paging through a list of entities. Defaults to *0*.
-   *
-   * @param  limit
-   *         The maximum number of results when paging through a list of entities, if not specify or exceed
-   *         the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *         (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
-   *
-   * @param  resturnSize
-   *         Tell the service if it must return the total size of the returned collection result, 
-   *         and the *link* http headers. 
-   *         It can be true or false, by default, it's *false* 
-   *
-   * @param  fields
-   *         This is a list of comma-separated property's names of response json object,
-   *         if not specified, it return the json will all available properties.
-   *
-   * @param  jsonp
-   *         The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *         json object is returned. 
-   *
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/calendars?type=personal&fields=id,name
+   * @param type Type of calendar, can be *personal*, *group* or *shared*. If omitted or unknown, it searches for *all* types.
+   * 
+   * @param offset The starting point when paging the result. Default is *0*.
+   * 
+   * @param limit Maximum number of calendars returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
+   *        
+   * @param returnSize Default is *false*. If set to *true*, the total number of matched calendars will be returned in JSON,
+   *        and a "Link" header is added. This header contains "first", "last", "next" and "previous" links.
+   *        
+   * @param fields Comma-separated list of selective calendar attributes to be returned. All returned if not specified.
+   * 
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
+   *        
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/calendars?type=personal&fields=id,name
    *
    * @format  JSON
    *
    * @response 
-   * [
-   *   {
-   *      id: "defaultId",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/calendars/defaultId",
-   *      name: "calName",
-   *      description: "...",
-   *      type: "personal",
-   *      timezone: "...",
-   *      color: "...",
-   *      owner: "...",
-   *      viewPermission: "",
-   *      editPermission: "",
-   *      group: ["", ""],
-   *      publicURL: "",
-   *      privateURL: "",
-   *      icsURL: ""
-   *   }, 
-   *   {id...}
-   * ]
-   * @return  List of calendars
+   * {
+   *   "limit": 10,
+   *   "data": [
+   *     {
+   *       "editPermission": "",
+   *       "viewPermission": "",
+   *       "privateURL": null,
+   *       "publicURL": null,
+   *       "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId/ics",
+   *       "description": null,
+   *       "color": "asparagus",
+   *       "timeZone": "Europe/Brussels",
+   *       "name": "John Smith",
+   *       "type": "0",
+   *       "owner": "john",
+   *       "groups": null,
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *       "id": "john-defaultCalendarId"
+   *     },
+   *     {
+   *       "editPermission": "/platform/users/:*.*;",
+   *       "viewPermission": "*.*;",
+   *       "privateURL": null,
+   *       "publicURL": null,
+   *       "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/calendar8b8f65e77f00010122b425ec81b80da9/ics",
+   *       "description": null,
+   *       "color": "asparagus",
+   *       "timeZone": "Europe/Brussels",
+   *       "name": "Users",
+   *       "type": "0",
+   *       "owner": null,
+   *       "groups": [
+   *         "/platform/users"
+   *       ],
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/calendars/calendar8b8f65e77f00010122b425ec81b80da9",
+   *       "id": "calendar8b8f65e77f00010122b425ec81b80da9"
+   *     }
+   *   ],
+   *   "size": -1,
+   *   "offset": 0
+   * }
+   *  
+   * @return  List of calendars in JSON.
    *
    * @authentication
    *
@@ -318,8 +328,8 @@ public class CalendarRestApi implements ResourceContainer {
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @GET
   @RolesAllowed("users")
-  @Path("/calendars/")
-  @Produces({MediaType.APPLICATION_JSON})
+  @Path("/calendars")
+  @Produces(MediaType.APPLICATION_JSON)
   public Response getCalendars(@QueryParam("type") String type,
                                                 @QueryParam("offset") int offset, 
                                                 @QueryParam("limit") int limit,
@@ -378,35 +388,25 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Creates a calendar if:
-   * - this is a personal calendar and the user is authenticated.
-   * - this is a group calendar and the user is authenticated and belongs to the group.
+   * Creates a calendar based on calendar attributes sent in the request body. Can be personal or group calendar.
    * 
-   * This entry point only allow http POST request, with json object (cal) in the request body. Example:
+   * This accepts HTTP POST request, with JSON object (cal) represents a CalendarResource. Example:
    *    {
    *      name: "Calendar name",
-   *      description: "Description of the calendar",
-   *      timezone: "...",
-   *      color: "...",
-   *      owner: "...",
-   *      viewPermission: "...",
-   *      editPermission: "...",
-   *      group: ["", ""],
-   *      publicURL: "", privateURL: ""
+   *      description: "Description of the calendar"
    *   }
    * 
-   * @param  cal
-   *         JSON object contains attributes of calendar object to create.
-   *         All attributes are optional. If specified explicitly, calendar name must not empty, 
-   *         contains only letter, digit, space, "-", "_" characters. Default value of calendar name is: calendar.
+   * @param cal JSON object contains attributes of calendar object to create.
+   *        All attributes are optional. If specified explicitly, calendar name must not empty, 
+   *        contains only letter, digit, space, "-", "_" characters. Default value of calendar name is: calendar.
    *
-   * @request  POST: http://localhost:8080/portal/rest/v1/calendar/calendars
+   * @request  POST: http://localhost:8080/rest/private/v1/calendar/calendars
    *
    * @response  HTTP status code: 
-   *            201 if created successfully, and http header *location* href point to the newly created calendar.
-   *            401 if user don't have create permission, 503 if there is any error during the save process
+   *            201 if created successfully, and HTTP header *location* href that points to the newly created calendar.
+   *            401 if the user does not have create permission, 503 if any error during save process.
    *
-   * @return  http status code
+   * @return  HTTP status code.
    *
    * @authentication
    *
@@ -445,45 +445,42 @@ public class CalendarRestApi implements ResourceContainer {
 	}
 
   /**
-   * Returns the calendar with the specified id parameter if:
-   * - The authenticated user is the owner of the calendar
-   * - The authenticated user belongs to the group of the calendar
-   * - The calendar has been shared with the authenticated user or with a group of the authenticated user
+   * Search for a calendar by its id, in one of conditions:
+   * The authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param  id
-   *         identity of the calendar to retrieve
+   * @param id Identity of the calendar to be retrieved.
    * 
-   * @param  fields
-   *         This is a list of comma-separated property's names of response json object,
-   *         if not specified, it return the json will all available properties (id, href, name, description, type, timezone, 
-   *         color, owner, viewPermission, editPermision, groups, publicURL, privateURL, icsURL)
+   * @param fields Comma-separated list of selective calendar attributes to be returned. All returned if not specified.
    * 
-   * @param  jsonp
-   *         The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *         json object is returned 
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned. 
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/calendars/{id}
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/calendars/{id}
    *
    * @format  JSON
    *
    * @response
-   *  {
-   *      id: "demo-defaultCalendarId",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId",
-   *      name: "calName",
-   *      description: "...",
-   *      type: "personal",
-   *      timezone: "...",
-   *      color: "...",
-   *      owner: "...",
-   *      viewPermission: "",
-   *      editPermission: "",
-   *      group: ["", ""],
-   *      publicURL: "",
-   *      privateURL: "",
-   *      icsURL: ""
-   *   }
-   * @return  calendar as JSON object
+   * {
+   *   "editPermission": "/platform/users/:*.*;",
+   *   "viewPermission": "*.*;",
+   *   "privateURL": null,
+   *   "publicURL": null,
+   *   "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/calendar8b8f65e77f00010122b425ec81b80da9/ics",
+   *   "description": null,
+   *   "color": "asparagus",
+   *   "timeZone": "Europe/Brussels",
+   *   "name": "Users",
+   *   "type": "2",
+   *   "owner": null,
+   *   "groups": [
+   *     "/platform/users"
+   *   ],
+   *   "href": "http://localhost:8080/rest/private/v1/calendar/calendars/calendar8b8f65e77f00010122b425ec81b80da9",
+   *   "id": "calendar8b8f65e77f00010122b425ec81b80da9"
+   * }
+   * @return  Calendar as JSON.
    *
    * @authentication
    * 
@@ -535,41 +532,24 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Update the calendar with specified id if:
-   * - the authenticated user is the owner of the calendar
-   * - for group calendars, the authenticated user has edit rights on the calendar
+   * Update a calendar specified by id, in one of conditions:
+   * the authenticated user is the owner of the calendar,
+   * OR for group calendars, the authenticated user has edit permission on the calendar.
    * 
-   * This entry point only allow http PUT request, with json object (calObj) in the request body, and calendar id in the path.
-   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href* can't
-   * be updated, they also be ignored.
-   * For example:
-   * {
-   *      name: "calName",
-   *      description: "...",
-   *      type: "personal",
-   *      timezone: "...",
-   *      color: "...",
-   *      owner: "...",
-   *      viewPermission: "",
-   *      editPermission: "",
-   *      group: ["", ""],
-   *      publicURL: "",
-   *      privateURL: ""
-   *   }
+   * This accepts HTTP PUT request, with JSON object (calObj) in the request body, and calendar id in the path.
+   * All the attributes of JSON object are optional, any absent/invalid ones will be ignored.
+   * *id*, *href* and URLs attributes are Read-only.
    *  
-   * @param id
-   *        identity of the calendar to update
+   * @param id Identity of the updated calendar.
    * 
-   * @param calObj  
-   *        json object contains attributes of calendar object to update, all the attributes are optional. 
-   *        The calendar name must not empty, contains only letter, digit, space, "-", "_" characters
+   * @param calObj JSON object contains attributes of calendar object to update, all the attributes are optional.
    * 
-   * @request  PUT: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
+   * @request  PUT: http://localhost:8080/rest/private/v1/calendar/calendars/demo-defaultCalendarId
    * 
-   * @response  HTTP status code: 200 if updated successfully, 404 if calendar with provided id doesnt exists,
-   *            401 if user don't have create permission, 503 if there is any error during the save process
+   * @response  HTTP status code: 200 if updated successfully, 404 if calendar not found,
+   *            401 if the user does not have edit permission, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code.
    * 
    * @authentication
    *  
@@ -606,20 +586,19 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Delete the calendar with the specified id if:
+   * Deletes a calendar specified by id, in one of conditions:
    * - the authenticated user is the owner of the calendar.
-   * - for group calendars, the authenticated user has edit rights on the calendar.
-   * - If it is a shared calendar the calendar is not shared anymore (but the original calendar is not deleted).
+   * - for group calendars, the authenticated user has edit permission on the calendar.
+   * - if it is a shared calendar, the calendar is not shared anymore (but not deleted).
    * 
-   * @param  id  
-   *         identity of the calendar to delete
+   * @param id Identity of the calendar to be deleted.
    * 
-   * @request  DELETE: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId
+   * @request  DELETE: http://localhost:8080/rest/private/v1/calendar/calendars/demo-defaultCalendarId
    * 
-   * @response  HTTP status code: 200 if updated successfully, 404 if calendar with provided id doesnt exists,
-   *            401 if user don't have create permission, 503 if there is any error during the save process
+   * @response  HTTP status code: 200 if updated successfully, 404 if calendar not found,
+   *            401 if the user does not have permissions, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code.
    * 
    * @authentication
    * 
@@ -659,22 +638,21 @@ public class CalendarRestApi implements ResourceContainer {
   }  
   
   /**
-   * Returns an iCalendar formated file which is exported from the calendar with specified id if:
-   * - the calendar is public
-   * - the authenticated user is the owner of the calendar
-   * - the authenticated user belongs to the group of the calendar
-   * - the calendar has been shared with the authenticated user or with a group of the authenticated user
+   * Exports a calendar specified by id into iCal formated file, with one of conditions:
+   * The calendar is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id   
-   *        identity of the calendar to retrieve ICS file
+   * @param id Identity of the exported calendar.
    * 
-   * @request GET: http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId/ics
+   * @request GET: http://localhost:8080/rest/private/v1/calendar/calendars/demo-defaultCalendarId/ics
    * 
    * @format text/calendar
    * 
-   * @response ICS file of calendar, or HTTP status code: 404 if not found
+   * @response ICS file on success, or HTTP status code 404 on failure.
    * 
-   * @return  ICS file or Http status code
+   * @return  ICS file on success, or HTTP status code 404 on failure.
    * 
    * @authentication
    *  
@@ -727,72 +705,79 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Returns an event with specified id parameter if:
-   * - the calendar of the event is public
-   * - the authenticated user is the owner of the calendar of the event
-   * - the authenticated user belongs to the group of the calendar of the event
-   * - the authenticated user is a participant of the event
-   * - the calendar of the event has been shared with the authenticated user or with a group of the authenticated user
+   * Searches for an event by id, in one of conditions:
+   * The calendar of the event is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the user is a participant of the event,
+   * OR the calendar of the event has been shared with the user or with a group of the user.
    * 
-   * @param id              
-   *        identity of event to find
+   * @param id Identity of the event.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective event attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit*) value into param. For example, expand=categories(1,5).
+   * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
+   *        This is a comma-separated list of property names. For example: expand=calendar,categories. In case of collections, 
+   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
-   *            id: "...", 
-   *            calendar: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *            ....
+   *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
    *        }
    *        It returns:
    *        {
-   *            id: "...", 
-   *            calendar: {
-   *            id: "...",
-   *            name:"demo-"efaultId",
-   *            ....
-   *        }
-   *            ....
+   *            "calendar": {
+   *              "editPermission": "",
+   *              "viewPermission": "",
+   *              "privateURL": null,
+   *              "publicURL": null,
+   *              "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId/ics",
+   *              "description": null,
+   *              "color": "asparagus",
+   *              "timeZone": "Europe/Brussels",
+   *              "name": "John Smith",
+   *              "type": "0",
+   *              "owner": "john",
+   *              "groups": null,
+   *              "href": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *              "id": "john-defaultCalendarId"
+   *            },
    *        }
    * 
-   * @request GET: http://localhost:8080/portal/rest/v1/calendar/events/Event123
+   * @request GET: http://localhost:8080/rest/private/v1/calendar/events/Event123
    * 
    * @format JSON
    * 
    * @response 
    * {
-   *      id: "defaultId",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/events/Event123",
-   *      subject: "..",
-   *      description: "...",
-   *      from: "...",
-   *      to: "...",
-   *      calendar: "...",
-   *      categories: ["...", ""],
-   *      location: "",
-   *      priority: "", 
-   *      repeat: {...},
-   *      recurrenceId: "...",
-   *      originalEvent: "...",
-   *      reminder: [],
-   *      attachment: [],
-   *      participants: [],
-   *      privacy: "",
-   *      availability: "" 
+   *   "to": "2015-07-24T01:30:00.000Z",
+   *   "attachments": [],
+   *   "from": "2015-07-24T01:00:00.000Z",
+   *   "categories": [
+   *     "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll"
+   *   ],
+   *   "categoryId": "defaultEventCategoryIdAll",
+   *   "availability": "busy",
+   *   "repeat": {},
+   *   "reminder": [],
+   *   "privacy": "private",
+   *   "recurrenceId": null,
+   *   "participants": [
+   *     "john"
+   *   ],
+   *   "originalEvent": null,
+   *   "description": null,
+   *   "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *   "subject": "event123",
+   *   "location": null,
+   *   "priority": "none",
+   *   "href": "http://localhost:8080/rest/private/v1/calendar/events/Eventa9c5b87b7f00010178ce661a6beb020d",
+   *   "id": "Eventa9c5b87b7f00010178ce661a6beb020d"
    * }
    * 
-   * @return        event as json object
+   * @return  Event as JSON object.
    * 
    * @authentication
    *  
@@ -838,51 +823,35 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Updates the event with specified id if:
-   * - the authenticated user is the owner of the calendar of the event
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar of the event has been shared with the authenticated user, with modification rights
-   * - the calendar of the event has been shared with a group of the authenticated user, with modification rights
+   * Updates an event specified by id, in one of conditions:
+   * The authenticated user is the owner of the calendar of the event,
+   * OR for group calendars, the user has edit permission on the calendar,
+   * OR the calendar has been shared with the user, with edit permission,
+   * OR the calendar has been shared with a group of the user, with edit permission.
    * 
-   * This entry point only allow http PUT request, with json object (evObject) in the request body, and event id in the path.
-   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. 
-   * Or read-only attributes: *id* and *href*, *originalEvent*, *calendar*, *recurrentId* can't be updated, they also be ignored.
-   * For example:
-   * {
-   *      subject: "..",
-   *      description: "...",
-   *      categoryId: "",
-   *      from: "...", to: "...",
-   *      location: "",
-   *      priority: "", 
-   *      repeat: {...},
-   *      reminder: [],
-   *      privacy: "",
-   *      availability: ""
-   * }
+   * This accepts HTTP PUT request, with JSON object (evObject) in the request body, and event id in the path.
+   * All the attributes of JSON object are optional, any absent/invalid ones will be ignored. 
+   * Read-only attributes: *id* and *href*, *originalEvent*, *calendar*, *recurrentId* will be ignored too.
    *  
-   * @param id             
-   *        identity of the event to update
+   * @param id Identity of the updated event.
    * 
-   * @param evObject  
-   *        json object contains attributes of event object to update, all the attributes are optional.
-   *        If provided explitly (not null), attributes are checked with some rules:
-   *        1. subject must not be empty
-   *        2. availability can only be one of "available", "busy", "outside"
-   *        3. repeat.repeatOn can only be one of"MO", "TU", "WE", "TH", "FR", "SA", "SU"
-   *        4. repeat.repeatBy must be >= 1 and <= 31
-   *        5. repeat.repeatType must be one of "norepeat", "daily", "weekly", "monthly", "yearly"
-   *        6. "from" date must be before "to" date
-   *        7. priority must be one of "none", "high", "normal", "low"
-   *        8. privacy can only be public or private
+   * @param evObject JSON object contains event attributes, all are optional.
+   *        If provided explicitly (not null), attributes are checked with some rules:
+   *        1. *subject* must not be empty.
+   *        2. *availability* can only be one of "available", "busy", "outside".
+   *        3. *repeat.repeatOn* can only be one of "MO", "TU", "WE", "TH", "FR", "SA", "SU".
+   *        4. *repeat.repeatBy* must be >= 1 and <= 31.
+   *        5. *repeat.repeatType* must be one of "norepeat", "daily", "weekly", "monthly", "yearly".
+   *        6. *from* date must be earlier than *to* date.
+   *        7. *priority* must be one of "none", "high", "normal", "low".
+   *        8. *privacy* can only be "public" or "private".
    * 
-   * @request PUT: http://localhost:8080/portal/rest/v1/calendar/events/Event123
+   * @request PUT: http://localhost:8080/rest/private/v1/calendar/events/Event123
    * 
-   * @response  HTTP status code: 200 if updated successfully, 400 if parameters are not valid 
-   *            404 if event with provided id doesnt exists,
-   *            401 if user don't have create permission, 503 if there is any error during the save process
+   * @response  HTTP status code: 200 if updated successfully, 400 if parameters are not valid, 404 if event does not exist,
+   *            401 if the user does not have edit permission, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code
    * 
    * @authentication
    *  
@@ -935,21 +904,20 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Delete an event with specified id parameter if:
-   * - the authenticated user is the owner of the calendar of the event
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar of the event has been shared with the authenticated user, with modification rights
-   * - the calendar of the event has been shared with a group of the authenticated user, with modification rights
+   * Deletes an event specified by id, in one of conditions:
+   * The authenticated user is the owner of the calendar of the event,
+   * OR for group calendars, the user has edit permission on the calendar,
+   * OR the calendar has been shared with the user, with edit permission,
+   * OR the calendar has been shared with a group of the user, with edit permission.
    * 
-   * @param id  
-   *        identity of the event to delete
+   * @param id Identity of the event.
    * 
-   * @request DELETE: http://localhost:8080/portal/rest/v1/calendar/events/Event123
+   * @request DELETE: http://localhost:8080/rest/private/v1/calendar/events/Event123
    * 
-   * @response  HTTP status code: 200 if delete successfully, 404 if event with provided id doesnt exists,
-   *            401 if user don't have permission, 503 if there is any error during the save process
+   * @response  HTTP status code: 200 if deleted successfully, 404 if event not found,
+   *            401 if the user does not have edit permission, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code
    * 
    * @authentication
    * 
@@ -997,48 +965,46 @@ public class CalendarRestApi implements ResourceContainer {
   
 
   /**
-   * Returns attachments of an event with specified id if:
-   * - the calendar of the event is public
-   * - the authenticated user is the owner of the calendar of the event
-   * - the authenticated user belongs to the group of the calendar of the event
-   * - the authenticated user is a participant of the event
-   * - the calendar of the event has been shared with the authenticated user or with a group of the authenticated user
+   * Returns attachments of an event specified by event id, in one of conditions:
+   * The calendar of the event is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the user is a participant of the event,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id        
-   *        identity of event that being query for attachments
+   * @param id Identity of the event.
    *
-   * @param offset  
-   *        The starting point when paging through a list of entities. Defaults to *0*.
+   * @param offset The starting point when paging the result. Default is *0*.
    * 
-   * @param limit   
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   * @param limit Maximum number of attachments returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
    * 
-   * @param fields  
-   *        This is a list of comma-separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective attachment attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp   
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned. 
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned. 
    * 
-   * @request GET: http://localhost:8080/portal/rest/v1/calendar/events/Event123/attachments
+   * @request GET: http://localhost:8080/rest/private/v1/calendar/events/Event123/attachments
    * 
    * @format JSON
    * 
    * @response 
-   *  [
-   *    {
-   *        id: "...",
-   *        href: "...",
-   *        name: "...",
-   *        mimeType: "...",
-   *        weight: "..."
-   *    }, {...}
-   *  ]
+   * {
+   *   "limit": 10,
+   *   "data": [
+   *     {
+   *       "mimeType": "image/jpeg",
+   *       "weight": 31249,
+   *       "name": "test.jpg",
+   *       "href": "...",
+   *       "id": "..."
+   *     }
+   *   ],
+   *   "size": 1,
+   *   "offset": 0
+   * }
    *  
-   * @return        List of attachments as json array
+   * @return  Attachments in JSON, or HTTP status 404 if event not found.
    * 
    * @authentication
    *  
@@ -1107,29 +1073,26 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Creates attachments for an event with specified id if:
-   * - the authenticated user is the owner of the calendar of the event
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar of the event has been shared with the authenticated user, with modification rights
-   * - the calendar of the event has been shared with a group of the authenticated user, with modification rights
+   * Creates attachments for an event specified by id, in one of conditions:
+   * The authenticated user is the owner of the calendar of the event,
+   * OR for group calendars, the user has edit permission on the calendar,
+   * OR the calendar has been shared with the user, with edit permission,
+   * OR the calendar has been shared with a group of the user, with edit permission.
    * 
-   * This entry point only allow http POST request, with file input stream in the http form submit, and the id of event in the path
+   * This accepts HTTP POST request, with files in HTTP form submit request, and the event id in path.
    * 
-   * @param id      
-   *        identity of event to create attachment 
+   * @param id Identity of the event. 
    *
-   * @param iter   
-   *        Iterator of org.apache.commons.fileupload.FileItem object 
-   *        (eXo rest framework use apache file upload to parse the input stream of http form submit request, and inject FileItem objects
+   * @param iter Iterator of org.apache.commons.fileupload.FileItem objects.
+   *        (eXo Rest framework uses Apache file upload to parse the input stream of HTTP form submit request, and inject FileItem objects).
    *
-   * @request POST: http://localhost:8080/portal/rest/v1/calendar/events/Event123/attachments
+   * @request POST: http://localhost:8080/rest/private/v1/calendar/events/Event123/attachments
    * 
    * @response  HTTP status code:
-   *            201 if created successfully, and http header *location* href point to the newly created attachment resource.
-   *            404 if event to create attachment not found 
-   *            401 if user don"t have create permission, 503 if there is any error during the save process
+   *            201 if created successfully, and HTTP header *location* href that points to the newly created attachments.
+   *            404 if event not found, 401 if the user does not have create permission, 503 if any error during save process.
    * 
-   * @return http status code
+   * @return HTTP status code
    * 
    * @authentication
    * 
@@ -1200,90 +1163,102 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Returns events of an calendar with specified id when:
-   * - the calendar is public
-   * - the authenticated user is the owner of the calendar of the event
-   * - the authenticated user belongs to the group of the calendar of the event
-   * - the authenticated user is a participant of the event
-   * - the calendar of the event has been shared with the authenticated user or with a group of the authenticated user
+   * Returns events of a calendar specified by id, in one of conditions:
+   * The calendar is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the user is a participant of the event,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id              
-   *        identity of a calendar to search for events
+   * @param id Identity of a calendar to search for events.
    * 
-   * @param start         
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
+   * @param startTime Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
    *        Default: current server time.
    * 
-   * @param end           
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date
+   * @param endTime Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date.
    *        Default: current server time + 1 week.
    * 
-   * @param category  
-   *        search for this category only. If not specify, search event of any category
+   * @param category Search for this category only. If not specified, search events of all categories.
    *
-   * @param offset       
-   *        The starting point when paging through a list of entities. Defaults to *0*.
+   * @param offset The starting point when paging the result. Default is *0*.
    * 
-   * @param limit         
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   * @param limit Maximum number of events returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
    * 
-   * @param resturnSize  
-   *        tell the service if it must return the total size of the returned collection result, and the *link* http headers. 
-   *        It can be true or false, by default, it's *false*
+   * @param returnSize Default is *false*. If set to *true*, the total number of matched calendars will be returned in JSON,
+   *        and a "Link" header is added. This header contains "first", "last", "next" and "previous" links.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective event properties to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=categories(1,5).
+   * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
+   *        This is a comma-separated list of event attribute names. For example: expand=calendar,categories. In case of collections, 
+   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
-   *            id: "...", 
-   *            calendar: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *            ....
+   *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
    *        }
    *        It returns:
    *        {
-   *            id: "...", 
-   *            calendar: {
-   *            id: "...",
-   *            name:"demo-defaultId",
-   *            ....
-   *            }
-   *            ....
+   *            "calendar": {
+   *            "editPermission": "",
+   *            "viewPermission": "",
+   *            "privateURL": null,
+   *            "publicURL": null,
+   *            "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId/ics",
+   *            "description": null,
+   *            "color": "asparagus",
+   *            "timeZone": "Europe/Brussels",
+   *            "name": "John Smith",
+   *            "type": "0",
+   *            "owner": "john",
+   *            "groups": null,
+   *            "href": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *            "id": "john-defaultCalendarId"
+   *            },
    *        }
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/myCalId/events?category=meeting&expand=calendar,categories(1,5)
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/calendars/myCalId/events?category=meeting&expand=calendar,categories(1,5)
    * 
    * @format JSON
    * 
    * @response 
-   * [
-   *   {
-   *      id: "myEventId",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/events/myEventId",
-   *      subject: "..", description: "...",
-   *      from: "...", to: "...",
-   *      calendar: "...", categories: ["...", "..."],
-   *      location: "", priority: "", 
-   *      repeat: {...},
-   *      recurrenceId: "...", originalEvent: "...",
-   *      reminder: [], attachment: [], participants: [],
-   *      privacy: "", availability: "" 
-   *   }, 
-   *   {id...}
-   * ]
+   * {
+   *   "limit": 10,
+   *   "data": [
+   *     {
+   *       "to": "2015-07-24T01:30:00.000Z",
+   *       "attachments": [],
+   *       "from": "2015-07-24T01:00:00.000Z",
+   *       "categories": [
+   *         "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll"
+   *       ],
+   *       "categoryId": "defaultEventCategoryIdAll",
+   *       "availability": "busy",
+   *       "repeat": {},
+   *       "reminder": [],
+   *       "privacy": "private",
+   *       "recurrenceId": null,
+   *       "participants": [
+   *         "john"
+   *       ],
+   *       "originalEvent": null,
+   *       "description": null,
+   *       "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *       "subject": "event123",
+   *       "location": null,
+   *       "priority": "none",
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/events/Eventa9c5b87b7f00010178ce661a6beb020d",
+   *       "id": "Eventa9c5b87b7f00010178ce661a6beb020d"
+   *     }
+   *   ],
+   *   "size": -1,
+   *   "offset": 0
+   * }
    * 
-   * @return  List of events of a specific calendar
+   * @return  List of events in JSON, or HTTP status 404 if the calendar is not found.
    * 
    * @authentication
    *     
@@ -1353,47 +1328,37 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Creates an event in a calendar with specified id only if:
-   * - the authenticated user is the owner of the calendar
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar has been shared with the authenticated user, with modification rights
-   * - the calendar has been shared with a group of the authenticated user, with modification rights
+   * Creates an event in a calendar specified by id, in one of conditions:
+   * The authenticated user is the owner of the calendar,
+   * OR for group calendars, the user has edit permission on the calendar,
+   * OR the calendar has been shared with the user, with edit permission,
+   * OR the calendar has been shared with a group of the user, with edit permission.
    * 
-   * This entry point only allow http POST request, with json object (evObject) in the request body. Example:
-   *    {
-   *      categoryId: "",
-   *      subject: "..", description: "...",
-   *      from: "...", to: "...",
-   *      location: "", priority: "", 
-   *      repeat: {...},
-   *      reminder: [],
-   *      privacy: "", availability: "" 
-   *   }
+   * This accepts HTTP POST request, with JSON object (evObject) in the request body.
    * 
-   * @param evObject    
-   *        json object contains attributes of event object to create.
-   *        All attribute are optional. If provided explitly (not null), attributes are checked with some rules:
-   *        1. subject must not be empty, default value is: default
-   *        2. availability can only be one of "available", "busy", "outside"
-   *        3. repeat.repeatOn can only be one of"MO", "TU", "WE", "TH", "FR", "SA", "SU"
-   *        4. repeat.repeatBy must be >= 1 and <= 31
-   *        5. repeat.repeatType must be one of "norepeat", "daily", "weekly", "monthly", "yearly"
-   *        6. "from" date must be before "to" date
-   *        7. priority must be one of "none", "high", "normal", "low"
-   *        8. privacy can only be public or private
+   * @param evObject JSON object contains attributes of event.
+   *        All attributes are optional. If provided explicitly (not null), attributes are checked with some rules:
+   *        1. *subject* must not be empty, default value is: default.
+   *        2. *availability* can only be one of "available", "busy", "outside".
+   *        3. *repeat.repeatOn* can only be one of "MO", "TU", "WE", "TH", "FR", "SA", "SU".
+   *        4. *repeat.repeatBy* must be >= 1 and <= 31.
+   *        5. *repeat.repeatType* must be one of "norepeat", "daily", "weekly", "monthly", "yearly".
+   *        6. *from* date must be earlier than *to* date.
+   *        7. *priority* must be one of "none", "high", "normal", "low".
+   *        8. *privacy* can only be public or private.
    * 
-   * @param id                
-   *        identity of the *calendar* to create event
+   * @param id Identity of the calendar.
    * 
-   * @request  POST: http://localhost:8080/portal/rest/v1/calendar/calendars/myCalId/events
+   * @request  POST: http://localhost:8080/rest/private/v1/calendar/calendars/myCalId/events
    *
    * @response  HTTP status code: 
-   *            201 if created successfully, and http header *location* href point to the newly created event.
-   *            400 if provided attributes are not valid (not following the rule of evObject)
-   *            404 if no calendar found with provided id.
-   *            401 if user don't have create permission, 503 if there is any error during the save process.
+   *            201 if created successfully, and HTTP header *location* href that points to the newly created event.
+   *            400 if provided attributes are not valid (not pass the rule of evObject).
+   *            404 if calendar not found.
+   *            401 if the user does not have create permission.
+   *            503 if any error during save process.
    * 
-   * @return  http status code
+   * @return  HTTP status code.
    * 
    * @authentication
    * 
@@ -1446,87 +1411,99 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Returns occurrences of a recurring event with specified id when :
-   * the calendar of the event is public
-   * the authenticated user is the owner of the calendar of the event
-   * the authenticated user belongs to the group of the calendar of the event
-   * the authenticated user is a participant of the event
-   * the calendar of the event has been shared with the authenticated user or with a group of the authenticated user
+   * Returns occurrences of a recurring event specified by id, in one of conditions:
+   * the calendar of the event is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the user is a participant of the event,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id             
-   *        identity of recurrence event, if event not exists, return 404 http status code
+   * @param id Identity of the event.
    * 
-   * @param start         
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
+   * @param start Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for occurrences *from* this date.
    *        Default: current server time.
    * 
-   * @param end           
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date
+   * @param end Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for occurrences *to* this date.
    *        Default: current server time + 1 week.
    *
-   * @param offset       
-   *        The starting point when paging through a list of entities. Defaults to *0*.
+   * @param offset The starting point when paging the result. Default is *0*.
    * 
-   * @param limit         
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   * @param limit Maximum number of occurrences returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
    * 
-   * @param resturnSize  
-   *        tell the service if it must return the total size of the returned collection result, and the *link* http headers. 
-   *        It can be true or false, by default, it's *false*
+   * @param returnSize Default is *false*. If set to *true*, the total number of matched calendars will be returned in JSON,
+   *        and a "Link" header is added. This header contains "first", "last", "next" and "previous" links.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=categories(1,5).
+   * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
+   *        This is a comma-separated list of property names. For example: expand=calendar,categories. In case of collections, 
+   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
-   *            id: "...", 
-   *            calendar: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *            ....
+   *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
    *        }
    *        It returns:
    *        {
-   *            id: "...", 
-   *            calendar: {
-   *            id: "...",
-   *            name:"demo-defaultId",
-   *            ....
-   *            }
-   *            ....
+   *            "calendar": {
+   *              "editPermission": "",
+   *              "viewPermission": "",
+   *              "privateURL": null,
+   *              "publicURL": null,
+   *              "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId/ics",
+   *              "description": null,
+   *              "color": "asparagus",
+   *              "timeZone": "Europe/Brussels",
+   *              "name": "John Smith",
+   *              "type": "0",
+   *              "owner": "john",
+   *              "groups": null,
+   *              "href": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *              "id": "john-defaultCalendarId"
+   *            },
    *        }
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/events/Event123/occurences?offset=1&limit=5
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/events/Event123/occurences?offset=1&limit=5
    * 
    * @format  JSON
    * 
    * @response 
-   * [
-   *   {
-   *      id: "myEventId",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/events/myEventId",
-   *      subject: "..", description: "...",
-   *      from: "...", to: "...",
-   *      calendar: "...", categories: ["...", ""],
-   *      location: "", priority: "", 
-   *      repeat: {...},
-   *      recurrenceId: "...", originalEvent: "...",
-   *      reminder: [], attachment: [], participants: [],
-   *      privacy: "", availability: "" 
-   *   }, 
-   *   {id...}
-   * ]
+   * {
+   *   "limit": 0,
+   *   "data": [
+   *     {
+   *       "to": "2015-07-24T02:30:00.000Z",
+   *       "attachments": [],
+   *       "from": "2015-07-24T02:00:00.000Z",
+   *       "categories": [
+   *         "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll"
+   *       ],
+   *       "categoryId": "defaultEventCategoryIdAll",
+   *       "availability": "busy",
+   *       "repeat": {},
+   *       "reminder": [],
+   *       "privacy": "private",
+   *       "recurrenceId": null,
+   *       "participants": [],
+   *       "originalEvent": null,
+   *       "description": null,
+   *       "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *       "subject": "rep123",
+   *       "location": null,
+   *       "priority": "none",
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/events/Eventaa3c68ee7f00010171ac205a54bc1419",
+   *       "id": "Eventaa3c68ee7f00010171ac205a54bc1419"
+   *     },
+   *     {}
+   *   ],
+   *   "size": -1,
+   *   "offset": 10
+   * }
    * 
-   * @return        List of occurrence events
+   * @return        List of occurrences.
    * 
    * @authentication
    *  
@@ -1603,88 +1580,97 @@ public class CalendarRestApi implements ResourceContainer {
   }  
   
   /**
-   * Returns tasks of a calendar with specified id when:
-   * - the calendar is public
-   * - the authenticated user is the owner of the calendar of the task
-   * - the authenticated user belongs to the group of the calendar of the task
-   * - the authenticated user is delegated by the task
-   * - the calendar of the task has been shared with the authenticated user or with a group of the authenticated user
+   * Returns tasks of a calendar specified by id, in one of conditions:
+   * The calendar is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the task is delegated to the user,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id              
-   *        identity of a calendar to search for tasks
+   * @param id Identity of the calendar.
    * 
-   * @param start         
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
+   * @param startTime Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *from* this date.
    *        Default: current server time.
    * 
-   * @param end           
-   *        date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date
+   * @param endTime Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *to* this date.
    *        Default: current server time + 1 week.
    * 
-   * @param category  
-   *        search for this category only. If not specify, search task of any category
+   * @param category Filter the tasks by this category if specified.
    *
-   * @param offset       
-   *        The starting point when paging through a list of entities. Defaults to *0*.
+   * @param offset The starting point when paging the result. Default is *0*.
    * 
-   * @param limit         
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   * @param limit Maximum number of tasks returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
    * 
-   * @param resturnSize  
-   *        tell the service if it must return the total size of the returned collection result, and the *link* http headers. 
-   *        It can be true or false, by default, it's *false*
+   * @param returnSize Default is *false*. If set to *true*, the total number of matched calendars will be returned in JSON,
+   *        and a "Link" header is added. This header contains "first", "last", "next" and "previous" links.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective task attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=categories(1,5).
+   * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
+   *        This is a comma-separated list of property names. For example: expand=calendar,categories. In case of collections, 
+   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
-   *            id: "...", 
-   *            calendar: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *            ....
+   *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
    *        }
    *        It returns:
    *        {
-   *            id: "...", 
-   *            calendar: {
-   *            id: "...",
-   *            name:"demo-defaultId",
-   *            ....
-   *            }
-   *            ....
+   *            "calendar": {
+   *              "editPermission": "",
+   *              "viewPermission": "",
+   *              "privateURL": null,
+   *              "publicURL": null,
+   *              "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId/ics",
+   *              "description": null,
+   *              "color": "asparagus",
+   *              "timeZone": "Europe/Brussels",
+   *              "name": "John Smith",
+   *              "type": "0",
+   *              "owner": "john",
+   *              "groups": null,
+   *              "href": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *              "id": "john-defaultCalendarId"
+   *            },
    *        }
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/myCalId/tasks?category=meeting&expand=calendar,categories(1,5)
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/myCalId/tasks?category=meeting&expand=calendar,categories(1,5)
    * 
    * @format JSON
    * 
    * @response 
-   * [
-   *   {
-   *      id: "Task123",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/tasks/Task123",
-   *      name: "..", note: "...",
-   *      from: "...", to: "...",
-   *      calendar: "...", categories: ["...", ""],
-   *      delegation: ["...", ""], priority: "", 
-   *      reminder: [], attachment: [],
-   *      status: ""
-   *   }, 
-   *   {id...}
-   * ]
+   * {
+   *   "limit": 10,
+   *   "data": [
+   *     {
+   *       "to": "2015-07-18T12:00:00.000Z",
+   *       "attachments": [],
+   *       "from": "2015-07-18T11:30:00.000Z",
+   *       "categories": [
+   *         "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll"
+   *       ],
+   *       "categoryId": "defaultEventCategoryIdAll",
+   *       "reminder": [],
+   *       "delegation": [
+   *         "john"
+   *       ],
+   *       "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *       "name": "caramazov",
+   *       "priority": "none",
+   *       "note": null,
+   *       "status": "",
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/tasks/Event99f63db07f0001016dd7a4b4e0e7125c",
+   *       "id": "Event99f63db07f0001016dd7a4b4e0e7125c"
+   *     }
+   *   ],
+   *   "size": -1,
+   *   "offset": 0
+   * }
    * 
-   * @return  List of tasks of a specific calendar
+   * @return  List of tasks in JSON, or HTTP status 404 if calendar not found.
    * 
    * @authentication
    *  
@@ -1752,42 +1738,41 @@ public class CalendarRestApi implements ResourceContainer {
   }
   
   /**
-   * Creates a task for a calendar with specified id only if:
-   * - the authenticated user is the owner of the calendar
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar has been shared with the authenticated user, with modification rights
-   * - the calendar has been shared with a group of the authenticated user, with modification rights
+   * Creates a task for a calendar specified by id, in one of conditions:
+   * The user is the owner of the calendar,
+   * OR for group calendars, the user has edit permission on the calendar,
+   * OR the calendar has been shared with the user, with edit permission,
+   * OR the calendar has been shared with a group of the user, with edit permission.
    * 
-   * This entry point only allow http POST request, with json object (evObject) in the request body. Example:
-   *    {
-   *      name: "..", note: "...",
-   *      categoryId: "",
-   *      from: "...", to: "...",
-   *      delegation: ["...", ""], priority: "", 
-   *      reminder: [],
-   *      status: ""
+   * This accepts HTTP POST request, with JSON object (evObject) in the request body. Example:
+   *   {
+   *      "name": "...", "note": "...",
+   *      "categoryId": "",
+   *      "from": "...", "to": "...",
+   *      "delegation": ["...", ""], "priority": "", 
+   *      "reminder": [],
+   *      "status": ""
    *   }
    * 
-   * @param evObject    
-   *        json object contains attributes of task object to create.
-   *        All attribute are optional. If provided explitly (not null), attributes are checked with some rules:
-   *        1. name must not be empty, default value is: "default".
-   *        2. "from" date must be before "to" date
-   *        3. priority must be one of "none", "high", "normal", "low"
-   *        4. status must be one of "needs-action", "completed", "in-progress", "canceled"
+   * @param evObject JSON object contains attributes of task.
+   *        All attributes are optional. If provided explicitly (not null), attributes are checked with some rules:
+   *        1. *name* must not be empty, default value is: "default".
+   *        2. *from* date must be earlier than *to* date.
+   *        3. *priority* must be one of "none", "high", "normal", "low".
+   *        4. *status* must be one of "needs-action", "completed", "in-progress", "canceled".
    * 
-   * @param id                
-   *        identity of the *calendar* to create task
+   * @param id Identity of the calendar.
    * 
-   * @request  POST: http://localhost:8080/portal/rest/v1/calendar/calendars/myCalId/tasks
+   * @request  POST: http://localhost:8080/rest/private/v1/calendar/calendars/myCalId/tasks
    * 
    * @response  HTTP status code: 
-   *            201 if created successfully, and http header *location* href point to the newly created task.
-   *            400 if provided attributes are not valid (not following the rule of evObject)
-   *            404 if no calendar found with provided id.
-   *            401 if user don't have create permission, 503 if there is any error during the save process.
+   *            201 if created successfully, and HTTP header *location* href that points to the newly created task.
+   *            400 if attributes are invalid (not pass the rule of evObject).
+   *            404 if calendar not found.
+   *            401 if the user does not have create permission.
+   *            503 if any error during save process.
    * 
-   * @return  http status code
+   * @return  HTTP status code.
    * 
    * @authentication
    * 
@@ -1843,58 +1828,74 @@ public class CalendarRestApi implements ResourceContainer {
 
   /**
    *
-   * Returns a task with specified id if: same rules as /events/{id}
-   * {@link #getEventById(String, String, String, String)}
+   * Returns a task specified by id, in one of conditions:
+   * the calendar of the task is public;
+   * OR the authenticated user is the owner of the calendar;
+   * OR the user belongs to the group of the calendar;
+   * OR the task is delegated to the user;
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id              
-   *        identity of task to find
+   * @param id Identity of the task.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective task properties to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar,categories. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=categories(1,5).
+   * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
+   *        This is a comma-separated list of task attributes names. For example: expand=calendar,categories. In case of collections, 
+   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
-   *            id: "...", 
-   *            calendar: "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *            ....
+   *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
    *        }
    *        It returns:
    *        {
-   *            id: "...", 
-   *            calendar: {
-   *            id: "...",
-   *            name:"demo-defaultId",
-   *            ....
-   *            }
-   *            ....
+   *            "calendar": {
+   *              "editPermission": "",
+   *              "viewPermission": "",
+   *              "privateURL": null,
+   *              "publicURL": null,
+   *              "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId/ics",
+   *              "description": null,
+   *              "color": "asparagus",
+   *              "timeZone": "Europe/Brussels",
+   *              "name": "John Smith",
+   *              "type": "0",
+   *              "owner": "john",
+   *              "groups": null,
+   *              "href": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *              "id": "john-defaultCalendarId"
+   *            },
    *        }
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/tasks/Task123?fields=id,name
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/tasks/Task123?fields=id,name
    * 
    * @format JSON
    * 
    * @response 
-   *   {
-   *      id: "Task123",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/tasks/Task123",
-   *      name: "..", note: "...",
-   *      from: "...", to: "...",
-   *      calendar: "...", categories: ["...", ""],
-   *      delegation: ["...", ""], priority: "", 
-   *      reminder: [], attachment: [],
-   *      status: ""
-   *   } 
+   * {
+   *   "to": "2015-07-18T12:00:00.000Z",
+   *   "attachments": [],
+   *   "from": "2015-07-18T11:30:00.000Z",
+   *   "categories": [
+   *     "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll"
+   *   ],
+   *   "categoryId": "defaultEventCategoryIdAll",
+   *   "reminder": [],
+   *   "delegation": [
+   *     "john"
+   *   ],
+   *   "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *   "name": "caramazov",
+   *   "priority": "none",
+   *   "note": null,
+   *   "status": "",
+   *   "href": "http://localhost:8080/rest/private/v1/calendar/tasks/Event99f63db07f0001016dd7a4b4e0e7125c",
+   *   "id": "Event99f63db07f0001016dd7a4b4e0e7125c"
+   * } 
    *  
-   * @return  return task as json object
+   * @return  Task in JSON format, or HTTP status 404 if task not found, or 503 if any other failure.
    * 
    * @authentication
    *  
@@ -1940,44 +1941,45 @@ public class CalendarRestApi implements ResourceContainer {
 
   /**
    *
-   * Updates a task with the specified id if:
-   * - the authenticated user is the owner of the calendar of the event
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar of the event has been shared with the authenticated user, with modification rights
-   * - the calendar of the event has been shared with a group of the authenticated user, with modification rights
+   * Updates a task specified by id, in one of conditions:
+   * the calendar of the task is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the task is delegated to the user,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * This entry point only allow http PUT request, with json object (evObject) in the request body, and task id in the path.
-   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href*, *calendar* can't
-   * be updated, they also be ignored.
+   * This accepts HTTP PUT request, with JSON object (evObject) in the request body, and task id in the path.
+   * All the attributes are optional, any absent/invalid attributes will be ignored.
+   * *id*, *href*, *calendar* are Read-only.
    * For example:
    *   {
-   *      name: "..", note: "...",
-   *      categoryId: "...",
-   *      from: "...", to: "...",
-   *      delegation: ["...", ""], priority: "", 
-   *      reminder: [],
-   *      status: ""
-   *   } 
+   *      "name": "...", "note": "...",
+   *      "categoryId": "",
+   *      "from": "...", "to": "...",
+   *      "delegation": ["...", ""], "priority": "", 
+   *      "reminder": [],
+   *      "status": ""
+   *   }
    *  
-   * @param id             
-   *        identity of the task to update
+   * @param id Identity of the task.
    * 
-   * @param evObject  
-   *        json object contains attributes of task object to update, all the attributes are optional.
-   *        If provided explitly (not null), attributes are checked with some rules:
-   *        1. name must not be empty
-   *        2. "from" date must be before "to" date
-   *        3. priority must be one of "none", "high", "normal", "low"
-   *        4. status must be one of "needs-action", "completed", "in-progress", "canceled" 
+   * @param evObject JSON object contains attributes of the task to be updated, all attributes are optional.
+   *        If provided explicitly (not null), attributes are checked with some rules:
+   *        1. *name* must not be empty.
+   *        2. *from* date must be earlier than *to* date.
+   *        3. *priority* must be one of "none", "high", "normal", "low".
+   *        4. *status* must be one of "needs-action", "completed", "in-progress", "canceled".
    * 
-   * @request  PUT: http://localhost:8080/portal/rest/v1/calendar/tasks/Task123
+   * @request  PUT: http://localhost:8080/rest/private/v1/calendar/tasks/Task123
    * 
    * @response  HTTP status code:
-   *            200 if updated successfully, 404 if task with provided id doesnt exists,
-   *            400 if provided attributes are not valid, 
-   *            401 if user don't have create permission, 503 if there is any error during the save process
+   *            200 if updated successfully,
+   *            404 if task not found,
+   *            400 if attributes are invalid, 
+   *            401 if the user does not have edit permission,
+   *            503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code.
    * 
    * @authentication
    *  
@@ -2026,22 +2028,22 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Deletes a task with specified id if:
-   * - the authenticated user is the owner of the calendar of the event
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar of the event has been shared with the authenticated user, with modification rights
-   * - the calendar of the event has been shared with a group of the authenticated user, with modification rights
+   * Deletes a task specified by id, in one of conditions:
+   * the calendar of the task is public;
+   * OR the authenticated user is the owner of the calendar;
+   * OR the user belongs to the group of the calendar;
+   * OR the task is delegated to the user;
+   * OR the calendar has been shared with the user or with a group of the user.
    *  
-   * @param id  
-   *        identity of the task to delete
+   * @param id Identity of the task.
    * 
-   * @request  DELETE: http://localhost:8080/portal/rest/v1/calendar/tasks/Task123
+   * @request  DELETE: http://localhost:8080/rest/private/v1/calendar/tasks/Task123
    * 
    * @response  HTTP status code:
-   *            200 if delete successfully, 404 if task with provided id doesnt exists,
-   *            401 if user don't have permission, 503 if there is any error during the save process
+   *            200 if deleted successfully, 404 if task not found,
+   *            401 if the user does not have permission, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code.
    * 
    * @authentication
    * 
@@ -2089,37 +2091,34 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Returns an attachment with specified id if:
-   * - the calendar of the event is public
-   * - the authenticated user is the owner of the calendar of the event
-   * - the authenticated user belongs to the group of the calendar of the event
-   * - the authenticated user is a participant of the event
-   * - the calendar of the event has been shared with the authenticated user or with a group of the authenticated user
+   * Queries an attachment (of an event/task) by attachment id, in one of conditions:
+   * The calendar of the event/task is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the user is a participant of the event or is delegated to the task,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id              
-   *        identity of attachment to find
+   * @param id Identity of the attachment.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective attachment attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/attachments/att123?fields=id,name
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/attachments/att123?fields=id,name
    * 
    * @format JSON
    * 
    * @response 
-   *   {
-   *      id: "att123",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/attachments/att123",
-   *      name: "..", mimeType: "...",
-   *      weight: ""
-   *   } 
+   * {
+   *   "weight": 38569,
+   *   "mimeType": "image/png",
+   *   "name": "test.png",
+   *   "href": "...",
+   *   "id": "..."
+   * }
    *  
-   * @return  return attachment info as json object
+   * @return  Attachment info in JSON.
    * 
    * @authentication
    *  
@@ -2183,22 +2182,22 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Deletes an attachment with specified id if:
-   * - the authenticated user is the owner of the calendar of the event
-   * - for group calendars, the authenticated user has edit rights on the calendar
-   * - the calendar of the event has been shared with the authenticated user, with modification rights
-   * - the calendar of the event has been shared with a group of the authenticated user, with modification rights
+   * Deletes an attachment (of an event/task) specified by attachment id, in one of conditions:
+   * The calendar of the event/task is public,
+   * OR the authenticated user is the owner of the calendar,
+   * OR the user belongs to the group of the calendar,
+   * OR the user is a participant of the event or is delegated to the task,
+   * OR the calendar has been shared with the user or with a group of the user.
    * 
-   * @param id  
-   *        identity of the attachment to delete
+   * @param id Identity of the attachment.
    * 
-   * @request  DELETE: http://localhost:8080/portal/rest/v1/calendar/attachments/att123
+   * @request  DELETE: http://localhost:8080/rest/private/v1/calendar/attachments/att123
    * 
    * @response  HTTP status code:
-   *            200 if delete successfully, 404 if event that contains attachment doen't exists
-   *            401 if user don't have permission, 503 if there is any error during the save process
+   *            200 if deleted successfully, 404 if attachment not found,
+   *            401 if the user does not have permission, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code.
    * 
    * @authentication
    * 
@@ -2227,39 +2226,38 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Returns the categories if an user is authenticated (the common categories + the personal categories)
+   * Returns the categories (common and personal categories).
    *
-   * @param offset       
-   *        The starting point when paging through a list of entities. Defaults to *0*.
+   * @param offset The starting point when paging the result. Default is *0*.
    * 
-   * @param limit         
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   * @param limit Maximum number of categories returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
    * 
-   * @param fields        
-   *        This is a list of comma separated property"s names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective category attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/categories?fields=id,name
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/categories?fields=id,name
    * 
    * @format JSON
    * 
    * @response 
-   * [
-   *   {
-   *      id: "myCat",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/categories/myCat",
-   *      name: ".." 
-   *   }, 
-   *   {id...}
-   * ]
+   * {
+   *   "limit": 10,
+   *   "data": [
+   *     {
+   *       "name": "defaultEventCategoryNameAll",
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll",
+   *       "id": "defaultEventCategoryIdAll"
+   *     },
+   *     {...}
+   *   ],
+   *   "size": 6,
+   *   "offset": 0
+   * }
    * 
-   * @return  List of event categories
+   * @return  List of categories.
    * 
    * @authentication
    *  
@@ -2307,31 +2305,27 @@ public class CalendarRestApi implements ResourceContainer {
   }  
   
   /**
-   * Returns the event category by id and it belongs to user
+   * Returns a category specified by id if it is a common category or is a personal category of the user.
    * 
-   * @param id              
-   *        identity of event category to find
+   * @param id Identity of the category.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective category attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/categories/cat123?fields=id,name
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/categories/cat123?fields=id,name
    * 
    * @format JSON
    * 
    * @response 
-   *   {
-   *      id: "cat123",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/categories/cat123",
-   *      name: ".." 
-   *   }
+   * {
+   *   "name": "defaultEventCategoryNameAll",
+   *   "href": "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll",
+   *   "id": "defaultEventCategoryIdAll"
+   * }
    *  
-   * @return  return event category info as json object
+   * @return  A category in JSON.
    * 
    * @authentication
    *  
@@ -2388,56 +2382,55 @@ public class CalendarRestApi implements ResourceContainer {
 
   /**
    *
-   * Gets a feed with the given id    
-   * Returns the feed if the authenticated user is the owner of the feed
+   * Gets a feed with the given id. The user must be the owner of the feed.
    *  
-   * @param id              
-   *        title of feed to find
+   * @param id The title of the feed.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective feed attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=calendar. In case of collections, 
-   *        you can put offset (default: 0), limit (default: *query_limit* of the rest service) value into param, for example: expand=calendar(0,5).
+   * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
+   *        This is a comma-separated list of attribute names. For example: expand=calendar,categories. In case of collections, 
+   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
-   *            id: "...", 
-   *            calendars: {
-   *                        "http://localhost:8080/portal/rest/v1/calendar/calendars/demo-defaultCalendarId"
-   *                        }
-   *            ....
+   *            "id": "...", 
+   *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/demo-defaultCalendarId"
+   *            ...
    *        }
    *        It returns:
    *        {
-   *            id: "...", 
-   *            calendars: {
-   *                id: "...",
-   *                name:"demo-defaultId",
-   *            ....
+   *            "id": "...", 
+   *            "calendar": 
+   *            {
+   *              "id": "...",
+   *              "name":"demo-defaultId",
+   *              ...
    *            }
-   *            ....
+   *            ...
    *        }
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/feeds/feed123?fields=id,name
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/feeds/feed123?fields=id,name
    * 
    * @format JSON
    * 
    * @response 
-   *   {
-   *      id: "feed123",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/feeds/feed123",
-   *      name: "..", rss: "...",
-   *      calendars: ["...", ".."]
-   *   }
+   * {
+   *   "calendars": [
+   *     "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId"
+   *   ],
+   *   "calendarIds": [
+   *     "john-defaultCalendarId"
+   *   ],
+   *   "rss": "/v1/calendar/feeds/Calendar_Feed/rss",
+   *   "name": "Calendar_Feed",
+   *   "href": "http://localhost:8080/rest/private/v1/calendar/feeds/Calendar_Feed",
+   *   "id": "Calendar_Feed"
+   * }
    *  
-   * @return  return feed as json object
+   * @return  Feed in JSON.
    * 
    * @authentication
    *  
@@ -2487,31 +2480,27 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Updates a feed with the given id   
-   * Updates the feed if the authenticated user is the owner of the feed 
+   * Updates a feed with the given id. The user must be the owner of the feed. 
    * 
-   * This entry point only allow http PUT request, with json object (feedResource) in the request body, and feed id in the path.
-   * All the attributes of json object are optional, any omited attributes, or non-exists one will be ignored. *id* and *href* attributes can't
-   * be updated, they also be ignored.
+   * This accepts HTTP PUT request, with JSON object (feedResource) in the request body, and feed id in the path.
+   * All the feed attributes are optional, any absent/invalid attributes will be ignored.
+   * *id* and *href* are auto-generated and cannot be edited by the users.
    * For example:
    *   {
-   *      name: "..",
-   *      calendarIds: ["...", ".."]
+   *      "name": "..",
+   *      "calendarIds": ["...", "..."]
    *   }
    *  
-   * @param id             
-   *        title of the feed to update
+   * @param id The title of the feed.
    * 
-   * @param feedResource  
-   *        json object contains attributes of feed object to update, all the attributes are optional 
+   * @param feedResource JSON object contains attributes of the feed to be updated, all the attributes are optional.
    * 
-   * @request  PUT: http://localhost:8080/portal/rest/v1/calendar/feeds/feed123
+   * @request  PUT: http://localhost:8080/rest/private/v1/calendar/feeds/feed123
    * 
    * @response  HTTP status code:
-   *            200 if updated successfully, 404 if feed with provided id doesnt exists,
-   *            503 if there is any error during the save process
+   *            200 if updated successfully, 404 if feed not found, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code.
    * 
    * @authentication
    *  
@@ -2576,19 +2565,16 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Deletes a feed with the given id    
-   * Deletes the feed if the authenticated user is the owner of the feed 
+   * Deletes a feed with the given id. The user must be the owner of the feed.
    * 
-   * @param id  
-   *        title of the feed to delete
+   * @param id The title of the feed.
    * 
-   * @request  DELETE: http://localhost:8080/portal/rest/v1/calendar/feeds/feed123
+   * @request  DELETE: http://localhost:8080/rest/private/v1/calendar/feeds/feed123
    * 
    * @response  HTTP status code:
-   *            200 if delete successfully,
-   *            503 if there is any error during the save process
+   *            200 if delete successfully, 503 if any error during save process.
    * 
-   * @return status code
+   * @return HTTP status code.
    * 
    * @authentication
    * 
@@ -2608,23 +2594,17 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   *  Gets the RSS stream of the feed with the given id
-   *  Returns the RSS stream if:
-   *   - the calendar is public
-   *   - the authenticated user is the owner of the calendar
-   *   - the authenticated user belongs to the group of the calendar
-   *   - the calendar has been shared with the authenticated user or with a group of the authenticated user
+   *  Gets the RSS stream of a feed with the given id. The user must be the owner of the feed.
    *   
-   * @param id              
-   *        title of the feed 
+   * @param id The title of the feed.
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/feeds/feed123/rss
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/feeds/feed123/rss
    * 
    * @format application/xml
    * 
-   * @response rss
+   * @response RSS
    *  
-   * @return  return rss from feed
+   * @return  Calendar RSS.
    * 
    * @authentication
    *  
@@ -2699,54 +2679,33 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Returns an invitation with specified id if:
-   * - the authenticated user is the participant of the invitation
-   * - the authenticated user has edit rights on the calendar of the event of the invitation
+   * Returns an invitation with specified id if one of conditions:
+   * The authenticated user is the participant of the invitation,
+   * OR the user has edit permission on the calendar of the event of the invitation.
    * 
-   * @param id              
-   *        identity of invitation to find
+   * @param id Identity of the invitation.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param fields Comma-separated list of selective invitation attributes to be returned. All returned if not specified.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=event
-   *        Instead of: 
-   *        {
-   *            id: "...", 
-   *            event: "http://localhost:8080/portal/rest/v1/calendar/events/evt123"
-   *            ....
-   *        }
-   *        It returns:
-   *        {
-   *            id: "...", 
-   *            event: {
-   *                id: "...",
-   *                name:"myEvent",
-   *                ....
-   *            }
-   *            ....
-   *        }
+   * @param expand Use expand=event to get more event attributes instead of only link.
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/invitations/evt123:root
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/invitations/evt123:root
    * 
    * @format  JSON
    * 
    * @response 
-   *   {
-   *      id: "evt123:root",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/events/evt123",
-   *      event: "..", participant: "...",
-   *      status: ""
-   *   }
+   * {
+   *   "participant": "root",
+   *   "event": "http://localhost:8080/rest/private/v1/calendar/events/Event9b014f9e7f00010166296f35cf2af06b",
+   *   "status": "",
+   *   "href": "http://localhost:8080/rest/private/v1/calendar/invitations/Event9b014f9e7f00010166296f35cf2af06b:root",
+   *   "id": "Event9b014f9e7f00010166296f35cf2af06b:root"
+   * }
    *  
-   * @return  invitation as json object
+   * @return  Invitation as JSON.
    * 
    * @authentication
    *  
@@ -2789,24 +2748,19 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Update the invitation if the authenticated user is the participant of the invitation
-   * This entry point only allow http PUT request, with id of invitation in the path, and the status
+   * Replies to an invitation specified by id. The user must be the invitee.
    *  
-   * @param id             
-   *        identity of the invitation to update
+   * @param id Identity of the invitation.
    * 
-   * @param status      
-   *        new status to update ("", "maybe", "yes", "no")
+   * @param status New status to update ("", "maybe", "yes", "no").
    * 
-   * @request  PUT: http://localhost:8080/portal/rest/v1/calendar/invitations/evt123:root
+   * @request  PUT: http://localhost:8080/rest/private/v1/calendar/invitations/evt123:root
    * 
    * @response  HTTP status code:
-   *            200 if updated successfully,
-   *            404 if invitation with provided id doesnt exists,
-   *            400 if status is not valid,
-   *            401 if user don't have create permission, 503 if there is any error during the save process
+   *            200 if updated successfully, 404 if invitation not found, 400 if status is invalid,
+   *            401 if the user does not have permission, 503 if any error during save process.
    * 
-   * @return  status code
+   * @return  HTTP status code.
    * 
    * @authentication
    *  
@@ -2838,20 +2792,17 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Delete an invitation with specified id if the authenticated user has edit rights on the calendar of the event of the invitation
+   * Deletes an invitation with specified id. The authenticated user must have edit permission on the calendar.
    *  
-   * @param id 
-   *        identity of the invitation to delete
+   * @param id Identity of the invitation.
    * 
-   * @request  DELETE: http://localhost:8080/portal/rest/v1/calendar/invitations/evt123:root
+   * @request  DELETE: http://localhost:8080/rest/private/v1/calendar/invitations/evt123:root
    * 
    * @response  HTTP status code:
-   *            200 if delete successfully,
-   *            404 if invitation with provided id doesnt exists,
-   *            401 if user don't have permission,
-   *            503 if there is any error during the save process
+   *            200 if deleted successfully, 404 if invitation not found,
+   *            401 if the user does not have permission, 503 if any error during save process.
    * 
-   * @return status code
+   * @return    HTTP status code.
    * 
    * @authentication
    * 
@@ -2880,68 +2831,57 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   * Returns invitations of an event with specified id when:
-   * the authenticated user is the participant of the invitation
-   * the authenticated user has edit rights on the calendar of the event of the invitation
+   * Returns invitations of an event specified by id when:
+   * the authenticated user is the participant of the invitation,
+   * OR the authenticated user has edit permission on the calendar of the event.
    * 
-   * @param id         
-   *        identity of event to search for invitations
+   * @param id Identity of the event.
    *
-   * @param status           
-   *        search for this status only. If not specify, search invitation of any status ("", "maybe", "yes", "no")
+   * @param status Filter the invitations by this status if specified.
    * 
-   * @param offset            
-   *        The starting point when paging through a list of entities. Defaults to *0*.
+   * @param offset The starting point when paging the result. Default is *0*.
    * 
-   * @param limit              
-   *        The maximum number of results when paging through a list of entities, if not specify or exceed
-   *        the *query_limit* configuration of calendar rest service, it will use the *query_limit* 
-   *        (see more on {@link #CalendarRestApi(OrganizationService, InitParams)} java doc)
+   * @param limit Maximum number of invitations returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
    * 
-   * @param fields        
-   *        This is a list of comma separated property's names of response json object,
-   *        if not specified, it return the json will all available properties.
+   * @param returnSize Default is *false*. If set to *true*, the total number of matched invitations will be returned in JSON,
+   *        and a "Link" header is added. This header contains "first", "last", "next" and "previous" links.
    * 
-   * @param jsonp        
-   *        The name of a JavaScript function to be used as the JSONP callback, if not specified, only
-   *        json object is returned.
+   * @param fields Comma-separated list of selective invitation attributes to be returned. All returned if not specified.
    * 
-   * @param expand     
-   *        used to ask for a full representation of a subresource, instead of only its link. 
-   *        This is a list of comma-separated property's names. For example: expand=event
-   *        Instead of: 
-   *        {
-   *            id: "...", 
-   *            event: "http://localhost:8080/portal/rest/v1/calendar/events/evt123"
-   *            ....
-   *        }
-   *        It returns:
-   *        {
-   *            id: "...", 
-   *            event: {
-   *                id: "...",
-   *                name:"myEvent",
-   *                ....
-   *            }
-   *            ....
-   *        }
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
    * 
-   * @request  GET: http://localhost:8080/portal/rest/v1/calendar/events/evt123/invitations
+   * @param expand Use expand=event to get more event attributes instead of only link.
+   * 
+   * @request  GET: http://localhost:8080/rest/private/v1/calendar/events/evt123/invitations
    * 
    * @format  JSON
    * 
    * @response 
-   * [
-   *   {
-   *      id: "evt123:root",
-   *      href: "http://localhost:8080/portal/rest/v1/calendar/events/evt123",
-   *      event: "..", participant: "...",
-   *      status: ""
-   *   }, 
-   *   {id...}
-   * ]
+   * {
+   *   "limit": 10,
+   *   "data": [
+   *     {
+   *       "participant": "john",
+   *       "event": "http://localhost:8080/rest/private/v1/calendar/events/Event9b014f9e7f00010166296f35cf2af06b",
+   *       "status": "",
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/invitations/Event9b014f9e7f00010166296f35cf2af06b:john",
+   *       "id": "Event9b014f9e7f00010166296f35cf2af06b:john"
+   *     },
+   *     {
+   *       "participant": "root",
+   *       "event": "http://localhost:8080/rest/private/v1/calendar/events/Event9b014f9e7f00010166296f35cf2af06b",
+   *       "status": "",
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/invitations/Event9b014f9e7f00010166296f35cf2af06b:root",
+   *       "id": "Event9b014f9e7f00010166296f35cf2af06b:root"
+   *     }
+   *   ],
+   *   "size": -1,
+   *   "offset": 0
+   * }
    * 
-   * @return  List of invitations of a specific event
+   * @return  Invitations as JSON.
    * 
    * @authentication
    *  
@@ -3013,29 +2953,24 @@ public class CalendarRestApi implements ResourceContainer {
   }  
 
   /**
-   *  Creates an invitation in the event with the given id . Creates the invitation only if:
-   *  - the authenticated user is the participant of the invitation
-   *  - the authenticated user has edit rights on the calendar of the event of the invitation
+   *  Creates an invitation in an event specified by event id, in one of conditions:
+   *  the authenticated user is the participant of the event,
+   *  OR the authenticated user has edit permission on the calendar of the event.
+   *  This accepts invitation resource in request body, for example : {"participant":"root","status":""}.
+   *  
    * 
-   * @param id                       
-   *        identity of the *event* to create invitation
+   * @param id Identity of the event.
    * 
-   * @param participant        
-   *        name of participant (userId). If not provided or empty, return 400 status code
-   * 
-   * @param status               
-   *        status of invitation ("", "maybe", "yes", "no")
-   * 
-   * @request  POST: http://localhost:8080/portal/rest/v1/calendar/events/evt123/invitations
+   * @request  POST: http://localhost:8080/rest/private/v1/calendar/events/evt123/invitations
    * 
    * @response  HTTP status code:
-   *            201 if created successfully, and http header *location* href point to the newly created event.
-   *            400 if participant or status is not valid.
-   *            404 if event not found with provided id.
-   *            401 if user don't have create permission,
-   *            503 if there is any error during the save process.
+   *            201 if created successfully, and HTTP header *location* href that points to the newly created invitation.
+   *            400 if participant is invalid.
+   *            404 if event not found.
+   *            401 if the authenticated user does not have permission.
+   *            503 if any error during save process.
    * 
-   * @return  http status code
+   * @return  HTTP status code.
    * 
    * @authentication
    * 
