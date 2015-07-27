@@ -39,7 +39,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
   public Calendar getCalendarById(String calId) {
     return getCalendarById(calId, null);
   }
-  
+
   @Override
   public Calendar getCalendarById(String calId, CalendarType calType) {
     for (CalendarDAO dao : getCalendarDAO(calType)) {
@@ -50,19 +50,22 @@ public class CalendarHandlerImpl implements CalendarHandler {
 
   @Override
   public ListAccess findCalendarsByQuery(CalendarQuery query) {
-    MultiListAccess lists = new MultiListAccess();    
-    
+    MultiListAccess lists = new MultiListAccess();
+
     for (CalendarDAO dao : getCalendarDAO(query.getCalType())) {
       lists.add(dao.findCalendarsByQuery(query));
     }
 
     return lists;
   }
-  
+
   @Override
   public Calendar saveCalendar(Calendar calendar, boolean isNew) {
     for (CalendarDAO dao : getCalendarDAO(calendar.getCalendarType())) {
-      return dao.save(calendar, isNew);
+      Calendar cal = dao.save(calendar, isNew); 
+      if (cal != null) {
+        return cal;
+      }
     }
 
     return null;
@@ -71,7 +74,10 @@ public class CalendarHandlerImpl implements CalendarHandler {
   @Override
   public Calendar removeCalendar(String calendarId, CalendarType calType) {
     for (CalendarDAO dao : getCalendarDAO(calType)) {
-      return dao.remove(calendarId, calType);
+      Calendar cal = dao.remove(calendarId, calType);
+      if (cal != null) {
+        return cal;        
+      }
     }
     
     return null;

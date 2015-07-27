@@ -62,6 +62,7 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.handler.CalendarHandler;
+import org.exoplatform.calendar.service.handler.CalendarHandlerImpl;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.commons.utils.ExoProperties;
@@ -111,10 +112,15 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   
   private List<Storage> storages = new LinkedList<Storage>();
   
+  private CalendarHandler calendarHandler;
+  
   private EventDAO eventDAO;
 
   public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs, CacheService cservice) throws Exception {
     super(nodeHierarchyCreator, reposervice, cservice);
+    
+    this.calendarHandler = new CalendarHandlerImpl(this);
+    
     calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(storage_));
     calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(storage_));
     remoteCalendarService = new RemoteCalendarServiceImpl(storage_);
@@ -1286,7 +1292,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     storage_.removeAttachmentById(attId);
   }
   
-  public void addDAOPlugin(ComponentPlugin dao) {
+  public void addStoragePlugin(ComponentPlugin dao) {
     if (dao instanceof Storage) {
       synchronized (this) {
           storages.add((Storage)dao);
@@ -1303,13 +1309,9 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     return storage_;
   }
 
-  /**
-   * @see org.exoplatform.calendar.service.CalendarService#getCalendarHandler()
-   */
   @Override
   public CalendarHandler getCalendarHandler() {
-    // TODO Auto-generated method stub
-    return null;
+    return calendarHandler;
   }
   
   /**
