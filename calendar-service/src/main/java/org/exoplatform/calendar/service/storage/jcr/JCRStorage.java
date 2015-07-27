@@ -33,7 +33,8 @@ public class JCRStorage extends BaseComponentPlugin implements Storage {
   public JCRStorage(CalendarService service) {
     calendarDAO = new JCRCalendarDAOImpl(service, this);
   }
-  
+
+  //TODO: is this in used ?
   public JCRStorage(CalendarDAO calDAO) {
     this.calendarDAO = calDAO;
   }

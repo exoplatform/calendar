@@ -30,7 +30,9 @@ import org.exoplatform.calendar.service.handler.CalendarHandler;
 import org.exoplatform.calendar.service.handler.EventHandler;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
+import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.services.scheduler.JobSchedulerService;
+
 import org.quartz.JobDetail;
 
 public interface CalendarService extends LegacyCalendarService {
@@ -46,6 +48,8 @@ public interface CalendarService extends LegacyCalendarService {
   public CalendarHandler getCalendarHandler();
   
   public EventHandler getEventHandler();
+
+  public Storage getDataSource(CalendarType type);
 
   /**
    * Gets all event categories of an user

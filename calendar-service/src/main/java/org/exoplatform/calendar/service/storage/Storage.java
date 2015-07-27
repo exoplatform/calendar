@@ -21,7 +21,10 @@ import java.util.List;
 
 import org.exoplatform.calendar.service.CalendarType;
 
+//TODO: rename to CalendarDataSource ?
 public interface Storage {
+
+  //TODO: change to isTypeSupported(type) which returns true OR false if the type is supported.
   public List<CalendarType> getSupportedTypes();
   
   public CalendarDAO getCalendarDAO();

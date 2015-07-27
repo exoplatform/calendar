@@ -27,6 +27,7 @@ import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.commons.utils.ListAccess;
 
+//TODO: should move to org.exoplatform.service.impl package.
 public class CalendarHandlerImpl implements CalendarHandler {
 
   private CalendarServiceImpl service;

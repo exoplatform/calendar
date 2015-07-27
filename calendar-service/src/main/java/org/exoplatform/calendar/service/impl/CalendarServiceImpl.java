@@ -1260,13 +1260,23 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   public void removeAttachmentById(String attId) {
     storage_.removeAttachmentById(attId);
   }
-  
+
+  // TODO: rename to addDataStore ?
   public void addStoragePlugin(ComponentPlugin dao) {
     if (dao instanceof Storage) {
       synchronized (this) {
           storages.add((Storage)dao);
       }
     }
+  }
+
+  public Storage getDataSource(CalendarType type) {
+    for (Storage s : storages) {
+      if (s.getSupportedTypes().contains(type)) {
+        return s;
+      }
+    }
+    return null;
   }
 
   public JCRDataStorage getDataStorage() {

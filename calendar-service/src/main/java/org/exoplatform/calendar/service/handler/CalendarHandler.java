@@ -22,6 +22,7 @@ import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.commons.utils.ListAccess;
 
+//TODO: Should move to org.exoplatform.calendar.service package.
 public interface CalendarHandler {
 
   /**
