@@ -63,6 +63,8 @@ import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.handler.CalendarHandler;
 import org.exoplatform.calendar.service.handler.CalendarHandlerImpl;
+import org.exoplatform.calendar.service.handler.EventHandler;
+import org.exoplatform.calendar.service.handler.EventHandlerImpl;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.commons.utils.ExoProperties;
@@ -113,18 +115,18 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   private List<Storage> storages = new LinkedList<Storage>();
   
   private CalendarHandler calendarHandler;
-  
-  private EventDAO eventDAO;
+
+  private EventHandler eventHandler;  
 
   public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs, CacheService cservice) throws Exception {
     super(nodeHierarchyCreator, reposervice, cservice);
     
     this.calendarHandler = new CalendarHandlerImpl(this);
+    this.eventHandler = new EventHandlerImpl(storage_);
     
     calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(storage_));
     calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(storage_));
-    remoteCalendarService = new RemoteCalendarServiceImpl(storage_);
-    eventDAO = new EventDAOImpl(this, storage_);
+    remoteCalendarService = new RemoteCalendarServiceImpl(storage_);    
     rbs_ = rbs;    
     ExoProperties props = params.getPropertiesParam("eventNumber.info").getProperties();
     String eventNumber = props.getProperty("eventNumber");
@@ -171,12 +173,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   public void removeEventCategory(String username, String eventCategoryId) throws Exception {
     storage_.removeEventCategory(username, eventCategoryId);
   }
-
-  public CalendarEvent getEvent(String username, String eventId) throws Exception {
-    return storage_.getEvent(username, eventId);
-  }
-
-  
 
   /**
    * {@inheritDoc}
@@ -253,15 +249,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     return storage_.searchHightLightEventSQL(username, eventQuery, privateCalendars, publicCalendars);
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
-    if(Utils.isUserEnabled(username))
-    return storage_.getEvents(username, eventQuery, publicCalendarIds);
-    else return new ArrayList<CalendarEvent>();
-  }
-
   @Override
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
     return storage_.getAllNoRepeatEvents(username, eventQuery, publicCalendarIds);
@@ -278,22 +265,8 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   /**
    * {@inheritDoc}
    */
-  public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
-    storage_.saveEventToSharedCalendar(username, calendarId, event, isNew);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   public Map<String, String> checkFreeBusy(EventQuery eventQuery) throws Exception {
     return storage_.checkFreeBusy(eventQuery);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public void removeSharedEvent(String username, String calendarId, String eventId) throws Exception {
-    storage_.removeSharedEvent(username, calendarId, eventId);
   }
 
   /**
@@ -756,10 +729,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery,
                                                                      String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception {
     return storage_.getHighLightOriginalRecurrenceEventsSQL(username, from, to, eventQuery, privateCalendars, publicCalendars, emptyCalendars);
-  }
-
-  public CalendarEvent getEventById(String eventId) throws Exception {
-    return storage_.getEventById(eventId);
   }
 
   @Override
@@ -1300,11 +1269,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     }
   }
 
-  @Override
-  public EventDAO getEventDAO() {
-    return eventDAO;
-  }
-  
   public JCRDataStorage getDataStorage() {
     return storage_;
   }
@@ -1313,6 +1277,12 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   public CalendarHandler getCalendarHandler() {
     return calendarHandler;
   }
+
+  @Override
+  public EventHandler getEventHandler() {
+    return eventHandler;
+  }
+  
 
   /**
    * This method is intended to used internally in implementation of handlers

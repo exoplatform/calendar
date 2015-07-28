@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-package org.exoplatform.calendar.service.impl;
+package org.exoplatform.calendar.service.handler;
 
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -32,170 +31,167 @@ import javax.jcr.query.QueryManager;
 
 import net.fortuna.ical4j.model.DateTime;
 
-import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
-import org.exoplatform.calendar.service.EventDAO;
 import org.exoplatform.calendar.service.EventPageListQuery;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
-import org.exoplatform.calendar.service.LegacyCalendarService;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.impl.EventNodeListAccess;
+import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-@Deprecated
-public class EventDAOImpl implements EventDAO {
+public class EventHandlerImpl implements EventHandler {
 
-  private static Log      log = ExoLogger.getLogger(EventDAOImpl.class);
-
-  private LegacyCalendarService calService;
+  private static Log      log = ExoLogger.getLogger(EventHandlerImpl.class);
 
   protected JCRDataStorage  storage;
 
-  public EventDAOImpl(LegacyCalendarService calService, JCRDataStorage storage_) {
-    this.calService = calService;
-    this.storage = storage_;    
+  public EventHandlerImpl(JCRDataStorage storage_) {
+    this.storage = storage_;
   }
 
   @Override
   public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
-    return new EventList(new EventNodeListAccess(this, eventQuery));
+//    return new EventList(new EventNodeListAccess(this, eventQuery));
+    return null;
   }
   
   @Override
   public ListAccess<Invitation> findInvitationsByQuery(EventQuery query) {
-    return new InvitationListAccess(this, query);
+//    return new InvitationListAccess(this, query);
+    return null;
   }
 
   @Override
   public Invitation getInvitationById(String invitationID) throws CalendarException {
-    String[] tmp = Invitation.parse(invitationID);
-    String eventId = tmp[0];
-    String participant = tmp[1];
-
-    CalendarEvent event = null;
-    try {
-      event = calService.getEventById(eventId);
-    } catch (Exception e) {
-      log.error("error during get event: {}, exeption: {}", eventId, e.getMessage());
-      throw new CalendarException(null, e);
-    }
-
-    if (event != null) {
-      Invitation[] invitations = event.getInvitations();
-      for (Invitation invite : invitations) {
-        if (invite.getParticipant().equals(participant)) {
-          return invite;
-        }
-      }
-    } else {
-      log.debug("Can't find invitation due to event not found: {}", invitationID);
-    }
+//    String[] tmp = Invitation.parse(invitationID);
+//    String eventId = tmp[0];
+//    String participant = tmp[1];
+//
+//    CalendarEvent event = null;
+//    try {
+//      event = calService.getEventById(eventId);
+//    } catch (Exception e) {
+//      log.error("error during get event: {}, exeption: {}", eventId, e.getMessage());
+//      throw new CalendarException(null, e);
+//    }
+//
+//    if (event != null) {
+//      Invitation[] invitations = event.getInvitations();
+//      for (Invitation invite : invitations) {
+//        if (invite.getParticipant().equals(participant)) {
+//          return invite;
+//        }
+//      }
+//    } else {
+//      log.debug("Can't find invitation due to event not found: {}", invitationID);
+//    }
     return null;
   }
 
   @Override
   public void removeInvitation(String invitationId) throws CalendarException {
-    String[] tmp = Invitation.parse(invitationId);
-    String eventId = tmp[0];
-    String participant = tmp[1];
-
-    CalendarEvent event = null;
-    try {
-      event = calService.getEventById(eventId);
-    } catch (Exception e) {
-      log.error("Can't remove Invitation, there is error during get event {}", eventId);
-      throw new CalendarException(null, e);
-    }
-    
-    if (event != null) {
-      event.removeParticipant(participant);
-      
-      try {
-        this.saveEvent(participant, event);
-      } catch (Exception e) {
-        log.error("Can't remove invitation, there is error during saving event {}", e);
-        throw new CalendarException(null, e);
-      }
-    }
+//    String[] tmp = Invitation.parse(invitationId);
+//    String eventId = tmp[0];
+//    String participant = tmp[1];
+//
+//    CalendarEvent event = null;
+//    try {
+//      event = calService.getEventById(eventId);
+//    } catch (Exception e) {
+//      log.error("Can't remove Invitation, there is error during get event {}", eventId);
+//      throw new CalendarException(null, e);
+//    }
+//    
+//    if (event != null) {
+//      event.removeParticipant(participant);
+//      
+//      try {
+//        this.saveEvent(participant, event);
+//      } catch (Exception e) {
+//        log.error("Can't remove invitation, there is error during saving event {}", e);
+//        throw new CalendarException(null, e);
+//      }
+//    }
   }
 
   @Override
   public void updateInvitation(String id, String status) {
-    String[] tmp = Invitation.parse(id);
-    String eventId = tmp[0];
-    String participant = tmp[1];
-
-    CalendarEvent event = null;
-    try {
-      event = calService.getEventById(eventId);
-    } catch (Exception e) {
-      log.error("Can't update invitation due to can't find event {}", eventId);
-      throw new CalendarException(null, e);
-    }
-    
-    if (event != null) {
-      Map<String, String> statusMap = event.getStatusMap();
-      String currStatus = statusMap.get(participant);
-
-      if (currStatus != null && !currStatus.equals(status)) {
-        statusMap.put(participant, status);
-        event.setStatusMap(statusMap);
-
-        try {
-          saveEvent(participant, event);
-        } catch (Exception e) {
-          log.error("Can't update invitation. There is error event {}", eventId);
-          throw new CalendarException(null, e);
-        }
-      }
-    }    
+//    String[] tmp = Invitation.parse(id);
+//    String eventId = tmp[0];
+//    String participant = tmp[1];
+//
+//    CalendarEvent event = null;
+//    try {
+//      event = calService.getEventById(eventId);
+//    } catch (Exception e) {
+//      log.error("Can't update invitation due to can't find event {}", eventId);
+//      throw new CalendarException(null, e);
+//    }
+//    
+//    if (event != null) {
+//      Map<String, String> statusMap = event.getStatusMap();
+//      String currStatus = statusMap.get(participant);
+//
+//      if (currStatus != null && !currStatus.equals(status)) {
+//        statusMap.put(participant, status);
+//        event.setStatusMap(statusMap);
+//
+//        try {
+//          saveEvent(participant, event);
+//        } catch (Exception e) {
+//          log.error("Can't update invitation. There is error event {}", eventId);
+//          throw new CalendarException(null, e);
+//        }
+//      }
+//    }    
   }
 
   @Override
   public Invitation createInvitation(String eventId, String participant, String status) throws CalendarException {
-    CalendarEvent event;
-    try {
-      event = calService.getEventById(eventId);
-    } catch (Exception e) {
-      log.error("Can't create invitation. There is error duing getting event: {}", eventId);
-      throw new CalendarException(null, e);
-    }
-
-    if (event != null && event.getStatusMap().get(participant) == null) {
-      event.addParticipant(participant, status);
-      
-      try {
-        saveEvent(participant, event);
-        return new Invitation(eventId, participant, status);
-      } catch (Exception e) {
-        log.error("Can't create invitation. There is error during saving event: {}",  eventId);
-        throw new CalendarException(null, e);
-      }
-    }
+//    CalendarEvent event;
+//    try {
+//      event = calService.getEventById(eventId);
+//    } catch (Exception e) {
+//      log.error("Can't create invitation. There is error duing getting event: {}", eventId);
+//      throw new CalendarException(null, e);
+//    }
+//
+//    if (event != null && event.getStatusMap().get(participant) == null) {
+//      event.addParticipant(participant, status);
+//      
+//      try {
+//        saveEvent(participant, event);
+//        return new Invitation(eventId, participant, status);
+//      } catch (Exception e) {
+//        log.error("Can't create invitation. There is error during saving event: {}",  eventId);
+//        throw new CalendarException(null, e);
+//      }
+//    }
     return null;
   }
   
   private void saveEvent(String username, CalendarEvent event) throws Exception {
-    String calendarId = event.getCalendarId();
-    Calendar cal = calService.getCalendarById(calendarId);
-    String owner = cal.getCalendarOwner();
-    int type = calService.getTypeOfCalendar(owner, calendarId);
-
-    switch (type) {
-    case Calendar.TYPE_PRIVATE:
-      calService.saveUserEvent(owner, calendarId, event, false);
-      break;
-    case Calendar.TYPE_PUBLIC:
-      calService.savePublicEvent(calendarId, event, false);
-      break;
-    case Calendar.TYPE_SHARED:
-      calService.saveEventToSharedCalendar(username, calendarId, event, false);
-    }
+//    String calendarId = event.getCalendarId();
+//    Calendar cal = calService.getCalendarById(calendarId);
+//    String owner = cal.getCalendarOwner();
+//    int type = calService.getTypeOfCalendar(owner, calendarId);
+//
+//    switch (type) {
+//    case Calendar.TYPE_PRIVATE:
+//      calService.saveUserEvent(owner, calendarId, event, false);
+//      break;
+//    case Calendar.TYPE_PUBLIC:
+//      calService.savePublicEvent(calendarId, event, false);
+//      break;
+//    case Calendar.TYPE_SHARED:
+//      calService.saveEventToSharedCalendar(username, calendarId, event, false);
+//    }
   }
   
   public QueryImpl createJCRQuery(String queryStm, String queryType) throws RepositoryException {

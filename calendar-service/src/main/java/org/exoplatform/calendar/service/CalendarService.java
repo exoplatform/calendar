@@ -27,6 +27,7 @@ import java.util.TimeZone;
 import javax.jcr.Node;
 
 import org.exoplatform.calendar.service.handler.CalendarHandler;
+import org.exoplatform.calendar.service.handler.EventHandler;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
 import org.exoplatform.services.scheduler.JobSchedulerService;
@@ -43,6 +44,8 @@ public interface CalendarService extends LegacyCalendarService {
   final public static String CALDAV      = "CalDAV";
 
   public CalendarHandler getCalendarHandler();
+  
+  public EventHandler getEventHandler();
 
   /**
    * Gets all event categories of an user
@@ -176,15 +179,6 @@ public interface CalendarService extends LegacyCalendarService {
    * @throws Exception
    */
   public Node getRssHome(String username) throws Exception;
-
-  /**
-   * Gets event/task by its id and its owner
-   * @param username user id of the event owner
-   * @param eventId id of the event
-   * @return CalendarEvent in the personal calendar of owner 
-   * @throws Exception 
-   */
-  public CalendarEvent getEvent(String username, String eventId) throws Exception;
   
   /**
    * Gets an <code>EventPageList</code> of events/tasks of a given list of public calendars that matches the condition <br> 
@@ -223,20 +217,6 @@ public interface CalendarService extends LegacyCalendarService {
                                                              String[] privateCalendars, String[] publicCalendars) throws Exception;
 
   /**
-   * Gets all the events and tasks that match the conditions in the given <code>EventQuery</code> object <br>
-   * <p> The result includes events of private, public and share calendars.
-   * <p> If <code>publicCalendarIds</code> is not null, the result will include also all public events from those <br>
-   * public calendar.
-   * @param username current user name(or user id)
-   * @param eventQuery <code>EventQuery</code> object
-   * @param publicCalendarIds Optional array of public calendar IDs of which to get events
-   * @return
-   * @throws Exception
-   * @see CalendarEvent
-   */
-  public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
-
-  /**
    * We do not use this method anymore, so i mark this method as deprecated
    * to notify other team do not use this method any more and we do not need to maintain this method.
    * use {@link #getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars)}
@@ -266,16 +246,6 @@ public interface CalendarService extends LegacyCalendarService {
                                                      String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
 
   /**
-   * Saves event to shared calendar.
-   * @param username current user name(or user id)
-   * @param calendarId given calendar id
-   * @param event <code>CalendarEvent</code> object
-   * @param isNew If <code>true</code>, a new event will be saved. If <code>false</code>, an existing event will be updated.
-   * @throws Exception
-   */
-  public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception;
-
-  /**
    * Gets busy time of participants in a period
    * <p> The list of participants and the period are given in an <code>EventQuery</code> object.
    * <p> The returned result is a <code>Map<String,String></code> with the key is user name of participants <br>
@@ -286,15 +256,6 @@ public interface CalendarService extends LegacyCalendarService {
    * @see EventQuery
    */
   public Map<String, String> checkFreeBusy(EventQuery eventQuery) throws Exception;
-
-  /**
-   * Removes event/task from shared calendar
-   * @param username current user name(or user id)
-   * @param calendarId given calendar id
-   * @param eventId given event id
-   * @throws Exception
-   */
-  public void removeSharedEvent(String username, String calendarId, String eventId) throws Exception;
 
   /**
    * Saves changes for list of events.
@@ -668,14 +629,6 @@ public interface CalendarService extends LegacyCalendarService {
                                                                      String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
 
   /**
-   * Gets event by its Id
-   * @param eventId Id of the event
-   * @return a {@link CalendarEvent} 
-   * @throws Exception
-   */
-  public CalendarEvent getEventById(String eventId) throws Exception;
-
-  /**
    * Imports given remote calendar in background <br/>
    * <p> Users don't need to wait too long when importing a big calendar
    * @param remoteCalendar
@@ -697,8 +650,6 @@ public interface CalendarService extends LegacyCalendarService {
   public Attachment getAttachmentById(String attId);
   
   public void removeAttachmentById(String attId);
-  
-  public EventDAO getEventDAO();
   
   public void addListenerPlugin(CalendarUpdateEventListener listener) throws Exception;
 

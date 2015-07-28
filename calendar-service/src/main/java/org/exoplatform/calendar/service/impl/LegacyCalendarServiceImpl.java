@@ -39,6 +39,7 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarIterator;
 import org.exoplatform.calendar.service.DeleteShareJob;
+import org.exoplatform.calendar.service.EventDAO;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.LegacyCalendarService;
@@ -65,6 +66,8 @@ import org.quartz.impl.triggers.SimpleTriggerImpl;
 
 public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService {
 
+  private EventDAO eventDAO;
+  
   protected JCRDataStorage                      storage_;
   
   protected List<CalendarEventListener>       eventListeners_       = new ArrayList<CalendarEventListener>(3);
@@ -73,6 +76,7 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
   
   public LegacyCalendarServiceImpl(NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, CacheService cservice) throws Exception {
     this.storage_ = new JCRDataStorage(nodeHierarchyCreator, reposervice, cservice);
+    this.eventDAO = new EventDAOImpl(this, storage_);
   }
 
   @Override
@@ -339,130 +343,6 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
   /**
    * {@inheritDoc}
    */
-  public List<CalendarEvent> getUserEventByCalendar(String username, List<String> calendarIds) throws Exception {
-    return storage_.getUserEventByCalendar(username, calendarIds);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public List<CalendarEvent> getUserEvents(String username, EventQuery eventQuery) throws Exception {
-    return storage_.getUserEvents(username, eventQuery);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
-    storage_.saveUserEvent(username, calendarId, event, isNew);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public CalendarEvent removeUserEvent(String username, String calendarId, String eventId) throws Exception {
-    return storage_.removeUserEvent(username, calendarId, eventId);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public CalendarEvent getGroupEvent(String eventId) throws Exception {
-    return storage_.getGroupEvent(eventId);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public CalendarEvent getGroupEvent(String calendarId, String eventId) throws Exception {
-    return storage_.getGroupEvent(calendarId, eventId);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public List<CalendarEvent> getGroupEventByCalendar(List<String> calendarIds) throws Exception {
-    return storage_.getGroupEventByCalendar(calendarIds);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public List<CalendarEvent> getPublicEvents(EventQuery eventQuery) throws Exception {
-    return storage_.getPublicEvents(eventQuery);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
-    CalendarEvent oldEvent = getGroupEvent(event.getId());
-    storage_.savePublicEvent(calendarId, event, isNew);
-    for (CalendarEventListener cel : eventListeners_) {
-      if (isNew) {
-        cel.savePublicEvent(event, calendarId);
-        storage_.savePublicEvent(calendarId, event, false);
-      } else {
-        cel.updatePublicEvent(oldEvent, event, calendarId);
-        storage_.savePublicEvent(calendarId, event, false);
-      }
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public CalendarEvent removePublicEvent(String calendarId, String eventId) throws Exception {
-    CalendarEvent event = storage_.removePublicEvent(calendarId, eventId);
-    CalendarEvent originEvent = getRepetitiveEvent(event);
-    if(originEvent != null) {
-      //if event is an exception, add comment about cancelling event in the origin event's activity
-      for(CalendarEventListener cel : eventListeners_) {
-        cel.removeOneOccurrence(originEvent, event);
-      }
-    }
-    //remove the event's activity
-    for (CalendarEventListener cel : eventListeners_) {
-      cel.deletePublicEvent(event, calendarId);
-    }
-
-    return event ;
-  }
-  
-  @Override
-  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception {
-    CalendarEvent originEvent = null;
-    if(occurence.getOriginalReference() != null) {
-      //if occurence is an exception that was broken from series, get the origin by UUID
-      Node eventNode = storage_.getSystemSession().getNodeByUUID(occurence.getOriginalReference());
-      originEvent =  storage_.getEvent(eventNode);
-    } else if(occurence.getRecurrenceId() != null) {
-      //if occurrence is not an exception event, the id of the origin is the id of the occurrence
-      //(because the occurrence is clone from origin event
-      originEvent = getEventById(occurence.getId());
-    }
-    if(originEvent != null) {
-      originEvent.setCalType(occurence.getCalType());
-    }
-
-    return originEvent;
-  }
-  
-  public CalendarEvent getEventById(String eventId) throws Exception {
-    return storage_.getEventById(eventId);
-  }
-
-  public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
-    storage_.assignGroupTask(taskId, calendarId, assignee);
-  }
-
-  public void setGroupTaskStatus(String taskId, String calendarId, String status) throws Exception {
-    storage_.setGroupTaskStatus(taskId, calendarId, status);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   public boolean isRemoteCalendar(String username, String calendarId) throws Exception {
     return storage_.isRemoteCalendar(username, calendarId);
   }
@@ -592,5 +472,163 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
     if(Utils.isUserEnabled(username))
     return storage_.getSharedCalendars(username, isShowAll);
     else return null;
+  }
+  
+  //Deprecated methods for Event
+  
+  public CalendarEvent getEventById(String eventId) throws Exception {
+    return storage_.getEventById(eventId);
+  }
+  
+  public CalendarEvent getEvent(String username, String eventId) throws Exception {
+    return storage_.getEvent(username, eventId);
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
+    if(Utils.isUserEnabled(username))
+    return storage_.getEvents(username, eventQuery, publicCalendarIds);
+    else return new ArrayList<CalendarEvent>();
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  public List<CalendarEvent> getUserEventByCalendar(String username, List<String> calendarIds) throws Exception {
+    return storage_.getUserEventByCalendar(username, calendarIds);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public List<CalendarEvent> getUserEvents(String username, EventQuery eventQuery) throws Exception {
+    return storage_.getUserEvents(username, eventQuery);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    storage_.saveUserEvent(username, calendarId, event, isNew);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public CalendarEvent removeUserEvent(String username, String calendarId, String eventId) throws Exception {
+    return storage_.removeUserEvent(username, calendarId, eventId);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public CalendarEvent getGroupEvent(String eventId) throws Exception {
+    return storage_.getGroupEvent(eventId);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public CalendarEvent getGroupEvent(String calendarId, String eventId) throws Exception {
+    return storage_.getGroupEvent(calendarId, eventId);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public List<CalendarEvent> getGroupEventByCalendar(List<String> calendarIds) throws Exception {
+    return storage_.getGroupEventByCalendar(calendarIds);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public List<CalendarEvent> getPublicEvents(EventQuery eventQuery) throws Exception {
+    return storage_.getPublicEvents(eventQuery);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    CalendarEvent oldEvent = getGroupEvent(event.getId());
+    storage_.savePublicEvent(calendarId, event, isNew);
+    for (CalendarEventListener cel : eventListeners_) {
+      if (isNew) {
+        cel.savePublicEvent(event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
+      } else {
+        cel.updatePublicEvent(oldEvent, event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
+      }
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public CalendarEvent removePublicEvent(String calendarId, String eventId) throws Exception {
+    CalendarEvent event = storage_.removePublicEvent(calendarId, eventId);
+    CalendarEvent originEvent = getRepetitiveEvent(event);
+    if(originEvent != null) {
+      //if event is an exception, add comment about cancelling event in the origin event's activity
+      for(CalendarEventListener cel : eventListeners_) {
+        cel.removeOneOccurrence(originEvent, event);
+      }
+    }
+    //remove the event's activity
+    for (CalendarEventListener cel : eventListeners_) {
+      cel.deletePublicEvent(event, calendarId);
+    }
+
+    return event ;
+  }
+  
+  @Override
+  public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception {
+    CalendarEvent originEvent = null;
+    if(occurence.getOriginalReference() != null) {
+      //if occurence is an exception that was broken from series, get the origin by UUID
+      Node eventNode = storage_.getSystemSession().getNodeByUUID(occurence.getOriginalReference());
+      originEvent =  storage_.getEvent(eventNode);
+    } else if(occurence.getRecurrenceId() != null) {
+      //if occurrence is not an exception event, the id of the origin is the id of the occurrence
+      //(because the occurrence is clone from origin event
+      originEvent = getEventById(occurence.getId());
+    }
+    if(originEvent != null) {
+      originEvent.setCalType(occurence.getCalType());
+    }
+
+    return originEvent;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    storage_.saveEventToSharedCalendar(username, calendarId, event, isNew);
+  }
+  
+  public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
+    storage_.assignGroupTask(taskId, calendarId, assignee);
+  }
+
+  public void setGroupTaskStatus(String taskId, String calendarId, String status) throws Exception {
+    storage_.setGroupTaskStatus(taskId, calendarId, status);
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  public void removeSharedEvent(String username, String calendarId, String eventId) throws Exception {
+    storage_.removeSharedEvent(username, calendarId, eventId);
+  }
+  
+  @Override
+  public EventDAO getEventDAO() {
+    return eventDAO;
   }
 }

@@ -14,12 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-package org.exoplatform.calendar.service;
+package org.exoplatform.calendar.service.handler;
 
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarException;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.commons.utils.ListAccess;
 
-@Deprecated
-public interface EventDAO {
+public interface EventHandler {
 
   public ListAccess<Invitation> findInvitationsByQuery(EventQuery query);
 

@@ -173,6 +173,151 @@ public interface LegacyCalendarService {
   public Calendar removePublicCalendar(String calendarId) throws Exception;
 
   /**
+   * Assigns a group task for an user
+   * @param taskId the assigned task
+   * @param calendarId Id of the task's calendar
+   * @param assignee User id of the assignee
+   * @throws Exception
+   */
+  public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception;
+
+  /**
+   * Sets status for a group task.
+   * @param taskId Id of the task
+   * @param calendarId Id of the task's calendar
+   * @param status
+   * @throws Exception
+   * @see CalendarEvent
+   */
+  public void setGroupTaskStatus(String taskId, String calendarId, String status) throws Exception;
+
+  /**
+   * Checks if the calendar with given calendarId is a remote calendar
+   * @param username the owner of calendar
+   * @param calendarId the Id of calendar
+   * @return true if this calendar is remote, otherwise false
+   * @throws Exception
+   */
+  public boolean isRemoteCalendar(String username, String calendarId) throws Exception;
+  
+  /**
+   * Shares group calendars with an user when he is assigned a new membership
+   * <p>This method is called in {@link NewMembershipListener#postSave}.
+   * @param groupsOfUser List of group id
+   * @param receiver User id 
+   * @throws Exception
+   */
+  public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception; 
+  
+  /**
+   * Un-shares group calendars with an user when he is removed from a membership
+   * <p>This method is called in {@link NewMembershipListener#preDelete}.
+   * @param groupId
+   * @param username
+   * @throws Exception
+   */
+  public void autoRemoveShareCalendar(String groupId, String username) throws Exception;
+  
+  /**
+   * Shares Calendar with groups
+   * <p> When a calendar is selected to share with a group, the sharing process will run as job
+   * in background to avoid blocking the user. It will send notification for users about starting and finishing the job.
+   *
+   * @param username Id of current user
+   * @param calendarId Id of shared calendar
+   * @param sharedGroups List of shared groups
+   * @throws Exception
+   */
+  public void shareCalendarByRunJob(String username, String calendarId, List<String> sharedGroups) throws Exception;
+  
+  /**
+   * Un-shares a calendar with groups.
+   * <p> To avoid letting users wait too long, un-sharing with groups runs as job in background.
+   * There are notifications about job starting and finishing
+   * 
+   * @param username Id of current user
+   * @param unsharedGroups List of un-shared groups
+   * @param calendarId Id of shared calendar
+   * @throws Exception
+   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
+   */
+  public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception;
+  
+  /**
+   * Removes shared calendars of an user
+   * @param username current user name(or user id)
+   * @param calendarId given calendar id
+   * @throws Exception
+   */
+  public void removeSharedCalendar(String username, String calendarId) throws Exception;
+  
+  /**
+   * Removes the shared calendar folder of an user and all references (from shared calendars) to this folder.   
+   * @param username the username
+   * @throws Exception
+   */
+  public void removeSharedCalendarFolder(String username) throws Exception;
+  
+  /**
+   * Checks if a group is belong to a list of groups that's being shared
+   * @param group Id of the group to be checked
+   * @param schedulerService The schedule service that manages jobs
+   * @return true if this group is belong to a list of groups that is being shared, false if not.
+   * @throws Exception
+   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
+   */
+  public boolean isGroupBeingShared(String group, JobSchedulerServiceImpl schedulerService) throws Exception;
+  
+  /**
+   * Gets type of a calendar by user name and calendar id
+   * <p> There a 3 types of calendar: <br/>
+   * <ul>
+   * <li>Private calendar - returned value: 0</li>
+   * <li>Shared calendar - returned value: 1</li>
+   * <li>Group/Public calendar - returned value: 2</li>
+   * </ul>
+   * @param userName
+   * @param calendarId
+   * @return 0 if the calendar is private, 1 if the calendar is shared, 2 if the calendar is public
+   * @throws Exception
+   * @see Calendar
+   */
+  public int getTypeOfCalendar(String userName, String calendarId) throws Exception;
+  
+  //Deprecated method for Event
+  
+  /**
+   * Gets event by its Id
+   * @param eventId Id of the event
+   * @return a {@link CalendarEvent} 
+   * @throws Exception
+   */
+  public CalendarEvent getEventById(String eventId) throws Exception;
+  
+  /**
+   * Gets event/task by its id and its owner
+   * @param username user id of the event owner
+   * @param eventId id of the event
+   * @return CalendarEvent in the personal calendar of owner 
+   * @throws Exception 
+   */
+  public CalendarEvent getEvent(String username, String eventId) throws Exception;
+  
+  /**
+   * Gets all the events and tasks that match the conditions in the given <code>EventQuery</code> object <br>
+   * <p> The result includes events of private, public and share calendars.
+   * <p> If <code>publicCalendarIds</code> is not null, the result will include also all public events from those <br>
+   * public calendar.
+   * @param username current user name(or user id)
+   * @param eventQuery <code>EventQuery</code> object
+   * @param publicCalendarIds Optional array of public calendar IDs of which to get events
+   * @return
+   * @throws Exception
+   * @see CalendarEvent
+   */
+  public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
+  
+  /**
    * Gets all events and tasks from a list of private calendars
    * @param username The owner of the calendar
    * @param calendarIds List of calendar id
@@ -276,120 +421,29 @@ public interface LegacyCalendarService {
    * @throws Exception
    */
   public CalendarEvent removePublicEvent(String calendarId, String eventId) throws Exception;
-
-  /**
-   * Assigns a group task for an user
-   * @param taskId the assigned task
-   * @param calendarId Id of the task's calendar
-   * @param assignee User id of the assignee
-   * @throws Exception
-   */
-  public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception;
-
-  /**
-   * Sets status for a group task.
-   * @param taskId Id of the task
-   * @param calendarId Id of the task's calendar
-   * @param status
-   * @throws Exception
-   * @see CalendarEvent
-   */
-  public void setGroupTaskStatus(String taskId, String calendarId, String status) throws Exception;
-
-  /**
-   * Checks if the calendar with given calendarId is a remote calendar
-   * @param username the owner of calendar
-   * @param calendarId the Id of calendar
-   * @return true if this calendar is remote, otherwise false
-   * @throws Exception
-   */
-  public boolean isRemoteCalendar(String username, String calendarId) throws Exception;
-  
-  /**
-   * Shares group calendars with an user when he is assigned a new membership
-   * <p>This method is called in {@link NewMembershipListener#postSave}.
-   * @param groupsOfUser List of group id
-   * @param receiver User id 
-   * @throws Exception
-   */
-  public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception; 
-  
-  /**
-   * Un-shares group calendars with an user when he is removed from a membership
-   * <p>This method is called in {@link NewMembershipListener#preDelete}.
-   * @param groupId
-   * @param username
-   * @throws Exception
-   */
-  public void autoRemoveShareCalendar(String groupId, String username) throws Exception;
-  
-  /**
-   * Shares Calendar with groups
-   * <p> When a calendar is selected to share with a group, the sharing process will run as job
-   * in background to avoid blocking the user. It will send notification for users about starting and finishing the job.
-   *
-   * @param username Id of current user
-   * @param calendarId Id of shared calendar
-   * @param sharedGroups List of shared groups
-   * @throws Exception
-   */
-  public void shareCalendarByRunJob(String username, String calendarId, List<String> sharedGroups) throws Exception;
-  
-  /**
-   * Un-shares a calendar with groups.
-   * <p> To avoid letting users wait too long, un-sharing with groups runs as job in background.
-   * There are notifications about job starting and finishing
-   * 
-   * @param username Id of current user
-   * @param unsharedGroups List of un-shared groups
-   * @param calendarId Id of shared calendar
-   * @throws Exception
-   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
-   */
-  public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception;
   
   public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception;
   
   /**
-   * Removes shared calendars of an user
+   * Saves event to shared calendar.
    * @param username current user name(or user id)
    * @param calendarId given calendar id
+   * @param event <code>CalendarEvent</code> object
+   * @param isNew If <code>true</code>, a new event will be saved. If <code>false</code>, an existing event will be updated.
    * @throws Exception
    */
-  public void removeSharedCalendar(String username, String calendarId) throws Exception;
+  public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception;
   
   /**
-   * Removes the shared calendar folder of an user and all references (from shared calendars) to this folder.   
-   * @param username the username
+   * Removes event/task from shared calendar
+   * @param username current user name(or user id)
+   * @param calendarId given calendar id
+   * @param eventId given event id
    * @throws Exception
    */
-  public void removeSharedCalendarFolder(String username) throws Exception;
+  public void removeSharedEvent(String username, String calendarId, String eventId) throws Exception;
   
-  /**
-   * Checks if a group is belong to a list of groups that's being shared
-   * @param group Id of the group to be checked
-   * @param schedulerService The schedule service that manages jobs
-   * @return true if this group is belong to a list of groups that is being shared, false if not.
-   * @throws Exception
-   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
-   */
-  public boolean isGroupBeingShared(String group, JobSchedulerServiceImpl schedulerService) throws Exception;
-  
-  /**
-   * Gets type of a calendar by user name and calendar id
-   * <p> There a 3 types of calendar: <br/>
-   * <ul>
-   * <li>Private calendar - returned value: 0</li>
-   * <li>Shared calendar - returned value: 1</li>
-   * <li>Group/Public calendar - returned value: 2</li>
-   * </ul>
-   * @param userName
-   * @param calendarId
-   * @return 0 if the calendar is private, 1 if the calendar is shared, 2 if the calendar is public
-   * @throws Exception
-   * @see Calendar
-   */
-  public int getTypeOfCalendar(String userName, String calendarId) throws Exception;
+  public EventDAO getEventDAO();
 }
 
 
