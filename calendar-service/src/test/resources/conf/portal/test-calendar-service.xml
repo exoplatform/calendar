@@ -22,28 +22,12 @@
    xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
    xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
-   <component>
-     <type>org.exoplatform.services.scheduler.impl.QuartzSheduler</type>
-   </component>
-   
-   <component>
-      <type>org.exoplatform.services.scheduler.QueueTasks</type>
-   </component>
-  
   <component>
-    <type>org.exoplatform.services.jcr.ext.app.ThreadLocalSessionProviderService</type>
-  </component>
-  
-    <component>
     <key>org.exoplatform.calendar.service.DataStorage</key>
     <type>org.exoplatform.calendar.service.impl.JCRDataStorage</type>
   </component>
+
   <component>
-    <key>org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator</key>
-    <type>org.exoplatform.services.jcr.ext.hierarchy.impl.NodeHierarchyCreatorImpl</type>
-  </component>
-  
-   <component>
     <key>org.exoplatform.services.resources.LocaleConfigService</key>
     <type>org.exoplatform.services.resources.impl.LocaleConfigServiceImpl</type>
     <init-params>
@@ -53,8 +37,8 @@
       </value-param>
     </init-params>
   </component>
-  
-   <component>
+
+  <component>
     <key>org.exoplatform.services.resources.ResourceBundleService</key>
     <type>org.exoplatform.services.resources.impl.SimpleResourceBundleService</type>
     <init-params>
@@ -81,101 +65,61 @@
       </values-param>
     </init-params>
   </component>
-  
-   <component>
+
+  <component>
     <key>org.exoplatform.calendar.service.CalendarService</key>
     <type>org.exoplatform.calendar.service.impl.CalendarServiceImpl</type>
     <init-params>
       <properties-param>
         <name>eventNumber.info</name>
-        <property name="eventNumber" value="100"/>         
+        <property name="eventNumber" value="100" />
       </properties-param>
     </init-params>
   </component>
 
   <component>
-    <key>org.exoplatform.services.scheduler.JobSchedulerService</key>
-    <type>org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl</type>
-  </component>
-  
-  <component>
     <key>org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector</key>
     <type>org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector</type>
-   <init-params>
-          <properties-param>
-             <name>constructor.params</name>
-             <property name="searchType" value="Calendar"/>
-             <property name="displayName" value="JCR Query"/>
-          </properties-param>
-   </init-params>      
+    <init-params>
+      <properties-param>
+        <name>constructor.params</name>
+        <property name="searchType" value="Calendar" />
+        <property name="displayName" value="JCR Query" />
+      </properties-param>
+    </init-params>
   </component>
-  
-  
+
   <component>
     <key>org.exoplatform.calendar.service.impl.EventSearchConnector</key>
     <type>org.exoplatform.calendar.service.impl.EventSearchConnector</type>
-     <init-params>
-          <properties-param>
-             <name>constructor.params</name>
-             <property name="searchType" value="Event"/>
-             <property name="displayName" value="JCR Query"/>
-          </properties-param>
-   </init-params>  
+    <init-params>
+      <properties-param>
+        <name>constructor.params</name>
+        <property name="searchType" value="Event" />
+        <property name="displayName" value="JCR Query" />
+      </properties-param>
+    </init-params>
   </component>
-  
+
   <component>
     <key>org.exoplatform.calendar.service.impl.TaskSearchConnector</key>
     <type>org.exoplatform.calendar.service.impl.TaskSearchConnector</type>
-     <init-params>
-          <properties-param>
-             <name>constructor.params</name>
-             <property name="searchType" value="Task"/>
-             <property name="displayName" value="JCR Query"/>
-          </properties-param>
-   </init-params>  
+    <init-params>
+      <properties-param>
+        <name>constructor.params</name>
+        <property name="searchType" value="Task" />
+        <property name="displayName" value="JCR Query" />
+      </properties-param>
+    </init-params>
   </component>
- 
-  <component>
-    <key>org.exoplatform.services.jdbc.DataSourceProvider</key>
-    <type>org.exoplatform.services.jdbc.impl.DataSourceProviderImpl</type>
-  </component>
-  <component>
-      <type>org.exoplatform.services.jcr.impl.ext.action.SessionActionCatalog</type>
-      <component-plugins>
-      <component-plugin>
-      <name>Last Update Action</name>
-      <set-method>addPlugin</set-method>
-      <type>org.exoplatform.services.jcr.impl.ext.action.AddActionsPlugin</type>
-      <description>add actions plugin</description>
-      <init-params>
-        <object-param>
-          <name>actions</name>
-          <object type="org.exoplatform.services.jcr.impl.ext.action.AddActionsPlugin$ActionsConfig">
-            <field  name="actions">
-              <collection type="java.util.ArrayList">                
-                <value>
-                  <object type="org.exoplatform.services.jcr.impl.ext.action.ActionConfiguration">
-                    <field  name="eventTypes"><string>addNode,changeProperty</string></field>
-                    <field  name="nodeTypes"><string>exo:calendarEvent</string></field>                     
-                    <field  name="actionClassName"><string>org.exoplatform.calendar.service.test.LastUpdateAction</string></field>
-                  </object>
-                </value>
-              </collection>
-            </field>
-          </object>
-        </object-param>
-      </init-params>
-      </component-plugin>
-      </component-plugins>
-    </component>
-  
+
   <external-component-plugins>
     <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
     <component-plugin>
       <name>calendar.storage.mock</name>
       <set-method>addDataStore</set-method>
       <type>org.exoplatform.calendar.service.MockStorage</type>
-      <description>A mock storage</description>      
+      <description>A mock storage</description>
     </component-plugin>
   </external-component-plugins>
 
@@ -189,7 +133,7 @@
         <values-param>
           <name>autoCreatedInNewRepository</name>
           <description>Node types configuration file</description>
-          <value>jar:/conf/portal/test-calendar-nodetypes.xml</value>
+          <value>jar:/conf/portal/calendar-nodetypes.xml</value>
         </values-param>
       </init-params>
     </component-plugin>
