@@ -15,19 +15,18 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.calendar.service.handler;
+package org.exoplatform.calendar.service.impl;
 
 import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.MultiListAccess;
-import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.commons.utils.ListAccess;
 
-//TODO: should move to org.exoplatform.service.impl package.
 public class CalendarHandlerImpl implements CalendarHandler {
 
   private CalendarServiceImpl service;
@@ -44,7 +43,10 @@ public class CalendarHandlerImpl implements CalendarHandler {
   @Override
   public Calendar getCalendarById(String calId, CalendarType calType) {
     for (CalendarDAO dao : getCalendarDAO(calType)) {
-      return dao.getById(calId, calType);
+      Calendar cal = dao.getById(calId, calType);
+      if (cal != null) {
+        return cal;
+      }
     }
     return null;
   }

@@ -25,11 +25,14 @@ import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
 public interface LegacyCalendarService {
 
   /**
+   * This method is deprecated, use {@link CalendarService#getCalendarHandler()} and {@link CalendarHandler#getCalendarById(String)}
+   * <br/>
    * Gets a calendar by its id
    * @param calId Id of the calendar
    * @return a {@link Calendar}
    * 
    */
+  @Deprecated
   public Calendar getCalendarById(String calId) throws Exception;
   
   /**
@@ -44,6 +47,8 @@ public interface LegacyCalendarService {
   public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit);
   
   /**
+   * This method is deprecated, use {@link CalendarHandler#getCalendarById(String, CalendarType)}
+   * <br/>
    * Gets the given user's private calendar, identified by its ID.
    * @param username current user name(or user id)
    * @param calendarId Id of the calendar
@@ -51,9 +56,12 @@ public interface LegacyCalendarService {
    * @throws Exception
    * @see Calendar
    */
+  @Deprecated
   public Calendar getUserCalendar(String username, String calendarId) throws Exception;
 
   /**
+   * Deprecated, use {@link CalendarHandler#findCalendarsByQuery(CalendarQuery)}
+   * <br/>
    * Gets private calendars of the given user.
    * <p> The result depends on value of <code>isShowAll</code> parameter. If <code>isShowAll</code> <br>
    * is <b>true</b>, this method returns all private calendars of this user, otherwise it returns <br>
@@ -67,6 +75,7 @@ public interface LegacyCalendarService {
    * @see Calendar
    * @see CalendarSetting
    */
+  @Deprecated
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception;
 
   /**
@@ -77,6 +86,8 @@ public interface LegacyCalendarService {
   ListAccess<Calendar> getPublicCalendars() throws Exception;
   
   /**
+   * Deprecated, use {@link CalendarHandler#saveCalendar(Calendar, boolean)}
+   * <br/>
    * Saves an user's private calendar to storage
    * 
    * @param username current user name(or user id)
@@ -84,9 +95,12 @@ public interface LegacyCalendarService {
    * @param isNew Boolean value to know adding a new calendar or just updating this calendar
    * @throws CalendarException if there is any error
    */
+  @Deprecated
   public void saveUserCalendar(String username, Calendar calendar, boolean isNew);
 
   /**
+   * Deprecated, use {@link CalendarHandler#saveCalendar(Calendar, boolean)}
+   *
    * Saves an calendar to storage with given type
    * 
    * @param username current user name(or user id)
@@ -95,6 +109,7 @@ public interface LegacyCalendarService {
    * @param isNew Boolean value to know adding a new calendar or just updating this calendar
    * @return instance calendar object
    */
+  @Deprecated
   public Calendar saveCalendar(String username, Calendar calendar, int caltype , boolean isNew);
   
   /**
@@ -126,24 +141,35 @@ public interface LegacyCalendarService {
   public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception;
 
   /**
+   * Deprecated, use {@link CalendarHandler#removeCalendar(String, CalendarType)}
+   * <br/>
+   *
    * Removes private calendar by given id, all events and tasks belong to this calendar will be removed
    * @param username current user name(or user id)
    * @param calendarId given calendar id
    * @return
    * @throws Exception
    */
+  @Deprecated
   public Calendar removeUserCalendar(String username, String calendarId) throws Exception;
 
   /**
+   * Deprecated, use {@link CalendarHandler#getCalendarById(String, CalendarType)}
+   * <br/>
+   *
    * Gets a group/public calendar by its Id
    * @param calendarId given calendar id
    * @return Calendar object 
    * @throws Exception
    * @see Calendar
    */
+  @Deprecated
   public Calendar getGroupCalendar(String calendarId) throws Exception;
 
   /**
+   * Deprecated, use {@link CalendarHandler#findCalendarsByQuery(CalendarQuery)}
+   * <br/>
+   *
    * Gets all the group calendar data of current user
    * <p> The {@link GroupCalendarData} contains information about list of calendars with the <br>
    * group that those calendars belong to.
@@ -154,22 +180,30 @@ public interface LegacyCalendarService {
    * @throws Exception
    * @see GroupCalendarData
    */
+  @Deprecated
   public List<GroupCalendarData> getGroupCalendars(String[] groupIds, boolean isShowAll, String username) throws Exception;
 
   /**
-  * Saves a calendar to public area (group calendar)
-  * @param calendar Calendar to be saved
-  * @param isNew If <code>true</code>, a new calendar will be saved. If <code>false</code>, an existing calendar will be updated.
-  * @throws Exception
-  */
+   * Deprecated, use {@link CalendarHandler#saveCalendar(Calendar, boolean)}
+   * <br/>
+   *
+   * Saves a calendar to public area (group calendar)
+   * @param calendar Calendar to be saved
+   * @param isNew If <code>true</code>, a new calendar will be saved. If <code>false</code>, an existing calendar will be updated.
+   * @throws Exception
+   */
+  @Deprecated
   public void savePublicCalendar(Calendar calendar, boolean isNew);   
 
   /**
+   * Deprecated, use {@link CalendarHandler#removeCalendar(String, CalendarType)}
+   *
    * Removes the group calendar form data base, every events, tasks inside this calendar will be removed too
    * @param calendarId
    * @return
    * @throws Exception
    */
+  @Deprecated
   public Calendar removePublicCalendar(String calendarId) throws Exception;
 
   /**
@@ -442,7 +476,7 @@ public interface LegacyCalendarService {
    * @throws Exception
    */
   public void removeSharedEvent(String username, String calendarId, String eventId) throws Exception;
-  
+
   public EventDAO getEventDAO();
 }
 

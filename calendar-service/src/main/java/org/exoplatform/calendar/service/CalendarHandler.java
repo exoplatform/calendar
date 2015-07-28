@@ -15,14 +15,10 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 
-package org.exoplatform.calendar.service.handler;
+package org.exoplatform.calendar.service;
 
-import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarQuery;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.commons.utils.ListAccess;
 
-//TODO: Should move to org.exoplatform.calendar.service package.
 public interface CalendarHandler {
 
   /**

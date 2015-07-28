@@ -51,7 +51,6 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
 import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventDAO;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
@@ -61,8 +60,7 @@ import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.handler.CalendarHandler;
-import org.exoplatform.calendar.service.handler.CalendarHandlerImpl;
+import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.handler.EventHandler;
 import org.exoplatform.calendar.service.handler.EventHandlerImpl;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
@@ -1261,8 +1259,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     storage_.removeAttachmentById(attId);
   }
 
-  // TODO: rename to addDataStore ?
-  public void addStoragePlugin(ComponentPlugin dao) {
+  public void addDataStore(ComponentPlugin dao) {
     if (dao instanceof Storage) {
       synchronized (this) {
           storages.add((Storage)dao);

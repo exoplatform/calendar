@@ -173,7 +173,7 @@
     <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
     <component-plugin>
       <name>calendar.storage.mock</name>
-      <set-method>addStoragePlugin</set-method>
+      <set-method>addDataStore</set-method>
       <type>org.exoplatform.calendar.service.MockStorage</type>
       <description>A mock storage</description>      
     </component-plugin>

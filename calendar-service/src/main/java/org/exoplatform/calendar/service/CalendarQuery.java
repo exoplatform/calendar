@@ -25,6 +25,8 @@ public class CalendarQuery {
   private String       userName;
 
   private List<String> groups;
+
+  private boolean showAll = false;
   
   public CalendarType getCalType() {
     return calType;
@@ -32,6 +34,10 @@ public class CalendarQuery {
 
   public String getUserName() {
     return userName;
+  }
+
+  public void setGroups(List<String> groups) {
+    this.groups = groups;
   }
 
   public List<String> getGroups() {
@@ -46,5 +52,13 @@ public class CalendarQuery {
   public CalendarQuery setUserName(String userName) {
     this.userName = userName;
     return this;
+  }
+
+  public boolean isShowAll() {
+    return showAll;
+  }
+
+  public void setShowAll(boolean showAll) {
+    this.showAll = showAll;
   }
 }
