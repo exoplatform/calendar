@@ -4448,7 +4448,7 @@ public class JCRDataStorage implements DataStorage {
     return recurEvents;
   }
 
-
+  //This method is not used anywhere
   public List<CalendarEvent> searchOriginalRecurrenceEventsSQL(Node calendar, String calType, java.util.Calendar from,
                                                                java.util.Calendar to, String[] calendarIds, List<String> emptyCalendars) throws Exception {
     if (calendar == null) return null;

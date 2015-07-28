@@ -16,7 +16,6 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -182,41 +181,6 @@ public interface CalendarService extends LegacyCalendarService {
    * @throws Exception
    */
   public Node getRssHome(String username) throws Exception;
-
-  /**
-   * We do not use this method anymore, so i mark this method as deprecated
-   * to notify other team do not use this method any more and we do not need to maintain this method.
-   * use {@link #searchHightLightEventSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars)}
-   *
-   *
-   * Gets the day in month on which there are events.
-   * <p> This method is used when UIMiniCalendar is loaded or updated. We need to know on which day there are events <br>
-   * to add  class 'highlight' for that day in the template.
-   * <p> The given <code>EventQuery</code> always has from date is the first day of the month, and end date is the last <br>
-   * day of the month. The returned result is a Map with key set is the days having events, the values are all "value".
-   * @param username current user name(or user id)
-   * @param eventQuery <code>EventQuery</code> object
-   * @param publicCalendarIds array of public calendar IDs of which to search events
-   * @return a <code>Map</code> with key set is the days having events. Ex: <code>{<14,"value">, <15,"value">}</code>
-   * @throws Exception
-   */
-  @Deprecated
-  public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
-
-  /**
-   * We do not use this method anymore, so i mark this method as deprecated
-   * to notify other team do not use this method any more and we do not need to maintain this method.
-   * use {@link #getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars)}
-   * A faster version of getEvents used for UIWeekview
-   *
-   * @param username
-   * @param eventQuery
-   * @param publicCalendarIds
-   * @return
-   * @throws Exception
-   */
-  @Deprecated
-  public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
   /**
    * Confirms invitation to participate in an event
@@ -568,6 +532,41 @@ public interface CalendarService extends LegacyCalendarService {
    */
   public List<CalendarEvent> getExceptionEvents(String username, CalendarEvent recurEvent) throws Exception;
 
+  /**
+   * We do not use this method anymore, so i mark this method as deprecated
+   * to notify other team do not use this method any more and we do not need to maintain this method.
+   * use {@link #searchHightLightEventSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars)}
+   *
+   *
+   * Gets the day in month on which there are events.
+   * <p> This method is used when UIMiniCalendar is loaded or updated. We need to know on which day there are events <br>
+   * to add  class 'highlight' for that day in the template.
+   * <p> The given <code>EventQuery</code> always has from date is the first day of the month, and end date is the last <br>
+   * day of the month. The returned result is a Map with key set is the days having events, the values are all "value".
+   * @param username current user name(or user id)
+   * @param eventQuery <code>EventQuery</code> object
+   * @param publicCalendarIds array of public calendar IDs of which to search events
+   * @return a <code>Map</code> with key set is the days having events. Ex: <code>{<14,"value">, <15,"value">}</code>
+   * @throws Exception
+   */
+  @Deprecated
+  public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
+
+  /**
+   * We do not use this method anymore, so i mark this method as deprecated
+   * to notify other team do not use this method any more and we do not need to maintain this method.
+   * use {@link #getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars)}
+   * A faster version of getEvents used for UIWeekview
+   *
+   * @param username
+   * @param eventQuery
+   * @param publicCalendarIds
+   * @return
+   * @throws Exception
+   */
+  @Deprecated
+  public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
+  
   /**
    * Removes only an occurrence instance from recurrence series, this function will get the original event node of the occurrence
    * and then put the recurrence id of the need-to-delete occurrence to excludeId list of original node.
