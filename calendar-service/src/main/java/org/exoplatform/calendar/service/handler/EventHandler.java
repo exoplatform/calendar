@@ -18,11 +18,21 @@ package org.exoplatform.calendar.service.handler;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
+import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.commons.utils.ListAccess;
 
 public interface EventHandler {
+  public CalendarEvent getEventById(String eventId);
+
+  public CalendarEvent getEventById(String eventId, CalendarType calType);
+
+  public CalendarEvent saveEvent(CalendarEvent event, boolean isNew);
+
+  public CalendarEvent removeEvent(String eventId, CalendarType calendarType);
+
+  ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException;
 
   public ListAccess<Invitation> findInvitationsByQuery(EventQuery query);
 
@@ -33,6 +43,4 @@ public interface EventHandler {
   public void updateInvitation(String id, String status) throws CalendarException;
 
   public Invitation createInvitation(String eventId, String participant, String status) throws CalendarException;
-
-  ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException;
 }

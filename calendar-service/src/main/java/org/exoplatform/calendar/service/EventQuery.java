@@ -33,6 +33,8 @@ public class EventQuery {
 
   private String             eventType;
 
+  private CalendarType       calendarType       = null;
+
   private String             text               = null;
 
   private String[]           categoryIds        = null;

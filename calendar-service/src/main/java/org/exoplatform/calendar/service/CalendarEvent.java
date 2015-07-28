@@ -199,7 +199,13 @@ public class CalendarEvent extends AbstractBean {
    */
   private String               status          = "";
 
+  /**
+   * Deprecated, use {@link #calendarType}
+   */
+  @Deprecated
   private String               calType         = "0";
+
+  private CalendarType         calendarType     = Calendar.Type.PERSONAL;
 
   private String[]             invitation;
 
@@ -404,12 +410,48 @@ public class CalendarEvent extends AbstractBean {
     return taskDelegator;
   }
 
+  /**
+   * Deprecated, use {@link #setCalendarType(CalendarType)}
+   * @param calType
+   */
+  @Deprecated
   public void setCalType(String calType) {
     this.calType = calType;
+    if (calType == "" + Calendar.TYPE_PRIVATE) {
+      this.calendarType = Calendar.Type.PERSONAL;
+    } else if (calType == "" + Calendar.TYPE_SHARED) {
+      this.calendarType = Calendar.Type.SHARED;
+    } else if (calType == "" + Calendar.TYPE_PUBLIC) {
+      this.calendarType = Calendar.Type.GROUP;
+    } else {
+      this.calendarType = Calendar.Type.UNDEFINED;
+    }
   }
 
+  /**
+   * Deprecated, use {@link #getCalendarType()}
+   * @return
+   */
+  @Deprecated
   public String getCalType() {
     return calType;
+  }
+
+  public CalendarType getCalendarType() {
+    return calendarType;
+  }
+
+  public void setCalendarType(CalendarType calendarType) {
+    this.calendarType = calendarType;
+    if (calendarType == Calendar.Type.PERSONAL) {
+      this.calType = "" + Calendar.TYPE_PRIVATE;
+    } else if (calendarType == Calendar.Type.SHARED) {
+      this.calType = "" + Calendar.TYPE_SHARED;
+    } else if (calendarType == Calendar.Type.GROUP) {
+      this.calType = "" + Calendar.TYPE_PUBLIC;
+    } else {
+      this.calType = "" + Calendar.TYPE_ALL;
+    }
   }
 
   public void setEventCategoryName(String eventCategoryName) {

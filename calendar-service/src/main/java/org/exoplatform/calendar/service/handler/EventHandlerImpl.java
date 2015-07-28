@@ -33,6 +33,7 @@ import net.fortuna.ical4j.model.DateTime;
 
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
+import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.EventPageListQuery;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
@@ -53,6 +54,26 @@ public class EventHandlerImpl implements EventHandler {
 
   public EventHandlerImpl(JCRDataStorage storage_) {
     this.storage = storage_;
+  }
+
+  @Override
+  public CalendarEvent getEventById(String eventId) {
+    return null;
+  }
+
+  @Override
+  public CalendarEvent getEventById(String eventId, CalendarType calType) {
+    return null;
+  }
+
+  @Override
+  public CalendarEvent saveEvent(CalendarEvent event, boolean isNew) {
+    return null;
+  }
+
+  @Override
+  public CalendarEvent removeEvent(String eventId, CalendarType calendarType) {
+    return null;
   }
 
   @Override

@@ -3,8 +3,8 @@ package org.exoplatform.calendar.service;
 import java.util.Arrays;
 import java.util.List;
 
-import org.exoplatform.calendar.service.storage.CalendarDAO;
-import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.calendar.service.storage.*;
+import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.container.component.BaseComponentPlugin;
 
 public class MockStorage extends BaseComponentPlugin implements Storage {
@@ -22,4 +22,8 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     return null;
   }
 
+  @Override
+  public EventDAO getEventDAO() {
+    return null;
+  }
 }

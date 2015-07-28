@@ -28,4 +28,6 @@ public interface Storage {
   public List<CalendarType> getSupportedTypes();
   
   public CalendarDAO getCalendarDAO();
+
+  public EventDAO getEventDAO();
 }

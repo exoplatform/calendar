@@ -305,11 +305,13 @@ public interface LegacyCalendarService {
   //Event
   
   /**
+   * Deprecated, use {@link org.exoplatform.calendar.service.handler.EventHandler#getEventById(String)}
    * Gets event by its Id
    * @param eventId Id of the event
    * @return a {@link CalendarEvent} 
    * @throws Exception
    */
+  @Deprecated
   public CalendarEvent getEventById(String eventId) throws Exception;
   
   /**
