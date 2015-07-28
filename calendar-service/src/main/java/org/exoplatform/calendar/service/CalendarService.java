@@ -182,18 +182,6 @@ public interface CalendarService extends LegacyCalendarService {
    * @throws Exception
    */
   public Node getRssHome(String username) throws Exception;
-  
-  /**
-   * Gets an <code>EventPageList</code> of events/tasks of a given list of public calendars that matches the condition <br> 
-   * in the given <code>EvenQuery</code> object. 
-   * @param username current user name(or user id)
-   * @param eventQuery <code>EventQuery</code> object
-   * @param publicCalendarIds Array of public calendar IDs in which to search events
-   * @return <code>EventPageList</code> object.
-   * @throws Exception
-   * @see EventPageList
-   */
-  public EventPageList searchEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
   /**
    * We do not use this method anymore, so i mark this method as deprecated
@@ -215,10 +203,6 @@ public interface CalendarService extends LegacyCalendarService {
   @Deprecated
   public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
-
-  public List<Map<Integer, String>> searchHightLightEventSQL(String username, EventQuery eventQuery,
-                                                             String[] privateCalendars, String[] publicCalendars) throws Exception;
-
   /**
    * We do not use this method anymore, so i mark this method as deprecated
    * to notify other team do not use this method any more and we do not need to maintain this method.
@@ -234,49 +218,6 @@ public interface CalendarService extends LegacyCalendarService {
   @Deprecated
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
 
-
-  /**
-   * A faster version of getAllNoRepeatEvents without thread
-   *
-   * @param username
-   * @param eventQuery
-   * @param privateCalendars
-   * @param publicCalendars
-   * @return
-   * @throws Exception
-   */
-  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery,
-                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
-
-  /**
-   * Gets busy time of participants in a period
-   * <p> The list of participants and the period are given in an <code>EventQuery</code> object.
-   * <p> The returned result is a <code>Map<String,String></code> with the key is user name of participants <br>
-   * and the value is pairs of <code>{fromtime, totime}</code> in milliseconds , separated by ','.  
-   * @param eventQuery <code>EventQuery</code> object
-   * @return a </code>Map<String,String></code> with the key is user name and value is  
-   * @throws Exception 
-   * @see EventQuery
-   */
-  public Map<String, String> checkFreeBusy(EventQuery eventQuery) throws Exception;
-
-  /**
-   * Saves changes for list of events.
-   * <p> This method can be used in 2 cases: <br/>
-   * <ul>
-   * <li>Moving events between 2 calendars</li>
-   * <li>Editing/updating events. In this case, from calendar and to calendar are the same</li>
-   * </ul>
-   * @param fromCalendar Id of the source calendar
-   * @param toCalendar  Id of the destination calendar
-   * @param formType type of the source calendar (private/shared/public)
-   * @param toType type of the destination calendar (private/shared/public)
-   * @param calEvents List of <code>CalendarEvent</code> objects
-   * @param username current user name(or user id)
-   * @throws Exception
-   */
-  public void moveEvent(String fromCalendar, String toCalendar, String formType, String toType, List<CalendarEvent> calEvents, String username) throws Exception;
-
   /**
    * Confirms invitation to participate in an event
    * <p>This method is called only when user uses exo mail product. <br/>
@@ -291,38 +232,6 @@ public interface CalendarService extends LegacyCalendarService {
    * @deprecated
    */
   public void confirmInvitation(String fromUserId, String toUserId, int calType, String calendarId, String eventId, int answer);
-
-  /**
-   * Confirms an invitation to participate in an event
-   * @param fromUserId Id of the invitation owner
-   * @param confirmingEmail Email of the invited participant
-   * @param confirmingUser User id of the invited participant
-   * @param calType Type of the invitation event's calendar
-   * @param calendarId Id of the invitation event's calendar
-   * @param eventId Id of the invitation event
-   * @param answer The answer of the invited user. It can be: DENY/ACCEPT/NOT_SURE
-   * @throws Exception
-   */
-  public void confirmInvitation(String fromUserId, String confirmingEmail, String confirmingUser, int calType, String calendarId, String eventId, int answer) throws Exception;
-
-  /**
-   * Gets events in shared calendars
-   * @param username current user name
-   * @param calendarIds list of shared calendars from which to get events
-   * @return list of <code>CalendarEvent</code> object
-   * @throws Exception
-   */
-  public List<CalendarEvent> getSharedEventByCalendars(String username, List<String> calendarIds) throws Exception;
-
-  /**
-   * Get shared event by user name, calendar id and event id
-   * @param username current user name
-   * @param calendarId id of shared calendar
-   * @param eventId id of shared event
-   * @return the <code>CalendarEvent</code> object
-   * @throws Exception
-   */
-  public CalendarEvent getSharedEvent(String username, String calendarId, String eventId) throws Exception;
 
   /**
    * Removes the feed data of an user by the feed's title
@@ -449,6 +358,90 @@ public interface CalendarService extends LegacyCalendarService {
   public void stopSynchronizeRemoteCalendarJob(String username) throws Exception;
 
   /**
+   * Imports given remote calendar in background <br/>
+   * <p> Users don't need to wait too long when importing a big calendar
+   * @param remoteCalendar
+   * @throws Exception
+   */
+  public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception;
+
+  /**
+   * Get specified attachment object by given attachment id
+   * @param attId given attachment id ( now we store this by using node path)
+   * @return Attachment object with input stream
+   */
+  public Attachment getAttachmentById(String attId);
+  
+  public void removeAttachmentById(String attId);
+  
+  public void addListenerPlugin(CalendarUpdateEventListener listener) throws Exception;
+
+  public void addEventListenerPlugin(CalendarEventListener listener) throws Exception;
+  
+  /**
+   * Initializes calendar data for a new created user
+   * @param userName User id of the new created user
+   * @param defaultCalendarSetting default calendar setting
+   * @throws Exception
+   */
+  public void initNewUser(String userName, CalendarSetting defaultCalendarSetting) throws Exception;
+
+  /**
+   * Checks if the remote URL is valid, in 2 cases of iCalendar URL or CalDav URL, with authentication
+   * @param url the remote URL
+   * @param type the type of remote calendar, iCalendar or CalDav
+   * @param remoteUser the remote user name used to authenticate
+   * @param remotePassword the remote password used to authenticate
+   * @return true if remote URL is available in case of iCalendar or supports CalDav access in case of CalDav
+   * @throws Exception
+   */
+  boolean isValidRemoteUrl(String url, String type, String remoteUser, String remotePassword) throws Exception;
+
+  //Event
+  
+  /**
+   * Gets busy time of participants in a period
+   * <p> The list of participants and the period are given in an <code>EventQuery</code> object.
+   * <p> The returned result is a <code>Map<String,String></code> with the key is user name of participants <br>
+   * and the value is pairs of <code>{fromtime, totime}</code> in milliseconds , separated by ','.  
+   * @param eventQuery <code>EventQuery</code> object
+   * @return a </code>Map<String,String></code> with the key is user name and value is  
+   * @throws Exception 
+   * @see EventQuery
+   */
+  public Map<String, String> checkFreeBusy(EventQuery eventQuery) throws Exception;
+
+  /**
+   * Saves changes for list of events.
+   * <p> This method can be used in 2 cases: <br/>
+   * <ul>
+   * <li>Moving events between 2 calendars</li>
+   * <li>Editing/updating events. In this case, from calendar and to calendar are the same</li>
+   * </ul>
+   * @param fromCalendar Id of the source calendar
+   * @param toCalendar  Id of the destination calendar
+   * @param formType type of the source calendar (private/shared/public)
+   * @param toType type of the destination calendar (private/shared/public)
+   * @param calEvents List of <code>CalendarEvent</code> objects
+   * @param username current user name(or user id)
+   * @throws Exception
+   */
+  public void moveEvent(String fromCalendar, String toCalendar, String formType, String toType, List<CalendarEvent> calEvents, String username) throws Exception;
+  
+  /**
+   * Confirms an invitation to participate in an event
+   * @param fromUserId Id of the invitation owner
+   * @param confirmingEmail Email of the invited participant
+   * @param confirmingUser User id of the invited participant
+   * @param calType Type of the invitation event's calendar
+   * @param calendarId Id of the invitation event's calendar
+   * @param eventId Id of the invitation event
+   * @param answer The answer of the invited user. It can be: DENY/ACCEPT/NOT_SURE
+   * @throws Exception
+   */
+  public void confirmInvitation(String fromUserId, String confirmingEmail, String confirmingUser, int calType, String calendarId, String eventId, int answer) throws Exception;
+  
+  /**
    * Gets all occurrences of a repetitive event in a period of time. <br/>
    * The result will be depended on the recurrence rule, the start date of recurrent event and the period of time to view.
    * @param recurEvent the original recurrent event
@@ -466,7 +459,9 @@ public interface CalendarService extends LegacyCalendarService {
    * @param to to time
    * @return list of <code>CalendarEvent</code> objects
    * @throws Exception
+   * @Deprecated use getHighLightOriginalRecurrenceEventsSQL instead
    */
+  @Deprecated
   public List<CalendarEvent> getOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
 
   /**
@@ -579,7 +574,10 @@ public interface CalendarService extends LegacyCalendarService {
    * @param username owner of this occurrence event
    * @param occurrence the occurrence event object to remove
    * @throws Exception
+   * 
+   * @Deprecated use removeOneOccurrenceEvent instead
    */
+  @Deprecated
   public void removeOccurrenceInstance(String username, CalendarEvent occurrence) throws Exception;
 
   /**
@@ -613,7 +611,10 @@ public interface CalendarService extends LegacyCalendarService {
    * @param timezone timezone
    * @return 
    * @throws Exception
+   * 
+   * @Deprecated use searchHighlightRecurrenceEventSQL instead
    */
+  @Deprecated
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception;
 
   public List<Map<Integer, String>> searchHighlightRecurrenceEventSQL(String username, EventQuery eventQuery, String timezone,
@@ -629,52 +630,5 @@ public interface CalendarService extends LegacyCalendarService {
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
 
   public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery,
-                                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
-
-  /**
-   * Imports given remote calendar in background <br/>
-   * <p> Users don't need to wait too long when importing a big calendar
-   * @param remoteCalendar
-   * @throws Exception
-   */
-  public void importRemoteCalendarByJob(RemoteCalendar remoteCalendar) throws Exception;
-  
-  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,Date from, Date to, String userId);
-  
-  public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,Date from, Date to, String userId);
-  
-  public String buildRecurrenceId(Date formTime, String username);
-
-  /**
-   * Get specified attachment object by given attachment id
-   * @param attId given attachment id ( now we store this by using node path)
-   * @return Attachment object with input stream
-   */
-  public Attachment getAttachmentById(String attId);
-  
-  public void removeAttachmentById(String attId);
-  
-  public void addListenerPlugin(CalendarUpdateEventListener listener) throws Exception;
-
-  public void addEventListenerPlugin(CalendarEventListener listener) throws Exception;
-  
-  /**
-   * Initializes calendar data for a new created user
-   * @param userName User id of the new created user
-   * @param defaultCalendarSetting default calendar setting
-   * @throws Exception
-   */
-  public void initNewUser(String userName, CalendarSetting defaultCalendarSetting) throws Exception;
-
-  /**
-   * Checks if the remote URL is valid, in 2 cases of iCalendar URL or CalDav URL, with authentication
-   * @param url the remote URL
-   * @param type the type of remote calendar, iCalendar or CalDav
-   * @param remoteUser the remote user name used to authenticate
-   * @param remotePassword the remote password used to authenticate
-   * @return true if remote URL is available in case of iCalendar or supports CalDav access in case of CalDav
-   * @throws Exception
-   */
-  boolean isValidRemoteUrl(String url, String type, String remoteUser, String remotePassword) throws Exception;
-
+                                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;  
 }

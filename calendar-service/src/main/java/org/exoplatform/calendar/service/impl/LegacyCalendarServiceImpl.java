@@ -17,13 +17,16 @@
   
 package org.exoplatform.calendar.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -474,7 +477,7 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
     else return null;
   }
   
-  //Deprecated methods for Event
+  //Event
   
   public CalendarEvent getEventById(String eventId) throws Exception {
     return storage_.getEventById(eventId);
@@ -627,8 +630,54 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
     storage_.removeSharedEvent(username, calendarId, eventId);
   }
   
+  public List<CalendarEvent> getSharedEventByCalendars(String username, List<String> calendarIds) throws Exception {
+    if(Utils.isUserEnabled(username))
+    return storage_.getSharedEventByCalendars(username, calendarIds);
+    else return new ArrayList<CalendarEvent>();
+  }
+  
+  /*
+   * (non-Javadoc)
+   * @see org.exoplatform.calendar.service.CalendarService#getSharedEvent(java.lang.String, java.lang.String, java.lang.String)
+   */
+  public CalendarEvent getSharedEvent(String username, String calendarId, String eventId) throws Exception {
+    return storage_.getSharedEvent(username, calendarId, eventId);
+  }
+  
   @Override
   public EventDAO getEventDAO() {
     return eventDAO;
+  }
+  
+  @Override
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,Date from, Date to, String userId) {
+    java.util.Calendar f = new GregorianCalendar();
+    f.setTime(from);
+    java.util.Calendar t = new GregorianCalendar();
+    t.setTime(to);
+    return storage_.getAllExcludedEvent(originEvent,f ,t , userId);
+  }
+  
+  @Override
+  public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,Date from, Date to, String userId) {
+    java.util.Calendar f = new GregorianCalendar();
+    f.setTime(from);
+    java.util.Calendar t = new GregorianCalendar();
+    t.setTime(to);
+    return storage_.buildSeriesByTime(originEvent,f ,t , userId) ;
+  }
+  
+  @Override
+  public String buildRecurrenceId(Date formTime, String username) {
+    String timezone = TimeZone.getDefault().getID();
+    try {
+      timezone = storage_.getCalendarSetting(username).getTimeZone();
+    } catch (Exception e) {
+      if (LOG.isDebugEnabled()) LOG.debug(e);
+    }
+    TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+    SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
+    format.setTimeZone(userTimeZone);
+    return format.format(formTime);
   }
 }

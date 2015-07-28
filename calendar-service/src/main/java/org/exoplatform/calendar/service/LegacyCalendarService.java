@@ -16,7 +16,10 @@
  **/
 package org.exoplatform.calendar.service;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.exoplatform.calendar.service.impl.NewMembershipListener;
 import org.exoplatform.commons.utils.ListAccess;
@@ -207,25 +210,6 @@ public interface LegacyCalendarService {
   public Calendar removePublicCalendar(String calendarId) throws Exception;
 
   /**
-   * Assigns a group task for an user
-   * @param taskId the assigned task
-   * @param calendarId Id of the task's calendar
-   * @param assignee User id of the assignee
-   * @throws Exception
-   */
-  public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception;
-
-  /**
-   * Sets status for a group task.
-   * @param taskId Id of the task
-   * @param calendarId Id of the task's calendar
-   * @param status
-   * @throws Exception
-   * @see CalendarEvent
-   */
-  public void setGroupTaskStatus(String taskId, String calendarId, String status) throws Exception;
-
-  /**
    * Checks if the calendar with given calendarId is a remote calendar
    * @param username the owner of calendar
    * @param calendarId the Id of calendar
@@ -318,7 +302,7 @@ public interface LegacyCalendarService {
    */
   public int getTypeOfCalendar(String userName, String calendarId) throws Exception;
   
-  //Deprecated method for Event
+  //Event
   
   /**
    * Gets event by its Id
@@ -459,6 +443,25 @@ public interface LegacyCalendarService {
   public CalendarEvent getRepetitiveEvent(CalendarEvent occurence) throws Exception;
   
   /**
+   * Gets events in shared calendars
+   * @param username current user name
+   * @param calendarIds list of shared calendars from which to get events
+   * @return list of <code>CalendarEvent</code> object
+   * @throws Exception
+   */
+  public List<CalendarEvent> getSharedEventByCalendars(String username, List<String> calendarIds) throws Exception;
+
+  /**
+   * Get shared event by user name, calendar id and event id
+   * @param username current user name
+   * @param calendarId id of shared calendar
+   * @param eventId id of shared event
+   * @return the <code>CalendarEvent</code> object
+   * @throws Exception
+   */
+  public CalendarEvent getSharedEvent(String username, String calendarId, String eventId) throws Exception;
+  
+  /**
    * Saves event to shared calendar.
    * @param username current user name(or user id)
    * @param calendarId given calendar id
@@ -476,8 +479,65 @@ public interface LegacyCalendarService {
    * @throws Exception
    */
   public void removeSharedEvent(String username, String calendarId, String eventId) throws Exception;
+  
+  /**
+   * Assigns a group task for an user
+   * @param taskId the assigned task
+   * @param calendarId Id of the task's calendar
+   * @param assignee User id of the assignee
+   * @throws Exception
+   */
+  public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception;
 
+  /**
+   * Sets status for a group task.
+   * @param taskId Id of the task
+   * @param calendarId Id of the task's calendar
+   * @param status
+   * @throws Exception
+   * @see CalendarEvent
+   */
+  public void setGroupTaskStatus(String taskId, String calendarId, String status) throws Exception;
+
+  /**
+   * Gets an <code>EventPageList</code> of events/tasks of a given list of public calendars that matches the condition <br> 
+   * in the given <code>EvenQuery</code> object. 
+   * @param username current user name(or user id)
+   * @param eventQuery <code>EventQuery</code> object
+   * @param publicCalendarIds Array of public calendar IDs in which to search events
+   * @return <code>EventPageList</code> object.
+   * @throws Exception
+   * @see EventPageList
+   */
+  public EventPageList searchEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception;
+  
+  public List<Map<Integer, String>> searchHightLightEventSQL(String username, EventQuery eventQuery,
+                                                             String[] privateCalendars, String[] publicCalendars) throws Exception;
+  
+  /**
+   * A faster version of getAllNoRepeatEvents without thread
+   *
+   * @param username
+   * @param eventQuery
+   * @param privateCalendars
+   * @param publicCalendars
+   * @return
+   * @throws Exception
+   */
+  public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery,
+                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
+  
   public EventDAO getEventDAO();
+  
+  /**
+   * Those methods are not used anywhere
+   */  
+  
+  public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,Date from, Date to, String userId);
+  
+  public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,Date from, Date to, String userId);
+  
+  public String buildRecurrenceId(Date formTime, String username);
 }
 
 
