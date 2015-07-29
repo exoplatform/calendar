@@ -19,6 +19,7 @@
 
 package org.exoplatform.calendar.service.storage.jcr;
 
+import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarService;
@@ -38,14 +39,16 @@ import org.exoplatform.services.log.Log;
  */
 public class JCREventDAOImpl implements EventDAO {
 
-  private Storage context;
-  private JCRDataStorage dataStorage;
+  private final Storage context;
+  private final JCRDataStorage dataStorage;
+  private final org.exoplatform.calendar.service.EventDAO oldDAO;
 
   private static final Log LOG   = ExoLogger.getExoLogger(JCRCalendarDAOImpl.class);
 
   public JCREventDAOImpl(CalendarService calService, JCRStorage storage) {
-    this.context = context;
+    this.context = storage;
     this.dataStorage = ((CalendarServiceImpl) calService).getDataStorage();
+    this.oldDAO = calService.getEventDAO();
   }
 
   @Override
@@ -55,51 +58,100 @@ public class JCREventDAOImpl implements EventDAO {
 
   @Override
   public ListAccess<Invitation> findInvitationsByQuery(EventQuery query) {
-    return null;
+    return oldDAO.findInvitationsByQuery(query);
   }
 
   @Override
   public Invitation getInvitationById(String invitationID) throws CalendarException {
-    return null;
+    return oldDAO.getInvitationById(invitationID);
   }
 
   @Override
   public void removeInvitation(String id) throws CalendarException {
-
+    oldDAO.removeInvitation(id);
   }
 
   @Override
   public void updateInvitation(String id, String status) throws CalendarException {
-
+    oldDAO.updateInvitation(id, status);
   }
 
   @Override
   public Invitation createInvitation(String eventId, String participant, String status) throws CalendarException {
-    return null;
+    return oldDAO.createInvitation(eventId, participant, status);
   }
 
   @Override
   public CalendarEvent getById(String id) {
-    return null;
+    return getById(id, null);
   }
 
   @Override
   public CalendarEvent getById(String id, CalendarType calType) {
+    try {
+      return dataStorage.getEventById(id);
+    } catch (Exception ex) {
+      LOG.error(ex);
+    }
     return null;
   }
 
   @Override
-  public CalendarEvent save(CalendarEvent object, boolean isNew) {
+  public CalendarEvent save(CalendarEvent event, boolean isNew) {
+    try {
+      CalendarType calType = event.getCalendarType();
+      String calendarId = event.getCalendarId();
+      Calendar cal = context.getCalendarDAO().getById(calendarId, calType);
+      if (cal == null) {
+        return null;
+      }
+      calType = cal.getCalendarType();
+
+      if (calType == Calendar.Type.PERSONAL) {
+        dataStorage.saveUserEvent(cal.getCalendarOwner(), cal.getId(), event, isNew);
+      } else if (calType == Calendar.Type.GROUP) {
+        dataStorage.savePublicEvent(cal.getId(), event, isNew);
+      } else {
+        return null;
+      }
+
+      return event;
+    } catch (Exception ex) {
+      LOG.error(ex);
+    }
     return null;
   }
 
   @Override
   public CalendarEvent remove(String id, CalendarType calType) {
+    try {
+      CalendarEvent event = this.getById(id, calType);
+      if (event == null) {
+        return null;
+      }
+      Calendar cal = context.getCalendarDAO().getById(event.getCalendarId(), event.getCalendarType());
+      CalendarType type = cal.getCalendarType();
+
+      if (type == Calendar.Type.PERSONAL) {
+        dataStorage.removeUserEvent(cal.getCalendarOwner(), cal.getId(), id);
+      } else if (type == Calendar.Type.GROUP) {
+        dataStorage.removePublicEvent(cal.getId(), id);
+      } else {
+        return null;
+      }
+
+      return event;
+
+    } catch (Exception ex) {
+      LOG.error(ex);
+    }
     return null;
   }
 
   @Override
   public CalendarEvent newInstance(CalendarType type) {
-    return null;
+    CalendarEvent event = new CalendarEvent();
+    event.setCalendarType(type);
+    return event;
   }
 }

@@ -64,6 +64,7 @@ import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.handler.EventHandler;
 import org.exoplatform.calendar.service.handler.EventHandlerImpl;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
+import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.container.ExoContainer;
@@ -120,7 +121,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     super(nodeHierarchyCreator, reposervice, cservice);
     
     this.calendarHandler = new CalendarHandlerImpl(this);
-    this.eventHandler = new EventHandlerImpl(storage_);
+    this.eventHandler = new EventHandlerImpl(this);
     
     calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(storage_));
     calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(storage_));
@@ -183,7 +184,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
    * {@inheritDoc}
    */
   public String[] getExportImportType() throws Exception {
-    return calendarImportExport_.keySet().toArray(new String[] {});
+    return calendarImportExport_.keySet().toArray(new String[]{});
   }
 
   /**
@@ -893,7 +894,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     try {
       String timezone = getCalendarSetting(username).getTimeZone();
       Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),
-                                                      TimeZone.getTimeZone(timezone));
+              TimeZone.getTimeZone(timezone));
       Boolean isFirstOccurrence = (stopDate == null);
 
       String calendarId = originEvent.getCalendarId();
@@ -1246,6 +1247,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   
 
   /**
+   * TODO: remove public access for this method
    * This method is intended to used internally in implementation of handlers
    * @param type
    * @return
@@ -1268,5 +1270,30 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
       daos.add(s.getCalendarDAO());
     }
     return daos;      
+  }
+
+  /**
+   * TODO: remove public access for this method after move EventHandlerImpl to same package
+   * @param type
+   * @return
+   */
+  public List<EventDAO> getSupportedEventDAO(CalendarType type) {
+    List<EventDAO> daos = new LinkedList<EventDAO>();
+    List<Storage> tmp = new LinkedList<Storage>();
+
+    if (type == null) {
+      tmp = storages;
+    } else {
+      for (Storage s : storages) {
+        if (s.getSupportedTypes().contains(type)) {
+          tmp.add(s);
+        }
+      }
+    }
+
+    for (Storage s : tmp) {
+      daos.add(s.getEventDAO());
+    }
+    return daos;
   }
 }

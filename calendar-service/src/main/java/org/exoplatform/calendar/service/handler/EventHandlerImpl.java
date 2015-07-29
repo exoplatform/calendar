@@ -38,8 +38,10 @@ import org.exoplatform.calendar.service.EventPageListQuery;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.EventNodeListAccess;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
+import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
@@ -50,29 +52,49 @@ public class EventHandlerImpl implements EventHandler {
 
   private static Log      log = ExoLogger.getLogger(EventHandlerImpl.class);
 
+  protected CalendarServiceImpl calSerVice;
   protected JCRDataStorage  storage;
 
-  public EventHandlerImpl(JCRDataStorage storage_) {
-    this.storage = storage_;
+  public EventHandlerImpl(CalendarServiceImpl service) {
+    this.calSerVice = service;
+    this.storage = service.getDataStorage();
   }
 
   @Override
   public CalendarEvent getEventById(String eventId) {
-    return null;
+    return getEventById(eventId, null);
   }
 
   @Override
   public CalendarEvent getEventById(String eventId, CalendarType calType) {
+    for(EventDAO dao : getSupportedEventDAOs(calType)) {
+      CalendarEvent event = dao.getById(eventId, calType);
+      if (event != null) {
+        return event;
+      }
+    }
     return null;
   }
 
   @Override
   public CalendarEvent saveEvent(CalendarEvent event, boolean isNew) {
+    for(EventDAO dao : getSupportedEventDAOs(event.getCalendarType())) {
+      CalendarEvent e = dao.save(event, isNew);
+      if (e != null) {
+        return e;
+      }
+    }
     return null;
   }
 
   @Override
   public CalendarEvent removeEvent(String eventId, CalendarType calendarType) {
+    for(EventDAO dao : getSupportedEventDAOs(calendarType)) {
+      CalendarEvent e = dao.remove(eventId, calendarType);
+      if (e != null) {
+        return e;
+      }
+    }
     return null;
   }
 
@@ -390,5 +412,9 @@ public class EventHandlerImpl implements EventHandler {
         log.error("Can not get JCR session", ex);
     }
     return session;
+  }
+
+  private List<EventDAO> getSupportedEventDAOs(CalendarType type) {
+    return calSerVice.getSupportedEventDAO(type);
   }
 }
