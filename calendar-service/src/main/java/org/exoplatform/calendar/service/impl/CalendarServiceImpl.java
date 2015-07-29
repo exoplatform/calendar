@@ -18,9 +18,7 @@ package org.exoplatform.calendar.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -51,6 +49,7 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
 import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
@@ -61,8 +60,6 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.CalendarHandler;
-import org.exoplatform.calendar.service.handler.EventHandler;
-import org.exoplatform.calendar.service.handler.EventHandlerImpl;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.calendar.service.storage.Storage;
@@ -85,6 +82,7 @@ import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.PeriodInfo;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
+
 import org.picocontainer.Startable;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -1252,24 +1250,18 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
    * @param type
    * @return
    */
-  public List<CalendarDAO> getCalendarDAO(CalendarType type) {
-    List<CalendarDAO> daos = new LinkedList<CalendarDAO>();
-    List<Storage> tmp = new LinkedList<Storage>();
-
+  public CalendarDAO getCalendarDAO(CalendarType type) {
     if (type == null) {
-      tmp = storages;
+      throw new IllegalArgumentException("CalendarType must not be NULL");
     } else {
       for (Storage s : storages) {
         if (s.isTypeSupported(type)) {
-          tmp.add(s);
+          return s.getCalendarDAO();
         }
       }
     }
     
-    for (Storage s : tmp) {
-      daos.add(s.getCalendarDAO());
-    }
-    return daos;      
+    return null;      
   }
 
   /**

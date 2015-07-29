@@ -28,7 +28,7 @@ import org.exoplatform.commons.utils.ListAccess;
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface EventDAO extends GenericDAO<CalendarEvent> {
+public interface EventDAO extends GenericDAO<CalendarEvent, String> {
 
   ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException;
 

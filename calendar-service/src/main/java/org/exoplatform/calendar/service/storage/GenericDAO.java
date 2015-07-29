@@ -19,20 +19,20 @@ package org.exoplatform.calendar.service.storage;
 
 import org.exoplatform.calendar.service.CalendarType;
 
-public interface GenericDAO<T> {
+public interface GenericDAO<T, ID> {
   
   /**
    * @param id
    * @return
    */
-  T getById(String id);
+  T getById(ID id);
 
   /**
    * @param id
    * @param calType
    * @return
    */
-  T getById(String id, CalendarType calType);
+  T getById(ID id, CalendarType calType);
 
 
   /**
@@ -46,7 +46,7 @@ public interface GenericDAO<T> {
    * @param calType
    * @return 
    */
-  T remove(String id, CalendarType calType);
+  T remove(ID id, CalendarType calType);
 
   /**
    * @param type

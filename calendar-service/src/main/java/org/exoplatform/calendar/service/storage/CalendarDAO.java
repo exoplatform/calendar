@@ -20,7 +20,7 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.commons.utils.ListAccess;
 
-public interface CalendarDAO extends GenericDAO<Calendar> {
+public interface CalendarDAO extends GenericDAO<Calendar, String> {
 
   /**
    * @param query

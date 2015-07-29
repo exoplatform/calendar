@@ -17,13 +17,10 @@
   
 package org.exoplatform.calendar.service.impl;
 
-import java.util.List;
-
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
-import org.exoplatform.calendar.service.MultiListAccess;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.commons.utils.ListAccess;
 
@@ -42,7 +39,8 @@ public class CalendarHandlerImpl implements CalendarHandler {
 
   @Override
   public Calendar getCalendarById(String calId, CalendarType calType) {
-    for (CalendarDAO dao : getCalendarDAO(calType)) {
+    CalendarDAO dao = getCalendarDAO(calType);
+    if (dao != null) {
       Calendar cal = dao.getById(calId, calType);
       if (cal != null) {
         return cal;
@@ -52,19 +50,18 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public ListAccess findCalendarsByQuery(CalendarQuery query) {
-    MultiListAccess lists = new MultiListAccess();
-
-    for (CalendarDAO dao : getCalendarDAO(query.getCalType())) {
-      lists.add(dao.findCalendarsByQuery(query));
+  public ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query) {
+    CalendarDAO dao = getCalendarDAO(query.getCalType());
+    if (dao != null) {
+      return dao.findCalendarsByQuery(query);
     }
-
-    return lists;
+    return null;
   }
 
   @Override
   public Calendar saveCalendar(Calendar calendar, boolean isNew) {
-    for (CalendarDAO dao : getCalendarDAO(calendar.getCalendarType())) {
+    CalendarDAO dao = getCalendarDAO(calendar.getCalendarType());
+    if (dao != null) {
       Calendar cal = dao.save(calendar, isNew); 
       if (cal != null) {
         return cal;
@@ -76,7 +73,8 @@ public class CalendarHandlerImpl implements CalendarHandler {
 
   @Override
   public Calendar removeCalendar(String calendarId, CalendarType calType) {
-    for (CalendarDAO dao : getCalendarDAO(calType)) {
+    CalendarDAO dao = getCalendarDAO(calType);
+    if (dao != null){
       Calendar cal = dao.remove(calendarId, calType);
       if (cal != null) {
         return cal;        
@@ -86,7 +84,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
     return null;
   }
   
-  private List<CalendarDAO> getCalendarDAO(CalendarType type) {
+  private CalendarDAO getCalendarDAO(CalendarType type) {
     return service.getCalendarDAO(type);
   }
 }

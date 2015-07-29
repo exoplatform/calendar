@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-package org.exoplatform.calendar.service.handler;
+package org.exoplatform.calendar.service.impl;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -34,13 +34,11 @@ import net.fortuna.ical4j.model.DateTime;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarType;
+import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.service.EventPageListQuery;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
-import org.exoplatform.calendar.service.impl.EventNodeListAccess;
-import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;

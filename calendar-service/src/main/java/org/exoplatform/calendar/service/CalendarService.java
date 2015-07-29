@@ -25,7 +25,6 @@ import java.util.TimeZone;
 
 import javax.jcr.Node;
 
-import org.exoplatform.calendar.service.handler.EventHandler;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
 import org.exoplatform.calendar.service.storage.Storage;
