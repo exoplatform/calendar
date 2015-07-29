@@ -17,9 +17,6 @@
   
 package org.exoplatform.calendar.service.storage.jcr;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
@@ -43,8 +40,8 @@ public class JCRStorage extends BaseComponentPlugin implements Storage {
   }
 
   @Override
-  public List<CalendarType> getSupportedTypes() {
-    return Arrays.asList((CalendarType)Calendar.Type.PERSONAL, (CalendarType)Calendar.Type.GROUP);
+  public boolean isTypeSupported(CalendarType type) {
+    return (Calendar.Type.PERSONAL.equals(type) || Calendar.Type.GROUP.equals(type));
   }
 
   @Override

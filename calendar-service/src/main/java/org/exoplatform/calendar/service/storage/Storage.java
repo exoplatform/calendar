@@ -17,15 +17,12 @@
   
 package org.exoplatform.calendar.service.storage;
 
-import java.util.List;
-
 import org.exoplatform.calendar.service.CalendarType;
 
-//TODO: rename to CalendarDataSource ?
+// TODO: rename to CalendarDataSource ?
 public interface Storage {
 
-  //TODO: change to isTypeSupported(type) which returns true OR false if the type is supported.
-  public List<CalendarType> getSupportedTypes();
+  public boolean isTypeSupported(CalendarType type);
   
   public CalendarDAO getCalendarDAO();
 
