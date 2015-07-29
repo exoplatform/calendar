@@ -223,13 +223,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   /**
    * {@inheritDoc}
    */
-  public EventPageList searchEvent(String username, EventQuery query, String[] publicCalendarIds) throws Exception {
-    return storage_.searchEvent(username, query, publicCalendarIds);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
   public EventCategory getEventCategory(String username, String eventCategoryId) throws Exception {
     return storage_.getEventCategory(username, eventCategoryId);
   }

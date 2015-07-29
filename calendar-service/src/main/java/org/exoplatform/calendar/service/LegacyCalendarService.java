@@ -406,6 +406,7 @@ public interface LegacyCalendarService {
   public CalendarEvent getGroupEvent(String calendarId, String eventId) throws Exception;
 
   /**
+   * 
    * Gets all events and tasks from a list of public calendars  
    * @param calendarIds List of Calendar IDs
    * @return List of <code>CalendarEvent</code> objects
@@ -541,5 +542,3 @@ public interface LegacyCalendarService {
   
   public String buildRecurrenceId(Date formTime, String username);
 }
-
-

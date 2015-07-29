@@ -43,6 +43,7 @@ import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarIterator;
 import org.exoplatform.calendar.service.DeleteShareJob;
 import org.exoplatform.calendar.service.EventDAO;
+import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.LegacyCalendarService;
@@ -494,6 +495,13 @@ public abstract class LegacyCalendarServiceImpl implements LegacyCalendarService
     if(Utils.isUserEnabled(username))
     return storage_.getEvents(username, eventQuery, publicCalendarIds);
     else return new ArrayList<CalendarEvent>();
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  public EventPageList searchEvent(String username, EventQuery query, String[] publicCalendarIds) throws Exception {
+    return storage_.searchEvent(username, query, publicCalendarIds);
   }
   
   /**

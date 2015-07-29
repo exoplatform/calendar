@@ -38,6 +38,7 @@ import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.service.EventPageListQuery;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
+import org.exoplatform.calendar.service.QueryCondition;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
@@ -97,13 +98,13 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
+  public ListAccess<CalendarEvent> findEventsByQuery(QueryCondition eventQuery) throws CalendarException {
 //    return new EventList(new EventNodeListAccess(this, eventQuery));
     return null;
   }
   
   @Override
-  public ListAccess<Invitation> findInvitationsByQuery(EventQuery query) {
+  public ListAccess<Invitation> findInvitationsByQuery(QueryCondition query) {
 //    return new InvitationListAccess(this, query);
     return null;
   }

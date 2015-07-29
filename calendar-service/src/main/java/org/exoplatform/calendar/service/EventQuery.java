@@ -28,12 +28,11 @@ import org.exoplatform.commons.utils.XPathUtils;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
+@Deprecated
 public class EventQuery {
   private String             nodeType           = "exo:calendarEvent";
 
   private String             eventType;
-
-  private CalendarType       calendarType       = null;
 
   private String             text               = null;
 
