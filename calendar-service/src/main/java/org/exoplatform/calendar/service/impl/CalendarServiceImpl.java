@@ -1285,7 +1285,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
       tmp = storages;
     } else {
       for (Storage s : storages) {
-        if (s.getSupportedTypes().contains(type)) {
+        if (s.isTypeSupported(type)) {
           tmp.add(s);
         }
       }
