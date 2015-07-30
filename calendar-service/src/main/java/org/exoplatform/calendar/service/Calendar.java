@@ -75,62 +75,9 @@ public class Calendar extends AbstractBean {
   
   public static final int      TYPE_ALL   = -1;
 
-  public static final String N_ASPARAGUS = "asparagus";
-
-  public static final String N_MUNSELL_BLUE =  "munsell_blue";
-
-  public static final String N_NAVY_BLUE = "navy_blue";
-
-  public static final String N_PURPLE = "purple";
-
-  public static final String N_RED = "red";
-
-  public static final String N_BROWN = "brown";
-
-  public static final String N_LAUREL_GREEN = "laurel_green";
-
-  public static final String N_SKY_BLUE = "sky_blue";
-
-  public static final String N_BLUE_GRAY = "blue_gray";
-
-  public static final String N_LIGHT_PURPLE = "light_purple";
-
-  public static final String N_HOT_PINK = "hot_pink";
-
-  public static final String N_LIGHT_BROWN = "light_brown";
-
-  public static final String N_MOSS_GREEN = "moss_green";
-
-  public static final String N_POWDER_BLUE = "powder_blue";
-
-  public static final String N_LIGHT_BLUE = "light_blue";
-
-  public static final String N_PINK = "pink";
-
-  public static final String N_ORANGE = "orange";
-
-  public static final String N_GRAY = "gray";
-
-  public static final String N_GREEN = "green";
-
-  public static final String N_BABY_BLUE = "baby_blue";
-
-  public static final String N_LIGHT_GRAY = "light_gray";
-
-  public static final String N_BEIGE = "beige";
-
-  public static final String N_YELLOW = "yellow";
-
-  public static final String N_PLUM_PURPLE = "#CEA6AC";
-
-  public static final String[] COLORS        = { N_ASPARAGUS, N_MUNSELL_BLUE, N_NAVY_BLUE, N_PURPLE, N_RED, N_BROWN,
-    N_LAUREL_GREEN, N_SKY_BLUE, N_BLUE_GRAY, N_LIGHT_PURPLE, N_HOT_PINK, N_LIGHT_BROWN,
-    N_MOSS_GREEN, N_POWDER_BLUE, N_LIGHT_BLUE, N_PINK, N_ORANGE, N_GRAY,
-    N_GREEN, N_BABY_BLUE, N_LIGHT_GRAY, N_BEIGE, N_YELLOW, N_PLUM_PURPLE };
-
   private String               name;
 
-  private String               calendarColor = N_POWDER_BLUE;
+  private String               calendarColor = Constants.N_POWDER_BLUE;
 
   private String               description;
 

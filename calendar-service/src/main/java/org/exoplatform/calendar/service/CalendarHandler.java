@@ -32,7 +32,7 @@ public interface CalendarHandler {
    * @param query
    * @return
    */
-  ListAccess findCalendarsByQuery(CalendarQuery query);
+  ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query);
   
   /**
    * @param calendar

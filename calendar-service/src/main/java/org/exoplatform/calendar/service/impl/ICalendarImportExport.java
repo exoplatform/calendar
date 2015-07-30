@@ -467,7 +467,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     if (isNew) {
       Calendar exoCalendar = new Calendar();
       exoCalendar.setName(calendarName);
-      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Calendar.COLORS[0]);
+      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Constants.COLORS[0]);
       exoCalendar.setDescription(iCalendar.getProductId().getValue());
       exoCalendar.setPublic(false);
       exoCalendar.setCalendarOwner(username);

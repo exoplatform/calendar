@@ -49,6 +49,7 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
 import org.exoplatform.calendar.service.CompositID;
+import org.exoplatform.calendar.service.Constants;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.service.EventPageList;
@@ -83,6 +84,7 @@ import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.PeriodInfo;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
+
 import org.picocontainer.Startable;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -405,7 +407,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     cal.setName(fullName); // name the default calendar after the user's full name, cf CAL-86
     cal.setDataInit(true);
     cal.setCalendarOwner(userName);
-    cal.setCalendarColor(Calendar.COLORS[0]);
+    cal.setCalendarColor(Constants.COLORS[0]);
     if (defaultCalendarSetting_ != null) {
       if (defaultCalendarSetting_.getTimeZone() != null)
         cal.setTimeZone(defaultCalendarSetting_.getTimeZone());

@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.Constants;
 import org.exoplatform.calendar.service.RemoteCalendar;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
@@ -158,7 +160,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     setUrl(url);
     this.getUIStringInput(URL).setReadOnly(true);
     setSyncPeriod(Utils.SYNC_AUTO);
-    setSelectColor(Calendar.COLORS[0]);
+    setSelectColor(Constants.COLORS[0]);
     setUseAuthentication(true);
     
     CalendarService calendarService = this.getApplicationComponent(CalendarService.class);

@@ -25,10 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.Constants;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -456,11 +458,11 @@ public class CalendarDataInjector extends DataInjector {
   private String getRandomColor() {
     if (clIndex <= 0) {
       l = 1;
-    } else if (clIndex >= Calendar.COLORS.length - 1) {
+    } else if (clIndex >= Constants.COLORS.length - 1) {
       l = -1;
     }
     clIndex += l;
-    return Calendar.COLORS[clIndex];
+    return Constants.COLORS[clIndex];
   }
 
   private long randomDateTime(long days, long oldTime) {
