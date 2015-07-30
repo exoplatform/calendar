@@ -18,6 +18,9 @@ package org.exoplatform.calendar.service;
 
 import org.exoplatform.commons.utils.ListAccess;
 
+/**
+ * TODO: we have to introduce the replacement before deprecate this api
+ */
 @Deprecated
 public interface EventDAO {
 

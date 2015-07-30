@@ -33,11 +33,6 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar getCalendarById(String calId) {
-    return getCalendarById(calId, null);
-  }
-
-  @Override
   public Calendar getCalendarById(String calId, CalendarType calType) {
     CalendarDAO dao = getCalendarDAO(calType);
     if (dao != null) {

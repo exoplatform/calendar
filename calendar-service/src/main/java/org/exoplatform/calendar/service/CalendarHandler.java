@@ -20,14 +20,6 @@ package org.exoplatform.calendar.service;
 import org.exoplatform.commons.utils.ListAccess;
 
 public interface CalendarHandler {
-
-  /**
-   * Gets a calendar by its id
-   * 
-   * @param calId Id of the calendar
-   * @return a {@link Calendar}
-   */
-  public Calendar getCalendarById(String calId);
   
   /**
    * @param calId

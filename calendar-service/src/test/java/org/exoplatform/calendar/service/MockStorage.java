@@ -28,11 +28,6 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
   class MockCalendarDAO implements CalendarDAO {
 
     @Override
-    public Calendar getById(String id) {
-      return null;
-    }
-
-    @Override
     public Calendar getById(String id, CalendarType calType) {
       return null;
     }
@@ -61,11 +56,6 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
   class MockEventDAO implements EventDAO {
 
     @Override
-    public CalendarEvent getById(String id) {
-      return null;
-    }
-
-    @Override
     public CalendarEvent getById(String id, CalendarType calType) {
       return null;
     }
@@ -89,29 +79,5 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
       return null;
     }
-
-    @Override
-    public ListAccess<Invitation> findInvitationsByQuery(EventQuery query) {
-      return null;
-    }
-
-    @Override
-    public Invitation getInvitationById(String invitationID) throws CalendarException {
-      return null;
-    }
-
-    @Override
-    public void removeInvitation(String id) throws CalendarException {
-    }
-
-    @Override
-    public void updateInvitation(String id, String status) throws CalendarException {
-    }
-
-    @Override
-    public Invitation createInvitation(String eventId, String participant, String status) throws CalendarException {
-      return null;
-    }
-    
   }
 }

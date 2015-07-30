@@ -32,13 +32,4 @@ public interface EventDAO extends GenericDAO<CalendarEvent, String> {
 
   ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException;
 
-  public ListAccess<Invitation> findInvitationsByQuery(EventQuery query);
-
-  public Invitation getInvitationById(String invitationID) throws CalendarException;
-
-  public void removeInvitation(String id) throws CalendarException;
-
-  public void updateInvitation(String id, String status) throws CalendarException;
-
-  public Invitation createInvitation(String eventId, String participant, String status) throws CalendarException;
 }

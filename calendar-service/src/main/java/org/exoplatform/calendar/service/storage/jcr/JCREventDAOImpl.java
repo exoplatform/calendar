@@ -41,49 +41,17 @@ public class JCREventDAOImpl implements EventDAO {
 
   private final Storage context;
   private final JCRDataStorage dataStorage;
-  private final org.exoplatform.calendar.service.EventDAO oldDAO;
 
   private static final Log LOG   = ExoLogger.getExoLogger(JCRCalendarDAOImpl.class);
 
   public JCREventDAOImpl(CalendarService calService, JCRStorage storage) {
     this.context = storage;
     this.dataStorage = ((CalendarServiceImpl) calService).getDataStorage();
-    this.oldDAO = calService.getEventDAO();
   }
 
   @Override
   public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
     return null;
-  }
-
-  @Override
-  public ListAccess<Invitation> findInvitationsByQuery(EventQuery query) {
-    return oldDAO.findInvitationsByQuery(query);
-  }
-
-  @Override
-  public Invitation getInvitationById(String invitationID) throws CalendarException {
-    return oldDAO.getInvitationById(invitationID);
-  }
-
-  @Override
-  public void removeInvitation(String id) throws CalendarException {
-    oldDAO.removeInvitation(id);
-  }
-
-  @Override
-  public void updateInvitation(String id, String status) throws CalendarException {
-    oldDAO.updateInvitation(id, status);
-  }
-
-  @Override
-  public Invitation createInvitation(String eventId, String participant, String status) throws CalendarException {
-    return oldDAO.createInvitation(eventId, participant, status);
-  }
-
-  @Override
-  public CalendarEvent getById(String id) {
-    return getById(id, null);
   }
 
   @Override

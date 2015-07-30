@@ -58,20 +58,15 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
     this.context = context;
     this.dataStorage = ((CalendarServiceImpl) service).getDataStorage();
   }
-  
+
   @Override
-  public Calendar getById(String id) {
+  public Calendar getById(String id, CalendarType calType) {
     try {
       return dataStorage.getCalendarById(id);
     } catch (Exception ex) {
       LOG.error("Exception while loading calendar by ID", ex);
       return null;
     }
-  }
-
-  @Override
-  public Calendar getById(String id, CalendarType calType) {
-    return this.getById(id);
   }
   
   @Override

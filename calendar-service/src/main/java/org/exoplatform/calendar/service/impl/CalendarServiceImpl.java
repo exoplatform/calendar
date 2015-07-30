@@ -1238,12 +1238,11 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   
 
   /**
-   * TODO: remove public access for this method
    * This method is intended to used internally in implementation of handlers
    * @param type
    * @return
    */
-  public CalendarDAO getCalendarDAO(CalendarType type) {
+  CalendarDAO getCalendarDAO(CalendarType type) {
     if (type == null) {
       throw new IllegalArgumentException("CalendarType must not be NULL");
     } else {
@@ -1258,27 +1257,19 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   }
 
   /**
-   * TODO: remove public access for this method after move EventHandlerImpl to same package
    * @param type
    * @return
    */
-  public List<EventDAO> getSupportedEventDAO(CalendarType type) {
-    List<EventDAO> daos = new LinkedList<EventDAO>();
-    List<Storage> tmp = new LinkedList<Storage>();
-
+  EventDAO getSupportedEventDAO(CalendarType type) {
     if (type == null) {
-      tmp = storages;
+      throw new IllegalArgumentException("CalendarType must not be NULL");
     } else {
       for (Storage s : storages) {
         if (s.isTypeSupported(type)) {
-          tmp.add(s);
+          return s.getEventDAO();
         }
       }
     }
-
-    for (Storage s : tmp) {
-      daos.add(s.getEventDAO());
-    }
-    return daos;
+    return null;
   }
 }

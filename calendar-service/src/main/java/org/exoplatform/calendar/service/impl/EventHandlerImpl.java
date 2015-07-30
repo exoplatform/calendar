@@ -16,34 +16,14 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.query.QueryManager;
-
-import net.fortuna.ical4j.model.DateTime;
-
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.EventHandler;
-import org.exoplatform.calendar.service.EventPageListQuery;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.QueryCondition;
-import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.storage.EventDAO;
-import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -60,39 +40,29 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent getEventById(String eventId) {
-    return getEventById(eventId, null);
-  }
-
-  @Override
   public CalendarEvent getEventById(String eventId, CalendarType calType) {
-    for(EventDAO dao : getSupportedEventDAOs(calType)) {
-      CalendarEvent event = dao.getById(eventId, calType);
-      if (event != null) {
-        return event;
-      }
+    EventDAO dao = getSupportedEventDAOs(calType);
+    if (dao != null) {
+      return dao.getById(eventId, calType);
     }
     return null;
   }
 
   @Override
   public CalendarEvent saveEvent(CalendarEvent event, boolean isNew) {
-    for(EventDAO dao : getSupportedEventDAOs(event.getCalendarType())) {
-      CalendarEvent e = dao.save(event, isNew);
-      if (e != null) {
-        return e;
-      }
+    EventDAO dao = getSupportedEventDAOs(event.getCalendarType());
+    if (dao != null) {
+      return dao.save(event, isNew);
     }
+
     return null;
   }
 
   @Override
   public CalendarEvent removeEvent(String eventId, CalendarType calendarType) {
-    for(EventDAO dao : getSupportedEventDAOs(calendarType)) {
-      CalendarEvent e = dao.remove(eventId, calendarType);
-      if (e != null) {
-        return e;
-      }
+    EventDAO dao = getSupportedEventDAOs(calendarType);
+    if (dao != null) {
+      return dao.remove(eventId, calendarType);
     }
     return null;
   }
@@ -109,311 +79,7 @@ public class EventHandlerImpl implements EventHandler {
     return null;
   }
 
-  @Override
-  public Invitation getInvitationById(String invitationID) throws CalendarException {
-//    String[] tmp = Invitation.parse(invitationID);
-//    String eventId = tmp[0];
-//    String participant = tmp[1];
-//
-//    CalendarEvent event = null;
-//    try {
-//      event = calService.getEventById(eventId);
-//    } catch (Exception e) {
-//      log.error("error during get event: {}, exeption: {}", eventId, e.getMessage());
-//      throw new CalendarException(null, e);
-//    }
-//
-//    if (event != null) {
-//      Invitation[] invitations = event.getInvitations();
-//      for (Invitation invite : invitations) {
-//        if (invite.getParticipant().equals(participant)) {
-//          return invite;
-//        }
-//      }
-//    } else {
-//      log.debug("Can't find invitation due to event not found: {}", invitationID);
-//    }
-    return null;
-  }
-
-  @Override
-  public void removeInvitation(String invitationId) throws CalendarException {
-//    String[] tmp = Invitation.parse(invitationId);
-//    String eventId = tmp[0];
-//    String participant = tmp[1];
-//
-//    CalendarEvent event = null;
-//    try {
-//      event = calService.getEventById(eventId);
-//    } catch (Exception e) {
-//      log.error("Can't remove Invitation, there is error during get event {}", eventId);
-//      throw new CalendarException(null, e);
-//    }
-//    
-//    if (event != null) {
-//      event.removeParticipant(participant);
-//      
-//      try {
-//        this.saveEvent(participant, event);
-//      } catch (Exception e) {
-//        log.error("Can't remove invitation, there is error during saving event {}", e);
-//        throw new CalendarException(null, e);
-//      }
-//    }
-  }
-
-  @Override
-  public void updateInvitation(String id, String status) {
-//    String[] tmp = Invitation.parse(id);
-//    String eventId = tmp[0];
-//    String participant = tmp[1];
-//
-//    CalendarEvent event = null;
-//    try {
-//      event = calService.getEventById(eventId);
-//    } catch (Exception e) {
-//      log.error("Can't update invitation due to can't find event {}", eventId);
-//      throw new CalendarException(null, e);
-//    }
-//    
-//    if (event != null) {
-//      Map<String, String> statusMap = event.getStatusMap();
-//      String currStatus = statusMap.get(participant);
-//
-//      if (currStatus != null && !currStatus.equals(status)) {
-//        statusMap.put(participant, status);
-//        event.setStatusMap(statusMap);
-//
-//        try {
-//          saveEvent(participant, event);
-//        } catch (Exception e) {
-//          log.error("Can't update invitation. There is error event {}", eventId);
-//          throw new CalendarException(null, e);
-//        }
-//      }
-//    }    
-  }
-
-  @Override
-  public Invitation createInvitation(String eventId, String participant, String status) throws CalendarException {
-//    CalendarEvent event;
-//    try {
-//      event = calService.getEventById(eventId);
-//    } catch (Exception e) {
-//      log.error("Can't create invitation. There is error duing getting event: {}", eventId);
-//      throw new CalendarException(null, e);
-//    }
-//
-//    if (event != null && event.getStatusMap().get(participant) == null) {
-//      event.addParticipant(participant, status);
-//      
-//      try {
-//        saveEvent(participant, event);
-//        return new Invitation(eventId, participant, status);
-//      } catch (Exception e) {
-//        log.error("Can't create invitation. There is error during saving event: {}",  eventId);
-//        throw new CalendarException(null, e);
-//      }
-//    }
-    return null;
-  }
-  
-  private void saveEvent(String username, CalendarEvent event) throws Exception {
-//    String calendarId = event.getCalendarId();
-//    Calendar cal = calService.getCalendarById(calendarId);
-//    String owner = cal.getCalendarOwner();
-//    int type = calService.getTypeOfCalendar(owner, calendarId);
-//
-//    switch (type) {
-//    case Calendar.TYPE_PRIVATE:
-//      calService.saveUserEvent(owner, calendarId, event, false);
-//      break;
-//    case Calendar.TYPE_PUBLIC:
-//      calService.savePublicEvent(calendarId, event, false);
-//      break;
-//    case Calendar.TYPE_SHARED:
-//      calService.saveEventToSharedCalendar(username, calendarId, event, false);
-//    }
-  }
-  
-  public QueryImpl createJCRQuery(String queryStm, String queryType) throws RepositoryException {
-    QueryManager qm = getSession().getWorkspace().getQueryManager();
-    return (QueryImpl)qm.createQuery(queryStm, queryType);
-  }
-
-  public CalendarEvent getEventFromNode(Node eventNode) throws RepositoryException {
-    CalendarEvent event = new CalendarEvent();
-    try {
-      event = EventPageListQuery.getEventFromNode(event,
-                                                  eventNode,
-                                                  getReminderFolder(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME)
-                                                                             .getDate()
-                                                                             .getTime()));
-    } catch (Exception e) {
-      log.error("Error during mapping node to CalendarEvent", e);
-      return null;
-    }
-    StringBuilder namePattern = new StringBuilder(128);
-    namePattern.append(Utils.EXO_RECURRENCE_ID)
-               .append('|')
-               .append(Utils.EXO_IS_EXCEPTION)
-               .append('|')
-               .append(Utils.EXO_REPEAT_UNTIL)
-               .append('|')
-               .append(Utils.EXO_REPEAT_COUNT)
-               .append('|')
-               .append(Utils.EXO_ORIGINAL_REFERENCE)
-               .append('|')
-               .append(Utils.EXO_REPEAT_INTERVAL)
-               .append('|')
-               .append(Utils.EXO_EXCLUDE_ID)
-               .append('|')
-               .append(Utils.EXO_REPEAT_BYDAY)
-               .append('|')
-               .append(Utils.EXO_REPEAT_BYMONTHDAY);
-    PropertyIterator it = eventNode.getProperties(namePattern.toString());
-    while (it.hasNext()) {
-      Property p = it.nextProperty();
-      String name = p.getName();
-      if (name.equals(Utils.EXO_RECURRENCE_ID)) {
-        event.setRecurrenceId(p.getString());
-      } else if (name.equals(Utils.EXO_IS_EXCEPTION)) {
-        event.setIsExceptionOccurrence(p.getBoolean());
-      } else if (name.equals(Utils.EXO_REPEAT_UNTIL)) {
-        event.setRepeatUntilDate(p.getDate().getTime());
-      } else if (name.equals(Utils.EXO_REPEAT_COUNT)) {
-        event.setRepeatCount(p.getLong());
-      } else if (name.equals(Utils.EXO_ORIGINAL_REFERENCE)) {
-        event.setOriginalReference(p.getString());
-      } else if (name.equals(Utils.EXO_REPEAT_INTERVAL)) {
-        event.setRepeatInterval(p.getLong());
-      } else if (name.equals(Utils.EXO_EXCLUDE_ID)) {
-        Value[] values = p.getValues();
-        if (values.length == 1) {
-          event.setExcludeId(new String[] { values[0].getString() });
-        } else {
-          String[] excludeIds = new String[values.length];
-          for (int i = 0; i < values.length; i++) {
-            excludeIds[i] = values[i].getString();
-          }
-          event.setExcludeId(excludeIds);
-        }
-      } else if (name.equals(Utils.EXO_REPEAT_BYDAY)) {
-        Value[] values = p.getValues();
-        if (values.length == 1) {
-          event.setRepeatByDay(new String[] { values[0].getString() });
-        } else {
-          String[] byDays = new String[values.length];
-          for (int i = 0; i < values.length; i++) {
-            byDays[i] = values[i].getString();
-          }
-          event.setRepeatByDay(byDays);
-        }
-      } else if (name.equals(Utils.EXO_REPEAT_BYMONTHDAY)) {
-        Value[] values = p.getValues();
-        if (values.length == 1) {
-          event.setRepeatByMonthDay(new long[] { values[0].getLong() });
-        } else {
-          long[] byMonthDays = new long[values.length];
-          for (int i = 0; i < values.length; i++) {
-            byMonthDays[i] = values[i].getLong();
-          }
-          event.setRepeatByMonthDay(byMonthDays);
-        }
-      }
-    }
-
-    String activitiId = ActivityTypeUtils.getActivityId(eventNode);
-    if (activitiId != null) {
-      event.setActivityId(ActivityTypeUtils.getActivityId(eventNode));
-    }
-    return event;
-  }
-  
-  public class EventList implements ListAccess<CalendarEvent> {
-
-    private EventNodeListAccess list;
-    
-    public EventList(EventNodeListAccess list) {
-      this.list = list;
-    }
-
-    @Override
-    public int getSize() throws Exception {
-      return list.getSize();
-    }
-
-    @Override
-    public CalendarEvent[] load(int offset, int limit) throws Exception, IllegalArgumentException {
-      Node[] results = list.load(offset, limit);
-      List<CalendarEvent> events = new LinkedList<CalendarEvent>();
-      for (Node node : results) {         
-        events.add(storage.getEventById(node.getProperty(Utils.EXO_ID).getString()));
-      }
-      
-      return events.toArray(new CalendarEvent[events.size()]);
-    }
-    
-  }
-
-  private Node getReminderFolder(Date fromDate) throws Exception {
-    Node publicApp = storage.getPublicCalendarServiceHome();
-    Node dateFolder = getDateFolder(publicApp, fromDate);
-    try {
-      return dateFolder.getNode(Utils.CALENDAR_REMINDER);
-    } catch (PathNotFoundException pnfe) {
-      try {
-        dateFolder.addNode(Utils.CALENDAR_REMINDER, Utils.NT_UNSTRUCTURED);
-        if (dateFolder.isNew())
-          dateFolder.getSession().save();
-        else
-          dateFolder.save();
-      } catch (Exception e) {
-        dateFolder.refresh(false);
-      }
-      return dateFolder.getNode(Utils.CALENDAR_REMINDER);
-    }
-  }
-
-  private Node getDateFolder(Node publicApp, Date date) throws Exception {
-    if (date instanceof DateTime) {
-      date = new Date(date.getTime());
-    }
-    java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
-    fromCalendar.setTime(date);
-    Node yearNode;
-    Node monthNode;
-    String year = "Y" + String.valueOf(fromCalendar.get(java.util.Calendar.YEAR));
-    String month = "M" + String.valueOf(fromCalendar.get(java.util.Calendar.MONTH) + 1);
-    String day = "D" + String.valueOf(fromCalendar.get(java.util.Calendar.DATE));
-    try {
-      yearNode = publicApp.getNode(year);
-    } catch (PathNotFoundException e) {
-      yearNode = publicApp.addNode(year, Utils.NT_UNSTRUCTURED);
-    }
-    try {
-      monthNode = yearNode.getNode(month);
-    } catch (PathNotFoundException e) {
-      monthNode = yearNode.addNode(month, Utils.NT_UNSTRUCTURED);
-    }
-    try {
-      return monthNode.getNode(day);
-    } catch (PathNotFoundException e) {
-      return monthNode.addNode(day, Utils.NT_UNSTRUCTURED);
-    }
-  }
-
-  private Session getSession() {
-    Session session = null;
-    try {
-      session = storage.getSession(storage.createSessionProvider());
-    } catch (Exception ex) {
-        log.error("Can not get JCR session", ex);
-    }
-    return session;
-  }
-
-  private List<EventDAO> getSupportedEventDAOs(CalendarType type) {
+  private EventDAO getSupportedEventDAOs(CalendarType type) {
     return calSerVice.getSupportedEventDAO(type);
   }
 }
