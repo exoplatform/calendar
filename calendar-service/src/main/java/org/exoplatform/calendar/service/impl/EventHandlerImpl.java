@@ -51,7 +51,7 @@ public class EventHandlerImpl implements EventHandler {
   public CalendarEvent saveEvent(CalendarEvent event, boolean isNew) {
     EventDAO dao = getSupportedEventDAOs(event.getCalendarType());
     if (dao != null) {
-      return dao.save(event, isNew);
+      return dao.save(event);
     }
 
     return null;

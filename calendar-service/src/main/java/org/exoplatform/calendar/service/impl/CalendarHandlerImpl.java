@@ -57,7 +57,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
   public Calendar saveCalendar(Calendar calendar, boolean isNew) {
     CalendarDAO dao = getCalendarDAO(calendar.getCalendarType());
     if (dao != null) {
-      Calendar cal = dao.save(calendar, isNew); 
+      Calendar cal = dao.save(calendar); 
       if (cal != null) {
         return cal;
       }

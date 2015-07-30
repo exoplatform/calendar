@@ -31,9 +31,18 @@ public interface GenericDAO<T, ID> {
 
   /**
    * @param object
-   * @param isNew
    */
-  T save(T object, boolean isNew);
+  T save(T object);
+
+  /**
+   * Update the specified entity argument with the most recent state.
+   * <p>
+   * If the entity does not exist, it throws 
+   *
+   * @param entity
+   * @return
+   */
+  T update(T entity);
 
   /**
    * @param id

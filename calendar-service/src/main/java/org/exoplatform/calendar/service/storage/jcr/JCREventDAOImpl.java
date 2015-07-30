@@ -64,7 +64,15 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent save(CalendarEvent event, boolean isNew) {
+  public CalendarEvent save(CalendarEvent event) {
+    return persist(event, true);
+  }
+
+  public CalendarEvent update(CalendarEvent event) {
+    return persist(event, false);
+  }
+
+  private CalendarEvent persist(CalendarEvent event, boolean isNew) {
     try {
       CalendarType calType = event.getCalendarType();
       String calendarId = event.getCalendarId();
@@ -73,7 +81,7 @@ public class JCREventDAOImpl implements EventDAO {
         return null;
       }
       calType = cal.getCalendarType();
-
+      
       if (calType == Calendar.Type.PERSONAL) {
         dataStorage.saveUserEvent(cal.getCalendarOwner(), cal.getId(), event, isNew);
       } else if (calType == Calendar.Type.GROUP) {
@@ -81,7 +89,7 @@ public class JCREventDAOImpl implements EventDAO {
       } else {
         return null;
       }
-
+      
       return event;
     } catch (Exception ex) {
       LOG.error(ex);

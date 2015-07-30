@@ -70,26 +70,34 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
   
   @Override
-  public Calendar save(Calendar calendar, boolean isNew) {
-    CalendarType type = calendar.getCalendarType();
+  public Calendar save(Calendar calendar) {
+    return persist(calendar, true);
+  }
 
+  public Calendar update(Calendar cal) {
+    return persist(cal, false);
+  }
+
+  private Calendar persist(Calendar cal, boolean isNew) {
+    CalendarType type = cal.getCalendarType();
+    
     if (type == Calendar.Type.PERSONAL) {
       try {
-        dataStorage.saveUserCalendar(calendar.getCalendarOwner(), calendar, isNew);
+        dataStorage.saveUserCalendar(cal.getCalendarOwner(), cal, isNew);
       } catch (Exception ex) {
         LOG.error(ex);
       }
     } else if (type == Calendar.Type.GROUP) {
       try {
-        dataStorage.savePublicCalendar(calendar, isNew, null);
+        dataStorage.savePublicCalendar(cal, isNew, null);
       } catch (Exception ex) {
         LOG.error(ex);
       }
     } else {
       throw new UnsupportedOperationException("Save calendar with type '" + type + "' is not supported");
     }
-
-    return calendar;
+    
+    return cal;
   }
 
   @Override

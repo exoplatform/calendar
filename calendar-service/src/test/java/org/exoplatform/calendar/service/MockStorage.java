@@ -36,7 +36,7 @@ public class MockStorage extends AbstractStorage {
     }
 
     @Override
-    public Calendar save(Calendar object, boolean isNew) {
+    public Calendar save(Calendar object) {
       return null;
     }
 
@@ -54,6 +54,11 @@ public class MockStorage extends AbstractStorage {
     public ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query) {
       return null;
     }
+
+    @Override
+    public Calendar update(Calendar entity) {
+      return null;
+    }
   }
 
   class MockEventDAO implements EventDAO {
@@ -64,7 +69,7 @@ public class MockStorage extends AbstractStorage {
     }
 
     @Override
-    public CalendarEvent save(CalendarEvent object, boolean isNew) {
+    public CalendarEvent save(CalendarEvent object) {
       return null;
     }
 
@@ -80,6 +85,11 @@ public class MockStorage extends AbstractStorage {
 
     @Override
     public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException {
+      return null;
+    }
+
+    @Override
+    public CalendarEvent update(CalendarEvent entity) {
       return null;
     }
   }
