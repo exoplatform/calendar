@@ -889,7 +889,9 @@ public class JCRDataStorage implements DataStorage {
 
   private List<CalendarEvent> getEventsByType(Node calendarHome, int type, EventQuery eventQuery) throws Exception {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
-    eventQuery.setCalendarPath(calendarHome.getPath());
+    if (calendarHome != null) {
+      eventQuery.setCalendarPath(calendarHome.getPath());      
+    }
     QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
     Query query = qm.createQuery(eventQuery.getQueryStatement(), eventQuery.getQueryType());
     QueryResult result = query.execute();
@@ -909,7 +911,10 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public List<CalendarEvent> getUserEvents(String username, EventQuery eventQuery) throws Exception {
-    Node calendarHome = getUserCalendarHome(username);
+    Node calendarHome = null;
+    if (username != null) {
+      calendarHome = getUserCalendarHome(username);      
+    }
     return getEventsByType(calendarHome, Calendar.TYPE_PRIVATE, eventQuery);
   }
 

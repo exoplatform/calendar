@@ -28,7 +28,6 @@ import org.exoplatform.commons.utils.XPathUtils;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-@Deprecated
 public class EventQuery {
   private String             nodeType           = "exo:calendarEvent";
 
@@ -39,6 +38,8 @@ public class EventQuery {
   private String[]           categoryIds        = null;
 
   private String[]           calendarIds        = null;
+  
+  private CalendarType calendarType;
 
   private String[]           filterCalendarIds  = null;
 
@@ -478,6 +479,14 @@ public class EventQuery {
     return excludeRepeatEvent;
   }
   
+  public CalendarType getCalendarType() {
+    return calendarType;
+  }
+
+  public void setCalendarType(CalendarType type) {
+    this.calendarType = type;
+  }
+
   protected String escapeContainsQuery(String s) {
     StringBuilder buffer = new StringBuilder();
     for (int i = 0; i < s.length(); i++) {

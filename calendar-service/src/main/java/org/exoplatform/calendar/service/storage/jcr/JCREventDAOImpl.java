@@ -19,12 +19,16 @@
 
 package org.exoplatform.calendar.service.storage.jcr;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
-import org.exoplatform.calendar.service.EventQueryCondition;
+import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.storage.EventDAO;
@@ -46,11 +50,6 @@ public class JCREventDAOImpl implements EventDAO {
   public JCREventDAOImpl(CalendarService calService, JCRStorage storage) {
     this.context = storage;
     this.dataStorage = ((CalendarServiceImpl) calService).getDataStorage();
-  }
-
-  @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException {
-    return null;
   }
 
   @Override
@@ -128,5 +127,35 @@ public class JCREventDAOImpl implements EventDAO {
     CalendarEvent event = new CalendarEvent();
     event.setCalendarType(type);
     return event;
+  }
+  
+  @Override
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
+    final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
+    try {
+      if (Calendar.Type.PERSONAL.equals(eventQuery.getCalendarType())) {
+        events.addAll(dataStorage.getUserEvents(null, eventQuery));        
+      } else {
+        events.addAll(dataStorage.getPublicEvents(eventQuery));
+      }      
+    } catch (Exception ex) {
+      LOG.error("Can't query for event", ex);
+    }
+    
+    for (CalendarEvent evt : events) {
+      evt.setCalendarType(eventQuery.getCalendarType());
+    }
+    
+    return new ListAccess<CalendarEvent>() {
+      @Override
+      public int getSize() throws Exception {
+        return events.size();
+      }
+
+      @Override
+      public CalendarEvent[] load(int offset, int limit) throws Exception, IllegalArgumentException {
+        return Utils.subList(events, offset, limit).toArray(new CalendarEvent[limit]);        
+      }
+    };
   }
 }
