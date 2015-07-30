@@ -45,6 +45,8 @@ public interface CalendarService extends LegacyCalendarService {
   public CalendarHandler getCalendarHandler();
   
   public EventHandler getEventHandler();
+  
+  public CompositID parse(String compositID);
 
   public Storage getDataSource(CalendarType type);
 

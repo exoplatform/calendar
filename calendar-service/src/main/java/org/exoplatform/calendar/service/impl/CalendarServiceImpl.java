@@ -48,6 +48,7 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
+import org.exoplatform.calendar.service.CompositID;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.service.EventPageList;
@@ -82,7 +83,6 @@ import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.PeriodInfo;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
-
 import org.picocontainer.Startable;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -128,7 +128,26 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     ExoProperties props = params.getPropertiesParam("eventNumber.info").getProperties();
     String eventNumber = props.getProperty("eventNumber");
     Utils.EVENT_NUMBER = Integer.parseInt(eventNumber);
-  } 
+  }
+
+  @Override
+  public CompositID parse(String compositID) {
+    List<CompositID> ids = new LinkedList<CompositID>();
+    for (Storage s : storages) {
+      CompositID id = s.parse(compositID);
+      if (id != null) {
+        ids.add(id);
+      }
+    }
+    
+    if (ids.size() > 1) {
+      LOG.warn("{} is not unique", compositID);
+    } else if (ids.size() == 0) {
+      return null;
+    }
+    
+    return ids.get(0);
+  }
 
   /**
    * {@inheritDoc}

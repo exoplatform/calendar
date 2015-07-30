@@ -20,8 +20,7 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.EventHandler;
-import org.exoplatform.calendar.service.Invitation;
-import org.exoplatform.calendar.service.QueryCondition;
+import org.exoplatform.calendar.service.EventQueryCondition;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -68,14 +67,7 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(QueryCondition eventQuery) throws CalendarException {
-//    return new EventList(new EventNodeListAccess(this, eventQuery));
-    return null;
-  }
-  
-  @Override
-  public ListAccess<Invitation> findInvitationsByQuery(QueryCondition query) {
-//    return new InvitationListAccess(this, query);
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException {
     return null;
   }
 

@@ -24,8 +24,7 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.Invitation;
+import org.exoplatform.calendar.service.EventQueryCondition;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.storage.EventDAO;
@@ -50,7 +49,7 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException {
     return null;
   }
 

@@ -17,6 +17,27 @@
   
 package org.exoplatform.calendar.service;
 
-public interface CalendarType {
-  String getName();
+public class CompositID {
+  private String id;
+  private CalendarType type;
+  public static final String SEPARATOR = "-";
+  protected String formater = "%s" + SEPARATOR + "%s";
+  
+  public CompositID(String id, CalendarType type) {
+    this.id = id;
+    this.type = type;
+  }
+  
+  public String getId() {
+    return id;
+  }
+  public CalendarType getType() {
+    return type;
+  }
+
+  @Override
+  public String toString() {
+    return String.format(formater, id, type.getName());
+  }
+  
 }

@@ -17,6 +17,19 @@
   
 package org.exoplatform.calendar.service;
 
-public interface CalendarType {
-  String getName();
+public class EventQueryCondition extends QueryCondition {
+  public static enum CONDITIONS {
+    TYPE, TEXT, CATEGORY_IDS, CALENDAR_COMPOSITE_IDS, CALENDAR_TYPE, FROM_DATE, TO_DATE, PRIORITY, STATE, PARTICIPANTS,  NONE_REPEAT,
+    EXCLUDE_PRV_EVENT_CALENDAR_IDS
+  }
+
+  @Override
+  public QueryCondition with(Expression<?> expression) {
+    if (expression.getName().equals(CONDITIONS.CALENDAR_TYPE) && parent != null) {
+      throw new IllegalStateException();
+    }
+    
+    return super.with(expression);
+  }
+  
 }

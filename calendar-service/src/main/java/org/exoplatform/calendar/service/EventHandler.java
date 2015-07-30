@@ -25,7 +25,6 @@ public interface EventHandler {
 
   public CalendarEvent removeEvent(String eventId, CalendarType calendarType);
 
-  ListAccess<CalendarEvent> findEventsByQuery(QueryCondition eventQuery) throws CalendarException;
+  ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException;
 
-  public ListAccess<Invitation> findInvitationsByQuery(QueryCondition query);
 }

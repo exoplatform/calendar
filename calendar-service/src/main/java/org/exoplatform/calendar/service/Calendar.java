@@ -60,6 +60,11 @@ public class Calendar extends AbstractBean {
 
       return UNDEFINED;
     }
+
+    @Override
+    public String getName() {
+      return name();
+    }
   }
 
   public static final int      TYPE_PRIVATE  = 0;

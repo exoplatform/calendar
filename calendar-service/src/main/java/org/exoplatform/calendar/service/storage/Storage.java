@@ -18,10 +18,13 @@
 package org.exoplatform.calendar.service.storage;
 
 import org.exoplatform.calendar.service.CalendarType;
+import org.exoplatform.calendar.service.CompositID;
 
 // TODO: rename to CalendarDataSource ?
 public interface Storage {
 
+  public CompositID parse(String compositID);
+  
   public boolean isTypeSupported(CalendarType type);
   
   public CalendarDAO getCalendarDAO();

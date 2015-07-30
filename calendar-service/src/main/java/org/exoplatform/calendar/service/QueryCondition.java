@@ -26,17 +26,16 @@ public class QueryCondition {
   
   private List<Expression<?>> expressions = new LinkedList<Expression<?>>();
   
-  public static enum EventCondition {
-    TYPE, TEXT, CATEGORY_IDS, CALENDAR_IDS, FROM_DATE, TO_DATE, PRIORITY, STATE, PARTICIPANTS,  NONE_REPEAT,
-    EXCLUDE_PRV_EVENT_CALENDAR_IDS
-  }
+  protected QueryCondition parent;
   
   public QueryCondition and(QueryCondition other) {
+    other.parent = this;
     andConditions.add(other);
     return this;
   }
   
   public QueryCondition or(QueryCondition other) {
+    other.parent = this;
     orConditions.add(other);
     return this;
   }
@@ -67,6 +66,9 @@ public class QueryCondition {
     }
     
     private Expression(String name, T value, Operator operator) {
+      if (name == null) {
+        throw new IllegalArgumentException("name must not be null");
+      }
       this.name = name;
       this.value = value;
       this.operator = operator;
