@@ -37,12 +37,12 @@ public interface GenericDAO<T, ID> {
   /**
    * Update the specified entity argument with the most recent state.
    * <p>
-   * If the entity does not exist, it throws 
+   * If the entity does not exist, it throws NoSuchEntityException
    *
    * @param entity
    * @return
    */
-  T update(T entity);
+  T update(T entity) throws NoSuchEntityException;
 
   /**
    * @param id

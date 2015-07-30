@@ -67,7 +67,7 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException {
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) {
     return null;
   }
 
