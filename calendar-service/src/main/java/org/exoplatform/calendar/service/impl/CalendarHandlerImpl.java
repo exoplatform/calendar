@@ -22,9 +22,13 @@ import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
+import org.exoplatform.calendar.service.storage.NoSuchEntityException;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 public class CalendarHandlerImpl implements CalendarHandler {
+  private static final Log log = ExoLogger.getExoLogger(CalendarHandlerImpl.class);
 
   private CalendarServiceImpl service;
 
@@ -54,12 +58,26 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar saveCalendar(Calendar calendar, boolean isNew) {
+  public Calendar saveCalendar(Calendar calendar) {
     CalendarDAO dao = getCalendarDAO(calendar.getCalendarType());
     if (dao != null) {
       Calendar cal = dao.save(calendar); 
       if (cal != null) {
         return cal;
+      }
+    }
+
+    return null;
+  }
+  
+  @Override
+  public Calendar updateCalendar(Calendar calendar) {
+    CalendarDAO dao = getCalendarDAO(calendar.getCalendarType());
+    if (dao != null) {
+      try {
+        return dao.update(calendar);
+      } catch (NoSuchEntityException e) {
+        log.error("Can't update calendar", e);
       }
     }
 

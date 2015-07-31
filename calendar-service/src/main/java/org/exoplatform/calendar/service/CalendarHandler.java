@@ -36,9 +36,13 @@ public interface CalendarHandler {
   
   /**
    * @param calendar
-   * @param isNew
    */
-  Calendar saveCalendar(Calendar calendar, boolean isNew);
+  Calendar saveCalendar(Calendar calendar);
+  
+  /**
+   * @param calendar
+   */
+  Calendar updateCalendar(Calendar calendar);
   
   /**
    * @param calendarId

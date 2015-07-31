@@ -56,7 +56,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     cal.setCalendarType(Calendar.Type.PERSONAL);
     cal.setCalendarOwner(username);
 
-    cal = calHandler.saveCalendar(cal, true);
+    cal = calHandler.saveCalendar(cal);
 
     Calendar calSaved = calHandler.getCalendarById(cal.getId(), Calendar.Type.PERSONAL);
     assertNotNull(calSaved);
@@ -69,7 +69,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     cal.setCalendarType(Calendar.Type.GROUP);
     cal.setGroups(userGroups);
 
-    cal = calHandler.saveCalendar(cal, true);
+    cal = calHandler.saveCalendar(cal);
 
     Calendar calSaved = calHandler.getCalendarById(cal.getId(), Calendar.Type.GROUP);
     assertNotNull(calSaved);
@@ -112,7 +112,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
 
   public void testRemovePersonalCalendar() throws Exception {
     Calendar cal1 = createPersonalCalendar("testRemovePersonalCalendar_1", username);
-    Calendar cal2 = createPersonalCalendar("testRemovePersonalCalendar_2", username);
+    createPersonalCalendar("testRemovePersonalCalendar_2", username);
 
     CalendarQuery query = new CalendarQuery();
     query.setCalType(Calendar.Type.PERSONAL);
@@ -140,7 +140,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
 
   public void testRemoveGroupCalendar() throws Exception {
     Calendar cal1 = createGroupCalendar("testRemoveGroupCalendar_1", userGroups);
-    Calendar cal2 = createGroupCalendar("testRemoveGroupCalendar_2", userGroups);
+    createGroupCalendar("testRemoveGroupCalendar_2", userGroups);
 
     CalendarQuery query = new CalendarQuery();
     query.setCalType(Calendar.Type.GROUP);
@@ -175,7 +175,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
 
     cal.setName("testUpdatePersonalCalendar_updated");
     cal.setDescription("testUpdatePersonalCalendar description");
-    calHandler.saveCalendar(cal, false);
+    calHandler.updateCalendar(cal);
 
     cal = calHandler.getCalendarById(calId, Calendar.Type.PERSONAL);
     assertNotNull(cal);
@@ -192,7 +192,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
 
     cal.setName("testUpdateGroupCalendar_updated");
     cal.setDescription("testUpdateGroupCalendar description");
-    calHandler.saveCalendar(cal, false);
+    calHandler.updateCalendar(cal);
 
     cal = calHandler.getCalendarById(calId, Calendar.Type.GROUP);
     assertNotNull(cal);
@@ -223,7 +223,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     cal.setCalendarType(Calendar.Type.GROUP);
     cal.setGroups(groups);
 
-    cal = calHandler.saveCalendar(cal, true);
+    cal = calHandler.saveCalendar(cal);
 
     return cal;
   }
@@ -234,7 +234,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     cal.setCalendarType(Calendar.Type.PERSONAL);
     cal.setCalendarOwner(owner);
 
-    cal = calHandler.saveCalendar(cal, true);
+    cal = calHandler.saveCalendar(cal);
 
     return cal;
   }
