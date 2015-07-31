@@ -84,7 +84,7 @@ public class MockStorage extends AbstractStorage {
     }
 
     @Override
-    public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
+    public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException {
       return null;
     }
 

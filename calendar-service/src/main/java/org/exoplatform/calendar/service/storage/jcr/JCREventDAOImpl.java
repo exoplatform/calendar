@@ -22,12 +22,15 @@ package org.exoplatform.calendar.service.storage.jcr;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.jcr.query.Query;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.EventQueryCondition;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
@@ -130,11 +133,12 @@ public class JCREventDAOImpl implements EventDAO {
   }
   
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition queryCondition) throws CalendarException {
     final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
+    EventQuery eventQuery = buildEvenQuery(queryCondition);
     try {
-      if (Calendar.Type.PERSONAL.equals(eventQuery.getCalendarType())) {
-        events.addAll(dataStorage.getUserEvents(null, eventQuery));        
+      if (Calendar.Type.PERSONAL.equals(queryCondition.getCalendarType())) {
+        events.addAll(dataStorage.getUserEvents(queryCondition.getOwner(), eventQuery));        
       } else {
         events.addAll(dataStorage.getPublicEvents(eventQuery));
       }      
@@ -143,7 +147,7 @@ public class JCREventDAOImpl implements EventDAO {
     }
     
     for (CalendarEvent evt : events) {
-      evt.setCalendarType(eventQuery.getCalendarType());
+      evt.setCalendarType(queryCondition.getCalendarType());
     }
     
     return new ListAccess<CalendarEvent>() {
@@ -157,5 +161,24 @@ public class JCREventDAOImpl implements EventDAO {
         return Utils.subList(events, offset, limit).toArray(new CalendarEvent[limit]);        
       }
     };
+  }
+
+  private EventQuery buildEvenQuery(EventQueryCondition queryCondition) {
+    EventQuery eventQuery = new EventQuery();    
+    eventQuery.setCalendarId(queryCondition.getCalendarIds());
+    eventQuery.setCategoryId(queryCondition.getCategoryIds());
+    eventQuery.setEventType(queryCondition.getEventType());
+    eventQuery.setExcludeRepeatEvent(queryCondition.getExcludeRepeatEvent());
+    eventQuery.setFilterCalendarIds(queryCondition.getFilterCalendarIds());
+    eventQuery.setFromDate(queryCondition.getFromDate());
+    eventQuery.setOrderBy(queryCondition.getOrderBy());
+    eventQuery.setOrderType(queryCondition.getOrderType());
+    eventQuery.setParticipants(queryCondition.getParticipants());
+    eventQuery.setPriority(queryCondition.getPriority());
+    eventQuery.setQueryType(Query.SQL);
+    eventQuery.setState(queryCondition.getState());
+    eventQuery.setText(queryCondition.getText());
+    eventQuery.setToDate(queryCondition.getToDate());
+    return eventQuery;
   }
 }
