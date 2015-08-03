@@ -103,23 +103,9 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
   }
 
   public void testFindNonRepeatEvent() throws Exception {
-     CalendarEvent repeatEvent = createUserEvent(userCal.getId(), null,
-     "Have a meeting");
-     repeatEvent.setRepeatType(CalendarEvent.RP_DAILY);
-     repeatEvent.setRepeatInterval(5L);
-     calendarService_.saveUserEvent(username, userCal.getId(), repeatEvent,
-     false);
-
-//    CalendarEvent event = new CalendarEvent();
-//    event.setSummary("test recurring");
-//    event.setFromDateTime(userEvent.getFromDateTime());
-//    event.setToDateTime(userEvent.getToDateTime());
-//    event.setRepeatType(CalendarEvent.RP_WEEKLY);
-//    event.setRepeatInterval(1);
-//    event.setRepeatByDay(new String[] { "MO", "TU", "WE", "TH", "FR" });
-//    event.setRepeatCount(10);
-//    event.setRepeatUntilDate(null);
-//    calendarService_.saveUserEvent(username, userCal.getId(), event, true);
+    CalendarEvent repeatEvent = createUserEvent(userCal.getId(), null, "Have a meeting");
+    repeatEvent.setRepeatType(CalendarEvent.RP_DAILY);
+    calendarService_.saveUserEvent(username, userCal.getId(), repeatEvent, false);
 
     EventQueryCondition condition = new EventQueryCondition();
     condition.setCalendarType(Calendar.Type.PERSONAL);
@@ -129,6 +115,22 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     assertEquals(2, events.getSize());
 
     condition.setExcludeRepeatEvent(true);
+    events = evtHandler.findEventsByQuery(condition);
+    assertEquals(1, events.getSize());
+  }
+  
+  public void testFindEventWithFilter() throws Exception {
+    Calendar cal = createPrivateCalendar(username, "cal", "des");
+    createUserEvent(cal.getId(), null, "Have a meeting");
+    
+    EventQueryCondition condition = new EventQueryCondition();
+    condition.setCalendarType(Calendar.Type.PERSONAL);
+    condition.setOwner(username);
+
+    ListAccess<CalendarEvent> events = evtHandler.findEventsByQuery(condition);
+    assertEquals(2, events.getSize());
+    
+    condition.setFilterCalendarIds(new String[] {cal.getId()});
     events = evtHandler.findEventsByQuery(condition);
     assertEquals(1, events.getSize());
   }
