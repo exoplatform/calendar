@@ -17,7 +17,9 @@
 
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.security.Identity;
+
+import java.util.List;
 
 public interface CalendarHandler {
   
@@ -28,11 +30,10 @@ public interface CalendarHandler {
    */
   Calendar getCalendarById(String calId, CalendarType calType);
 
-  /**
-   * @param query
-   * @return
-   */
-  ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query);
+  List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludeIds);
+
+  //TODO: we really need this method? Now, this method allow to load all shared/personal/group calendars of user
+  List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds);
   
   /**
    * @param calendar
@@ -49,4 +50,6 @@ public interface CalendarHandler {
    * @param calType
    */
   Calendar removeCalendar(String calendarId, CalendarType calType);
+
+  Calendar newCalendarInstance(CalendarType calendarType);
 }

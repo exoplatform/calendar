@@ -53,6 +53,8 @@ import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -166,8 +168,9 @@ public class UICalendars extends UIForm  {
     
     calendars.clear();
     CalendarService service = CalendarUtils.getCalendarService();
-    ListAccess tmp = service.getCalendarHandler().findCalendarsByQuery(null);
-    for (Object cal : tmp.load(0, -1)) {
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    List<Calendar> tmp = service.getCalendarHandler().findAllCalendarOfUser(identity, null);
+    for (Object cal : tmp) {
       Calendar c = (Calendar)cal;
       List<Calendar> cals = calendars.get(c.getCalType()); 
       if (cals == null) {

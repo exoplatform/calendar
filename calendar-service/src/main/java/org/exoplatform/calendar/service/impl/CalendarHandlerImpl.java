@@ -19,13 +19,15 @@ package org.exoplatform.calendar.service.impl;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarHandler;
-import org.exoplatform.calendar.service.CalendarQuery;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.NoSuchEntityException;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.services.security.Identity;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CalendarHandlerImpl implements CalendarHandler {
   private static final Log log = ExoLogger.getExoLogger(CalendarHandlerImpl.class);
@@ -49,12 +51,27 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query) {
-    CalendarDAO dao = getCalendarDAO(query.getCalType());
+  public List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludeIds) {
+    CalendarDAO dao = getCalendarDAO(type);
     if (dao != null) {
-      return dao.findCalendarsByQuery(query);
+      if (excludeIds == null) {
+        excludeIds = new String[0];
+      }
+      return dao.findCalendarsByIdentity(identity, type, excludeIds);
     }
     return null;
+  }
+
+  @Override
+  public List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds) {
+    List<Calendar> calendars = new LinkedList<Calendar>();
+    for (Storage storage : service.getAllStorage()) {
+      List<Calendar> cals = storage.getCalendarDAO().findCalendarsByIdentity(identity, null, excludeIds);
+      if (cals != null) {
+        calendars.addAll(cals);
+      }
+    }
+    return calendars;
   }
 
   @Override
@@ -96,7 +113,16 @@ public class CalendarHandlerImpl implements CalendarHandler {
     
     return null;
   }
-  
+
+  @Override
+  public Calendar newCalendarInstance(CalendarType calendarType) {
+    CalendarDAO dao = getCalendarDAO(calendarType);
+    if (dao != null) {
+      return dao.newInstance(calendarType);
+    }
+    return null;
+  }
+
   private CalendarDAO getCalendarDAO(CalendarType type) {
     return service.getCalendarDAO(type);
   }

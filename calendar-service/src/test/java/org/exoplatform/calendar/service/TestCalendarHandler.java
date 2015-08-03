@@ -20,13 +20,14 @@
 package org.exoplatform.calendar.service;
 
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
-import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
-
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
+import static org.exoplatform.calendar.service.AssertUtil.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -77,97 +78,101 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   }
 
   public void testGetAllPersonalCalendar() throws Exception {
-    createPersonalCalendar("testGetAllPersonalCalendar_Personal", username);
-    createGroupCalendar("testGetAllPersonalCalendar_Group", userGroups);
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    TestUtil.createPersonalCalendar(calHandler, "testGetAllPersonalCalendar_Personal", username);
+    TestUtil.createGroupCalendar(calHandler, "testGetAllPersonalCalendar_Group", userGroups);
 
     CalendarQuery query = new CalendarQuery();
     query.setCalType(Calendar.Type.PERSONAL);
     query.setUserName(username);
     query.setShowAll(true);
 
-    ListAccess<Calendar> calendars = calHandler.findCalendarsByQuery(query);
+    List<Calendar> calendars = calHandler.findCalendarsByIdentity(identity, Calendar.Type.PERSONAL, null);
     assertNotNull(calendars);
-    int size = calendars.getSize();
+    int size = calendars.size();
     assertTrue("User " + username + " must has at least 1 personal calendar", size >= 1);
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testGetAllPersonalCalendar_Personal");
-    assertNotContainCalendarName(Arrays.asList(calendars.load(0, size)), "testGetAllPersonalCalendar_Group");
+    assertContainCalendarName(calendars, "testGetAllPersonalCalendar_Personal");
+    assertNotContainCalendarName(calendars, "testGetAllPersonalCalendar_Group");
   }
 
   public void testGetAllGroupCalendarOfUser() throws Exception {
-    createPersonalCalendar("testGetAllGroupCalendarOfUser_Personal", username);
-    createGroupCalendar("testGetAllGroupCalendarOfUser_Group", userGroups);
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    TestUtil.createPersonalCalendar(calHandler, "testGetAllGroupCalendarOfUser_Personal", username);
+    TestUtil.createGroupCalendar(calHandler, "testGetAllGroupCalendarOfUser_Group", userGroups);
 
     CalendarQuery query = new CalendarQuery();
     query.setCalType(Calendar.Type.GROUP);
     query.setGroups(Arrays.asList("/platform/users"));
     query.setShowAll(true);
 
-    ListAccess<Calendar> calendars = calHandler.findCalendarsByQuery(query);
+    List<Calendar> calendars = calHandler.findCalendarsByIdentity(identity, Calendar.Type.GROUP, null);
     assertNotNull(calendars);
-    int size = calendars.getSize();
+    int size = calendars.size();
     assertTrue("User " + username + " must has at least 1 group calendar", size >= 1);
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testGetAllGroupCalendarOfUser_Group");
-    assertNotContainCalendarName(Arrays.asList(calendars.load(0, size)), "testGetAllGroupCalendarOfUser_Personal");
+    assertContainCalendarName(calendars, "testGetAllGroupCalendarOfUser_Group");
+    assertNotContainCalendarName(calendars, "testGetAllGroupCalendarOfUser_Personal");
   }
 
   public void testRemovePersonalCalendar() throws Exception {
-    Calendar cal1 = createPersonalCalendar("testRemovePersonalCalendar_1", username);
-    createPersonalCalendar("testRemovePersonalCalendar_2", username);
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    Calendar cal1 = TestUtil.createPersonalCalendar(calHandler, "testRemovePersonalCalendar_1", username);
+    Calendar cal2 = TestUtil.createPersonalCalendar(calHandler, "testRemovePersonalCalendar_2", username);
 
     CalendarQuery query = new CalendarQuery();
     query.setCalType(Calendar.Type.PERSONAL);
     query.setUserName(username);
     query.setShowAll(true);
 
-    ListAccess<Calendar> calendars;
+    List<Calendar> calendars;
     int size;
 
-    calendars = calHandler.findCalendarsByQuery(query);
-    size = calendars.getSize();
+    calendars = calHandler.findCalendarsByIdentity(identity, Calendar.Type.PERSONAL, null);
+    size = calendars.size();
     assertTrue("User " + username + " must have at least 2 personal calendars", size >= 2);
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemovePersonalCalendar_1");
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemovePersonalCalendar_2");
+    assertContainCalendarName(calendars, "testRemovePersonalCalendar_1");
+    assertContainCalendarName(calendars, "testRemovePersonalCalendar_2");
 
     // Remove calendar
     calHandler.removeCalendar(cal1.getId(), Calendar.Type.PERSONAL);
 
-    calendars = calHandler.findCalendarsByQuery(query);
-    size = calendars.getSize();
+    calendars = calHandler.findCalendarsByIdentity(identity, Calendar.Type.PERSONAL, null);
+    size = calendars.size();
     assertTrue("User " + username + " must have at least 1 personal calendars", size >= 1);
-    assertNotContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemovePersonalCalendar_1");
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemovePersonalCalendar_2");
+    assertNotContainCalendarName(calendars, "testRemovePersonalCalendar_1");
+    assertContainCalendarName(calendars, "testRemovePersonalCalendar_2");
   }
 
   public void testRemoveGroupCalendar() throws Exception {
-    Calendar cal1 = createGroupCalendar("testRemoveGroupCalendar_1", userGroups);
-    createGroupCalendar("testRemoveGroupCalendar_2", userGroups);
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    Calendar cal1 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_1", userGroups);
+    Calendar cal2 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_2", userGroups);
 
     CalendarQuery query = new CalendarQuery();
     query.setCalType(Calendar.Type.GROUP);
     query.setGroups(Arrays.asList("/platform/users"));
     query.setShowAll(true);
 
-    ListAccess<Calendar> calendars;
+    List<Calendar> calendars;
     int size;
 
-    calendars = calHandler.findCalendarsByQuery(query);
-    size = calendars.getSize();
+    calendars = calHandler.findCalendarsByIdentity(identity, Calendar.Type.GROUP, null);
+    size = calendars.size();
     assertTrue("User must have at least 2 group calendars", size >= 2);
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemoveGroupCalendar_1");
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemoveGroupCalendar_2");
+    assertContainCalendarName(calendars, "testRemoveGroupCalendar_1");
+    assertContainCalendarName(calendars, "testRemoveGroupCalendar_2");
 
     // Remove calendar
     calHandler.removeCalendar(cal1.getId(), Calendar.Type.GROUP);
 
-    calendars = calHandler.findCalendarsByQuery(query);
-    size = calendars.getSize();
+    calendars = calHandler.findCalendarsByIdentity(identity, Calendar.Type.GROUP, null);
+    size = calendars.size();
     assertTrue("User must have at least 1 personal calendars", size >= 1);
-    assertNotContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemoveGroupCalendar_1");
-    assertContainCalendarName(Arrays.asList(calendars.load(0, size)), "testRemoveGroupCalendar_2");
+    assertNotContainCalendarName(calendars, "testRemoveGroupCalendar_1");
+    assertContainCalendarName(calendars, "testRemoveGroupCalendar_2");
   }
 
   public void testUpdatePersonalCalendar() {
-    String calId = createPersonalCalendar("testUpdatePersonalCalendar", username).getId();
+    String calId = TestUtil.createPersonalCalendar(calHandler, "testUpdatePersonalCalendar", username).getId();
 
     Calendar cal = calHandler.getCalendarById(calId, Calendar.Type.PERSONAL);
     assertNotNull(cal);
@@ -184,7 +189,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   }
 
   public void testUpdateGroupCalendar() {
-    String calId = createGroupCalendar("testUpdateGroupCalendar", userGroups).getId();
+    String calId = TestUtil.createGroupCalendar(calHandler, "testUpdateGroupCalendar", userGroups).getId();
 
     Calendar cal = calHandler.getCalendarById(calId, Calendar.Type.GROUP);
     assertNotNull(cal);
@@ -198,44 +203,5 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     assertNotNull(cal);
     assertEquals("testUpdateGroupCalendar_updated", cal.getName());
     assertEquals("testUpdateGroupCalendar description", cal.getDescription());
-  }
-
-  private void assertNotContainCalendarName(Collection<Calendar> calendars, String name) {
-    for (Calendar calendar : calendars) {
-      if (calendar.getName().equals(name)) {
-        fail("List must not contain the calendar '" + name + "'");
-      }
-    }
-  }
-
-  private void assertContainCalendarName(Collection<Calendar> calendars, String name) {
-    for (Calendar calendar : calendars) {
-      if (calendar.getName().equals(name)) {
-        return;
-      }
-    }
-    fail("List must contain the calendar '" + name + "'");
-  }
-
-  private Calendar createGroupCalendar(String calName, String[] groups) {
-    Calendar cal = new Calendar();
-    cal.setName(calName);
-    cal.setCalendarType(Calendar.Type.GROUP);
-    cal.setGroups(groups);
-
-    cal = calHandler.saveCalendar(cal);
-
-    return cal;
-  }
-
-  private Calendar createPersonalCalendar(String calName, String owner) {
-    Calendar cal = new Calendar();
-    cal.setName(calName);
-    cal.setCalendarType(Calendar.Type.PERSONAL);
-    cal.setCalendarOwner(owner);
-
-    cal = calHandler.saveCalendar(cal);
-
-    return cal;
   }
 }

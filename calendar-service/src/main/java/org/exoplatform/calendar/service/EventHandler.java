@@ -26,4 +26,6 @@ public interface EventHandler {
   public CalendarEvent removeEvent(String eventId, CalendarType calendarType);
 
   ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery);
+
+  public CalendarEvent newEventInstance(CalendarType type);
 }

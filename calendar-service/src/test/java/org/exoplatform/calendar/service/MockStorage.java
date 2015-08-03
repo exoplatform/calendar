@@ -4,6 +4,8 @@ import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.calendar.service.storage.jcr.AbstractStorage;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.security.Identity;
+import java.util.List;
 
 public class MockStorage extends AbstractStorage {
 
@@ -51,7 +53,7 @@ public class MockStorage extends AbstractStorage {
     }
 
     @Override
-    public ListAccess<Calendar> findCalendarsByQuery(CalendarQuery query) {
+    public List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludeIds) {
       return null;
     }
 

@@ -1293,4 +1293,8 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     }
     return null;
   }
+
+  List<Storage> getAllStorage() {
+    return this.storages;
+  }
 }

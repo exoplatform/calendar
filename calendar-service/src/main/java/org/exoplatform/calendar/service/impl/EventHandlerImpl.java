@@ -87,6 +87,15 @@ public class EventHandlerImpl implements EventHandler {
     }
   }
 
+  @Override
+  public CalendarEvent newEventInstance(CalendarType type) {
+    EventDAO dao = getSupportedEventDAOs(type);
+    if (dao != null) {
+      return dao.newInstance(type);
+    }
+    return null;
+  }
+
   private EventDAO getSupportedEventDAOs(CalendarType type) {
     return calSerVice.getSupportedEventDAO(type);
   }
