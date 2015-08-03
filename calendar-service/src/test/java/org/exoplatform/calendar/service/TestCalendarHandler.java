@@ -47,7 +47,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    this.calHandler = this.calendarService_.getCalendarHandler();
+    this.calHandler = this.calendarService_.getCalendarHandler();    
   }
 
   public void testCreatePersonalCalendar() {

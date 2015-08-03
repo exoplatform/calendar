@@ -20,7 +20,6 @@
 package org.exoplatform.calendar.service.storage;
 
 import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.EventQueryCondition;
 import org.exoplatform.commons.utils.ListAccess;
 
@@ -29,6 +28,6 @@ import org.exoplatform.commons.utils.ListAccess;
  */
 public interface EventDAO extends GenericDAO<CalendarEvent, String> {
 
-  ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException;
+  ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery);
 
 }

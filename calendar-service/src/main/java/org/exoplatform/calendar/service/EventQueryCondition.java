@@ -33,9 +33,9 @@ public class EventQueryCondition {
 
   private String[]           filterCalendarIds;
 
-  private java.util.Calendar fromDate;
+  private Long fromDate;
 
-  private java.util.Calendar toDate;
+  private Long toDate;
 
   private String             priority;
 
@@ -105,19 +105,19 @@ public class EventQueryCondition {
     this.filterCalendarIds = filterCalendarIds;
   }
 
-  public java.util.Calendar getFromDate() {
+  public Long getFromDate() {
     return fromDate;
   }
 
-  public void setFromDate(java.util.Calendar fromDate) {
+  public void setFromDate(Long fromDate) {
     this.fromDate = fromDate;
   }
 
-  public java.util.Calendar getToDate() {
+  public Long getToDate() {
     return toDate;
   }
 
-  public void setToDate(java.util.Calendar toDate) {
+  public void setToDate(Long toDate) {
     this.toDate = toDate;
   }
 

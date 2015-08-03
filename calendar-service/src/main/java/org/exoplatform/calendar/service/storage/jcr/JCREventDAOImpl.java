@@ -26,7 +26,6 @@ import javax.jcr.query.Query;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.EventQuery;
@@ -133,7 +132,7 @@ public class JCREventDAOImpl implements EventDAO {
   }
   
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition queryCondition) throws CalendarException {
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition queryCondition) {
     final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
     EventQuery eventQuery = buildEvenQuery(queryCondition);
     try {
@@ -170,15 +169,23 @@ public class JCREventDAOImpl implements EventDAO {
     eventQuery.setEventType(queryCondition.getEventType());
     eventQuery.setExcludeRepeatEvent(queryCondition.getExcludeRepeatEvent());
     eventQuery.setFilterCalendarIds(queryCondition.getFilterCalendarIds());
-    eventQuery.setFromDate(queryCondition.getFromDate());
+    if (queryCondition.getFromDate() != null) {
+      java.util.Calendar from = java.util.Calendar.getInstance();
+      from.setTimeInMillis(queryCondition.getFromDate());
+      eventQuery.setFromDate(from);      
+    }
     eventQuery.setOrderBy(queryCondition.getOrderBy());
     eventQuery.setOrderType(queryCondition.getOrderType());
     eventQuery.setParticipants(queryCondition.getParticipants());
     eventQuery.setPriority(queryCondition.getPriority());
-    eventQuery.setQueryType(Query.SQL);
+    eventQuery.setQueryType(Query.XPATH);
     eventQuery.setState(queryCondition.getState());
     eventQuery.setText(queryCondition.getText());
-    eventQuery.setToDate(queryCondition.getToDate());
+    if (queryCondition.getToDate() != null) {
+      java.util.Calendar to = java.util.Calendar.getInstance();
+      to.setTimeInMillis(queryCondition.getToDate());      
+      eventQuery.setToDate(to);
+    }
     return eventQuery;
   }
 }
