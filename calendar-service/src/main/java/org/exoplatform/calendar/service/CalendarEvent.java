@@ -217,12 +217,12 @@ public class CalendarEvent extends AbstractBean {
 
   private String activityId ;
   public CalendarEvent() {
-    setId("Event" + IdGenerator.generate());
+    super("Event" + IdGenerator.generate());
   }
 
   // copy constructor
   public CalendarEvent(CalendarEvent event) {
-    setId(event.getId());
+    super(event.getId());
     this.summary = event.summary;
     this.description = event.description;
     this.fromDateTime = event.fromDateTime;

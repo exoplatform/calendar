@@ -22,19 +22,24 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.EventDAO;
+import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.container.component.BaseComponentPlugin;
 
-public class JCRStorage extends AbstractStorage {  
+public class JCRStorage extends BaseComponentPlugin implements Storage {
+
+  public static final String JCR_STORAGE = "jcr";
+
   private CalendarDAO calendarDAO;
   private EventDAO eventDAO;
+  
+  @Override
+  public String getId() {
+    return JCR_STORAGE;
+  }
 
   public JCRStorage(CalendarService service) {
     calendarDAO = new JCRCalendarDAOImpl(service, this);
     eventDAO = new JCREventDAOImpl(service, this);
-  }
-
-  //TODO: is this in used ?
-  public JCRStorage(CalendarDAO calDAO) {
-    this.calendarDAO = calDAO;
   }
 
   @Override

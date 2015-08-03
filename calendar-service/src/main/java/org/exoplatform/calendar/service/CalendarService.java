@@ -46,9 +46,9 @@ public interface CalendarService extends LegacyCalendarService {
   
   public EventHandler getEventHandler();
   
-  public CompositID parse(String compositID);
-
   public Storage getDataSource(CalendarType type);
+
+  public Storage lookForDS(String compositeId);
 
   /**
    * Gets all event categories of an user

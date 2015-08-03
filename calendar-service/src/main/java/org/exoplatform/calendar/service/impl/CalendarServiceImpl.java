@@ -39,20 +39,24 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Period;
 import net.fortuna.ical4j.model.Recur;
 
+import org.picocontainer.Startable;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
+
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarCollection;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CalendarUpdateEventListener;
-import org.exoplatform.calendar.service.CompositID;
 import org.exoplatform.calendar.service.Constants;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventHandler;
-import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.ImportCalendarJob;
@@ -61,10 +65,10 @@ import org.exoplatform.calendar.service.RemoteCalendarService;
 import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.calendar.service.storage.jcr.JCRStorage;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -84,11 +88,6 @@ import org.exoplatform.services.scheduler.JobInfo;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.PeriodInfo;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
-
-import org.picocontainer.Startable;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.impl.triggers.SimpleTriggerImpl;
 
 
 /**
@@ -111,7 +110,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
 
   private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);  
   
-  private List<Storage> storages = new LinkedList<Storage>();
+  private Map<String, Storage> storages = new HashMap<String, Storage>();
   
   private CalendarHandler calendarHandler;
 
@@ -130,25 +129,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     ExoProperties props = params.getPropertiesParam("eventNumber.info").getProperties();
     String eventNumber = props.getProperty("eventNumber");
     Utils.EVENT_NUMBER = Integer.parseInt(eventNumber);
-  }
-
-  @Override
-  public CompositID parse(String compositID) {
-    List<CompositID> ids = new LinkedList<CompositID>();
-    for (Storage s : storages) {
-      CompositID id = s.parse(compositID);
-      if (id != null) {
-        ids.add(id);
-      }
-    }
-    
-    if (ids.size() > 1) {
-      LOG.warn("{} is not unique", compositID);
-    } else if (ids.size() == 0) {
-      return null;
-    }
-    
-    return ids.get(0);
   }
 
   /**
@@ -1228,14 +1208,15 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
 
   public void addDataStore(ComponentPlugin dao) {
     if (dao instanceof Storage) {
+      Storage storage = (Storage) dao;
       synchronized (this) {
-          storages.add((Storage)dao);
+          storages.put(storage.getId(), storage);
       }
     }
   }
 
   public Storage getDataSource(CalendarType type) {
-    for (Storage s : storages) {
+    for (Storage s : storages.values()) {
       if (s.isTypeSupported(type)) {
         return s;
       }
@@ -1267,7 +1248,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     if (type == null) {
       throw new IllegalArgumentException("CalendarType must not be NULL");
     } else {
-      for (Storage s : storages) {
+      for (Storage s : storages.values()) {
         if (s.isTypeSupported(type)) {
           return s.getCalendarDAO();
         }
@@ -1285,7 +1266,7 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     if (type == null) {
       throw new IllegalArgumentException("CalendarType must not be NULL");
     } else {
-      for (Storage s : storages) {
+      for (Storage s : storages.values()) {
         if (s.isTypeSupported(type)) {
           return s.getEventDAO();
         }
@@ -1295,6 +1276,13 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   }
 
   List<Storage> getAllStorage() {
-    return this.storages;
+    return new ArrayList<>(storages.values());
+  }
+
+  public Storage lookForDS(String id) {
+    if (id != null) {
+      return storages.get(id);
+    }
+    return storages.get(JCRStorage.JCR_STORAGE);
   }
 }

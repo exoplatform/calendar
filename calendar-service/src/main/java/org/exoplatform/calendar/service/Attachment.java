@@ -60,7 +60,7 @@ public class Attachment extends AbstractBean {
    * the id will automatic generate when create new object
    */
   public Attachment() {
-    setId("Attachment" + IdGenerator.generate());
+    super("Attachment" + IdGenerator.generate());
   }
 
   public String getMimeType() {

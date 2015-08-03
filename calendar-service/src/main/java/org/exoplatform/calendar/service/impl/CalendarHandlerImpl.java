@@ -17,17 +17,19 @@
   
 package org.exoplatform.calendar.service.impl;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarType;
+import org.exoplatform.calendar.service.CompositeID;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.NoSuchEntityException;
+import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.services.security.Identity;
-import java.util.LinkedList;
-import java.util.List;
 
 public class CalendarHandlerImpl implements CalendarHandler {
   private static final Log log = ExoLogger.getExoLogger(CalendarHandlerImpl.class);
@@ -39,10 +41,12 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar getCalendarById(String calId, CalendarType calType) {
-    CalendarDAO dao = getCalendarDAO(calType);
+  public Calendar getCalendarById(String compositeId, CalendarType calType) {
+    CompositeID composId = CompositeID.parse(compositeId);
+    Storage storage = service.lookForDS(composId.getDS());
+    CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null) {
-      Calendar cal = dao.getById(calId, calType);
+      Calendar cal = dao.getById(composId.getId(), calType);
       if (cal != null) {
         return cal;
       }
@@ -76,7 +80,8 @@ public class CalendarHandlerImpl implements CalendarHandler {
 
   @Override
   public Calendar saveCalendar(Calendar calendar) {
-    CalendarDAO dao = getCalendarDAO(calendar.getCalendarType());
+    Storage storage = service.lookForDS(calendar.getDS());
+    CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null) {
       Calendar cal = dao.save(calendar); 
       if (cal != null) {
@@ -89,7 +94,8 @@ public class CalendarHandlerImpl implements CalendarHandler {
   
   @Override
   public Calendar updateCalendar(Calendar calendar) {
-    CalendarDAO dao = getCalendarDAO(calendar.getCalendarType());
+    Storage storage = service.lookForDS(calendar.getDS());
+    CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null) {
       try {
         return dao.update(calendar);
@@ -102,12 +108,14 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar removeCalendar(String calendarId, CalendarType calType) {
-    CalendarDAO dao = getCalendarDAO(calType);
+  public Calendar removeCalendar(String compositeId, CalendarType calType) {
+    CompositeID composId = CompositeID.parse(compositeId);
+    Storage storage = service.lookForDS(composId.getDS());
+    CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null){
-      Calendar cal = dao.remove(calendarId, calType);
+      Calendar cal = dao.remove(compositeId, calType);
       if (cal != null) {
-        return cal;        
+        return cal;
       }
     }
     

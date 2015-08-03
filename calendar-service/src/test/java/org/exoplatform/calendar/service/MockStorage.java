@@ -1,20 +1,30 @@
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.calendar.service.storage.CalendarDAO;
-import org.exoplatform.calendar.service.storage.EventDAO;
-import org.exoplatform.calendar.service.storage.jcr.AbstractStorage;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.services.security.Identity;
 import java.util.List;
 
-public class MockStorage extends AbstractStorage {
+import org.exoplatform.calendar.service.storage.CalendarDAO;
+import org.exoplatform.calendar.service.storage.EventDAO;
+import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.component.BaseComponentPlugin;
+import org.exoplatform.services.security.Identity;
+
+public class MockStorage extends BaseComponentPlugin implements Storage {
+
+  public static final String ID = "MOCK_STORAGE";
 
   public static final CalendarType MOCK_CAL_TYPE = new CalendarType(){
     @Override
     public String getName() {
       return "mock";
-    }};
-  
+    }
+  };
+
+  @Override
+  public String getId() {
+    return ID;
+  }
+    
   @Override
   public boolean isTypeSupported(CalendarType type) {
     return MOCK_CAL_TYPE.equals(type);
@@ -34,7 +44,8 @@ public class MockStorage extends AbstractStorage {
 
     @Override
     public Calendar getById(String id, CalendarType calType) {
-      return null;
+      Calendar cal = new Calendar(id);
+      return cal;
     }
 
     @Override
@@ -95,6 +106,4 @@ public class MockStorage extends AbstractStorage {
       return null;
     }
   }
-
-
 }

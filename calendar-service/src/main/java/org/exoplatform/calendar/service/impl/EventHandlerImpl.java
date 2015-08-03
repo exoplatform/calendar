@@ -30,19 +30,20 @@ public class EventHandlerImpl implements EventHandler {
 
   private static Log      log = ExoLogger.getLogger(EventHandlerImpl.class);
 
-  protected CalendarServiceImpl calSerVice;
+  protected CalendarServiceImpl calService;
   protected JCRDataStorage  storage;
 
   public EventHandlerImpl(CalendarServiceImpl service) {
-    this.calSerVice = service;
+    this.calService = service;
     this.storage = service.getDataStorage();
   }
 
   @Override
   public CalendarEvent getEventById(String eventId, CalendarType calType) {
-    EventDAO dao = getSupportedEventDAOs(calType);
+    String[] split = eventId.split("::");
+    EventDAO dao = getEventDAOImpl(split[0]);
     if (dao != null) {
-      return dao.getById(eventId, calType);
+      return dao.getById(split[1], calType);
     }
     return null;
   }
@@ -97,6 +98,10 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   private EventDAO getSupportedEventDAOs(CalendarType type) {
-    return calSerVice.getSupportedEventDAO(type);
+    return calService.getSupportedEventDAO(type);
+  }
+
+  private EventDAO getEventDAOImpl(String id) {
+    return calService.lookForDS(id).getEventDAO();
   }
 }

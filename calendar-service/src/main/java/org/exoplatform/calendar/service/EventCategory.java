@@ -43,7 +43,7 @@ public class EventCategory extends AbstractBean {
   private boolean isDataInit = false;
 
   public EventCategory() {
-    setId("eventCategory" + IdGenerator.generate());
+    super("eventCategory" + IdGenerator.generate());
   }
 
   public String getName() {

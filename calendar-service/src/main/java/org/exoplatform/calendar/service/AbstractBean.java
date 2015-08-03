@@ -21,16 +21,47 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public abstract class AbstractBean implements Serializable {
 
-  private String             id;
+  private String id;
+
+  private String ds;
 
   private long lastModified;
 
+  public AbstractBean(String compositeId) {
+    if (compositeId == null) {
+      throw new IllegalArgumentException();
+    }
+    String[] split = compositeId.split("::");
+
+    if (split.length > 1) {
+      ds = split[0];
+      id = split[1];
+    } else {
+      id = split[0];
+    }
+  }
+  
   public String getId() {
     return id;
   }
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public void setDS(String dsName) {
+    this.ds = dsName;
+  }
+
+  public String getDS() {
+    return ds;
+  }
+
+  public String getCompositeId() {
+    if (ds != null && !ds.isEmpty()) {
+      return ds + "::" + id;
+    }
+    return id;
   }
 
   public long getLastModified() {    

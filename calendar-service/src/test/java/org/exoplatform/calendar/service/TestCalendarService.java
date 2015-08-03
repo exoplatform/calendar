@@ -31,5 +31,10 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
     assertEquals(MockStorage.class, src.getClass());
     assertEquals(MockCalendarDAO.class, src.getCalendarDAO().getClass());
     assertEquals(MockEventDAO.class, src.getEventDAO().getClass());
+
+    src = calendarService_.lookForDS(MockStorage.ID);
+    assertEquals(MockStorage.class, src.getClass());
+    assertEquals(MockCalendarDAO.class, src.getCalendarDAO().getClass());
+    assertEquals(MockEventDAO.class, src.getEventDAO().getClass());
   }
 }
