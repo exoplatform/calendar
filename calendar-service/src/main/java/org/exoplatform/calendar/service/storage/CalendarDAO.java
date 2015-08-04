@@ -17,12 +17,11 @@
 package org.exoplatform.calendar.service.storage;
 
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.services.security.Identity;
 
 import java.util.List;
 
 public interface CalendarDAO extends GenericDAO<Calendar, String> {
 
-  List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludeIds);
+  List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludeIds);
 }

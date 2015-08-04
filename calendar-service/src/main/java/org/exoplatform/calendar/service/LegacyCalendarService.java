@@ -50,7 +50,7 @@ public interface LegacyCalendarService {
   public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit);
   
   /**
-   * This method is deprecated, use {@link CalendarHandler#getCalendarById(String, CalendarType)}
+   * This method is deprecated, use {@link CalendarHandler#getCalendarById(String)}
    * <br/>
    * Gets the given user's private calendar, identified by its ID.
    * @param username current user name(or user id)
@@ -144,7 +144,7 @@ public interface LegacyCalendarService {
   public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception;
 
   /**
-   * Deprecated, use {@link CalendarHandler#removeCalendar(String, CalendarType)}
+   * Deprecated, use {@link CalendarHandler#removeCalendar(String)}
    * <br/>
    *
    * Removes private calendar by given id, all events and tasks belong to this calendar will be removed
@@ -157,7 +157,7 @@ public interface LegacyCalendarService {
   public Calendar removeUserCalendar(String username, String calendarId) throws Exception;
 
   /**
-   * Deprecated, use {@link CalendarHandler#getCalendarById(String, CalendarType)}
+   * Deprecated, use {@link CalendarHandler#getCalendarById(String)}
    * <br/>
    *
    * Gets a group/public calendar by its Id
@@ -199,7 +199,7 @@ public interface LegacyCalendarService {
   public void savePublicCalendar(Calendar calendar, boolean isNew);   
 
   /**
-   * Deprecated, use {@link CalendarHandler#removeCalendar(String, CalendarType)}
+   * Deprecated, use {@link CalendarHandler#removeCalendar(String)}
    *
    * Removes the group calendar form data base, every events, tasks inside this calendar will be removed too
    * @param calendarId

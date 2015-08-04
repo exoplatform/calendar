@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2003-2014 eXo Platform SAS.
+ * Copyright (C) 2003-2007 eXo Platform SAS.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License
@@ -16,16 +16,15 @@
  **/
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.commons.utils.ListAccess;
 
-public interface EventHandler {
-  public CalendarEvent getEventById(String eventId, CalendarType calType);
+/**
+ * @author <a href="trongtt@gmail.com">Trong Tran</a>
+ * @version $Revision$
+ */
+public class MockCalendar extends Calendar {
 
-  public CalendarEvent saveEvent(CalendarEvent event, boolean isNew);
-
-  public CalendarEvent removeEvent(String eventId, CalendarType calendarType);
-
-  ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery);
-
-  public CalendarEvent newEventInstance(String dsId);
+  public MockCalendar() {
+    super();
+    setDS(MockStorage.ID);
+  }
 }

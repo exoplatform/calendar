@@ -55,7 +55,7 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent getById(String id, CalendarType calType) {
+  public CalendarEvent getById(String id) {
     try {
       return dataStorage.getEventById(id);
     } catch (Exception ex) {
@@ -77,7 +77,7 @@ public class JCREventDAOImpl implements EventDAO {
     try {
       CalendarType calType = event.getCalendarType();
       String calendarId = event.getCalendarId();
-      Calendar cal = context.getCalendarDAO().getById(calendarId, calType);
+      Calendar cal = context.getCalendarDAO().getById(calendarId);
       if (cal == null) {
         return null;
       }
@@ -99,13 +99,13 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent remove(String id, CalendarType calType) {
+  public CalendarEvent remove(String id) {
     try {
-      CalendarEvent event = this.getById(id, calType);
+      CalendarEvent event = this.getById(id);
       if (event == null) {
         return null;
       }
-      Calendar cal = context.getCalendarDAO().getById(event.getCalendarId(), event.getCalendarType());
+      Calendar cal = context.getCalendarDAO().getById(event.getCalendarId());
       CalendarType type = cal.getCalendarType();
 
       if (type == Calendar.Type.PERSONAL) {
@@ -125,9 +125,8 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent newInstance(CalendarType type) {
+  public CalendarEvent newInstance() {
     CalendarEvent event = new CalendarEvent();
-    event.setCalendarType(type);
     return event;
   }
   

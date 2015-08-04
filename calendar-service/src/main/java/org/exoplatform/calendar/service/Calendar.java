@@ -119,9 +119,16 @@ public class Calendar extends AbstractBean {
   }
 
   public Calendar(String compositeId) {
-    super(compositeId);
+    this(compositeId, null);
+  }
+
+  public Calendar(String id, CalendarType type) {
+    super(id);
     timeZone = TimeZone.getDefault().getID();
     locale = Locale.getDefault().getISO3Country();
+    if (type != null) {
+      setCalendarType(type);
+    }
   }
 
   public String getName() {

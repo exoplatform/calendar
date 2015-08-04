@@ -47,7 +47,7 @@ public class TestUtil {
   }
 
   public static CalendarEvent createEvent(EventHandler handler, String summary, Date from, Date to, boolean isPrivate, Calendar calendar, EventCategory category) {
-    CalendarEvent event = handler.newEventInstance(calendar.getCalendarType());
+    CalendarEvent event = handler.newEventInstance(calendar.getDS());
     event.setSummary(summary);
     event.setFromDateTime(from);
     event.setToDateTime(to);

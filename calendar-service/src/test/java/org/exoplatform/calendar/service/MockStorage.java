@@ -1,5 +1,6 @@
 package org.exoplatform.calendar.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.exoplatform.calendar.service.storage.CalendarDAO;
@@ -20,6 +21,10 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     }
   };
 
+  CalendarDAO calDAO;
+
+  EventDAO eventDAO;
+
   @Override
   public String getId() {
     return ID;
@@ -32,39 +37,47 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
 
   @Override
   public CalendarDAO getCalendarDAO() {
-    return new MockCalendarDAO();
+    if (calDAO == null) {
+      calDAO = new MockCalendarDAO();
+    }
+    return calDAO;
   }
 
   @Override
   public EventDAO getEventDAO() {
-    return new MockEventDAO();
+    if (eventDAO == null) {
+      eventDAO = new MockEventDAO();
+    }
+    return eventDAO;
   }
 
   class MockCalendarDAO implements CalendarDAO {
 
+    private HashMap<String, Calendar> cals = new HashMap<String, Calendar>();
+
     @Override
-    public Calendar getById(String id, CalendarType calType) {
-      Calendar cal = new Calendar(id);
+    public Calendar getById(String id) {
+      return cals.get(id);
+    }
+
+    @Override
+    public Calendar save(Calendar cal) {
+      cals.put(cal.getId(), cal);
       return cal;
     }
 
     @Override
-    public Calendar save(Calendar object) {
-      return null;
+    public Calendar remove(String id) {
+      return cals.remove(id);
     }
 
     @Override
-    public Calendar remove(String id, CalendarType calType) {
-      return null;
+    public Calendar newInstance() {
+      return new MockCalendar();
     }
 
     @Override
-    public Calendar newInstance(CalendarType type) {
-      return null;
-    }
-
-    @Override
-    public List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludeIds) {
+    public List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludeIds) {
       return null;
     }
 
@@ -77,7 +90,7 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
   class MockEventDAO implements EventDAO {
 
     @Override
-    public CalendarEvent getById(String id, CalendarType calType) {
+    public CalendarEvent getById(String id) {
       return null;
     }
 
@@ -87,12 +100,12 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     }
 
     @Override
-    public CalendarEvent remove(String id, CalendarType calType) {
+    public CalendarEvent remove(String id) {
       return null;
     }
 
     @Override
-    public CalendarEvent newInstance(CalendarType type) {
+    public CalendarEvent newInstance() {
       return null;
     }
 

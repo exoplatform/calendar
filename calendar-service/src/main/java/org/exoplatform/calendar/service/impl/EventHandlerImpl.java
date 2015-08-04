@@ -43,7 +43,7 @@ public class EventHandlerImpl implements EventHandler {
     String[] split = eventId.split("::");
     EventDAO dao = getEventDAOImpl(split[0]);
     if (dao != null) {
-      return dao.getById(split[1], calType);
+      return dao.getById(split[1]);
     }
     return null;
   }
@@ -62,7 +62,7 @@ public class EventHandlerImpl implements EventHandler {
   public CalendarEvent removeEvent(String eventId, CalendarType calendarType) {
     EventDAO dao = getSupportedEventDAOs(calendarType);
     if (dao != null) {
-      return dao.remove(eventId, calendarType);
+      return dao.remove(eventId);
     }
     return null;
   }
@@ -89,10 +89,10 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent newEventInstance(CalendarType type) {
-    EventDAO dao = getSupportedEventDAOs(type);
+  public CalendarEvent newEventInstance(String dsId) {
+    EventDAO dao = getEventDAOImpl(dsId);
     if (dao != null) {
-      return dao.newInstance(type);
+      return dao.newInstance();
     }
     return null;
   }

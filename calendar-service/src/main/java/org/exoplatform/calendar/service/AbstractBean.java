@@ -27,18 +27,8 @@ public abstract class AbstractBean implements Serializable {
 
   private long lastModified;
 
-  public AbstractBean(String compositeId) {
-    if (compositeId == null) {
-      throw new IllegalArgumentException();
-    }
-    String[] split = compositeId.split("::");
-
-    if (split.length > 1) {
-      ds = split[0];
-      id = split[1];
-    } else {
-      id = split[0];
-    }
+  public AbstractBean(String id) {
+    this.id = id;
   }
   
   public String getId() {
@@ -58,10 +48,7 @@ public abstract class AbstractBean implements Serializable {
   }
 
   public String getCompositeId() {
-    if (ds != null && !ds.isEmpty()) {
-      return ds + "::" + id;
-    }
-    return id;
+    return new CompositeID(getId(), ds).toString();
   }
 
   public long getLastModified() {    

@@ -41,12 +41,12 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar getCalendarById(String compositeId, CalendarType calType) {
+  public Calendar getCalendarById(String compositeId) {
     CompositeID composId = CompositeID.parse(compositeId);
     Storage storage = service.lookForDS(composId.getDS());
     CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null) {
-      Calendar cal = dao.getById(composId.getId(), calType);
+      Calendar cal = dao.getById(composId.getId());
       if (cal != null) {
         return cal;
       }
@@ -55,22 +55,10 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludeIds) {
-    CalendarDAO dao = getCalendarDAO(type);
-    if (dao != null) {
-      if (excludeIds == null) {
-        excludeIds = new String[0];
-      }
-      return dao.findCalendarsByIdentity(identity, type, excludeIds);
-    }
-    return null;
-  }
-
-  @Override
   public List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds) {
     List<Calendar> calendars = new LinkedList<Calendar>();
     for (Storage storage : service.getAllStorage()) {
-      List<Calendar> cals = storage.getCalendarDAO().findCalendarsByIdentity(identity, null, excludeIds);
+      List<Calendar> cals = storage.getCalendarDAO().findCalendarsByIdentity(identity, excludeIds);
       if (cals != null) {
         calendars.addAll(cals);
       }
@@ -108,12 +96,12 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar removeCalendar(String compositeId, CalendarType calType) {
+  public Calendar removeCalendar(String compositeId) {
     CompositeID composId = CompositeID.parse(compositeId);
     Storage storage = service.lookForDS(composId.getDS());
     CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null){
-      Calendar cal = dao.remove(compositeId, calType);
+      Calendar cal = dao.remove(compositeId);
       if (cal != null) {
         return cal;
       }
@@ -123,10 +111,10 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar newCalendarInstance(CalendarType calendarType) {
-    CalendarDAO dao = getCalendarDAO(calendarType);
+  public Calendar newCalendarInstance(String dsId) {
+    CalendarDAO dao = service.lookForDS(dsId).getCalendarDAO();
     if (dao != null) {
-      return dao.newInstance(calendarType);
+      return dao.newInstance();
     }
     return null;
   }

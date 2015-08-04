@@ -29,7 +29,9 @@ import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,7 +60,7 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
 
   @Override
-  public Calendar getById(String id, CalendarType calType) {
+  public Calendar getById(String id) {
     try {
       return dataStorage.getCalendarById(id);
     } catch (Exception ex) {
@@ -99,19 +101,19 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
 
   @Override
-  public Calendar remove(String id, CalendarType calType) {
-    Calendar calendar = getById(id, calType);
+  public Calendar remove(String id) {
+    Calendar calendar = getById(id);
     if (calendar == null) {
       return null;
     }
 
-    if (calType == Calendar.Type.PERSONAL) {
+    if (calendar.getCalendarType() == Calendar.Type.PERSONAL) {
       try {
         dataStorage.removeUserCalendar(calendar.getCalendarOwner(), id);
       } catch (Exception ex) {
         LOG.error(ex);
       }
-    } else if (calType == Calendar.Type.GROUP) {
+    } else if (calendar.getCalendarType() == Calendar.Type.GROUP) {
       try {
         dataStorage.removeGroupCalendar(id);
       } catch (Exception ex) {
@@ -122,47 +124,44 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
 
   @Override
-  public Calendar newInstance(CalendarType type) {
+  public Calendar newInstance() {
     Calendar c = new Calendar();
-    c.setCalendarType(type);
     return c;
   }
 
   @Override
-  public List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludesId) {
+  public List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludesId) {
     List<Calendar> calendars = new LinkedList<Calendar>();
-    List<String> excludes = Arrays.asList(excludesId);
+    List<String> excludes = Collections.emptyList();
+    if (excludesId != null) {
+      excludes = Arrays.asList(excludesId);
+    }
+    
     try {
-      if (type == null || type == Calendar.Type.PERSONAL) {
-        List<Calendar> cals = dataStorage.getUserCalendars(identity.getUserId(), true);
-        if (cals != null && cals.size() > 0) {
-          for (Calendar c : cals) {
-            if (!excludes.contains(c.getId())) {
-              calendars.add(c);
-            }
+      List<Calendar> cals = dataStorage.getUserCalendars(identity.getUserId(), true);
+      if (cals != null && cals.size() > 0) {
+        for (Calendar c : cals) {
+          if (!excludes.contains(c.getId())) {
+            calendars.add(c);
           }
         }
       }
 
-      if (type == null) {
-        GroupCalendarData data = dataStorage.getSharedCalendars(identity.getUserId(), true);
-        if (data != null && data.getCalendars().size() > 0) {
-          for (Calendar c : data.getCalendars()) {
-            if (!excludes.contains(c.getId())) {
-              calendars.add(c);
-            }
+      GroupCalendarData data = dataStorage.getSharedCalendars(identity.getUserId(), true);
+      if (data != null && data.getCalendars().size() > 0) {
+        for (Calendar c : data.getCalendars()) {
+          if (!excludes.contains(c.getId())) {
+            calendars.add(c);
           }
         }
       }
 
-      if (type == null || type == Calendar.Type.GROUP) {
-        List<GroupCalendarData> datas = dataStorage.getGroupCalendars(identity.getGroups().toArray(new String[0]), true, identity.getUserId());
-        if (datas != null && datas.size() > 0) {
-          for (GroupCalendarData d : datas) {
-            for (Calendar c : d.getCalendars()) {
-              if (!excludes.contains(c.getId())) {
-                calendars.add(c);
-              }
+      List<GroupCalendarData> datas = dataStorage.getGroupCalendars(identity.getGroups().toArray(new String[0]), true, identity.getUserId());
+      if (datas != null && datas.size() > 0) {
+        for (GroupCalendarData d : datas) {
+          for (Calendar c : d.getCalendars()) {
+            if (!excludes.contains(c.getId())) {
+              calendars.add(c);
             }
           }
         }

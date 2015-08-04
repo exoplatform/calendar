@@ -22,17 +22,11 @@ import org.exoplatform.services.security.Identity;
 import java.util.List;
 
 public interface CalendarHandler {
-  
-  /**
-   * @param calId
-   * @param calType
-   * @return
-   */
-  Calendar getCalendarById(String calId, CalendarType calType);
 
-  List<Calendar> findCalendarsByIdentity(Identity identity, CalendarType type, String[] excludeIds);
+  Calendar getCalendarById(String calId);
 
   //TODO: we really need this method? Now, this method allow to load all shared/personal/group calendars of user
+  // TODO Don't use Identity object in this API. It may be better to have one Query argument only
   List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds);
   
   /**
@@ -47,9 +41,8 @@ public interface CalendarHandler {
   
   /**
    * @param calendarId
-   * @param calType
    */
-  Calendar removeCalendar(String calendarId, CalendarType calType);
+  Calendar removeCalendar(String calendarId);
 
-  Calendar newCalendarInstance(CalendarType calendarType);
+  Calendar newCalendarInstance(String dsId);
 }
