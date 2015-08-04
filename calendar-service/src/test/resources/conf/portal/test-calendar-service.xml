@@ -116,6 +116,15 @@
   <external-component-plugins>
     <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
     <component-plugin>
+      <name>addJCRStorage</name>
+      <set-method>addDataStore</set-method>
+      <type>org.exoplatform.calendar.service.storage.jcr.JCRStorage</type>
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
+    <component-plugin>
       <name>calendar.storage.mock</name>
       <set-method>addDataStore</set-method>
       <type>org.exoplatform.calendar.service.MockStorage</type>
@@ -133,7 +142,7 @@
         <values-param>
           <name>autoCreatedInNewRepository</name>
           <description>Node types configuration file</description>
-          <value>jar:/conf/portal/calendar-nodetypes.xml</value>
+          <value>jar:/conf/portal/test-calendar-nodetypes.xml</value>
         </values-param>
       </init-params>
     </component-plugin>
