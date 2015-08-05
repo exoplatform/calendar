@@ -24,6 +24,7 @@ import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.exoplatform.calendar.model.AbstractModel;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.util.IdGenerator;
@@ -37,7 +38,7 @@ import org.exoplatform.services.log.Log;
  * Sep 28, 2007  
  */
 
-public class Attachment extends AbstractBean {  
+public class Attachment extends AbstractModel {  
 
   private static final long serialVersionUID = -1104737448010961448L;
 

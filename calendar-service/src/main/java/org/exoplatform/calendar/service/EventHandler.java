@@ -19,11 +19,11 @@ package org.exoplatform.calendar.service;
 import org.exoplatform.commons.utils.ListAccess;
 
 public interface EventHandler {
-  public CalendarEvent getEventById(String eventId, CalendarType calType);
+  public CalendarEvent getEventById(String eventId);
 
-  public CalendarEvent saveEvent(CalendarEvent event, boolean isNew);
+  public CalendarEvent saveEvent(CalendarEvent event);
 
-  public CalendarEvent removeEvent(String eventId, CalendarType calendarType);
+  public CalendarEvent removeEvent(String eventId);
 
   ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery);
 

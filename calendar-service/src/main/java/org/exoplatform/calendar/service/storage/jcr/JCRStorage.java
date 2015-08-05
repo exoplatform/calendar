@@ -43,11 +43,6 @@ public class JCRStorage extends BaseComponentPlugin implements Storage {
   }
 
   @Override
-  public boolean isTypeSupported(CalendarType type) {
-    return (Calendar.Type.PERSONAL.equals(type) || Calendar.Type.GROUP.equals(type));
-  }
-
-  @Override
   public CalendarDAO getCalendarDAO() {
     return calendarDAO;
   }

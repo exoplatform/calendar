@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.exoplatform.calendar.service;
+package org.exoplatform.calendar.model;
 
 import java.io.Serializable;
 
+import org.exoplatform.calendar.service.CompositeID;
+
 @SuppressWarnings("serial")
-public abstract class AbstractBean implements Serializable {
+public abstract class AbstractModel implements Serializable {
 
   private String id;
 
@@ -27,7 +29,7 @@ public abstract class AbstractBean implements Serializable {
 
   private long lastModified;
 
-  public AbstractBean(String id) {
+  public AbstractModel(String id) {
     this.id = id;
   }
   

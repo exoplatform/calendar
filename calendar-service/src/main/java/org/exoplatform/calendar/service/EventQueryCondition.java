@@ -17,7 +17,9 @@
 
 package org.exoplatform.calendar.service;
 
-public class EventQueryCondition {
+import org.exoplatform.calendar.model.Query;
+
+public class EventQueryCondition implements Query {
 
   private String             eventType = CalendarEvent.TYPE_EVENT;
 
@@ -167,6 +169,12 @@ public class EventQueryCondition {
 
   public void setOrderType(String orderType) {
     this.orderType = orderType;
+  }
+
+  @Override
+  public String getDS() {
+    // TODO Auto-generated method stub
+    return null;
   }
   
 }

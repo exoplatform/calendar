@@ -1215,15 +1215,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
     }
   }
 
-  public Storage getDataSource(CalendarType type) {
-    for (Storage s : storages.values()) {
-      if (s.isTypeSupported(type)) {
-        return s;
-      }
-    }
-    return null;
-  }
-
   public JCRDataStorage getDataStorage() {
     return storage_;
   }
@@ -1236,43 +1227,6 @@ public class CalendarServiceImpl extends LegacyCalendarServiceImpl implements Ca
   @Override
   public EventHandler getEventHandler() {
     return eventHandler;
-  }
-  
-
-  /**
-   * This method is intended to used internally in implementation of handlers
-   * @param type
-   * @return
-   */
-  CalendarDAO getCalendarDAO(CalendarType type) {
-    if (type == null) {
-      throw new IllegalArgumentException("CalendarType must not be NULL");
-    } else {
-      for (Storage s : storages.values()) {
-        if (s.isTypeSupported(type)) {
-          return s.getCalendarDAO();
-        }
-      }
-    }
-    
-    return null;      
-  }
-
-  /**
-   * @param type
-   * @return
-   */
-  EventDAO getSupportedEventDAO(CalendarType type) {
-    if (type == null) {
-      throw new IllegalArgumentException("CalendarType must not be NULL");
-    } else {
-      for (Storage s : storages.values()) {
-        if (s.isTypeSupported(type)) {
-          return s.getEventDAO();
-        }
-      }
-    }
-    return null;
   }
 
   List<Storage> getAllStorage() {

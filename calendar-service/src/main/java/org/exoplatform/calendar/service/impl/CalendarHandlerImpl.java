@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarHandler;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CompositeID;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.NoSuchEntityException;
@@ -117,9 +116,5 @@ public class CalendarHandlerImpl implements CalendarHandler {
       return dao.newInstance();
     }
     return null;
-  }
-
-  private CalendarDAO getCalendarDAO(CalendarType type) {
-    return service.getCalendarDAO(type);
   }
 }

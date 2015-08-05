@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.exoplatform.calendar.model.AbstractModel;
 import org.exoplatform.services.jcr.util.IdGenerator;
 
 /**
@@ -36,7 +37,7 @@ import org.exoplatform.services.jcr.util.IdGenerator;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-public class CalendarEvent extends AbstractBean {
+public class CalendarEvent extends AbstractModel {
 
   private static final long serialVersionUID = 908458203599863175L;
 

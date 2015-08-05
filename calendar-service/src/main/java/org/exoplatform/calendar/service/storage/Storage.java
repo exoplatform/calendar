@@ -23,8 +23,6 @@ public interface Storage {
 
   public String getId();
 
-  public boolean isTypeSupported(CalendarType type);
-  
   public CalendarDAO getCalendarDAO();
 
   public EventDAO getEventDAO();

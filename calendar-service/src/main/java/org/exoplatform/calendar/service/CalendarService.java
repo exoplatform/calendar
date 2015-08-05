@@ -46,8 +46,6 @@ public interface CalendarService extends LegacyCalendarService {
   
   public EventHandler getEventHandler();
   
-  public Storage getDataSource(CalendarType type);
-
   public Storage lookForDS(String compositeId);
 
   /**

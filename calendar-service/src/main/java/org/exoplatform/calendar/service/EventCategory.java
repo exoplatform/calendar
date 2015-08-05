@@ -19,6 +19,7 @@ package org.exoplatform.calendar.service;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.exoplatform.calendar.model.AbstractModel;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
@@ -32,7 +33,7 @@ import org.exoplatform.webui.application.WebuiRequestContext;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-public class EventCategory extends AbstractBean {
+public class EventCategory extends AbstractModel {
   
   private static final long serialVersionUID = 3773092354485644604L;
 

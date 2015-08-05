@@ -14,13 +14,6 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
 
   public static final String ID = "MOCK_STORAGE";
 
-  public static final CalendarType MOCK_CAL_TYPE = new CalendarType(){
-    @Override
-    public String getName() {
-      return "mock";
-    }
-  };
-
   CalendarDAO calDAO;
 
   EventDAO eventDAO;
@@ -30,11 +23,6 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     return ID;
   }
     
-  @Override
-  public boolean isTypeSupported(CalendarType type) {
-    return MOCK_CAL_TYPE.equals(type);
-  }
-
   @Override
   public CalendarDAO getCalendarDAO() {
     if (calDAO == null) {

@@ -19,6 +19,7 @@ package org.exoplatform.calendar.service.impl;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarType;
+import org.exoplatform.calendar.service.CompositeID;
 import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.service.EventQueryCondition;
 import org.exoplatform.calendar.service.storage.EventDAO;
@@ -39,18 +40,18 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent getEventById(String eventId, CalendarType calType) {
-    String[] split = eventId.split("::");
-    EventDAO dao = getEventDAOImpl(split[0]);
+  public CalendarEvent getEventById(String eventId) {
+    CompositeID composID = CompositeID.parse(eventId);
+    EventDAO dao = getEventDAOImpl(composID.getDS());
     if (dao != null) {
-      return dao.getById(split[1]);
+      return dao.getById(composID.getId());
     }
     return null;
   }
 
   @Override
-  public CalendarEvent saveEvent(CalendarEvent event, boolean isNew) {
-    EventDAO dao = getSupportedEventDAOs(event.getCalendarType());
+  public CalendarEvent saveEvent(CalendarEvent event) {
+    EventDAO dao = getEventDAOImpl(event.getDS());
     if (dao != null) {
       return dao.save(event);
     }
@@ -59,10 +60,11 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent removeEvent(String eventId, CalendarType calendarType) {
-    EventDAO dao = getSupportedEventDAOs(calendarType);
+  public CalendarEvent removeEvent(String eventId) {
+    CompositeID composId = CompositeID.parse(eventId);
+    EventDAO dao = getEventDAOImpl(composId.getDS());
     if (dao != null) {
-      return dao.remove(eventId);
+      return dao.remove(composId.getId());
     }
     return null;
   }
@@ -72,20 +74,13 @@ public class EventHandlerImpl implements EventHandler {
    */
   @Override
   public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) {
-    CalendarType type = eventQuery.getCalendarType();
-    EventDAO dao = null;
-
-    if (type != null) {
-      dao = getSupportedEventDAOs(type);
-    } else {
-      dao = getSupportedEventDAOs(Calendar.Type.PERSONAL);
-    }
-
+    EventDAO dao = getEventDAOImpl(eventQuery.getDS());
+    
     if (dao != null) {
       return dao.findEventsByQuery(eventQuery);
-    } else {
-      throw new IllegalStateException("Can't find supported DAO for type: " + type);
     }
+
+    return null;
   }
 
   @Override
@@ -95,10 +90,6 @@ public class EventHandlerImpl implements EventHandler {
       return dao.newInstance();
     }
     return null;
-  }
-
-  private EventDAO getSupportedEventDAOs(CalendarType type) {
-    return calService.getSupportedEventDAO(type);
   }
 
   private EventDAO getEventDAOImpl(String id) {

@@ -58,6 +58,6 @@ public class TestUtil {
       event.setEventCategoryName(category.getName());
     }
 
-    return handler.saveEvent(event, true);
+    return handler.saveEvent(event);
   }
 }
