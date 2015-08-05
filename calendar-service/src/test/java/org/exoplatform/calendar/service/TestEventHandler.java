@@ -19,6 +19,7 @@
 
 package org.exoplatform.calendar.service;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.storage.jcr.JCREventQuery;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
 import org.exoplatform.commons.utils.ListAccess;
@@ -73,7 +74,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     condition.setFromDate(userEvent.getFromDateTime().getTime());
     condition.setToDate(userEvent.getToDateTime().getTime() + 60 * 60 * 1000);
 
-    ListAccess<CalendarEvent> events = evtHandler.findEventsByQuery(condition);
+    ListAccess<Event> events = evtHandler.findEventsByQuery(condition);
     assertEquals(1, events.getSize());
     assertEquals(userEvent.getId(), events.load(0, 1)[0].getId());
 
@@ -92,7 +93,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     condition.setOwner(username);
     condition.setCalendarIds(new String[] { userCal.getId() });
 
-    ListAccess<CalendarEvent> events = evtHandler.findEventsByQuery(condition);
+    ListAccess<Event> events = evtHandler.findEventsByQuery(condition);
     assertEquals(1, events.getSize());
     assertEquals(userEvent.getId(), events.load(0, 1)[0].getId());
 
@@ -112,7 +113,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     condition.setCalendarType(Calendar.Type.PERSONAL);
     condition.setOwner(username);
 
-    ListAccess<CalendarEvent> events = evtHandler.findEventsByQuery(condition);
+    ListAccess<Event> events = evtHandler.findEventsByQuery(condition);
     assertEquals(2, events.getSize());
 
     condition.setExcludeRepeatEvent(true);
@@ -128,7 +129,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     condition.setCalendarType(Calendar.Type.PERSONAL);
     condition.setOwner(username);
 
-    ListAccess<CalendarEvent> events = evtHandler.findEventsByQuery(condition);
+    ListAccess<Event> events = evtHandler.findEventsByQuery(condition);
     assertEquals(2, events.getSize());
     
     condition.setFilterCalendarIds(new String[] {cal.getId()});

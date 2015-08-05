@@ -16,8 +16,8 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
-import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CompositeID;
 import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.service.storage.EventDAO;
@@ -27,7 +27,7 @@ import org.exoplatform.services.log.Log;
 
 public class EventHandlerImpl implements EventHandler {
 
-  private static Log      log = ExoLogger.getLogger(EventHandlerImpl.class);
+  private static Log log = ExoLogger.getLogger(EventHandlerImpl.class);
 
   protected CalendarServiceImpl calService;
   protected JCRDataStorage  storage;
@@ -38,7 +38,7 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent getEventById(String eventId) {
+  public Event getEventById(String eventId) {
     CompositeID composID = CompositeID.parse(eventId);
     EventDAO dao = getEventDAOImpl(composID.getDS());
     if (dao != null) {
@@ -48,7 +48,7 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent saveEvent(CalendarEvent event) {
+  public Event saveEvent(Event event) {
     EventDAO dao = getEventDAOImpl(event.getDS());
     if (dao != null) {
       return dao.save(event);
@@ -58,7 +58,7 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent removeEvent(String eventId) {
+  public Event removeEvent(String eventId) {
     CompositeID composId = CompositeID.parse(eventId);
     EventDAO dao = getEventDAOImpl(composId.getDS());
     if (dao != null) {
@@ -71,7 +71,7 @@ public class EventHandlerImpl implements EventHandler {
    * if no calendarType in query, fallback solution: use JCR DAO implementation with all available JCR calendar types (PERSONAL, GROUP)
    */
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) {
+  public ListAccess<Event> findEventsByQuery(EventQuery eventQuery) {
     EventDAO dao = getEventDAOImpl(eventQuery.getDS());
     
     if (dao != null) {
@@ -82,7 +82,7 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public CalendarEvent newEventInstance(String dsId) {
+  public Event newEventInstance(String dsId) {
     EventDAO dao = getEventDAOImpl(dsId);
     if (dao != null) {
       return dao.newInstance();

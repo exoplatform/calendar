@@ -19,7 +19,6 @@
 package org.exoplatform.calendar.model.query;
 
 import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.Utils;
 
 /**

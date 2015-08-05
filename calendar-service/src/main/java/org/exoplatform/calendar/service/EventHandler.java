@@ -16,16 +16,17 @@
  **/
 package org.exoplatform.calendar.service;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.commons.utils.ListAccess;
 
 public interface EventHandler {
-  public CalendarEvent getEventById(String eventId);
+  public Event getEventById(String eventId);
 
-  public CalendarEvent saveEvent(CalendarEvent event);
+  public Event saveEvent(Event event);
 
-  public CalendarEvent removeEvent(String eventId);
+  public Event removeEvent(String eventId);
 
-  ListAccess<CalendarEvent> findEventsByQuery(org.exoplatform.calendar.model.query.EventQuery eventQuery);
+  ListAccess<Event> findEventsByQuery(org.exoplatform.calendar.model.query.EventQuery eventQuery);
 
-  public CalendarEvent newEventInstance(String dsId);
+  public Event newEventInstance(String dsId);
 }

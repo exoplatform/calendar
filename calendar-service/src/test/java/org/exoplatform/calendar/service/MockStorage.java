@@ -3,6 +3,7 @@ package org.exoplatform.calendar.service;
 import java.util.HashMap;
 import java.util.List;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.storage.CalendarDAO;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.calendar.service.storage.Storage;
@@ -78,32 +79,32 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
   class MockEventDAO implements EventDAO {
 
     @Override
-    public CalendarEvent getById(String id) {
+    public Event getById(String id) {
       return null;
     }
 
     @Override
-    public CalendarEvent save(CalendarEvent object) {
+    public Event save(Event object) {
       return null;
     }
 
     @Override
-    public CalendarEvent remove(String id) {
+    public Event remove(String id) {
       return null;
     }
 
     @Override
-    public CalendarEvent newInstance() {
+    public Event newInstance() {
       return null;
     }
 
     @Override
-    public ListAccess<CalendarEvent> findEventsByQuery(org.exoplatform.calendar.model.query.EventQuery eventQuery) throws CalendarException {
+    public ListAccess<Event> findEventsByQuery(org.exoplatform.calendar.model.query.EventQuery eventQuery) throws CalendarException {
       return null;
     }
 
     @Override
-    public CalendarEvent update(CalendarEvent entity) {
+    public Event update(Event entity) {
       return null;
     }
   }

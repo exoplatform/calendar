@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.jcr.query.Query;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -54,7 +55,7 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent getById(String id) {
+  public Event getById(String id) {
     try {
       return dataStorage.getEventById(id);
     } catch (Exception ex) {
@@ -64,15 +65,15 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent save(CalendarEvent event) {
+  public Event save(Event event) {
     return persist(event, true);
   }
 
-  public CalendarEvent update(CalendarEvent event) {
+  public Event update(Event event) {
     return persist(event, false);
   }
 
-  private CalendarEvent persist(CalendarEvent event, boolean isNew) {
+  private Event persist(Event event, boolean isNew) {
     try {
       CalendarType calType = event.getCalendarType();
       String calendarId = event.getCalendarId();
@@ -81,11 +82,11 @@ public class JCREventDAOImpl implements EventDAO {
         return null;
       }
       calType = cal.getCalendarType();
-      
+      CalendarEvent calEvent = CalendarEvent.build(event);
       if (calType == Calendar.Type.PERSONAL) {
-        dataStorage.saveUserEvent(cal.getCalendarOwner(), cal.getId(), event, isNew);
+        dataStorage.saveUserEvent(cal.getCalendarOwner(), cal.getId(), calEvent, isNew);
       } else if (calType == Calendar.Type.GROUP) {
-        dataStorage.savePublicEvent(cal.getId(), event, isNew);
+        dataStorage.savePublicEvent(cal.getId(), calEvent, isNew);
       } else {
         return null;
       }
@@ -98,9 +99,9 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent remove(String id) {
+  public Event remove(String id) {
     try {
-      CalendarEvent event = this.getById(id);
+      Event event = this.getById(id);
       if (event == null) {
         return null;
       }
@@ -124,14 +125,14 @@ public class JCREventDAOImpl implements EventDAO {
   }
 
   @Override
-  public CalendarEvent newInstance() {
-    CalendarEvent event = new CalendarEvent();
+  public Event newInstance() {
+    Event event = new Event();
     return event;
   }
   
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery query) {
-    final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
+  public ListAccess<Event> findEventsByQuery(EventQuery query) {
+    final List<Event> events = new LinkedList<Event>();
     org.exoplatform.calendar.service.EventQuery eventQuery = buildEvenQuery(query);
 
     CalendarType type = Calendar.Type.UNDEFINED;
@@ -149,19 +150,19 @@ public class JCREventDAOImpl implements EventDAO {
       LOG.error("Can't query for event", ex);
     }
     
-    for (CalendarEvent evt : events) {
+    for (Event evt : events) {
       evt.setCalendarType(type);
     }
     
-    return new ListAccess<CalendarEvent>() {
+    return new ListAccess<Event>() {
       @Override
       public int getSize() throws Exception {
         return events.size();
       }
 
       @Override
-      public CalendarEvent[] load(int offset, int limit) throws Exception, IllegalArgumentException {
-        return Utils.subList(events, offset, limit).toArray(new CalendarEvent[limit]);        
+      public Event[] load(int offset, int limit) throws Exception, IllegalArgumentException {
+        return Utils.subList(events, offset, limit).toArray(new Event[limit]);        
       }
     };
   }

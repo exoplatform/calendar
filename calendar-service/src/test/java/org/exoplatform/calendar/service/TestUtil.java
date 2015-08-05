@@ -21,6 +21,8 @@ package org.exoplatform.calendar.service;
 
 import java.util.Date;
 
+import org.exoplatform.calendar.model.Event;
+
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
@@ -46,8 +48,8 @@ public class TestUtil {
     return cal;
   }
 
-  public static CalendarEvent createEvent(EventHandler handler, String summary, Date from, Date to, boolean isPrivate, Calendar calendar, EventCategory category) {
-    CalendarEvent event = handler.newEventInstance(calendar.getDS());
+  public static Event createEvent(EventHandler handler, String summary, Date from, Date to, boolean isPrivate, Calendar calendar, EventCategory category) {
+    Event event = handler.newEventInstance(calendar.getDS());
     event.setSummary(summary);
     event.setFromDateTime(from);
     event.setToDateTime(to);

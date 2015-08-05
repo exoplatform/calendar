@@ -19,15 +19,15 @@
 
 package org.exoplatform.calendar.service.storage;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
-import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.commons.utils.ListAccess;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
-public interface EventDAO extends GenericDAO<CalendarEvent, String> {
+public interface EventDAO extends GenericDAO<Event, String> {
 
-  ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery);
+  ListAccess<Event> findEventsByQuery(EventQuery eventQuery);
 
 }
