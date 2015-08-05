@@ -98,7 +98,7 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     }
 
     @Override
-    public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) throws CalendarException {
+    public ListAccess<CalendarEvent> findEventsByQuery(org.exoplatform.calendar.model.query.EventQuery eventQuery) throws CalendarException {
       return null;
     }
 

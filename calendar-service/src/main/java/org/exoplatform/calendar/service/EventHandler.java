@@ -25,7 +25,7 @@ public interface EventHandler {
 
   public CalendarEvent removeEvent(String eventId);
 
-  ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery);
+  ListAccess<CalendarEvent> findEventsByQuery(org.exoplatform.calendar.model.query.EventQuery eventQuery);
 
   public CalendarEvent newEventInstance(String dsId);
 }

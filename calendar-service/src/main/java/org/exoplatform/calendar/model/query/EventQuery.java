@@ -1,27 +1,36 @@
-/**
+/*
  * Copyright (C) 2015 eXo Platform SAS.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Affero General Public License
- * as published by the Free Software Foundation; either version 3
- * of the License, or (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see<http://www.gnu.org/licenses/>.
- **/
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.exoplatform.calendar.model.query;
 
-package org.exoplatform.calendar.service;
+import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarType;
+import org.exoplatform.calendar.service.Utils;
 
-import org.exoplatform.calendar.model.Query;
+/**
+ * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
+ * @version $Revision$
+ */
+public class EventQuery implements Query {
 
-public class EventQueryCondition implements Query {
-
-  private String             eventType = CalendarEvent.TYPE_EVENT;
+  private String ds;
+  
+  private String             eventType = CalendarEvent.TYPE_EVENT; // Event or Task
 
   private String owner;
   
@@ -30,8 +39,6 @@ public class EventQueryCondition implements Query {
   private String[]           categoryIds;
 
   private String[]           calendarIds;
-
-  private CalendarType       calendarType;
 
   private String[]           filterCalendarIds;
 
@@ -89,14 +96,6 @@ public class EventQueryCondition implements Query {
 
   public void setCalendarIds(String[] calendarIds) {
     this.calendarIds = calendarIds;
-  }
-
-  public CalendarType getCalendarType() {
-    return calendarType;
-  }
-
-  public void setCalendarType(CalendarType calendarType) {
-    this.calendarType = calendarType;
   }
 
   public String[] getFilterCalendarIds() {
@@ -173,8 +172,10 @@ public class EventQueryCondition implements Query {
 
   @Override
   public String getDS() {
-    // TODO Auto-generated method stub
-    return null;
+    return this.ds;
   }
-  
+
+  public void setDS(String id) {
+    this.ds = id;
+  }
 }

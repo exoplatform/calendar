@@ -16,18 +16,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
-package org.exoplatform.calendar.service.storage;
+package org.exoplatform.calendar.service.storage.jcr;
 
 import org.exoplatform.calendar.model.query.EventQuery;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.calendar.service.CalendarType;
 
 /**
- * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
+ * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
+ * @version $Revision$
  */
-public interface EventDAO extends GenericDAO<CalendarEvent, String> {
+public class JCREventQuery extends EventQuery {
 
-  ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery);
+  private CalendarType       calendarType;
 
+  public CalendarType getCalendarType() {
+    return calendarType;
+  }
+
+  public void setCalendarType(CalendarType calendarType) {
+    this.calendarType = calendarType;
+  }
 }

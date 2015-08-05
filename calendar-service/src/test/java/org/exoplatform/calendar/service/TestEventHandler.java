@@ -19,6 +19,7 @@
 
 package org.exoplatform.calendar.service;
 
+import org.exoplatform.calendar.service.storage.jcr.JCREventQuery;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.component.test.ConfigurationUnit;
@@ -66,7 +67,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
   }
 
   public void testFindEventByDate() throws Exception {
-    EventQueryCondition condition = new EventQueryCondition();
+    JCREventQuery condition = new JCREventQuery();
     condition.setCalendarType(Calendar.Type.PERSONAL);
     condition.setOwner(username);
     condition.setFromDate(userEvent.getFromDateTime().getTime());
@@ -86,7 +87,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
   }
 
   public void testFindEventByCalendarID() throws Exception {
-    EventQueryCondition condition = new EventQueryCondition();
+    JCREventQuery condition = new JCREventQuery();
     condition.setCalendarType(Calendar.Type.PERSONAL);
     condition.setOwner(username);
     condition.setCalendarIds(new String[] { userCal.getId() });
@@ -107,7 +108,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     repeatEvent.setRepeatType(CalendarEvent.RP_DAILY);
     calendarService_.saveUserEvent(username, userCal.getId(), repeatEvent, false);
 
-    EventQueryCondition condition = new EventQueryCondition();
+    JCREventQuery condition = new JCREventQuery();
     condition.setCalendarType(Calendar.Type.PERSONAL);
     condition.setOwner(username);
 
@@ -123,7 +124,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     Calendar cal = createPrivateCalendar(username, "cal", "des");
     createUserEvent(cal.getId(), null, "Have a meeting");
     
-    EventQueryCondition condition = new EventQueryCondition();
+    JCREventQuery condition = new JCREventQuery();
     condition.setCalendarType(Calendar.Type.PERSONAL);
     condition.setOwner(username);
 

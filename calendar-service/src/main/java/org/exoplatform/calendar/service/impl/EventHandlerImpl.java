@@ -16,12 +16,10 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.CompositeID;
 import org.exoplatform.calendar.service.EventHandler;
-import org.exoplatform.calendar.service.EventQueryCondition;
 import org.exoplatform.calendar.service.storage.EventDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -73,7 +71,7 @@ public class EventHandlerImpl implements EventHandler {
    * if no calendarType in query, fallback solution: use JCR DAO implementation with all available JCR calendar types (PERSONAL, GROUP)
    */
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition eventQuery) {
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) {
     EventDAO dao = getEventDAOImpl(eventQuery.getDS());
     
     if (dao != null) {

@@ -24,12 +24,11 @@ import java.util.List;
 
 import javax.jcr.query.Query;
 
+import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarType;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.EventQueryCondition;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
@@ -131,12 +130,18 @@ public class JCREventDAOImpl implements EventDAO {
   }
   
   @Override
-  public ListAccess<CalendarEvent> findEventsByQuery(EventQueryCondition queryCondition) {
+  public ListAccess<CalendarEvent> findEventsByQuery(EventQuery query) {
     final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
-    EventQuery eventQuery = buildEvenQuery(queryCondition);
+    org.exoplatform.calendar.service.EventQuery eventQuery = buildEvenQuery(query);
+
+    CalendarType type = Calendar.Type.UNDEFINED;
     try {
-      if (Calendar.Type.PERSONAL.equals(queryCondition.getCalendarType())) {
-        events.addAll(dataStorage.getUserEvents(queryCondition.getOwner(), eventQuery));        
+      if (query instanceof JCREventQuery) {
+        type = ((JCREventQuery)query).getCalendarType();
+      }
+
+      if (Calendar.Type.PERSONAL.equals(type)) {
+        events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));        
       } else {
         events.addAll(dataStorage.getPublicEvents(eventQuery));
       }      
@@ -145,7 +150,7 @@ public class JCREventDAOImpl implements EventDAO {
     }
     
     for (CalendarEvent evt : events) {
-      evt.setCalendarType(queryCondition.getCalendarType());
+      evt.setCalendarType(type);
     }
     
     return new ListAccess<CalendarEvent>() {
@@ -161,28 +166,28 @@ public class JCREventDAOImpl implements EventDAO {
     };
   }
 
-  private EventQuery buildEvenQuery(EventQueryCondition queryCondition) {
-    EventQuery eventQuery = new EventQuery();    
-    eventQuery.setCalendarId(queryCondition.getCalendarIds());
-    eventQuery.setCategoryId(queryCondition.getCategoryIds());
-    eventQuery.setEventType(queryCondition.getEventType());
-    eventQuery.setExcludeRepeatEvent(queryCondition.getExcludeRepeatEvent());
-    eventQuery.setFilterCalendarIds(queryCondition.getFilterCalendarIds());
-    if (queryCondition.getFromDate() != null) {
+  private org.exoplatform.calendar.service.EventQuery buildEvenQuery(EventQuery query) {
+    org.exoplatform.calendar.service.EventQuery eventQuery = new org.exoplatform.calendar.service.EventQuery();    
+    eventQuery.setCalendarId(query.getCalendarIds());
+    eventQuery.setCategoryId(query.getCategoryIds());
+    eventQuery.setEventType(query.getEventType());
+    eventQuery.setExcludeRepeatEvent(query.getExcludeRepeatEvent());
+    eventQuery.setFilterCalendarIds(query.getFilterCalendarIds());
+    if (query.getFromDate() != null) {
       java.util.Calendar from = java.util.Calendar.getInstance();
-      from.setTimeInMillis(queryCondition.getFromDate());
+      from.setTimeInMillis(query.getFromDate());
       eventQuery.setFromDate(from);      
     }
-    eventQuery.setOrderBy(queryCondition.getOrderBy());
-    eventQuery.setOrderType(queryCondition.getOrderType());
-    eventQuery.setParticipants(queryCondition.getParticipants());
-    eventQuery.setPriority(queryCondition.getPriority());
+    eventQuery.setOrderBy(query.getOrderBy());
+    eventQuery.setOrderType(query.getOrderType());
+    eventQuery.setParticipants(query.getParticipants());
+    eventQuery.setPriority(query.getPriority());
     eventQuery.setQueryType(Query.XPATH);
-    eventQuery.setState(queryCondition.getState());
-    eventQuery.setText(queryCondition.getText());
-    if (queryCondition.getToDate() != null) {
+    eventQuery.setState(query.getState());
+    eventQuery.setText(query.getText());
+    if (query.getToDate() != null) {
       java.util.Calendar to = java.util.Calendar.getInstance();
-      to.setTimeInMillis(queryCondition.getToDate());      
+      to.setTimeInMillis(query.getToDate());      
       eventQuery.setToDate(to);
     }
     return eventQuery;

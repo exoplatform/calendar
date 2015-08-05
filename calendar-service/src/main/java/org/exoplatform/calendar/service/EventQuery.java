@@ -26,8 +26,11 @@ import org.exoplatform.commons.utils.XPathUtils;
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen Quang
  *          hung.nguyen@exoplatform.com
- * Jul 11, 2007  
+ * Jul 11, 2007
+ *
+ * @deprecated This is only for old Calendar Service API methods.
  */
+@Deprecated
 public class EventQuery {
   private String             nodeType           = "exo:calendarEvent";
 
