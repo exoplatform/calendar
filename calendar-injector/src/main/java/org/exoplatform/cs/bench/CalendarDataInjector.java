@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.Constants;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;

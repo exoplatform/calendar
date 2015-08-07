@@ -28,7 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
 import javax.jcr.Node;
+
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -39,11 +41,13 @@ import org.exoplatform.calendar.service.ImportCalendarJob;
 import org.exoplatform.calendar.service.ModifiedInputStream;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.scheduler.JobSchedulerService;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
+
 import org.quartz.JobDetail;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
 
@@ -467,7 +471,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     if (isNew) {
       Calendar exoCalendar = new Calendar();
       exoCalendar.setName(calendarName);
-      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Constants.COLORS[0]);
+      exoCalendar.setCalendarColor(Constants.COLORS[0]);
       exoCalendar.setDescription(iCalendar.getProductId().getValue());
       exoCalendar.setPublic(false);
       exoCalendar.setCalendarOwner(username);

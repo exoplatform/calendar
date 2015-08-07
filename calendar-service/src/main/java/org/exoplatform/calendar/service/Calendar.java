@@ -21,6 +21,7 @@ import java.util.TimeZone;
 
 import org.exoplatform.calendar.model.AbstractModel;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.organization.OrganizationService;
 

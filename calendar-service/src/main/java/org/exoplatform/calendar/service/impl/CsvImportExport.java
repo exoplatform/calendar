@@ -31,12 +31,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.jcr.ItemExistsException;
+
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -238,7 +241,7 @@ public class CsvImportExport implements CalendarImportExport {
     if (isNew) {
       org.exoplatform.calendar.service.Calendar exoCalendar = new org.exoplatform.calendar.service.Calendar();
       exoCalendar.setName(calendarName);
-      exoCalendar.setCalendarColor(org.exoplatform.calendar.service.Constants.COLORS[0]);
+      exoCalendar.setCalendarColor(Constants.COLORS[0]);
       exoCalendar.setDescription(Utils.EMPTY_STR);
       exoCalendar.setPublic(true);
       exoCalendar.setCalendarOwner(username);
