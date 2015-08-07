@@ -28,7 +28,7 @@ public interface CalendarHandler {
 
   //TODO: we really need this method? Now, this method allow to load all shared/personal/group calendars of user
   // TODO Don't use Identity object in this API. It may be better to have one Query argument only
-  List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds);
+  List<Calendar> findAllCalendarOfUser(Identity identity, String ...excludeIds);
   
   /**
    * @param calendar

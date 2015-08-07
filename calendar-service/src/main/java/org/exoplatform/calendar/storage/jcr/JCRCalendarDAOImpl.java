@@ -133,7 +133,7 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
 
   @Override
-  public List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludesId) {
+  public List<Calendar> findCalendarsByIdentity(Identity identity, String ...excludesId) {
     List<Calendar> calendars = new LinkedList<Calendar>();
     List<String> excludes = Collections.emptyList();
     if (excludesId != null) {

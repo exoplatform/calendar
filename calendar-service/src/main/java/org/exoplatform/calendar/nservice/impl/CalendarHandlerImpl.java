@@ -54,7 +54,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds) {
+  public List<Calendar> findAllCalendarOfUser(Identity identity, String ...excludeIds) {
     List<Calendar> calendars = new LinkedList<Calendar>();
     for (Storage storage : service.getAllStorage()) {
       List<Calendar> cals = storage.getCalendarDAO().findCalendarsByIdentity(identity, excludeIds);

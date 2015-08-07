@@ -23,5 +23,5 @@ import java.util.List;
 
 public interface CalendarDAO extends GenericDAO<Calendar, String> {
 
-  List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludeIds);
+  List<Calendar> findCalendarsByIdentity(Identity identity, String ...excludeIds);
 }

@@ -122,7 +122,7 @@ public class UICalendars extends UIForm  {
   private String calType = CalendarUtils.SHARED_TYPE;
   private Map<String, List<Calendar>> calendars = new HashMap<String, List<Calendar>>();
   
-  private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);;
+  private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
 
   @Override
   public void processRender(WebuiRequestContext arg0) throws Exception {
@@ -135,7 +135,7 @@ public class UICalendars extends UIForm  {
     calendars.clear();
 
     Identity identity = ConversationState.getCurrent().getIdentity();
-    List<Calendar> tmp = xCalService.getCalendarHandler().findAllCalendarOfUser(identity, null);
+    List<Calendar> tmp = xCalService.getCalendarHandler().findAllCalendarOfUser(identity);
     for (Calendar cal : tmp) {
       String typeName = cal.getCalendarType().getName();
       if (cal.isShared(identity.getUserId())) {

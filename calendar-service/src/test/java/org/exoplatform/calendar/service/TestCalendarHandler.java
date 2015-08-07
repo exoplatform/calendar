@@ -106,7 +106,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     List<Calendar> calendars;
     int size;
 
-    calendars = calHandler.findAllCalendarOfUser(identity, null);
+    calendars = calHandler.findAllCalendarOfUser(identity);
     size = calendars.size();
     assertTrue("User must have at least 2 group calendars", size >= 2);
     assertContainCalendarName(calendars, "testRemoveGroupCalendar_1");
@@ -115,7 +115,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     // Remove calendar
     calHandler.removeCalendar(cal1.getId());
 
-    calendars = calHandler.findAllCalendarOfUser(identity, null);
+    calendars = calHandler.findAllCalendarOfUser(identity);
     size = calendars.size();
     assertTrue("User must have at least 1 personal calendars", size >= 1);
     assertNotContainCalendarName(calendars, "testRemoveGroupCalendar_1");
