@@ -10,7 +10,7 @@
 	DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
 	df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
 	CalendarEvent event = uicomponent.getEvent() ;
-	color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+	color = uicomponent.getColors().get(event.getCalendarId()) ;
 	def requirejs = _ctx.getRequestContext().getJavascriptManager().getRequireJS();
 	requirejs.require("PORTLET/calendar/CalendarPortlet","cal");
 	requirejs.require("SHARED/jquery","gj");

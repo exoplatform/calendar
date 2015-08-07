@@ -5,7 +5,7 @@ var UICalendars = {
     currentMenuElm   : null,
     currentAnchorElm : null,
     originalHeight   : null,
-    
+
     init : function(calendarsForm) {
       var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
 

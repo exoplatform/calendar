@@ -3326,7 +3326,7 @@ public class JCRDataStorage implements DataStorage {
     for (int i = 0; i < editValues.length; i++) {
       editPerms[i] = editValues[i].getString();
     }
-    return Utils.canEdit(oService, editPerms, username);
+    return Utils.hasPermission(oService, editPerms, username);
   }
 
   /**

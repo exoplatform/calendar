@@ -299,9 +299,9 @@ public class UIMonthView extends UICalendarView {
               continue ;
             } else {
               boolean bGroupPermit = (CalendarUtils.SHARED_TYPE.equals(ce.getCalType())
-                  && !Utils.canEdit(Utils.getEditPerUsers(calendar)))
+                  && !Utils.hasPermission(Utils.getEditPerUsers(calendar)))
                   || (CalendarUtils.PUBLIC_TYPE.equals(ce.getCalType()) 
-                      && !Utils.canEdit(calendar.getEditPermission()));
+                      && !Utils.hasPermission(calendar.getEditPermission()));
               if (bGroupPermit) {
                 continue;
               }

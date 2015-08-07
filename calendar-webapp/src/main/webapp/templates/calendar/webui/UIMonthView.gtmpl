@@ -170,7 +170,7 @@
             cal.setTime(event.fromDateTime) ;
             startIndex = cal.get(Calendar.WEEK_OF_MONTH) ;
           }
-          color = uicomponent.getColors().get(event.calType +CalendarUtils.COLON+ event.calendarId) ;
+          color = uicomponent.getColors().get(event.calendarId) ;
           moveAction = uicomponent.url("MoveEvent",event.getId());
           Boolean isOccur = (!CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()))?true:false;
           String recurId = event.getRecurrenceId();

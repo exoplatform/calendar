@@ -81,7 +81,7 @@ requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
 	    rowStyle = "" ;
 	    if(event.getId().equals(uicomponent.getLastUpdatedEventId())) {rowStyle = "background:#f5f5f5;";}
 	    String actionLink = uicomponent.event("ViewDetail", event.getId()+"&calendarId="+event.getCalendarId()+"&calType="+event.getCalType()) ;
-	    def color = uicomponent.getColors().get(event.getCalType() + CalendarUtils.COLON + event.getCalendarId()) ;
+	    def color = uicomponent.getColors().get(event.getCalendarId()) ;
 	    boolean isEditable;
         if (event.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
         else isEditable = true;

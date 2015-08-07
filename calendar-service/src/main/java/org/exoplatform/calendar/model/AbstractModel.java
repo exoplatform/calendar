@@ -50,7 +50,7 @@ public abstract class AbstractModel implements Serializable {
   }
 
   public String getCompositeId() {
-    return new CompositeID(getId(), ds).toString();
+    return new CompositeID(getId(), getDS()).toString();
   }
 
   public long getLastModified() {    

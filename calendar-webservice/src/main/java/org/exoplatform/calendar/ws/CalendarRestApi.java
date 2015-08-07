@@ -3318,7 +3318,7 @@ public class CalendarRestApi implements ResourceContainer {
     else if (cal.getGroups() != null) {
       return isInGroups(cal.getGroups());
     } else if (cal.getViewPermission() != null) {
-      return Utils.canEdit(orgService, cal.getViewPermission(), username);
+      return Utils.hasPermission(orgService, cal.getViewPermission(), username);
     }
     return false;
   }

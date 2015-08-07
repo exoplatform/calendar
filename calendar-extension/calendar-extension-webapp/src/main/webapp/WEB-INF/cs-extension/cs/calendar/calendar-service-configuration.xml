@@ -11,17 +11,7 @@
         <property name="eventNumber" value="100"/>         
       </properties-param>
     </init-params>
-  </component>    
-  
-  <external-component-plugins>
-    <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
-    <component-plugin>
-      <name>calendar.storage.jcr</name>
-      <set-method>addStoragePlugin</set-method>
-      <type>org.exoplatform.calendar.service.storage.JCRStorage</type>
-      <description>calendar storage implemented for JCR</description>      
-    </component-plugin>
-  </external-component-plugins>
+  </component>     
   
   <external-component-plugins>
     <target-component>org.exoplatform.services.organization.OrganizationService</target-component>

@@ -10,7 +10,7 @@
 	DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
 	df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
 	CalendarEvent task = uicomponent.getEvent() ;
-	color = uicomponent.getColors().get(task.getCalType() + CalendarUtils.COLON + task.getCalendarId()) ;
+	color = uicomponent.getColors().get(task.getCalendarId()) ;
 	def rcontext = _ctx.getRequestContext();
 	def requireJS = rcontext.getJavascriptManager().getRequireJS();
 	requireJS.require("SHARED/jquery","gj");

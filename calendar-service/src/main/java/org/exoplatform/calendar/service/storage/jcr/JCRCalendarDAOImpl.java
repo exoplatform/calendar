@@ -62,7 +62,9 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   @Override
   public Calendar getById(String id) {
     try {
-      return dataStorage.getCalendarById(id);
+      Calendar cal = dataStorage.getCalendarById(id);
+      cal.setDS(JCRStorage.JCR_STORAGE);
+      return cal;
     } catch (Exception ex) {
       LOG.error("Exception while loading calendar by ID", ex);
       return null;
@@ -126,6 +128,7 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   @Override
   public Calendar newInstance() {
     Calendar c = new Calendar();
+    c.setDS(JCRStorage.JCR_STORAGE);
     return c;
   }
 
@@ -141,7 +144,7 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
       List<Calendar> cals = dataStorage.getUserCalendars(identity.getUserId(), true);
       if (cals != null && cals.size() > 0) {
         for (Calendar c : cals) {
-          if (!excludes.contains(c.getId())) {
+          if (!excludes.contains(c.getId())) {            
             calendars.add(c);
           }
         }
@@ -165,6 +168,10 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
             }
           }
         }
+      }
+      
+      for (Calendar cal : calendars) {
+        cal.setDS(JCRStorage.JCR_STORAGE);
       }
 
       return calendars;

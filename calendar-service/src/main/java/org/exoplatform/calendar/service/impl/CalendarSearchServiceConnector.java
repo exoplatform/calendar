@@ -137,7 +137,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
           getCalendarMap().put(cal.getId(), cal);          
           sCals.add(cal.getId());
           
-          if(!Utils.canEdit(orgService, cal.getEditPermission(), userId)) {
+          if(!Utils.hasPermission(orgService, cal.getEditPermission(), userId)) {
             readOnlyCalendars.add(cal.getId());
           }
         }
@@ -156,7 +156,7 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
             getCalendarMap().put(cal.getId(), cal);
             gCals.add(cal.getId());
             
-            if(!Utils.canEdit(orgService, cal.getEditPermission(), userId)) {
+            if(!Utils.hasPermission(orgService, cal.getEditPermission(), userId)) {
               readOnlyCalendars.add(cal.getId());
             }
           }

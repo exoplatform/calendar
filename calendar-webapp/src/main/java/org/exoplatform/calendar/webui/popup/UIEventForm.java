@@ -1515,9 +1515,9 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     }
     boolean canEdit = false ;
     if(uiForm.calType_.equals(CalendarUtils.SHARED_TYPE)) {
-      canEdit = Utils.canEdit(org.exoplatform.calendar.service.Utils.getEditPerUsers(currentCalendar)) ;
+      canEdit = Utils.hasPermission(org.exoplatform.calendar.service.Utils.getEditPerUsers(currentCalendar)) ;
     } else if(uiForm.calType_.equals(CalendarUtils.PUBLIC_TYPE)) {
-      canEdit = Utils.canEdit(currentCalendar.getEditPermission()) ;
+      canEdit = Utils.hasPermission(currentCalendar.getEditPermission()) ;
     }
     if(!canEdit && !uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE) ) {
       uiPopupAction.deActivate() ;

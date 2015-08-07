@@ -1,5 +1,5 @@
 (function(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, 
-		ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, dateUtils) {
+    ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, dateUtils) {
     var _module = {};
     eXo.calendar = eXo.calendar || {};
     function UICalendarPortlet() {
@@ -108,6 +108,7 @@
          */
         var calType = id.split('&')[1].split('=')[1];
         var calId = id.split('&')[0].split('=')[1];
+        calId = calId.split('::')[1];
         var selectedCalId = calType + ":" + calId;
         if(parseInt(type) ==1) {
             this.timeShiftE = parseInt(gj("#UIQuickAddEvent").parents("#QuickAddEventContainer").attr("timeshift"));
@@ -2146,7 +2147,7 @@
         var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
         var arr = eval(values);
         if(isNew == "false") this.dayDiff = dateUtils.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
-        if(compid == "UIEventForm") {        	
+        if(compid == "UIEventForm") {         
             var fromIndex = this.getTimeIndex(eFromTime.val());
             var toIndex = this.getTimeIndex(eToTime.val(), true);
             
@@ -2170,13 +2171,13 @@
     }
     
     UICalendarPortlet.prototype.getTimeIndex = function(time, roundUp) {
-    	var t = time.split(":");
-    	var minutes = parseInt(gj.trim(t[0])) * 60 + parseInt(gj.trim(t[1]));
-    	if (roundUp) {
-    		return Math.ceil(minutes/30);
-    	} else {
-    		return Math.floor(minutes/30);
-    	}
+      var t = time.split(":");
+      var minutes = parseInt(gj.trim(t[0])) * 60 + parseInt(gj.trim(t[1]));
+      if (roundUp) {
+        return Math.ceil(minutes/30);
+      } else {
+        return Math.floor(minutes/30);
+      }
     }
 
     UICalendarPortlet.prototype.suggestTime = function(compid, isNew, eFromDate, eToDate, eFromTime, eToTime, timeShift, event) {
@@ -2495,4 +2496,4 @@
     var uiPopup = uiPopupWindow ;
     return _module;
 })(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
-		uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, DateUtils);
+    uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, DateUtils);

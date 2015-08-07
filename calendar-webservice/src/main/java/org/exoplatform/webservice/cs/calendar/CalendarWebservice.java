@@ -165,13 +165,13 @@ public class CalendarWebservice implements ResourceContainer {
         OrganizationService oService = (OrganizationService)ExoContainerContext
         .getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
         cal = calendarService.getGroupCalendar(calendarId) ;
-        if(Utils.canEdit(oService, cal.getEditPermission(), username)) {
+        if(Utils.hasPermission(oService, cal.getEditPermission(), username)) {
           eventData.setPermission(true);
         }
       } else if(Utils.SHARED_TYPE == Integer.parseInt(type)) {
         if(calendarService.getSharedCalendars(username, true) != null) {
           cal = calendarService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
-          if(Utils.canEdit(null, Utils.getEditPerUsers(cal), username)) {
+          if(Utils.hasPermission(null, Utils.getEditPerUsers(cal), username)) {
             eventData.setPermission(true);
           }
         }

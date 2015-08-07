@@ -70,10 +70,11 @@
 	        {
 		        if (uicomponent.getChildById(calendar.getId()) == null) continue;
                 def calendarId   = calendar.id ;
+                def compositeID = calendar.getCompositeId();
 		        def calendarName = calendar.name;
 		        def color        = calendar.calendarColor ;
 		        def icon         = "CalendarIcon" ;
-		        def isRemote     = uicomponent.isRemoteCalendar(calendarId) ;
+		        def isRemote     = calendar.isRemote() ;
 		        def css          = "iconCheckBox checkbox" ;
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
 
@@ -81,7 +82,7 @@
 		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar.getGroups())) css = "IconUnCheckBox checkbox";
 		        if(chk.isChecked()) css = "iconCheckBox checkbox";
 		    %>
-		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="true" id="$calendarId" calType="0" isRemote="$isRemote">
+		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="true" id="$compositeID" calType="0" isRemote="$isRemote">
 		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
               <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
                 <a href="javascript:void(0);" class="$color">
@@ -102,8 +103,7 @@
 
   private void renderSharedCalendarGroup()
   {
-    GroupCalendarData sharedCalendars = uicomponent.getSharedCalendars() ;
-    List calendarList = sharedCalendars.getCalendars() ;
+    def calendarList = uicomponent.getAllSharedCalendars() ;
     if (calendarList.size() == 0) return;
 
     def sharedCalendarTitle = _ctx.appRes("UICalendarSettingForm.label.sharedCalendar");
@@ -121,8 +121,9 @@
 	        {
 		        if (uicomponent.getChildById(calendar.getId()) == null) continue
                 def calendarId   = calendar.id ;
+		        def compositeID = calendar.getCompositeId();
 		        def calendarName = calendar.name ;
-		        def color        = uicomponent.getColorMap().get("1" + ":" + calendarId) ;
+		        def color        = uicomponent.getColorMap().get(calendarId) ;
 		        def isEditable   = UISharedForm.canUserEditCalendar(user, calendar);
 		        def css          = "iconCheckBox checkbox";
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId);
@@ -130,7 +131,7 @@
 		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar.getGroups())) css = "IconUnCheckBox checkbox";
 		        if (chk.isChecked()) css = "iconCheckBox checkbox";
 		      %>
-		      <li class="calendarItem CalendarItemShared" calColor="$color" id="$calendarId" calType="1" canEdit="$isEditable">
+		      <li class="calendarItem CalendarItemShared" calColor="$color" id="$compositeID" calType="1" canEdit="$isEditable">
 		        <div id="UICalendars_CalendarPopupMenu2" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
             <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
               <a href="javascript:void(0);" class="$color">
@@ -165,26 +166,27 @@
 	      <ul class="uiVTabContent">
 	      <%
 	        for (calendar in calendarList)
-	        {
-		        if (uicomponent.getChildById(calendar.getId()) == null) continue
-                def calendarId   = calendar.id ;
-		        def calendarName = calendar.name;
-		        def css          = "iconCheckBox checkbox" ;
-		        def color        = calendar.calendarColor ;
-		        def isEditable   = Utils.canEdit(calendar.getEditPermission()) ;
-		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
+	      	        {
+	      		        if (uicomponent.getChildById(calendar.getId()) == null) continue
+	                  def calendarId   = calendar.id ;
+	      		        def compositeID = calendar.getCompositeId();
+	      		        def calendarName = calendar.name;
+	      		        def css          = "iconCheckBox checkbox" ;
+	      		        def color        = calendar.calendarColor ;
+	      		        def isEditable   = Utils.hasPermission(calendar.getEditPermission()) ;
+	      		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
 
-		        StringBuffer groupList = new StringBuffer();
-		        for (String groupId: calendar.getGroups())
-		        {
-			        groupList.append(groupId + ", ")
-		        }
-		        groupList.deleteCharAt(groupList.lastIndexOf(","));
+	      		        StringBuffer groupList = new StringBuffer();
+	      		        for (String groupId: calendar.getGroups())
+	      		        {
+	      			        groupList.append(groupId + ", ")
+	      		        }
+	      		        groupList.deleteCharAt(groupList.lastIndexOf(","));
 
-		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar.getGroups())) css = "IconUnCheckBox checkbox";
-		        if (chk.isChecked()) css = "iconCheckBox checkbox";
-		      %>
-		      <li class="calendarItem calendarItemPublic "  calColor="$color" canEdit="$isEditable" id="$calendarId" calType="2" >
+	      		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar.getGroups())) css = "IconUnCheckBox checkbox";
+	      		        if (chk.isChecked()) css = "iconCheckBox checkbox";
+	      %>
+		      <li class="calendarItem calendarItemPublic " calColor="$color" canEdit="$isEditable" id="$compositeID" calType="2" >
 		        <div id="UICalendars_CalendarPopupMenu3" class="uiIconCalSettingMini uiIconLightGray pull-right" ></div>
             <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
               <a href="javascript:void(0);" class="$color">
@@ -205,9 +207,9 @@
 
   private void renderOtherGroup()
   {
-    def others = uicomponent.calendars.get(3);
+    def others = uicomponent.getAllOtherCalendars();
     if (others == null || others.size() == 0) return;
-    def otherTitle = "Others";
+    def otherTitle = _ctx.appRes("UICalendars.label.other");
     %>
 	  <div class="myCalendar">
 	    <h6 class="calendarTitle">$otherTitle</h6>
@@ -218,16 +220,19 @@
 	        {
 		        if (uicomponent.getChildById(calendar.getId()) == null) continue;
                 def calendarId   = calendar.id ;
+                def compositeID = calendar.getCompositeId();
 		        def calendarName = calendar.name;
 		        def color        = calendar.calendarColor ;
 		        def icon         = "CalendarIcon" ;
-		        def isRemote     = uicomponent.isRemoteCalendar(calendarId) ;
+		        def isRemote     = calendar.isRemote();
 		        def css          = "iconCheckBox checkbox" ;
+		        def username 	 = CalendarUtils.getCurrentUser();
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
+		        def calendarType = calendar.getCalendarType();
 
 		        if (calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) icon = "SharedCalendarIcon";
 		    %>
-		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="true" id="$calendarId" calType="0" isRemote="$isRemote">
+		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="<%=calendar.canEdit(username)%>" id="$compositeID" calType="<%=calendarType.getName() %>" isRemote="$isRemote">
 		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
               <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
                 <a href="javascript:void(0);" class="$color">

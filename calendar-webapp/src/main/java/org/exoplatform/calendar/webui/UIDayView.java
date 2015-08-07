@@ -200,8 +200,8 @@ public class UIDayView extends UICalendarView {
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
-            if((ce.getCalType().equals(CalendarUtils.SHARED_TYPE) && !Utils.canEdit(Utils.getEditPerUsers(calendar))) ||
-                                (ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE) && !Utils.canEdit(calendar.getEditPermission()))) 
+            if((ce.getCalType().equals(CalendarUtils.SHARED_TYPE) && !Utils.hasPermission(Utils.getEditPerUsers(calendar))) ||
+                                (ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE) && !Utils.hasPermission(calendar.getEditPermission()))) 
             {
 
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit-event", null, 1)) ;

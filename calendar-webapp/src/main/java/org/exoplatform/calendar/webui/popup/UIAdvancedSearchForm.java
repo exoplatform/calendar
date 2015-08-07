@@ -348,9 +348,9 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
               if (checkedCals.contains(calendar.getId())) calendarIds.add(calendar.getId());
             }
 
-          GroupCalendarData shareClas = uiCalendars.getSharedCalendars();
+          List<Calendar> shareClas = uiCalendars.getAllSharedCalendars();
           if (shareClas != null) {
-            for (org.exoplatform.calendar.service.Calendar calendar : shareClas.getCalendars()) {
+            for (org.exoplatform.calendar.service.Calendar calendar : shareClas) {
               if (checkedCals.contains(calendar.getId())) calendarIds.add(calendar.getId());
             }
           }

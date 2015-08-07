@@ -488,6 +488,8 @@ public class Utils {
   public static final String SPACES_GROUP = "spaces";
   public static final String SPACES_GROUP_ID_PREFIX = "/spaces/";
   public static final String SPACE_CALENDAR_ID_SUFFIX = "_space_calendar";
+  
+  private static final Log LOG = ExoLogger.getExoLogger(Utils.class);
 
   public static OrganizationService getOrganizationService(){
     return (OrganizationService)ExoContainerContext.getCurrentContainer().getComponentInstance(OrganizationService.class) ;
@@ -522,9 +524,9 @@ public class Utils {
     return string == null || string.trim().length() == 0;
   }
   
-  public static boolean canEdit(String[] savePerms, Identity user) throws Exception {
-    if (savePerms != null) {
-      for (String savePer : savePerms) {
+  public static boolean hasPermission(String[] permissions, Identity user) throws Exception {
+    if (permissions != null) {
+      for (String savePer : permissions) {
         PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
         
         if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
@@ -547,7 +549,7 @@ public class Utils {
     return false;
   }
 
-  public static boolean canEdit(OrganizationService oService, String[] savePerms, String username) throws Exception {
+  public static boolean hasPermission(OrganizationService oService, String[] savePerms, String username) {
     if (savePerms != null) {
         for (String savePer : savePerms) {
             PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
@@ -561,13 +563,17 @@ public class Utils {
                 String membershipType = permission.getMembership();
                 MembershipEntry expected = new MembershipEntry(groupId, membershipType);
                 
-                Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
-                for (Membership ms : memberships) {
+                try {
+                  Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
+                  for (Membership ms : memberships) {
                     //Core project care about * membership type
                     MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
                     if (userMS.equals(expected)) {
-                        return true;
+                      return true;
                     }
+                  }
+                } catch (Exception e) {
+                  LOG.error(e);
                 }
             }
         }        
@@ -575,7 +581,7 @@ public class Utils {
     return false;
   }
   
-  public static boolean canEdit(String[] savePerms) throws Exception {
+  public static boolean hasPermission(String[] savePerms) {
     Identity identity = ConversationState.getCurrent().getIdentity();
 
     if (savePerms != null) {
@@ -1438,10 +1444,10 @@ public class Utils {
         if (ConversationState.getCurrent() != null) {
           Identity curr = ConversationState.getCurrent().getIdentity();
           if (curr != null && curr.getUserId().equals(username)) {
-            return Utils.canEdit(cal.getEditPermission(), curr);
+            return Utils.hasPermission(cal.getEditPermission(), curr);
           }
         }
-        return Utils.canEdit(oService, cal.getEditPermission(), username);    
+        return Utils.hasPermission(oService, cal.getEditPermission(), username);    
       }
     } catch (Exception ex) {
       log.error("Exception raised during checking for calendar editable", ex);

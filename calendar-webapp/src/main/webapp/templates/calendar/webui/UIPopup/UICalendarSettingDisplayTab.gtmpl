@@ -109,7 +109,7 @@
 	          if (uicomponent.getChildById(calendar.getId()) == null) continue;
 	          def calendarId   = calendar.id ;
 	          def calendarName = calendar.name ;
-	          def color        = uicomponent.getColorMap().get("1" + ":" + calendarId) ;
+	          def color        = uicomponent.getColorMap().get(calendarId) ;
 	          def css          = "iconUnCheckBox checkbox";
 
 	          UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId);

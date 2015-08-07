@@ -16,11 +16,6 @@
  **/
 package org.exoplatform.calendar;
 
-import javax.jcr.PathNotFoundException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.portlet.PortletPreferences;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -42,6 +37,11 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.jcr.PathNotFoundException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.portlet.PortletPreferences;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -436,8 +436,13 @@ public class CalendarUtils {
     DateFormat df = new SimpleDateFormat(timeFormat, locale) ;
     return df.format(date) ;    
   }
+  
   static public String getCurrentUser() throws Exception {
     return Util.getPortalRequestContext().getRemoteUser() ; 
+  }
+  
+  static public Identity getCurrentIdentity() throws Exception {
+    return ConversationState.getCurrent().getIdentity(); 
   }
 
   public static boolean isAllDayEvent(CalendarEvent eventCalendar) {
@@ -610,7 +615,7 @@ public class CalendarUtils {
     if(gcd != null) {
       SelectOptionGroup sharedGrp = new SelectOptionGroup(CalendarUtils.SHARED_CALENDARS);
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
-        if(Utils.canEdit(Utils.getEditPerUsers(c))){
+        if(Utils.hasPermission(Utils.getEditPerUsers(c))){
           if (!hash.containsKey(c.getId())) {
             hash.put(c.getId(), "");
             sharedGrp.addOption(new SelectOption(c.getName(), CalendarUtils.SHARED_TYPE + CalendarUtils.COLON + c.getId())) ;
@@ -626,7 +631,7 @@ public class CalendarUtils {
       SelectOptionGroup pubGrp = new SelectOptionGroup(CalendarUtils.PUBLIC_CALENDARS);
       for(GroupCalendarData g : lgcd) {
         for(org.exoplatform.calendar.service.Calendar c : g.getCalendars()) {
-          if(Utils.canEdit(c.getEditPermission())) {
+          if(Utils.hasPermission(c.getEditPermission())) {
             if (!hash.containsKey(c.getId())) {
               hash.put(c.getId(), "");
               pubGrp.addOption(new SelectOption(c.getName(), CalendarUtils.PUBLIC_TYPE + CalendarUtils.COLON + c.getId())) ;
@@ -654,7 +659,7 @@ public class CalendarUtils {
     GroupCalendarData gcd = calendarService.getSharedCalendars(username, true);
     if(gcd != null) {
       for(org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
-        if(Utils.canEdit(Utils.getEditPerUsers(c))){
+        if(Utils.hasPermission(Utils.getEditPerUsers(c))){
           list.add(c) ;
         }
       }
@@ -663,7 +668,7 @@ public class CalendarUtils {
     if(lgcd != null) {
       for(GroupCalendarData g : lgcd) {
         for(org.exoplatform.calendar.service.Calendar c : g.getCalendars()) {
-          if(Utils.canEdit(c.getEditPermission())) {
+          if(Utils.hasPermission(c.getEditPermission())) {
             list.add(c) ; 
           }
         }
@@ -906,18 +911,8 @@ public class CalendarUtils {
   }
 
   public static org.exoplatform.calendar.service.Calendar getCalendar(String calType, String calendarId) throws Exception {
-    CalendarService calService = CalendarUtils.getCalendarService() ;
-    String currentUser = CalendarUtils.getCurrentUser() ;
-    org.exoplatform.calendar.service.Calendar calendar = null;
-    if(CalendarUtils.PRIVATE_TYPE.equals(calType)) {
-      calendar = calService.getUserCalendar(currentUser, calendarId) ;
-    } else if(CalendarUtils.SHARED_TYPE.equals(calType)) {
-      GroupCalendarData gCalendarData = calService.getSharedCalendars(currentUser, true) ;
-      if(gCalendarData != null) calendar = gCalendarData.getCalendarById(calendarId) ;
-    } else if(CalendarUtils.PUBLIC_TYPE.equals(calType)) {
-      calendar = calService.getGroupCalendar(calendarId) ;
-    }
-    return calendar;
+    CalendarService calService = CalendarUtils.getCalendarService();
+    return calService.getCalendarHandler().getCalendarById(calendarId);
   }
 
   public static List<SelectItemOption<String>> getCategory() throws Exception {

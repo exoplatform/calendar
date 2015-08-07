@@ -30,6 +30,7 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.CompositeID;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.CalendarView;
@@ -241,7 +242,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
 
   }
   public void setSelectedCalendar(String value) {
-    value = calType_ + CalendarUtils.COLON + value ;
+    value = calType_ + CalendarUtils.COLON + value;
     getUIFormSelectBoxGroup(FIELD_CALENDAR).setValue(value) ;
   }
   public UIFormSelectBoxWithGroups getUIFormSelectBoxGroup(String id) {
@@ -268,7 +269,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
   }
   
   public boolean canEdit(String[] savePerms) throws Exception{
-    return Utils.canEdit(savePerms) ;
+    return Utils.hasPermission(savePerms) ;
   }
   protected int getTimeShift(){
     int defaultTime = 2;
@@ -387,7 +388,7 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
           event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UICalendarPortlet.class)) ;
           return ;
         } else {
-          if(CalendarUtils.SHARED_TYPE.equals(uiForm.calType_) && !Utils.canEdit(Utils.getEditPerUsers(calendar))) {
+          if(CalendarUtils.SHARED_TYPE.equals(uiForm.calType_) && !Utils.hasPermission(Utils.getEditPerUsers(calendar))) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null,1));
             uiForm.reset() ;
             event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UICalendarPortlet.class)) ;

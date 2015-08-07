@@ -208,7 +208,7 @@ public class UIListView extends UICalendarView {
     List<String> checkedCals = uiCalendars.getCheckedCalendars();
     List<org.exoplatform.calendar.service.Calendar> privateCalendar = uiCalendars.getAllPrivateCalendars();
     List<org.exoplatform.calendar.service.Calendar> publicCalendar = uiCalendars.getAllPublicCalendars();
-    GroupCalendarData shareClas = uiCalendars.getSharedCalendars();
+    List<org.exoplatform.calendar.service.Calendar> shareClas = uiCalendars.getAllSharedCalendars();
 
     for (org.exoplatform.calendar.service.Calendar cal :privateCalendar) {
       if (checkedCals.contains(cal.getId())) {
@@ -224,7 +224,7 @@ public class UIListView extends UICalendarView {
 
 
     if (shareClas != null) {
-      for (org.exoplatform.calendar.service.Calendar cal : shareClas.getCalendars()) {
+      for (org.exoplatform.calendar.service.Calendar cal : shareClas) {
         if (checkedCals.contains(cal.getId())) {
           calendarIds.add(cal.getId());
         }

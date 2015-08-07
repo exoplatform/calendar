@@ -72,7 +72,7 @@
 					<%
 						for(ce in uicomponent.getAllDayEvents()) {             
 						actionLink = uicomponent.event("UpdateEvent",ce.id);
-						color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;
+						color = uicomponent.getColors().get(ce.getCalendarId()) ;
 						Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
 						String recurId = ce.getRecurrenceId();
 					  def isEditable;
@@ -146,7 +146,7 @@
 						      long   beginTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
 						      cal.setTime(ce.getToDateTime()) ;
 						      long  endTime = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
-						      color = uicomponent.getColors().get(ce.calType +CalendarUtils.COLON+ ce.getCalendarId()) ;
+						      color = uicomponent.getColors().get(ce.getCalendarId()) ;
 						      actionLink = uicomponent.event("UpdateEvent",ce.id);
 						      Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
 						      String recurId = ce.getRecurrenceId();

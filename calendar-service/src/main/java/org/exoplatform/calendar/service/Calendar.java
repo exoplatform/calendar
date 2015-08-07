@@ -20,7 +20,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.exoplatform.calendar.model.AbstractModel;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.jcr.util.IdGenerator;
+import org.exoplatform.services.organization.OrganizationService;
 
 /**
  * Created by The eXo Platform SARL
@@ -304,5 +306,15 @@ public class Calendar extends AbstractModel {
   
   public CalendarType getCalendarType() {
     return calendarType;
+  }
+
+  public boolean canEdit(String username) {
+    return Utils.isCalendarEditable(username, this);
+  }
+  
+  public boolean isShared(String username) {
+    OrganizationService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
+    return Calendar.Type.PERSONAL.equals(this.getCalendarType()) && username != null 
+        && !username.equals(this.getCalendarOwner()) && Utils.hasPermission(service, this.getViewPermission(), username);
   }
 }

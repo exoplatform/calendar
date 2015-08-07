@@ -296,7 +296,7 @@ public class UIWeekView extends UICalendarView {
       String eventId  = event.getId();
       String calType  = event.getCalType();
       String calendarId = event.getCalendarId();
-      String color    = getColors().get(calType + CalendarUtils.COLON + calendarId) ;
+      String color    = getColors().get(calendarId) ;
       //String title    = tf.format(event.getFromDateTime()) + "->" + tf.format(event.getToDateTime())+ ":&#013; " + event.getSummary() ;
       String actionLink =  event("UpdateAllDayEvent", eventId);
       boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
@@ -377,7 +377,7 @@ public class UIWeekView extends UICalendarView {
           int beginTime    = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
           cal.setTime(event.getToDateTime()) ;
           int endTime      = cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE) ;
-          String color     = getColors().get(event.getCalType() + CalendarUtils.COLON+ event.getCalendarId()) ;
+          String color     = getColors().get(event.getCalendarId()) ;
           String actionLink =  event("UpdateEvent", eventId) ;
           boolean isOccur  = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
           String recurId   = event.getRecurrenceId();
@@ -774,8 +774,8 @@ public class UIWeekView extends UICalendarView {
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
-            if((CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.canEdit(Utils.getEditPerUsers(calendar))) ||
-                (CalendarUtils.PUBLIC_TYPE.equals(calType) && !Utils.canEdit(calendar.getEditPermission()))) 
+            if((CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.hasPermission(Utils.getEditPerUsers(calendar))) ||
+                (CalendarUtils.PUBLIC_TYPE.equals(calType) && !Utils.hasPermission(calendar.getEditPermission()))) 
             {
               event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit-event", null, 1)) ;
               calendarview.refresh() ;
