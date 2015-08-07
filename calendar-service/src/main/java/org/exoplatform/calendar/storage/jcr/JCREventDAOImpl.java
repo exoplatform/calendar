@@ -75,13 +75,12 @@ public class JCREventDAOImpl implements EventDAO {
 
   private Event persist(Event event, boolean isNew) {
     try {
-      CalendarType calType = event.getCalendarType();
       String calendarId = event.getCalendarId();
       Calendar cal = context.getCalendarDAO().getById(calendarId);
       if (cal == null) {
         return null;
       }
-      calType = cal.getCalendarType();
+      CalendarType calType = cal.getCalendarType();
       CalendarEvent calEvent = CalendarEvent.build(event);
       if (calType == Calendar.Type.PERSONAL) {
         dataStorage.saveUserEvent(cal.getCalendarOwner(), cal.getId(), calEvent, isNew);
@@ -132,27 +131,16 @@ public class JCREventDAOImpl implements EventDAO {
   
   @Override
   public ListAccess<Event> findEventsByQuery(EventQuery query) {
-    final List<Event> events = new LinkedList<Event>();
+    final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
     org.exoplatform.calendar.service.EventQuery eventQuery = buildEvenQuery(query);
 
-    CalendarType type = Calendar.Type.UNDEFINED;
     try {
-      if (query instanceof JCREventQuery) {
-        type = ((JCREventQuery)query).getCalendarType();
-      }
-
-      if (Calendar.Type.PERSONAL.equals(type)) {
-        events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));        
-      } else {
-        events.addAll(dataStorage.getPublicEvents(eventQuery));
-      }      
+      events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));        
+      events.addAll(dataStorage.getPublicEvents(eventQuery));
     } catch (Exception ex) {
       LOG.error("Can't query for event", ex);
     }
     
-    for (Event evt : events) {
-      evt.setCalendarType(type);
-    }
     
     return new ListAccess<Event>() {
       @Override

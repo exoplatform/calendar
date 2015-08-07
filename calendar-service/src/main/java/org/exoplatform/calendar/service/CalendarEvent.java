@@ -27,12 +27,23 @@ import org.exoplatform.calendar.model.Event;
 @Deprecated
 public class CalendarEvent extends Event {
   
+  private String               calType         = "0";
+
   public CalendarEvent() {
     super();
   }
 
   public CalendarEvent(CalendarEvent evt) {
     super(evt);
+    this.calType = evt.calType;
+  }
+
+  public void setCalType(String calType) {
+    this.calType = calType;
+  }
+
+  public String getCalType() {
+    return calType;
   }
 
   public static CalendarEvent build(Event evt) {
