@@ -15,17 +15,17 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.calendar.service.impl;
+package org.exoplatform.calendar.nservice.impl;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import org.exoplatform.calendar.model.CompositeID;
+import org.exoplatform.calendar.nservice.CalendarHandler;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarHandler;
-import org.exoplatform.calendar.service.CompositeID;
-import org.exoplatform.calendar.service.storage.CalendarDAO;
-import org.exoplatform.calendar.service.storage.NoSuchEntityException;
-import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.calendar.storage.CalendarDAO;
+import org.exoplatform.calendar.storage.NoSuchEntityException;
+import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.Identity;
@@ -33,9 +33,9 @@ import org.exoplatform.services.security.Identity;
 public class CalendarHandlerImpl implements CalendarHandler {
   private static final Log log = ExoLogger.getExoLogger(CalendarHandlerImpl.class);
 
-  private CalendarServiceImpl service;
+  private ExtendedCalendarServiceImpl service;
 
-  public CalendarHandlerImpl(CalendarServiceImpl service) {
+  public CalendarHandlerImpl(ExtendedCalendarServiceImpl service) {
     this.service = service;
   }
 

@@ -13,17 +13,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
- **/
-  
-package org.exoplatform.calendar.service.storage;
+ **/  
+package org.exoplatform.calendar.storage;
 
-import org.exoplatform.calendar.service.CalendarType;
+import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.services.security.Identity;
 
-public interface Storage {
+import java.util.List;
 
-  public String getId();
+public interface CalendarDAO extends GenericDAO<Calendar, String> {
 
-  public CalendarDAO getCalendarDAO();
-
-  public EventDAO getEventDAO();
+  List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludeIds);
 }

@@ -15,41 +15,15 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.calendar.service.storage;
+package org.exoplatform.calendar.storage;
 
+import org.exoplatform.calendar.service.CalendarType;
 
-public interface GenericDAO<T, ID> {
+public interface Storage {
 
-  /**
-   * @param id
-   * @return
-   */
-  T getById(ID id);
+  public String getId();
 
+  public CalendarDAO getCalendarDAO();
 
-  /**
-   * @param object
-   */
-  T save(T object);
-
-  /**
-   * Update the specified entity argument with the most recent state.
-   * <p>
-   * If the entity does not exist, it throws NoSuchEntityException
-   *
-   * @param entity
-   * @return
-   */
-  T update(T entity) throws NoSuchEntityException;
-
-  /**
-   * @param id
-   * @return 
-   */
-  T remove(ID id);
-
-  /**
-   * @return
-   */
-  T newInstance();
+  public EventDAO getEventDAO();
 }

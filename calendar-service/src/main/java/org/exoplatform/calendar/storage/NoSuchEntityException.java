@@ -1,4 +1,4 @@
-package org.exoplatform.calendar.service.storage;
+package org.exoplatform.calendar.storage;
 
 public class NoSuchEntityException extends Exception {
 

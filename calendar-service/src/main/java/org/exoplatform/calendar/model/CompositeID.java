@@ -15,7 +15,7 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.calendar.service;
+package org.exoplatform.calendar.model;
 
 public class CompositeID {
   private String id;

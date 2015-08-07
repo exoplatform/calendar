@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.exoplatform.calendar.nservice.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -83,6 +84,8 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
   protected OrganizationService organizationService_;
 
   protected CalendarService     calendarService_;
+  
+  protected ExtendedCalendarService xCalService;
 
   @Override
   public void setUp() throws Exception {
@@ -91,6 +94,7 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
     // Init services
     organizationService_ = getService(OrganizationService.class);
     calendarService_ = getService(CalendarService.class);
+    xCalService = getService(ExtendedCalendarService.class);
 
     // . Init JCR root node
     JCRDataStorage storage = ((CalendarServiceImpl) calendarService_).getDataStorage();

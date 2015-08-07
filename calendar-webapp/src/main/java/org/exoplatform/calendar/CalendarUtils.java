@@ -912,7 +912,7 @@ public class CalendarUtils {
 
   public static org.exoplatform.calendar.service.Calendar getCalendar(String calType, String calendarId) throws Exception {
     CalendarService calService = CalendarUtils.getCalendarService();
-    return calService.getCalendarHandler().getCalendarById(calendarId);
+    return calService.getCalendarById(calendarId);
   }
 
   public static List<SelectItemOption<String>> getCategory() throws Exception {

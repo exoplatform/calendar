@@ -20,8 +20,9 @@
 package org.exoplatform.calendar.service;
 
 import org.exoplatform.calendar.model.Event;
-import org.exoplatform.calendar.service.storage.jcr.JCREventQuery;
+import org.exoplatform.calendar.nservice.EventHandler;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
+import org.exoplatform.calendar.storage.jcr.JCREventQuery;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
@@ -50,7 +51,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    this.evtHandler = this.calendarService_.getEventHandler();
+    this.evtHandler = this.xCalService.getEventHandler();
 
     userCal = createPrivateCalendar(username, "CalendarName", "CalendarDescription");
     EventCategory eventCategory = createUserEventCategory(username, "EventCategoryName2");

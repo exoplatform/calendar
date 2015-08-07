@@ -22,6 +22,8 @@ package org.exoplatform.calendar.service;
 import java.util.Date;
 
 import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.nservice.CalendarHandler;
+import org.exoplatform.calendar.nservice.EventHandler;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.

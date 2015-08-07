@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2003-2014 eXo Platform SAS.
+ * Copyright (C) 2003-2007 eXo Platform SAS.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License
@@ -14,19 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-package org.exoplatform.calendar.service;
+package org.exoplatform.calendar.nservice;
 
-import org.exoplatform.calendar.model.Event;
-import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.calendar.storage.Storage;
 
-public interface EventHandler {
-  public Event getEventById(String eventId);
+public interface ExtendedCalendarService {
 
-  public Event saveEvent(Event event);
-
-  public Event removeEvent(String eventId);
-
-  ListAccess<Event> findEventsByQuery(org.exoplatform.calendar.model.query.EventQuery eventQuery);
-
-  public Event newEventInstance(String dsId);
+  public CalendarHandler getCalendarHandler();
+  
+  public EventHandler getEventHandler();
+  
+  public Storage lookForDS(String compositeId);
+  
 }

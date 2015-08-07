@@ -14,35 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-
-package org.exoplatform.calendar.service;
-
-import org.exoplatform.services.security.Identity;
-
-import java.util.List;
-
-public interface CalendarHandler {
-
-  Calendar getCalendarById(String calId);
-
-  //TODO: we really need this method? Now, this method allow to load all shared/personal/group calendars of user
-  // TODO Don't use Identity object in this API. It may be better to have one Query argument only
-  List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds);
   
-  /**
-   * @param calendar
-   */
-  Calendar saveCalendar(Calendar calendar);
-  
-  /**
-   * @param calendar
-   */
-  Calendar updateCalendar(Calendar calendar);
-  
-  /**
-   * @param calendarId
-   */
-  Calendar removeCalendar(String calendarId);
+package org.exoplatform.calendar.storage;
 
-  Calendar newCalendarInstance(String dsId);
+
+public interface GenericDAO<T, ID> {
+
+  /**
+   * @param id
+   * @return
+   */
+  T getById(ID id);
+
+
+  /**
+   * @param object
+   */
+  T save(T object);
+
+  /**
+   * Update the specified entity argument with the most recent state.
+   * <p>
+   * If the entity does not exist, it throws NoSuchEntityException
+   *
+   * @param entity
+   * @return
+   */
+  T update(T entity) throws NoSuchEntityException;
+
+  /**
+   * @param id
+   * @return 
+   */
+  T remove(ID id);
+
+  /**
+   * @return
+   */
+  T newInstance();
 }

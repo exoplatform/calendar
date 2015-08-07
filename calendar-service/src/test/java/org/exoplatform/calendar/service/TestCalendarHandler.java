@@ -19,15 +19,20 @@
 
 package org.exoplatform.calendar.service;
 
+import static org.exoplatform.calendar.service.AssertUtil.assertContainCalendarName;
+import static org.exoplatform.calendar.service.AssertUtil.assertNotContainCalendarName;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.exoplatform.calendar.model.CompositeID;
+import org.exoplatform.calendar.nservice.CalendarHandler;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
-import java.util.Arrays;
-import java.util.List;
-import static org.exoplatform.calendar.service.AssertUtil.*;
 
 /**
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
@@ -47,7 +52,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    this.calHandler = this.calendarService_.getCalendarHandler();    
+    this.calHandler = this.xCalService.getCalendarHandler();    
   }
 
   public void testCreateCalendar() {

@@ -2,8 +2,8 @@ package org.exoplatform.calendar.service;
 
 import org.exoplatform.calendar.service.MockStorage.MockCalendarDAO;
 import org.exoplatform.calendar.service.MockStorage.MockEventDAO;
-import org.exoplatform.calendar.service.storage.Storage;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
+import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
@@ -25,9 +25,9 @@ public class TestCalendarService extends BaseCalendarServiceTestCase {
 
   public void testInitServices() throws Exception{
     assertNotNull(calendarService_) ;
-    assertNotNull(calendarService_.getCalendarHandler());
+    assertNotNull(xCalService.getCalendarHandler());
 
-    Storage src = calendarService_.lookForDS(MockStorage.ID);
+    Storage src = xCalService.lookForDS(MockStorage.ID);
     assertEquals(MockStorage.class, src.getClass());
     assertEquals(MockCalendarDAO.class, src.getCalendarDAO().getClass());
     assertEquals(MockEventDAO.class, src.getEventDAO().getClass());

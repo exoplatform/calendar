@@ -30,12 +30,13 @@ import java.util.Set;
 import javax.jcr.PathNotFoundException;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.CompositeID;
+import org.exoplatform.calendar.nservice.CalendarHandler;
+import org.exoplatform.calendar.nservice.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.CompositeID;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
@@ -120,6 +121,8 @@ public class UICalendars extends UIForm  {
   private String removed_cal_id = null;
   private String calType = CalendarUtils.SHARED_TYPE;
   private Map<String, List<Calendar>> calendars = new HashMap<String, List<Calendar>>();
+  
+  private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);;
 
   @Override
   public void processRender(WebuiRequestContext arg0) throws Exception {
@@ -131,9 +134,8 @@ public class UICalendars extends UIForm  {
     colorMap_.clear();
     calendars.clear();
 
-    CalendarService service = CalendarUtils.getCalendarService();
     Identity identity = ConversationState.getCurrent().getIdentity();
-    List<Calendar> tmp = service.getCalendarHandler().findAllCalendarOfUser(identity, null);
+    List<Calendar> tmp = xCalService.getCalendarHandler().findAllCalendarOfUser(identity, null);
     for (Calendar cal : tmp) {
       String typeName = cal.getCalendarType().getName();
       if (cal.isShared(identity.getUserId())) {
@@ -532,7 +534,7 @@ public class UICalendars extends UIForm  {
       try {
         String calendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
         String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
-        Calendar calendar = calService.getCalendarHandler().getCalendarById(calendarId);
+        Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
         if(calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet) ;
@@ -591,7 +593,7 @@ public class UICalendars extends UIForm  {
         String clientTime = CalendarUtils.getCurrentTime(uiComponent) ;
         String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
         String categoryId = event.getRequestContext().getRequestParameter("categoryId") ;
-        Calendar calendar = calService.getCalendarHandler().getCalendarById(calendarId);
+        Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
         if(calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet) ;
@@ -643,8 +645,7 @@ public class UICalendars extends UIForm  {
       UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
       UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
       popupAction.deActivate() ;
-      CalendarService calService = CalendarUtils.getCalendarService();
-      Calendar calendar = calService.getCalendarHandler().getCalendarById(calendarId);
+      Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
       if (calendar == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
@@ -694,7 +695,7 @@ public class UICalendars extends UIForm  {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         }        
       } else {
-        CalendarHandler handler = calService.getCalendarHandler();
+        CalendarHandler handler = uiComponent.xCalService.getCalendarHandler();
         Calendar cal = handler.getCalendarById(calendarId);
         if (cal == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
@@ -773,8 +774,7 @@ public class UICalendars extends UIForm  {
       String currentUser = CalendarUtils.getCurrentUser() ;
       String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
-      CalendarService calService = CalendarUtils.getCalendarService() ;
-      Calendar calendar =  calService.getCalendarHandler().getCalendarById(selectedCalendarId);
+      Calendar calendar =  uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId);
       if (calendar == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
@@ -840,7 +840,7 @@ public class UICalendars extends UIForm  {
       String username = CalendarUtils.getCurrentUser() ;
 
       try{
-        Calendar calendar = calService.getCalendarHandler().getCalendarById(calendarId);
+        Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
         if (calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         } else if (!calendar.canEdit(username)) {
@@ -850,7 +850,7 @@ public class UICalendars extends UIForm  {
           if (calendar.isShared(username)) {
             calService.saveSharedCalendar(username, calendar);
           } else {
-            calService.getCalendarHandler().updateCalendar(calendar);
+            uiComponent.xCalService.getCalendarHandler().updateCalendar(calendar);
           }
           
           UICalendarPortlet uiPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
@@ -927,7 +927,7 @@ public class UICalendars extends UIForm  {
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String remoteCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String username = CalendarUtils.getCurrentUser();
-      Calendar calendar = calService.getCalendarHandler().getCalendarById(remoteCalendarId);
+      Calendar calendar = uiCalendars.xCalService.getCalendarHandler().getCalendarById(remoteCalendarId);
       try {
         calService.refreshRemoteCalendar(username, remoteCalendarId);
         event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;
@@ -957,9 +957,8 @@ public class UICalendars extends UIForm  {
       uiPopupContainer.setId("UIPermissionSelectPopup") ;
 
       UISharedForm sharedForm = uiPopupContainer.addChild(UISharedForm.class, null, null);
-      CalendarService calService = CalendarUtils.getCalendarService() ;
       String username = CalendarUtils.getCurrentUser() ;
-      Calendar cal = calService.getCalendarHandler().getCalendarById(selectedCalendarId);
+      Calendar cal = uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId);
 
       if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName))
       {

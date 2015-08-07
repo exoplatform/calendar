@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.exoplatform.calendar.service.storage.jcr;
+package org.exoplatform.calendar.storage.jcr;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +33,8 @@ import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
-import org.exoplatform.calendar.service.storage.EventDAO;
-import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.calendar.storage.EventDAO;
+import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;

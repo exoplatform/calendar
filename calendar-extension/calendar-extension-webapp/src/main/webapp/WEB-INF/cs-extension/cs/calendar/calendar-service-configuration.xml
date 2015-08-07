@@ -11,7 +11,12 @@
         <property name="eventNumber" value="100"/>         
       </properties-param>
     </init-params>
-  </component>     
+  </component>  
+  
+  <component>
+    <key>org.exoplatform.calendar.nservice.ExtendedCalendarService</key>
+    <type>org.exoplatform.calendar.nservice.impl.ExtendedCalendarServiceImpl</type>
+  </component>    
   
   <external-component-plugins>
     <target-component>org.exoplatform.services.organization.OrganizationService</target-component>

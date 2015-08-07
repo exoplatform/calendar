@@ -13,15 +13,37 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
- **/  
-package org.exoplatform.calendar.service.storage;
+ **/
+
+package org.exoplatform.calendar.nservice;
+
+import java.util.List;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.services.security.Identity;
 
-import java.util.List;
+public interface CalendarHandler {
 
-public interface CalendarDAO extends GenericDAO<Calendar, String> {
+  Calendar getCalendarById(String calId);
 
-  List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludeIds);
+  //TODO: we really need this method? Now, this method allow to load all shared/personal/group calendars of user
+  // TODO Don't use Identity object in this API. It may be better to have one Query argument only
+  List<Calendar> findAllCalendarOfUser(Identity identity, String[] excludeIds);
+  
+  /**
+   * @param calendar
+   */
+  Calendar saveCalendar(Calendar calendar);
+  
+  /**
+   * @param calendar
+   */
+  Calendar updateCalendar(Calendar calendar);
+  
+  /**
+   * @param calendarId
+   */
+  Calendar removeCalendar(String calendarId);
+
+  Calendar newCalendarInstance(String dsId);
 }

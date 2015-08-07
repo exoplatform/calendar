@@ -15,14 +15,12 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.calendar.service.storage.jcr;
+package org.exoplatform.calendar.storage.jcr;
 
-import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarType;
-import org.exoplatform.calendar.service.storage.CalendarDAO;
-import org.exoplatform.calendar.service.storage.EventDAO;
-import org.exoplatform.calendar.service.storage.Storage;
+import org.exoplatform.calendar.storage.CalendarDAO;
+import org.exoplatform.calendar.storage.EventDAO;
+import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.container.component.BaseComponentPlugin;
 
 public class JCRStorage extends BaseComponentPlugin implements Storage {

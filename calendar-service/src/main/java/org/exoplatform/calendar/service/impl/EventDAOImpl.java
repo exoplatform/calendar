@@ -39,7 +39,6 @@ import org.exoplatform.calendar.service.EventDAO;
 import org.exoplatform.calendar.service.EventPageListQuery;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
-import org.exoplatform.calendar.service.LegacyCalendarService;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;
@@ -52,11 +51,11 @@ public class EventDAOImpl implements EventDAO {
 
   private static Log      log = ExoLogger.getLogger(EventDAOImpl.class);
 
-  private LegacyCalendarService calService;
+  private CalendarServiceImpl calService;
 
   protected JCRDataStorage  storage;
 
-  public EventDAOImpl(LegacyCalendarService calService, JCRDataStorage storage_) {
+  public EventDAOImpl(CalendarServiceImpl calService, JCRDataStorage storage_) {
     this.calService = calService;
     this.storage = storage_;    
   }

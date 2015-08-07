@@ -18,8 +18,6 @@ package org.exoplatform.calendar.model;
 
 import java.io.Serializable;
 
-import org.exoplatform.calendar.service.CompositeID;
-
 @SuppressWarnings("serial")
 public abstract class AbstractModel implements Serializable {
 

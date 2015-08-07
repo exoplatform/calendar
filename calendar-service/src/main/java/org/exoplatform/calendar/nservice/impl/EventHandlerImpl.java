@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-package org.exoplatform.calendar.service.impl;
+package org.exoplatform.calendar.nservice.impl;
 
+import org.exoplatform.calendar.model.CompositeID;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
-import org.exoplatform.calendar.service.CompositeID;
-import org.exoplatform.calendar.service.EventHandler;
-import org.exoplatform.calendar.service.storage.EventDAO;
+import org.exoplatform.calendar.nservice.EventHandler;
+import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -29,12 +29,10 @@ public class EventHandlerImpl implements EventHandler {
 
   private static Log log = ExoLogger.getLogger(EventHandlerImpl.class);
 
-  protected CalendarServiceImpl calService;
-  protected JCRDataStorage  storage;
+  protected ExtendedCalendarServiceImpl calService;
 
-  public EventHandlerImpl(CalendarServiceImpl service) {
+  public EventHandlerImpl(ExtendedCalendarServiceImpl service) {
     this.calService = service;
-    this.storage = service.getDataStorage();
   }
 
   @Override
