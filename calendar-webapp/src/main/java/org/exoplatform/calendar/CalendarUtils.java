@@ -911,8 +911,18 @@ public class CalendarUtils {
   }
 
   public static org.exoplatform.calendar.service.Calendar getCalendar(String calType, String calendarId) throws Exception {
-    CalendarService calService = CalendarUtils.getCalendarService();
-    return calService.getCalendarById(calendarId);
+    CalendarService calService = CalendarUtils.getCalendarService() ;
+    String currentUser = CalendarUtils.getCurrentUser() ;
+    org.exoplatform.calendar.service.Calendar calendar = null;
+    if(CalendarUtils.PRIVATE_TYPE.equals(calType)) {
+      calendar = calService.getUserCalendar(currentUser, calendarId) ;
+    } else if(CalendarUtils.SHARED_TYPE.equals(calType)) {
+      GroupCalendarData gCalendarData = calService.getSharedCalendars(currentUser, true) ;
+      if(gCalendarData != null) calendar = gCalendarData.getCalendarById(calendarId) ;
+    } else if(CalendarUtils.PUBLIC_TYPE.equals(calType)) {
+      calendar = calService.getGroupCalendar(calendarId) ;
+    }
+    return calendar;
   }
 
   public static List<SelectItemOption<String>> getCategory() throws Exception {

@@ -63,7 +63,9 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   public Calendar getById(String id) {
     try {
       Calendar cal = dataStorage.getCalendarById(id);
-      cal.setDS(JCRStorage.JCR_STORAGE);
+      if (cal != null) {
+        cal.setDS(JCRStorage.JCR_STORAGE);
+      }
       return cal;
     } catch (Exception ex) {
       LOG.error("Exception while loading calendar by ID", ex);
