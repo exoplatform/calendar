@@ -28,11 +28,11 @@ public class JCREventQuery extends EventQuery {
 
   private int       calendarType;
 
-  public int getCalendarType() {
+  public int getCalType() {
     return calendarType;
   }
 
-  public void setCalendarType(int calendarType) {
-    this.calendarType = calendarType;
+  public void setCalType(int calType) {
+    this.calendarType = calType;
   }
 }

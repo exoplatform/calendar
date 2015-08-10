@@ -135,7 +135,7 @@ public class JCREventDAOImpl implements EventDAO {
 
     int type = Calendar.Type.UNDEFINED.type();
     if (query instanceof JCREventQuery) {
-      type = ((JCREventQuery)query).getCalendarType();
+      type = ((JCREventQuery)query).getCalType();
     }
     try {
       if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.PERSONAL.type() == type) {

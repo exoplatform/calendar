@@ -120,7 +120,7 @@ public class UICalendars extends UIForm  {
   private LinkedHashMap<String, String> colorMap_ = new LinkedHashMap<String, String>() ;
   private String removed_cal_id = null;
   private String calType = CalendarUtils.SHARED_TYPE;
-  private Map<String, List<Calendar>> calendars = new HashMap<String, List<Calendar>>();
+  private Map<Integer, List<Calendar>> calendars = new HashMap<Integer, List<Calendar>>();
   
   private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
 
@@ -137,14 +137,14 @@ public class UICalendars extends UIForm  {
     Identity identity = ConversationState.getCurrent().getIdentity();
     List<Calendar> tmp = xCalService.getCalendarHandler().findAllCalendarOfUser(identity);
     for (Calendar cal : tmp) {
-      String typeName = cal.getCalendarType().getName();
+      int type = cal.getCalType();
       if (cal.isShared(identity.getUserId())) {
-        typeName = Calendar.Type.SHARED.getName();
+        type = Calendar.Type.SHARED.type();
       }
-      List<Calendar> cals = calendars.get(typeName); 
+      List<Calendar> cals = calendars.get(type); 
       if (cals == null) {
         cals = new LinkedList<Calendar>();
-        calendars.put(typeName, cals);
+        calendars.put(type, cals);
       }
       cals.add(cal);
       colorMap_.put(cal.getId(), cal.getCalendarColor());
@@ -298,12 +298,12 @@ public class UICalendars extends UIForm  {
    * @throws Exception
    */
   public List<Calendar> getAllPrivateCalendars() {
-    List<Calendar> cals = calendars.get(Calendar.Type.PERSONAL.getName());    
+    List<Calendar> cals = calendars.get(Calendar.Type.PERSONAL.type());    
     return cals != null ? cals : Collections.<Calendar>emptyList();    
   }
   
   public List<Calendar> getAllSharedCalendars() {
-    List<Calendar> cals = calendars.get(Calendar.Type.SHARED.getName());
+    List<Calendar> cals = calendars.get(Calendar.Type.SHARED.type());
     return cals != null ? cals : Collections.<Calendar>emptyList();
   }
   
@@ -311,10 +311,10 @@ public class UICalendars extends UIForm  {
     List<Calendar> cals = new LinkedList<Calendar>();
     Set<String> typeNames = new HashSet<String>();
     for (Calendar.Type t : Calendar.Type.values()) {
-      typeNames.add(t.getName());
+      typeNames.add(t.toString());
     }
     
-    for (String type : calendars.keySet()) {
+    for (int type : calendars.keySet()) {
       if (!typeNames.contains(type)) {
         cals.addAll(calendars.get(type));        
       }
@@ -420,7 +420,7 @@ public class UICalendars extends UIForm  {
    * @throws Exception
    */
   public List<Calendar> getAllPublicCalendars() {
-    List<Calendar> cals = calendars.get(Calendar.Type.GROUP.getName()); 
+    List<Calendar> cals = calendars.get(Calendar.Type.GROUP.type()); 
     return cals != null ? cals : Collections.<Calendar>emptyList();
   }
 
