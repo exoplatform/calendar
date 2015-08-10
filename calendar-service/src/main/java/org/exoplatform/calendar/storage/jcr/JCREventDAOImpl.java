@@ -134,9 +134,18 @@ public class JCREventDAOImpl implements EventDAO {
     final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
     org.exoplatform.calendar.service.EventQuery eventQuery = buildEvenQuery(query);
 
+    CalendarType type = Calendar.Type.UNDEFINED;
+    if (query instanceof JCREventQuery) {
+      type = ((JCREventQuery)query).getCalendarType();
+    }
     try {
-      events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));        
-      events.addAll(dataStorage.getPublicEvents(eventQuery));
+      if (Calendar.Type.UNDEFINED.equals(type) || Calendar.Type.PERSONAL.equals(type)) {
+        events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));        
+      }
+      
+      if (Calendar.Type.UNDEFINED.equals(type) || Calendar.Type.GROUP.equals(type)) {
+        events.addAll(dataStorage.getPublicEvents(eventQuery));
+      }
     } catch (Exception ex) {
       LOG.error("Can't query for event", ex);
     }
