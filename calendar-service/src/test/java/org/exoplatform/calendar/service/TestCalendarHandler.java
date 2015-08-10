@@ -22,7 +22,6 @@ package org.exoplatform.calendar.service;
 import static org.exoplatform.calendar.service.AssertUtil.assertContainCalendarName;
 import static org.exoplatform.calendar.service.AssertUtil.assertNotContainCalendarName;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.exoplatform.calendar.model.CompositeID;
@@ -70,7 +69,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   public void testCreatePersonalCalendar() {
     Calendar cal = new Calendar();
     cal.setName("testCreatePersonalCalendar");
-    cal.setCalendarType(Calendar.Type.PERSONAL);
+    cal.setCalType(Calendar.Type.PERSONAL.type());
     cal.setCalendarOwner(username);
 
     cal = calHandler.saveCalendar(cal);
@@ -83,7 +82,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   public void testCreateGroupCalendar() {
     Calendar cal = new Calendar();
     cal.setName("testCreateGroupCalendar");
-    cal.setCalendarType(Calendar.Type.GROUP);
+    cal.setCalType(Calendar.Type.GROUP.type());
     cal.setGroups(userGroups);
 
     cal = calHandler.saveCalendar(cal);
@@ -97,11 +96,6 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     Identity identity = ConversationState.getCurrent().getIdentity();
     Calendar cal1 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_1", userGroups);
     Calendar cal2 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_2", userGroups);
-
-    CalendarQuery query = new CalendarQuery();
-    query.setCalType(Calendar.Type.GROUP);
-    query.setGroups(Arrays.asList("/platform/users"));
-    query.setShowAll(true);
 
     List<Calendar> calendars;
     int size;

@@ -603,9 +603,9 @@ public class JCRDataStorage implements DataStorage {
       }
     }
     if (calNode.getPath().startsWith(getGroupCalendarHomePath())) {
-      calendar.setCalendarType(Calendar.Type.GROUP);
+      calendar.setCalType(Calendar.Type.GROUP.type());
     } else {
-      calendar.setCalendarType(Calendar.Type.PERSONAL);
+      calendar.setCalType(Calendar.Type.PERSONAL.type());
     }
     return calendar;
   }

@@ -17,8 +17,6 @@
   
 package org.exoplatform.calendar.storage;
 
-import org.exoplatform.calendar.service.CalendarType;
-
 public interface Storage {
 
   public String getId();

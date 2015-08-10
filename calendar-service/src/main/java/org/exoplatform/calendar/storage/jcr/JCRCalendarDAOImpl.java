@@ -19,7 +19,6 @@ package org.exoplatform.calendar.storage.jcr;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
@@ -83,15 +82,15 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
 
   private Calendar persist(Calendar cal, boolean isNew) {
-    CalendarType type = cal.getCalendarType();
+    int type = cal.getCalType();
     
-    if (type == Calendar.Type.PERSONAL) {
+    if (type == Calendar.Type.PERSONAL.type()) {
       try {
         dataStorage.saveUserCalendar(cal.getCalendarOwner(), cal, isNew);
       } catch (Exception ex) {
         LOG.error(ex);
       }
-    } else if (type == Calendar.Type.GROUP) {
+    } else if (type == Calendar.Type.GROUP.type()) {
       try {
         dataStorage.savePublicCalendar(cal, isNew, null);
       } catch (Exception ex) {
@@ -111,13 +110,13 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
       return null;
     }
 
-    if (calendar.getCalendarType() == Calendar.Type.PERSONAL) {
+    if (calendar.getCalType() == Calendar.Type.PERSONAL.type()) {
       try {
         dataStorage.removeUserCalendar(calendar.getCalendarOwner(), id);
       } catch (Exception ex) {
         LOG.error(ex);
       }
-    } else if (calendar.getCalendarType() == Calendar.Type.GROUP) {
+    } else if (calendar.getCalType() == Calendar.Type.GROUP.type()) {
       try {
         dataStorage.removeGroupCalendar(id);
       } catch (Exception ex) {

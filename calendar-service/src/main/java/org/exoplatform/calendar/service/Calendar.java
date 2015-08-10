@@ -35,7 +35,7 @@ public class Calendar extends AbstractModel {
 
   private static final long serialVersionUID = 2638692203625602436L;
 
-  public enum Type implements CalendarType {
+  public enum Type {
 
     PERSONAL(0),
 
@@ -63,11 +63,6 @@ public class Calendar extends AbstractModel {
       }
 
       return UNDEFINED;
-    }
-
-    @Override
-    public String getName() {
-      return name();
     }
   }
 
@@ -107,10 +102,7 @@ public class Calendar extends AbstractModel {
 
   private boolean              _isPublic      = false;
 
-  @Deprecated
   private int                  _calType;
-  
-  private CalendarType calendarType;
   
   private boolean       remote = false;
   
@@ -123,16 +115,9 @@ public class Calendar extends AbstractModel {
   }
 
   public Calendar(String compositeId) {
-    this(compositeId, null);
-  }
-
-  public Calendar(String id, CalendarType type) {
-    super(id);
+    super(compositeId);
     timeZone = TimeZone.getDefault().getID();
     locale = Locale.getDefault().getISO3Country();
-    if (type != null) {
-      setCalendarType(type);
-    }
   }
 
   public String getName() {
@@ -275,12 +260,10 @@ public class Calendar extends AbstractModel {
     return getId().hashCode();
   }
 
-  @Deprecated
   public int getCalType() {
     return _calType;
   }
 
-  @Deprecated
   public void setCalType(int calType) {    
     this._calType = calType;
   }
@@ -301,21 +284,13 @@ public class Calendar extends AbstractModel {
     this.hasChildren = children;
   }
 
-  public void setCalendarType(CalendarType type) {
-    this.calendarType = type;
-  }
-  
-  public CalendarType getCalendarType() {
-    return calendarType;
-  }
-
   public boolean canEdit(String username) {
     return Utils.isCalendarEditable(username, this);
   }
   
   public boolean isShared(String username) {
     OrganizationService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
-    return Calendar.Type.PERSONAL.equals(this.getCalendarType()) && username != null 
+    return Calendar.Type.PERSONAL.type() == this.getCalType() && username != null 
         && !username.equals(this.getCalendarOwner()) && Utils.hasPermission(service, this.getViewPermission(), username);
   }
 }

@@ -29,7 +29,6 @@ import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
@@ -80,11 +79,11 @@ public class JCREventDAOImpl implements EventDAO {
       if (cal == null) {
         return null;
       }
-      CalendarType calType = cal.getCalendarType();
+      int calType = cal.getCalType();
       CalendarEvent calEvent = CalendarEvent.build(event);
-      if (calType == Calendar.Type.PERSONAL) {
+      if (calType == Calendar.Type.PERSONAL.type()) {
         dataStorage.saveUserEvent(cal.getCalendarOwner(), cal.getId(), calEvent, isNew);
-      } else if (calType == Calendar.Type.GROUP) {
+      } else if (calType == Calendar.Type.GROUP.type()) {
         dataStorage.savePublicEvent(cal.getId(), calEvent, isNew);
       } else {
         return null;
@@ -105,11 +104,11 @@ public class JCREventDAOImpl implements EventDAO {
         return null;
       }
       Calendar cal = context.getCalendarDAO().getById(event.getCalendarId());
-      CalendarType type = cal.getCalendarType();
+      int type = cal.getCalType();
 
-      if (type == Calendar.Type.PERSONAL) {
+      if (type == Calendar.Type.PERSONAL.type()) {
         dataStorage.removeUserEvent(cal.getCalendarOwner(), cal.getId(), id);
-      } else if (type == Calendar.Type.GROUP) {
+      } else if (type == Calendar.Type.GROUP.type()) {
         dataStorage.removePublicEvent(cal.getId(), id);
       } else {
         return null;
@@ -134,16 +133,16 @@ public class JCREventDAOImpl implements EventDAO {
     final List<CalendarEvent> events = new LinkedList<CalendarEvent>();
     org.exoplatform.calendar.service.EventQuery eventQuery = buildEvenQuery(query);
 
-    CalendarType type = Calendar.Type.UNDEFINED;
+    int type = Calendar.Type.UNDEFINED.type();
     if (query instanceof JCREventQuery) {
       type = ((JCREventQuery)query).getCalendarType();
     }
     try {
-      if (Calendar.Type.UNDEFINED.equals(type) || Calendar.Type.PERSONAL.equals(type)) {
+      if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.PERSONAL.type() == type) {
         events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));        
       }
       
-      if (Calendar.Type.UNDEFINED.equals(type) || Calendar.Type.GROUP.equals(type)) {
+      if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.GROUP.type() == type) {
         events.addAll(dataStorage.getPublicEvents(eventQuery));
       }
     } catch (Exception ex) {

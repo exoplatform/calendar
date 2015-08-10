@@ -70,7 +70,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
 
   public void testFindEventByDate() throws Exception {
     JCREventQuery condition = new JCREventQuery();
-    condition.setCalendarType(Calendar.Type.PERSONAL);
+    condition.setCalendarType(Calendar.Type.PERSONAL.type());
     condition.setOwner(username);
     condition.setFromDate(userEvent.getFromDateTime().getTime());
     condition.setToDate(userEvent.getToDateTime().getTime() + 60 * 60 * 1000);
@@ -83,14 +83,14 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     events = evtHandler.findEventsByQuery(condition);
     assertEquals(0, events.getSize());
 
-    condition.setCalendarType(Calendar.Type.GROUP);
+    condition.setCalendarType(Calendar.Type.GROUP.type());
     events = evtHandler.findEventsByQuery(condition);
     assertEquals(1, events.getSize());
   }
 
   public void testFindEventByCalendarID() throws Exception {
     JCREventQuery condition = new JCREventQuery();
-    condition.setCalendarType(Calendar.Type.PERSONAL);
+    condition.setCalendarType(Calendar.Type.PERSONAL.type());
     condition.setOwner(username);
     condition.setCalendarIds(new String[] { userCal.getId() });
 
@@ -98,7 +98,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     assertEquals(1, events.getSize());
     assertEquals(userEvent.getId(), events.load(0, 1)[0].getId());
 
-    condition.setCalendarType(Calendar.Type.GROUP);
+    condition.setCalendarType(Calendar.Type.GROUP.type());
     condition.setCalendarIds(new String[] { grpCal.getId() });
     events = evtHandler.findEventsByQuery(condition);
     assertEquals(1, events.getSize());
@@ -111,7 +111,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     calendarService_.saveUserEvent(username, userCal.getId(), repeatEvent, false);
 
     JCREventQuery condition = new JCREventQuery();
-    condition.setCalendarType(Calendar.Type.PERSONAL);
+    condition.setCalendarType(Calendar.Type.PERSONAL.type());
     condition.setOwner(username);
 
     ListAccess<Event> events = evtHandler.findEventsByQuery(condition);
@@ -127,7 +127,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     createUserEvent(cal.getId(), null, "Have a meeting");
     
     JCREventQuery condition = new JCREventQuery();
-    condition.setCalendarType(Calendar.Type.PERSONAL);
+    condition.setCalendarType(Calendar.Type.PERSONAL.type());
     condition.setOwner(username);
 
     ListAccess<Event> events = evtHandler.findEventsByQuery(condition);

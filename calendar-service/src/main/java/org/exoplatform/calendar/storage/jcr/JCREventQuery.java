@@ -19,7 +19,6 @@
 package org.exoplatform.calendar.storage.jcr;
 
 import org.exoplatform.calendar.model.query.EventQuery;
-import org.exoplatform.calendar.service.CalendarType;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -27,13 +26,13 @@ import org.exoplatform.calendar.service.CalendarType;
  */
 public class JCREventQuery extends EventQuery {
 
-  private CalendarType       calendarType;
+  private int       calendarType;
 
-  public CalendarType getCalendarType() {
+  public int getCalendarType() {
     return calendarType;
   }
 
-  public void setCalendarType(CalendarType calendarType) {
+  public void setCalendarType(int calendarType) {
     this.calendarType = calendarType;
   }
 }

@@ -32,7 +32,7 @@ public class TestUtil {
   public static Calendar createPersonalCalendar(CalendarHandler calHandler, String name, String username) {
     Calendar cal = new Calendar();
     cal.setName(name);
-    cal.setCalendarType(Calendar.Type.PERSONAL);
+    cal.setCalType(Calendar.Type.PERSONAL.type());
     cal.setCalendarOwner(username);
 
     cal = calHandler.saveCalendar(cal);
@@ -42,7 +42,7 @@ public class TestUtil {
   public static Calendar createGroupCalendar(CalendarHandler calHandler, String calName, String[] groups) {
     Calendar cal = new Calendar();
     cal.setName(calName);
-    cal.setCalendarType(Calendar.Type.GROUP);
+    cal.setCalType(Calendar.Type.GROUP.type());
     cal.setGroups(groups);
 
     cal = calHandler.saveCalendar(cal);

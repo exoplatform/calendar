@@ -30,9 +30,7 @@ import java.util.Set;
 
 import org.exoplatform.calendar.model.AbstractModel;
 import org.exoplatform.calendar.service.Attachment;
-import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.CalendarType;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.services.jcr.util.IdGenerator;
