@@ -921,7 +921,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @authentication
    * 
-   * @anchor CalendarRestApi.deleteCalendarById
+   * @anchor CalendarRestApi.deleteEventById
    */
   @DELETE
   @RolesAllowed("users")
