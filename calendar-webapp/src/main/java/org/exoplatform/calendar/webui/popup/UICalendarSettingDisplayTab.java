@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.exoplatform.calendar.nservice.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.webui.UICalendarContainer;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarWorkingContainer;

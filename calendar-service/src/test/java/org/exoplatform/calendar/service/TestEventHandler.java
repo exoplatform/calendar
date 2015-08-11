@@ -20,7 +20,6 @@
 package org.exoplatform.calendar.service;
 
 import org.exoplatform.calendar.model.Event;
-import org.exoplatform.calendar.nservice.EventHandler;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
 import org.exoplatform.calendar.storage.jcr.JCREventQuery;
 import org.exoplatform.commons.utils.ListAccess;

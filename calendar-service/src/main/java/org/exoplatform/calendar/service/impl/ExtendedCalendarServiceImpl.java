@@ -15,16 +15,16 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.calendar.nservice.impl;
+package org.exoplatform.calendar.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.exoplatform.calendar.nservice.CalendarHandler;
-import org.exoplatform.calendar.nservice.EventHandler;
-import org.exoplatform.calendar.nservice.ExtendedCalendarService;
+import org.exoplatform.calendar.service.CalendarHandler;
+import org.exoplatform.calendar.service.EventHandler;
+import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.calendar.storage.jcr.JCRStorage;
 import org.exoplatform.container.component.ComponentPlugin;

@@ -15,11 +15,10 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
 
-package org.exoplatform.calendar.nservice;
+package org.exoplatform.calendar.service;
 
 import java.util.List;
 
-import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.services.security.Identity;
 
 public interface CalendarHandler {

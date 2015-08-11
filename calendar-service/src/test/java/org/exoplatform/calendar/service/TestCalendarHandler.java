@@ -25,7 +25,6 @@ import static org.exoplatform.calendar.service.AssertUtil.assertNotContainCalend
 import java.util.List;
 
 import org.exoplatform.calendar.model.CompositeID;
-import org.exoplatform.calendar.nservice.CalendarHandler;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;

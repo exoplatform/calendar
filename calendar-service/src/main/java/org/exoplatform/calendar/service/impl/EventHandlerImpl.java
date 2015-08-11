@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-package org.exoplatform.calendar.nservice.impl;
+package org.exoplatform.calendar.service.impl;
 
 import org.exoplatform.calendar.model.CompositeID;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
-import org.exoplatform.calendar.nservice.EventHandler;
+import org.exoplatform.calendar.service.EventHandler;
 import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;

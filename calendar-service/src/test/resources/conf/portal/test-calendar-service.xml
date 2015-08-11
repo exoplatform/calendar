@@ -78,8 +78,8 @@
   </component>
   
   <component>
-    <key>org.exoplatform.calendar.nservice.ExtendedCalendarService</key>
-    <type>org.exoplatform.calendar.nservice.impl.ExtendedCalendarServiceImpl</type>
+    <key>org.exoplatform.calendar.service.ExtendedCalendarService</key>
+    <type>org.exoplatform.calendar.service.impl.ExtendedCalendarServiceImpl</type>
   </component>
 
   <component>
@@ -119,7 +119,7 @@
   </component>
 
   <external-component-plugins>
-    <target-component>org.exoplatform.calendar.nservice.ExtendedCalendarService</target-component>
+    <target-component>org.exoplatform.calendar.service.ExtendedCalendarService</target-component>
     <component-plugin>
       <name>addJCRStorage</name>
       <set-method>addDataStore</set-method>
@@ -128,7 +128,7 @@
   </external-component-plugins>
 
   <external-component-plugins>
-    <target-component>org.exoplatform.calendar.nservice.ExtendedCalendarService</target-component>
+    <target-component>org.exoplatform.calendar.service.ExtendedCalendarService</target-component>
     <component-plugin>
       <name>calendar.storage.mock</name>
       <set-method>addDataStore</set-method>

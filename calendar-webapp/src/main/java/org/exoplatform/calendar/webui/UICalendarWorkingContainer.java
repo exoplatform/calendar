@@ -17,10 +17,10 @@
 package org.exoplatform.calendar.webui;
 
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.nservice.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;

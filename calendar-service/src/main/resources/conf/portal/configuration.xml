@@ -22,7 +22,7 @@
         xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
         xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
   <external-component-plugins>
-    <target-component>org.exoplatform.calendar.nservice.ExtendedCalendarService</target-component>
+    <target-component>org.exoplatform.calendar.service.ExtendedCalendarService</target-component>
     <component-plugin>
       <name>addJCRStorage</name>
       <set-method>addDataStore</set-method>

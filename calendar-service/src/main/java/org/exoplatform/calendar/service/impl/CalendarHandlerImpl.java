@@ -15,14 +15,14 @@
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
   
-package org.exoplatform.calendar.nservice.impl;
+package org.exoplatform.calendar.service.impl;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.exoplatform.calendar.model.CompositeID;
-import org.exoplatform.calendar.nservice.CalendarHandler;
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.storage.CalendarDAO;
 import org.exoplatform.calendar.storage.NoSuchEntityException;
 import org.exoplatform.calendar.storage.Storage;

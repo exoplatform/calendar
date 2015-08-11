@@ -24,11 +24,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.exoplatform.calendar.nservice.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
