@@ -391,8 +391,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return Utils.hasPermission(calendar.getEditPermission());
   }
 
-  public LinkedHashMap<String, String> getColors() {
-    LinkedHashMap<String, String> colors = new LinkedHashMap<String, String>();
+  public Map<String, String> getColors() {
+    Map<String, String> colors = new LinkedHashMap<String, String>();
     try {
       if (isInSpace()) {
         for (GroupCalendarData group : getPublicCalendars(CalendarUtils.getCurrentUser())) {

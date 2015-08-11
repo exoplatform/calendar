@@ -17,7 +17,13 @@
 package org.exoplatform.calendar.webui;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.nservice.ExtendedCalendarService;
+import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
+import org.exoplatform.services.security.ConversationState;
+import org.exoplatform.services.security.Identity;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
@@ -26,7 +32,11 @@ import org.exoplatform.webui.core.model.SelectItem;
 import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by The eXo Platform SARL
@@ -39,15 +49,61 @@ import java.util.List;
                  template =  "app:/templates/calendar/webui/UICalendarWorkingContainer.gtmpl"
 )
 public class UICalendarWorkingContainer extends UIContainer  {
+  
+  private Map<String, List<Calendar>> calendars = new HashMap<String, List<Calendar>>();
+  
+  /**
+   * contains key as <type_calendar>:<calendar_id> and value as color of calendar
+   * example: key 2:calendar1401dda8c0a801303011177469ff542e, value: color code
+   */
 
-
+  private LinkedHashMap<String, String> colorMap = new LinkedHashMap<String, String>();
+  
+  private CalendarService calService = getApplicationComponent(CalendarService.class);
+  
+  private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
+  
   public UICalendarWorkingContainer() throws Exception {
     addChild(UICalendarContainer.class, null, null).setRendered(true) ;
     addChild(UICalendarViewContainer.class, null, null).setRendered(true) ;
-  }  
+  }
+  
+  public void init() throws Exception {
+    colorMap.clear();
+    calendars.clear();
+
+    Identity identity = ConversationState.getCurrent().getIdentity();
+    List<Calendar> tmp = xCalService.getCalendarHandler().findAllCalendarOfUser(identity);
+    for (Calendar cal : tmp) {
+      int t = calService.getTypeOfCalendar(identity.getUserId(), cal.getId());
+      String typeName;      
+      Calendar.Type type = Calendar.Type.getType(t);
+      if (Calendar.Type.UNDEFINED.equals(type)) {
+        typeName = String.valueOf(t);
+      } else {
+        typeName = type.name();
+      }
+      if (cal.isShared(identity.getUserId())) {
+        typeName = Calendar.Type.SHARED.name();
+      }
+      List<Calendar> cals = calendars.get(typeName); 
+      if (cals == null) {
+        cals = new LinkedList<Calendar>();
+        calendars.put(typeName, cals);
+      }
+      cals.add(cal);
+      colorMap.put(cal.getId(), cal.getCalendarColor());
+    }
+
+    CalendarSetting setting = CalendarUtils.getCalendarService().getCalendarSetting(CalendarUtils.getCurrentUser()) ;
+    for (String key : setting.getSharedCalendarsColors()) {
+      colorMap.put(key.split(CalendarUtils.COLON)[0], key.split(CalendarUtils.COLON)[1]);
+    }
+  }
 
   @Override
   public void processRender(WebuiRequestContext context) throws Exception {
+    init();
     active() ;
     super.processRender(context);
   }
@@ -77,5 +133,13 @@ public class UICalendarWorkingContainer extends UIContainer  {
     quickAddTask.getUIFormSelectBox(UIQuickAddEvent.FIELD_CATEGORY).setOptions(CalendarUtils.getCategory()) ;
     uiWindowT.setUIComponent(quickAddTask) ;
     uiWindowT.setWindowSize(540, 0);
+  }
+
+  public Map<String, List<Calendar>> getCalendarMap() {
+    return calendars;
+  }
+  
+  public Map<String, String> getColorMap() {
+    return colorMap;
   }
 }

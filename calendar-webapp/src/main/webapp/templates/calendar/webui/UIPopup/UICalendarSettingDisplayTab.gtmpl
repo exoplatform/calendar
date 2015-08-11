@@ -6,20 +6,21 @@
   import org.exoplatform.calendar.service.GroupCalendarData;
   import org.exoplatform.calendar.webui.UICalendars;
 
-  def rcontext = _ctx.getRequestContext() ;
+  def rcontext = _ctx.getRequestContext();
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/UICalendarSettingForm","uiCalendarSettingForm");
   requirejs.require("SHARED/jquery","gj");
   requirejs.addScripts("gj('div.calendarCheckboxBlock').click(function() { uiCalendarSettingForm.clickOnCalendarCheckbox(this); });");
 
-  uiForm = uicomponent.getParentFrom() ;
+  uiForm = uicomponent.getParentFrom();
 
   private boolean hasNoCalendar()
   {
 	  int privateCalendars = uicomponent.getAllPrivateCalendars().size();
-	  int sharedCalendars  = uicomponent.getSharedCalendars().getCalendars().size();
+	  int sharedCalendars  = uicomponent.getSharedCalendars().size();
 	  int publicCalendars  = uicomponent.getAllPublicCalendars().size();
-	  if ( (privateCalendars == 0) && (sharedCalendars == 0) && (publicCalendars == 0) )
+	  int otherCalendars   = uicomponent.getAllOtherCalendars().size();
+	  if ( (privateCalendars == 0) && (sharedCalendars == 0) && (publicCalendars == 0) && (otherCalendars == 0))
 		  return true;
 	  return false;
   }
@@ -94,8 +95,7 @@
 	private void renderSharedCalendarGroup()
 	{
 		def uiForm = uicomponent.getParentFrom() ;
-		GroupCalendarData sharedCalendars = uicomponent.getSharedCalendars() ;
-		List calendarList = sharedCalendars.getCalendars() ;
+		List calendarList = uicomponent.getSharedCalendars();
 		def sharedCalendarTitle = _ctx.appRes("UICalendarSettingForm.label.sharedCalendar");
 		if (calendarList.size() == 0) return;
     %>
@@ -184,7 +184,46 @@
 		<%
 	}
 
-%>
+	private void renderOtherCalendarGroup() {
+		  def uiForm = uicomponent.getParentFrom();
+		  List calendars = uicomponent.getAllOtherCalendars();
+		  if (calendars.size() == 0) return;
+		  def otherCalendarTitle = _ctx.appRes("UICalendarSettingForm.label.otherCalendar");
+		  %>
+		  <div class="myCalendar">
+		    <h6 class="calendarTitle">$otherCalendarTitle</h6>
+		      <div class="myCalendarContainer">
+		        <ul class="uiVTabContent" >
+		        <%
+		          for (calendar in calendars)
+		          {
+			          if (uicomponent.getChildById(calendar.getId()) == null) continue;
+			          def calendarId   = calendar.id ;
+		          	def calendarName = calendar.name;
+		          	def color        = calendar.calendarColor ;
+	          		def css          = "iconUnCheckBox checkbox" ;
+	          		UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
+	
+		          	if (chk.isChecked()) css = "iconCheckBox checkbox";
+		      	%>
+		         	<li class="calendarItem  calendarItemPrivate " calColor="$color" canEdit="true" id="$calendarId" calType="0">
+		          	<div class="calendarCheckboxBlock clearfix" calId="$calendarId">
+		            	<a href="javascript:void(0);" class="$color">
+		              	<span class="colorOpacity">
+		                	<span class="$css"></span>
+		                </span>
+		            	</a>
+	              	<a class="calendarName" href="javascript:void(0);" rel="tooltip" data-placement="bottom" title="$calendar.name" >$calendarName</a>
+		              <span style="display:none"><% uiForm.renderField(calendarId) %></span>
+		            </div>
+			        </li>
+		        <% } %>
+	          </ul>
+			    </div>
+	      </div>
+			<%
+		}
+	%>
 <div id="$uicomponent.id" class="uiCalendars defaultCalendarTab">
   <div class="contentContainer">
 	  <% if (hasNoCalendar()) renderNoCalendarNote(); else renderNotice(); %>
@@ -194,6 +233,8 @@
 	  <% renderSharedCalendarGroup(); %>
 
 	  <% renderPublicCalendarGroup(); %>
+	  
+	  <% renderOtherCalendarGroup(); %>
 
 	</div>
 </div>

@@ -17,9 +17,12 @@
 package org.exoplatform.calendar.service;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -178,6 +181,20 @@ public class CalendarSetting implements Serializable {
 
   public String[] getFilterPublicCalendars() {
     return filterPublicCalendars;
+  }
+  
+  public List<String> getFilterCalendars() {
+    List<String> cals = new LinkedList<String>();
+    if (getFilterPrivateCalendars() != null) {
+      cals.addAll(Arrays.asList(getFilterPrivateCalendars()));
+    }
+    if (getFilterPublicCalendars() != null) {
+      cals.addAll(Arrays.asList(getFilterPublicCalendars()));
+    }
+    if (getFilterSharedCalendars() != null) {
+      cals.addAll(Arrays.asList(getFilterSharedCalendars()));
+    }
+    return cals;
   }
 
   public void setShowWorkingTime(boolean isShowWorkingTime) {

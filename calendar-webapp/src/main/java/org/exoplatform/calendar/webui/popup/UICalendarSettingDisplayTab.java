@@ -16,22 +16,20 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.exoplatform.calendar.CalendarUtils;
+import java.util.Set;
+
+import org.exoplatform.calendar.nservice.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.webui.UICalendarContainer;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarWorkingContainer;
 import org.exoplatform.calendar.webui.UICalendars;
-import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormInputWithActions;
@@ -49,25 +47,30 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
 ) 
 public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
   private Map<String, List<ActionData>> actionField_  = new HashMap<String, List<ActionData>>() ;
-
-  /**
-   * contains key as <type_calendar>:<calendar_id> and value as color of calendar
-   * example: key 2:calendar1401dda8c0a801303011177469ff542e, value: color code
-   */
-  private LinkedHashMap<String, String> colorMap_ = new LinkedHashMap<String, String>() ;
+  
+  private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
 
   public UICalendarSettingDisplayTab(String compId) throws Exception {
     super(compId);
     setComponentConfig(getClass(), null) ;
   }
+  
   protected UIForm getParentFrom() {
     return (UIForm)getParent() ;
   }
-
-  public LinkedHashMap<String, String> getColorMap() {
-    return colorMap_;
+  
+  public Map<String, List<Calendar>> getCalendars() {    
+    return getWorkingContainer().getCalendarMap();
   }
-
+  
+  public Map<String, String> getColorMap() {
+    return getWorkingContainer().getColorMap();
+  }
+  
+  private UICalendarWorkingContainer getWorkingContainer() {
+    UICalendarPortlet portlet = getAncestorOfType(UICalendarPortlet.class);
+    return portlet.findFirstComponentOfType(UICalendarWorkingContainer.class);
+  }
 
   /**
    * get all private calendars for current user
@@ -79,24 +82,10 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
    */
   public List<Calendar> getAllPrivateCalendars() throws Exception
   {
-    CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    String username = CalendarUtils.getCurrentUser() ;
-    boolean showAllCalendar = true;
-    List<Calendar> calendars = calendarService.getUserCalendars(username, showAllCalendar) ;
-    if (calendars.size() == 0) return new ArrayList<Calendar>(0);
-
-    if(calendars != null) {
-      for (Calendar calendar : calendars) {
-        colorMap_.put(Calendar.TYPE_PRIVATE + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
-        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
-        if (checkbox == null) {
-          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-          checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
-          addUIFormInput(checkbox);
-        }
-      }
-    }
-    return calendars;
+    List<Calendar> cals = getCalendars().get(Calendar.Type.PERSONAL.name());
+    cals = cals != null ? cals : Collections.<Calendar>emptyList();
+    initCheckbox(cals);
+    return cals;
   }
 
   /**
@@ -122,38 +111,12 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
    */
   public List<Calendar> getAllPublicCalendars() throws Exception
   {
-    String username = CalendarUtils.getCurrentUser() ;
-    String[] groups = CalendarUtils.getUserGroups(username) ;
+    List<Calendar> groupCalendars = getCalendars().get(Calendar.Type.GROUP.name());
+    groupCalendars = groupCalendars != null ? groupCalendars : Collections.<Calendar>emptyList();
+    initCheckbox(groupCalendars);    
 
-    CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    /* return all calendars for a list of group, filter by calendar setting */
-    boolean showAllCalendar = true;
-    List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups, showAllCalendar, username) ;
-    if (groupCalendars.size() == 0) return new ArrayList<Calendar>(0);
-
-    Map<String, String> map = new HashMap<String, String> () ;
-    List<Calendar> calendars = new ArrayList<Calendar>();  /* contains all calendar */
-
-    for (GroupCalendarData group : groupCalendars) {
-
-      calendars.addAll(group.getCalendars()) ;
-      for(Calendar calendar : calendars) {
-        map.put(calendar.getId(), calendar.getId()) ;
-        colorMap_.put(Calendar.TYPE_PUBLIC + CalendarUtils.COLON + calendar.getId(), calendar.getCalendarColor()) ;
-
-        /* add a checkbox for each calendar */
-        UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
-        if (checkbox == null) {
-          checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-          checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
-          addUIFormInput(checkbox);
-        }
-      }
-    }
-
-    return new ArrayList<Calendar>(new HashSet<Calendar>(calendars));
+    return groupCalendars;
   }
-
 
   /**
    * return a group of shared calendars for current users
@@ -163,34 +126,29 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
    * @return
    * @throws Exception
    */
-  public GroupCalendarData getSharedCalendars() throws Exception
+  public List<Calendar> getSharedCalendars() throws Exception
   {
-    CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    /* get shared calendar but filter from setting */
-    boolean showAllCalendar = true;
-    GroupCalendarData groupCalendars = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(), showAllCalendar) ;
-    if (groupCalendars == null) return new GroupCalendarData("", "", new ArrayList<Calendar>(0));
+    List<Calendar> calendars = getCalendars().get(Calendar.Type.SHARED.name());
+    calendars = calendars != null ? calendars : Collections.<Calendar>emptyList();
+    initCheckbox(calendars);
 
-    CalendarSetting setting = calendarService.getCalendarSetting(CalendarUtils.getCurrentUser()) ;
-    Map<String, String> map = new HashMap<String, String>() ;
-    for(String key : setting.getSharedCalendarsColors()) {
-      map.put(key.split(CalendarUtils.COLON)[0], key.split(CalendarUtils.COLON)[1]) ;
+    return calendars ;
+  }
+
+  public List<Calendar> getAllOtherCalendars() {    
+    List<Calendar> cals = new LinkedList<Calendar>();
+    Set<String> typeNames = new HashSet<String>();
+    for (Calendar.Type t : Calendar.Type.values()) {
+      typeNames.add(t.name());
     }
-
-    List<Calendar> calendars = groupCalendars.getCalendars() ;
-    for (Calendar calendar : calendars) {
-      String color = map.get(calendar.getId()) ;
-      if(color == null) color = calendar.getCalendarColor() ;
-      colorMap_.put(Calendar.TYPE_SHARED + CalendarUtils.COLON + calendar.getId(), color) ;
-      UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
-      if (checkbox == null) {
-        checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-        checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
-        addUIFormInput(checkbox);
+    
+    for (String type : getCalendars().keySet()) {
+      if (!typeNames.contains(type)) {
+        cals.addAll(getCalendars().get(type));        
       }
     }
-
-    return groupCalendars ;
+    initCheckbox(cals);
+    return cals != null ? cals : Collections.<Calendar>emptyList();
   }
 
   /**
@@ -235,8 +193,15 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
     actionField_.put(fieldName, actions) ;
   }
   public List<ActionData> getActionField(String fieldName) {return actionField_.get(fieldName) ;}
-  @Override
-  public void processRender(WebuiRequestContext arg0) throws Exception {
-    super.processRender(arg0);
+
+  private void initCheckbox(List<Calendar> calendars) {
+    for (Calendar calendar : calendars) {
+      UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
+      if (checkbox == null) {
+        checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
+        checkbox.setChecked(isCalendarOfSpace(calendar.getGroups()));
+        addUIFormInput(checkbox);
+      }
+    }
   }
 }

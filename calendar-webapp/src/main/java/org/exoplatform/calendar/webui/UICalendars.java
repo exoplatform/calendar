@@ -17,10 +17,7 @@
 package org.exoplatform.calendar.webui;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,8 +52,6 @@ import org.exoplatform.calendar.webui.popup.UISubscribeForm;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.ConversationState;
-import org.exoplatform.services.security.Identity;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
@@ -113,14 +108,8 @@ public class UICalendars extends UIForm  {
 
   private boolean isShowTaskList_ = false ;
 
-  /**
-   * contains key as <type_calendar>:<calendar_id> and value as color of calendar
-   * example: key 2:calendar1401dda8c0a801303011177469ff542e, value: color code
-   */
-  private LinkedHashMap<String, String> colorMap_ = new LinkedHashMap<String, String>() ;
   private String removed_cal_id = null;
   private String calType = CalendarUtils.SHARED_TYPE;
-  private Map<Integer, List<Calendar>> calendars = new HashMap<Integer, List<Calendar>>();
   
   private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
 
@@ -131,30 +120,17 @@ public class UICalendars extends UIForm  {
   }
 
   public void init() throws Exception {
-    colorMap_.clear();
-    calendars.clear();
-
-    Identity identity = ConversationState.getCurrent().getIdentity();
-    List<Calendar> tmp = xCalService.getCalendarHandler().findAllCalendarOfUser(identity);
-    for (Calendar cal : tmp) {
-      int type = cal.getCalType();
-      if (cal.isShared(identity.getUserId())) {
-        type = Calendar.Type.SHARED.type();
+    Map<String, List<Calendar>> tmp = getCalendars();
+    for (List<Calendar> cals : tmp.values()) {
+      for (Calendar cal :cals) {
+        initCheckBox(cal);
       }
-      List<Calendar> cals = calendars.get(type); 
-      if (cals == null) {
-        cals = new LinkedList<Calendar>();
-        calendars.put(type, cals);
-      }
-      cals.add(cal);
-      colorMap_.put(cal.getId(), cal.getCalendarColor());
-      initCheckBox(cal);
     }
-
-    CalendarSetting setting = CalendarUtils.getCalendarService().getCalendarSetting(CalendarUtils.getCurrentUser()) ;
-    for (String key : setting.getSharedCalendarsColors()) {
-      colorMap_.put(key.split(CalendarUtils.COLON)[0], key.split(CalendarUtils.COLON)[1]);
-    }
+  }
+  
+  public Map<String, List<Calendar>> getCalendars() {
+    UICalendarWorkingContainer container = getAncestorOfType(UICalendarWorkingContainer.class);
+    return container.getCalendarMap();
   }
 
   private void initCheckBox(Calendar calendar) {
@@ -298,28 +274,49 @@ public class UICalendars extends UIForm  {
    * @throws Exception
    */
   public List<Calendar> getAllPrivateCalendars() {
-    List<Calendar> cals = calendars.get(Calendar.Type.PERSONAL.type());    
-    return cals != null ? cals : Collections.<Calendar>emptyList();    
+    return filterHidden(getCalendars().get(Calendar.Type.PERSONAL.name()));    
   }
   
+  private List<Calendar> filterHidden(List<Calendar> calendars) {
+    List<Calendar> result = new LinkedList<Calendar>();
+    
+    if (calendars != null && !calendars.isEmpty()) {
+      CalendarService calService = getApplicationComponent(CalendarService.class);
+      Set<String> filterCals = new HashSet<String>();
+      try {
+        CalendarSetting settings = calService.getCalendarSetting(CalendarUtils.getCurrentUser());
+        filterCals.addAll(settings.getFilterCalendars());
+      } catch (Exception e) {
+        throw new IllegalStateException(e);
+      }
+      
+      for (Calendar cal : calendars) {
+        if (!filterCals.contains(cal.getId())) {
+          result.add(cal);
+        }
+      }      
+    }
+    return result;
+  }
+
   public List<Calendar> getAllSharedCalendars() {
-    List<Calendar> cals = calendars.get(Calendar.Type.SHARED.type());
-    return cals != null ? cals : Collections.<Calendar>emptyList();
+    return filterHidden(getCalendars().get(Calendar.Type.SHARED.name()));
   }
   
   public List<Calendar> getAllOtherCalendars() {    
     List<Calendar> cals = new LinkedList<Calendar>();
     Set<String> typeNames = new HashSet<String>();
     for (Calendar.Type t : Calendar.Type.values()) {
-      typeNames.add(t.toString());
+      typeNames.add(t.name());
     }
     
-    for (int type : calendars.keySet()) {
+
+    for (String type : getCalendars().keySet()) {
       if (!typeNames.contains(type)) {
-        cals.addAll(calendars.get(type));        
+        cals.addAll(getCalendars().get(type));        
       }
     }
-    return cals != null ? cals : Collections.<Calendar>emptyList();
+    return filterHidden(cals);
   }
 
   private void setCheckedCheckbox(UICheckBoxInput checkbox, Calendar calendar){
@@ -420,8 +417,7 @@ public class UICalendars extends UIForm  {
    * @throws Exception
    */
   public List<Calendar> getAllPublicCalendars() {
-    List<Calendar> cals = calendars.get(Calendar.Type.GROUP.type()); 
-    return cals != null ? cals : Collections.<Calendar>emptyList();
+    return filterHidden(getCalendars().get(Calendar.Type.GROUP.name()));
   }
 
   /**
@@ -461,8 +457,9 @@ public class UICalendars extends UIForm  {
   }
 
 
-  public LinkedHashMap<String, String> getColorMap() {
-    return colorMap_;
+  public Map<String, String> getColorMap() {
+    UICalendarWorkingContainer container = getAncestorOfType(UICalendarWorkingContainer.class);
+    return container.getColorMap();
   }
   public String[] getColors() {
     return UIFormColorPicker.Colors.COLORNAMES ;

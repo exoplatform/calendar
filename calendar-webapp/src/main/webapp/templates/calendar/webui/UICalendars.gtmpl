@@ -228,11 +228,11 @@
 		        def css          = "iconCheckBox checkbox" ;
 		        def username 	 = CalendarUtils.getCurrentUser();
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
-		        def calendarType = calendar.getCalendarType();
+		        def calendarType = calendar.getCalType();
 
 		        if (calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) icon = "SharedCalendarIcon";
 		    %>
-		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="<%=calendar.canEdit(username)%>" id="$compositeID" calType="<%=calendarType.getName() %>" isRemote="$isRemote">
+		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="<%=calendar.canEdit(username)%>" id="$compositeID" calType="<%=calendarType%>" isRemote="$isRemote">
 		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
               <div class="calendarCheckboxBlock clearfix" calId="$calendarId">
                 <a href="javascript:void(0);" class="$color">

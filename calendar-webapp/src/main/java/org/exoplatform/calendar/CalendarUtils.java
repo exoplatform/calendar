@@ -437,7 +437,7 @@ public class CalendarUtils {
     return df.format(date) ;    
   }
   
-  static public String getCurrentUser() throws Exception {
+  static public String getCurrentUser() {
     return Util.getPortalRequestContext().getRemoteUser() ; 
   }
   
