@@ -328,7 +328,7 @@ public class CalendarRestApi implements ResourceContainer {
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @GET
   @RolesAllowed("users")
-  @Path("/calendars")
+  @Path("/calendars/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getCalendars(@QueryParam("type") String type,
                                                 @QueryParam("offset") int offset, 
