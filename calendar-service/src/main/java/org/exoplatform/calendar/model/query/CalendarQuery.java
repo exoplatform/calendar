@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2015 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.exoplatform.calendar.model.query;
+
+import org.exoplatform.services.security.Identity;
+
+/**
+ * @author <a href="trongtt@gmail.com">Trong Tran</a>
+ * @version $Revision$
+ */
+public class CalendarQuery implements Query {
+
+  private String ds;
+
+  private Identity identity;
+
+  private String[] exclusions;
+
+  @Override
+  public String getDS() {
+    return this.ds;
+  }
+
+  public void setDS(String id) {
+    this.ds = id;
+  }
+
+  public Identity getIdentity() {
+    return this.identity;
+  }
+
+  public void setIdentity(Identity identity) {
+    this.identity = identity;
+  }
+
+  public String[] getExclusions() {
+    return this.exclusions;
+  }
+
+  public void setExclusions(String... exclusions) {
+    this.exclusions = exclusions;
+  }
+}

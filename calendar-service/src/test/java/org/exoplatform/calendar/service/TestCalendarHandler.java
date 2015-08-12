@@ -25,6 +25,7 @@ import static org.exoplatform.calendar.service.AssertUtil.assertNotContainCalend
 import java.util.List;
 
 import org.exoplatform.calendar.model.CompositeID;
+import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.service.test.BaseCalendarServiceTestCase;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
@@ -99,7 +100,9 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     List<Calendar> calendars;
     int size;
 
-    calendars = calHandler.findAllCalendarOfUser(identity);
+    CalendarQuery query = new CalendarQuery();
+    query.setIdentity(identity);
+    calendars = calHandler.findCalendars(query);
     size = calendars.size();
     assertTrue("User must have at least 2 group calendars", size >= 2);
     assertContainCalendarName(calendars, "testRemoveGroupCalendar_1");
@@ -108,7 +111,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     // Remove calendar
     calHandler.removeCalendar(cal1.getId());
 
-    calendars = calHandler.findAllCalendarOfUser(identity);
+    calendars = calHandler.findCalendars(query);
     size = calendars.size();
     assertTrue("User must have at least 1 personal calendars", size >= 1);
     assertNotContainCalendarName(calendars, "testRemoveGroupCalendar_1");

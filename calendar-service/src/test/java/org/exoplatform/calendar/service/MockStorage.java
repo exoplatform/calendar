@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.storage.CalendarDAO;
 import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.component.BaseComponentPlugin;
-import org.exoplatform.services.security.Identity;
 
 public class MockStorage extends BaseComponentPlugin implements Storage {
 
@@ -66,7 +66,7 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     }
 
     @Override
-    public List<Calendar> findCalendarsByIdentity(Identity identity, String[] excludeIds) {
+    public List<Calendar> findCalendars(CalendarQuery query) {
       return null;
     }
 

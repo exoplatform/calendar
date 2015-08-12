@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.webui;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -73,7 +74,9 @@ public class UICalendarWorkingContainer extends UIContainer  {
     calendars.clear();
 
     Identity identity = ConversationState.getCurrent().getIdentity();
-    List<Calendar> tmp = xCalService.getCalendarHandler().findAllCalendarOfUser(identity);
+    CalendarQuery query = new CalendarQuery();
+    query.setIdentity(identity);
+    List<Calendar> tmp = xCalService.getCalendarHandler().findCalendars(query);
     for (Calendar cal : tmp) {
       int t = calService.getTypeOfCalendar(identity.getUserId(), cal.getId());
       String typeName;      

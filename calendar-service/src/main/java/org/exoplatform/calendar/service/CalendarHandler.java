@@ -19,16 +19,14 @@ package org.exoplatform.calendar.service;
 
 import java.util.List;
 
-import org.exoplatform.services.security.Identity;
+import org.exoplatform.calendar.model.query.CalendarQuery;
 
 public interface CalendarHandler {
 
   Calendar getCalendarById(String calId);
 
-  //TODO: we really need this method? Now, this method allow to load all shared/personal/group calendars of user
-  // TODO Don't use Identity object in this API. It may be better to have one Query argument only
-  List<Calendar> findAllCalendarOfUser(Identity identity, String ...excludeIds);
-  
+  List<Calendar> findCalendars(CalendarQuery query);
+
   /**
    * @param calendar
    */

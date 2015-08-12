@@ -150,7 +150,7 @@ public class Event extends AbstractModel {
 
   private Boolean              isExceptionOccurrence;
 
-  private String[]             excludeId;
+  private Collection<String>             exclusions;
 
   private String               originalReference;
 
@@ -436,26 +436,6 @@ public class Event extends AbstractModel {
   }
 
   /**
-   * use getLastModified instead
-   */
-  @Deprecated
-  public Date getLastUpdatedTime() {
-    return new Date(getLastModified());    
-  }
-
-  /**
-   * use setLastModified instead
-   */
-  @Deprecated
-  public void setLastUpdatedTime(Date lastUpdatedTime) {
-    long last = 0;
-    if (lastUpdatedTime != null) {
-      last = lastUpdatedTime.getTime();      
-    }
-    setLastModified(last);
-  }
-
-  /**
    * @param recurrenceId the recurrenceIndex to set
    */
   public void setRecurrenceId(String recurrenceId) {
@@ -484,57 +464,34 @@ public class Event extends AbstractModel {
   }
 
   /**
-   * @deprecated
-   * @see #setExceptionIds(Collection)
-   * @param excludeId the excludeId to set
-   */
-  public void setExcludeId(String[] excludeId) {
-    this.excludeId = excludeId;
-  }
-
-  /**
-   * @deprecated
-   * @see #getExceptionIds()
-   * @return the excludeId
-   */
-  public String[] getExcludeId() {
-    return excludeId;
-  }
-  /**
    * This method will set the collection of excluded event's id to the collection
    * @param ids a collection of id with string type
    */
-  public void setExceptionIds(Collection<String> ids){
-    if(ids != null)
-    this.excludeId = ids.toArray(new String[ids.size()]);
-    else this.excludeId = null;
+  public void setExclusions(Collection<String> ids){
+    this.exclusions = ids;
   }
+
   /**
-   * This method will return all id excluded event id
    * @return collection of excluded event's id
    */
-  public Collection<String> getExceptionIds(){
-    return this.excludeId != null ? new HashSet<String>(Arrays.asList(this.excludeId)) : null;
+  public Collection<String> getExclusions(){
+    return this.exclusions;
   }
   
   /**
    * This method will add more excluded id to existed collection 
    * @param id a single id want to add to exited excluded collection
    */
-  public void addExceptionId(String id){
-    if(this.excludeId != null){  
-     Set<String> existedId = new HashSet<String>(Arrays.asList(this.excludeId));
-     existedId.add(id);
-     this.excludeId = existedId.toArray(new String[]{});
+  public void addExclusion(String id){
+    if(this.exclusions == null){  
+      this.exclusions = new HashSet<String>();
     }
-    else this.excludeId = new String[]{id};
+    this.exclusions.add(id);
   }
 
-  public void removeExceptionId(String id){
-    if(this.excludeId != null){  
-      List<String> existedId = new ArrayList<String>(Arrays.asList(this.excludeId));
-      existedId.remove(id);
-      this.excludeId = existedId.toArray(new String[]{});
+  public void removeExclusion(String id){
+    if(this.exclusions != null){  
+      this.exclusions.remove(id);
      }
   }
   

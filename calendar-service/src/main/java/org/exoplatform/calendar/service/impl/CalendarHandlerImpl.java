@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.exoplatform.calendar.model.CompositeID;
+import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.storage.CalendarDAO;
@@ -28,7 +29,6 @@ import org.exoplatform.calendar.storage.NoSuchEntityException;
 import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.Identity;
 
 public class CalendarHandlerImpl implements CalendarHandler {
   private static final Log log = ExoLogger.getExoLogger(CalendarHandlerImpl.class);
@@ -54,10 +54,10 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public List<Calendar> findAllCalendarOfUser(Identity identity, String ...excludeIds) {
+  public List<Calendar> findCalendars(CalendarQuery query) {
     List<Calendar> calendars = new LinkedList<Calendar>();
     for (Storage storage : service.getAllStorage()) {
-      List<Calendar> cals = storage.getCalendarDAO().findCalendarsByIdentity(identity, excludeIds);
+      List<Calendar> cals = storage.getCalendarDAO().findCalendars(query);
       if (cals != null) {
         calendars.addAll(cals);
       }

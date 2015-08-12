@@ -17,6 +17,7 @@
 
 package org.exoplatform.calendar.storage.jcr;
 
+import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.GroupCalendarData;
@@ -134,14 +135,16 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
 
   @Override
-  public List<Calendar> findCalendarsByIdentity(Identity identity, String ...excludesId) {
+  public List<Calendar> findCalendars(CalendarQuery query) {
     List<Calendar> calendars = new LinkedList<Calendar>();
     List<String> excludes = Collections.emptyList();
+    String[] excludesId = query.getExclusions();
     if (excludesId != null) {
       excludes = Arrays.asList(excludesId);
     }
     
     try {
+      Identity identity = query.getIdentity();
       List<Calendar> cals = dataStorage.getUserCalendars(identity.getUserId(), true);
       if (cals != null && cals.size() > 0) {
         for (Calendar c : cals) {
