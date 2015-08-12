@@ -158,7 +158,7 @@ public class JCREventDAOImpl implements EventDAO {
 
       @Override
       public Event[] load(int offset, int limit) throws Exception, IllegalArgumentException {
-        return Utils.subList(events, offset, limit).toArray(new Event[limit]);        
+        return Utils.subArray(events.toArray(new Event[getSize()]), offset, limit);
       }
     };
   }

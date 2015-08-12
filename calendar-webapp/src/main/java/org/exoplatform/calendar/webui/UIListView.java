@@ -272,7 +272,7 @@ public class UIListView extends UICalendarView {
       allEvents.addAll(calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
                                                                                privateCalendars.toArray(new String[privateCalendars.size()]),
                                                                                publicCalendars.toArray(new String[publicCalendars.size()]),
-                                                                               emptyEventCalendars));
+                                                                               null));
       
       originalRecurEvents.addAll(calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
                                                                                                         eventQuery.getFromDate(),
@@ -280,7 +280,7 @@ public class UIListView extends UICalendarView {
                                                                                                         eventQuery,
                                                                                                         privateCalendars.toArray(new String[privateCalendars.size()]),
                                                                                                         publicCalendars.toArray(new String[publicCalendars.size()]),
-                                                                                                        emptyRecurrentEventCalendars));      
+                                                                                                        null));      
     }
         
     CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();

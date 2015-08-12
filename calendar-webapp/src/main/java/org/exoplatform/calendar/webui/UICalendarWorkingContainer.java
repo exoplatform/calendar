@@ -79,7 +79,7 @@ public class UICalendarWorkingContainer extends UIContainer  {
     List<Calendar> tmp = xCalService.getCalendarHandler().findCalendars(query);
     for (Calendar cal : tmp) {
       int t = calService.getTypeOfCalendar(identity.getUserId(), cal.getId());
-      String typeName;      
+      String typeName;
       Calendar.Type type = Calendar.Type.getType(t);
       if (Calendar.Type.UNDEFINED.equals(type)) {
         typeName = String.valueOf(t);

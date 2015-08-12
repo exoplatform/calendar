@@ -24,6 +24,6 @@ public interface ExtendedCalendarService {
   
   public EventHandler getEventHandler();
   
-  public Storage lookForDS(String compositeId);
+  public Storage lookForDS(String compositeId);  
   
 }

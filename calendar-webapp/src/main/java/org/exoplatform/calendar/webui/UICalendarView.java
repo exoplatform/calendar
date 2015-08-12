@@ -16,6 +16,27 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TimeZone;
+
+import javax.jcr.PathNotFoundException;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -24,9 +45,11 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.storage.jcr.JCREventQuery;
 import org.exoplatform.calendar.webui.popup.UIConfirmForm;
 import org.exoplatform.calendar.webui.popup.UIEventForm;
 import org.exoplatform.calendar.webui.popup.UIEventShareTab;
@@ -35,6 +58,7 @@ import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UITaskForm;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
@@ -51,26 +75,6 @@ import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormRadioBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
-
-import javax.jcr.PathNotFoundException;
-
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen
@@ -182,12 +186,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   protected DateFormatSymbols dfs_;
 
   private CalendarEvent currentOccurrence;
+  
+  List<org.exoplatform.calendar.model.Event> evtInMonth = new LinkedList<org.exoplatform.calendar.model.Event>();
 
   protected Map<String, Map<String, CalendarEvent>> recurrenceEventsMap = new LinkedHashMap<String, Map<String, CalendarEvent>>();
-
-  protected    List<String>                     emptyEventCalendars;
-
-  protected    List<String>                     emptyRecurrentEventCalendars;
+  
+  protected ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
 
   abstract LinkedHashMap<String, CalendarEvent> getDataMap();
 
@@ -220,14 +224,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    * @return string of time value in milliseconds.
    */
   public abstract String getDefaultStartTimeOfEvent();
-
-  public void setEmptyEventCalendars(List<String> calendars) {
-    emptyEventCalendars = calendars;
-  }
-
-  public void setEmptyRecurrentEventCalendars(List<String> calendars) {
-    emptyRecurrentEventCalendars = calendars;
-  }
 
   protected String renderDayViewInTitleBar(String monthOpenTag,
                                            String monthCloseTag,
@@ -313,22 +309,46 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    */
   public String[] getPublicCalendars() throws Exception {
     Set<String> map = new HashSet<String>();
-    for (GroupCalendarData group : getPublicCalendars(CalendarUtils.getCurrentUser())) {
-      for (org.exoplatform.calendar.service.Calendar calendar : group.getCalendars()) {
-        map.add(calendar.getId());
-      }
+    for (org.exoplatform.calendar.service.Calendar calendar : getPublicCalendars(CalendarUtils.getCurrentUser())) {
+      map.add(calendar.getId());
     }
-    return map.toArray(new String[]{});
+
+    return map.toArray(new String[map.size()]);
   }
 
 
   public List<String> getPrivateCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
     if (isInSpace()) return list;
-    CalendarService calendarService = CalendarUtils.getCalendarService();
-    for (org.exoplatform.calendar.service.Calendar c : calendarService.getUserCalendars(CalendarUtils.getCurrentUser(),
-            true)) {
-      list.add(c.getId());
+    
+    List<org.exoplatform.calendar.service.Calendar> cals = getCalendars().get(org.exoplatform.calendar.service.Calendar.Type.PERSONAL.name());
+    if (cals != null) {
+      for (org.exoplatform.calendar.service.Calendar cal : cals) {
+        list.add(cal.getId());
+      }      
+    }
+    return list;
+  }
+  
+  public List<String> getOtherCalendars() throws Exception {
+    List<String> list = new ArrayList<String>();
+    if (isInSpace()) return list;
+    
+    Map<String, List<org.exoplatform.calendar.service.Calendar>> cals = getCalendars();
+    Set<String> typeNames = new HashSet<String>();
+    for (org.exoplatform.calendar.service.Calendar.Type t : org.exoplatform.calendar.service.Calendar.Type.values()) {
+      typeNames.add(t.name());
+    }    
+
+    List<org.exoplatform.calendar.service.Calendar> other = new LinkedList<org.exoplatform.calendar.service.Calendar>();
+    for (String type : cals.keySet()) {
+      if (!typeNames.contains(type)) {
+        other.addAll(cals.get(type)); 
+      }
+    }
+
+    for (org.exoplatform.calendar.service.Calendar cal : other) {
+      list.add(cal.getId());
     }
     return list;
   }
@@ -337,12 +357,13 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public List<String> getSharedCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
     if (isInSpace()) return list;
-    CalendarService calendarService = CalendarUtils.getCalendarService();
-    GroupCalendarData gcd = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(), true);
-    if (gcd != null)
-      for (org.exoplatform.calendar.service.Calendar cal : gcd.getCalendars()) {
+    
+    List<org.exoplatform.calendar.service.Calendar> cals = getCalendars().get(org.exoplatform.calendar.service.Calendar.Type.SHARED.name());
+    if (cals != null) {
+      for (org.exoplatform.calendar.service.Calendar cal : cals) {
         list.add(cal.getId());
-      }
+      }      
+    }
     return list;
   }
 
@@ -364,16 +385,46 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return results.toArray(new String[] {});
   }
 
-  protected List<GroupCalendarData> getPublicCalendars(String username) throws Exception {
+  protected List<org.exoplatform.calendar.service.Calendar> getPublicCalendars(String username) throws Exception {
     String[] groups = CalendarUtils.getUserGroups(username);
     UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
     if (isInSpace()) groups = new String[]{ uiCalendarPortlet != null ? uiCalendarPortlet.getSpaceGroupId()
       : UICalendarPortlet.getGroupIdOfSpace()};
-    CalendarService calendarService = CalendarUtils.getCalendarService();
-    List<GroupCalendarData> groupCalendars = calendarService.getGroupCalendars(groups,
-            false,
-            username);
-    return groupCalendars;
+    
+    List<org.exoplatform.calendar.service.Calendar> result = new LinkedList<org.exoplatform.calendar.service.Calendar>();
+    List<org.exoplatform.calendar.service.Calendar> tmp = getCalendars().get(org.exoplatform.calendar.service.Calendar.Type.GROUP.name());
+    if (tmp != null) {
+      for (org.exoplatform.calendar.service.Calendar cal : tmp) {
+        List<String> calGrp = Arrays.asList(cal.getGroups());
+        for (String g : groups) {
+          if (calGrp.contains(g)) {
+            result.add(cal);
+            break;
+          }
+        }
+      }
+    }
+    return filterHidden(result);
+  }
+
+  private List<org.exoplatform.calendar.service.Calendar> filterHidden(List<org.exoplatform.calendar.service.Calendar> calendars) {
+    List<org.exoplatform.calendar.service.Calendar> result = new LinkedList<org.exoplatform.calendar.service.Calendar>();
+    
+    if (calendars != null && !calendars.isEmpty()) {      
+      List<String> filterCals = getCalendarSetting().getFilterCalendars();
+      
+      for (org.exoplatform.calendar.service.Calendar cal : calendars) {
+        if (!filterCals.contains(cal.getId())) {
+          result.add(cal);
+        }
+      }      
+    }
+    return result;
+  }
+
+  private Map<String, List<org.exoplatform.calendar.service.Calendar>> getCalendars() {
+    UICalendarWorkingContainer container = getAncestorOfType(UICalendarWorkingContainer.class);
+    return container.getCalendarMap();
   }
 
   /**
@@ -395,10 +446,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     Map<String, String> colors = new LinkedHashMap<String, String>();
     try {
       if (isInSpace()) {
-        for (GroupCalendarData group : getPublicCalendars(CalendarUtils.getCurrentUser())) {
-          for (org.exoplatform.calendar.service.Calendar calendar : group.getCalendars()) {
-            colors.put(calendar.getId(), calendar.getCalendarColor());
-          }
+        for (org.exoplatform.calendar.service.Calendar calendar : getPublicCalendars(CalendarUtils.getCurrentUser())) {
+          colors.put(calendar.getId(), calendar.getCalendarColor());
         }
       } else
         colors = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class)
@@ -413,6 +462,48 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   @Override
   public void refresh() throws Exception {
+    evtInMonth.clear();
+    org.exoplatform.calendar.model.query.EventQuery query = new JCREventQuery();
+    query.setOwner(CalendarUtils.getCurrentUser());
+    query.setFromDate(getBeginDateOfMonth().getTimeInMillis()) ;
+    Calendar cal = getEndDateOfMonth() ;
+    cal.add(java.util.Calendar.MILLISECOND, -1) ;
+    query.setToDate(cal.getTimeInMillis()) ;
+    List<String> calendarIds = new LinkedList<String>();
+    calendarIds.addAll(getPrivateCalendars());
+    calendarIds.addAll(Arrays.asList(getPublicCalendars()));
+    calendarIds.addAll(getSharedCalendars());
+    calendarIds.addAll(getOtherCalendars());    
+    query.setCalendarIds(calendarIds.toArray(new String[calendarIds.size()]));
+    ListAccess<org.exoplatform.calendar.model.Event> events = xCalService.getEventHandler().findEventsByQuery(query);
+    
+    for (org.exoplatform.calendar.model.Event evt : events.load(0, -1)) {
+      if (evt.getRepeatType() == null || evt.getRepeatType().isEmpty() || 
+          evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
+        evtInMonth.add(evt);
+      } else {
+        CalendarEvent depEvt = CalendarEvent.build(evt);
+        Map<String, CalendarEvent> map = CalendarUtils.getCalendarService().getOccurrenceEvents(depEvt, getBeginDateOfMonth(), cal, 
+                                                               getCalendarSetting().getTimeZone());
+        for (CalendarEvent e : map.values()) {
+          evtInMonth.add(e);
+        }
+      }
+    }
+  }
+  
+  public List<org.exoplatform.calendar.model.Event> getEventInMonth() {
+    return evtInMonth;
+  }
+  
+  public List<org.exoplatform.calendar.model.Event> getEventInMonth(long startTime, long endTime) {
+    List<org.exoplatform.calendar.model.Event> result = new LinkedList<org.exoplatform.calendar.model.Event>();
+    for (org.exoplatform.calendar.model.Event evt : getEventInMonth()) {
+      if (endTime >= evt.getFromDateTime().getTime() && startTime <= evt.getToDateTime().getTime()) {
+        result.add(evt);
+      }
+    }
+    return result;
   }
 
   public boolean isInSpace(){
@@ -894,6 +985,19 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public CalendarEvent getcurrentOccurrence() {
     return currentOccurrence;
   }
+  
+  public java.util.Calendar getBeginDateOfMonth() throws Exception{
+    java.util.Calendar temCal = getInstanceTempCalendar() ;
+    temCal.setTime(calendar_.getTime()) ;
+    temCal.set(java.util.Calendar.DATE, 1) ;
+    return CalendarUtils.getBeginDay(temCal) ;  
+  }
+  public java.util.Calendar getEndDateOfMonth() throws Exception{
+    java.util.Calendar temCal = getInstanceTempCalendar() ;
+    temCal.setTime(calendar_.getTime()) ;
+    temCal.set(java.util.Calendar.DATE, getDaysInMonth()) ;
+    return CalendarUtils.getEndDay(temCal) ;  
+  }
 
   static public class AddEventActionListener extends EventListener<UICalendarView> {
     @Override
@@ -1319,12 +1423,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           if (calendarData != null && calendarData.getCalendarById(calendarId) != null)
             canEdit = Utils.hasPermission(Utils.getEditPerUsers(calendarData.getCalendarById(calendarId)));
         } else if (CalendarUtils.PUBLIC_TYPE.equals(calType)) {
-          List<GroupCalendarData> publicData = uiCalendarView.getPublicCalendars(username);
-          for (GroupCalendarData calendarData : publicData) {
-            if (calendarData.getCalendarById(calendarId) != null) {
-              canEdit = Utils.hasPermission((calendarData.getCalendarById(calendarId)).getEditPermission());
-              break;
-            }
+          org.exoplatform.calendar.service.Calendar cal = uiCalendarView.xCalService.getCalendarHandler().getCalendarById(calendarId);
+          if (cal != null) {
+            canEdit = Utils.hasPermission(cal.getEditPermission());
           }
         }
 

@@ -16,11 +16,18 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.exoplatform.calendar.model.CompositeID;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
+import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.service.EventHandler;
+import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.storage.EventDAO;
+import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -70,13 +77,49 @@ public class EventHandlerImpl implements EventHandler {
    */
   @Override
   public ListAccess<Event> findEventsByQuery(EventQuery eventQuery) {
-    EventDAO dao = getEventDAOImpl(eventQuery.getDS());
-    
-    if (dao != null) {
-      return dao.findEventsByQuery(eventQuery);
+    List<EventDAO> daos = new LinkedList<EventDAO>();
+    if (eventQuery.getDS() == null) {
+      for (Storage storage : calService.getAllStorage()) {
+        daos.add(storage.getEventDAO());
+      }
+    } else {
+      daos.add(getEventDAOImpl(eventQuery.getDS()));
     }
 
-    return null;
+    List<ListAccess<Event>> result = new LinkedList<ListAccess<Event>>();
+    for (EventDAO dao : daos) {
+      ListAccess<Event> tmp = dao.findEventsByQuery(eventQuery);
+      if (tmp != null) {
+        result.add(tmp);
+      }
+    }
+
+    if (result.size() == 0) {
+      return null;      
+    } else if (result.size() == 1) {
+      return result.get(0);
+    } else {
+      final List<Event> events = new LinkedList<Event>();
+      for (ListAccess<Event> list : result) {
+        try {
+          events.addAll(Arrays.asList(list.load(0, -1)));
+        } catch (Exception e) {
+          throw new CalendarException(null, e.getMessage(), e);
+        }
+      }
+      
+      return new ListAccess<Event>() {
+        @Override
+        public int getSize() throws Exception {
+          return events.size();
+        }
+
+        @Override
+        public Event[] load(int offset, int limit) throws Exception, IllegalArgumentException {
+          return Utils.subArray(events.toArray(new Event[getSize()]), offset, limit);
+        }        
+      };
+    }
   }
 
   @Override

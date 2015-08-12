@@ -114,13 +114,13 @@ public class UIMonthView extends UICalendarView {
       //allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
 
       allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-          privateCalendars, publicCalendars, emptyEventCalendars);
+          privateCalendars, publicCalendars, null);
     }
 
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     //List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
     List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
+        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, null);
 
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
       Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();

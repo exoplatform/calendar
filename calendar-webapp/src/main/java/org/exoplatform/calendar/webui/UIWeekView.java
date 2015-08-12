@@ -151,12 +151,6 @@ public class UIWeekView extends UICalendarView {
       eventData_.put(key, list) ;
       c.add(Calendar.DATE, 1) ;
     }
-    // If this week is in 2 month (for example from 29/09/2014 to 04/10/2014)
-    // We should not use emptyEventCalendars and emptyRecurrentEvents calendar set by UIMiniCalendar
-    if(beginMonth != c.get(Calendar.MONTH)) {
-        this.setEmptyEventCalendars(Collections.EMPTY_LIST);
-        this.setEmptyRecurrentEventCalendars(Collections.EMPTY_LIST);
-    }
     CalendarService calendarService = CalendarUtils.getCalendarService() ;
     String username = CalendarUtils.getCurrentUser() ;
     EventQuery eventQuery = new EventQuery() ;
@@ -179,12 +173,12 @@ public class UIWeekView extends UICalendarView {
     }
     else {
       allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-          privateCalendars, publicCalendars, emptyEventCalendars);
+          privateCalendars, publicCalendars, null);
     }
 
     /** get exception occurrences, exclude original recurrence events */
     List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, emptyRecurrentEventCalendars);
+        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, null);
 
     String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
     if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
