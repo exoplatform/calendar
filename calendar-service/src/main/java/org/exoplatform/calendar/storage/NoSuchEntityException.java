@@ -1,5 +1,5 @@
 package org.exoplatform.calendar.storage;
 
-public class NoSuchEntityException extends Exception {
+public class NoSuchEntityException extends RuntimeException {
 
 }

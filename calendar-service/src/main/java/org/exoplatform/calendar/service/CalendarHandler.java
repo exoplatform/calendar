@@ -23,16 +23,31 @@ import org.exoplatform.calendar.model.query.CalendarQuery;
 
 public interface CalendarHandler {
 
-  Calendar getCalendarById(String calId);
+  /**
+   * Return a Calendar with given id, or NULL if it doesn't exist.
+   *
+   * @param calId
+   * @return a Calendar with given id, or NULL if it doesn't exist.
+   */
+  Calendar getCalendarById(String id);
 
+  /**
+   * Find calendars which are matching to query
+   * @param query
+   * @return a list of calendars satisfied with given query.
+   */
   List<Calendar> findCalendars(CalendarQuery query);
 
   /**
+   * Save calendar into database.
+   *
    * @param calendar
    */
   Calendar saveCalendar(Calendar calendar);
   
   /**
+   * Update an existing Calendar with new information given from Calendar argument.
+   *
    * @param calendar
    */
   Calendar updateCalendar(Calendar calendar);

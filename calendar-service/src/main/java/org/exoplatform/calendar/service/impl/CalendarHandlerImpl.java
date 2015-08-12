@@ -96,11 +96,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
     Storage storage = service.lookForDS(calendar.getDS());
     CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null) {
-      try {
-        return dao.update(calendar);
-      } catch (NoSuchEntityException e) {
-        log.error("Can't update calendar", e);
-      }
+      return dao.update(calendar);
     }
 
     return null;

@@ -28,9 +28,11 @@ public interface GenericDAO<T, ID> {
 
 
   /**
+   * Persist the entity object into database.
+   *
    * @param object
    */
-  T save(T object);
+  T save(T entity);
 
   /**
    * Update the specified entity argument with the most recent state.
@@ -43,6 +45,8 @@ public interface GenericDAO<T, ID> {
   T update(T entity) throws NoSuchEntityException;
 
   /**
+   * Remove the entity with given id if exists.
+   *
    * @param id
    * @return 
    */

@@ -18,12 +18,36 @@ package org.exoplatform.calendar.service;
 
 import org.exoplatform.calendar.storage.Storage;
 
+/**
+ * A new Calendar Service API which supports multiple data sources known as
+ * Storage.
+ * <p>
+ * The new service API is also better organized into smaller handlers, such as
+ * CalendarHandler and EventHandler.
+ * 
+ * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
+ * @version $Revision$
+ */
 public interface ExtendedCalendarService {
 
+  /**
+   * @return the CalendarHandler implementation
+   */
   public CalendarHandler getCalendarHandler();
-  
+
+  /**
+   * @return the EventHandler implementation
+   */
   public EventHandler getEventHandler();
-  
-  public Storage lookForDS(String compositeId);  
-  
+
+  /**
+   * Return the Storage associated with given id, or NULL if there is no one
+   * with such id.
+   * <p>
+   * If the given id is NULL, the JCRStorage will be returned by default.
+   * 
+   * @param compositeId
+   * @return the Storage associated with given id.
+   */
+  public Storage lookForDS(String id);
 }

@@ -17,8 +17,18 @@
   
 package org.exoplatform.calendar.storage;
 
+/**
+ * A Storage can be understood as a data source served for Calendar application.
+ * It can be pluggability added into Calendar Service by configuration.
+ * 
+ * @author <a href="trongtt@gmail.com">Trong Tran</a>
+ * @version $Revision$
+ */
 public interface Storage {
 
+  /**
+   * @return storage identity
+   */
   public String getId();
 
   public CalendarDAO getCalendarDAO();
