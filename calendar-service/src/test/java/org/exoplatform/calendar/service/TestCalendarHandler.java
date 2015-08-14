@@ -55,7 +55,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   }
 
   public void testCreateCalendar() {
-    Calendar cal = new MockCalendar();
+    org.exoplatform.calendar.model.Calendar cal = new MockCalendar();
     cal.setName("newCalendar");
     cal = calHandler.saveCalendar(cal);
 
@@ -72,9 +72,9 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     cal.setCalType(Calendar.Type.PERSONAL.type());
     cal.setCalendarOwner(username);
 
-    cal = calHandler.saveCalendar(cal);
+    calHandler.saveCalendar(cal);
 
-    Calendar calSaved = calHandler.getCalendarById(cal.getId());
+    org.exoplatform.calendar.model.Calendar calSaved = calHandler.getCalendarById(cal.getId());
     assertNotNull(calSaved);
     assertEquals("testCreatePersonalCalendar", calSaved.getName());
   }
@@ -85,19 +85,19 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
     cal.setCalType(Calendar.Type.GROUP.type());
     cal.setGroups(userGroups);
 
-    cal = calHandler.saveCalendar(cal);
+    calHandler.saveCalendar(cal);
 
-    Calendar calSaved = calHandler.getCalendarById(cal.getId());
+    org.exoplatform.calendar.model.Calendar calSaved = calHandler.getCalendarById(cal.getId());
     assertNotNull(calSaved);
     assertEquals("testCreateGroupCalendar", calSaved.getName());
   }
 
   public void testRemoveGroupCalendar() throws Exception {
     Identity identity = ConversationState.getCurrent().getIdentity();
-    Calendar cal1 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_1", userGroups);
-    Calendar cal2 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_2", userGroups);
+    org.exoplatform.calendar.model.Calendar cal1 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_1", userGroups);
+    org.exoplatform.calendar.model.Calendar cal2 = TestUtil.createGroupCalendar(calHandler, "testRemoveGroupCalendar_2", userGroups);
 
-    List<Calendar> calendars;
+    List<org.exoplatform.calendar.model.Calendar> calendars;
     int size;
 
     CalendarQuery query = new CalendarQuery();
@@ -121,7 +121,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   public void testUpdatePersonalCalendar() {
     String calId = TestUtil.createPersonalCalendar(calHandler, "testUpdatePersonalCalendar", username).getId();
 
-    Calendar cal = calHandler.getCalendarById(calId);
+    org.exoplatform.calendar.model.Calendar cal = calHandler.getCalendarById(calId);
     assertNotNull(cal);
     assertEquals("testUpdatePersonalCalendar", cal.getName());
 
@@ -138,7 +138,7 @@ public class TestCalendarHandler extends BaseCalendarServiceTestCase {
   public void testUpdateGroupCalendar() {
     String calId = TestUtil.createGroupCalendar(calHandler, "testUpdateGroupCalendar", userGroups).getId();
 
-    Calendar cal = calHandler.getCalendarById(calId);
+    org.exoplatform.calendar.model.Calendar cal = calHandler.getCalendarById(calId);
     assertNotNull(cal);
     assertEquals("testUpdateGroupCalendar", cal.getName());
 

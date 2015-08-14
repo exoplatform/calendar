@@ -29,33 +29,33 @@ public interface CalendarHandler {
    * @param calId
    * @return a Calendar with given id, or NULL if it doesn't exist.
    */
-  Calendar getCalendarById(String id);
+  org.exoplatform.calendar.model.Calendar getCalendarById(String id);
 
   /**
    * Find calendars which are matching to query
    * @param query
    * @return a list of calendars satisfied with given query.
    */
-  List<Calendar> findCalendars(CalendarQuery query);
+  List<org.exoplatform.calendar.model.Calendar> findCalendars(CalendarQuery query);
 
   /**
    * Save calendar into database.
    *
    * @param calendar
    */
-  Calendar saveCalendar(Calendar calendar);
+  org.exoplatform.calendar.model.Calendar saveCalendar(org.exoplatform.calendar.model.Calendar calendar);
   
   /**
    * Update an existing Calendar with new information given from Calendar argument.
    *
    * @param calendar
    */
-  Calendar updateCalendar(Calendar calendar);
+  org.exoplatform.calendar.model.Calendar updateCalendar(org.exoplatform.calendar.model.Calendar calendar);
   
   /**
    * @param calendarId
    */
-  Calendar removeCalendar(String calendarId);
+  org.exoplatform.calendar.model.Calendar removeCalendar(String calendarId);
 
-  Calendar newCalendarInstance(String dsId);
+  org.exoplatform.calendar.model.Calendar newCalendarInstance(String dsId);
 }

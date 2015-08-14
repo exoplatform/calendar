@@ -22,10 +22,8 @@ import java.util.List;
 
 import org.exoplatform.calendar.model.CompositeID;
 import org.exoplatform.calendar.model.query.CalendarQuery;
-import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.storage.CalendarDAO;
-import org.exoplatform.calendar.storage.NoSuchEntityException;
 import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -40,13 +38,13 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar getCalendarById(String compositeId) {
+  public org.exoplatform.calendar.model.Calendar getCalendarById(String compositeId) {
     CompositeID composId = CompositeID.parse(compositeId);
     if (composId.getDS() != null) {
       Storage storage = service.lookForDS(composId.getDS());
       CalendarDAO dao = storage.getCalendarDAO();
       if (dao != null) {
-        Calendar cal = dao.getById(composId.getId());
+        org.exoplatform.calendar.model.Calendar cal = dao.getById(composId.getId());
         if (cal != null) {
           return cal;
         }
@@ -55,7 +53,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
       for (Storage storage : service.getAllStorage()) {
         CalendarDAO dao = storage.getCalendarDAO();
         if (dao != null) {
-          Calendar cal = dao.getById(composId.getId());
+          org.exoplatform.calendar.model.Calendar cal = dao.getById(composId.getId());
           if (cal != null) {
             return cal;
           }
@@ -66,10 +64,10 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public List<Calendar> findCalendars(CalendarQuery query) {
-    List<Calendar> calendars = new LinkedList<Calendar>();
+  public List<org.exoplatform.calendar.model.Calendar> findCalendars(CalendarQuery query) {
+    List<org.exoplatform.calendar.model.Calendar> calendars = new LinkedList<org.exoplatform.calendar.model.Calendar>();
     for (Storage storage : service.getAllStorage()) {
-      List<Calendar> cals = storage.getCalendarDAO().findCalendars(query);
+      List<org.exoplatform.calendar.model.Calendar> cals = storage.getCalendarDAO().findCalendars(query);
       if (cals != null) {
         calendars.addAll(cals);
       }
@@ -78,11 +76,11 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar saveCalendar(Calendar calendar) {
+  public org.exoplatform.calendar.model.Calendar saveCalendar(org.exoplatform.calendar.model.Calendar calendar) {
     Storage storage = service.lookForDS(calendar.getDS());
     CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null) {
-      Calendar cal = dao.save(calendar); 
+      org.exoplatform.calendar.model.Calendar cal = dao.save(calendar); 
       if (cal != null) {
         return cal;
       }
@@ -92,7 +90,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
   
   @Override
-  public Calendar updateCalendar(Calendar calendar) {
+  public org.exoplatform.calendar.model.Calendar updateCalendar(org.exoplatform.calendar.model.Calendar calendar) {
     Storage storage = service.lookForDS(calendar.getDS());
     CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null) {
@@ -103,12 +101,12 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar removeCalendar(String compositeId) {
+  public org.exoplatform.calendar.model.Calendar removeCalendar(String compositeId) {
     CompositeID composId = CompositeID.parse(compositeId);
     Storage storage = service.lookForDS(composId.getDS());
     CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null){
-      Calendar cal = dao.remove(compositeId);
+      org.exoplatform.calendar.model.Calendar cal = dao.remove(compositeId);
       if (cal != null) {
         return cal;
       }
@@ -118,7 +116,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
   }
 
   @Override
-  public Calendar newCalendarInstance(String dsId) {
+  public org.exoplatform.calendar.model.Calendar newCalendarInstance(String dsId) {
     CalendarDAO dao = service.lookForDS(dsId).getCalendarDAO();
     if (dao != null) {
       return dao.newInstance();

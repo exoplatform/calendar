@@ -536,7 +536,7 @@ public class UICalendars extends UIForm  {
       try {
         String calendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
         String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
-        Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
+        Calendar calendar = Calendar.build(uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId));
         if(calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet) ;
@@ -547,7 +547,7 @@ public class UICalendars extends UIForm  {
             return;
           }
 
-          if(!calendar.canEdit(currentUser)) {
+          if(!Utils.isCalendarEditable(currentUser, calendar)) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
             return;
           }
@@ -595,7 +595,7 @@ public class UICalendars extends UIForm  {
         String clientTime = CalendarUtils.getCurrentTime(uiComponent) ;
         String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
         String categoryId = event.getRequestContext().getRequestParameter("categoryId") ;
-        Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
+        Calendar calendar = Calendar.build(uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId));
         if(calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet) ;
@@ -606,7 +606,7 @@ public class UICalendars extends UIForm  {
             return;
           }
 
-          if(!calendar.canEdit(currentUser)) {
+          if(!Utils.isCalendarEditable(currentUser, calendar)) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
             return;
           }
@@ -647,7 +647,7 @@ public class UICalendars extends UIForm  {
       UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
       UIPopupAction popupAction = uiCalendarPortlet.getChild(UIPopupAction.class) ;
       popupAction.deActivate() ;
-      Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
+      Calendar calendar = Calendar.build(uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId));
       if (calendar == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
@@ -659,7 +659,7 @@ public class UICalendars extends UIForm  {
           UIRemoteCalendar uiRemoteCalendar = popupAction.activate(UIRemoteCalendar.class, 600);
           uiRemoteCalendar.init(calendar);
           event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
-        } else if (!calendar.canEdit(username)) {
+        } else if (!Utils.isCalendarEditable(username, calendar)) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, 1)) ;
           Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
         } else {
@@ -698,11 +698,11 @@ public class UICalendars extends UIForm  {
         }        
       } else {
         CalendarHandler handler = uiComponent.xCalService.getCalendarHandler();
-        Calendar cal = handler.getCalendarById(calendarId);
+        Calendar cal = Calendar.build(handler.getCalendarById(calendarId));
         if (cal == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         } else {
-          if (cal.canEdit(username)) {
+          if (Utils.isCalendarEditable(username, cal)) {
             handler.removeCalendar(calendarId);
             if (cal.isRemote() && calService.getRemoteCalendarCount(username) == 0) {
               // remove sync job
@@ -776,11 +776,11 @@ public class UICalendars extends UIForm  {
       String currentUser = CalendarUtils.getCurrentUser() ;
       String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
-      Calendar calendar =  uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId);
+      Calendar calendar =  Calendar.build(uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId));
       if (calendar == null) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
         Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
-      } else if (!calendar.canEdit(currentUser)) {
+      } else if (!Utils.isCalendarEditable(currentUser, calendar)) {
         event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null)) ;
         Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
       } else {
@@ -842,17 +842,18 @@ public class UICalendars extends UIForm  {
       String username = CalendarUtils.getCurrentUser() ;
 
       try{
-        Calendar calendar = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId);
+        org.exoplatform.calendar.model.Calendar cal = uiComponent.xCalService.getCalendarHandler().getCalendarById(calendarId); 
+        Calendar calendar = Calendar.build(cal);
         if (calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-        } else if (!calendar.canEdit(username)) {
+        } else if (!Utils.isCalendarEditable(username, calendar)) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, AbstractApplicationMessage.WARNING)) ;          
         } else {
           calendar.setCalendarColor(color) ;
           if (calendar.isShared(username)) {
             calService.saveSharedCalendar(username, calendar);
           } else {
-            uiComponent.xCalService.getCalendarHandler().updateCalendar(calendar);
+            uiComponent.xCalService.getCalendarHandler().updateCalendar(cal);
           }
           
           UICalendarPortlet uiPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
@@ -929,7 +930,7 @@ public class UICalendars extends UIForm  {
       CalendarService calService = CalendarUtils.getCalendarService() ;
       String remoteCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       String username = CalendarUtils.getCurrentUser();
-      Calendar calendar = uiCalendars.xCalService.getCalendarHandler().getCalendarById(remoteCalendarId);
+      Calendar calendar = Calendar.build(uiCalendars.xCalService.getCalendarHandler().getCalendarById(remoteCalendarId));
       try {
         calService.refreshRemoteCalendar(username, remoteCalendarId);
         event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;
@@ -960,7 +961,7 @@ public class UICalendars extends UIForm  {
 
       UISharedForm sharedForm = uiPopupContainer.addChild(UISharedForm.class, null, null);
       String username = CalendarUtils.getCurrentUser() ;
-      Calendar cal = uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId);
+      Calendar cal = Calendar.build(uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId));
 
       if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName))
       {

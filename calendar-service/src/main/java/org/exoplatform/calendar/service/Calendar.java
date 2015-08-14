@@ -16,14 +16,12 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
-import org.exoplatform.calendar.model.AbstractModel;
 import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.services.jcr.util.IdGenerator;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.ConversationState;
 
 /**
  * Created by The eXo Platform SARL
@@ -31,9 +29,11 @@ import org.exoplatform.services.organization.OrganizationService;
  *          hung.nguyen@exoplatform.com
  * Jul 11, 2007  
  */
-public class Calendar extends AbstractModel {
+public class Calendar extends org.exoplatform.calendar.model.Calendar {
 
   private static final long serialVersionUID = 2638692203625602436L;
+  
+  private static final Log log = ExoLogger.getLogger(Calendar.class);
 
   public enum Type {
 
@@ -74,40 +74,12 @@ public class Calendar extends AbstractModel {
   
   public static final int      TYPE_ALL   = -1;
 
-  private String               name;
-
-  private String               calendarColor = Constants.N_POWDER_BLUE;
-
-  private String               description;
-
-  private String               timeZone;
-
-  private String               locale;
-
-  private String               calendarOwner;
-
-  private String[]             viewPermission;
-
-  private String[]             editPermission;
-
-  private String[]             groups;
-
-  private String               publicUrl;
-
-  private String               privateUrl;
-
   private String               _calendarPath;
 
   private boolean              _isDataInit    = false;
 
-  private boolean              _isPublic      = false;
-
   private int                  _calType;
   
-  private boolean       remote = false;
-  
-  private boolean hasChildren = false;
-
   public static final String   CALENDAR_PREF = "calendar";
 
   public Calendar() {
@@ -116,16 +88,6 @@ public class Calendar extends AbstractModel {
 
   public Calendar(String compositeId) {
     super(compositeId);
-    timeZone = TimeZone.getDefault().getID();
-    locale = Locale.getDefault().getISO3Country();
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public String getCalendarPath() {
@@ -136,128 +98,12 @@ public class Calendar extends AbstractModel {
     this._calendarPath = path;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String[] getEditPermission() {
-    return editPermission;
-  }
-
-  public void setEditPermission(String[] editPermission) {
-    this.editPermission = editPermission;
-  }
-
-  public String[] getViewPermission() {
-    return viewPermission;
-  }
-
-  public void setViewPermission(String[] viewPermission) {
-    this.viewPermission = viewPermission;
-  }
-
-  public String[] getGroups() {
-    return groups;
-  }
-
-  public void setGroups(String[] groups) {
-    this.groups = groups;
-  }
-
-  public boolean isPublic() {
-    return _isPublic;
-  }
-
-  public void setPublic(boolean isPublic) {
-    this._isPublic = isPublic;
-  }
-
-  public void setTimeZone(String timeZone) {
-    this.timeZone = timeZone;
-  }
-
-  public String getTimeZone() {
-    return timeZone;
-  }
-
-  public void setLocale(String locale) {
-    this.locale = locale;
-  }
-
-  public String getLocale() {
-    return locale;
-  }
-
-  public void setCalendarColor(String calendarColor) {
-    this.calendarColor = calendarColor;
-  }
-
-  public String getCalendarColor() {
-    return calendarColor;
-  }
-
   public void setDataInit(boolean isDataInit) {
     this._isDataInit = isDataInit;
   }
 
   public boolean isDataInit() {
     return _isDataInit;
-  }
-
-  public void setCalendarOwner(String calendarOwner) {
-    this.calendarOwner = calendarOwner;
-  }
-
-  public String getCalendarOwner() {
-    return calendarOwner;
-  }
-
-  public void setPublicUrl(String publicUrl) {
-    this.publicUrl = removeDomainName(publicUrl);
-  }
-
-  public String getPublicUrl() {
-    return publicUrl;
-  }
-
-  public void setPrivateUrl(String privateUrl) {
-    this.privateUrl = removeDomainName(privateUrl);
-  }
-
-  public String getPrivateUrl() {
-    return privateUrl;
-  }
-  
-  // This method used to back compatible with old url data contain domain name
-  private String removeDomainName(String url) {
-    if (url != null && url.indexOf("http") == 0) {
-      url = url.substring(url.indexOf(":") + 3);
-      url = url.substring(url.indexOf("/"));
-    }
-    return url;
-  }
-
-  /**
-   * used to compare 2 calendars or between a calendar and an object
-   *
-   * @param o a particular object
-   * @return true false
-   */
-  @Override
-  public boolean equals(Object o)
-  {
-    if (!(o instanceof Calendar)) return false;
-    return getId().equals(((Calendar) o).getId());
-  }
-
-  @Override
-  public int hashCode()
-  {
-    return getId().hashCode();
   }
 
   public int getCalType() {
@@ -268,22 +114,6 @@ public class Calendar extends AbstractModel {
     this._calType = calType;
   }
 
-  public boolean isRemote() {
-    return remote;
-  }
-
-  public void setRemote(boolean remote) {
-    this.remote = remote;
-  }
-
-  public boolean hasChildren() {
-    return hasChildren;
-  }
-
-  public void setHasChildren(boolean children) {
-    this.hasChildren = children;
-  }
-
   public boolean canEdit(String username) {
     return Utils.isCalendarEditable(username, this);
   }
@@ -292,5 +122,33 @@ public class Calendar extends AbstractModel {
     OrganizationService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
     return Calendar.Type.PERSONAL.type() == this.getCalType() && username != null 
         && !username.equals(this.getCalendarOwner()) && Utils.hasPermission(service, this.getViewPermission(), username);
+  }
+
+  public static Calendar build(org.exoplatform.calendar.model.Calendar newModel) {
+    Calendar cal = new Calendar();
+
+    cal.setId(newModel.getId());
+    cal.setName(newModel.getName());
+    cal.setDescription(newModel.getDescription());
+    cal.setLocale(newModel.getLocale());
+    cal.setTimeZone(newModel.getTimeZone());
+    cal.setCalendarColor(newModel.getCalendarColor());
+    cal.setCalendarOwner(newModel.getCalendarOwner());
+    cal.setPublicUrl(newModel.getPublicUrl());
+    cal.setPrivateUrl(newModel.getPrivateUrl());
+    cal.setLastModified(newModel.getLastModified());
+    cal.setGroups(newModel.getGroups());
+    cal.setViewPermission(newModel.getViewPermission());
+    cal.setEditPermission(newModel.getEditPermission());
+    cal.setRemote(newModel.isRemote());
+    cal.setHasChildren(newModel.hasChildren());
+    CalendarService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+    try {
+      cal.setCalType(service.getTypeOfCalendar(ConversationState.getCurrent().getIdentity().getUserId(), cal.getId()));
+    } catch (Exception e) {
+      log.error(e);
+    }
+    
+    return cal;
   }
 }

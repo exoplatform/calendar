@@ -27,16 +27,16 @@ import java.util.Collection;
  */
 public class AssertUtil {
 
-  public static void assertNotContainCalendarName(Collection<Calendar> calendars, String name) {
-    for (Calendar calendar : calendars) {
+  public static void assertNotContainCalendarName(Collection<org.exoplatform.calendar.model.Calendar> calendars, String name) {
+    for (org.exoplatform.calendar.model.Calendar calendar : calendars) {
       if (calendar.getName().equals(name)) {
         fail("List must not contain the calendar '" + name + "'");
       }
     }
   }
 
-  public static void assertContainCalendarName(Collection<Calendar> calendars, String name) {
-    for (Calendar calendar : calendars) {
+  public static void assertContainCalendarName(Collection<org.exoplatform.calendar.model.Calendar> calendars, String name) {
+    for (org.exoplatform.calendar.model.Calendar calendar : calendars) {
       if (calendar.getName().equals(name)) {
         return;
       }

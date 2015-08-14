@@ -27,25 +27,22 @@ import org.exoplatform.calendar.model.Event;
  * @author <a href="mailto:tuyennt@exoplatform.com">Tuyen Nguyen The</a>.
  */
 public class TestUtil {
-  public static Calendar createPersonalCalendar(CalendarHandler calHandler, String name, String username) {
+  public static org.exoplatform.calendar.model.Calendar createPersonalCalendar(CalendarHandler calHandler, String name, String username) {
     Calendar cal = new Calendar();
     cal.setName(name);
     cal.setCalType(Calendar.Type.PERSONAL.type());
     cal.setCalendarOwner(username);
 
-    cal = calHandler.saveCalendar(cal);
-    return cal;
+    return calHandler.saveCalendar(cal);
   }
 
-  public static Calendar createGroupCalendar(CalendarHandler calHandler, String calName, String[] groups) {
+  public static org.exoplatform.calendar.model.Calendar createGroupCalendar(CalendarHandler calHandler, String calName, String[] groups) {
     Calendar cal = new Calendar();
     cal.setName(calName);
     cal.setCalType(Calendar.Type.GROUP.type());
     cal.setGroups(groups);
 
-    cal = calHandler.saveCalendar(cal);
-
-    return cal;
+    return calHandler.saveCalendar(cal);
   }
 
   public static Event createEvent(EventHandler handler, String summary, Date from, Date to, boolean isPrivate, Calendar calendar, EventCategory category) {

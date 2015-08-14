@@ -618,7 +618,7 @@ public class UIWeekView extends UICalendarView {
         boolean isMove = false;
         try {
           CalendarHandler handler = calendarview.xCalService.getCalendarHandler();
-          org.exoplatform.calendar.service.Calendar calendar = handler.getCalendarById(eventCalendar.getCalendarId());
+          org.exoplatform.calendar.model.Calendar calendar = handler.getCalendarById(eventCalendar.getCalendarId());
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {

@@ -16,12 +16,11 @@
  **/  
 package org.exoplatform.calendar.storage;
 
-import org.exoplatform.calendar.model.query.CalendarQuery;
-import org.exoplatform.calendar.service.Calendar;
-
 import java.util.List;
 
-public interface CalendarDAO extends GenericDAO<Calendar, String> {
+import org.exoplatform.calendar.model.query.CalendarQuery;
 
-  List<Calendar> findCalendars(CalendarQuery query);
+public interface CalendarDAO extends GenericDAO<org.exoplatform.calendar.model.Calendar, String> {
+
+  List<org.exoplatform.calendar.model.Calendar> findCalendars(CalendarQuery query);
 }

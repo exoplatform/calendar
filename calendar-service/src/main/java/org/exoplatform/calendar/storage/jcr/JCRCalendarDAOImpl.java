@@ -74,26 +74,34 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
   
   @Override
-  public Calendar save(Calendar calendar) {
+  public org.exoplatform.calendar.model.Calendar save(org.exoplatform.calendar.model.Calendar calendar) {
     return persist(calendar, true);
   }
 
-  public Calendar update(Calendar cal) {
+  @Override
+  public org.exoplatform.calendar.model.Calendar update(org.exoplatform.calendar.model.Calendar cal) {
     return persist(cal, false);
   }
 
-  private Calendar persist(Calendar cal, boolean isNew) {
-    int type = cal.getCalType();
+  private org.exoplatform.calendar.model.Calendar persist(org.exoplatform.calendar.model.Calendar cal, boolean isNew) {
+    Calendar o;
+    if (cal instanceof Calendar) {
+      o = (Calendar)cal;
+    } else {
+      o = Calendar.build(cal);
+    }
+
+    int type = o.getCalType();
     
     if (type == Calendar.Type.PERSONAL.type()) {
       try {
-        dataStorage.saveUserCalendar(cal.getCalendarOwner(), cal, isNew);
+        dataStorage.saveUserCalendar(o.getCalendarOwner(), o, isNew);
       } catch (Exception ex) {
         LOG.error(ex);
       }
     } else if (type == Calendar.Type.GROUP.type()) {
       try {
-        dataStorage.savePublicCalendar(cal, isNew, null);
+        dataStorage.savePublicCalendar(o, isNew, null);
       } catch (Exception ex) {
         LOG.error(ex);
       }
@@ -135,8 +143,8 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
   }
 
   @Override
-  public List<Calendar> findCalendars(CalendarQuery query) {
-    List<Calendar> calendars = new LinkedList<Calendar>();
+  public List<org.exoplatform.calendar.model.Calendar> findCalendars(CalendarQuery query) {
+    List<org.exoplatform.calendar.model.Calendar> calendars = new LinkedList<org.exoplatform.calendar.model.Calendar>();
     List<String> excludes = Collections.emptyList();
     String[] excludesId = query.getExclusions();
     if (excludesId != null) {
@@ -174,7 +182,7 @@ public class JCRCalendarDAOImpl implements CalendarDAO {
         }
       }
       
-      for (Calendar cal : calendars) {
+      for (org.exoplatform.calendar.model.Calendar cal : calendars) {
         cal.setDS(JCRStorage.JCR_STORAGE);
       }
 

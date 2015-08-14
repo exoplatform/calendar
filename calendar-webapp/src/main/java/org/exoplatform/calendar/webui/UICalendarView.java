@@ -433,7 +433,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    *      in template
    */
   protected boolean isEventEditable(org.exoplatform.calendar.model.Event event) throws Exception {  
-    org.exoplatform.calendar.service.Calendar calendar = xCalService.getCalendarHandler().getCalendarById(event.getCalendarId());
+    org.exoplatform.calendar.model.Calendar calendar = xCalService.getCalendarHandler().getCalendarById(event.getCalendarId());
     return Utils.hasPermission(calendar.getEditPermission());
   }
 
@@ -1414,7 +1414,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           if (calendarData != null && calendarData.getCalendarById(calendarId) != null)
             canEdit = Utils.hasPermission(Utils.getEditPerUsers(calendarData.getCalendarById(calendarId)));
         } else if (CalendarUtils.PUBLIC_TYPE.equals(calType)) {
-          org.exoplatform.calendar.service.Calendar cal = uiCalendarView.xCalService.getCalendarHandler().getCalendarById(calendarId);
+          org.exoplatform.calendar.model.Calendar cal = uiCalendarView.xCalService.getCalendarHandler().getCalendarById(calendarId);
           if (cal != null) {
             canEdit = Utils.hasPermission(cal.getEditPermission());
           }

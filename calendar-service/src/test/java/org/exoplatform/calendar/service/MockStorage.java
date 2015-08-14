@@ -42,21 +42,21 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
 
   class MockCalendarDAO implements CalendarDAO {
 
-    private HashMap<String, Calendar> cals = new HashMap<String, Calendar>();
+    private HashMap<String, org.exoplatform.calendar.model.Calendar> cals = new HashMap<String, org.exoplatform.calendar.model.Calendar>();
 
     @Override
-    public Calendar getById(String id) {
+    public org.exoplatform.calendar.model.Calendar getById(String id) {
       return cals.get(id);
     }
 
     @Override
-    public Calendar save(Calendar cal) {
+    public org.exoplatform.calendar.model.Calendar save(org.exoplatform.calendar.model.Calendar cal) {
       cals.put(cal.getId(), cal);
       return cal;
     }
 
     @Override
-    public Calendar remove(String id) {
+    public org.exoplatform.calendar.model.Calendar remove(String id) {
       return cals.remove(id);
     }
 
@@ -66,12 +66,12 @@ public class MockStorage extends BaseComponentPlugin implements Storage {
     }
 
     @Override
-    public List<Calendar> findCalendars(CalendarQuery query) {
+    public List<org.exoplatform.calendar.model.Calendar> findCalendars(CalendarQuery query) {
       return null;
     }
 
     @Override
-    public Calendar update(Calendar entity) {
+    public org.exoplatform.calendar.model.Calendar update(org.exoplatform.calendar.model.Calendar entity) {
       return null;
     }
   }

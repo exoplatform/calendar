@@ -76,8 +76,9 @@ public class UICalendarWorkingContainer extends UIContainer  {
     Identity identity = ConversationState.getCurrent().getIdentity();
     CalendarQuery query = new CalendarQuery();
     query.setIdentity(identity);
-    List<Calendar> tmp = xCalService.getCalendarHandler().findCalendars(query);
-    for (Calendar cal : tmp) {
+    List<org.exoplatform.calendar.model.Calendar> tmp = xCalService.getCalendarHandler().findCalendars(query);
+    for (org.exoplatform.calendar.model.Calendar cal : tmp) {
+      Calendar calendar = Calendar.build(cal);
       int t = calService.getTypeOfCalendar(identity.getUserId(), cal.getId());
       String typeName;
       Calendar.Type type = Calendar.Type.getType(t);
@@ -86,7 +87,7 @@ public class UICalendarWorkingContainer extends UIContainer  {
       } else {
         typeName = type.name();
       }
-      if (cal.isShared(identity.getUserId())) {
+      if (calendar.isShared(identity.getUserId())) {
         typeName = Calendar.Type.SHARED.name();
       }
       List<Calendar> cals = calendars.get(typeName); 
@@ -94,7 +95,7 @@ public class UICalendarWorkingContainer extends UIContainer  {
         cals = new LinkedList<Calendar>();
         calendars.put(typeName, cals);
       }
-      cals.add(cal);
+      cals.add(calendar);
       colorMap.put(cal.getId(), cal.getCalendarColor());
     }
 

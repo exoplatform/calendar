@@ -75,11 +75,14 @@ public class JCREventDAOImpl implements EventDAO {
   private Event persist(Event event, boolean isNew) {
     try {
       String calendarId = event.getCalendarId();
-      Calendar cal = context.getCalendarDAO().getById(calendarId);
+      org.exoplatform.calendar.model.Calendar cal = context.getCalendarDAO().getById(calendarId);
       if (cal == null) {
         return null;
       }
-      int calType = cal.getCalType();
+      int calType = Calendar.TYPE_ALL;
+      if (cal instanceof Calendar) {
+        calType = ((Calendar)cal).getCalType();
+      }
       CalendarEvent calEvent = CalendarEvent.build(event);
       if (calType == Calendar.Type.PERSONAL.type()) {
         dataStorage.saveUserEvent(cal.getCalendarOwner(), cal.getId(), calEvent, isNew);
@@ -103,8 +106,11 @@ public class JCREventDAOImpl implements EventDAO {
       if (event == null) {
         return null;
       }
-      Calendar cal = context.getCalendarDAO().getById(event.getCalendarId());
-      int type = cal.getCalType();
+      org.exoplatform.calendar.model.Calendar cal = context.getCalendarDAO().getById(event.getCalendarId());
+      int type = Calendar.TYPE_ALL;
+      if (cal instanceof Calendar) {
+        type = ((Calendar)cal).getCalType();
+      }
 
       if (type == Calendar.Type.PERSONAL.type()) {
         dataStorage.removeUserEvent(cal.getCalendarOwner(), cal.getId(), id);
