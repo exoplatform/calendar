@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -42,7 +43,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarImportExport;
@@ -50,6 +53,7 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.service.FeedData;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
@@ -108,6 +112,10 @@ public class CalendarWebservice implements ResourceContainer {
   }
 
   private static CalendarService calendarService = null;
+  private ExtendedCalendarService xCalService;
+  
+  
+  
   public static CalendarService calendarServiceInstance(){
 	  if(calendarService == null) calendarService = (CalendarService)ExoContainerContext.getCurrentContainer()
               .getComponentInstanceOfType(CalendarService.class);
@@ -122,7 +130,9 @@ public class CalendarWebservice implements ResourceContainer {
     return calendarService;
   }
 
-  public CalendarWebservice() {}
+  public CalendarWebservice(ExtendedCalendarService xCalService) {
+    this.xCalService = xCalService;
+  }
 
   private boolean validateEventType(String type) {
     return type != null && (CalendarEvent.TYPE_EVENT.equals(type) || CalendarEvent.TYPE_TASK.equals(type));
@@ -692,7 +702,7 @@ public class CalendarWebservice implements ResourceContainer {
         return (Response) getCalendarService();
       }
       String username = ConversationState.getCurrent().getIdentity().getUserId();
-      CalendarEvent calEvent = calendarService.getEventById(eventid);
+      CalendarEvent calEvent = CalendarEvent.build(xCalService.getEventHandler().getEventById(eventid));
       CalendarSetting calSetting = calendarService.getCalendarSetting(username);
       if(calEvent.getAttachment()!= null && !calEvent.getAttachment().isEmpty()) calEvent.setAttachment(null);
       SingleEvent data = makeSingleEvent(calSetting, calEvent);

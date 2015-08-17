@@ -23,11 +23,11 @@ import java.util.List;
  * @author Hung Nguyen (hung.nguyen@exoplatform.com)
  * @since July 25, 2007
  */
-public class EventPageList extends JCRPageList {
+public class EventPageList<T> extends JCRPageList<T> {
 
-  private List<CalendarEvent> eventList_ = null;
+  private List<T> eventList_ = null;
 
-  public EventPageList(List<CalendarEvent> eventList, long pageSize) throws Exception {
+  public EventPageList(List<T> eventList, long pageSize) throws Exception {
     super(pageSize);
     eventList_ = eventList;
     setAvailablePage(eventList_.size());
@@ -42,7 +42,7 @@ public class EventPageList extends JCRPageList {
     else {
       position = (page - 1) * pageSize;
     }
-    currentListPage_ = new ArrayList<CalendarEvent>();
+    currentListPage_ = new ArrayList<T>();
     Long objPos = position;
     if (position + pageSize > eventList_.size()) {
       currentListPage_ = eventList_.subList(objPos.intValue(), eventList_.size());
@@ -53,7 +53,7 @@ public class EventPageList extends JCRPageList {
   }
 
   @Override
-  public List<CalendarEvent> getAll() throws Exception {
+  public List<T> getAll() throws Exception {
     return eventList_;
   }
 

@@ -75,12 +75,14 @@
 						color = uicomponent.getColors().get(ce.getCalendarId()) ;
 						Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
 						String recurId = ce.getRecurrenceId();
-					  def isEditable;
-						if (ce.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(ce);
+					   def isEditable;
+					   def username = CalendarUtils.getCurrentUser();
+					 	def calType = CalendarUtils.getCalendarService().getTypeOfCalendar(username, ce.getCalendarId());
+						if (calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(ce);
 						else isEditable = "true";
 					%>
-						<div unselectable="on" class="eventContainerBorder eventBoxes clearfix" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink" isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
-						  <input type="hidden" name="${ce.id}calType" value="$ce.calType" />
+						<div unselectable="on" class="eventContainerBorder eventBoxes clearfix" calType="$calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink" isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
+						  <input type="hidden" name="${ce.id}calType" value="$calType" />
 						  <input type="hidden" name="${ce.id}calendarId" value="$ce.calendarId" />          
 						  <input type="hidden" name="${ce.id}startTime" value="" />
 						  <input type="hidden" name="${ce.id}finishTime" value="" />
@@ -151,11 +153,13 @@
 						      Boolean isOccur = (ce.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(ce.getRepeatType()) && (ce.getIsExceptionOccurrence() == null || !ce.getIsExceptionOccurrence()));
 						      String recurId = ce.getRecurrenceId();
 							    def isEditable;
-							    if (ce.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(ce);
+							    def username = CalendarUtils.getCurrentUser();
+							  	def calType = CalendarUtils.getCalendarService().getTypeOfCalendar(username, ce.getCalendarId());
+							    if (calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(ce);
 							    else isEditable = "true";
 						  %>
-						  <div class="eventContainerBorder eventBoxes $color" calType="$ce.calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink"  startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
-							<input type="hidden" name="${ce.id}calType" value="$ce.calType" />
+						  <div class="eventContainerBorder eventBoxes $color" calType="$calType" eventCat="$ce.eventCategoryId" eventid="$ce.id" calid="$ce.calendarId" actionlink="$actionLink"  startTime="$beginTime" endTime="$endTime" isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
+							<input type="hidden" name="${ce.id}calType" value="$calType" />
 							<input type="hidden" name="${ce.id}calendarId" value="$ce.calendarId" />          
 							<input type="hidden" name="${ce.id}startTime" value="" />
 							<input type="hidden" name="${ce.id}finishTime" value="" />

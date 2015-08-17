@@ -38,13 +38,14 @@ import java.util.TimeZone;
 import javax.jcr.PathNotFoundException;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
@@ -70,7 +71,6 @@ import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.cssfile.CssClassUtils;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormRadioBoxInput;
@@ -169,10 +169,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   private String dateTimeFormat_;
 
-  protected List<String> privateCalendarIds = new ArrayList<String>();
-
-  protected List<String> publicCalendarIds = new ArrayList<String>();
-
   protected Calendar instanceTempCalendar_ = null;
 
   final public static Map<Integer, String> monthsName_ = new HashMap<Integer, String>();
@@ -193,7 +189,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   
   protected ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
 
-  abstract LinkedHashMap<String, CalendarEvent> getDataMap();
+  abstract LinkedHashMap<String, Event> getDataMap();
 
   private String singleDeletedEventId = null;
   private String singleDeletedCalendarId = null;
@@ -323,7 +319,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     
     List<org.exoplatform.calendar.service.Calendar> cals = getCalendars().get(org.exoplatform.calendar.service.Calendar.Type.PERSONAL.name());
     if (cals != null) {
-      for (org.exoplatform.calendar.service.Calendar cal : cals) {
+      for (org.exoplatform.calendar.service.Calendar cal : filterHidden(cals)) {
         list.add(cal.getId());
       }      
     }
@@ -347,7 +343,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
     }
 
-    for (org.exoplatform.calendar.service.Calendar cal : other) {
+    for (org.exoplatform.calendar.service.Calendar cal : filterHidden(other)) {
       list.add(cal.getId());
     }
     return list;
@@ -360,7 +356,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     
     List<org.exoplatform.calendar.service.Calendar> cals = getCalendars().get(org.exoplatform.calendar.service.Calendar.Type.SHARED.name());
     if (cals != null) {
-      for (org.exoplatform.calendar.service.Calendar cal : cals) {
+      for (org.exoplatform.calendar.service.Calendar cal : filterHidden(cals)) {
         list.add(cal.getId());
       }      
     }
@@ -436,9 +432,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    * @see <code>UIWeekview.gtmpl, UIDayview.gtmpl, UIDayview.gtmpl</code> - used
    *      in template
    */
-  protected boolean isEventEditable(CalendarEvent event) throws Exception {
-    org.exoplatform.calendar.service.Calendar calendar = CalendarUtils.getCalendar(event.getCalType(),
-            event.getCalendarId());
+  protected boolean isEventEditable(org.exoplatform.calendar.model.Event event) throws Exception {  
+    org.exoplatform.calendar.service.Calendar calendar = xCalService.getCalendarHandler().getCalendarById(event.getCalendarId());
     return Utils.hasPermission(calendar.getEditPermission());
   }
 
@@ -477,17 +472,17 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     query.setCalendarIds(calendarIds.toArray(new String[calendarIds.size()]));
     ListAccess<org.exoplatform.calendar.model.Event> events = xCalService.getEventHandler().findEventsByQuery(query);
     
-    for (org.exoplatform.calendar.model.Event evt : events.load(0, -1)) {
-      if (evt.getRepeatType() == null || evt.getRepeatType().isEmpty() || 
-          evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
-        evtInMonth.add(evt);
-      } else {
+    for (org.exoplatform.calendar.model.Event evt : events.load(0, -1)) {      
+      if (evt.getRepeatType() != null &&
+          !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
         CalendarEvent depEvt = CalendarEvent.build(evt);
         Map<String, CalendarEvent> map = CalendarUtils.getCalendarService().getOccurrenceEvents(depEvt, getBeginDateOfMonth(), cal, 
-                                                               getCalendarSetting().getTimeZone());
+                                                                                                getCalendarSetting().getTimeZone());
         for (CalendarEvent e : map.values()) {
           evtInMonth.add(e);
         }
+      } else {
+        evtInMonth.add(evt);
       }
     }
   }
@@ -652,26 +647,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   protected String keyGen(int day, int month, int year) {
     return String.valueOf(day) + CalendarUtils.UNDERSCORE + String.valueOf(month)
             + CalendarUtils.UNDERSCORE + String.valueOf(year);
-  }
-
-  public List<CalendarEvent> getList() throws Exception {
-    CalendarService calendarService = CalendarUtils.getCalendarService();
-    List<CalendarEvent> events = new ArrayList<CalendarEvent>();
-    if (privateCalendarIds.size() > 0) {
-      events = calendarService.getUserEventByCalendar(CalendarUtils.getCurrentUser(),
-              privateCalendarIds);
-    }
-    if (publicCalendarIds.size() > 0) {
-      if (events.size() > 0) {
-        List<CalendarEvent> publicEvents = calendarService.getGroupEventByCalendar(publicCalendarIds);
-        for (CalendarEvent event : publicEvents) {
-          events.add(event);
-        }
-      } else {
-        events = calendarService.getGroupEventByCalendar(publicCalendarIds);
-      }
-    }
-    return events;
   }
 
   protected void gotoDate(int day, int month, int year) {
@@ -961,7 +936,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     String[] list = eventIds.split(",");
     List<CalendarEvent> dataList = new ArrayList<CalendarEvent>();
     for (int i = 0; i < list.length; i++) {
-      CalendarEvent evt = getDataMap().get(list[i]);
+      CalendarEvent evt = CalendarEvent.build(getDataMap().get(list[i]));
       dataList.add(evt);
     }
     return dataList;
@@ -1001,7 +976,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class AddEventActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiForm = event.getSource();
       String username = CalendarUtils.getCurrentUser();
       if (CalendarUtils.getCalendarOption().isEmpty()) {
@@ -1067,7 +1042,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   //, confirm="UICalendarView.msg.confirm-delete"
   public static class DeleteEventActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet calendarPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       /** check no event selected */
@@ -1104,7 +1079,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmCloseActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet calendarPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       UICalendarViewContainer uiContainer = uiCalendarView.getAncestorOfType(UICalendarViewContainer.class);
@@ -1136,7 +1111,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
               if (uiListView.getDataMap().containsKey(eventId)) {
                 long currentPage = uiListView.getCurrentPage();
 
-                List<CalendarEvent> events = uiListView.getPageList().getAll(); // get all events displayed in list
+                List<Event> events = uiListView.getPageList().getAll(); // get all events displayed in list
                 events.remove(uiListView.getDataMap().get(eventId)); // remove the deleted event from the list
                 uiListView.update(new EventPageList(events, 10)); // update the page list
 
@@ -1194,7 +1169,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public static class AbortCloseActionListener extends EventListener<UICalendarView> {
 
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       uiCalendarView.singleDeletedEventId = null;
       uiCalendarView.singleDeletedCalendarId = null;
@@ -1206,7 +1181,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public static class CancelDeleteEvent extends EventListener<UICalendarView> {
 
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
@@ -1218,7 +1193,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   public static class ConfirmDeleteEvent extends EventListener<UICalendarView> {
 
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       uiCalendarView.allDelete_ = true;
       UICalendarPortlet calPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
@@ -1301,19 +1276,19 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class ChangeCategoryActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
     }
   }
 
   static public class EventSelectActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
     }
   }
 
   static public class ViewActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       uiPortlet.cancelAction();
@@ -1340,7 +1315,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
 
       if (uiCalendarView.getDataMap() != null) {
-        eventCalendar = uiCalendarView.getDataMap().get(eventId);
+        eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
 
         if (isOccur && !Utils.isEmpty(recurId)) {
           eventCalendar = uiCalendarView.recurrenceEventsMap.get(eventId).get(recurId);
@@ -1382,13 +1357,29 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class EditActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
       UIPopupContainer uiPopupContainer = uiPortlet.createUIComponent(UIPopupContainer.class, null, null);
       CalendarEvent eventCalendar = null;
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
+      Boolean isOccur = false;
+      if (!Utils.isEmpty(event.getRequestContext().getRequestParameter(ISOCCUR))) {
+        isOccur = Boolean.parseBoolean(event.getRequestContext().getRequestParameter(ISOCCUR));
+      }
+      // need to get recurrence-id
+      String recurId = null;
+      if (isOccur) {
+        recurId = event.getRequestContext().getRequestParameter(RECURID);  
+      }
+      if (isOccur && !Utils.isEmpty(recurId)) {          
+        eventCalendar = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
+      } else {
+        eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
+      }
+      
+      String username = CalendarUtils.getCurrentUser();
       String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
 
       // Need to reload Event from JCR to check if it's still existing on calendar or not
@@ -1493,7 +1484,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class DeleteActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
@@ -1516,9 +1507,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       try {
         // if event is occurrence event (instance of repetitive event)
         if (isOccur && !Utils.isEmpty(recurId)) {
-          if (uiCalendarView instanceof UIPreview)
-            uiCalendarView.setCurrentOccurrence(((UIPreview) uiCalendarView).getEvent());
-          else uiCalendarView.setCurrentOccurrence(uiCalendarView.getRecurrenceMap()
+          if (uiCalendarView instanceof UIPreview) {
+            Event occurent  = ((UIPreview) uiCalendarView).getEvent();
+            uiCalendarView.setCurrentOccurrence(CalendarEvent.build(occurent));            
+          } else uiCalendarView.setCurrentOccurrence(uiCalendarView.getRecurrenceMap()
                   .get(eventId)
                   .get(recurId));
           UIConfirmForm confirmForm = uiPopupAction.activate(UIConfirmForm.class, 400);
@@ -1596,7 +1588,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
               if (uiListView.getDataMap().containsKey(eventId)) {
                 long currentPage = uiListView.getCurrentPage();
 
-                List<CalendarEvent> events = uiListView.getPageList().getAll(); // get all events displayed in list
+                List<Event> events = uiListView.getPageList().getAll(); // get all events displayed in list
                 events.remove(uiListView.getDataMap().get(eventId)); // remove the deleted event from the list
                 uiListView.update(new EventPageList(events, 10)); // update the page list
 
@@ -1653,7 +1645,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class TaskViewActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       String viewType = event.getRequestContext().getRequestParameter(OBJECTID);
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
@@ -1663,14 +1655,14 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       java.util.Calendar fromcalendar = uiListView.getBeginDay(new GregorianCalendar(uiListView.getCurrentYear(),
               uiListView.getCurrentMonth(),
               uiListView.getCurrentDay()));
-      eventQuery.setFromDate(fromcalendar);
+      eventQuery.setFromDate(fromcalendar.getTimeInMillis());
       java.util.Calendar tocalendar = uiListView.getEndDay(new GregorianCalendar(uiListView.getCurrentYear(),
               uiListView.getCurrentMonth(),
               uiListView.getCurrentDay()));
-      eventQuery.setToDate(tocalendar);
+      eventQuery.setToDate(tocalendar.getTimeInMillis());
       eventQuery = uiPortlet.findFirstComponentOfType(UICalendars.class).getEventQuery(eventQuery);
       uiListView.setEventQuery(eventQuery);
-      List<CalendarEvent> allEvents = uiListView.getAllEvents(eventQuery);
+      List<Event> allEvents = uiListView.getAllEvents(eventQuery);
       uiListView.update(new EventPageList(allEvents, 10));
       uiListView.setShowEventAndTask(false);
       uiListView.setDisplaySearchResult(false);
@@ -1685,7 +1677,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class GotoDateActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       try {
         UICalendarView calendarview = event.getSource();
         String viewType = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -1769,7 +1761,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class SwitchViewActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiView = event.getSource();
       String viewType = event.getRequestContext().getRequestParameter(OBJECTID);
       uiView.setViewType(viewType);
@@ -1785,7 +1777,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class QuickAddActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiForm = event.getSource();
       if (CalendarUtils.getCalendarOption().isEmpty()) {
         event.getRequestContext()
@@ -1838,7 +1830,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class MoveNextActionListener extends EventListener<UIMonthView> {
     @Override
-    public void execute(Event<UIMonthView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIMonthView> event) throws Exception {
       UICalendarView calendarview = event.getSource();
       try {
         String type = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -1861,7 +1853,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class MovePreviousActionListener extends EventListener<UIMonthView> {
     @Override
-    public void execute(Event<UIMonthView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIMonthView> event) throws Exception {
       UICalendarView calendarview = event.getSource();
       try {
         String type = event.getRequestContext().getRequestParameter(OBJECTID);
@@ -1884,7 +1876,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class ExportEventActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiComponent = event.getSource();
       UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class);
       String currentUser = CalendarUtils.getCurrentUser();
@@ -1955,7 +1947,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   static public class MoveEventActionListener extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiComponent = event.getSource();
       String eventIds = event.getRequestContext().getRequestParameter("objectId");
       String selectedCalendarId = event.getRequestContext().getRequestParameter("calendarId");
@@ -1976,7 +1968,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmDeleteOnlyInstance extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       // delete the only selected event
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
@@ -2086,7 +2078,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmDeleteAllSeries extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
       UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
@@ -2144,7 +2136,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmDeleteFollowingSeries extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView vForm = event.getSource();
       CalendarEvent newEvent = vForm.getcurrentOccurrence();
       CalendarService calService = CalendarUtils.getCalendarService();
@@ -2166,7 +2158,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmDeleteCancel extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       uiCalendarView.setCurrentOccurrence(null);
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
@@ -2179,7 +2171,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmUpdateOnlyInstance extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       CalendarEvent newEvent = uiCalendarView.getcurrentOccurrence();
       CalendarService calService = CalendarUtils.getCalendarService();
@@ -2202,7 +2194,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmUpdateFollowSeries extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       CalendarEvent newEvent = uiCalendarView.getcurrentOccurrence();
       CalendarService calService = CalendarUtils.getCalendarService();
@@ -2226,7 +2218,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmUpdateAllSeries extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       CalendarEvent newEvent = uiCalendarView.getcurrentOccurrence();
       CalendarService calService = CalendarUtils.getCalendarService();
@@ -2250,7 +2242,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   public static class ConfirmUpdateCancel extends EventListener<UICalendarView> {
     @Override
-    public void execute(Event<UICalendarView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
       UICalendarView uiCalendarView = event.getSource();
       uiCalendarView.setCurrentOccurrence(null);
       UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);

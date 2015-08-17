@@ -19,20 +19,30 @@ package org.exoplatform.calendar.webui;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.jcr.PathNotFoundException;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.popup.UIConfirmForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.JavascriptManager;
 import org.exoplatform.web.application.RequireJS;
@@ -40,7 +50,6 @@ import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 
 /**
@@ -83,10 +92,10 @@ public class UIWeekView extends UICalendarView {
 
   public static final String    CURRENT_DATE     = "currentDate"; 
 
-  protected Map<String, List<CalendarEvent>> eventData_ = new HashMap<String, List<CalendarEvent>>() ;
-  protected List<CalendarEvent> allDayEvent = new ArrayList<CalendarEvent>();
-  protected LinkedHashMap<String, CalendarEvent> dataMap_ = new LinkedHashMap<String,  CalendarEvent>() ;
-  protected  List<CalendarEvent> daysData_  = new ArrayList<CalendarEvent>() ;
+  protected Map<String, List<Event>> eventData_ = new HashMap<String, List<Event>>() ;
+  protected List<Event> allDayEvent = new ArrayList<Event>();
+  protected LinkedHashMap<String, Event> dataMap_ = new LinkedHashMap<String,  Event>() ;
+  protected  List<Event> daysData_  = new ArrayList<Event>() ;
   protected boolean isShowCustomView_ = false ;
   protected Date beginDate_ ;
   protected Date endDate_ ; 
@@ -137,84 +146,71 @@ public class UIWeekView extends UICalendarView {
 
   @Override
   public void refresh() throws Exception {
+    super.refresh();
     init();
     eventData_.clear() ;
     allDayEvent.clear();
+    recurrenceEventsMap.clear();
     int i = 0 ;
     Calendar c = getBeginDateOfWeek();
-    int beginMonth = c.get(Calendar.MONTH);
     int maxDay = 7 ;
     if(isShowCustomView_) maxDay = 5 ;
     while(i++ <maxDay) {
-      List<CalendarEvent> list = new ArrayList<CalendarEvent>();
+      List<Event> list = new LinkedList<Event>();
       String key = keyGen(c.get(Calendar.DATE), c.get(Calendar.MONTH), c.get(Calendar.YEAR)) ;
       eventData_.put(key, list) ;
       c.add(Calendar.DATE, 1) ;
     }
-    CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    String username = CalendarUtils.getCurrentUser() ;
-    EventQuery eventQuery = new EventQuery() ;
-    eventQuery.setFromDate(getBeginDateOfWeek()) ;
+    
     Calendar endDateOfWeek = getEndDateOfWeek();
     Date toDate = endDateOfWeek.getTime();
     toDate.setTime(toDate.getTime()-1);
     endDateOfWeek.setTime(toDate);
-    eventQuery.setToDate(endDateOfWeek) ; 
-    eventQuery.setExcludeRepeatEvent(true);
-
-    /** get all norepeat events */
-    List<CalendarEvent> allEvents;
-    String[] publicCalendars  = getPublicCalendars();
-    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
-
+    List<Event> allEvents = getEventInMonth(getBeginDateOfWeek().getTimeInMillis(), endDateOfWeek.getTimeInMillis());
     if (isInSpace()) {
-      eventQuery.setCalendarId(publicCalendars);
-      allEvents = calendarService.getPublicEvents(eventQuery);
-    }
-    else {
-      allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-          privateCalendars, publicCalendars, null);
-    }
-
-    /** get exception occurrences, exclude original recurrence events */
-    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, null);
-
-    String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
-      Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
-      while (recurEventsIter.hasNext()) {
-        CalendarEvent recurEvent = recurEventsIter.next();
-        Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(recurEvent, eventQuery.getFromDate(), eventQuery.getToDate(), timezone);
-        if (tempMap != null) {
-          recurrenceEventsMap.put(recurEvent.getId(), tempMap);
-          allEvents.addAll(tempMap.values());
+      List<String> publicCalendars  = Arrays.asList(getPublicCalendars());
+      Iterator<Event> iter = allEvents.iterator();
+      while (iter.hasNext()) {
+        Event evt = iter.next();
+        if (!publicCalendars.contains(evt.getCalendarId())) {
+          iter.remove();
         }
       }
     }
 
-    Iterator<CalendarEvent> iter = allEvents.iterator() ;
+    for (Event evt : allEvents) {
+      if (evt.getRepeatType() != null && evt.getRecurrenceId() != null &&
+          !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT) ) {
+        Map<String, CalendarEvent> recurrMap = recurrenceEventsMap.get(evt.getOriginalReference());
+        if (recurrMap == null) {
+          recurrMap = new HashMap<String, CalendarEvent>();
+          recurrenceEventsMap.put(evt.getOriginalReference(), recurrMap);          
+        }
+        recurrMap.put(evt.getRecurrenceId(), (CalendarEvent)evt);
+      }
+    }
+    
+    Iterator<Event> iter = allEvents.iterator() ;
     while(iter.hasNext()) {
-      CalendarEvent event = iter.next() ;
+      Event event = iter.next() ;
       Date beginEvent = event.getFromDateTime() ;
       Date endEvent = event.getToDateTime() ;
       long eventAmount = endEvent.getTime() - beginEvent.getTime() ;
-      i = 0 ;
+      i = 0;
       c = getBeginDateOfWeek();
       while(i++ < maxDay) {
         String key = keyGen(c.get(Calendar.DATE), c.get(Calendar.MONTH), c.get(Calendar.YEAR)) ;
         if(isSameDate(c.getTime(), beginEvent) && (isSameDate(c.getTime(), endEvent)) && eventAmount < CalendarUtils.MILISECONS_OF_DAY){
-          eventData_.get(key).add(event) ;
-          iter.remove() ;
-        }  
+          eventData_.get(key).add(event);
+          iter.remove();
+        }
         c.add(Calendar.DATE, 1) ;
       }
     }
 
-    for( CalendarEvent ce : allEvents) {
+    for( Event ce : allEvents) {
       allDayEvent.add(ce);
     }
-
   }
 
 
@@ -282,13 +278,15 @@ public class UIWeekView extends UICalendarView {
     stringBuilder.append("\n</tr>")
         .append("\n</table>");
 
-    for (CalendarEvent event : allDayEvent) {
+    for (Event event : allDayEvent) {
       long begindate  =  event.getFromDateTime().getTime() ;
       long enddate    = event.getToDateTime().getTime() ;
       //long startTime  = event.getFromDateTime().getTime() ;
       //long finishTime = event.getToDateTime().getTime() ;
       String eventId  = event.getId();
-      String calType  = event.getCalType();
+      String username = CalendarUtils.getCurrentUser();
+      CalendarService service = CalendarUtils.getCalendarService();      
+      String calType  = String.valueOf(service.getTypeOfCalendar(username, event.getCalendarId()));
       String calendarId = event.getCalendarId();
       String color    = getColors().get(calendarId) ;
       //String title    = tf.format(event.getFromDateTime()) + "->" + tf.format(event.getToDateTime())+ ":&#013; " + event.getSummary() ;
@@ -296,7 +294,7 @@ public class UIWeekView extends UICalendarView {
       boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
       String recurId  = event.getRecurrenceId();
       boolean isEditable;
-      if (!event.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) isEditable = isEventEditable(event);
+      if (!calType.equals(CalendarUtils.PRIVATE_TYPE)) isEditable = isEventEditable(event);
       else isEditable = true;
 
       stringBuilder.append("\n<div class=\"eventContainer eventAlldayContainer weekViewEventBoxes clearfix\" eventcat=\"" + event.getEventCategoryId() + "\" style=\"position:absolute;display:none;\"")
@@ -359,9 +357,11 @@ public class UIWeekView extends UICalendarView {
       int year  = cl.get(Calendar.YEAR) ;
       String key = keyGen(day, month, year) ;
       int dayOfWeek = cl.get(Calendar.DAY_OF_WEEK) ;
-      List<CalendarEvent> events = getEventData().get(key) ;
+      List<Event> events = getEventData().get(key) ;
       if (events != null) {
-        for (CalendarEvent event : events) {
+        for (Event event : events) {
+          String username = CalendarUtils.getCurrentUser();
+          String calType = String.valueOf(CalendarUtils.getCalendarService().getTypeOfCalendar(username, event.getCalendarId()));
           String eventId   = event.getId();
           String begin     =  tf.format(event.getFromDateTime()) ;
           String begindate = dtf.format(event.getFromDateTime()) ;
@@ -375,19 +375,17 @@ public class UIWeekView extends UICalendarView {
           String actionLink =  event("UpdateEvent", eventId) ;
           boolean isOccur  = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
           String recurId   = event.getRecurrenceId();
-          boolean isEditable;
-          if (!event.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) isEditable = isEventEditable(event);
-          else isEditable = true;
+          boolean isEditable = isEventEditable(event);
 
           stringBuilder.append("\n<div class=\"eventContainerBorder weekViewEventBoxes " + color + "\" eventindex=\"" + dayOfWeek + "\"")
-            .append(" style=\"position: absolute;display:none\" eventcat=\"" + event.getEventCategoryId() + "\" caltype=\"" + event.getCalType() + "\"")
+            .append(" style=\"position: absolute;display:none\" eventcat=\"" + event.getEventCategoryId() + "\" caltype=\"" + calType + "\"")
             .append(" eventid=\"" + eventId + "\" calid=\"" + event.getCalendarId() + "\" actionlink=\"" + actionLink + "\" unselectable=\"on\"")
             .append(" startTime=\"" + beginTime + "\" endTime=\"" + endTime + "\" isOccur=\"" + isOccur + "\" recurId=\"" + recurId + "\" isEditable=\"" + isEditable + "\">");
 
           if (!eventList.contains(eventId)) {
             eventList.add(eventId);
 
-            stringBuilder.append("\n<input type=\"hidden\" name=\"" + eventId + "calType\" value=\"" + event.getCalType() + "\" />")
+            stringBuilder.append("\n<input type=\"hidden\" name=\"" + eventId + "calType\" value=\"" + calType + "\" />")
               .append("\n<input type=\"hidden\" name=\"" + eventId + "calendarId\" value=\"" + event.getCalendarId() + "\" />")
               .append("\n<input type=\"hidden\" name=\"" + eventId + "startTime\" value=\"\" />")
               .append("\n<input type=\"hidden\" name=\"" + eventId + "finishTime\" value=\"\" />")
@@ -569,16 +567,16 @@ public class UIWeekView extends UICalendarView {
     return getEndDay(temCal) ;
   }
 
-  protected Map<String, List<CalendarEvent>> getEventData() {return eventData_ ;}
+  protected Map<String, List<Event>> getEventData() {return eventData_ ;}
 
   @Override
-  public LinkedHashMap<String, CalendarEvent> getDataMap() {
-    LinkedHashMap<String, CalendarEvent> dataMap = new LinkedHashMap<String,  CalendarEvent>() ;
-    for (CalendarEvent ce : allDayEvent) {
+  public LinkedHashMap<String, Event> getDataMap() {
+    LinkedHashMap<String, Event> dataMap = new LinkedHashMap<String,  Event>() ;
+    for (Event ce : allDayEvent) {
       dataMap.put(ce.getId(), ce);
     }
     for(String key : eventData_.keySet()) {
-      for(CalendarEvent ce : eventData_.get(key)) {
+      for(Event ce : eventData_.get(key)) {
         dataMap.put(ce.getId(), ce);
       }
     }
@@ -588,7 +586,7 @@ public class UIWeekView extends UICalendarView {
 
   static  public class UpdateEventActionListener extends EventListener<UIWeekView> {
     @Override
-    public void execute(Event<UIWeekView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIWeekView> event) throws Exception {
 
       UIWeekView calendarview = event.getSource() ;
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
@@ -610,7 +608,7 @@ public class UIWeekView extends UICalendarView {
       String username = CalendarUtils.getCurrentUser() ;
       CalendarService calendarService = CalendarUtils.getCalendarService() ;
 
-      CalendarEvent eventCalendar = calendarview.getDataMap().get(eventId) ;
+      CalendarEvent eventCalendar = CalendarEvent.build(calendarview.getDataMap().get(eventId));
       if (isOccur && !Utils.isEmpty(recurId)) {
         eventCalendar = calendarview.getRecurrenceMap().get(eventId).get(recurId);
       }
@@ -619,16 +617,8 @@ public class UIWeekView extends UICalendarView {
         CalendarService calService = CalendarUtils.getCalendarService() ;
         boolean isMove = false;
         try {
-          org.exoplatform.calendar.service.Calendar calendar = null ;
-          if(eventCalendar.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) {
-            calendar = calService.getUserCalendar(username, calendarId) ;
-          } else if(eventCalendar.getCalType().equals(CalendarUtils.SHARED_TYPE)){
-            if(calService.getSharedCalendars(username, true) != null)
-              calendar = 
-              calService.getSharedCalendars(username, true).getCalendarById(calendarId) ;
-          } else if(eventCalendar.getCalType().equals(CalendarUtils.PUBLIC_TYPE)) {
-            calendar = calService.getGroupCalendar(calendarId) ;
-          }
+          CalendarHandler handler = calendarview.xCalService.getCalendarHandler();
+          org.exoplatform.calendar.service.Calendar calendar = handler.getCalendarById(eventCalendar.getCalendarId());
           if(calendar == null) {
             event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
           } else {
@@ -721,7 +711,7 @@ public class UIWeekView extends UICalendarView {
 
   static  public class UpdateAllDayEventActionListener extends EventListener<UIWeekView> {
     @Override
-    public void execute(Event<UIWeekView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIWeekView> event) throws Exception {
       UIWeekView calendarview = event.getSource() ;
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       String calendarId = event.getRequestContext().getRequestParameter(eventId + CALENDARID);
@@ -741,7 +731,7 @@ public class UIWeekView extends UICalendarView {
         if (isOccur && !Utils.isEmpty(recurId)) {
           eventCalendar = calendarview.getRecurrenceMap().get(eventId).get(recurId);
         } else {
-          eventCalendar = calendarview.getDataMap().get(eventId) ;
+          eventCalendar = CalendarEvent.build(calendarview.getDataMap().get(eventId));
         }
         if(eventCalendar != null) {
           CalendarService calendarService = CalendarUtils.getCalendarService() ;

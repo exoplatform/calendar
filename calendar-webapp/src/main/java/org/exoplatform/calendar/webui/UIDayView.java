@@ -17,13 +17,19 @@
 package org.exoplatform.calendar.webui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.jcr.PathNotFoundException;
+
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -38,7 +44,6 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 
 /**
@@ -78,59 +83,51 @@ import org.exoplatform.webui.event.EventListener;
 public class UIDayView extends UICalendarView {
   private static final Log log = ExoLogger.getExoLogger(UIDayView.class);
 
-  private List<CalendarEvent> eventData_ = new ArrayList<CalendarEvent>();
-  private List<CalendarEvent> allDayEvent_ = new ArrayList<CalendarEvent>();
+  private List<Event> eventData_ = new ArrayList<Event>();
+  private List<Event> allDayEvent_ = new ArrayList<Event>();
 
   public UIDayView() throws Exception{
     super() ;
   }
+
   @Override
   public void refresh() throws Exception {
-    eventData_.clear() ;
-    allDayEvent_.clear() ;
-    Calendar begin = getBeginDay(getCurrentCalendar()) ;  
-    Calendar end = getEndDay(getCurrentCalendar()) ; 
-    end.add(Calendar.MILLISECOND, -1) ;
-    List<CalendarEvent> events = new ArrayList<CalendarEvent>() ;
-    CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    String username = CalendarUtils.getCurrentUser() ;
-    EventQuery eventQuery = new EventQuery() ;
-    eventQuery.setFromDate(begin) ;
-    eventQuery.setToDate(end) ;
-    eventQuery.setExcludeRepeatEvent(true);
+    super.refresh();
+    eventData_.clear();
+    allDayEvent_.clear();
+    recurrenceEventsMap.clear();
 
-    String[] publicCalendars  = getPublicCalendars();
-    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
-
-    if(isInSpace()) { 
-      eventQuery.setCalendarId(publicCalendars);
-      events = calendarService.getPublicEvents(eventQuery);
-    }
-    else {
-      events =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-          privateCalendars, publicCalendars, null);
-    }
-
-    String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-
-    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, null);
-
-    if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
-      Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
-      while (recurEventsIter.hasNext()) {
-        CalendarEvent recurEvent = recurEventsIter.next();
-        Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(recurEvent, eventQuery.getFromDate(), eventQuery.getToDate(), timezone);
-        if (tempMap != null) {
-          recurrenceEventsMap.put(recurEvent.getId(), tempMap);
-          events.addAll(tempMap.values());
+    Calendar begin = getBeginDay(getCurrentCalendar());  
+    Calendar end = getEndDay(getCurrentCalendar());
+    end.add(Calendar.MILLISECOND, -1);
+    List<Event> allEvents = getEventInMonth(begin.getTimeInMillis(), end.getTimeInMillis());
+    
+    if (isInSpace()) {
+      List<String> publicCalendars  = Arrays.asList(getPublicCalendars());
+      Iterator<Event> iter = allEvents.iterator();
+      while (iter.hasNext()) {
+        Event evt = iter.next();
+        if (!publicCalendars.contains(evt.getCalendarId())) {
+          iter.remove();
         }
       }
     }
+    
+    for (Event evt : allEvents) {
+      if (evt.getRepeatType() != null && evt.getRecurrenceId() != null &&
+          !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT) ) {
+        Map<String, CalendarEvent> recurrMap = recurrenceEventsMap.get(evt.getOriginalReference());
+        if (recurrMap == null) {
+          recurrMap = new HashMap<String, CalendarEvent>();
+          recurrenceEventsMap.put(evt.getOriginalReference(), recurrMap);          
+        }
+        recurrMap.put(evt.getRecurrenceId(), (CalendarEvent)evt);
+      }
+    }
 
-    Iterator<CalendarEvent> iter = events.iterator() ;
+    Iterator<Event> iter = allEvents.iterator() ;
     while (iter.hasNext()) {
-      CalendarEvent ce = iter.next() ;
+      Event ce = iter.next() ;
       long eventAmount = ce.getToDateTime().getTime() - ce.getFromDateTime().getTime() ;
       if (isSameDate(ce.getFromDateTime(), getCurrentDate())
           && isSameDate(ce.getToDateTime(), getCurrentDate())
@@ -139,20 +136,22 @@ public class UIDayView extends UICalendarView {
         iter.remove() ;
       } 
     }
-    for(CalendarEvent ce : events){
+    
+    for( Event ce : allEvents) {
       allDayEvent_.add(ce);
-    } 
+    }
   }
-  protected List<CalendarEvent> getEventData() { return eventData_; }
-  protected List<CalendarEvent> getAllDayEvents() { return allDayEvent_; } ;
+  
+  protected List<Event> getEventData() { return eventData_; }
+  protected List<Event> getAllDayEvents() { return allDayEvent_; } ;
 
   @Override
-  public LinkedHashMap<String, CalendarEvent> getDataMap() {
-    LinkedHashMap<String, CalendarEvent> dataMap = new LinkedHashMap<String, CalendarEvent>() ;
-    for (CalendarEvent ce : eventData_) {
+  public LinkedHashMap<String, Event> getDataMap() {
+    LinkedHashMap<String, Event> dataMap = new LinkedHashMap<String, Event>() ;
+    for (Event ce : eventData_) {
       dataMap.put(ce.getId(), ce);
     }
-    for (CalendarEvent ce : allDayEvent_) {
+    for (Event ce : allDayEvent_) {
       dataMap.put(ce.getId(), ce);
     }
     return dataMap ;
@@ -160,7 +159,7 @@ public class UIDayView extends UICalendarView {
 
   static  public class UpdateEventActionListener extends EventListener<UIDayView> {
     @Override
-    public void execute(Event<UIDayView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIDayView> event) throws Exception {
       UIDayView calendarview = event.getSource();
       UICalendarPortlet uiCalendarPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class);
 
@@ -182,7 +181,7 @@ public class UIDayView extends UICalendarView {
       if (isOccur && !Utils.isEmpty(recurId)) {
         ce = calendarview.getRecurrenceMap().get(eventId).get(recurId);
       } else {
-        ce = calendarview.getDataMap().get(eventId) ;
+        ce = CalendarEvent.build(calendarview.getDataMap().get(eventId));
       }
       if(ce != null) {
         CalendarService calService = CalendarUtils.getCalendarService() ;

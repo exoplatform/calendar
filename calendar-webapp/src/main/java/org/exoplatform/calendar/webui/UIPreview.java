@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
@@ -39,7 +40,6 @@ import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 
 /**
@@ -68,7 +68,7 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
 {
   public static final int DEFAULT_THUMBNAIL_DIMENSION = 50;
   public static final int DEFAULT_PREVIEW_DIMENSION   = 170;
-  private CalendarEvent event_ = null;
+  private Event event_ = null;
   private boolean isShowPopup_ = false;
   private boolean isPreviewByUrl = false;
   
@@ -134,8 +134,8 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
     return "app:/templates/calendar/webui/UIDefaultPreview.gtmpl" ;
   }
 
-  public CalendarEvent getEvent(){ return event_ ; }
-  public void setEvent(CalendarEvent event) { event_ = event ; }
+  public Event getEvent(){ return event_ ; }
+  public void setEvent(Event event) { event_ = event ; }
 
   @Override
   public void refresh() throws Exception {
@@ -178,8 +178,8 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
   }
 
   @Override
-  LinkedHashMap<String, CalendarEvent> getDataMap() {
-    LinkedHashMap<String, CalendarEvent> dataMap = new LinkedHashMap<String, CalendarEvent>() ;
+  LinkedHashMap<String, Event> getDataMap() {
+    LinkedHashMap<String, Event> dataMap = new LinkedHashMap<String, Event>() ;
     if(event_ != null) dataMap.put(event_.getId(), event_) ;
     return dataMap ;
   }
@@ -189,7 +189,7 @@ public class UIPreview extends UICalendarView implements UIPopupComponent
     Map<String, Map<String, CalendarEvent>> recurMap = new HashMap<String, Map<String,CalendarEvent>>();
     if(event_ != null) {
       Map<String, CalendarEvent> eventMap = new HashMap<String, CalendarEvent>();
-      eventMap.put(event_.getRecurrenceId(), event_);
+      eventMap.put(event_.getRecurrenceId(), CalendarEvent.build(event_));
       recurMap.put(event_.getId(), eventMap) ;
     }
     return recurMap;        
@@ -205,7 +205,7 @@ public String getPortalName() {
   }
   static  public class DownloadActionListener extends EventListener<UIPreview> {
     @Override
-    public void execute(Event<UIPreview> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIPreview> event) throws Exception {
       UIPreview uiPreview = event.getSource() ;
       String attId = event.getRequestContext().getRequestParameter(OBJECTID) ;
       Attachment attach = uiPreview.getAttachment(attId) ;
@@ -251,7 +251,7 @@ public String getPortalName() {
   }
   public static class CloseWindowActionListener extends EventListener<UIPreview>
   {
-    public void execute(Event<UIPreview> event) throws Exception
+    public void execute(org.exoplatform.webui.event.Event<UIPreview> event) throws Exception
     {
       PortalRequestContext pContext = Util.getPortalRequestContext();
       String requestedURL = ((HttpServletRequest) pContext.getRequest()).getRequestURL().toString();

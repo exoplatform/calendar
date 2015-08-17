@@ -43,11 +43,23 @@ public class EventHandlerImpl implements EventHandler {
   }
 
   @Override
-  public Event getEventById(String eventId) {
+  public Event getEventById(String eventId) {    
     CompositeID composID = CompositeID.parse(eventId);
-    EventDAO dao = getEventDAOImpl(composID.getDS());
-    if (dao != null) {
-      return dao.getById(composID.getId());
+    if (composID.getDS() != null) {
+      EventDAO dao = getEventDAOImpl(composID.getDS());
+      if (dao != null) {
+        return dao.getById(composID.getId());
+      }      
+    } else {
+      for (Storage storage : calService.getAllStorage()) {
+        EventDAO dao = storage.getEventDAO();
+        if (dao != null) {
+          Event evt =  dao.getById(composID.getId());
+          if (evt != null) {
+            return evt;
+          }
+        }
+      }
     }
     return null;
   }

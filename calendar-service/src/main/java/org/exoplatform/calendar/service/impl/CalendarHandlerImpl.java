@@ -42,12 +42,24 @@ public class CalendarHandlerImpl implements CalendarHandler {
   @Override
   public Calendar getCalendarById(String compositeId) {
     CompositeID composId = CompositeID.parse(compositeId);
-    Storage storage = service.lookForDS(composId.getDS());
-    CalendarDAO dao = storage.getCalendarDAO();
-    if (dao != null) {
-      Calendar cal = dao.getById(composId.getId());
-      if (cal != null) {
-        return cal;
+    if (composId.getDS() != null) {
+      Storage storage = service.lookForDS(composId.getDS());
+      CalendarDAO dao = storage.getCalendarDAO();
+      if (dao != null) {
+        Calendar cal = dao.getById(composId.getId());
+        if (cal != null) {
+          return cal;
+        }
+      }      
+    } else {
+      for (Storage storage : service.getAllStorage()) {
+        CalendarDAO dao = storage.getCalendarDAO();
+        if (dao != null) {
+          Calendar cal = dao.getById(composId.getId());
+          if (cal != null) {
+            return cal;
+          }
+        }
       }
     }
     return null;

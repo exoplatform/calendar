@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.exoplatform.calendar.model.Event;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.security.ConversationState;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang
@@ -161,6 +164,16 @@ public class CalendarEvent extends Event {
     calEvent.setRepeatByDay(evt.getRepeatByDay());
     calEvent.setRepeatByMonthDay(evt.getRepeatByMonthDay());
     calEvent.setActivityId(evt.getActivityId());
+    
+    ExoContainer container = ExoContainerContext.getCurrentContainer();
+    if (container != null) {
+      String username = ConversationState.getCurrent().getIdentity().getUserId();
+      CalendarService service = container.getComponentInstanceOfType(CalendarService.class);
+      try {
+        calEvent.setCalType(String.valueOf(service.getTypeOfCalendar(username, calEvent.getCalendarId())));
+      } catch (Exception e) {        
+      }      
+    }
     return calEvent;
   }
 }

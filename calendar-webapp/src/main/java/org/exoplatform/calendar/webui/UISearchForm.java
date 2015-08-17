@@ -19,11 +19,13 @@ package org.exoplatform.calendar.webui;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.services.log.ExoLogger;
@@ -32,7 +34,6 @@ import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormStringInput;
@@ -75,7 +76,7 @@ public class UISearchForm extends UIForm {
   }
   static  public class SearchActionListener extends EventListener<UISearchForm> {
     @Override
-    public void execute(Event<UISearchForm> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UISearchForm> event) throws Exception {
       UISearchForm uiForm = event.getSource() ;
       String text = uiForm.getSearchValue() ;
      if(CalendarUtils.isEmpty(text))   {
@@ -111,7 +112,7 @@ public class UISearchForm extends UIForm {
         eventQuery.setOrderType(Utils.DESCENDING);
         uiListView.setEventQuery(eventQuery);
         uiListView.setDisplaySearchResult(true);
-        List<CalendarEvent> allEvents = uiListView.getAllEvents(eventQuery);
+        List<Event> allEvents = uiListView.getAllEvents(eventQuery);
         uiListView.update(new EventPageList(allEvents, 10));
         uiListView.setSelectedEvent(null);
         uiListView.setLastUpdatedEventId(null);

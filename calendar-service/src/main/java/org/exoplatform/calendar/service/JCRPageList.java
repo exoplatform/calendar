@@ -17,6 +17,8 @@
 package org.exoplatform.calendar.service;
 
 import java.util.List;
+
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.commons.exception.ExoMessageException;
 
 /**
@@ -24,7 +26,7 @@ import org.exoplatform.commons.exception.ExoMessageException;
  * @since Oct 21, 2004
  * @version $Id: PageList.java,v 1.2 2004/10/25 03:36:58 tuan08 Exp $
  */
-abstract public class JCRPageList {
+abstract public class JCRPageList<T> {
   // final static public PageList EMPTY_LIST = new ObjectPageList(new ArrayList(), 10) ;
 
   private long                  pageSize_;
@@ -35,7 +37,7 @@ abstract public class JCRPageList {
 
   protected long                currentPage_   = 1;
 
-  protected List<CalendarEvent> currentListPage_;
+  protected List<T> currentListPage_;
 
   public JCRPageList(long pageSize) {
     pageSize_ = pageSize;
@@ -62,7 +64,7 @@ abstract public class JCRPageList {
     return availablePage_;
   }
 
-  public List<CalendarEvent> currentPage(String username) throws Exception {
+  public List<T> currentPage(String username) throws Exception {
     if (currentListPage_ == null) {
       populateCurrentPage(currentPage_, username);
     }
@@ -71,7 +73,7 @@ abstract public class JCRPageList {
 
   abstract protected void populateCurrentPage(long page, String username) throws Exception;
 
-  public List<CalendarEvent> getPage(long page, String username) throws Exception {
+  public List<T> getPage(long page, String username) throws Exception {
     checkAndSetPage(page);
     populateCurrentPage(page, username);
     return currentListPage_;

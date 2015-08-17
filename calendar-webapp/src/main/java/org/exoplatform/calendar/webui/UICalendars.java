@@ -28,13 +28,13 @@ import javax.jcr.PathNotFoundException;
 
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.CompositeID;
+import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
@@ -223,10 +223,15 @@ public class UICalendars extends UIForm  {
         calendarIds.add(cal.getId());
       }
     }
+    for (org.exoplatform.calendar.service.Calendar cal : getAllOtherCalendars()) {
+      if (checkedCals.contains(cal.getId())) {
+        calendarIds.add(cal.getId());
+      }
+    }
     if (calendarIds.size() > 0)
-      eventQuery.setCalendarId(calendarIds.toArray(new String[] {}));
+      eventQuery.setCalendarIds(calendarIds.toArray(new String[] {}));
     else {
-      eventQuery.setCalendarId(new String[] {"null"});
+      eventQuery.setCalendarIds(new String[] {"null"});
     }
     eventQuery.setOrderBy(new String[] {Utils.EXO_SUMMARY});
     return eventQuery;

@@ -9,7 +9,9 @@
 	def dateTimeFormat = uicomponent.getDateTimeFormat() ;
 	DateFormat df = new SimpleDateFormat(dateTimeFormat, locale) ;
 	df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
-	CalendarEvent task = uicomponent.getEvent() ;
+	def task = uicomponent.getEvent();
+	def username = CalendarUtils.getCurrentUser();
+	def calType = CalendarUtils.getCalendarService().getTypeOfCalendar(username, event.getCalendarId());
 	color = uicomponent.getColors().get(task.getCalendarId()) ;
 	def rcontext = _ctx.getRequestContext();
 	def requireJS = rcontext.getJavascriptManager().getRequireJS();
@@ -184,17 +186,17 @@
     </table>
 	<% 
 	  def isEditable;
-	  if (task.calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(task);
+	  if (calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(task);
       else isEditable = "true";
 	  if ((!uicomponent.isShowPopup()) && isEditable) {
 	  	// TRUE when the preview is part of the calendar List View
     %>
 	  
 	  <div class="uiActionContainer">
-		<a class="btn" href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>" class="ControlButton">
+		<a class="btn" href="<%=uicomponent.event("Edit",task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +calType)%>" class="ControlButton">
 			<i class="uiIconEdit uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('EditTask')%>
 		</a>
-		<a class="btn" href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +task.getCalType())%>">
+		<a class="btn" href="<%=uicomponent.event("Delete",uicomponent.id,task.getId()+"&"+uicomponent.CALENDARID+"="+task.getCalendarId()+"&calType=" +calType)%>">
 			<i class="uiIconDelete uiIconLightGray"></i>&nbsp;<%=uiform.getLabel('DeleteTask')%>
 		</a>
 	</div>

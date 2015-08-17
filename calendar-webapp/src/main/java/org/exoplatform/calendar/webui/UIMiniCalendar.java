@@ -82,7 +82,7 @@ public class UIMiniCalendar extends UICalendarView  {
   }
   
   @Override
-  public LinkedHashMap<String, CalendarEvent> getDataMap(){ return null ; }
+  public LinkedHashMap<String, org.exoplatform.calendar.model.Event> getDataMap(){ return null ; }
 
   public java.util.Calendar getBeginDateOfMonthView() throws Exception {
     java.util.Calendar temCal = getBeginDateOfMonth() ;

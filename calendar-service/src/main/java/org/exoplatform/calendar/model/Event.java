@@ -206,13 +206,13 @@ public class Event extends AbstractModel {
    * Deprecated, use {@link #calendarType}
    */
 
-  private String[]             invitation;
+  private String[]             invitation = new String[0];
 
-  private String[]             participant;
+  private String[]             participant = new String[0];
 
-  private List<Reminder>       reminders;
+  private List<Reminder>       reminders = Collections.emptyList();
 
-  private List<Attachment>     attachment;
+  private List<Attachment>     attachment = Collections.emptyList();
 
   private String activityId ;
   public Event() {

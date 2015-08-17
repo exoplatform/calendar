@@ -24,13 +24,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
@@ -52,7 +54,6 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 import org.exoplatform.webui.core.model.SelectItemOption;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
@@ -262,7 +263,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
   }
   static  public class SearchActionListener extends EventListener<UIAdvancedSearchForm> {
     @Override
-    public void execute(Event<UIAdvancedSearchForm> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIAdvancedSearchForm> event) throws Exception {
       UIAdvancedSearchForm uiForm = event.getSource() ;
       
       String fromDateValue = uiForm.getFromDateValue();
@@ -299,7 +300,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         List<String> checkedCals = uiCalendars.getCheckedCalendars() ;
         if(calendarId != null && calendarId.trim().length() > 0){
           try {
-            query.setCalendarId(new String[]{calendarId.split(CalendarUtils.COLON)[1].trim()}) ;            
+            query.setCalendarIds(new String[]{calendarId.split(CalendarUtils.COLON)[1].trim()}) ;            
           } catch (ArrayIndexOutOfBoundsException e) {
             if (log.isDebugEnabled()) {
               log.debug("Fail to set calendar id", e);
@@ -308,19 +309,19 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         }
 
         String categoryId = uiForm.getUIFormSelectBox(UIAdvancedSearchForm.CATEGORY).getValue() ;
-        if(categoryId != null && categoryId.trim().length() > 0) query.setCategoryId(new String[]{categoryId}) ;
+        if(categoryId != null && categoryId.trim().length() > 0) query.setCategoryIds(new String[]{categoryId}) ;
         java.util.Calendar cal = CalendarUtils.getInstanceOfCurrentCalendar() ;
         if(fromDate != null && toDate != null) {
           cal.setTime(fromDate);
-          query.setFromDate(CalendarUtils.getBeginDay(cal)) ;
+          query.setFromDate(CalendarUtils.getBeginDay(cal).getTimeInMillis()) ;
           cal.setTime(toDate) ;
-          query.setToDate(CalendarUtils.getEndDay(cal)) ;
+          query.setToDate(CalendarUtils.getEndDay(cal).getTimeInMillis()) ;
         } else if (fromDate !=null) {
           cal.setTime(fromDate) ;
-          query.setFromDate(CalendarUtils.getBeginDay(cal)) ;
+          query.setFromDate(CalendarUtils.getBeginDay(cal).getTimeInMillis()) ;
         } else if (toDate !=null) {
           cal.setTime(toDate) ;
-          query.setToDate(CalendarUtils.getEndDay(cal)) ;
+          query.setToDate(CalendarUtils.getEndDay(cal).getTimeInMillis()) ;
         }
         String priority = uiForm.getUIFormSelectBox(UIAdvancedSearchForm.PRIORITY).getValue() ;
         if(priority != null && priority.trim().length() > 0) query.setPriority(priority) ;
@@ -339,7 +340,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         uiListView.setIsAscending(false);
         calendarPortlet.cancelAction();
         
-        if (query.getCalendarId() == null) {
+        if (query.getCalendarIds() == null) {
           List<String> calendarIds = new ArrayList<String>() ;
             for (org.exoplatform.calendar.service.Calendar calendar : uiCalendars.getAllPrivateCalendars()) {
               if (checkedCals.contains(calendar.getId())) calendarIds.add(calendar.getId());
@@ -356,10 +357,10 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
           }
 
           if (calendarIds.size() > 0) {
-            query.setCalendarId(calendarIds.toArray(new String[] {}));
+            query.setCalendarIds(calendarIds.toArray(new String[] {}));
           }
           else {
-            query.setCalendarId(new String[] {"null"});
+            query.setCalendarIds(new String[] {"null"});
           }          
         }
         
@@ -367,7 +368,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         query.setOrderType(Utils.DESCENDING);
         uiListView.setEventQuery(query);
         uiListView.setDisplaySearchResult(true) ;
-        List<CalendarEvent> allEvents = uiListView.getAllEvents(query);
+        List<Event> allEvents = uiListView.getAllEvents(query);
         uiListView.update(new EventPageList(allEvents,10));
         calendarViewContainer.setRenderedChild(UICalendarViewContainer.LIST_VIEW) ;        
         if(!uiListView.isDisplaySearchResult()) uiListView.setLastViewId(currentView) ;
@@ -388,7 +389,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
   }
   static  public class OnchangeActionListener extends EventListener<UIAdvancedSearchForm> {
     @Override
-    public void execute(Event<UIAdvancedSearchForm> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIAdvancedSearchForm> event) throws Exception {
       UIAdvancedSearchForm uiForm = event.getSource() ;
       uiForm.getUIFormSelectBox(STATE).setRendered(uiForm.isSearchTask()) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
@@ -396,7 +397,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
   }
   static  public class CancelActionListener extends EventListener<UIAdvancedSearchForm> {
     @Override
-    public void execute(Event<UIAdvancedSearchForm> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIAdvancedSearchForm> event) throws Exception {
       UIAdvancedSearchForm uiForm = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
       calendarPortlet.cancelAction() ;

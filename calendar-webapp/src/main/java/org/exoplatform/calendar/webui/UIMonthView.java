@@ -17,17 +17,21 @@
 package org.exoplatform.calendar.webui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.jcr.PathNotFoundException;
+
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -36,7 +40,6 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
 
@@ -79,14 +82,14 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
 public class UIMonthView extends UICalendarView {
   private static final Log log = ExoLogger.getExoLogger(UIMonthView.class);
   
-  private LinkedHashMap<String, CalendarEvent> dataMap_ = new LinkedHashMap<String, CalendarEvent>() ;
-  private List<CalendarEvent> eventData_ = new ArrayList<CalendarEvent>();
-  public UIMonthView() throws Exception{
+  private LinkedHashMap<String, Event> dataMap_ = new LinkedHashMap<String, Event>() ;
+  private List<Event> eventData_ = new ArrayList<Event>();
+  public UIMonthView() throws Exception {
     super() ;
   }
 
   protected int getWeeksOfTheMonth(int year, int month, int day) {
-    Calendar cal = getInstanceTempCalendar() ;
+    Calendar cal = getInstanceTempCalendar();
     cal.set(Calendar.YEAR, year);
     cal.set(Calendar.MONTH, month);
     cal.set(Calendar.DATE, day);
@@ -95,42 +98,33 @@ public class UIMonthView extends UICalendarView {
   }
   @Override
   public void refresh() throws Exception {
-    CalendarService calendarService = CalendarUtils.getCalendarService() ;
-    String username = CalendarUtils.getCurrentUser() ;
-    EventQuery eventQuery = new EventQuery() ;
-    eventQuery.setFromDate(getBeginDateOfMonthView()) ;
-    eventQuery.setToDate(getEndDateOfMonthView()) ;
-    eventQuery.setExcludeRepeatEvent(true);
-    List<CalendarEvent> allEvents ;
-
-    String[] publicCalendars  = getPublicCalendars();
-    String[] privateCalendars = getPrivateCalendars().toArray(new String[]{});
-
+    super.refresh();
+    dataMap_.clear() ;
+    eventData_.clear();
+    long begin = getBeginDateOfMonthView().getTimeInMillis();
+    long end = getEndDateOfMonthView().getTimeInMillis();
+    
+    List<Event> allEvents = getEventInMonth(begin, end);
     if (isInSpace()) {
-      eventQuery.setCalendarId(publicCalendars);
-      allEvents = calendarService.getPublicEvents(eventQuery);
-    } else {
-
-      //allEvents = calendarService.getEvents(username, eventQuery, getPublicCalendars());
-
-      allEvents =  calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-          privateCalendars, publicCalendars, null);
-    }
-
-    String timezone = CalendarUtils.getCurrentUserCalendarSetting().getTimeZone();
-    //List<CalendarEvent> originalRecurEvents = calendarService.getOriginalRecurrenceEvents(username, eventQuery.getFromDate(), eventQuery.getToDate(), getPublicCalendars());
-    List<CalendarEvent> originalRecurEvents = calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-        eventQuery.getFromDate(), eventQuery.getToDate(), eventQuery, privateCalendars, publicCalendars, null);
-
-    if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
-      Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
-      while (recurEventsIter.hasNext()) {
-        CalendarEvent recurEvent = recurEventsIter.next();
-        Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(recurEvent, eventQuery.getFromDate(), eventQuery.getToDate(), timezone);
-        if (tempMap != null) {
-          recurrenceEventsMap.put(recurEvent.getId(), tempMap);
-          allEvents.addAll(tempMap.values());          
+      List<String> publicCalendars  = Arrays.asList(getPublicCalendars());
+      Iterator<Event> iter = allEvents.iterator();
+      while (iter.hasNext()) {
+        Event evt = iter.next();
+        if (!publicCalendars.contains(evt.getCalendarId())) {
+          iter.remove();
         }
+      }
+    }
+    
+    for (Event evt : allEvents) {
+      if (evt.getRepeatType() != null && evt.getRecurrenceId() != null &&
+          !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT) ) {
+        Map<String, CalendarEvent> recurrMap = recurrenceEventsMap.get(evt.getOriginalReference());
+        if (recurrMap == null) {
+          recurrMap = new HashMap<String, CalendarEvent>();
+          recurrenceEventsMap.put(evt.getOriginalReference(), recurrMap);          
+        }
+        recurrMap.put(evt.getRecurrenceId(), (CalendarEvent)evt);
       }
     }
     
@@ -141,12 +135,10 @@ public class UIMonthView extends UICalendarView {
         removeChildById(comp.getId()) ;
       }
     }
-    dataMap_.clear() ;
-    eventData_.clear();
-    Iterator<CalendarEvent> eventIter = allEvents.iterator() ;
     
+    Iterator<Event> eventIter = allEvents.iterator() ;    
     while(eventIter.hasNext()) {
-      CalendarEvent event = eventIter.next();      
+      Event event = eventIter.next();      
       dataMap_.put(event.getId(), event) ;
       eventData_.add(event);
       // if event is a occurrence
@@ -162,7 +154,7 @@ public class UIMonthView extends UICalendarView {
     }  
   }
   
-  public String getCheckboxId(CalendarEvent event) throws Exception {
+  public String getCheckboxId(Event event) throws Exception {
     if (!CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && !CalendarUtils.isEmpty(event.getRecurrenceId())) {
       return event.getId() + "-" + event.getRecurrenceId();
     }
@@ -227,7 +219,7 @@ public class UIMonthView extends UICalendarView {
     for(String id : dataMap_.keySet()) {
       checkbox = getChildById(id )  ;
       if (checkbox != null && checkbox.isChecked()) {
-        events.add(dataMap_.get(id));
+        events.add(CalendarEvent.build(dataMap_.get(id)));
       }
     }
     if (recurrenceEventsMap.isEmpty()) {
@@ -250,17 +242,17 @@ public class UIMonthView extends UICalendarView {
   }
   
   @Override
-  public LinkedHashMap<String, CalendarEvent> getDataMap() {
+  public LinkedHashMap<String, Event> getDataMap() {
     return dataMap_ ;
   }
   
-  protected List<CalendarEvent> getEventData() {
+  protected List<Event> getEventData() {
     return eventData_;
   }
   
   static  public class ChangeViewActionListener extends EventListener<UIMonthView> {
     @Override
-    public void execute(Event<UIMonthView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIMonthView> event) throws Exception {
       UIMonthView calendarview = event.getSource() ;
       UICalendarViewContainer uiContainer = calendarview.getAncestorOfType(UICalendarViewContainer.class) ;
       uiContainer.setRenderedChild(UIDayView.class) ;
@@ -270,7 +262,7 @@ public class UIMonthView extends UICalendarView {
   }
   static  public class UpdateEventActionListener extends EventListener<UIMonthView> {
     @Override
-    public void execute(Event<UIMonthView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIMonthView> event) throws Exception {
       UIMonthView calendarview = event.getSource() ;
       UICalendarPortlet uiPortlet = calendarview.getAncestorOfType(UICalendarPortlet.class) ;
       String username = CalendarUtils.getCurrentUser() ;

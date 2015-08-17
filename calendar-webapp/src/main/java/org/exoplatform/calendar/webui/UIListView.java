@@ -16,26 +16,34 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
+import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
+import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
-import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
@@ -78,7 +86,7 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
     )
 public class UIListView extends UICalendarView {
   private static final Log log = ExoLogger.getLogger(UIListView.class);
-  private LinkedHashMap<String, CalendarEvent> eventMap_ = new LinkedHashMap<String, CalendarEvent>() ;
+  private LinkedHashMap<String, Event> eventMap_ = new LinkedHashMap<String, Event>() ;
   private EventPageList pageList_ = null ;
   private String selectedEvent_ = null ;
   private boolean isShowEventAndTask = true ;
@@ -123,10 +131,10 @@ public class UIListView extends UICalendarView {
   public boolean isAscending() { return isAscending_; }
 
   public void setEventQuery(EventQuery eventQuery) { 
-    query = new EventQuery(eventQuery);
+    query = eventQuery;
   }
   public EventQuery getEventQuery() { 
-    return new EventQuery(query);    
+    return query;
   }
 
   @Override
@@ -134,31 +142,31 @@ public class UIListView extends UICalendarView {
     UIListContainer uiListContainer = getParent() ;
     this.setCalClicked(true);
     if (uiListContainer.isDisplaySearchResult()) return;
-    query = new EventQuery() ;
+    query = new EventQuery();
+    query.setOwner(CalendarUtils.getCurrentUser());
     if (!CalendarUtils.isEmpty(categoryId_) && !categoryId_.toLowerCase().equals("null")
         && !categoryId_.equals("calId") && !categoryId_.equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL)) {
-      query.setCategoryId(new String[] { categoryId_ });
+      query.setCategoryIds(new String[] { categoryId_ });
     }
 
     Calendar fromcalendar = getBeginDay(getCurrentCalendar());
-    query.setFromDate(fromcalendar) ;
+    query.setFromDate(fromcalendar.getTimeInMillis());
     Calendar tocalendar = getEndDay(getCurrentCalendar());
     if(tocalendar.get(Calendar.MILLISECOND) == 0) tocalendar.add(Calendar.MILLISECOND, -1);
-    query.setToDate(tocalendar) ;
+    query.setToDate(tocalendar.getTimeInMillis());
     if(!getViewType().equals(TYPE_BOTH)) {
-      query.setEventType(getViewType()) ;
+      query.setEventType(getViewType());
     }
-    query.setExcludeRepeatEvent(true);
 
     List<String> calendarIds = findCalendarIds();
     if (calendarIds.size() > 0)
-      query.setCalendarId(calendarIds.toArray(new String[] {}));
+      query.setCalendarIds(calendarIds.toArray(new String[] {}));
     else {
-      query.setCalendarId(null);
+      query.setCalendarIds(null);
     }
     query.setOrderBy(new String[] {Utils.EXO_SUMMARY});
 
-    List<CalendarEvent> allEvents = getAllEvents(query);
+    List<Event> allEvents = getAllEvents(query);
 
     if(uiListContainer.isDisplaySearchResult())  {
       update(pageList_) ;
@@ -172,7 +180,7 @@ public class UIListView extends UICalendarView {
 
     UIListContainer uiContainer = getParent() ;
     UIPreview view = uiContainer.getChild(UIPreview.class);
-    CalendarEvent[] events = getEvents();
+    Event[] events = getEvents();
     String selectedEvent = getSelectedEvent();
 
     if(events.length == 0) {
@@ -192,7 +200,7 @@ public class UIListView extends UICalendarView {
   
   public void refreshSearch() throws Exception {
     this.setDisplaySearchResult(true);
-    List<CalendarEvent> allEvents = this.getAllEvents(getEventQuery());
+    List<Event> allEvents = this.getAllEvents(getEventQuery());
     this.update(new EventPageList(allEvents, 10));
     this.setSelectedEvent(null);
     this.setLastUpdatedEventId(null);
@@ -209,6 +217,7 @@ public class UIListView extends UICalendarView {
     List<org.exoplatform.calendar.service.Calendar> privateCalendar = uiCalendars.getAllPrivateCalendars();
     List<org.exoplatform.calendar.service.Calendar> publicCalendar = uiCalendars.getAllPublicCalendars();
     List<org.exoplatform.calendar.service.Calendar> shareClas = uiCalendars.getAllSharedCalendars();
+    List<org.exoplatform.calendar.service.Calendar> otherClas = uiCalendars.getAllOtherCalendars();
 
     for (org.exoplatform.calendar.service.Calendar cal :privateCalendar) {
       if (checkedCals.contains(cal.getId())) {
@@ -230,85 +239,63 @@ public class UIListView extends UICalendarView {
         }
       }
     }
+    
+    if (otherClas != null) {
+      for (org.exoplatform.calendar.service.Calendar cal : otherClas) {
+        if (checkedCals.contains(cal.getId())) {
+          calendarIds.add(cal.getId());
+        }
+      }
+    }
     return calendarIds;
   }
 
-  public List<CalendarEvent> getAllEvents(EventQuery eventQuery) throws Exception {
-    CalendarService calendarService = CalendarUtils.getCalendarService();
-    String username = CalendarUtils.getCurrentUser();
+  public List<Event> getAllEvents(EventQuery eventQuery) throws Exception {
+    eventQuery.setOwner(CalendarUtils.getCurrentUser());
+    if(eventQuery.getCalendarIds() == null) {
+      List<String> calIds = new LinkedList<String>();
+      calIds.addAll(Arrays.asList(getPublicCalendars()));
+      calIds.addAll(getPrivateCalendars());
+      calIds.addAll(getSharedCalendars());
+      calIds.addAll(getOtherCalendars());
+      eventQuery.setCalendarIds(calIds.toArray(new String[calIds.size()]));
+    }
 
-    List<String> publicCalendars  = null;
-    List<String> privateCalendars = null;
-    if(eventQuery.getCalendarId() != null && eventQuery.getCalendarId().length > 0) {
-      publicCalendars = new LinkedList<String>();
-      privateCalendars = new LinkedList<String>();
-      List<String> calendarIds = Arrays.asList(eventQuery.getCalendarId());
-      for(String cal : getPublicCalendars()) {
-          if(calendarIds.contains(cal)) {
-              publicCalendars.add(cal);
-          }
-      }
-      for(String cal : getPrivateCalendars()) {
-          if(calendarIds.contains(cal)) {
-              privateCalendars.add(cal);
-          }
-      }
-    } else {
-      publicCalendars  = Arrays.asList(getPublicCalendars());
-      privateCalendars = getPrivateCalendars();
-    }
-    
-    List<CalendarEvent> allEvents = new LinkedList<CalendarEvent>();
-    List<CalendarEvent> originalRecurEvents = new LinkedList<CalendarEvent>();
-    if (isDisplaySearchResult()) {
-      eventQuery.setExcludeRepeatEvent(false);      
-      originalRecurEvents.addAll(calendarService.getEvents(username, eventQuery, publicCalendars.toArray(new String[publicCalendars.size()])));
-      for (CalendarEvent evt : originalRecurEvents) {
-        if (evt.getRepeatType() == null || CalendarEvent.RP_NOREPEAT.equals(evt.getRepeatType())) {
-          allEvents.add(evt);          
-        }
-      }
-    } else {
-      allEvents.addAll(calendarService.getAllNoRepeatEventsSQL(username, eventQuery,
-                                                                               privateCalendars.toArray(new String[privateCalendars.size()]),
-                                                                               publicCalendars.toArray(new String[publicCalendars.size()]),
-                                                                               null));
-      
-      originalRecurEvents.addAll(calendarService.getHighLightOriginalRecurrenceEventsSQL(username,
-                                                                                                        eventQuery.getFromDate(),
-                                                                                                        eventQuery.getToDate(),
-                                                                                                        eventQuery,
-                                                                                                        privateCalendars.toArray(new String[privateCalendars.size()]),
-                                                                                                        publicCalendars.toArray(new String[publicCalendars.size()]),
-                                                                                                        null));      
-    }
+    List<Event> allEvents = new LinkedList<Event>();
+    ListAccess<org.exoplatform.calendar.model.Event> list = xCalService.getEventHandler().findEventsByQuery(eventQuery);
+
+    CalendarService calendarService = CalendarUtils.getCalendarService();
+    CalendarSetting setting = getCalendarSetting();
+    recurrenceEventsMap.clear();
+    for (Event evt : Arrays.asList(list.load(0, -1))) {
+      if (evt.getRepeatType() != null &&
+          !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
+        CalendarEvent depEvt = CalendarEvent.build(evt);
         
-    CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
-    String timezone = setting.getTimeZone();
-    if (originalRecurEvents != null && originalRecurEvents.size() > 0) {
-      Iterator<CalendarEvent> recurEventsIter = originalRecurEvents.iterator();
-      
-      while (recurEventsIter.hasNext()) {
-        CalendarEvent recurEvent = recurEventsIter.next();
-        Calendar fromDate = eventQuery.getFromDate();
-        if (fromDate == null) {
-          fromDate = CalendarUtils.getCalendarInstanceBySetting(setting);
-          fromDate.setTime(recurEvent.getFromDateTime());          
+        Calendar fromDate = CalendarUtils.getCalendarInstanceBySetting(setting);
+        if (eventQuery.getFromDate() != null) {
+          fromDate.setTimeInMillis(eventQuery.getFromDate());
+        } else {
+          fromDate.setTime(evt.getFromDateTime());
         }
-        Calendar toDate = eventQuery.getToDate();
-        if (toDate == null) {
-          toDate = CalendarUtils.getCalendarInstanceBySetting(setting);
-          if (fromDate.after(toDate)) {
-            toDate = (Calendar)fromDate.clone();
-          }
+        Calendar toDate = (Calendar)fromDate.clone();
+        if (eventQuery.getToDate() != null) {
+          toDate.setTimeInMillis(eventQuery.getToDate());
+        } else {
           toDate.add(Calendar.YEAR, 2);
         }
-        Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(recurEvent, fromDate, toDate, timezone);
+        
+        Map<String,CalendarEvent> tempMap = calendarService.getOccurrenceEvents(depEvt, fromDate, toDate, setting.getTimeZone());
         if (tempMap != null) {
-          recurrenceEventsMap.put(recurEvent.getId(), tempMap);
-          allEvents.addAll(tempMap.values());
-        }
+          recurrenceEventsMap.put(depEvt.getId(), tempMap);
+        }        
+      } else {
+        allEvents.add(evt);
       }
+    }
+    
+    for (Map<String, CalendarEvent> map : recurrenceEventsMap.values()) {
+      allEvents.addAll(map.values());      
     }
 
     final String orderType = eventQuery.getOrderType();
@@ -316,10 +303,10 @@ public class UIListView extends UICalendarView {
     if (orderBys != null && orderBys.length > 0) {
       final String orderBy = orderBys[0];
       
-      Collections.sort(allEvents, new Comparator<CalendarEvent>() {
+      Collections.sort(allEvents, new Comparator<Event>() {
         @Override
-        public int compare(CalendarEvent o1, CalendarEvent o2) {
-          CalendarEvent tmp;
+        public int compare(Event o1, Event o2) {
+          Event tmp;
           if (Utils.DESCENDING.equals(orderType)) {
             tmp = o1;
             o1 = o2;
@@ -363,7 +350,8 @@ public class UIListView extends UICalendarView {
     uiCategory.setOnChange("Onchange") ;
     eventMap_.clear();
     if(pageList_ != null) {
-      for(CalendarEvent calendarEvent : pageList_.getPage(page ,CalendarUtils.getCurrentUser())) {
+      for(Object evt : pageList_.getPage(page ,CalendarUtils.getCurrentUser())) {
+        Event calendarEvent = (Event)evt;
         String id = calendarEvent.getId();
         if (calendarEvent.getRecurrenceId() != null && (calendarEvent.getIsExceptionOccurrence() == null || !calendarEvent.getIsExceptionOccurrence())
             && isDisplaySearchResult()) {
@@ -381,11 +369,11 @@ public class UIListView extends UICalendarView {
     }
   }
 
-  public CalendarEvent[] getEvents() throws Exception {
+  public Event[] getEvents() throws Exception {
     if(eventMap_.size() == 0){
-      return new CalendarEvent[]{} ;
+      return new Event[]{} ;
     }else{
-      return eventMap_.values().toArray(new CalendarEvent[]{}) ;
+      return eventMap_.values().toArray(new Event[]{}) ;
     }
   }
 
@@ -434,12 +422,12 @@ public class UIListView extends UICalendarView {
   }
 
   @Override
-  public LinkedHashMap<String, CalendarEvent> getDataMap(){
+  public LinkedHashMap<String, Event> getDataMap(){
     return eventMap_ ;
   }
   static public class ViewDetailActionListener extends EventListener<UIListView> {
     @Override
-    public void execute(Event<UIListView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource();
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
       Boolean isOccur = false;
@@ -459,7 +447,7 @@ public class UIListView extends UICalendarView {
         if (isOccur && !Utils.isEmpty(recurId)) {
             calendarEvent = uiListView.getRecurrenceMap().get(eventId).get(recurId);
         } else {
-            calendarEvent = uiListView.getDataMap().get(eventId) ;            
+            calendarEvent = CalendarEvent.build(uiListView.getDataMap().get(eventId));            
         }
         if(calendarEvent != null) {
           uiListView.setLastUpdatedEventId(eventId) ;
@@ -480,9 +468,9 @@ public class UIListView extends UICalendarView {
   }
   public List<CalendarEvent> getSelectedEvents() {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>() ;
-    for(CalendarEvent ce : eventMap_.values()) {
+    for(Event ce : eventMap_.values()) {
       UICheckBoxInput checkbox = getChildById(ce.getId())  ;
-      if(checkbox != null && checkbox.isChecked()) events.add(ce) ;
+      if(checkbox != null && checkbox.isChecked()) events.add(CalendarEvent.build(ce));
     }
     return events ;
   }
@@ -503,7 +491,7 @@ public class UIListView extends UICalendarView {
   }
   static public class CloseSearchActionListener extends EventListener<UIListView> {
     @Override
-    public void execute(Event<UIListView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       uiListView.setDisplaySearchResult(false) ;
       uiListView.setCategoryId(null) ;
@@ -523,7 +511,7 @@ public class UIListView extends UICalendarView {
   }
   static  public class ShowPageActionListener extends EventListener<UIListView> {
     @Override
-    public void execute(Event<UIListView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       int page = Integer.parseInt(event.getRequestContext().getRequestParameter(OBJECTID)) ;
       uiListView.currentPage_ = page ;
@@ -533,7 +521,7 @@ public class UIListView extends UICalendarView {
   }
   static  public class OnchangeActionListener extends EventListener<UIListView> {
     @Override
-    public void execute(Event<UIListView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       String categoryId = uiListView.getUIFormSelectBox(EVENT_CATEGORIES).getValue() ;
       uiListView.setCategoryId(categoryId) ;
@@ -549,7 +537,7 @@ public class UIListView extends UICalendarView {
       event.getRequestContext().addUIComponentToUpdateByAjax(uiListView.getParent());
     }
   }
-  public CalendarEvent getSelectedEventObj() {
+  public Event getSelectedEventObj() {
     return eventMap_.get(selectedEvent_);
   }
 
@@ -564,7 +552,7 @@ public class UIListView extends UICalendarView {
   public static class SortActionListener extends EventListener<UIListView> {
 
     @Override
-    public void execute(Event<UIListView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIListView> event) throws Exception {
       UIListView uiListView = event.getSource() ;
       long currentPage      = uiListView.getCurrentPage() ;
       String fieldId        = event.getRequestContext().getRequestParameter(OBJECTID) ;
@@ -572,9 +560,9 @@ public class UIListView extends UICalendarView {
 
       List<String> calendarIds = uiListView.findCalendarIds();
       if (calendarIds.size() > 0)
-        query.setCalendarId(calendarIds.toArray(new String[] {}));
+        query.setCalendarIds(calendarIds.toArray(new String[] {}));
       else {
-        query.setCalendarId(new String[] {"null"});
+        query.setCalendarIds(new String[] {"null"});
       }
       query.setOrderBy(new String[] {fieldId});
       uiListView.setIsAscending(!uiListView.isAscending());
@@ -582,17 +570,17 @@ public class UIListView extends UICalendarView {
       if (uiListView.isAscending()) query.setOrderType(Utils.ASCENDING);
       else query.setOrderType(Utils.DESCENDING);
 
-      List<CalendarEvent> allEvents = uiListView.getAllEvents(query);
+      List<Event> allEvents = uiListView.getAllEvents(query);
 
       /** re-sorting priority */
       if (fieldId.equals(UIListView.EVENT_PRIORITY)) {
-        List<CalendarEvent> sortedEvents         = new LinkedList<CalendarEvent>();
-        List<CalendarEvent> nonePriorityEvents   = new ArrayList<CalendarEvent>();
-        List<CalendarEvent> lowPriorityEvents    = new ArrayList<CalendarEvent>();
-        List<CalendarEvent> normalPriorityEvents = new ArrayList<CalendarEvent>();
-        List<CalendarEvent> highPriorityEvents   = new ArrayList<CalendarEvent>();
+        List<Event> sortedEvents         = new LinkedList<Event>();
+        List<Event> nonePriorityEvents   = new ArrayList<Event>();
+        List<Event> lowPriorityEvents    = new ArrayList<Event>();
+        List<Event> normalPriorityEvents = new ArrayList<Event>();
+        List<Event> highPriorityEvents   = new ArrayList<Event>();
 
-        for (CalendarEvent calendarEvent : allEvents) {
+        for (Event calendarEvent : allEvents) {
           if (calendarEvent.getPriority().equals("none"))        nonePriorityEvents.add(calendarEvent);
           else if (calendarEvent.getPriority().equals("low"))    lowPriorityEvents.add(calendarEvent);
           else if (calendarEvent.getPriority().equals("normal")) normalPriorityEvents.add(calendarEvent);
@@ -633,7 +621,7 @@ public class UIListView extends UICalendarView {
   }
 
   static  public class AdvancedSearchActionListener extends EventListener<UIListView> {
-    public void execute(Event<UIListView> event) throws Exception {
+    public void execute(org.exoplatform.webui.event.Event<UIListView> event) throws Exception {
       UIListView currentView = event.getSource() ;
       UICalendarPortlet calendarPortlet = currentView.getAncestorOfType(UICalendarPortlet.class) ;
       UIPopupAction popupAction = calendarPortlet.getChild(UIPopupAction.class) ;
