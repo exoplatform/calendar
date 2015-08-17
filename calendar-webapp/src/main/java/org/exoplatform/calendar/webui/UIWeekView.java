@@ -181,10 +181,10 @@ public class UIWeekView extends UICalendarView {
     for (Event evt : allEvents) {
       if (evt.getRepeatType() != null && evt.getRecurrenceId() != null &&
           !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT) ) {
-        Map<String, CalendarEvent> recurrMap = recurrenceEventsMap.get(evt.getOriginalReference());
+        Map<String, CalendarEvent> recurrMap = recurrenceEventsMap.get(evt.getId());
         if (recurrMap == null) {
           recurrMap = new HashMap<String, CalendarEvent>();
-          recurrenceEventsMap.put(evt.getOriginalReference(), recurrMap);          
+          recurrenceEventsMap.put(evt.getId(), recurrMap);          
         }
         recurrMap.put(evt.getRecurrenceId(), (CalendarEvent)evt);
       }

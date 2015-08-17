@@ -139,7 +139,9 @@ public class UICalendarSettingDisplayTab extends UIFormInputWithActions {
     List<Calendar> cals = new LinkedList<Calendar>();
     Set<String> typeNames = new HashSet<String>();
     for (Calendar.Type t : Calendar.Type.values()) {
-      typeNames.add(t.name());
+      if (!Calendar.Type.UNDEFINED.equals(t)) {
+        typeNames.add(t.name());        
+      }
     }
     
     for (String type : getCalendars().keySet()) {

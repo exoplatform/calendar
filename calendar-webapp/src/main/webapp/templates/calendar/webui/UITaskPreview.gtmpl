@@ -11,7 +11,7 @@
 	df.setCalendar(CalendarUtils.getInstanceTempCalendar()) ;
 	def task = uicomponent.getEvent();
 	def username = CalendarUtils.getCurrentUser();
-	def calType = CalendarUtils.getCalendarService().getTypeOfCalendar(username, event.getCalendarId());
+	def calType = CalendarUtils.getCalendarService().getTypeOfCalendar(username, task.getCalendarId());
 	color = uicomponent.getColors().get(task.getCalendarId()) ;
 	def rcontext = _ctx.getRequestContext();
 	def requireJS = rcontext.getJavascriptManager().getRequireJS();

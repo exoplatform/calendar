@@ -333,7 +333,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     Map<String, List<org.exoplatform.calendar.service.Calendar>> cals = getCalendars();
     Set<String> typeNames = new HashSet<String>();
     for (org.exoplatform.calendar.service.Calendar.Type t : org.exoplatform.calendar.service.Calendar.Type.values()) {
-      typeNames.add(t.name());
+      if (!org.exoplatform.calendar.service.Calendar.Type.UNDEFINED.equals(t)) {
+        typeNames.add(t.name());
+      }
     }    
 
     List<org.exoplatform.calendar.service.Calendar> other = new LinkedList<org.exoplatform.calendar.service.Calendar>();
@@ -434,7 +436,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
    */
   protected boolean isEventEditable(org.exoplatform.calendar.model.Event event) throws Exception {  
     org.exoplatform.calendar.model.Calendar calendar = xCalService.getCalendarHandler().getCalendarById(event.getCalendarId());
-    return Utils.hasPermission(calendar.getEditPermission());
+    return Utils.isCalendarEditable(CalendarUtils.getCurrentUser(), org.exoplatform.calendar.service.Calendar.build(calendar));
   }
 
   public Map<String, String> getColors() {

@@ -227,7 +227,7 @@
 		        def isRemote     = calendar.isRemote();
 		        def css          = "iconCheckBox checkbox" ;
 		        def username 	 = CalendarUtils.getCurrentUser();
-		        def isEditable   = Utils.hasPermission(calendar.getEditPermission());		        
+		        def isEditable   = Utils.isCalendarEditable(username, calendar);		        
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
 		        def calendarType = calendar.getCalType();
 

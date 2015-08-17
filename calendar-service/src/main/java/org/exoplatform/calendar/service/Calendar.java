@@ -148,7 +148,8 @@ public class Calendar extends org.exoplatform.calendar.model.Calendar {
     } catch (Exception e) {
       log.error(e);
     }
-    
+    cal.setDS(newModel.getDS());
+
     return cal;
   }
 }

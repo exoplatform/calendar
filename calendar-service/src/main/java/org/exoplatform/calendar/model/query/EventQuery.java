@@ -18,7 +18,6 @@
  */
 package org.exoplatform.calendar.model.query;
 
-import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.Utils;
 
 /**
@@ -29,7 +28,7 @@ public class EventQuery implements Query {
 
   private String ds;
   
-  private String             eventType = Event.TYPE_EVENT; // Event or Task
+  private String             eventType; // Event or Task
 
   private String owner;
   
