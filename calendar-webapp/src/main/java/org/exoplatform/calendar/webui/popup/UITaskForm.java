@@ -988,6 +988,7 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
         calendarEvent.setPriority(uiForm.getEventPriority()) ; 
         calendarEvent.setAttachment(uiForm.getAttachments(calendarEvent.getId(), uiForm.isAddNew_)) ;
         calendarEvent.setReminders(uiForm.getEventReminders(from)) ;
+        calendarEvent.setRepeatType(CalendarEvent.RP_NOREPEAT);
         try {
           if(uiForm.isAddNew_){
             if(uiForm.calType_.equals(CalendarUtils.PRIVATE_TYPE)) {
