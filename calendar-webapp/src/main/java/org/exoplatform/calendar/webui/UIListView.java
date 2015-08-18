@@ -264,7 +264,7 @@ public class UIListView extends UICalendarView {
       eventQuery.setExcludeRepeatEvent(false);      
       originalRecurEvents.addAll(calendarService.getEvents(username, eventQuery, publicCalendars.toArray(new String[publicCalendars.size()])));
       for (CalendarEvent evt : originalRecurEvents) {
-        if (CalendarEvent.RP_NOREPEAT.equals(evt.getRepeatType())) {
+        if (evt.getRepeatType() == null || CalendarEvent.RP_NOREPEAT.equals(evt.getRepeatType())) {
           allEvents.add(evt);          
         }
       }
