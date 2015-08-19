@@ -2089,7 +2089,10 @@
 
     UICalendarPortlet.prototype.overidePopUpClose = function() {
         gj('.UICalendarPortlet .uiIconClose').attr('onclick','');
-        gj('.UICalendarPortlet .uiIconClose').click(function(){gj(this).parents()[1].style.display = 'none';});
+        gj('.UICalendarPortlet').on('click', '.uiIconClose', function(){
+          uiPopupWindow.hide(gj(this).closest('.uiPopup').attr('id'), false);
+          gj(this).parents()[1].style.display = 'none';
+        });
     }
 
     UICalendarPortlet.prototype.checkEventCategoryName = function(textFieldId) {
