@@ -109,8 +109,6 @@ public class TestCalendarRestApi extends TestRestApi {
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.CREATED, response.getStatus());
-    String location = "[/v1/calendar/calendars/" + cal.getId() + "]";
-    assertEquals(location, response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION).toString());
 
     //demo is not owner of root calendar    
     login("demo");
