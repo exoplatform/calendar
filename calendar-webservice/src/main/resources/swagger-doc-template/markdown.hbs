@@ -1,20 +1,26 @@
-#{{#info}}{{title}}
+#{{#info}}{{title}} REST API
 
 
 ## {{join schemes " | "}}://{{host}}{{basePath}}
 
 
-{{description}}
+{{{description}}}
 
 {{#contact}}
-[**Contact the developer**](mailto:{{email}})
+{{#if email}}[**Contact the developer**](mailto:{{email}}){{/if}}
+
+{{#if url}}[**Visit the developer's website**]({{url}}){{/if}}
 {{/contact}}
 
-**Version** {{version}}
+**Version {{version}}**
 
-[**Terms of Service**]({{termsOfService}})
+{{#if termsOfService}}**<a href="{{termsOfService}}" target="_blank">Terms of Service</a>**{{/if}}
 
-{{#license}}[**{{name}}**]({{url}}){{/license}}
+{{#license}}
+{{#if url}}**<a href="{{url}}" target="_blank">{{name}}</a>**
+{{else}}**[{{name}}]()**
+{{/if}}
+{{/license}}
 
 {{/info}}
 
@@ -77,13 +83,15 @@
 ## <a name="/definitions/{{key}}">{{@key}}</a>
 
 <table border="1">
-    <tr>
-        <th>name</th>
-        <th>type</th>
-        <th>required</th>
-        <th>description</th>
-        <th>example</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>name</th>
+            <th>type</th>
+            <th>required</th>
+            <th>description</th>
+            <th>example</th>
+        </tr>
+    </thead>
     {{#each this.properties}}
         <tr>
             <td>{{@key}}</td>

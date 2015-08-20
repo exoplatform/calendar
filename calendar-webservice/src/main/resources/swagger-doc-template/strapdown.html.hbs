@@ -1,10 +1,42 @@
 <!DOCTYPE html>
 <html>
-<title>API Document</title>
+<head>
+    <title>REST API Documentation</title>
+    <link rel="icon" type="image/png" href="../classes/swagger-doc-template/images/exo_icon.jpg" sizes="32x32" />
+    <link rel="icon" type="image/png" href="../classes/swagger-doc-template/images/exo_icon.jpg" sizes="16x16" />
+</head>
+
+
+<body class="swagger-section">
+
+<!-- Navbar
+    ================================================== -->
+<iframe class="header-frame navbar navbar-fixed-top" src="http://docs.exoplatform.com/banner/banner.html" frameborder="0" scrolling="no" width="100%" height="51px"></iframe>
+
+{{#info}}
+<div id="situation-bar" class="container">
+    <p>
+        <span><a href="http://docs.exoplatform.com/">eXo Platform Documentation</a></span>
+        <span class="rightArrow">&nbsp;</span>
+        <span><a href="#">REST API Documentation</a></span>
+        <span class="rightArrow">&nbsp;</span>
+        <span class="current-resource">{{title}} Resources</span>
+    </p>
+</div>
+<div class="container API-resource">
+    <h1>{{title}} Resources</h1>
+    <select name="selected-resource">
+        <option value="" title="">Jump to</option>
+        <option value="Calendar">{{title}}</option>
+    </select>
+</div>
+{{/info}}
 
 <xmp theme="united" style="display:none;">
 {{>markdown}}
 </xmp>
 
-<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="../classes/swagger-doc-template/javascript/CustomStrapdown.js"></script>
+</body>
+
 </html>

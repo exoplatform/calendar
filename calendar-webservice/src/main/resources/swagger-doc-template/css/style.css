@@ -1,0 +1,205 @@
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;
+  /* Firefox, other Gecko */
+  box-sizing: border-box;
+}
+.loading-action {
+  -webkit-animation: loading 1s infinite linear;
+  animation: loading 1s infinite linear;
+}
+@-webkit-keyframes loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+.swagger-section {
+  color: #333333;
+  font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.swagger-section div.container {
+  width: auto;
+  margin: 0 20px;
+}
+.swagger-section div.container#situation-bar {
+  margin-top: 51px;
+  border-bottom: 1px dotted #cfcfcf;
+}
+.swagger-section div.container#situation-bar p {
+  margin: 20px 0;
+}
+.swagger-section div.container#situation-bar p span {
+  display: inline-block;
+}
+.swagger-section div.container#situation-bar p span a {
+  color: inherit;
+}
+.swagger-section div.container#situation-bar p span.rightArrow {
+  width: 16px;
+  background: transparent url("../images/BlackNextArrow.gif") no-repeat center right;
+  -webkit-background-size: 120%;
+  -moz-background-size: 120%;
+  -o-background-size: 120%;
+  background-size: 120%;
+}
+.swagger-section div.container#situation-bar p span.current-resource {
+  color: #999999;
+  font-weight: bold;
+}
+.swagger-section div.container.API-resource {
+  border-bottom: 1px dotted #cfcfcf;
+  padding: 20px 0;
+  height: 28px;
+}
+.swagger-section div.container.API-resource h1 {
+  float: left;
+  font-size: 25px;
+  margin: 0;
+  line-height: 25px;
+}
+.swagger-section div.container.API-resource select {
+  float: right;
+  width: auto;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background: #ffffff url("../images/BlackDownArrow.gif") no-repeat 94% 50%;
+  -webkit-box-shadow: inset 0 -4px 4px #f1f1f1;
+  -moz-box-shadow: inset 0 -4px 4px #f1f1f1;
+  box-shadow: inset 0 -4px 4px #f1f1f1;
+  margin: 0;
+}
+.swagger-section div.container#content {
+  margin-top: 5px;
+  /*h4 {
+                font-size: 14px;
+            }*/
+}
+.swagger-section div.container#content h1,
+.swagger-section div.container#content h2,
+.swagger-section div.container#content h3,
+.swagger-section div.container#content h4,
+.swagger-section div.container#content h5,
+.swagger-section div.container#content h6 {
+  color: inherit;
+  margin: 0;
+  line-height: 35px;
+}
+.swagger-section div.container#content h1 {
+  color: #345f8f;
+  font-size: 21px;
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin-top: 10px;
+}
+.swagger-section div.container#content h2 {
+  font-size: 18px;
+}
+.swagger-section div.container#content h2 a {
+  color: inherit;
+}
+.swagger-section div.container#content h3,
+.swagger-section div.container#content h4 {
+  font-size: 16px;
+}
+.swagger-section div.container#content h5 {
+  font-size: 14px;
+}
+.swagger-section div.container#content h4,
+.swagger-section div.container#content h5 {
+  line-height: 30px;
+}
+.swagger-section div.container#content table {
+  border-collapse: collapse;
+  -webkit-box-shadow: 2px 3px 2px #efefef, -2px 3px 2px #efefef;
+  -moz-box-shadow: 2px 3px 2px #efefef, -2px 3px 2px #efefef;
+  box-shadow: 2px 3px 2px #efefef, -2px 3px 2px #efefef;
+  margin-top: 10px;
+  width: auto;
+}
+.swagger-section div.container#content table thead {
+  background-color: #f0f0f0;
+}
+.swagger-section div.container#content table thead th {
+  vertical-align: middle;
+  -webkit-box-shadow: 0px 3px 3px #e9e9e9;
+  -moz-box-shadow: 0px 3px 3px #e9e9e9;
+  box-shadow: 0px 3px 3px #e9e9e9;
+  white-space: nowrap;
+}
+.swagger-section div.container#content table tbody tr:nth-child(odd) td,
+.swagger-section div.container#content table tbody tr:nth-child(odd) th {
+  background-color: #f8f8f8;
+}
+.swagger-section div.container#content table tbody tr:nth-child(even) td,
+.swagger-section div.container#content table tbody tr:nth-child(even) th {
+  background-color: white;
+}
+.swagger-section div.container#content table th,
+.swagger-section div.container#content table td {
+  border: 1px solid #cfcfcf;
+  padding: 10px 20px;
+  text-align: justify;
+}
+.swagger-section div.container#content table td {
+  vertical-align: top;
+}
+.swagger-section div.container#content p {
+  margin: 0;
+  line-height: 25px;
+}
+.swagger-section div.container select {
+  overflow: hidden;
+  background: #ffffff url("../images/GrayDownArrow.gif") no-repeat center right;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  outline: none;
+  padding: 0 15px;
+  line-height: 26px;
+}
+.swagger-section div.container select:focus,
+.swagger-section div.container select:active,
+.swagger-section div.container select option,
+.swagger-section div.container select option:focus,
+.swagger-section div.container select option:active {
+  outline: none;
+  outline-offset: 0;
+}
+.swagger-section div.container select option {
+  outline: none;
+  outline-offset: 0;
+}
+.swagger-section div.container select option:active,
+.swagger-section div.container select option:hover,
+.swagger-section div.container select option:focus {
+  outline: none;
+  outline-offset: 0;
+}

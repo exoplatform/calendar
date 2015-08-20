@@ -344,9 +344,9 @@
               <locations>org.exoplatform.calendar.ws</locations>
               <schemes>http,https</schemes>
               <host>localhost:8080</host>
-              <basePath>/v1/calendar</basePath>
+              <basePath>/rest/private/v1/calendar</basePath>
               <info>
-                <title>eXo Calendar REST API</title>
+                <title>Calendar</title>
                 <version>1</version>
                 <description>Calendar REST API documentation</description>
                 <termsOfService>
@@ -355,6 +355,7 @@
                 <contact>
                   <name>eXo Platform</name>
                   <url>http://www.exoplatform.org</url>
+                  <email>exo-engineering@exoplatform.com</email>
                 </contact>
                 <license>
                   <url>http://www.gnu.org/licenses</url>

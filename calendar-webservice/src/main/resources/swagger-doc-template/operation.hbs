@@ -1,7 +1,7 @@
 {{#deprecated}}-deprecated-{{/deprecated}}
 <a id="{{operationId}}">{{summary}}</a>
 
-{{description}}
+{{{description}}}
 
 {{#if externalDocs.url}}{{externalDocs.description}}. [See external documents for more details]({{externalDocs.url}})
 {{/if}}
@@ -26,14 +26,16 @@
 ##### Parameters
 {{#if parameters}}
 <table border="1">
-    <tr>
-        <th>Name</th>
-        <th>Located in</th>
-        <th>Required</th>
-        <th>Description</th>
-        <th>Default</th>
-        <th>Schema</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Located in</th>
+            <th>Required</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Schema</th>
+        </tr>
+    </thead>
 {{/if}}
 
 {{#parameters}}
