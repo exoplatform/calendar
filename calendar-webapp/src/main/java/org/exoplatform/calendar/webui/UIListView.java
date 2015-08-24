@@ -251,23 +251,35 @@ public class UIListView extends UICalendarView {
   }
 
   public List<Event> getAllEvents(EventQuery eventQuery) throws Exception {
-    eventQuery.setOwner(CalendarUtils.getCurrentUser());
-    if(eventQuery.getCalendarIds() == null) {
-      List<String> calIds = new LinkedList<String>();
-      calIds.addAll(Arrays.asList(getPublicCalendars()));
-      calIds.addAll(getPrivateCalendars());
-      calIds.addAll(getSharedCalendars());
-      calIds.addAll(getOtherCalendars());
-      eventQuery.setCalendarIds(calIds.toArray(new String[calIds.size()]));
-    }
+    String username = CalendarUtils.getCurrentUser();
+    eventQuery.setOwner(username);
 
     List<Event> allEvents = new LinkedList<Event>();
-    ListAccess<org.exoplatform.calendar.model.Event> list = xCalService.getEventHandler().findEventsByQuery(eventQuery);
+    List<Event> tmp = new LinkedList<Event>();
+    if (isDisplaySearchResult()) {
+      List<String> publicCalendars  = null;
+      if(eventQuery.getCalendarIds() != null && eventQuery.getCalendarIds().length > 0) {
+        publicCalendars = new LinkedList<String>();
+        List<String> calendarIds = Arrays.asList(eventQuery.getCalendarIds());
+        for(String cal : getPublicCalendars()) {
+            if(calendarIds.contains(cal)) {
+                publicCalendars.add(cal);
+            }
+        }
+      } else {
+        publicCalendars  = Arrays.asList(getPublicCalendars());
+      }
+      eventQuery.setExcludeRepeatEvent(false); 
+      tmp.addAll(CalendarUtils.getCalendarService().getEvents(username, convertQuery(eventQuery), publicCalendars.toArray(new String[publicCalendars.size()])));
+    } else {
+      ListAccess<org.exoplatform.calendar.model.Event> list = xCalService.getEventHandler().findEventsByQuery(eventQuery);
+      tmp.addAll(Arrays.asList(list.load(0, -1)));
+    }
 
     CalendarService calendarService = CalendarUtils.getCalendarService();
     CalendarSetting setting = getCalendarSetting();
     recurrenceEventsMap.clear();
-    for (Event evt : Arrays.asList(list.load(0, -1))) {
+    for (Event evt : tmp) {
       if (evt.getRepeatType() != null &&
           !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
         CalendarEvent depEvt = CalendarEvent.build(evt);
@@ -327,6 +339,32 @@ public class UIListView extends UICalendarView {
       });      
     } 
     return allEvents;
+  }
+
+  private org.exoplatform.calendar.service.EventQuery convertQuery(EventQuery eventQuery) {
+    org.exoplatform.calendar.service.EventQuery query = new org.exoplatform.calendar.service.EventQuery();
+    query.setCalendarId(eventQuery.getCalendarIds());
+    query.setCategoryId(eventQuery.getCategoryIds());
+    query.setEventType(eventQuery.getEventType());
+    query.setExcludeRepeatEvent(eventQuery.getExcludeRepeatEvent());
+    query.setFilterCalendarIds(eventQuery.getFilterCalendarIds());
+    if (eventQuery.getFromDate() != null) {
+      Calendar fromDate = Calendar.getInstance();
+      fromDate.setTimeInMillis(eventQuery.getFromDate());      
+      query.setFromDate(fromDate);
+    }
+    query.setOrderBy(eventQuery.getOrderBy());
+    query.setOrderType(eventQuery.getOrderType());
+    query.setParticipants(eventQuery.getParticipants());
+    query.setPriority(eventQuery.getPriority());
+    query.setState(eventQuery.getState());
+    query.setText(eventQuery.getText());
+    if (eventQuery.getToDate() != null) {
+      Calendar toDate = Calendar.getInstance();
+      toDate.setTimeInMillis(eventQuery.getToDate());
+      query.setToDate(toDate);      
+    }
+    return query;
   }
 
   public void update(EventPageList pageList) throws Exception {
