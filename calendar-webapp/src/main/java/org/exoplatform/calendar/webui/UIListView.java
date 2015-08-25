@@ -332,7 +332,19 @@ public class UIListView extends UICalendarView {
           } else if (UIListView.EVENT_SUMMARY.equals(orderBy)) {
             return o1.getSummary().compareTo(o2.getSummary());
           } else if (UIListView.EVENT_DESCRIPTION.equals(orderBy)) {
-            return o1.getDescription().compareTo(o2.getDescription());
+            if (o1.getDescription() == null) {
+              if (o2.getDescription() == null) {
+                return 0;
+              } else {
+                return -1;
+              }
+            } else {
+              if (o2.getDescription() == null) {
+                return 1;
+              } else {
+                return o1.getDescription().compareTo(o2.getDescription());                
+              }
+            }
           }
           return 0;
         }

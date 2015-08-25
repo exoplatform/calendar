@@ -125,6 +125,7 @@ public class Calendar extends org.exoplatform.calendar.model.Calendar {
   }
 
   public static Calendar build(org.exoplatform.calendar.model.Calendar newModel) {
+    if (newModel == null) return null;
     Calendar cal = new Calendar();
 
     cal.setId(newModel.getId());

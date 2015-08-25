@@ -105,7 +105,7 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
   }
 
   public void testFindNonRepeatEvent() throws Exception {
-    CalendarEvent repeatEvent = createUserEvent(userCal.getId(), null, "Have a meeting");
+    CalendarEvent repeatEvent = createUserEvent(userCal.getId(), null, "this is repeated event");
     repeatEvent.setRepeatType(CalendarEvent.RP_DAILY);
     calendarService_.saveUserEvent(username, userCal.getId(), repeatEvent, false);
 

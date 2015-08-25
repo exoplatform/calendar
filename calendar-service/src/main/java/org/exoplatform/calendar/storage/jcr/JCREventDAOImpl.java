@@ -151,6 +151,10 @@ public class JCREventDAOImpl implements EventDAO {
       if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.GROUP.type() == type) {
         events.addAll(dataStorage.getPublicEvents(eventQuery));
       }
+      
+      if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.SHARED.type() == type) {
+        events.addAll(dataStorage.getSharedEvents(query.getOwner(), eventQuery));
+      }
     } catch (Exception ex) {
       LOG.error("Can't query for event", ex);
     }

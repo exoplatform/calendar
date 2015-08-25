@@ -433,7 +433,11 @@ public class EventQuery {
       }
 
       if (excludeRepeatEvent != null && excludeRepeatEvent) {
-        stringBuffer.append("and not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='").append(CalendarEvent.RP_NOREPEAT).append("' and @exo:recurrenceId='')");
+        if (hasConjuntion) {
+          stringBuffer.append(" and ");
+        }
+        stringBuffer.append(" not(@jcr:mixinTypes='exo:repeatCalendarEvent' and @exo:repeat!='").append(CalendarEvent.RP_NOREPEAT).append("' and @exo:recurrenceId='')");
+        hasConjuntion = true;
       }
       stringBuffer.append("]");
       // declared order by

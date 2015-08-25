@@ -1524,8 +1524,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           confirmForm.setActions(actions);
           event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
           return;
-        }
-        calendar = CalendarUtils.getCalendar(calType, calendarId);
+        }        
+        org.exoplatform.calendar.model.Calendar tmp = uiCalendarView.xCalService.getCalendarHandler().getCalendarById(calendarId);
+        calendar = org.exoplatform.calendar.service.Calendar.build(tmp);
         if (calendar == null) {
           event.getRequestContext()
                   .getUIApplication()
@@ -1542,12 +1543,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
             return;
           }
 
-          if ((CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.hasPermission(Utils.getEditPerUsers(calendar)))
+          if (Integer.valueOf(calType) == -1 || (CalendarUtils.SHARED_TYPE.equals(calType) && !Utils.hasPermission(Utils.getEditPerUsers(calendar)))
                   || (CalendarUtils.PUBLIC_TYPE.equals(calType) && !Utils.hasPermission(calendar.getEditPermission()))) {
 
             event.getRequestContext()
                     .getUIApplication()
-                    .addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit-event",
+                    .addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-delete-event",
                             null,
                             1));
             uiCalendarView.refresh();
@@ -1895,22 +1896,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
                 .addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1));
         event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarPortlet);
       }
-      if (calType.equals(CalendarUtils.PRIVATE_TYPE)) {
-        calendar = calService.getUserCalendar(currentUser, selectedCalendarId);
-      } else if (calType.equals(CalendarUtils.SHARED_TYPE)) {
-        GroupCalendarData gCalendarData = calService.getSharedCalendars(currentUser, true);
-        if (gCalendarData != null) {
-          calendar = gCalendarData.getCalendarById(selectedCalendarId);
-          if (calendar != null && !CalendarUtils.isEmpty(calendar.getCalendarOwner()))
-            calendar.setName(calendar.getName());
-        }
-      } else if (calType.equals(CalendarUtils.PUBLIC_TYPE)) {
-        try {
-          calendar = calService.getGroupCalendar(selectedCalendarId);
-        } catch (PathNotFoundException e) {
-          log.debug("\n\n calendar has been removed !");
-        }
-      }
+      org.exoplatform.calendar.model.Calendar tmp = uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId); 
+      calendar = org.exoplatform.calendar.service.Calendar.build(tmp);
+      
       if (calendar == null) {
         event.getRequestContext()
                 .getUIApplication()
