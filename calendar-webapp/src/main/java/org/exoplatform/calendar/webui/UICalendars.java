@@ -851,10 +851,11 @@ public class UICalendars extends UIForm  {
         } else if (!Utils.isCalendarEditable(username, calendar)) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, AbstractApplicationMessage.WARNING)) ;          
         } else {
-          calendar.setCalendarColor(color) ;
           if (calendar.isShared(username)) {
+            calendar.setCalendarColor(color) ;
             calService.saveSharedCalendar(username, calendar);
           } else {
+            cal.setCalendarColor(color);
             uiComponent.xCalService.getCalendarHandler().updateCalendar(cal);
           }
           
