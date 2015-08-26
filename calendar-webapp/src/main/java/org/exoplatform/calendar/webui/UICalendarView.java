@@ -69,6 +69,7 @@ import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.core.model.SelectItemOption;
 import org.exoplatform.webui.cssfile.CssClassUtils;
 import org.exoplatform.webui.event.EventListener;
@@ -181,9 +182,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   protected DateFormatSymbols dfs_;
 
-  private CalendarEvent currentOccurrence;
-  
-  List<org.exoplatform.calendar.model.Event> evtInMonth = new LinkedList<org.exoplatform.calendar.model.Event>();
+  private CalendarEvent currentOccurrence;  
 
   protected Map<String, Map<String, CalendarEvent>> recurrenceEventsMap = new LinkedHashMap<String, Map<String, CalendarEvent>>();
   
@@ -459,6 +458,13 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
   @Override
   public void refresh() throws Exception {
+    refresh(false);
+  }
+  
+  public void refresh(boolean renew) throws Exception {
+    List<Event> evtInMonth = getEventInMonth();
+    if (!renew) return;
+    
     evtInMonth.clear();
     org.exoplatform.calendar.model.query.EventQuery query = new JCREventQuery();
     query.setOwner(CalendarUtils.getCurrentUser());
@@ -489,8 +495,20 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
   }
   
-  public List<org.exoplatform.calendar.model.Event> getEventInMonth() {
-    return evtInMonth;
+  @SuppressWarnings("unchecked")
+  public List<Event> getEventInMonth() {
+    PortletRequestContext context = PortletRequestContext.getCurrentInstance();
+    List<Event> events = (List<Event>)context.getAttribute("");
+    if (events == null) {
+      events = new LinkedList<Event>();
+      context.setAttribute("", events);
+      try {
+        refresh(true);
+      } catch (Exception e) {
+        log.error("can't refresh calendar view", e);
+      }
+    }
+    return events;
   }
   
   public List<org.exoplatform.calendar.model.Event> getEventInMonth(long startTime, long endTime) {
