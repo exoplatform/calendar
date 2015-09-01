@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.jcr.PathNotFoundException;
 
+import net.fortuna.ical4j.data.ParserException;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarCollection;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -320,6 +322,9 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     } catch (IOException e) {
       log.info("Exception occurs when connect to remote calendar. Skip this test.");
       return;
+    } catch (ParserException e) {
+      log.info("Exception occurs when parse remote calendar. Skip this test.");
+      return;
     }
     //cal.setCategoryId(calCategory.getId());
     calendarService_.saveUserCalendar(username, cal, true);
@@ -354,7 +359,7 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     // test RemoteCaldav
     remoteCal.setType(CalendarService.CALDAV);
     remoteCal.setRemoteUser("exomailtest@gmail.com");
-    remoteCal.setRemotePassword("tuanpham");
+    remoteCal.setRemotePassword("testexomail");
     remoteCal.setRemoteUrl("https://www.google.com/calendar/dav/exomailtest@gmail.com/events/");
     try {
       cal = remoteCalendarService.importRemoteCalendar(remoteCal);
