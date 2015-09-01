@@ -487,8 +487,10 @@ public class CalendarRestApi implements ResourceContainer {
             }
 		  }
 		}
-		
-		return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, uriInfo.getAbsolutePath() + cal.getId()).cacheControl(nc).build();
+		StringBuilder location = new StringBuilder(getBasePath(uriInfo));
+		location.append(CALENDAR_URI);
+		location.append(calendar.getId());		
+		return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, location).cacheControl(nc).build();
 	}
 
   /**

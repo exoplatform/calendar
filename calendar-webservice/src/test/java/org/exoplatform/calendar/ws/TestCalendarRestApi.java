@@ -99,8 +99,10 @@ public class TestCalendarRestApi extends TestRestApi {
     Calendar cal = new Calendar() ;
     cal.setName("myCal") ;
     cal.setCalendarOwner("root");
+    //to simulate exactly user data as json, we don't have id for unsaved entity
+    cal.setId(null);
     JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
-    JsonValue json = generatorImpl.createJsonObject(new CalendarResource(cal, CAL_BASE_URI + "/"));
+    JsonValue json = generatorImpl.createJsonObject(new CalendarResource(cal, CAL_BASE_URI));
     byte[] data = json.toString().getBytes("UTF-8");
     
     headers.putSingle("content-type", "application/json");
@@ -109,8 +111,13 @@ public class TestCalendarRestApi extends TestRestApi {
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.CREATED, response.getStatus());
-    String location = "[/v1/calendar/calendars/" + cal.getId() + "]";
-    assertEquals(location, response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION).toString());
+    //now try to get newly created calendar by returned location in http header
+    String location = response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION).toString();
+    location = location.replaceAll("\\[|\\]", "");
+    response = service(HTTPMethods.GET, location, baseURI, headers, null, writer);    
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    CalendarResource calR = (CalendarResource)response.getEntity();
+    assertEquals(cal.getName(), calR.getName());    
 
     //demo is not owner of root calendar    
     login("demo");
