@@ -396,6 +396,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
                        OCCURRENCE_URI + queryParams, baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     CollectionResource calR = (CollectionResource)response.getEntity();
+    assertEquals(4, calR.getLimit());
     List<EventResource> evs = (ArrayList<EventResource>)calR.getData();
     assertEquals(4, evs.size());
     Map<String,CalendarEvent> occMap = calendarService.getOccurrenceEvents(ev, from, to, timeZone);

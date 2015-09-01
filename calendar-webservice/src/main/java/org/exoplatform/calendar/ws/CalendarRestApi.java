@@ -1707,7 +1707,7 @@ public class CalendarRestApi implements ResourceContainer {
         int fullSize = returnSize ? occMap.values().size() : -1;
         CollectionResource evData = new CollectionResource(data, fullSize);
         evData.setOffset(offset);
-        evData.setOffset(limit);
+        evData.setLimit(limit);
         
         //
         ResponseBuilder response = buildJsonP(evData, jsonp);
