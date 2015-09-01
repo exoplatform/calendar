@@ -1384,22 +1384,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       UIPopupContainer uiPopupContainer = uiPortlet.createUIComponent(UIPopupContainer.class, null, null);
       CalendarEvent eventCalendar = null;
       String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
-      Boolean isOccur = false;
-      if (!Utils.isEmpty(event.getRequestContext().getRequestParameter(ISOCCUR))) {
-        isOccur = Boolean.parseBoolean(event.getRequestContext().getRequestParameter(ISOCCUR));
-      }
-      // need to get recurrence-id
-      String recurId = null;
-      if (isOccur) {
-        recurId = event.getRequestContext().getRequestParameter(RECURID);  
-      }
-      if (isOccur && !Utils.isEmpty(recurId)) {          
-        eventCalendar = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
-      } else {
-        eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
-      }
       
-      String username = CalendarUtils.getCurrentUser();
       String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
 
       // Need to reload Event from JCR to check if it's still existing on calendar or not
@@ -1418,10 +1403,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
         if (isOccur && !Utils.isEmpty(recurId)) {
           eventCalendar = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
         } else {
-          eventCalendar = uiCalendarView.getDataMap().get(eventId);
+          eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
         }
 
-        String username = CalendarUtils.getCurrentUser();
         String calType = event.getRequestContext().getRequestParameter(CALTYPE);
 
         CalendarService calendarService = CalendarUtils.getCalendarService();
