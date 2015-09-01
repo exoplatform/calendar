@@ -26,10 +26,10 @@
         <propertyDefinition name="exo:reminderType" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>
-        <propertyDefinition name="exo:fromTime" requiredType="" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+        <propertyDefinition name="exo:fromDateTime" requiredType="Date" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>
-        <propertyDefinition name="exo:remindTime" requiredType="" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+        <propertyDefinition name="exo:remindDateTime" requiredType="Date" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>                
         <propertyDefinition name="exo:isRepeat" requiredType="Boolean" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
@@ -176,6 +176,9 @@
         <propertyDefinition name="exo:name" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>        
+        <propertyDefinition name="exo:description" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>        
       </propertyDefinitions>
       <childNodeDefinitions>
         <childNodeDefinition name="*" defaultPrimaryType="" autoCreated="false" mandatory="false"
@@ -224,7 +227,7 @@
         </propertyDefinition>    
         <propertyDefinition name="exo:timeZone" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
-        </propertyDefinition>   
+        </propertyDefinition>    
         
         <!-- added from cs 2.0.0 Beta01 -->
         <propertyDefinition name="exo:publicUrl" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
@@ -232,7 +235,7 @@
         </propertyDefinition>  
         <propertyDefinition name="exo:privateUrl" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
-        </propertyDefinition> 
+        </propertyDefinition>
                 
       </propertyDefinitions>
       <childNodeDefinitions>
@@ -286,7 +289,7 @@
         </propertyDefinition>        
         <propertyDefinition name="exo:title" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
-        </propertyDefinition>      
+        </propertyDefinition>        
         <propertyDefinition name="exo:content" requiredType="Binary" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>        
@@ -313,6 +316,9 @@
         <propertyDefinition name="exo:timeFormat" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>              
+        <propertyDefinition name="exo:location" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
         <propertyDefinition name="exo:timeZone" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>
@@ -352,7 +358,7 @@
           <valueConstraints/>
         </propertyDefinition>        
       </propertyDefinitions>
-    </nodeType>
+    </nodeType>       
     <nodeType name="exo:remoteCalendar" isMixin="true" hasOrderableChildNodes="false" primaryItemName="">
       <propertyDefinitions>
         <propertyDefinition name="exo:remoteUrl" requiredType="String" autoCreated="false" mandatory="true"
@@ -378,7 +384,7 @@
         <propertyDefinition name="exo:lastUpdated" requiredType="Date" autoCreated="false" mandatory="false"
           onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
-        </propertyDefinition>       
+        </propertyDefinition>
         <propertyDefinition name="exo:beforeDate" requiredType="String" autoCreated="false" mandatory="false"
           onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
@@ -386,9 +392,9 @@
         <propertyDefinition name="exo:afterDate" requiredType="String" autoCreated="false" mandatory="false"
           onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
-        </propertyDefinition>       
+        </propertyDefinition> 
       </propertyDefinitions>
-    </nodeType>       
+    </nodeType>
     <nodeType name="exo:caldavCalendarEvent" isMixin="true" hasOrderableChildNodes="false" primaryItemName="">
       <propertyDefinitions>
         <propertyDefinition name="exo:caldavHref" requiredType="String" autoCreated="false" mandatory="false"
@@ -411,6 +417,38 @@
           onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
         </propertyDefinition>
+        <propertyDefinition name="exo:repeatInterval" requiredType="Long" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:repeatByDay" requiredType="String" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="true">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:repeatByMonthDay" requiredType="Long" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="true">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:repeatByYearDay" requiredType="Long" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="true">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:repeatByWeekNo" requiredType="Long" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="true">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:repeatByMonth" requiredType="Long" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="true">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:repeatBySetPos" requiredType="Long" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="true">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:repeatWkst" requiredType="String" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
         <propertyDefinition name="exo:recurrenceId" requiredType="String" autoCreated="false" mandatory="false"
           onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
@@ -422,18 +460,31 @@
         <propertyDefinition name="exo:isException" requiredType="Boolean" autoCreated="false" mandatory="false"
           onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
-        </propertyDefinition>   
+        </propertyDefinition>
         <propertyDefinition name="exo:originalReference" requiredType="Reference" autoCreated="false" mandatory="false"
           onParentVersion="COPY" protected="false" multiple="false">
           <valueConstraints/>
-        </propertyDefinition>
+        </propertyDefinition>   
+        <propertyDefinition name="exo:repeatFinishDate" requiredType="Date" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>  
       </propertyDefinitions>
     </nodeType>
+    <nodeType name="exo:hiddenable" isMixin="true" hasOrderableChildNodes="false" primaryItemName="">
+      <propertyDefinitions>
+      </propertyDefinitions>
+  	 </nodeType>
+  	 <nodeType name="exo:datetime" isMixin="true" hasOrderableChildNodes="false" primaryItemName="">
+      <propertyDefinitions>
+        <propertyDefinition name="exo:dateCreated" requiredType="Date" autoCreated="true" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>        
+        </propertyDefinition>
+        <propertyDefinition name="exo:dateModified" requiredType="Date" autoCreated="true" mandatory="false"
+          onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>        
+        </propertyDefinition>
+      </propertyDefinitions>
+     </nodeType>
 </nodeTypes>  
-  
-   
-  
-
-
-
-  

@@ -341,7 +341,6 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
 
   public void testGetEventById() throws Exception {
     CalendarEvent calendarEvent = createUserEvent("Have a meeting");
-    calendarService_.saveUserEvent(username, calendarEvent.getCalendarId(), calendarEvent, true);
 
     CalendarEvent findEvent1 = calendarService_.getEventById(calendarEvent.getId());
     assertNotNull(findEvent1);

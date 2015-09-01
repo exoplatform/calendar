@@ -179,7 +179,7 @@
         <values-param>
           <name>autoCreatedInNewRepository</name>
           <description>Node types configuration file</description>
-          <value>jar:/conf/portal/test-calendar-nodetypes.xml</value>
+          <value>jar:/conf/calendar-nodetypes.xml</value>
         </values-param>
       </init-params>
     </component-plugin>
