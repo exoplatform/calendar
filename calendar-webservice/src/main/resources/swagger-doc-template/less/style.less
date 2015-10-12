@@ -1,0 +1,194 @@
+@import "variables.less";
+@import "mixins.less";
+
+//////////////////////////
+// Additional variables //
+//////////////////////////
+
+// Dimensions
+@navbarHeight: 51px;
+@arrowSize: 16px;
+@containerSideMargin: 20px;
+
+// Colors
+@hoverColor: #f8f8f8;
+@infoTitleColor: #345f8f;
+@separatorsColor: #cfcfcf;
+
+// Mixin for appearance
+.appear(@value : none) {
+    -webkit-appearance: @value;
+    -moz-appearance: @value;
+    -o-appearance: @value;
+    appearance: @value;
+}
+
+.swagger-section {
+    color: @grayDark;
+    font: @sansFontFamily;
+
+    div.container {
+        width: auto;
+        margin: 0 @containerSideMargin;
+
+        &#situation-bar {
+            margin-top: @navbarHeight;
+            border-bottom: 1px dotted @separatorsColor;
+
+            p {
+                margin: 20px 0;
+
+                span {
+                    display: inline-block;
+
+                    a {
+                        color: inherit;
+                    }
+
+                    &.rightArrow {
+                        width: @arrowSize;
+                        background: transparent url("../images/BlackNextArrow.gif") no-repeat center right;
+                        .background-size(120%);
+                    }
+
+                    &.current-resource {
+                        color: @grayLight;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+        &.API-resource {
+            border-bottom: 1px dotted @separatorsColor;
+            padding: 20px 0;
+            height: 28px;
+
+            h1 {
+                float: left;
+                font-size: 25px;
+                margin: 0;
+                line-height: 25px;
+            }
+
+            select {
+                float: right;
+                width: auto;
+                .border-radius(@baseBorderRadius);
+                background: white url("../images/BlackDownArrow.gif") no-repeat 94% 50%;
+                .box-shadow(~"inset 0 -4px 4px #f1f1f1");
+                margin: 0;
+            }
+        }
+
+        &#content {
+            margin-top: 5px;
+            
+            h1, h2, h3, h4, h5, h6 {
+                color: inherit;
+                margin: 0;
+                line-height: 35px;
+            }
+
+            h1 {
+                color: @infoTitleColor;
+                font-size: 21px;
+                font-weight: bold;
+                font-family: @sansFontFamily;
+                margin-top: 10px;
+            }
+
+            h2 {
+                font-size: 18px;
+                
+                a {
+                    color: inherit;
+                }
+            }
+
+            h3, h4 {
+                font-size: 16px;
+            }
+            
+            /*h4 {
+                font-size: 14px;
+            }*/
+            
+            h5 {
+                font-size: 14px;
+            }
+
+            h4, h5 {
+                line-height: 30px;
+            }
+
+            table {
+                border-collapse: collapse;
+                .box-shadow(~"2px 3px 2px #efefef, -2px 3px 2px #efefef");
+                margin-top: 10px;
+                width: auto;
+
+                thead {
+                    background-color: @primaryBackground;
+
+                    th {
+                        vertical-align: middle;
+                        .box-shadow(0px 3px 3px lighten(@separatorsColor, 10%));
+                        white-space: nowrap;
+                    }
+                }
+
+                tbody tr {
+                    &:nth-child(odd) {
+                        td, th {
+                            background-color: @hoverColor;
+                        }
+                    }
+                    &:nth-child(even) {
+                        td, th {
+                            background-color: white;
+                        }
+                    }
+                }
+
+                th, td {
+                    border: 1px solid @separatorsColor;
+                    padding: 10px 20px;
+                    text-align: justify;
+                }
+
+                td {
+                    vertical-align: top;
+                }
+            }
+
+            p {
+                margin: 0;
+                line-height: 25px;
+            }
+        }
+
+        select {
+            overflow: hidden;
+            background: white url("../images/GrayDownArrow.gif") no-repeat center right;
+            .appear();
+            outline: none;
+            padding: 0 15px;
+            line-height: 26px;
+
+            &:focus, &:active, option, option:focus, option:active {
+                outline: none;
+                outline-offset: 0;
+            }
+            option {
+                outline: none;
+                outline-offset: 0;
+
+                &:active, &:hover, &:focus {
+                    outline: none;
+                    outline-offset: 0;
+                }
+            }
+        }
+    }
+}

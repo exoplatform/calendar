@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.3.x-SNAPSHOT</version>
+    <version>4.3.x-cal-rest-api-doc-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-webservice</artifactId>
   <packaging>jar</packaging>
@@ -269,6 +269,12 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- Swagger -->
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-jaxrs</artifactId>
+      <version>1.5.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -327,6 +333,51 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.github.kongchen</groupId>
+        <artifactId>swagger-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+          <apiSources>
+            <apiSource>
+              <springmvc>false</springmvc>
+              <locations>org.exoplatform.calendar.ws</locations>
+              <schemes>http,https</schemes>
+              <host>localhost:8080</host>
+              <basePath>/rest/private/v1/calendar</basePath>
+              <info>
+                <title>Calendar</title>
+                <version>1</version>
+                <description>Calendar REST API documentation</description>
+                <termsOfService>
+                  https://github.com/exoplatform/calendar
+                </termsOfService>
+                <contact>
+                  <name>eXo Platform</name>
+                  <url>http://www.exoplatform.org</url>
+                  <email>exo-engineering@exoplatform.com</email>
+                </contact>
+                <license>
+                  <url>http://www.gnu.org/licenses</url>
+                  <name>GNU Affero General Public License</name>
+                </license>
+              </info>
+              <templatePath>${basedir}/src/main/resources/swagger-doc-template/strapdown.html.hbs</templatePath>
+              <outputPath>${basedir}/target/generated/document.html</outputPath>
+              <swaggerDirectory>${basedir}/target/generated/swagger-ui</swaggerDirectory>
+            </apiSource>
+          </apiSources>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 </project>
