@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar-extension</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.3.x-cal-rest-api-doc-SNAPSHOT</version>
+    <version>4.3.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-extension-webapp</artifactId>
   <packaging>war</packaging>
