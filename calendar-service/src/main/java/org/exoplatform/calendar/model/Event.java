@@ -192,6 +192,9 @@ public class Event extends AbstractModel {
   private String               eventState      = ST_BUSY;
 
   /**
+   * TODO: Actually this field is not used, status of Task is saved in field {@link #eventState}
+   * Value of this field is always empty. We should remove it
+   *
    *Status:
    *-for event: TENTATIVE, CONFIRMED, CANCELLED. 
    *-for task:  NEEDS-ACTION, COMPLETED, IN-PROCESS, CANCELLED
@@ -325,6 +328,10 @@ public class Event extends AbstractModel {
     this.eventState = eventState;
   }
 
+  /**
+   * This method is always return EMPTY string because field status is not used in fact.
+   * @return
+   */
   public String getStatus() {
     return status;
   }

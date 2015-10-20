@@ -25,6 +25,7 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
 import java.util.Collection;
 import java.util.List;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.ws.bean.CollectionResource;
@@ -222,6 +223,7 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
         
     Resource resource = null;
     if (CalendarEvent.TYPE_TASK.equals(eventType)) {
+      uEvt.setEventState(Event.NEEDS_ACTION);
       resource = new TaskResource(uEvt, "");
     } else {
       resource = new EventResource(uEvt, "");

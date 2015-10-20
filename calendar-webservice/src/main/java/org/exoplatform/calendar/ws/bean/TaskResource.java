@@ -87,7 +87,9 @@ public class TaskResource extends Resource {
      }
      attachments = atts.toArray(new String[atts.size()]);
    }
-   status = data.getStatus();
+    // Actually status is used in event state field
+   //status = data.getStatus();
+    status = data.getEventState();
   }
 
   public String getName() {

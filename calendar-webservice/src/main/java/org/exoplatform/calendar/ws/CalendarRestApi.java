@@ -3957,6 +3957,8 @@ public class CalendarRestApi implements ResourceContainer {
         return buildBadResponse(new ErrorResource("status must be one of " + StringUtils.join(TASK_STATUS, ","), "status"));
       } else {
         old.setStatus(status);
+        // Actually task status is saved in eventState field
+        old.setEventState(status);
       }
     }
     String name = evObject.getName();
