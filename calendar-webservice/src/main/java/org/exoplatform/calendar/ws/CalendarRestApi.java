@@ -21,6 +21,11 @@ import com.sun.syndication.feed.synd.*;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
 import com.sun.syndication.io.XmlReader;
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Method;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Version;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.*;
@@ -55,6 +60,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -857,6 +863,21 @@ public class CalendarRestApi implements ResourceContainer {
         ArrayList<String> calIds = new ArrayList<String>();
         calIds.add(id);
         OutputStream out = iCalExport.exportCalendar(username, calIds, String.valueOf(type), Utils.UNLIMITED);
+
+        // In case calendar hasn't got any event/task, CalendarImportExport service will return NULL
+        // But in this case, we still should return an ICS file without any event/task (like Google do)
+        // This is workaround to reach it without update in CalendarImportExport. (Because CalendarImportExport is used in some other business that need NULL value returned).
+        if (out == null) {
+          net.fortuna.ical4j.model.Calendar calendar = new net.fortuna.ical4j.model.Calendar();
+          calendar.getProperties().add(new ProdId("-//Ben Fortuna//iCal4j 1.0//EN"));
+          calendar.getProperties().add(Version.VERSION_2_0);
+          calendar.getProperties().add(CalScale.GREGORIAN);
+          calendar.getProperties().add(Method.REQUEST);
+          out = new ByteArrayOutputStream();
+          CalendarOutputter output = new CalendarOutputter(false);
+          output.output(calendar, out);
+        }
+
         byte[] data = out.toString().getBytes();
 
         byte[] hashCode = digest(data).getBytes();
