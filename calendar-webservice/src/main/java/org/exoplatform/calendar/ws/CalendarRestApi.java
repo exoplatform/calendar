@@ -405,6 +405,9 @@ public class CalendarRestApi implements ResourceContainer {
     if (cal.getName() == null) {
       cal.setName(DEFAULT_CAL_NAME);
     }
+    if (cal.getOwner() == null) {
+      cal.setOwner(currentUserId());
+    }
     Response error = buildCalendar(calendar, cal);
     if (error != null) {
       return error;
