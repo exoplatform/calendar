@@ -38,9 +38,13 @@ public class SubResourceHrefBuilder {
     List<String> resources = new LinkedList<String>();
         
     StringBuilder uriBuilder = new StringBuilder();
-    URI uri = uriInfo.getRequestUri();
+    URI uri = uriInfo.getBaseUri();
     uriBuilder.append(uri.getScheme()).append("://");
-    uriBuilder.append(uri.getHost()).append(":").append(uri.getPort());
+    uriBuilder.append(uri.getHost());
+    if (uri.getPort() != 80 && uri.getPort() != 443) {
+      uriBuilder.append(":").append(uri.getPort());
+    }
+    uriBuilder.append(uri.getPath());
     String base = uriBuilder.toString();
     
     for (String rs : subResources) {
