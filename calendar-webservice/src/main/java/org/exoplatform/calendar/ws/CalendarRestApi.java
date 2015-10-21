@@ -596,7 +596,7 @@ public class CalendarRestApi implements ResourceContainer {
    * @request  PUT: http://localhost:8080/rest/private/v1/calendar/calendars/demo-defaultCalendarId
    * 
    * @response  HTTP status code: 200 if updated successfully, 404 if calendar not found,
-   *            401 if the user does not have edit permission, 403 if user try to set other user as owner of his personal calendar
+   *            401 if the user does not have edit permission, 403 if user submit invalid data to update
    *            503 if any error during save process.
    * 
    * @return HTTP status code.
@@ -616,7 +616,7 @@ public class CalendarRestApi implements ResourceContainer {
   @ApiResponses(value = {
 		  @ApiResponse(code = 200, message = "Calendar successfully updated"),
 		  @ApiResponse(code = 401, message = "User unauthorized to update the calendar"),
-          @ApiResponse(code = 403, message = "If user try to set other user as owner of his personal calendar"),
+          @ApiResponse(code = 403, message = "If user try to update invalid data to the calendar"),
 		  @ApiResponse(code = 404, message = "Calendar with provided ID Not Found"),
 		  @ApiResponse(code = 503, message = "An error occurred during the saving process")
 		  })
@@ -645,8 +645,13 @@ public class CalendarRestApi implements ResourceContainer {
         } else {
           int type = calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId());
 
-          if (type == Calendar.TYPE_PRIVATE && !currentUserId().equals(cal.getCalendarOwner())) {
-            return Response.status(HTTPStatus.FORBIDDEN).cacheControl(nc).build();
+          if (type == Calendar.TYPE_PRIVATE) {
+            if (!currentUserId().equals(cal.getCalendarOwner())) {
+              return Response.status(HTTPStatus.FORBIDDEN).entity("Can not change owner of personal calendar").cacheControl(nc).build();
+            }
+            if (cal.getGroups() != null && cal.getGroups().length > 0) {
+              return Response.status(HTTPStatus.FORBIDDEN).entity("Can not update groups of personal calendar").cacheControl(nc).build();
+            }
           }
 
           calendarServiceInstance().saveCalendar(cal.getCalendarOwner(), cal, type, false);
