@@ -80,7 +80,7 @@ public class RestEventQuery extends EventQuery {
     }
     if (getToDate() != null) {
       sql.append(" AND (")
-         .append(Utils.EXO_TO_DATE_TIME)
+         .append(Utils.EXO_FROM_DATE_TIME)
          .append(" <= TIMESTAMP '")
          .append(ISO8601.format(getToDate()))
          .append("')");
