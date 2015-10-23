@@ -21,11 +21,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.CompositeID;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarImportExport;
 import org.exoplatform.calendar.service.CalendarService;
@@ -103,14 +106,14 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   public void initCheckBox(List<Calendar> calendars, String selectedCalendarId)
   {
     for (Calendar calendar : calendars) {
-      UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-      if(calendar.getId().equals(selectedCalendarId)) checkBox.setChecked(true) ;
+      UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getCompositeId(), calendar.getCompositeId(), false);
+      if(calendar.getCompositeId().equals(selectedCalendarId)) checkBox.setChecked(true) ;
       else checkBox.setChecked(false) ;
       if(eventId != null) checkBox.setDisabled(true) ;
       else checkBox.setDisabled(false) ;
       addUIFormInput(checkBox) ;
-      names_.put(calendar.getId(), calendar.getName()) ;
-      longNames_.put(calendar.getId(), calendar.getName()) ;
+      names_.put(calendar.getCompositeId(), calendar.getName()) ;
+      longNames_.put(calendar.getCompositeId(), calendar.getName()) ;
     }
   }
 
@@ -163,10 +166,14 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
       OutputStream out = null ;
       try {
         // export a single event
-        if(uiForm.eventId != null) {
-          out = importExport.exportEventCalendar(CalendarUtils.getCurrentUser(), calendarIds.get(0), uiForm.calType, uiForm.eventId) ;
+        List<String> calIds = new LinkedList<String>();
+        for (String id : calendarIds) {
+          calIds.add(CompositeID.parse(id).getId());
         }
-        else out = importExport.exportCalendar(CalendarUtils.getCurrentUser(), calendarIds, uiForm.calType, -1) ;
+        if(uiForm.eventId != null) {
+          out = importExport.exportEventCalendar(CalendarUtils.getCurrentUser(), calIds.get(0), uiForm.calType, uiForm.eventId) ;
+        }
+        else out = importExport.exportCalendar(CalendarUtils.getCurrentUser(), calIds, uiForm.calType, -1) ;
         ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
         DownloadResource dresource = new InputStreamDownloadResource(is, "text/iCalendar") ;
         DownloadService dservice = (DownloadService)PortalContainer.getInstance().getComponentInstanceOfType(DownloadService.class) ;
