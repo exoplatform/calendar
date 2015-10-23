@@ -687,6 +687,7 @@ public class UICalendars extends UIForm  {
       Calendar calendar = null ;
 
       if(CalendarUtils.SHARED_TYPE.equals(calType)) {
+        calendarId = CompositeID.parse(calendarId).getId();
         try {
           if(calService.getSharedCalendars(username, true) != null)
             calendar = calService.getSharedCalendars(username, true).getCalendarById(calendarId) ;

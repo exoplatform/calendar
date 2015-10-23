@@ -105,15 +105,16 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
 
   public void initCheckBox(List<Calendar> calendars, String selectedCalendarId)
   {
+    String calId = CompositeID.parse(selectedCalendarId).getId();
     for (Calendar calendar : calendars) {
-      UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getCompositeId(), calendar.getCompositeId(), false);
-      if(calendar.getCompositeId().equals(selectedCalendarId)) checkBox.setChecked(true) ;
+      UICheckBoxInput checkBox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
+      if(calendar.getId().equals(calId)) checkBox.setChecked(true) ;
       else checkBox.setChecked(false) ;
       if(eventId != null) checkBox.setDisabled(true) ;
       else checkBox.setDisabled(false) ;
       addUIFormInput(checkBox) ;
-      names_.put(calendar.getCompositeId(), calendar.getName()) ;
-      longNames_.put(calendar.getCompositeId(), calendar.getName()) ;
+      names_.put(calendar.getId(), calendar.getName()) ;
+      longNames_.put(calendar.getId(), calendar.getName()) ;
     }
   }
 
