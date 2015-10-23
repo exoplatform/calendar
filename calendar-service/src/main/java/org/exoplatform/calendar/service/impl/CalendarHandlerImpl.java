@@ -106,7 +106,7 @@ public class CalendarHandlerImpl implements CalendarHandler {
     Storage storage = service.lookForDS(composId.getDS());
     CalendarDAO dao = storage.getCalendarDAO();
     if (dao != null){
-      org.exoplatform.calendar.model.Calendar cal = dao.remove(compositeId);
+      org.exoplatform.calendar.model.Calendar cal = dao.remove(composId.getId());
       if (cal != null) {
         return cal;
       }
