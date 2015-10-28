@@ -37,6 +37,7 @@ import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
 
+import org.apache.poi.ss.formula.functions.Even;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
@@ -1335,10 +1336,12 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
 
       if (uiCalendarView.getDataMap() != null) {
-        eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
+        Event e = uiCalendarView.getDataMap().get(eventId);
+        eventCalendar = e != null ? CalendarEvent.build(e) : null;
 
         if (isOccur && !Utils.isEmpty(recurId)) {
-          eventCalendar = uiCalendarView.recurrenceEventsMap.get(eventId).get(recurId);
+          Map<String, CalendarEvent> events = uiCalendarView.recurrenceEventsMap.get(eventId);
+          eventCalendar = events != null ? events.get(recurId) : null;
         }
       }
       if (eventCalendar != null) {
