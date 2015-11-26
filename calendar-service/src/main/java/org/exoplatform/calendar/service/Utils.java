@@ -535,7 +535,7 @@ public class Utils {
         PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
         
         if (permission.getOwnerType().equals(PermissionOwner.USER_OWNER)) {
-          if (savePer.equals(user.getUserId())) {
+          if (permission.getId().equals(user.getUserId())) {
             return true;
           }
         } else {
