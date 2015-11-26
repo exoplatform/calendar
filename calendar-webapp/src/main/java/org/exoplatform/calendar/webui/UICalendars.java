@@ -819,8 +819,11 @@ public class UICalendars extends UIForm  {
     @Override
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiComponent = event.getSource() ;
-      String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      CompositeID compositeID = CompositeID.parse(selectedCalendarId);
+      String selectedCalendarId = event.getRequestContext().getRequestParameter(OBJECTID);
+      if (selectedCalendarId != null) {
+        CompositeID compositeID = CompositeID.parse(selectedCalendarId);
+        selectedCalendarId = compositeID.getId();
+      }
       
       String calType = event.getRequestContext().getRequestParameter(CALTYPE) ;
       UICalendarPortlet uiCalendarPortlet = uiComponent.getAncestorOfType(UICalendarPortlet.class) ;
@@ -829,7 +832,7 @@ public class UICalendars extends UIForm  {
       UIPopupContainer uiPopupContainer = popupAction.activate(UIPopupContainer.class, 600) ;
       uiPopupContainer.setId(UIPopupContainer.UICALENDARPOPUP) ;
       UIImportForm form = uiPopupContainer.addChild(UIImportForm.class,null,null);
-      form.init(compositeID.getId(), calType) ;
+      form.init(selectedCalendarId, calType) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent.getParent()) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(popupAction) ;
     }
