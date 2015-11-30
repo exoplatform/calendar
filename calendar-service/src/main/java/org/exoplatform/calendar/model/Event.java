@@ -472,6 +472,9 @@ public class Event extends AbstractModel {
    * @param ids a collection of id with string type
    */
   public void setExclusions(Collection<String> ids){
+    if (ids != null) {
+      ids = new HashSet<String>(ids);
+    }
     this.exclusions = ids;
   }
 

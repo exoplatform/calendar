@@ -469,8 +469,15 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     evtInMonth.clear();
     org.exoplatform.calendar.model.query.EventQuery query = new JCREventQuery();
     query.setOwner(CalendarUtils.getCurrentUser());
-    query.setFromDate(getBeginDateOfMonth().getTimeInMillis()) ;
+    //We take 1 week before current month for the case
+    //UIWeekView show days of 2 month
+    Calendar beginMonth = getBeginDateOfMonth();
+    beginMonth.roll(Calendar.DATE, -7);
+    query.setFromDate(beginMonth.getTimeInMillis()) ;
+    //we take 1 week after current month
+    //to make UIWeekView works
     Calendar cal = getEndDateOfMonth() ;
+    cal.roll(Calendar.DATE, 7);
     cal.add(java.util.Calendar.MILLISECOND, -1) ;
     query.setToDate(cal.getTimeInMillis()) ;
     List<String> calendarIds = new LinkedList<String>();
@@ -485,7 +492,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       if (evt.getRepeatType() != null &&
           !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
         CalendarEvent depEvt = CalendarEvent.build(evt);
-        Map<String, CalendarEvent> map = CalendarUtils.getCalendarService().getOccurrenceEvents(depEvt, getBeginDateOfMonth(), cal, 
+        Map<String, CalendarEvent> map = CalendarUtils.getCalendarService().getOccurrenceEvents(depEvt, beginMonth, cal, 
                                                                                                 getCalendarSetting().getTimeZone());
         for (CalendarEvent e : map.values()) {
           evtInMonth.add(e);
