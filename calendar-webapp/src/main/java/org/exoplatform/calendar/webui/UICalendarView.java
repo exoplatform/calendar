@@ -1398,7 +1398,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
 
       // Need to reload Event from JCR to check if it's still existing on calendar or not
-      eventCalendar = uiCalendarView.getApplicationComponent(CalendarService.class).getEventById(eventId);
+      CalendarService calService = uiCalendarView.getApplicationComponent(CalendarService.class);
+      eventCalendar = calService.getEventById(eventId);
       if (eventCalendar != null && eventCalendar.getCalendarId().equals(calendarId)) {
         Boolean isOccur = false;
         if (!Utils.isEmpty(event.getRequestContext().getRequestParameter(ISOCCUR))) {
@@ -1412,6 +1413,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
 
         if (isOccur && !Utils.isEmpty(recurId)) {
           eventCalendar = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
+          // Recover recurring info from GMT (persisted timezone) to user timezone
+          CalendarSetting setting = calService.getCalendarSetting(event.getRequestContext().getRemoteUser());
+          TimeZone tz = TimeZone.getTimeZone(setting.getTimeZone());
+          Utils.adaptRepeatRule(eventCalendar, CalendarService.PERSISTED_TIMEZONE, tz);
         } else {
           eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
         }

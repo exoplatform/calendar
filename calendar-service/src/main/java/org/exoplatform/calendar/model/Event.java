@@ -25,11 +25,13 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Reminder;
+import org.exoplatform.portal.pom.config.tasks.SearchTask;
 import org.exoplatform.services.jcr.util.IdGenerator;
 
 /**
@@ -490,8 +492,12 @@ public class Event extends AbstractModel {
    * @param id a single id want to add to exited excluded collection
    */
   public void addExclusion(String id){
-    if(this.exclusions == null){  
+    if(this.exclusions == null){
       this.exclusions = new HashSet<String>();
+
+    } else if (!(this.exclusions instanceof HashSet)) {
+      //. Sometime the exclusions is set value of Arrays.asList(...), that is un-modification list
+      this.exclusions = new HashSet<String>(this.exclusions);
     }
     this.exclusions.add(id);
   }
