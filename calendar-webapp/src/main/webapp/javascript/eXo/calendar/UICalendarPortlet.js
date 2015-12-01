@@ -34,11 +34,10 @@
 
     UICalendarPortlet.prototype.notify = function(eventObj) {
         var uiCalendarWorkingContainer = gj(eventObj).parents("#UICalendarWorkingContainer")[0];
-        var msg = "<div style='padding:3px;color:red;'>" + uiCalendarWorkingContainer.getAttribute("msg") + "</div>";
-        var html = Reminder.generateHTML(msg) ;
-        var popup = gj(Reminder.createMessage(html, msg)).find('div.UIPopupNotification')[0];
-        eXo.calendar.Box.config(popup,popup.offsetHeight, 5, Reminder.openCallback, Reminder.closeBox) ;
-        window.focus() ;
+        var msg = uiCalendarWorkingContainer.getAttribute("msg");
+        var popup = gj('#editEventNotification').show();
+        popup.find('.message').text(msg);
+        setTimeout(function(){popup.hide()},3000);
         return ;
     };
 
@@ -2358,10 +2357,10 @@
     
     UICalendarPortlet.prototype.setPosition = function(eventObj) {
       this.activeEventObject = eventObj;
-      var cTop = gj(eventObj).top;
-      var cLeft = gj(eventObj).offset().left;
-      var cWdith = gj(eventObj).width();
-      var cHeight =gj(eventObj).height();
+      var cTop = gj(eventObj).css('top');
+      var cLeft = gj(eventObj).css('left');
+      var cWdith = gj(eventObj).css('width');
+      var cHeight =gj(eventObj).css('height');
       var cTitle = gj(eventObj).find('div.eventTitle')[0].innerHTML;
       var cInnerHeight = gj(eventObj).find('div.eventContainer').height();
       this.restoreTitle = cTitle;
