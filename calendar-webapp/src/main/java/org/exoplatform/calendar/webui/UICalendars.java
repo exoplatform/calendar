@@ -242,7 +242,8 @@ public class UICalendars extends UIForm  {
     int privateCalendars = getAllPrivateCalendars().size();
     int sharedCalendars  = getAllSharedCalendars().size();
     int publicCalendars  = getAllPublicCalendars().size();
-    if ( (privateCalendars == 0) && (sharedCalendars == 0) && (publicCalendars == 0) )
+    int othersCalendars  = getAllOtherCalendars().size();
+    if ( (privateCalendars == 0) && (sharedCalendars == 0) && (publicCalendars == 0) && othersCalendars == 0)
       return true;
     return false;
   }

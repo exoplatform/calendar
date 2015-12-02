@@ -485,21 +485,23 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     calendarIds.addAll(Arrays.asList(getPublicCalendars()));
     calendarIds.addAll(getSharedCalendars());
     calendarIds.addAll(getOtherCalendars());    
-    query.setCalendarIds(calendarIds.toArray(new String[calendarIds.size()]));
-    ListAccess<org.exoplatform.calendar.model.Event> events = xCalService.getEventHandler().findEventsByQuery(query);
-    
-    for (org.exoplatform.calendar.model.Event evt : events.load(0, -1)) {      
-      if (evt.getRepeatType() != null &&
-          !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
-        CalendarEvent depEvt = CalendarEvent.build(evt);
-        Map<String, CalendarEvent> map = CalendarUtils.getCalendarService().getOccurrenceEvents(depEvt, beginMonth, cal, 
-                                                                                                getCalendarSetting().getTimeZone());
-        for (CalendarEvent e : map.values()) {
-          evtInMonth.add(e);
-        }
-      } else {
-        evtInMonth.add(evt);
-      }
+    if (calendarIds.size() > 0) {
+        query.setCalendarIds(calendarIds.toArray(new String[calendarIds.size()]));
+        ListAccess<org.exoplatform.calendar.model.Event> events = xCalService.getEventHandler().findEventsByQuery(query);
+        
+        for (org.exoplatform.calendar.model.Event evt : events.load(0, -1)) {      
+            if (evt.getRepeatType() != null &&
+                    !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
+                CalendarEvent depEvt = CalendarEvent.build(evt);
+                Map<String, CalendarEvent> map = CalendarUtils.getCalendarService().getOccurrenceEvents(depEvt, beginMonth, cal, 
+                        getCalendarSetting().getTimeZone());
+                for (CalendarEvent e : map.values()) {
+                    evtInMonth.add(e);
+                }
+            } else {
+                evtInMonth.add(evt);
+            }
+        }        
     }
   }
   
