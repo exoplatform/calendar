@@ -10,7 +10,7 @@
   def requirejs = rcontext.getJavascriptManager().getRequireJS();
   requirejs.require("SHARED/UICalendarSettingForm","uiCalendarSettingForm");
   requirejs.require("SHARED/jquery","gj");
-  requirejs.addScripts("gj('div.calendarCheckboxBlock').click(function() { uiCalendarSettingForm.clickOnCalendarCheckbox(this); });");
+  requirejs.addScripts("gj('#" + uicomponent.getId() + " div.calendarCheckboxBlock').click(function() { uiCalendarSettingForm.clickOnCalendarCheckbox(this); });");
 
   uiForm = uicomponent.getParentFrom();
 
