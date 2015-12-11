@@ -79,7 +79,7 @@
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
 
 		        if (calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) icon = "SharedCalendarIcon";
-		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar.getGroups())) css = "IconUnCheckBox checkbox";
+		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar)) css = "IconUnCheckBox checkbox";
 		        if(chk.isChecked()) css = "iconCheckBox checkbox";
 		    %>
 		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="true" id="$compositeID" calType="0" isRemote="$isRemote">
@@ -128,7 +128,7 @@
 		        def css          = "iconCheckBox checkbox";
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId);
 
-		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar.getGroups())) css = "IconUnCheckBox checkbox";
+		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar)) css = "IconUnCheckBox checkbox";
 		        if (chk.isChecked()) css = "iconCheckBox checkbox";
 		      %>
 		      <li class="calendarItem CalendarItemShared" calColor="$color" id="$compositeID" calType="1" canEdit="$isEditable">
@@ -183,7 +183,7 @@
 	      		        }
 	      		        groupList.deleteCharAt(groupList.lastIndexOf(","));
 
-	      		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar.getGroups())) css = "IconUnCheckBox checkbox";
+	      		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar)) css = "IconUnCheckBox checkbox";
 	      		        if (chk.isChecked()) css = "iconCheckBox checkbox";
 	      %>
 		      <li class="calendarItem calendarItemPublic " calColor="$color" canEdit="$isEditable" id="$compositeID" calType="2" >

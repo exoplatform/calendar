@@ -211,7 +211,9 @@ public class UIListView extends UICalendarView {
     List<String> calendarIds = new ArrayList<String>();
     UICalendars uiCalendars = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
     if(isInSpace()){
-      return Arrays.asList(getPublicCalendars());
+      List<String> spaceCals = new LinkedList<String>(Arrays.asList(getPublicCalendars()));
+      spaceCals.addAll(getOtherSpaceCalendar());
+      return spaceCals;
     }
     List<String> checkedCals = uiCalendars.getCheckedCalendars();
     List<org.exoplatform.calendar.service.Calendar> privateCalendar = uiCalendars.getAllPrivateCalendars();

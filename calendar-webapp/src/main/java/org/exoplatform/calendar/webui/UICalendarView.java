@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +38,6 @@ import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
 
-import org.apache.poi.ss.formula.functions.Even;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
@@ -61,11 +61,10 @@ import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UITaskForm;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.portal.application.PortalRequestContext;
-import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.web.application.RequestContext;
@@ -328,7 +327,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   
   public List<String> getOtherCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
-    if (isInSpace()) return list;
     
     Map<String, List<org.exoplatform.calendar.service.Calendar>> cals = getCalendars();
     Set<String> typeNames = new HashSet<String>();
@@ -350,7 +348,50 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
     return list;
   }
+  
+  public List<String> getOtherSpaceCalendar() throws Exception {
+    Map<String, org.exoplatform.calendar.service.Calendar> allCal = getAllCalendars();
+    List<String> otherSpaceCal = new LinkedList<String>();
+    String groupId = UICalendarPortlet.getGroupIdOfSpace();
+    Set<MembershipEntry> spaceMS = getSpaceMembership(groupId);
+    for (String calId : getOtherCalendars()) {
+      if (isSpaceCal(allCal.get(calId), spaceMS)) {
+        otherSpaceCal.add(calId);
+      }
+    }
+    return otherSpaceCal;
+  }
 
+  private boolean isSpaceCal(org.exoplatform.calendar.service.Calendar calendar, Set<MembershipEntry> spaceMS) {
+    if (calendar.getViewPermission() != null) {      
+      for (String per : calendar.getViewPermission()) {
+        MembershipEntry entry = MembershipEntry.parse(per);
+        if (entry != null && spaceMS.contains(entry)) {
+          return true;
+        }
+      }      
+    }
+    return false;
+  }
+
+  private Set<MembershipEntry> getSpaceMembership(String groupId) {
+    Set<MembershipEntry> entries = new HashSet<MembershipEntry>();
+    entries.add(new MembershipEntry(groupId, "manager"));
+    entries.add(new MembershipEntry(groupId, "member"));
+    return entries;
+  }
+
+  private Map<String, org.exoplatform.calendar.service.Calendar> getAllCalendars() {
+    UICalendarWorkingContainer container = getAncestorOfType(UICalendarWorkingContainer.class);
+    Map<String, List<org.exoplatform.calendar.service.Calendar>> map = container.getCalendarMap();
+    Map<String, org.exoplatform.calendar.service.Calendar> allCals = new HashMap<String, org.exoplatform.calendar.service.Calendar>();
+    for (List<org.exoplatform.calendar.service.Calendar> cals : map.values()) {
+      for (org.exoplatform.calendar.service.Calendar cal : cals) {
+        allCals.put(cal.getId(), cal);
+      }
+    }
+    return allCals;
+  }
 
   public List<String> getSharedCalendars() throws Exception {
     List<String> list = new ArrayList<String>();
@@ -443,8 +484,16 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     Map<String, String> colors = new LinkedHashMap<String, String>();
     try {
       if (isInSpace()) {
-        for (org.exoplatform.calendar.service.Calendar calendar : getPublicCalendars(CalendarUtils.getCurrentUser())) {
-          colors.put(calendar.getId(), calendar.getCalendarColor());
+        List<org.exoplatform.calendar.service.Calendar> tmp = new LinkedList<org.exoplatform.calendar.service.Calendar>();
+        tmp.addAll(getPublicCalendars(CalendarUtils.getCurrentUser()));
+        //
+        Map<String, org.exoplatform.calendar.service.Calendar> allCals = getAllCalendars();
+        for (String calId : getOtherSpaceCalendar()) {
+          org.exoplatform.calendar.service.Calendar calendar = allCals.get(calId);
+          tmp.add(calendar);
+        }
+        for (org.exoplatform.calendar.service.Calendar cal : tmp) {
+          colors.put(cal.getId(), cal.getCalendarColor());
         }
       } else
         colors = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class)
@@ -505,6 +554,18 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
   }
   
+  protected void filterNonSpaceEvent(List<Event> allEvents) throws Exception {
+    List<String> publicCalendars  = Arrays.asList(getPublicCalendars());    
+    List<String> otherSpaceCals = getOtherSpaceCalendar();
+    Iterator<Event> iter = allEvents.iterator();
+    while (iter.hasNext()) {
+      Event evt = iter.next();
+      if (!publicCalendars.contains(evt.getCalendarId()) && !otherSpaceCals.contains(evt.getCalendarId())) {
+        iter.remove();
+      }
+    }
+  }
+
   @SuppressWarnings("unchecked")
   public List<Event> getEventInMonth() {
     PortletRequestContext context = PortletRequestContext.getCurrentInstance();
