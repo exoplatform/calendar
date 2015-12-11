@@ -16,30 +16,29 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import javax.jcr.PathNotFoundException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.jcr.PathNotFoundException;
 
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.popup.UIConfirmForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -103,14 +102,7 @@ public class UIDayView extends UICalendarView {
     List<Event> allEvents = getEventInMonth(begin.getTimeInMillis(), end.getTimeInMillis());
     
     if (isInSpace()) {
-      List<String> publicCalendars  = Arrays.asList(getPublicCalendars());
-      Iterator<Event> iter = allEvents.iterator();
-      while (iter.hasNext()) {
-        Event evt = iter.next();
-        if (!publicCalendars.contains(evt.getCalendarId())) {
-          iter.remove();
-        }
-      }
+      filterNonSpaceEvent(allEvents);
     }
     
     for (Event evt : allEvents) {
@@ -141,7 +133,7 @@ public class UIDayView extends UICalendarView {
       allDayEvent_.add(ce);
     }
   }
-  
+
   protected List<Event> getEventData() { return eventData_; }
   protected List<Event> getAllDayEvents() { return allDayEvent_; } ;
 

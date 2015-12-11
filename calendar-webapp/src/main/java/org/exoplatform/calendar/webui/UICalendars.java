@@ -137,7 +137,7 @@ public class UICalendars extends UIForm  {
     UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
     if (checkbox == null) {
       checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-      checkbox.setChecked(isCalendarOfSpace1(calendar.getGroups()));
+      checkbox.setChecked(isCalendarOfSpace1(calendar));
       addUIFormInput(checkbox);
     } else {
       setCheckedCheckbox(checkbox, calendar);
@@ -185,9 +185,8 @@ public class UICalendars extends UIForm  {
       for(UIComponent component : getChildren()){
         for (Calendar cal : getAllPublicCalendars()) {
           if (cal.getId().equals(component.getId())) {
-            String[] groupIds = cal.getGroups();
             if(getUICheckBoxInput(component.getId()) != null) {
-              getUICheckBoxInput(component.getId()).setChecked(isCalendarOfSpace1(groupIds)) ;
+              getUICheckBoxInput(component.getId()).setChecked(isCalendarOfSpace1(cal)) ;
             }
           }
         }
@@ -261,7 +260,7 @@ public class UICalendars extends UIForm  {
       }
       for(Calendar c : publicCalendars) {
         // Check if this public calendar belong to current space
-        if(isCalendarOfSpace1(c.getGroups())) {
+        if(isCalendarOfSpace1(c)) {
           return false;
         }
       }
@@ -338,7 +337,7 @@ public class UICalendars extends UIForm  {
     if (isListView){
       checkbox.setChecked(checkbox.isChecked());
     } else{
-      checkbox.setChecked(isCalendarOfSpace1(calendar.getGroups()));
+      checkbox.setChecked(isCalendarOfSpace1(calendar));
     }
   }
 
@@ -369,22 +368,35 @@ public class UICalendars extends UIForm  {
   }
 
 
-  protected boolean isCalendarOfSpace1(String[] groupIds)
-  {
+  protected boolean isCalendarOfSpace1(Calendar calendar)
+  {    
     UICalendarPortlet calendarPortlet = getAncestorOfType(UICalendarPortlet.class);
-    String spaceGroupId = calendarPortlet != null ? calendarPortlet.getSpaceGroupId()
-        : UICalendarPortlet.getGroupIdOfSpace();
-    if (spaceGroupId.equals("")) {
+    UICalendarView calView = calendarPortlet.findFirstComponentOfType(UICalendarView.class);
+    Set<String> otherCals = new HashSet<String>();
+    try {
+      otherCals.addAll(calView.getOtherSpaceCalendar());
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+    //
+    if (otherCals.contains(calendar.getId())) {
       return true;
-    }
-    if (groupIds == null) {
-      return false;
-    }
-
-    for (String groupId : groupIds) {
-      if (spaceGroupId.equals(groupId)) {
+    } else {
+      String[] groupIds = calendar.getGroups();
+      String spaceGroupId = calendarPortlet != null ? calendarPortlet.getSpaceGroupId()
+                                                    : UICalendarPortlet.getGroupIdOfSpace();
+      if (spaceGroupId.equals("")) {
         return true;
       }
+      if (groupIds == null) {
+        return false;
+      }
+      
+      for (String groupId : groupIds) {
+        if (spaceGroupId.equals(groupId)) {
+          return true;
+        }
+      }      
     }
     return false;
   }

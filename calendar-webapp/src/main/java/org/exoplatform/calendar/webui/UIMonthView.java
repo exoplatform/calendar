@@ -106,14 +106,7 @@ public class UIMonthView extends UICalendarView {
     
     List<Event> allEvents = getEventInMonth(begin, end);
     if (isInSpace()) {
-      List<String> publicCalendars  = Arrays.asList(getPublicCalendars());
-      Iterator<Event> iter = allEvents.iterator();
-      while (iter.hasNext()) {
-        Event evt = iter.next();
-        if (!publicCalendars.contains(evt.getCalendarId())) {
-          iter.remove();
-        }
-      }
+      filterNonSpaceEvent(allEvents);
     }
     
     for (Event evt : allEvents) {
