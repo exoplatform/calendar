@@ -22,7 +22,11 @@ package org.exoplatform.calendar.storage.jcr;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.jcr.NodeIterator;
+import javax.jcr.Session;
 import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
@@ -35,6 +39,7 @@ import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.storage.EventDAO;
 import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
@@ -144,16 +149,23 @@ public class JCREventDAOImpl implements EventDAO {
       type = ((JCREventQuery)query).getCalType();
     }
     try {
-      if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.PERSONAL.type() == type) {
-        events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));        
-      }
-      
-      if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.GROUP.type() == type) {
+      if (Calendar.Type.PERSONAL.type() == type) {
+        events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));
+      } else if (Calendar.Type.GROUP.type() == type) {
         events.addAll(dataStorage.getPublicEvents(eventQuery));
-      }
-      
-      if (Calendar.Type.UNDEFINED.type() == type || Calendar.Type.SHARED.type() == type) {
+      } else if (Calendar.Type.SHARED.type() == type) {
         events.addAll(dataStorage.getSharedEvents(query.getOwner(), eventQuery));
+      } else {
+        SessionProvider provider = dataStorage.createSystemProvider();
+        Session session = dataStorage.getSession(provider);
+        QueryManager qm = session.getWorkspace().getQueryManager();
+        Query jcrQuery = qm.createQuery(eventQuery.getQueryStatement(), eventQuery.getQueryType());
+        QueryResult result = jcrQuery.execute();
+        NodeIterator it = result.getNodes();
+        while (it.hasNext()) {
+          CalendarEvent evt = dataStorage.getEventById(it.nextNode().getProperty(Utils.EXO_ID).getString());
+          events.add(evt);
+        }
       }
     } catch (Exception ex) {
       LOG.error("Can't query for event", ex);

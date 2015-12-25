@@ -534,6 +534,23 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     calendarIds.addAll(Arrays.asList(getPublicCalendars()));
     calendarIds.addAll(getSharedCalendars());
     calendarIds.addAll(getOtherCalendars());    
+        
+    UICalendarWorkingContainer workingCont = getAncestorOfType(UICalendarWorkingContainer.class);
+    workingCont.init();
+    Map<String, org.exoplatform.calendar.service.Calendar> allCals = new HashMap<String, org.exoplatform.calendar.service.Calendar>();
+    for (List<org.exoplatform.calendar.service.Calendar> cals : getCalendars().values()) {
+      for (org.exoplatform.calendar.service.Calendar calendar : cals) {
+        allCals.put(calendar.getId(), calendar);
+      }
+    }
+    for (Iterator<String> iter = calendarIds.iterator(); iter.hasNext();) {
+      org.exoplatform.calendar.service.Calendar calendar = allCals.get(iter.next());
+      if (calendar != null && !calendar.hasChildren()) {
+        iter.remove();
+      }
+    }
+    
+    
     if (calendarIds.size() > 0) {
         query.setCalendarIds(calendarIds.toArray(new String[calendarIds.size()]));
         ListAccess<org.exoplatform.calendar.model.Event> events = xCalService.getEventHandler().findEventsByQuery(query);
