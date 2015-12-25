@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +38,6 @@ import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
 
-import org.apache.poi.ss.formula.functions.Even;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
@@ -61,8 +61,6 @@ import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UITaskForm;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.portal.application.PortalRequestContext;
-import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -485,6 +483,23 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     calendarIds.addAll(Arrays.asList(getPublicCalendars()));
     calendarIds.addAll(getSharedCalendars());
     calendarIds.addAll(getOtherCalendars());    
+        
+    UICalendarWorkingContainer workingCont = getAncestorOfType(UICalendarWorkingContainer.class);
+    workingCont.init();
+    Map<String, org.exoplatform.calendar.service.Calendar> allCals = new HashMap<String, org.exoplatform.calendar.service.Calendar>();
+    for (List<org.exoplatform.calendar.service.Calendar> cals : getCalendars().values()) {
+      for (org.exoplatform.calendar.service.Calendar calendar : cals) {
+        allCals.put(calendar.getId(), calendar);
+      }
+    }
+    for (Iterator<String> iter = calendarIds.iterator(); iter.hasNext();) {
+      org.exoplatform.calendar.service.Calendar calendar = allCals.get(iter.next());
+      if (calendar != null && !calendar.hasChildren()) {
+        iter.remove();
+      }
+    }
+    
+    
     if (calendarIds.size() > 0) {
         query.setCalendarIds(calendarIds.toArray(new String[calendarIds.size()]));
         ListAccess<org.exoplatform.calendar.model.Event> events = xCalService.getEventHandler().findEventsByQuery(query);

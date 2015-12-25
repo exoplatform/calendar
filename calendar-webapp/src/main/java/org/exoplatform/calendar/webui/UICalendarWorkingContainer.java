@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.webui;
 
 import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
@@ -26,6 +27,7 @@ import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.webui.application.WebuiRequestContext;
+import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.UIPopupWindow;
@@ -70,6 +72,15 @@ public class UICalendarWorkingContainer extends UIContainer  {
   }
   
   public void init() throws Exception {
+    //UICalendarView#refresh method need to call this method
+    //We add "initilized" context attribute to make sure this only called only 1 time per request
+    PortletRequestContext context = PortletRequestContext.getCurrentInstance();
+    Object initilized = context.getAttribute(this.getClass().toString());
+    if (initilized != null) {
+      return;
+    } else {
+      context.setAttribute(this.getClass().toString(), true);
+    }
     colorMap.clear();
     calendars.clear();
 

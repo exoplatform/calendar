@@ -1172,6 +1172,7 @@ public class JCRDataStorage implements DataStorage {
       calendarNode.save();
       calendarNode.getSession().save();
       calendarNode.refresh(true);
+      userCalendarCache.clear();
       return event;
     }
     return null;
@@ -1290,6 +1291,7 @@ public class JCRDataStorage implements DataStorage {
           log.debug(e.getMessage());
       }
 
+      groupCalendarCache.clear();
       groupCalendarEventCache.clearCache();
       groupCalendarRecurrentEventCache.clearCache();
 
@@ -1538,6 +1540,8 @@ public class JCRDataStorage implements DataStorage {
     if(CalendarEvent.TYPE_EVENT.equals(event.getEventType())) {
       addEvent(event);
     }
+    userCalendarCache.clear();
+    groupCalendarCache.clear();
     eventCache.remove(event.getId());
   }
 
@@ -4858,6 +4862,7 @@ public class JCRDataStorage implements DataStorage {
           break;
         }
       }
+      userCalendarCache.clear();
     }
   }
 
