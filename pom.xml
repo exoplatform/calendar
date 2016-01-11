@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.exoplatform.calendar</groupId>
   <artifactId>calendar</artifactId>
-  <version>4.3.0</version>
+  <version>4.3.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Calendar</name>
   <description>eXo Calendar application</description>
@@ -27,7 +27,7 @@
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/calendar.git</developerConnection>
-    <tag>4.3.0</tag>
+    <tag>HEAD</tag>
     <url>http://fisheye.exoplatform.org/browse/calendar</url>
   </scm>
   <properties>
