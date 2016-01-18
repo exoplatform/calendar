@@ -1066,7 +1066,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     return sbSubject.toString();
   }
 
-  private String buildMailBody(User invitor, CalendarEvent event, String toId, DateFormat df, String timezone, ResourceBundle res) throws Exception {
+  private String buildMailBody(User invitor, CalendarEvent event, String toDisplayName, DateFormat df, String timezone, ResourceBundle res) throws Exception {
     List<Attachment> atts = getAttachments(null, false);
 
     StringBuffer sbBody = new StringBuffer() ;
@@ -1075,7 +1075,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     sbBody.append("<tbody>") ;
     sbBody.append("<tr>") ;
     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap; \">"+getLabel(res, "fromWho")+":</td>") ;
-    sbBody.append("<td style=\"padding: 4px;\"> " + invitor.getUserName() +"("+invitor.getEmail()+")" + " </td>") ;
+    sbBody.append("<td style=\"padding: 4px;\"> " + invitor.getDisplayName() +" ("+invitor.getEmail()+")" + " </td>") ;
     sbBody.append("</tr>") ;
 
     sbBody.append("<tr>") ;
@@ -1102,12 +1102,11 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     sbBody.append("</tr>") ;
     sbBody.append("<tr>") ;
     sbBody.append("<td style=\"padding: 4px;  text-align: right; vertical-align: top; white-space:nowrap;\">"+getLabel(res, FIELD_MEETING)+"</td>") ;
-    toId = toId.replace(CalendarUtils.BREAK_LINE, CalendarUtils.COMMA);
     if (CalendarUtils.isEmpty(getInvitationEmail())) {
-      sbBody.append("<td style=\"padding: 4px;\">" +toId + "</td>") ;
+      sbBody.append("<td style=\"padding: 4px;\">" +toDisplayName + "</td>") ;
     } else {
       String newInvi = getInvitationEmail().replace(",", ", ") ;
-      sbBody.append("<td style=\"padding: 4px;\">" +toId + ", " + newInvi + "</td>") ;
+      sbBody.append("<td style=\"padding: 4px;\">" +toDisplayName + ", " + newInvi + "</td>") ;
     }
     sbBody.append("</tr>");
     if(!atts.isEmpty()){
@@ -1133,6 +1132,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     Map<String, String> eXoIdMap = new HashMap<String, String>();
     Map<String, String> eXoMailMap = new HashMap<String, String>();
 
+    String toDisplayName = "";
+
     StringBuffer sbAddress = new StringBuffer() ;
     if(event.getInvitation()!= null) {
       for(String s : event.getInvitation()) {
@@ -1149,7 +1150,10 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       if(user != null) {
         eXoIdMap.put(user.getEmail(), s);
         eXoMailMap.put(s, user.getEmail());
-
+        if (!toDisplayName.equals("")) {
+          toDisplayName+=", ";
+        }
+        toDisplayName+=user.getDisplayName();
         if(sbAddress.length() > 0) sbAddress.append(CalendarUtils.COMMA) ;
         sbAddress.append(user.getEmail());
       }
@@ -1205,7 +1209,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
 
       org.exoplatform.services.mail.Message message = new org.exoplatform.services.mail.Message();
       message.setSubject(buildMailSubject(event, _df, res));
-      message.setBody(getBodyMail(buildMailBody(invitor, event, toId, _df, CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone()), res),
+      message.setBody(getBodyMail(buildMailBody(invitor, event, toDisplayName, _df, CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone()), res),
               eXoIdMap, userEmail, invitor, event, res)) ;
       message.setTo(userEmail);
       message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
