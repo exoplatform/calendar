@@ -42,52 +42,52 @@
         <!--Params for default calendar setting-->
         <value-param>
          <name>viewType</name><!-- default view type -->
-         <value>1</value><!-- DAY_VIEW = "0" ; WEEK_VIEW = "1" ; MONTH_VIEW = "2" ; YEAR_VIEW = "3" ; LIST_VIEW = "4" ; SCHEDULE_VIEW = "5" ; WORKING_VIEW = "6" ;-->
+         <value>${exo.calendar.service.configuration.viewType:1}</value><!-- DAY_VIEW = "0" ; WEEK_VIEW = "1" ; MONTH_VIEW = "2" ; YEAR_VIEW = "3" ; LIST_VIEW = "4" ; SCHEDULE_VIEW = "5" ; WORKING_VIEW = "6" ;-->
         </value-param>
         
         <value-param>
          <name>weekStartOn</name><!-- default start day of the week -->
-         <value>2</value><!--SUNDAY = "1" ; MONDAY = "2" ; TUESDAY = "3" ; WEDNESDAY = "4" ; THURSDAY = "5" ; FRIDAY = "6" ;SATURDAY = "7" ;-->
+         <value>${exo.calendar.service.configuration.weekStartOn:2}</value><!--SUNDAY = "1" ; MONDAY = "2" ; TUESDAY = "3" ; WEDNESDAY = "4" ; THURSDAY = "5" ; FRIDAY = "6" ;SATURDAY = "7" ;-->
         </value-param>
         
         <value-param>
          <name>dateFormat</name>
-         <value>MM/dd/yyyy</value>
+         <value>${exo.calendar.service.configuration.dateFormat:MM/dd/yyyy}</value>
         </value-param>
         
         <value-param>
          <name>timeFormat</name>
-         <value>HH:mm</value> <!-- HH:mm/hh:mm a -->
+         <value>${exo.calendar.service.configuration.timeFormat:HH:mm}</value> <!-- HH:mm/hh:mm a -->
         </value-param>
         
         <value-param>
          <name>localeId</name>
-         <value>BEL</value><!-- see more locale ids http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html -->
+         <value>${exo.calendar.service.configuration.localeId:BEL}</value><!-- see more locale ids http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html -->
         </value-param>
         
          <value-param>
          <name>timezoneId</name>
-         <value>Europe/Brussels</value><!-- see more for timeZone ids http://www.unicode.org/cldr/data/docs/design/formatting/zone_log.html#windows_ids -->
+         <value>${exo.calendar.service.configuration.timezoneId:Europe/Brussels}</value><!-- see more for timeZone ids http://www.unicode.org/cldr/data/docs/design/formatting/zone_log.html#windows_ids -->
         </value-param>
         
          <value-param>
          <name>baseUrlForRss</name><!-- base url for rss -->
-         <value>philippe</value><!-- default value is <serverBaseUrl>/calendar/iCalRss  -->
+         <value>${exo.calendar.service.configuration.baseUrlForRss:http://localhost:8080/portal/intranet/calendar/iCalRss}</value><!-- default value is <serverBaseUrl>/calendar/iCalRss  -->
         </value-param>
         
          <value-param>
          <name>isShowWorkingTime</name><!-- show working time, area out of working time is darkened in the calendar view-->
-         <value>false</value><!-- boolean true/false -->
+         <value>${exo.calendar.service.configuration.isShowWorkingTime:false}</value><!-- boolean true/false -->
         </value-param>
         
          <value-param>
          <name>workingTimeBegin</name><!-- begin time of working day -->
-         <value>08:00</value>
+         <value>${exo.calendar.service.configuration.workingTimeBegin:08:00}</value>
         </value-param>
         
          <value-param>
            <name>workingTimeEnd</name><!-- end time of working day -->
-           <value>18:00</value>
+           <value>${exo.calendar.service.configuration.workingTimeEnd:18:00}</value>
         </value-param>
         
         <values-param>
