@@ -248,7 +248,10 @@ public class UIRepeatEventForm extends UIForm implements UIPopupComponent {
       Date until = null;
       if (uiForm.getEndType().equals(UIRepeatEventForm.RP_END_AFTER)) {
         try {
-          if (uiForm.getEndAfter() != null) count = Integer.parseInt(uiForm.getEndAfter());
+          if (uiForm.getEndAfter() != null) {
+            count = Integer.parseInt(uiForm.getEndAfter());
+            if (count <= 0) count = 5;
+          }
           else count = 5;
         } catch (NumberFormatException e) {
           // pop-up error? too much pop-up window!
