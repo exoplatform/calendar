@@ -196,12 +196,7 @@ public class ReminderJob extends MultiTenancyJob {
       to = res.getString("Reminder.event.to") + ": ";
     }
     StringBuilder summary = new StringBuilder(type);
-    if (calEvent.getEventType().equals("Event")) {
-      summary.append(res.getString("Reminder.event.type.event")).append("<br>");
-    }
-    else if (calEvent.getEventType().equals("Task")) {
-      summary.append(res.getString("Reminder.event.type.task")).append("<br>");
-    }
+    summary.append(res.getString("Reminder.event.type." + calEvent.getEventType().toLowerCase())).append("<br>");
     summary.append(summaryLabel);
     summary.append(calEvent.getSummary()).append("<br>");
     summary.append(description);
