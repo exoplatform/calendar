@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -814,7 +814,7 @@ public class CalendarUtils {
     if(isEmpty(values)) return "";
     values = values.trim().replaceAll("(,\\s*)", COMMA).replaceAll("(\\s*,)", COMMA);
     String[] tmpArr = values.split(COMMA);
-    Set<String> set = new HashSet<String>(Arrays.asList(tmpArr));
+    Set<String> set = new LinkedHashSet<>(Arrays.asList(tmpArr));
     StringBuilder data = new StringBuilder();
     for (String s : set) {
       if(s.trim().length() > 0) {

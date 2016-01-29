@@ -25,6 +25,7 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.ICS_URI;
 
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.ws.bean.CalendarResource;
@@ -254,8 +255,11 @@ public class TestCalendarRestApi extends TestRestApi {
     assertEquals(gCal.getDescription(), result.getDescription());
     assertEquals(gCal.getName(), result.getName());
     assertEquals(gCal.getTimeZone(), result.getTimeZone());
-    assertEquals(gCal.getEditPermission()[0], result.getEditPermission()[0]);    
-    assertEquals(gCal.getViewPermission()[0], result.getViewPermission()[0]);
+    assertEquals(1, result.getEditPermission().length);
+    assertEquals(gCal.getEditPermission()[0], result.getEditPermission()[0]);
+    assertEquals(2, result.getViewPermission().length);
+    assertTrue(ArrayUtils.contains(result.getViewPermission(), gCal.getViewPermission()[0]));
+    assertTrue(ArrayUtils.contains(result.getViewPermission(), gCal.getEditPermission()[0]));
     assertEquals(gCal.getGroups()[0], gCal.getGroups()[0]);
     assertEquals(gCal.getPrivateUrl(), result.getPrivateUrl());
     assertEquals(gCal.getPublicUrl(), result.getPublicUrl());
