@@ -673,7 +673,7 @@ public interface DataStorage {
   /**
    * Safely closes JCR session provider. Call this method in finally to clean any provider initialized by createSessionProvider()
    * @param sessionProvider the sessionProvider to close
-   * @see SessionProvider#close();
+   * @see SessionProvider#close()
    */
   public void closeSessionProvider(SessionProvider sessionProvider);
 

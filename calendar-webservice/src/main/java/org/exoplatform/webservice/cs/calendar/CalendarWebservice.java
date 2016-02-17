@@ -321,7 +321,7 @@ public class CalendarWebservice implements ResourceContainer {
 
   /**
    *
-   * @param auhtor : the feed create
+   * @param author : the feed create
    * @param events : list of event from data
    * @return
    * @throws Exception
@@ -715,8 +715,8 @@ public class CalendarWebservice implements ResourceContainer {
   /**
    * Produces the content of an occurrence of a repetitive event, based on its event Id and occurrence Id.
    * It requires authentication and permission of the _Users_ group only.
-   * @param eventid The Id of the original event.
-   * @param recurid The occurrence Id of the event.
+   * @param eventId The Id of the original event.
+   * @param recurId The occurrence Id of the event.
    * @return The JSON data type.
    * @throws Exception
    *

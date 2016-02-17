@@ -4204,7 +4204,7 @@ public class JCRDataStorage implements DataStorage {
   }
 
   /**
-   * Get all active 'original' recurrence event <br/>
+   * Get all active 'original' recurrence event <br>
    * The result list includes all 'original' recurrence event in all three
    * types: private, public and shared
    * 
@@ -4580,7 +4580,7 @@ public class JCRDataStorage implements DataStorage {
   }
 
   /**
-   * Query all occurrences of recurrence event between from and to date. <br/>
+   * Query all occurrences of recurrence event between from and to date. <br>
    * The result contains only 'virtual' occurrence events, no exception
    * occurrences
    * 
@@ -5043,7 +5043,7 @@ public class JCRDataStorage implements DataStorage {
   }
 
   /**
-   * This function is used to update a occurrence event. <br/>
+   * This function is used to update a occurrence event. <br>
    * A occurrence event after update will be an exception occurrence from
    * recurrence series and will be saved as an new event node refers to original
    * node

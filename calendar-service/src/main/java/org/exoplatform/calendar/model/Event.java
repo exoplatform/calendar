@@ -204,10 +204,6 @@ public class Event extends AbstractModel {
    */
   private String               status          = "";
 
-  /**
-   * Deprecated, use {@link #calendarType}
-   */
-
   private String[]             invitation = new String[0];
 
   private String[]             participant = new String[0];

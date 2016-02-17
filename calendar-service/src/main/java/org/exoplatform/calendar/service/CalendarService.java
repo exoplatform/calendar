@@ -26,6 +26,7 @@ import java.util.TimeZone;
 
 import javax.jcr.Node;
 
+import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.service.impl.CalendarEventListener;
 import org.exoplatform.calendar.service.impl.CsvImportExport;
 import org.exoplatform.calendar.service.impl.NewMembershipListener;
@@ -155,7 +156,7 @@ public interface CalendarService {
    * @throws Exception
    * @see RssData
    * 
-   * @deprecated This method currently does not work properly. User <code>generateRss(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData)</code> to instead of.
+   * @deprecated This method currently does not work properly. User {@code generateRss(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData)} to instead of.
    */
   @Deprecated
   public int generateRss(String username, List<String> calendarIds, RssData rssData) throws Exception;
@@ -179,7 +180,7 @@ public interface CalendarService {
 
   /**
    * Confirms invitation to participate in an event
-   * <p>This method is called only when user uses exo mail product. <br/>
+   * <p>This method is called only when user uses exo mail product. <br>
    * <p>The answer can be: DENY, ACCEPT, NOTSURE
    * 
    * @param fromUserId Id of the invitation owner
@@ -235,7 +236,7 @@ public interface CalendarService {
    * Gets an user's remote calendar, identified by its ID
    * @param owner user name of the calendar's owner
    * @param calendarId the Id of calendar
-   * @return <code>RemoteCalendar<code> object
+   * @return <code>RemoteCalendar</code> object
    * @throws Exception
    * @see RemoteCalendar
    */
@@ -268,7 +269,7 @@ public interface CalendarService {
 
   /**
    * Gets the reference key to remote event of an event in a subscribed calendar.
-   * <p> Each event of a CalDav subscribed calendar has a reference key to its respective remote event. This key allows us to know if <br/>
+   * <p> Each event of a CalDav subscribed calendar has a reference key to its respective remote event. This key allows us to know if <br>
    * an event is deleted or created from remote calendar. 
    * <p> The JCR property holding this value is <code>exo:caldavHref</code> of the node type <code>exo:caldavCalendarEvent</code>.
    * 
@@ -282,7 +283,7 @@ public interface CalendarService {
 
   /**
    * Gets the entity tag of an event in a subscribed calendar.
-   * <p> Each event of a CalDav subscribed calendar has an entity tag. This value allows us to know if the details content of a remote event <br/>
+   * <p> Each event of a CalDav subscribed calendar has an entity tag. This value allows us to know if the details content of a remote event <br>
    * were updated, so that we can update the respective local event properly.
    * <p> The JCR property holding this value is <code>exo:caldavEtag</code> of the node type <code>exo:caldavCalendarEvent</code>.
    * @param username current user name (or user ID)
@@ -317,7 +318,7 @@ public interface CalendarService {
   public void stopSynchronizeRemoteCalendarJob(String username) throws Exception;
 
   /**
-   * Imports given remote calendar in background <br/>
+   * Imports given remote calendar in background <br>
    * <p> Users don't need to wait too long when importing a big calendar
    * @param remoteCalendar
    * @throws Exception
@@ -359,8 +360,8 @@ public interface CalendarService {
   //Calendar
   
   /**
-   * This method is deprecated, use {@link CalendarService#getCalendarHandler()} and {@link CalendarHandler#getCalendarById(String)}
-   * <br/>
+   * This method is deprecated, use {@link ExtendedCalendarService#getCalendarHandler()} and {@link CalendarHandler#getCalendarById(String)}
+   * <br>
    * Gets a calendar by its id
    * @param calId Id of the calendar
    * @return a {@link Calendar}
@@ -375,14 +376,13 @@ public interface CalendarService {
    * @param calType type of calendar to filter 
    * @param offset offset to continue to return data
    * @param limit limit item will be returned
-   * @param fullSize reference full size of data list 
    * @return collection of Calendar object
    */
   public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit);
   
   /**
    * This method is deprecated, use {@link CalendarHandler#getCalendarById(String)}
-   * <br/>
+   * <br>
    * Gets the given user's private calendar, identified by its ID.
    * @param username current user name(or user id)
    * @param calendarId Id of the calendar
@@ -394,15 +394,15 @@ public interface CalendarService {
   public Calendar getUserCalendar(String username, String calendarId) throws Exception;
 
   /**
-   * Deprecated, use {@link CalendarHandler#findCalendarsByQuery(CalendarQuery)}
-   * <br/>
+   * Deprecated, use {@link CalendarHandler#findCalendars(CalendarQuery)}
+   * <br>
    * Gets private calendars of the given user.
    * <p> The result depends on value of <code>isShowAll</code> parameter. If <code>isShowAll</code> <br>
    * is <b>true</b>, this method returns all private calendars of this user, otherwise it returns <br>
    * only calendars selected to be displayed in Calendar setting
    * 
    * @param username current user name(or user id)
-   * @param isShowAll If <code>true</code>, returns all private calendars. If <code>false</code>, returns <br/>
+   * @param isShowAll If <code>true</code>, returns all private calendars. If <code>false</code>, returns <br>
    * only calendars that are selected in Calendar Setting
    * @return List of Calendar objects
    * @throws Exception
@@ -420,8 +420,8 @@ public interface CalendarService {
   ListAccess<Calendar> getPublicCalendars() throws Exception;
   
   /**
-   * Deprecated, use {@link CalendarHandler#saveCalendar(Calendar, boolean)}
-   * <br/>
+   * Deprecated, use {@link CalendarHandler#saveCalendar(org.exoplatform.calendar.model.Calendar)}
+   * <br>
    * Saves an user's private calendar to storage
    * 
    * @param username current user name(or user id)
@@ -433,7 +433,7 @@ public interface CalendarService {
   public void saveUserCalendar(String username, Calendar calendar, boolean isNew);
 
   /**
-   * Deprecated, use {@link CalendarHandler#saveCalendar(Calendar, boolean)}
+   * Deprecated, use {@link CalendarHandler#saveCalendar(org.exoplatform.calendar.model.Calendar)}
    *
    * Saves an calendar to storage with given type
    * 
@@ -476,7 +476,7 @@ public interface CalendarService {
 
   /**
    * Deprecated, use {@link CalendarHandler#removeCalendar(String)}
-   * <br/>
+   * <br>
    *
    * Removes private calendar by given id, all events and tasks belong to this calendar will be removed
    * @param username current user name(or user id)
@@ -489,7 +489,7 @@ public interface CalendarService {
 
   /**
    * Deprecated, use {@link CalendarHandler#getCalendarById(String)}
-   * <br/>
+   * <br>
    *
    * Gets a group/public calendar by its Id
    * @param calendarId given calendar id
@@ -501,8 +501,8 @@ public interface CalendarService {
   public Calendar getGroupCalendar(String calendarId) throws Exception;
 
   /**
-   * Deprecated, use {@link CalendarHandler#findCalendarsByQuery(CalendarQuery)}
-   * <br/>
+   * Deprecated, use {@link CalendarHandler#findCalendars(CalendarQuery)}
+   * <br>
    *
    * Gets all the group calendar data of current user
    * <p> The {@link GroupCalendarData} contains information about list of calendars with the <br>
@@ -518,13 +518,12 @@ public interface CalendarService {
   public List<GroupCalendarData> getGroupCalendars(String[] groupIds, boolean isShowAll, String username) throws Exception;
 
   /**
-   * Deprecated, use {@link CalendarHandler#saveCalendar(Calendar, boolean)}
-   * <br/>
+   * Deprecated, use {@link CalendarHandler#saveCalendar(org.exoplatform.calendar.model.Calendar)}
+   * <br>
    *
    * Saves a calendar to public area (group calendar)
    * @param calendar Calendar to be saved
    * @param isNew If <code>true</code>, a new calendar will be saved. If <code>false</code>, an existing calendar will be updated.
-   * @throws Exception
    */
   @Deprecated
   public void savePublicCalendar(Calendar calendar, boolean isNew);   
@@ -588,7 +587,7 @@ public interface CalendarService {
    * @param unsharedGroups List of un-shared groups
    * @param calendarId Id of shared calendar
    * @throws Exception
-   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
+   * @see CalendarService#shareCalendarByRunJob(String, String, List)
    */
   public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception;
   
@@ -613,13 +612,13 @@ public interface CalendarService {
    * @param schedulerService The schedule service that manages jobs
    * @return true if this group is belong to a list of groups that is being shared, false if not.
    * @throws Exception
-   * @see {@link CalendarService#shareCalendarByRunJob(String, String, List)}
+   * @see CalendarService#shareCalendarByRunJob(String, String, List)
    */
   public boolean isGroupBeingShared(String group, JobSchedulerServiceImpl schedulerService) throws Exception;
   
   /**
    * Gets type of a calendar by user name and calendar id
-   * <p> There a 3 types of calendar: <br/>
+   * <p> There a 3 types of calendar: <br>
    * <ul>
    * <li>Private calendar - returned value: 0</li>
    * <li>Shared calendar - returned value: 1</li>
@@ -636,7 +635,7 @@ public interface CalendarService {
   //Event
   
   /**
-   * Deprecated, use {@link org.exoplatform.calendar.service.handler.EventHandler#getEventById(String)}
+   * Deprecated, use {@link org.exoplatform.calendar.service.EventHandler#getEventById(String)}
    * Gets event by its Id
    * @param eventId Id of the event
    * @return a {@link CalendarEvent} 
@@ -685,7 +684,7 @@ public interface CalendarService {
    * <li><code>calendarIds</code>: array of calendar IDs in which to search events.</li>
    * <li>...</li>
    * </ul>
-   * After setting value for those properties, the conditions are built in a query statement by the <br/>
+   * After setting value for those properties, the conditions are built in a query statement by the <br>
    * method {@link EventQuery#getQueryStatement()} 
    * 
    * @param username current user name(or user id)
@@ -876,10 +875,10 @@ public interface CalendarService {
   /**
    * Gets busy time of participants in a period
    * <p> The list of participants and the period are given in an <code>EventQuery</code> object.
-   * <p> The returned result is a <code>Map<String,String></code> with the key is user name of participants <br>
+   * <p> The returned result is a {@code Map<String,String>} with the key is user name of participants <br>
    * and the value is pairs of <code>{fromtime, totime}</code> in milliseconds , separated by ','.  
    * @param eventQuery <code>EventQuery</code> object
-   * @return a </code>Map<String,String></code> with the key is user name and value is  
+   * @return a {@code Map<String,String>} with the key is user name and value is
    * @throws Exception 
    * @see EventQuery
    */
@@ -887,7 +886,7 @@ public interface CalendarService {
 
   /**
    * Saves changes for list of events.
-   * <p> This method can be used in 2 cases: <br/>
+   * <p> This method can be used in 2 cases: <br>
    * <ul>
    * <li>Moving events between 2 calendars</li>
    * <li>Editing/updating events. In this case, from calendar and to calendar are the same</li>
@@ -916,7 +915,7 @@ public interface CalendarService {
   public void confirmInvitation(String fromUserId, String confirmingEmail, String confirmingUser, int calType, String calendarId, String eventId, int answer) throws Exception;
   
   /**
-   * Gets all occurrences of a repetitive event in a period of time. <br/>
+   * Gets all occurrences of a repetitive event in a period of time. <br>
    * The result will be depended on the recurrence rule, the start date of recurrent event and the period of time to view.
    * @param recurEvent the original recurrent event
    * @param from the from time
@@ -933,7 +932,7 @@ public interface CalendarService {
    * @param to to time
    * @return list of <code>CalendarEvent</code> objects
    * @throws Exception
-   * @Deprecated use getHighLightOriginalRecurrenceEventsSQL instead
+   * @deprecated use getHighLightOriginalRecurrenceEventsSQL instead
    */
   @Deprecated
   public List<CalendarEvent> getOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
@@ -1056,7 +1055,7 @@ public interface CalendarService {
    * @param username current user name(or user id)
    * @param eventQuery <code>EventQuery</code> object
    * @param publicCalendarIds array of public calendar IDs of which to search events
-   * @return a <code>Map</code> with key set is the days having events. Ex: <code>{<14,"value">, <15,"value">}</code>
+   * @return a <code>Map</code> with key set is the days having events. Ex: {@code {<14,"value">, <15,"value">}}
    * @throws Exception
    */
   @Deprecated
@@ -1065,7 +1064,7 @@ public interface CalendarService {
   /**
    * We do not use this method anymore, so i mark this method as deprecated
    * to notify other team do not use this method any more and we do not need to maintain this method.
-   * use {@link #getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars)}
+   * use {@link #getAllNoRepeatEvents(String, EventQuery, String[])}
    * A faster version of getEvents used for UIWeekview
    *
    * @param username
@@ -1084,13 +1083,13 @@ public interface CalendarService {
    * @param occurrence the occurrence event object to remove
    * @throws Exception
    * 
-   * @Deprecated use removeOneOccurrenceEvent instead
+   * @deprecated use removeOneOccurrenceEvent instead
    */
   @Deprecated
   public void removeOccurrenceInstance(String username, CalendarEvent occurrence) throws Exception;
 
   /**
-   * Removes all occurrence from an recurrence series. It will delete the original event of recurrence series. <br/>
+   * Removes all occurrence from an recurrence series. It will delete the original event of recurrence series. <br>
    * All exception occurrences of this series still exist and will be treated as a normal event
    * @param username owner of recurrent event, in case of private or shared calendar
    * @param originalEvent the original recurrent event object
@@ -1099,7 +1098,7 @@ public interface CalendarService {
   public void removeRecurrenceSeries(String username, CalendarEvent originalEvent) throws Exception;
 
   /**
-   * Updates recurrence series from an occurrence, this function is only called if the occurrence event is not changed the from date property. <br/>
+   * Updates recurrence series from an occurrence, this function is only called if the occurrence event is not changed the from date property. <br>
    * In other way, if the occurrence event move to another date, it will be updated as a 'exception' occurrence and not affects to series
    * @param fromCalendar the calendarId of the calendar which the recurrent event belong to before updating
    * @param toCalendar the new calendarId of the recurrent event
@@ -1112,7 +1111,7 @@ public interface CalendarService {
   public void updateRecurrenceSeries(String fromCalendar, String toCalendar, String fromType, String toType, CalendarEvent occurrence, String username) throws Exception;
 
   /**
-   * Finds all days of month or year that have event/task to highlight from all personal, shared and public calendar of an user <br/>
+   * Finds all days of month or year that have event/task to highlight from all personal, shared and public calendar of an user <br>
    * This function is much same like searchHightLightEvent() function but it only counts for recurrent event
    * @param username the username of user
    * @param eventQuery EventQuery object to limit time-range
@@ -1121,7 +1120,7 @@ public interface CalendarService {
    * @return 
    * @throws Exception
    * 
-   * @Deprecated use searchHighlightRecurrenceEventSQL instead
+   * @deprecated use searchHighlightRecurrenceEventSQL instead
    */
   @Deprecated
   public Map<Integer, String> searchHighlightRecurrenceEvent(String username, EventQuery eventQuery, String[] publicCalendarIds, String timezone) throws Exception;
@@ -1133,7 +1132,7 @@ public interface CalendarService {
    * We do not use this method anymore, so i mark this method as deprecated
    * to notify other team do not use this method any more and we do not need to maintain this method.
    *
-   * use {@link #getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery, String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars)}
+   * use {@link #getHighLightOriginalRecurrenceEventsSQL(String, java.util.Calendar, java.util.Calendar, EventQuery, String[], String[], List)}
    */
   @Deprecated
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;

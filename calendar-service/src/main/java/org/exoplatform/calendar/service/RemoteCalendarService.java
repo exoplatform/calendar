@@ -31,19 +31,15 @@ public interface RemoteCalendarService {
    * Check if the remote url is valid, in 2 cases of iCalendar url or CalDav url, with authentication
    * @param url the remote url
    * @param type the type of remote calendar, iCalendar or CalDav
-   * @param username the remote username used to authenticate
-   * @param password the remote password used to authenticate
+   * @param remoteUser the remote username used to authenticate
+   * @param remotePassword the remote password used to authenticate
    * @return true if remote url is available in case of iCalendar and CalDav access support in case of CalDav
-   * @throws Exception
    */
   boolean isValidRemoteUrl(String url, String type, String remoteUser, String remotePassword) throws IOException, UnsupportedOperationException;
 
   /**
    * Connect to remote server
-   * @param remoteUrl the remote url
-   * @param remoteType the remote type, iCalendar or CalDav
-   * @param remoteUser remote username to authenticate
-   * @param remotePassword remote password to authenticate
+   * @param remoteCalendar the remote calendar
    * @return response's input stream
    * @throws Exception
    */

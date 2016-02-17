@@ -30,7 +30,7 @@ public interface GenericDAO<T, ID> {
   /**
    * Persist the entity object into database.
    *
-   * @param object
+   * @param entity
    */
   T save(T entity);
 

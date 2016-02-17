@@ -136,7 +136,7 @@ public class UIGroupSelector extends UIGroupMembershipSelector implements UIPopu
 
   /**
    *
-   * @param groups groups parameters MUST be passed as List<Group> but casted into List<Object>
+   * @param groups groups parameters MUST be passed as {@code List<Group>} but casted into {@code List<Object>}
    */
   public void setSelectedGroups(List groups){
     if(groups != null) {

@@ -144,7 +144,7 @@ public class RestSecurityServiceImpl implements RestSecurityService {
   }
 
   /**
-   * The permission follow pattern: membershipType:groupId. For example: *:/platform/administrators <br/>  
+   * The permission follow pattern: membershipType:groupId. For example: *:/platform/administrators <br>
    */
   public static class PermissionPlugin extends BaseComponentPlugin {
     private Map<String, String> config = new HashMap<String, String>();

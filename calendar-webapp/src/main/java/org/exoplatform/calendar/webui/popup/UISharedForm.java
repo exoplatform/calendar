@@ -67,7 +67,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
  *          hung.nguyen@exoplatform.com
  * Aus 01, 2007 2:48:18 PM
  *
- * <br/>modified by: <a href="mailto:tuna@exoplatform.com">Anh-Tu NGUYEN<a/>
+ * <br>modified by: <a href="mailto:tuna@exoplatform.com">Anh-Tu NGUYEN</a>
  */
 @ComponentConfigs({
   @ComponentConfig(

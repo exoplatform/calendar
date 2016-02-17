@@ -71,7 +71,7 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
  *          hung.nguyen@exoplatform.com
  * Aus 01, 2007 2:48:18 PM
  *
- * <br/>modified by: <a href="mailto:tuna@exoplatform.com">Anh-Tu NGUYEN<a/>
+ * <br>modified by: <a href="mailto:tuna@exoplatform.com">Anh-Tu NGUYEN</a>
  */
 
 @ComponentConfig(
@@ -276,7 +276,6 @@ public class UICalendars extends UIForm  {
    *
    * @see <code>UICalendars.gtmpl</code> - used in template
    * @return
-   * @throws Exception
    */
   public List<Calendar> getAllPrivateCalendars() {
     return filterHidden(getCalendars().get(Calendar.Type.PERSONAL.name()));    
@@ -434,7 +433,6 @@ public class UICalendars extends UIForm  {
    *
    * @see <code>UICalendars.gtmpl</code> - used in template
    * @return
-   * @throws Exception
    */
   public List<Calendar> getAllPublicCalendars() {
     return filterHidden(getCalendars().get(Calendar.Type.GROUP.name()));

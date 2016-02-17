@@ -237,7 +237,7 @@ public class CalendarRestApi implements ResourceContainer {
    * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
    *        If not specified, only JSON object is returned.
    *        
-   * @request  GET: http://localhost:8080/rest/private/v1/calendar/calendars?type=personal&fields=id,name
+   * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/calendars?type=personal&fields=id,name}
    *
    * @format  JSON
    *
@@ -1069,7 +1069,7 @@ public class CalendarRestApi implements ResourceContainer {
    *        1. *subject* must not be empty.
    *        2. *availability* can only be one of "available", "busy", "outside".
    *        3. *repeat.repeatOn* can only be one of "MO", "TU", "WE", "TH", "FR", "SA", "SU".
-   *        4. *repeat.repeatBy* must be >= 1 and <= 31.
+   *        4. *repeat.repeatBy* {@literal must be >= 1 and <= 31}.
    *        5. *repeat.repeatType* must be one of "norepeat", "daily", "weekly", "monthly", "yearly".
    *        6. *from* date must be earlier than *to* date.
    *        7. *priority* must be one of "none", "high", "normal", "low".
@@ -1461,10 +1461,10 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param id Identity of a calendar to search for events.
    * 
-   * @param startTime Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
+   * @param start Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
    *        Default: current server time.
    * 
-   * @param endTime Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date.
+   * @param end Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date.
    *        Default: current server time + 1 week.
    * 
    * @param category Search for this category only. If not specified, search events of all categories.
@@ -1509,7 +1509,7 @@ public class CalendarRestApi implements ResourceContainer {
    *            },
    *        }
    * 
-   * @request  GET: http://localhost:8080/rest/private/v1/calendar/calendars/myCalId/events?category=meeting&expand=calendar,categories(1,5)
+   * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/calendars/myCalId/events?category=meeting&expand=calendar,categories(1,5)}
    * 
    * @format JSON
    * 
@@ -1643,7 +1643,7 @@ public class CalendarRestApi implements ResourceContainer {
    *        1. *subject* must not be empty, default value is: default.
    *        2. *availability* can only be one of "available", "busy", "outside".
    *        3. *repeat.repeatOn* can only be one of "MO", "TU", "WE", "TH", "FR", "SA", "SU".
-   *        4. *repeat.repeatBy* must be >= 1 and <= 31.
+   *        4. *repeat.repeatBy* {@literal must be >= 1 and <= 31}.
    *        5. *repeat.repeatType* must be one of "norepeat", "daily", "weekly", "monthly", "yearly".
    *        6. *from* date must be earlier than *to* date.
    *        7. *priority* must be one of "none", "high", "normal", "low".
@@ -1785,7 +1785,7 @@ public class CalendarRestApi implements ResourceContainer {
    *            },
    *        }
    * 
-   * @request  GET: http://localhost:8080/rest/private/v1/calendar/events/Event123/occurences?offset=1&limit=5
+   * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/events/Event123/occurences?offset=1&limit=5}
    * 
    * @format  JSON
    * 
@@ -1922,10 +1922,10 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param id Identity of the calendar.
    * 
-   * @param startTime Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *from* this date.
+   * @param start Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *from* this date.
    *        Default: current server time.
    * 
-   * @param endTime Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *to* this date.
+   * @param end Date complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for tasks *to* this date.
    *        Default: current server time + 1 week.
    * 
    * @param category Filter the tasks by this category if specified.
@@ -1970,7 +1970,7 @@ public class CalendarRestApi implements ResourceContainer {
    *            },
    *        }
    * 
-   * @request  GET: http://localhost:8080/rest/private/v1/calendar/myCalId/tasks?category=meeting&expand=calendar,categories(1,5)
+   * @request  GET: {@code http://localhost:8080/rest/private/v1/calendar/myCalId/tasks?category=meeting&expand=calendar,categories(1,5)}
    * 
    * @format JSON
    * 

@@ -26,7 +26,7 @@ public interface CalendarHandler {
   /**
    * Return a Calendar with given id, or NULL if it doesn't exist.
    *
-   * @param calId
+   * @param id
    * @return a Calendar with given id, or NULL if it doesn't exist.
    */
   org.exoplatform.calendar.model.Calendar getCalendarById(String id);

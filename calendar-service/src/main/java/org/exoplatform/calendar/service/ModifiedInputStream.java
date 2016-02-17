@@ -33,7 +33,7 @@ import java.io.InputStream;
 /** 
  *  This class provides methods to modify an input stream before importing.
  *  Sometime, user's input stream is not standard conformed. We need to survive erroneous data
- *  @see CAL-514, CAL-524
+ *  See CAL-514, CAL-524
  */
 
 public class ModifiedInputStream {

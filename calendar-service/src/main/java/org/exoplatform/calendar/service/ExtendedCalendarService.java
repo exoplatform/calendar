@@ -46,7 +46,7 @@ public interface ExtendedCalendarService {
    * <p>
    * If the given id is NULL, the JCRStorage will be returned by default.
    * 
-   * @param compositeId
+   * @param id
    * @return the Storage associated with given id.
    */
   public Storage lookForDS(String id);

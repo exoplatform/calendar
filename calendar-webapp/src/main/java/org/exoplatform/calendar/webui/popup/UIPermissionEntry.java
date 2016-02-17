@@ -11,9 +11,9 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
  * represents an entry for permission in the grid
  *
  * @author Created by The eXo Platform SAS
- *         <br/>Anh-Tu Nguyen
- *         <br/><a href="mailto:tuna@exoplatform.com">tuna@exoplatform.com<a/>
- *         <br/>Jan 28, 2013
+ *         <br>Anh-Tu Nguyen
+ *         <br><a href="mailto:tuna@exoplatform.com">tuna@exoplatform.com</a>
+ *         <br>Jan 28, 2013
  */
 @ComponentConfig(
     lifecycle = Lifecycle.class,

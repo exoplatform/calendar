@@ -76,10 +76,10 @@ public class PermissionOwner {
   }
 
   /**
-   * example of permission statement <br/>
-   * - membership: /platform/users/:*.manager <br/> 
-   * - user: demo <br/>
-   * - user: /platform/users/:demo <br/>
+   * example of permission statement <br>
+   * - membership: /platform/users/:*.manager <br>
+   * - user: demo <br>
+   * - user: /platform/users/:demo <br>
    * - group: /organization/management/executive-board/:*.*
    */
   public static PermissionOwner createPermissionOwnerFrom(String permissionStatement) {

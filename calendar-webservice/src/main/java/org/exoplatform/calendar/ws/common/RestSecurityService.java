@@ -23,10 +23,10 @@ public interface RestSecurityService {
 
   /**
    * Return TRUE if no permission configured for this request uri, 
-   * OR user has permission configured with that uri <br/>
-   * For example: if no permission is configured, any user can access any rest resource <br/>
-   * But if the rest uri: /rest/calendar is configured with *:/platform/admins --> only admin group can access that resource <br/>
-   * The permissions are inherited, if there are config:  /rest --> *:/admin, and /rest/calendar --> *:/users. So an user must
+   * OR user has permission configured with that uri <br>
+   * For example: if no permission is configured, any user can access any rest resource <br>
+   * But if the rest uri: /rest/calendar is configured with {@literal *:/platform/admins -->} only admin group can access that resource <br>
+   * The permissions are inherited, if there are config:  {@literal /rest --> *:/admin, and /rest/calendar --> *:/users}. So an user must
    * have admin permission to access to /rest/calendar
    * Super user has permission to access all resources. No matter how permission is configured
    */ 

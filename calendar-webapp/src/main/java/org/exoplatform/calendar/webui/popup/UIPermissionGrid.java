@@ -10,9 +10,9 @@ import org.exoplatform.webui.core.lifecycle.Lifecycle;
  * a grid that contains a list of permission entry
  *
  * @author Created by The eXo Platform SEA
- *         <br/>Anh-Tu Nguyen
- *         <br/><a href="mailto:tuna@exoplatform.com">tuna@exoplatform.com<a/>
- *         <br/>Jan 25, 2013
+ *         <br>Anh-Tu Nguyen
+ *         <br><a href="mailto:tuna@exoplatform.com">tuna@exoplatform.com</a>
+ *         <br>Jan 25, 2013
  */
 @ComponentConfig(
     lifecycle = Lifecycle.class,

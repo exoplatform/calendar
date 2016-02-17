@@ -1051,7 +1051,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   }
 
   /**
-   * Get data about recurrence events <br/>
+   * Get data about recurrence events <br>
    * Each item of the map has the key is the eventid of recurrence event.
    * The value of the map contains all occurrence events with the key is the recurrence-id
    *

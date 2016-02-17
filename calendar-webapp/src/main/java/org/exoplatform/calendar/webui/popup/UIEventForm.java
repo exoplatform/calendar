@@ -1717,10 +1717,10 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   }
 
   /**
-   * Build the repeating summary, i.e: daily every 2 days, until 02/03/2011. <br/>
-   * The summary structure is defined in resource bundle, it contains some parameters and </br>
-   * will be replaced by values from repeatEvent. <br/>
-   * <p>There are 6 parameters: {count}, {until}, {interval}, {byDays}, {theDay}, {theNumber}.<br/>
+   * Build the repeating summary, i.e: daily every 2 days, until 02/03/2011. <br>
+   * The summary structure is defined in resource bundle, it contains some parameters and <br>
+   * will be replaced by values from repeatEvent. <br>
+   * <p>There are 6 parameters: {count}, {until}, {interval}, {byDays}, {theDay}, {theNumber}.<br>
    * Some labels in resource bundle to define numbers (the first, the second, ...) which were used in summary
    * @param repeatEvent the repeating event
    * @return summary string about repeating event

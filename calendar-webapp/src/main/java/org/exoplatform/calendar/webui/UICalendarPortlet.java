@@ -94,7 +94,6 @@ public class UICalendarPortlet extends UIPortletApplication {
 
   /**
    * @return a calendar that contains configuration of the user, such as: Time zone, First day of week.
-   * @throws Exception
    */
   public Calendar getUserCalendar() {    
     return CalendarUtils.getInstanceOfCurrentCalendar();
