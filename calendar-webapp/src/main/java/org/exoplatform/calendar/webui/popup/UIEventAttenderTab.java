@@ -125,7 +125,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     User u = CalendarUtils.getOrganizationService().getUserHandler().findUserByName(username);
     if (u == null) return null;
     String fullName = u.getDisplayName();
-    //--- patch to fix ORG-1812
+    //--- Return the username when it is not null
     if (fullName != null && fullName.length() != 0 ) {
       return fullName;
     }
