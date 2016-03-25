@@ -42,6 +42,7 @@ import org.exoplatform.calendar.service.ModifiedInputStream;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.util.Constants;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -488,7 +489,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     Map<String, List<CalendarEvent>> exceptionOccurrences = new HashMap<String, List<CalendarEvent>>();
 
     SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-    format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    format.setTimeZone(DateUtils.getTimeZone("GMT"));
     int calType = storage_.getTypeOfCalendar(username, calendarId);
 
     for (Object obj : componentList) {

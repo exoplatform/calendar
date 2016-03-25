@@ -31,6 +31,7 @@ import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.commons.utils.DateUtils;
 
 public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
 
@@ -187,7 +188,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     setting.setTimeFormat("H:m");
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
 
     Calendar calendar = createPrivateCalendar(username, "testSaveFollowingOccurrenceEventWithChangeTime calendar", "description");
 
@@ -561,7 +562,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
   }
 
   public void testCalculateRecurrenceFinishDate() throws Exception {
-    TimeZone timeZone = TimeZone.getTimeZone("GMT");
+    TimeZone timeZone = DateUtils.getTimeZone("GMT");
     
     java.util.Calendar fromCal = java.util.Calendar.getInstance(timeZone);
     fromCal.set(2011, 6, 20, 5, 30);
@@ -678,7 +679,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     setting.setTimeZone("Europe/Brussels");
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     // Build startTime and endTime string
     // startTime == nextHour from current hour
     // endTime = next hour from start time
@@ -754,7 +755,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     setting.setTimeZone("Europe/Brussels");
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     // Build startTime and endTime string
     // startTime == nextHour from current hour
     // endTime = next hour from start time
@@ -822,7 +823,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     setting.setTimeZone("Asia/Saigon");
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     Calendar calendar = createPrivateCalendar(username, "test recurring calendar", "description");
     String startTime = "10202014 10:00";
     String endTime = "10202014 11:00";
@@ -897,7 +898,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     setting.setTimeZone("Asia/Saigon");
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     Calendar calendar = createPrivateCalendar(username, "test recurring calendar", "description");
     String startTime = "10222014 10:00";
     String endTime = "10222014 11:00";
@@ -947,7 +948,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     setting.setTimeZone("Asia/Saigon");
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     Calendar calendar = createPrivateCalendar(username, "test recurring calendar", "description");
     //. 22 Oct 2014 (Wednesday)
     String startTime = "10222014 10:00";
@@ -996,7 +997,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     setting.setTimeZone("Asia/Saigon");
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     Calendar calendar = createPrivateCalendar(username, "test recurring calendar", "description");
     //. 22 Oct 2014 (Wednesday)
     String startTime = "10192014 10:00";
@@ -1048,7 +1049,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
 
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     Calendar calendar = createPrivateCalendar(username, "calendar for testing monthly recurring", "description");
     //. 09 Mar 2015 (Monday)
     String startTime = "03092015 03:00";
@@ -1107,7 +1108,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
     calendarService_.saveCalendarSetting(username, setting);
     setting = calendarService_.getCalendarSetting(username);
 
-    TimeZone userTimezone = TimeZone.getTimeZone(setting.getTimeZone());
+    TimeZone userTimezone = DateUtils.getTimeZone(setting.getTimeZone());
     Calendar calendar = createPrivateCalendar(username, "calendar for testing monthly recurring", "description");
     //. 09 Mar 2015 (Monday)
     String startTime = "03092015 03:00";
@@ -1170,7 +1171,7 @@ public class RecurringEventTestCase extends BaseCalendarServiceTestCase {
   private java.util.Calendar getCalendarInstanceBySetting(final CalendarSetting calendarSetting) {
     java.util.Calendar calendar = java.util.Calendar.getInstance() ;
     calendar.setLenient(false);
-    calendar.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
+    calendar.setTimeZone(DateUtils.getTimeZone(calendarSetting.getTimeZone()));
     calendar.setFirstDayOfWeek(Integer.parseInt(calendarSetting.getWeekStartOn()));
     calendar.setMinimalDaysInFirstWeek(4);
     return calendar;

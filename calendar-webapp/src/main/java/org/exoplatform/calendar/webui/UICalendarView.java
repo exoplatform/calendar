@@ -60,6 +60,7 @@ import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UITaskForm;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -2337,7 +2338,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   // used in some templates to display DateTime string
   public String getDateTimeString(Date date) {
     DateFormat df = new SimpleDateFormat(dateTimeFormat_, getLocale());
-    df.setTimeZone(TimeZone.getTimeZone(getTimeZone()));
+    df.setTimeZone(DateUtils.getTimeZone(getTimeZone()));
     return df.format(date);
   }
 

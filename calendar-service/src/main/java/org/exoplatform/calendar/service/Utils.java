@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -64,6 +65,7 @@ import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
 
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -454,6 +456,7 @@ public class Utils {
 
   public static final String ERROR_UN_SHARE = "errorUnShare";
 
+
   //Cache
   private static final String CALENDAR_DST_CACHE_REGION = "calendar.DaylightSavingTime";
   
@@ -516,7 +519,7 @@ public class Utils {
    */
   public static GregorianCalendar getInstanceTempCalendar() {
     GregorianCalendar calendar = new GregorianCalendar();
-    calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+    calendar.setTimeZone(DateUtils.getTimeZone("GMT"));
     return calendar;
   }
 
@@ -649,7 +652,7 @@ public class Utils {
   }
 
   public static java.util.Calendar getGreenwichMeanTime() {
-    java.util.Calendar calendar = GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT"));
+    java.util.Calendar calendar = GregorianCalendar.getInstance(DateUtils.getTimeZone("GMT"));
     calendar.setLenient(false);
     int gmtoffset = calendar.get(java.util.Calendar.DST_OFFSET) + calendar.get(java.util.Calendar.ZONE_OFFSET);
     calendar.setTimeInMillis(System.currentTimeMillis() - gmtoffset);

@@ -52,6 +52,7 @@ import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
@@ -281,7 +282,7 @@ public class CalendarUtils {
   public static Calendar getCalendarInstanceBySetting(final CalendarSetting calendarSetting) {
     Calendar  calendar = Calendar.getInstance() ;
     calendar.setLenient(false);
-    calendar.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
+    calendar.setTimeZone(DateUtils.getTimeZone(calendarSetting.getTimeZone()));
     calendar.setFirstDayOfWeek(Integer.parseInt(calendarSetting.getWeekStartOn()));
     calendar.setMinimalDaysInFirstWeek(4);
     return calendar;
@@ -319,7 +320,7 @@ public class CalendarUtils {
   }
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String labelFormat, String valueFormat, long timeInteval, Locale locale) {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
-    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("")); // get a GMT calendar
+    Calendar cal = Calendar.getInstance(DateUtils.getTimeZone("")); // get a GMT calendar
     cal.set(Calendar.HOUR_OF_DAY, 0) ;
     cal.set(Calendar.MINUTE, 0) ;
     cal.set(Calendar.MILLISECOND, 0) ;
@@ -356,7 +357,7 @@ public class CalendarUtils {
   public static String generateTimeZoneLabel(String timeZoneID) {
     String label = timeZoneID;
     if(label.lastIndexOf("/") > 0 && label.toLowerCase().lastIndexOf("etc".toLowerCase()) < 0 && label.toLowerCase().lastIndexOf("system") < 0) {
-      TimeZone timeZone = TimeZone.getTimeZone(label) ;
+      TimeZone timeZone = DateUtils.getTimeZone(label) ;
       int rawOffset = timeZone.getRawOffset() / 60000;
       int hours = rawOffset / 60;
       int minutes = Math.abs(rawOffset) % 60;
@@ -544,7 +545,7 @@ public class CalendarUtils {
   }
 
   static public String getTimeZone(String timezone) {
-    TimeZone timeZone = TimeZone.getTimeZone(timezone) ;
+    TimeZone timeZone = DateUtils.getTimeZone(timezone) ;
     int rawOffset = timeZone.getRawOffset()  ;
     return String.valueOf(0 - (rawOffset /60000 + timeZone.getDSTSavings()/60000)) ;
   }

@@ -36,6 +36,7 @@ import org.exoplatform.calendar.service.impl.TaskSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.web.controller.metadata.ControllerDescriptor;
@@ -690,7 +691,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     assertEquals(keyword, r.getTitle());
     
     SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT);
-    df.setTimeZone(TimeZone.getTimeZone(calSetting.getTimeZone()));
+    df.setTimeZone(DateUtils.getTimeZone(calSetting.getTimeZone()));
     String detail = "root calendar - " + df.format(fromCal.getTime());
     assertEquals(detail, r.getDetail());
   }

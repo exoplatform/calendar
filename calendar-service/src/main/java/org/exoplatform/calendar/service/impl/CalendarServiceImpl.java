@@ -80,6 +80,7 @@ import org.exoplatform.calendar.service.ShareCalendarJob;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.util.Constants;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainer;
@@ -744,7 +745,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     } catch (Exception e) {
       if (LOG.isDebugEnabled()) LOG.debug(e);
     }
-    TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+    TimeZone userTimeZone = DateUtils.getTimeZone(timezone);
     SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
     format.setTimeZone(userTimeZone);
     return format.format(formTime);
@@ -1294,7 +1295,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     if ((repetitiveEvent.getRepeatCount() <= 0) && (repetitiveEvent.getRepeatUntilDate() != null))
     {
       CalendarSetting calendarSetting = getCalendarSetting(username);
-      TimeZone timezone = TimeZone.getTimeZone(calendarSetting.getTimeZone()); // europe brussels
+      TimeZone timezone = DateUtils.getTimeZone(calendarSetting.getTimeZone()); // europe brussels
       java.util.Calendar fromDate = java.util.Calendar.getInstance(timezone);
       fromDate.setTime(repetitiveEvent.getFromDateTime());
       java.util.Calendar toDate   = java.util.Calendar.getInstance(timezone);
@@ -1418,7 +1419,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
                                   String username) {
     try {
       String timezone = getCalendarSetting(username).getTimeZone();
-      TimeZone tz = TimeZone.getTimeZone(timezone);
+      TimeZone tz = DateUtils.getTimeZone(timezone);
       CalendarEvent originEvent = getRepetitiveEvent(occurrence);
 
       updateOriginFromToTime(originEvent, occurrence);
@@ -1505,7 +1506,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     try {
       String timezone = getCalendarSetting(username).getTimeZone();
       Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),
-              TimeZone.getTimeZone(timezone));
+              DateUtils.getTimeZone(timezone));
       Boolean isFirstOccurrence = (stopDate == null);
 
       String calendarId = originEvent.getCalendarId();
@@ -1515,10 +1516,10 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           Recur recur = Utils.getICalendarRecur(originEvent);
           
           DateTime ical4jEventFrom = new DateTime(originEvent.getFromDateTime());//the date time of the first occurrence of the series
-          net.fortuna.ical4j.model.TimeZone tz = Utils.getICalTimeZone(TimeZone.getTimeZone(timezone));
+          net.fortuna.ical4j.model.TimeZone tz = Utils.getICalTimeZone(DateUtils.getTimeZone(timezone));
           ical4jEventFrom.setTimeZone(tz);
           
-          TimeZone userTimeZone = TimeZone.getTimeZone(timezone);
+          TimeZone userTimeZone = DateUtils.getTimeZone(timezone);
           SimpleDateFormat format = new SimpleDateFormat(Utils.DATE_FORMAT_RECUR_ID);
           format.setTimeZone(userTimeZone);
           
@@ -1672,7 +1673,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
                                           String username) {
     try {
       String timezone = getCalendarSetting(username).getTimeZone();
-      TimeZone tz = TimeZone.getTimeZone(timezone);
+      TimeZone tz = DateUtils.getTimeZone(timezone);
       Date stopDate = Utils.getPreviousOccurrenceDate(originEvent, selectedOccurrence.getFromDateTime(),tz);
       String calendarId = originEvent.getCalendarId();
 
