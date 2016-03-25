@@ -60,6 +60,7 @@ import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UITaskForm;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -1495,7 +1496,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
           eventCalendar = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
           // Recover recurring info from GMT (persisted timezone) to user timezone
           CalendarSetting setting = calService.getCalendarSetting(event.getRequestContext().getRemoteUser());
-          TimeZone tz = TimeZone.getTimeZone(setting.getTimeZone());
+          TimeZone tz = DateUtils.getTimeZone(setting.getTimeZone());
           Utils.adaptRepeatRule(eventCalendar, CalendarService.PERSISTED_TIMEZONE, tz);
         } else {
           eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
@@ -2342,7 +2343,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
   // used in some templates to display DateTime string
   public String getDateTimeString(Date date) {
     DateFormat df = new SimpleDateFormat(dateTimeFormat_, getLocale());
-    df.setTimeZone(TimeZone.getTimeZone(getTimeZone()));
+    df.setTimeZone(DateUtils.getTimeZone(getTimeZone()));
     return df.format(date);
   }
 

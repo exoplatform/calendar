@@ -16,6 +16,8 @@
  **/
 package org.exoplatform.calendar.service;
 
+import org.exoplatform.commons.utils.DateUtils;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -259,7 +261,7 @@ public class CalendarSetting implements Serializable {
    * @return calendar object
    */
   public Calendar createCalendar(long time) {
-    Calendar c = GregorianCalendar.getInstance(TimeZone.getTimeZone(timeZone));
+    Calendar c = GregorianCalendar.getInstance(DateUtils.getTimeZone(timeZone));
     c.setFirstDayOfWeek(Integer.parseInt(weekStartOn));
     c.setTimeInMillis(time);
     c.setMinimalDaysInFirstWeek(4);

@@ -58,6 +58,7 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.version.report.ReportInfo;
 import org.apache.jackrabbit.webdav.xml.DomUtil;
 import org.apache.jackrabbit.webdav.xml.Namespace;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -607,7 +608,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
     Map<String, VAlarm> vAlarmData = new HashMap<String, VAlarm>();
 
     SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-    format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    format.setTimeZone(DateUtils.getTimeZone("GMT"));
 
     CalendarEvent original = null;
     List<CalendarEvent> exceptions = new ArrayList<CalendarEvent>();

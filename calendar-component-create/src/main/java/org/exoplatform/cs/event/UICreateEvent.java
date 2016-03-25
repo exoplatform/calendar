@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.TimeZone;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -22,6 +21,7 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
@@ -300,7 +300,7 @@ public class UICreateEvent extends UIForm {
   public static Calendar getCalendarInstanceBySetting(final CalendarSetting calendarSetting) {
     Calendar calendar = GregorianCalendar.getInstance();
     calendar.setLenient(false);
-    calendar.setTimeZone(TimeZone.getTimeZone(calendarSetting.getTimeZone()));
+    calendar.setTimeZone(DateUtils.getTimeZone(calendarSetting.getTimeZone()));
     calendar.setFirstDayOfWeek(Integer.parseInt(calendarSetting.getWeekStartOn()));
     // fix CS-4725
     calendar.setMinimalDaysInFirstWeek(4);
@@ -380,7 +380,7 @@ public class UICreateEvent extends UIForm {
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String labelFormat, String valueFormat, long timeInteval, Locale locale) {
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
     options.add(new SelectItemOption<String>(getResourceBundle("UICreateEvent.label."+ALL_DAY,"All Day"), ALL_DAY));
-    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("")); // get a GMT calendar
+    Calendar cal = Calendar.getInstance(DateUtils.getTimeZone("")); // get a GMT calendar
     cal.set(Calendar.HOUR_OF_DAY, 0);
     cal.set(Calendar.MINUTE, 0);
     cal.set(Calendar.MILLISECOND, 0);
