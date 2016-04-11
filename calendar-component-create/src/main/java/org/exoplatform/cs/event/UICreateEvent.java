@@ -45,7 +45,6 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.UIForm;
 import org.exoplatform.webui.form.UIFormDateTimeInput;
-import org.exoplatform.webui.form.UIFormRadioBoxInput;
 import org.exoplatform.webui.form.UIFormSelectBox;
 import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
 import org.exoplatform.webui.form.UIFormStringInput;
@@ -90,7 +89,6 @@ public class UICreateEvent extends UIForm {
   public static final String OPEN_PARENTHESIS = "(";
   public static final String CLOSE_PARENTHESIS = ")";
   private static Log log = ExoLogger.getLogger(UICreateEvent.class);
-  static String CHOIX = "Choix";
 
   static String TITLE = "Title";
 
@@ -106,7 +104,6 @@ public class UICreateEvent extends UIForm {
   public static final long DEFAULT_TIME_INTERVAL = 30;
 
   public UICreateEvent() throws Exception {
-    addUIFormInput(new UIFormRadioBoxInput(CHOIX, "Event", getTypeValue()));
     addUIFormInput(new UIFormStringInput(TITLE, TITLE, null));
     addUIFormInput(new UIFormDateTimeInput(START_EVENT, START_EVENT, getInstanceOfCurrentCalendar().getTime(), false));
     addUIFormInput(new UIFormDateTimeInput(END_EVENT, END_EVENT, getInstanceOfCurrentCalendar().getTime(), false));
@@ -167,17 +164,10 @@ public class UICreateEvent extends UIForm {
         calEvent.setSummary(summary);
         calEvent.setCalendarId(uiForm.getEventCalendar());
         String username = getCurrentUser();
-        boolean isEvent = "Event".equals(((UIFormRadioBoxInput) uiForm.getUIInput(CHOIX)).getValue());
-        if (isEvent) {
-          calEvent.setEventType(CalendarEvent.TYPE_EVENT);
-          calEvent.setEventState(CalendarEvent.ST_BUSY);
+        calEvent.setEventType(CalendarEvent.TYPE_EVENT);
+        calEvent.setEventState(CalendarEvent.ST_BUSY);
 
-          calEvent.setRepeatType(CalendarEvent.RP_NOREPEAT);
-        } else {
-          calEvent.setEventType(CalendarEvent.TYPE_TASK);
-          calEvent.setEventState(CalendarEvent.NEEDS_ACTION);
-          calEvent.setTaskDelegator(event.getRequestContext().getRemoteUser());
-        }
+        calEvent.setRepeatType(CalendarEvent.RP_NOREPEAT);
         calEvent.setFromDateTime(from);
         calEvent.setToDateTime(to);
         calEvent.setCalType(uiForm.calType_);
@@ -209,7 +199,7 @@ public class UICreateEvent extends UIForm {
         } else if (uiForm.calType_.equals(PUBLIC_TYPE)) {
           calService.savePublicEvent(calEvent.getCalendarId(), calEvent, true);
         }
-        String defaultMsg = "The {0} added to the {1}.";
+        String defaultMsg = "The event has been added to the {1}.";
         String message =  UICreateEvent.getResourceBundle(uiForm.getId()+".msg.add-successfully."+ calEvent.getEventType(),defaultMsg);
         message = message.replace("{1}", calName);
         Event<UIComponent> cancelEvent = uiForm.<UIComponent>getParent().createEvent("Cancel", Event.Phase.PROCESS, event.getRequestContext());
@@ -354,15 +344,6 @@ public class UICreateEvent extends UIForm {
 
     }
   }
-
-
-
-    private List<SelectItemOption<String>> getTypeValue() {
-        List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
-        options.add(new SelectItemOption<String>("Event", "Event")) ;
-        options.add(new SelectItemOption<String>("Task", "Task")) ;
-        return options ;
-    }
 
   public static List<SelectItemOption<String>> getTimesSelectBoxOptions(String timeFormat) {
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
