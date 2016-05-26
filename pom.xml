@@ -17,9 +17,7 @@
     <module>calendar-common</module>
     <module>calendar-service</module>
     <module>calendar-webservice</module>
-    <module>calendar-resources</module>
     <module>calendar-webapp</module>
-    <module>calendar-extension</module>
     <module>calendar-injector</module>
     <module>calendar-statistics</module>
     <module>calendar-component-create</module>
@@ -102,32 +100,8 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-extension-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-extension-webapp</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-injector</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-resources</artifactId>
-        <version>${project.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-resources</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
