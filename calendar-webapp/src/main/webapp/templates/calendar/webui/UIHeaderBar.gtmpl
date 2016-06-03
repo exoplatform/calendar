@@ -177,9 +177,6 @@ int currentDay = uicomponent.getCurrentDay() ;
     </a> 
 		<div id="UIHeaderBar_1" class="dropdown pull-left">
 		  <% /*Begin ViewTypeSelect Popup Menu*/ %>
-      <div class="dropdown-toggle uiActionWithLabel" data-toggle="dropdown" >
-			  <%=_ctx.appRes("UIHeaderBar.label."+uicomponent.getViewType())%><i class="uiIconMiniArrowDown uiIconLightGray"></i>
-      </div>
 			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 			   <%for(type in uicomponent.getViews()){
 				   if(!type.equals(uicomponent.getViewType())){

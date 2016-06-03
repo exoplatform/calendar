@@ -80,7 +80,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
   private static final Log log = ExoLogger.getExoLogger(UIAdvancedSearchForm.class);
   
   final static  private String TEXT = "text" ;
-  final static  private String TYPE = "type" ;
   final static  private String CALENDAR = "calendar" ;
   final static  private String CATEGORY = "category" ;
   final static  private String PRIORITY = "priority" ;
@@ -90,24 +89,14 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
 
   public UIAdvancedSearchForm() throws Exception{
     addChild(new UIFormStringInput(TEXT, TEXT, "").addValidator(SpecialCharacterValidator.class)) ;
-    List<SelectItemOption<String>> types = new ArrayList<SelectItemOption<String>>() ;
-    types.add(new SelectItemOption<String>("", "")) ;
-    types.add(new SelectItemOption<String>(CalendarEvent.TYPE_EVENT, CalendarEvent.TYPE_EVENT)) ;
-    types.add(new SelectItemOption<String>(CalendarEvent.TYPE_TASK, CalendarEvent.TYPE_TASK)) ;
-    UIFormSelectBox type =  new UIFormSelectBox(TYPE, TYPE, types) ;
-    type.setOnChange("Onchange") ;
-    addChild(type) ;
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>() ;
     String username = CalendarUtils.getCurrentUser() ;
     CalendarService cservice = CalendarUtils.getCalendarService() ;
     options.add(new SelectItemOption<String>("", "")) ;
     String[] groupIds = CalendarUtils.getUserGroups(username);
-    //UICalendarPortlet uiCalendarPortlet = getAncestorOfType(UICalendarPortlet.class);
 
     if (UICalendarPortlet.isInSpace()){
       groupIds = new String[]{UICalendarPortlet.getGroupIdOfSpace()};
-    //if (uiCalendarPortlet.isInSpaceContext()) {
-      //groupIds = new String[]{uiCalendarPortlet.getSpaceGroupId()};
     } else {
       for(Calendar cal : cservice.getUserCalendars(username, true)) {
         options.add(new SelectItemOption<String>(cal.getName(), Calendar.TYPE_PRIVATE + CalendarUtils.COLON + cal.getId())) ;
@@ -238,12 +227,6 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     return map.values().toArray(new String[map.values().size()] ) ;
   }
 
-  public boolean isSearchTask() {
-    return getUIFormSelectBox(TYPE).getValue().equals(CalendarEvent.TYPE_TASK) ; 
-  }
-  public String getTaskState() {
-    return getUIFormSelectBox(STATE).getValue() ;
-  }
   @Override
   public String[] getActions() {
     return new String[]{"Search","Cancel"} ;
@@ -253,7 +236,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     if(value == null) value = "" ;
     StringBuilder formData = new StringBuilder();
     formData.append(value);
-    formData.append(getUIFormSelectBox(TYPE).getValue());
+    formData.append(CalendarEvent.TYPE_EVENT);
     formData.append(getUIFormSelectBox(CALENDAR).getValue());
     formData.append(getUIFormSelectBox(CATEGORY).getValue());
     formData.append(getUIFormSelectBox(PRIORITY).getValue());
@@ -293,8 +276,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
       try {
         EventQuery query = new EventQuery() ;
         if(!CalendarUtils.isEmpty(text)) query.setText(CalendarUtils.encodeJCRText(text)) ;
-        query.setEventType(uiForm.getUIFormSelectBox(UIAdvancedSearchForm.TYPE).getValue()) ;
-        if(uiForm.isSearchTask()) query.setState(uiForm.getTaskState()) ; 
+        query.setEventType(CalendarEvent.TYPE_EVENT) ;
         String calendarId = uiForm.getUIFormSelectBox(UIAdvancedSearchForm.CALENDAR).getValue() ;
         UICalendars uiCalendars = uiForm.getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UICalendars.class);
         List<String> checkedCals = uiCalendars.getCheckedCalendars() ;
@@ -391,7 +373,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     @Override
     public void execute(org.exoplatform.webui.event.Event<UIAdvancedSearchForm> event) throws Exception {
       UIAdvancedSearchForm uiForm = event.getSource() ;
-      uiForm.getUIFormSelectBox(STATE).setRendered(uiForm.isSearchTask()) ;
+      uiForm.getUIFormSelectBox(STATE).setRendered(false) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm) ;
     }
   }

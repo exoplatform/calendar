@@ -84,12 +84,6 @@ requirejs.addScripts("cal.UICalendarPortlet.loadTitle();");
         <%=_ctx.appRes("ContextMenu.label.addEvent")%>
         </a>
       </li>
-      <li>
-        <a class="createTask" href="#">
-        <i class="uiIconCalCreateTask uiIconLightGray"></i>
-        <%=_ctx.appRes("ContextMenu.label.addTask")%>
-        </a>
-      </li>
     </ul>
   </div>
     

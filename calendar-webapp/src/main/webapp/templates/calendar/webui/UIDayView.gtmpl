@@ -297,12 +297,6 @@
                  <%=_ctx.appRes("ContextMenu.label.addEvent")%>
                </a>
               </li>
-              <li>
-                <a class="createTask" href="<%=uicomponent.event("QuickAdd","$uicomponent.TYPE_TASK&startTime=beginTime")%>">
-                  <i class="uiIconCalCreateTask uiIconLightGray"></i>
-                  <%=_ctx.appRes("ContextMenu.label.addTask")%>
-                </a>
-              </li>
           </ul>
   </div>
   <% /*End Popup Menu*/ %>

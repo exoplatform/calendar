@@ -32,7 +32,6 @@ import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.impl.CalendarSearchResult;
 import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
 import org.exoplatform.calendar.service.impl.EventSearchConnector;
-import org.exoplatform.calendar.service.impl.TaskSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
@@ -50,13 +49,10 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
 
   private CalendarSearchServiceConnector eventSearchConnector_;
 
-  private CalendarSearchServiceConnector taskSearchConnector_;
-
   @Override
   public void setUp() throws Exception {
     super.setUp();
     unifiedSearchService_ = getService(CalendarSearchServiceConnector.class);
-    taskSearchConnector_ = getService(TaskSearchConnector.class);
     eventSearchConnector_ = getService(EventSearchConnector.class);
   }
 
@@ -172,78 +168,6 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     for (SearchResult item : result) {
       checkFieldsValueWithType(cal.getName(), calEvent, item);
     }
-
-    // == test task search ==//
-    calEvent.setEventType(CalendarEvent.TYPE_TASK);
-    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    result = taskSearchConnector_.search(null,
-                                         query.getText(),
-                                         params,
-                                         0,
-                                         10,
-                                         query.getOrderBy()[0],
-                                         query.getOrderType());
-    assertEquals(1, result.size());
-    for (SearchResult item : result) {
-      checkFieldsValueWithType(cal.getName(), calEvent, item);
-    }
-
-    // Does not search completed task
-    calEvent.setEventState(CalendarEvent.COMPLETED);
-    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    String status = CalendarEvent.COMPLETED + Utils.COLON + CalendarEvent.CANCELLED;
-    query.setState(status);
-    result = taskSearchConnector_.search(null,
-                                         query.getText(),
-                                         params,
-                                         0,
-                                         10,
-                                         query.getOrderBy()[0],
-                                         query.getOrderType());
-    assertEquals(0, result.size());
-
-    // search all need action
-    calEvent.setEventState(CalendarEvent.NEEDS_ACTION);
-    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    query.setState(status);
-    result = taskSearchConnector_.search(null,
-                                         query.getText(),
-                                         params,
-                                         0,
-                                         10,
-                                         query.getOrderBy()[0],
-                                         query.getOrderType());
-    assertEquals(1, result.size());
-    CalendarSearchResult calItem = (CalendarSearchResult) result.toArray()[0];
-    assertEquals(calEvent.getEventState(), calItem.getTaskStatus());
-
-    // search all inprocess
-    calEvent.setEventState(CalendarEvent.IN_PROCESS);
-    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    query.setState(status);
-    result = taskSearchConnector_.search(null,
-                                         query.getText(),
-                                         params,
-                                         0,
-                                         10,
-                                         query.getOrderBy()[0],
-                                         query.getOrderType());
-    assertEquals(1, result.size());
-    calItem = (CalendarSearchResult) result.toArray()[0];
-    assertEquals(calEvent.getEventState(), calItem.getTaskStatus());
-
-    // Does not search cancelled task
-    calEvent.setEventState(CalendarEvent.CANCELLED);
-    calendarService_.saveUserEvent(username, cal.getId(), calEvent, false);
-    query.setState(status);
-    result = taskSearchConnector_.search(null,
-                                         query.getText(),
-                                         params,
-                                         0,
-                                         10,
-                                         query.getOrderBy()[0],
-                                         query.getOrderType());
-    assertEquals(0, result.size());
   }
 
   public void testSearchResultURL() throws Exception {
@@ -381,39 +305,6 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           query.getOrderBy()[0],
                                           query.getOrderType());
     assertEquals(1, result.size());
-
-    // Search task due for and no need check from time
-    current = java.util.Calendar.getInstance();
-    current.add(java.util.Calendar.MINUTE, -1);
-    inPassEvent.setFromDateTime(current.getTime());
-    inPassEvent.setEventType(CalendarEvent.TYPE_TASK);
-    calendarService_.saveUserEvent(username, cal.getId(), inPassEvent, false);
-    result = taskSearchConnector_.search(null,
-                                         query.getText(),
-                                         params,
-                                         0,
-                                         10,
-                                         query.getOrderBy()[0],
-                                         query.getOrderType());
-    assertEquals(1, result.size());
-
-    // Search task not completed or not cancelled in pass
-    CalendarEvent task2 = inPassEvent;
-    task2.setId(new CalendarEvent().getId());
-    task2.setEventState(CalendarEvent.NEEDS_ACTION);
-    calendarService_.saveUserEvent(username, cal.getId(), task2, true);
-    assertEquals(2,
-                 calendarService_.getUserEventByCalendar(username,
-                                                         Arrays.asList(new String[] { cal.getId() }))
-                                 .size());
-    result = taskSearchConnector_.search(null,
-                                         query.getText(),
-                                         params,
-                                         0,
-                                         10,
-                                         query.getOrderBy()[0],
-                                         query.getOrderType());
-    assertEquals(2, result.size());
   }
 
   public void testSearchPermission() throws Exception {
@@ -510,7 +401,6 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     String calId = createPrivateCalendar(username, "root calendar", "").getId();
     createUserEvent(username, calId, "how do you do root", "you are a search able event", false);
     createUserEvent(username, calId, "are you here?", "I am not search able event with john", false);
-    createUserEvent(username, calId, "are you here?", "I am search able task with john", false);
 
     String john = "john";
     calendarService_.shareCalendar(username, calId, Arrays.asList(new String[] { john }));
@@ -531,7 +421,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                                                    query.getOrderBy()[0],
                                                                    query.getOrderType());
     assertNotNull(result);
-    assertEquals(3, result.size());
+    assertEquals(2, result.size());
 
     login(john);
     result = unifiedSearchService_.search(null,
@@ -541,7 +431,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                                           10,
                                           query.getOrderBy()[0],
                                           query.getOrderType());
-    assertEquals(3, result.size());
+    assertEquals(2, result.size());
   }
 
   public void testUnifiedSeachAllWord() throws Exception {
@@ -1045,10 +935,6 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
       assertEquals(item.getFromDateTime(), calEvent.getFromDateTime().getTime());
       assertNull(item.getImageUrl());
       assertEquals(Utils.EVENT_ICON_URL, item.getImageUrl());
-    } else if (CalendarEvent.TYPE_TASK.equals(calEvent.getEventType())) {
-      assertEquals(0, item.getFromDateTime());
-      assertNotNull(item.getImageUrl());
-      assertEquals(Utils.TASK_ICON_URL, item.getImageUrl());
     }
     assertNotNull(item.getTimeZoneName());
   }
@@ -1092,9 +978,6 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     if (CalendarEvent.TYPE_EVENT.equals(item.getDataType())) {
       assertNull(item.getImageUrl());
       assertNull(item.getTaskStatus());
-    } else if (CalendarEvent.TYPE_TASK.equals(item.getDataType())) {
-      assertEquals(Utils.TASK_ICON_URL, item.getImageUrl());
-      assertNotNull(item.getTaskStatus());
     }
   }
 }

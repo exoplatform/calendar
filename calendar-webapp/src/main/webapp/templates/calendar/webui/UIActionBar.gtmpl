@@ -29,9 +29,6 @@
 		<button type="button" class="btn btn-primary" id="UIActionBarQuickAddEvent">
 			<i class="uiIconCalCreateEvent uiIconCalWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Event")%>
 		</button>
-		<button type="button" class="btn btn-primary" id="UIActionBarQuickAddTask">
-			<i class="uiIconCalCreateTask uiIconCalWhite"></i> <%=_ctx.appRes(uicomponent.id + ".label.Task")%>
-		</button>
 		<span class="separatorLine"></span> 
 		<a href="javascript:void(0);" onclick="<%=uicomponent.event("Today")%>" class="todayActionBar">
 			<%=_ctx.appRes(uicomponent.id + ".label.Today")%>

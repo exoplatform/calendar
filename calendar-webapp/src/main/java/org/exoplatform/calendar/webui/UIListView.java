@@ -115,9 +115,7 @@ public class UIListView extends UICalendarView {
 
   @Override
   public String getTemplate() {
-    if( getViewType().equals(TYPE_TASK)) {
-      return "app:/templates/calendar/webui/UIListTask.gtmpl" ;
-    } else if(getViewType().equals(TYPE_EVENT)) {
+    if(getViewType().equals(TYPE_EVENT)) {
       return "app:/templates/calendar/webui/UIListEvent.gtmpl" ;
     } else {
       return "app:/templates/calendar/webui/UIListView.gtmpl" ;

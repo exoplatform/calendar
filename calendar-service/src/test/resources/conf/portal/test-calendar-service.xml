@@ -105,19 +105,6 @@
       </properties-param>
     </init-params>
   </component>
-
-  <component>
-    <key>org.exoplatform.calendar.service.impl.TaskSearchConnector</key>
-    <type>org.exoplatform.calendar.service.impl.TaskSearchConnector</type>
-    <init-params>
-      <properties-param>
-        <name>constructor.params</name>
-        <property name="searchType" value="Task" />
-        <property name="displayName" value="JCR Query" />
-      </properties-param>
-    </init-params>
-  </component>
-
   <external-component-plugins>
     <target-component>org.exoplatform.calendar.service.ExtendedCalendarService</target-component>
     <component-plugin>
