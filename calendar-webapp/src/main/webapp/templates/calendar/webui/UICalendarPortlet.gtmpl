@@ -34,7 +34,7 @@
 
 <div id="CalendarApplicationMinWidth">
     <div class="UICalendarPortlet" id="$uicomponent.id">
-    
+    <div id="calendar-notice" style="display: none;" class="alert alert-success"><i class="uiIconSuccess"></i><%=_ctx.appRes("UICalendarPortlet.label.invitation-success")%></div>
     <div class="uiCalPopover popover top" style="display:none;">
       <span class="arrow">
       </span>

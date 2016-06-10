@@ -52,6 +52,7 @@ import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.web.application.JavascriptManager;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -1367,6 +1368,15 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     try {
       if (toId != null && !toId.isEmpty()) {
         sendMail(CalendarUtils.getMailService(), CalendarUtils.getOrganizationService(), calSetting, username, toId, calendarEvent);
+        JavascriptManager jsManager = event.getRequestContext().getJavascriptManager();
+        jsManager.addJavascript("var noticeElem = document.getElementById(\"calendar-notice\")");
+        jsManager.addJavascript("noticeElem.style.display = \"block\"");
+        jsManager.addJavascript("noticeElem.style.left = \"50%\"");
+        jsManager.addJavascript("noticeElem.style.top = \"40%\"");
+        jsManager.addJavascript("noticeElem.style.position = \"absolute\"");
+        jsManager.addJavascript("setTimeout(function(){\n" +
+                "  noticeElem.style.display = \"none\";\n" +
+                "}, 5000)");
         List<String> parsUpdated = new LinkedList<String>();
         for (String parSt : calendarEvent.getParticipantStatus()) {
           String[] entry = parSt.split(":");
