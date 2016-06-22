@@ -552,7 +552,7 @@ public class UIListView extends UICalendarView {
       UIActionBar uiActionBar = uiPortlet.findFirstComponentOfType(UIActionBar.class) ;
       uiActionBar.setCurrentView(uiListView.getLastViewId()) ;
       UICalendarViewContainer uiCalViewContainer = uiPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
-      uiCalViewContainer.initView(uiListView.getLastViewId()) ;
+      uiCalViewContainer.initView(uiListView.getLastViewId(), false) ;
       uiListView.setLastViewId(null) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiSearchForm) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiActionBar) ;

@@ -315,7 +315,7 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
         if(calendarViewContainer.getRenderedChild() instanceof UIWeekView) {
           if(((UIWeekView)calendarViewContainer.getRenderedChild()).isShowCustomView()) currentView = UICalendarViewContainer.WORKING_VIEW;
         }
-        calendarViewContainer.initView(UICalendarViewContainer.LIST_VIEW) ;
+        calendarViewContainer.initView(UICalendarViewContainer.LIST_VIEW, false) ;
         UIListView uiListView = calendarViewContainer.findFirstComponentOfType(UIListView.class) ;
         uiListView.setViewType(UICalendarView.TYPE_BOTH);
         uiListView.setSortedField(UIListView.EVENT_START);
