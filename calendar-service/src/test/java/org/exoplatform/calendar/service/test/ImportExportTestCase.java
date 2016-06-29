@@ -98,4 +98,23 @@ public class ImportExportTestCase extends BaseCalendarServiceTestCase {
         assertEquals(3, events.size());
 
     }
+
+    public void testImportXSSFile() throws Exception{
+        CalendarImportExport calIE = calendarService_.getCalendarImportExports(CalendarService.ICALENDAR);
+        String xssSummary = "<script>alert('XSS1');</script>";
+        String xssDescription = "<script>alert('XSS2');</script>";
+        String xssLocation = "<script>alert('XSS3');</script>";
+        String calendarId = createPrivateCalendar(username, "XSSCalendar", "abcd").getId();
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("xss_calendar.ics");
+        calIE.importCalendar(username, in, calendarId, calendarId, null, null, false);
+        List<String> calendarIds = new ArrayList<String>();
+        calendarIds.add(calendarId);
+        List<CalendarEvent> events = calendarService_.getUserEventByCalendar(username, calendarIds);
+        assertEquals(1, events.size());
+        CalendarEvent calendarEvent = events.get(0);
+        assertFalse( xssSummary.indexOf("alert") == calendarEvent.getSummary().indexOf("alert"));
+        assertFalse(xssDescription.indexOf("alert") == calendarEvent.getDescription().indexOf("alert"));
+        assertFalse( xssLocation.indexOf("alert") == calendarEvent.getLocation().indexOf("alert"));
+
+    }
 }

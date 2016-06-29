@@ -18,6 +18,7 @@ package org.exoplatform.calendar.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.ParseException;
@@ -95,10 +96,7 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
-import org.exoplatform.commons.utils.DateUtils;
-import org.exoplatform.commons.utils.ActivityTypeUtils;
-import org.exoplatform.commons.utils.ISO8601;
-import org.exoplatform.commons.utils.XPathUtils;
+import org.exoplatform.commons.utils.*;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -1417,12 +1415,12 @@ public class JCRDataStorage implements DataStorage {
       }
     }
 
-    eventNode.setProperty(Utils.EXO_SUMMARY, event.getSummary());
+    eventNode.setProperty(Utils.EXO_SUMMARY, HTMLSanitizer.sanitize(event.getSummary()));
     eventNode.setProperty(Utils.EXO_CALENDAR_ID, event.getCalendarId());
     eventNode.setProperty(Utils.EXO_EVENT_CATEGORYID, event.getEventCategoryId());
     eventNode.setProperty(Utils.EXO_EVENT_CATEGORY_NAME, event.getEventCategoryName());
-    eventNode.setProperty(Utils.EXO_DESCRIPTION, event.getDescription());
-    eventNode.setProperty(Utils.EXO_LOCATION, event.getLocation());
+    eventNode.setProperty(Utils.EXO_DESCRIPTION, HTMLSanitizer.sanitize(event.getDescription()));
+    eventNode.setProperty(Utils.EXO_LOCATION, HTMLSanitizer.sanitize(event.getLocation()));
     eventNode.setProperty(Utils.EXO_TASK_DELEGATOR, event.getTaskDelegator());
 
     GregorianCalendar startTime = Utils.getInstanceTempCalendar();
@@ -1823,7 +1821,14 @@ public class JCRDataStorage implements DataStorage {
     nodeContent.setProperty(Utils.JCR_LASTMODIFIED, java.util.Calendar.getInstance()
                             .getTimeInMillis());
     nodeContent.setProperty(Utils.JCR_MIMETYPE, attachment.getMimeType());
-    nodeContent.setProperty(Utils.JCR_DATA, attachment.getInputStream());
+    if ( "text/html".compareTo(attachment.getMimeType()) == 0) {
+      String content = IOUtil.getStreamContentAsString(attachment.getInputStream());
+      content = HTMLSanitizer.sanitize(content);
+      nodeContent.setProperty(Utils.JCR_DATA, new ByteArrayInputStream(content.getBytes()));
+    }
+    else {
+      nodeContent.setProperty(Utils.JCR_DATA, attachment.getInputStream());
+    }
     eventCache.remove(eventNode.getProperty(Utils.EXO_ID).getString());
   }
   
