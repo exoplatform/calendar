@@ -332,12 +332,6 @@
 					</a>
 				</li>
 				<li>
-					<a id="AddTask" href="javascript:eXo.calendar.UICalendarPortlet.addQuickShowHiddenWithId(this, 2, 'objectId=id');">
-					  <i class="uiIconCalCreateTask uiIconLightGray"></i>
-					  <%=uiform.getLabel("AddTask")%>
-					</a>
-				</li>
-				<li>
 					<a href="<%=uicomponent.event("EditCalendar","id")%>">
 					  <i class="uiIconEdit uiIconLightGray"></i>
 					  <%=uiform.getLabel("EditCalendar")%>
