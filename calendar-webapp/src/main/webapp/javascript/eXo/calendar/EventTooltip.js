@@ -134,6 +134,16 @@
         time += (eventTimezone + settingTimezone)*60*1000;
         return time;
       },
+	  
+      urlify: function (text) {
+        return text.replace(/((((https?|ftp|file):\/\/)|www\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])/ig, function(url){
+	  var value = url;
+	  if(url.indexOf('www.') == 0) {
+	    url = 'http://' + url;
+	  }
+	  return '<a href="' + url + '" target="_blank">' + value + '</a>';
+        }) 
+      },
       
       render: function(req) {
         var self = eXo.calendar.EventTooltip;
@@ -162,7 +172,7 @@
           html += '<div class="time clearfix"><div class="pull-left"><i class="'+className+'"></i></div><div class="text">' + info + '</div></div>';
         }
         if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + data.location + '</div></div>';
-        if(data.description) html += '<div class="description ">' + data.description + '</div>';
+        if(data.description) html += '<div class="description ">' + self.urlify(data.description) + '</div>';
         self._container.style.display = "block";
         var popoverContent = gj(self._container).find('.popover-content');
         popoverContent.text('');
