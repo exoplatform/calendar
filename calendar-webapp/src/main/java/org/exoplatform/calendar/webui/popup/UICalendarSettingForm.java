@@ -291,7 +291,7 @@ public class UICalendarSettingForm extends UIFormTabPane implements UIPopupCompo
       calendarPortlet.setCalendarSetting(calendarSetting) ;
       String viewType = UICalendarViewContainer.TYPES[Integer.parseInt(calendarSetting.getViewType())] ;
       UICalendarViewContainer uiViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
-      uiViewContainer.initView(viewType) ;
+      uiViewContainer.initView(viewType, false) ;
       uiViewContainer.applySeting() ;
       uiViewContainer.refresh() ;
       

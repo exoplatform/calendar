@@ -99,7 +99,7 @@ public class UIActionBar extends UIContainer  {
       UICalendarViewContainer uiViewContainer = uiPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
       UICalendarContainer uiVContainer = uiPortlet.findFirstComponentOfType(UICalendarContainer.class) ;
       uiVContainer.findFirstComponentOfType(UICalendars.class).checkAll();
-      uiViewContainer.initView(viewType);
+      uiViewContainer.initView(viewType, false);
       UIMiniCalendar miniCalendar = uiPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
       miniCalendar.setCategoryId(categoryId) ; 
       if(uiViewContainer.getRenderedChild() instanceof UIListContainer) {
@@ -127,7 +127,7 @@ public class UIActionBar extends UIContainer  {
         if(listContainer.isDisplaySearchResult()) {
           listContainer.setDisplaySearchResult(false) ;
           UIListView uiListView = listContainer.getChild(UIListView.class) ;
-          uiViewContainer.initView(uiListView.getLastViewId()) ;
+          uiViewContainer.initView(uiListView.getLastViewId(), false) ;
           uiActionBar.setCurrentView(uiListView.getLastViewId()) ;
           uiListView.setLastViewId(null) ;
         } 

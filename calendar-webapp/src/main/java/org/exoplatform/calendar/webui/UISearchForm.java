@@ -97,7 +97,7 @@ public class UISearchForm extends UIForm {
             currentView = UICalendarViewContainer.WORKING_VIEW;
           }
         }
-        calendarViewContainer.initView(UICalendarViewContainer.LIST_VIEW) ;
+        calendarViewContainer.initView(UICalendarViewContainer.LIST_VIEW, false) ;
         UIListView uiListView = calendarViewContainer.findFirstComponentOfType(UIListView.class) ;
         if(!uiListView.isDisplaySearchResult()) {
           uiListView.setLastViewId(currentView) ;

@@ -249,18 +249,33 @@ public class UICalendarPortlet extends UIPortletApplication {
       url = url.substring(url.indexOf(CalendarUtils.INVITATION_DETAIL_URL) + CalendarUtils.INVITATION_DETAIL_URL.length());
       String[] params = url.split("/");
       String eventId = params[1];
-      int calType = Integer.parseInt(params[2]);
-      CalendarEvent event = calService.getEventById(eventId);
-      event.setCalType(String.valueOf(calType));
-      org.exoplatform.calendar.service.Calendar calendar = calService.getCalendarById(event.getCalendarId());
-      if (calendar == null)
-      {
-        context.getUIApplication().addMessage(
-                                              new ApplicationMessage("UICalendarPortlet.msg.have-no-permission-to-view-event", null, ApplicationMessage.WARNING ));
-        return ;
+      Date startDate = calService.getEventById(eventId).getFromDateTime();
+      Date endDate = calService.getEventById(eventId).getToDateTime();
+      UICalendarWorkingContainer uiCalendarWorkingContainer = this.getChild(UICalendarWorkingContainer.class);
+      UICalendarViewContainer uiCalendarViewContainer = uiCalendarWorkingContainer.getChild(UICalendarViewContainer.class);
+      uiCalendarViewContainer.setStartDate(startDate);
+      UIActionBar uiActionBar = this.getChild(UIActionBar.class);
+      if (isOneDay(startDate.toString().split(" "), endDate.toString().split(" "))) {
+        uiCalendarViewContainer.initView(UICalendarViewContainer.DAY_VIEW, true);
+        uiActionBar.setCurrentView(UICalendarViewContainer.TYPES[0]);
+      } else {
+        uiCalendarViewContainer.initView(UICalendarViewContainer.WEEK_VIEW, true);
+        uiActionBar.setCurrentView(UICalendarViewContainer.TYPES[1]);
       }
-      openEventPreviewPopup(event, context);
+      context.addUIComponentToUpdateByAjax(uiActionBar);
+      context.addUIComponentToUpdateByAjax(uiCalendarViewContainer);
     }
+  }
+
+  private boolean isOneDay(String[] begin, String[] end) {
+    if (begin[1].equals(end[1])) { //month
+      if (begin[2].equals(end[2])) { //day
+        if (begin[5].equals(end[5])) { //year
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 

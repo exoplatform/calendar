@@ -25,6 +25,9 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIComponent;
 
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen
@@ -48,14 +51,16 @@ public class UICalendarViewContainer extends UIContainer  {
 
   private String currentViewType_;
 
+  private Date startDate;
+
   private static final Log LOG = ExoLogger.getExoLogger(UICalendarViewContainer.class);
 
   public UICalendarViewContainer() throws Exception {
-    initView(null) ;
+    initView(null, false) ;
   }
 
 
-  public void initView(String viewType) throws Exception {
+  public void initView(String viewType, Boolean isInvitation) throws Exception {
     CalendarSetting calendarSetting = new CalendarSetting();
     try {
       calendarSetting = getAncestorOfType(UICalendarPortlet.class).getCalendarSetting() ;
@@ -71,14 +76,26 @@ public class UICalendarViewContainer extends UIContainer  {
     if (DAY_VIEW.equals(viewType)) {
       UIDayView uiView = getChild(UIDayView.class) ;
       if(uiView == null) uiView =  addChild(UIDayView.class, null, null) ;
-      if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+      if(getRenderedChild() != null) {
+        Calendar cal = ((CalendarView)getRenderedChild()).getCurrentCalendar();
+        if (isInvitation) {
+          cal.setTime(getStartDate());
+        }
+        uiView.setCurrentCalendar(cal);
+      }
       setRenderedChild(viewType) ;
     }
     else if (WEEK_VIEW.equals(viewType)) {
       UIWeekView uiView = getChild(UIWeekView.class) ;
       if(uiView == null) uiView =  addChild(UIWeekView.class, null, null) ;
       uiView.isShowCustomView_ = false ;
-      if(getRenderedChild() != null) uiView.setCurrentCalendar(((CalendarView)getRenderedChild()).getCurrentCalendar()) ;
+      if(getRenderedChild() != null) {
+        Calendar cal = ((CalendarView)getRenderedChild()).getCurrentCalendar();
+        if (isInvitation) {
+          cal.setTime(getStartDate());
+        }
+        uiView.setCurrentCalendar(cal) ;
+      }
       setRenderedChild(viewType) ;
     }
     else if (MONTH_VIEW.equals(viewType)) {
@@ -158,4 +175,12 @@ public class UICalendarViewContainer extends UIContainer  {
        if((comp instanceof CalendarView)) ((CalendarView)comp).applySeting() ;  
      }
    }
+
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
 }
