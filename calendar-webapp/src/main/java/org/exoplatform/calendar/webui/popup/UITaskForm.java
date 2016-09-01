@@ -223,8 +223,8 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
           SelectItemOption<String> item = new SelectItemOption<String>(eventCalendar.getEventCategoryName(), eventCategoryId) ;
           uiSelectBox.getOptions().add(item) ;
           uiSelectBox.setValue(eventCategoryId);
-          uiSelectBox.setDisabled(true) ;
-          taskDetailTab.getUIFormSelectBoxGroup(UITaskDetailTab.FIELD_CALENDAR).setDisabled(true) ;
+          uiSelectBox.setDisabled(false) ;
+          taskDetailTab.getUIFormSelectBoxGroup(UITaskDetailTab.FIELD_CALENDAR).setDisabled(false) ;
           taskDetailTab.setActionField(UITaskDetailTab.FIELD_CATEGORY, null) ;
         }
       }
