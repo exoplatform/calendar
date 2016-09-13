@@ -7,7 +7,7 @@
     <version>4.4.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-statistics</artifactId>
-  <name>eXo Calendar Common Statistics</name>
+  <name>eXo PLF:: Calendar Common Statistics</name>
   <dependencies>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -17,34 +17,34 @@
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.core</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>xml-apis</groupId>
+        <exclusion>
           <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>xml-apis-ext</artifactId>
           <groupId>xml-apis</groupId>
-          <artifactId>xml-apis-ext</artifactId>          
         </exclusion>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>org.jboss.javaee</groupId>
-          <artifactId>jboss-transaction-api</artifactId>
-        </exclusion>  
-         <exclusion>          
-          <groupId>org.ow2.spec.ee</groupId>
-          <artifactId>ow2-jta-1.1-spec</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>xpp3</groupId>
+        <exclusion>
+          <artifactId>jboss-transaction-api</artifactId>
+          <groupId>org.jboss.javaee</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>ow2-jta-1.1-spec</artifactId>
+          <groupId>org.ow2.spec.ee</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>stax-api</artifactId>
+          <groupId>javax.xml.stream</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xpp3_min</artifactId>
-        </exclusion>      
+          <groupId>xpp3</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -55,11 +55,11 @@
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.servlet</groupId>
+        <exclusion>
           <artifactId>javax.servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
         </exclusion>
-      </exclusions>  
+      </exclusions>
     </dependency>
   </dependencies>
   <build>

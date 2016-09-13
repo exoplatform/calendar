@@ -8,7 +8,7 @@
   </parent>
   <artifactId>calendar-webapp</artifactId>
   <packaging>war</packaging>
-  <name>eXo Calendar Application</name>
+  <name>eXo PLF:: Calendar Application</name>
   <description>eXo Calendar Application</description>
   <dependencies>
     <dependency>
@@ -23,11 +23,11 @@
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
-        </exclusion> 
-      </exclusions> 
+          <groupId>javax.activation</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.portlet</groupId>
@@ -39,77 +39,77 @@
       <artifactId>calendar-service</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.ant</groupId>
           <artifactId>ant</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.apache.ant</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>ant-launcher</artifactId>
+          <groupId>org.apache.ant</groupId>
         </exclusion>
         <exclusion>
-          <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
         </exclusion>
         <exclusion>
-          <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
         </exclusion>
         <exclusion>
-          <groupId>jdom</groupId>
           <artifactId>jdom</artifactId>
+          <groupId>jdom</groupId>
         </exclusion>
         <exclusion>
-          <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
         </exclusion>
         <exclusion>
-          <groupId>junit</groupId>
           <artifactId>junit</artifactId>
+          <groupId>junit</groupId>
         </exclusion>
         <exclusion>
-          <groupId>jdom</groupId>
           <artifactId>jdom</artifactId>
+          <groupId>jdom</groupId>
         </exclusion>
         <exclusion>
-          <groupId>commons-beanutils</groupId>
           <artifactId>commons-beanutils-core</artifactId>
+          <groupId>commons-beanutils</groupId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.geronimo.specs</groupId>
           <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+          <groupId>org.apache.geronimo.specs</groupId>
         </exclusion>
         <exclusion>
-          <groupId>javax.xml.stream</groupId>
           <artifactId>stax-api</artifactId>
+          <groupId>javax.xml.stream</groupId>
         </exclusion>
         <exclusion>
-          <groupId>javax.activation</groupId>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
         <exclusion>
-          <groupId>rome</groupId>
           <artifactId>modules</artifactId>
+          <groupId>rome</groupId>
         </exclusion>
         <exclusion>
-          <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
-        </exclusion>
-        <exclusion>          
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
+          <groupId>javax.xml.bind</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>xml-apis</artifactId>
           <groupId>xml-apis</groupId>
-          <artifactId>xml-apis-ext</artifactId>          
-        </exclusion> 
-        <exclusion>          
-          <groupId>xpp3</groupId>
-          <artifactId>xpp3_min</artifactId>
         </exclusion>
-        <exclusion>          
-          <groupId>xerces</groupId>
+        <exclusion>
+          <artifactId>xml-apis-ext</artifactId>
+          <groupId>xml-apis</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>xpp3_min</artifactId>
+          <groupId>xpp3</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>       
+          <groupId>xerces</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <!-- This dependency is required to compile our main classes but is erroneously reported as useless by dependency:analyze -->
@@ -117,11 +117,11 @@
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-webservice</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
-        </exclusion> 
-      </exclusions> 
+          <groupId>javax.activation</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
@@ -131,19 +131,19 @@
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-webui-ext</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
-        </exclusion> 
-      </exclusions> 
+          <groupId>javax.activation</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-component-common</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>javax.activation</groupId>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -159,26 +159,26 @@
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.core</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>xml-apis</groupId>
+        <exclusion>
           <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>xml-apis-ext</artifactId>
           <groupId>xml-apis</groupId>
-          <artifactId>xml-apis-ext</artifactId>          
-        </exclusion> 
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>stax-api</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>org.jboss.javaee</groupId>
+          <groupId>javax.xml.stream</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jboss-transaction-api</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>org.ow2.spec.ee</groupId>
+          <groupId>org.jboss.javaee</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>ow2-jta-1.1-spec</artifactId>
-        </exclusion>          
+          <groupId>org.ow2.spec.ee</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -189,62 +189,62 @@
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.component.common</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
-      <exclusions> 
-        <exclusion>          
-          <groupId>javax.servlet</groupId>
+      <exclusions>
+        <exclusion>
           <artifactId>javax.servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
         </exclusion>
-      </exclusions>   
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.core</artifactId>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.exoplatform.social</groupId>
       <artifactId>social-component-core</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>xml-apis</groupId>
+        <exclusion>
           <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>xml-apis-ext</artifactId>
           <groupId>xml-apis</groupId>
-          <artifactId>xml-apis-ext</artifactId>          
         </exclusion>
-        <exclusion>          
-          <groupId>commons-logging</groupId>
+        <exclusion>
           <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
         </exclusion>
-          <exclusion>
-              <groupId>jdom</groupId>
-              <artifactId>jdom</artifactId>
-          </exclusion>
-        <exclusion>          
-          <groupId>xpp3</groupId>
+        <exclusion>
+          <artifactId>jdom</artifactId>
+          <groupId>jdom</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xpp3_min</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>rome</groupId>
-          <artifactId>modules</artifactId>
+          <groupId>xpp3</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>xerces</groupId>
+        <exclusion>
+          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+          <groupId>org.apache.geronimo.specs</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>modules</artifactId>
+          <groupId>rome</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>     
+          <groupId>xerces</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -259,26 +259,26 @@
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>log4j</groupId>
+        <exclusion>
           <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.xml.bind</groupId>
+        <exclusion>
           <artifactId>jaxb-api</artifactId>
+          <groupId>javax.xml.bind</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>com.sun.xml.bind</groupId>
+        <exclusion>
           <artifactId>jaxb-impl</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
+          <groupId>com.sun.xml.bind</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>stax-api</artifactId>
-        </exclusion> 
+          <groupId>javax.xml.stream</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -289,18 +289,18 @@
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.web.resources</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>org.apache.ant</groupId>
+        <exclusion>
           <artifactId>ant</artifactId>
+          <groupId>org.apache.ant</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>ant-launcher</artifactId>
           <groupId>org.apache.ant</groupId>
-          <artifactId>ant-launcher</artifactId>          
-        </exclusion> 
-        <exclusion>          
-          <groupId>junit</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>junit</artifactId>
-        </exclusion>        
+          <groupId>junit</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -319,85 +319,85 @@
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.webui.portal</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>xml-apis</groupId>
+        <exclusion>
           <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>xml-apis-ext</artifactId>
           <groupId>xml-apis</groupId>
-          <artifactId>xml-apis-ext</artifactId>          
         </exclusion>
-        <exclusion>          
-          <groupId>commons-beanutils</groupId>
+        <exclusion>
           <artifactId>commons-beanutils-core</artifactId>
+          <groupId>commons-beanutils</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
+        <exclusion>
           <artifactId>stax-api</artifactId>
+          <groupId>javax.xml.stream</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>commons-logging</groupId>
+        <exclusion>
           <artifactId>commons-logging</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>javax.servlet</groupId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>javax.servlet-api</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>log4j</groupId>
+          <groupId>javax.servlet</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>jdom</groupId>
+        <exclusion>
           <artifactId>jdom</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>junit</groupId>
+          <groupId>jdom</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>junit</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>jdom</groupId>
+          <groupId>junit</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jdom</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+          <groupId>jdom</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>org.jboss.javaee</groupId>
+        <exclusion>
           <artifactId>jboss-transaction-api</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>org.ow2.spec.ee</groupId>
+          <groupId>org.jboss.javaee</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>ow2-jta-1.1-spec</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>rome</groupId>
+          <groupId>org.ow2.spec.ee</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>modules</artifactId>
+          <groupId>rome</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.xml.bind</groupId>
+        <exclusion>
           <artifactId>jaxb-api</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>xerces</groupId>
+          <groupId>javax.xml.bind</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xmlParserAPIs</artifactId>
+          <groupId>xerces</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>org.apache.ant</groupId>
+        <exclusion>
           <artifactId>ant</artifactId>
-        </exclusion>
-        <exclusion>          
           <groupId>org.apache.ant</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>ant-launcher</artifactId>
+          <groupId>org.apache.ant</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>xpp3</groupId>
+        <exclusion>
           <artifactId>xpp3_min</artifactId>
+          <groupId>xpp3</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>com.sun.xml.bind</groupId>
+        <exclusion>
           <artifactId>jaxb-impl</artifactId>
+          <groupId>com.sun.xml.bind</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -440,12 +440,12 @@
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
-      <exclusions>  
-        <exclusion>         
-          <groupId>junit</groupId>
+      <exclusions>
+        <exclusion>
           <artifactId>junit</artifactId>
-        </exclusion> 
-      </exclusions>    
+          <groupId>junit</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
@@ -456,7 +456,6 @@
   </dependencies>
   <build>
     <finalName>calendar</finalName>
-    <plugins>
-    </plugins>
+    <plugins />
   </build>
 </project>

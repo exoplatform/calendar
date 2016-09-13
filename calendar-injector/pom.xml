@@ -7,96 +7,96 @@
     <version>4.4.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-injector</artifactId>
-  <name>eXo Calendar Data Injector</name>
+  <name>eXo PLF:: Calendar Data Injector</name>
   <dependencies>
     <!-- This dependency is required to compile our main classes but is erroneously reported as useless by dependency:analyze -->
     <dependency>
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>org.apache.ant</groupId>
+        <exclusion>
           <artifactId>ant</artifactId>
+          <groupId>org.apache.ant</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>ant-launcher</artifactId>
           <groupId>org.apache.ant</groupId>
-          <artifactId>ant-launcher</artifactId>          
         </exclusion>
-        <exclusion>          
-          <groupId>commons-logging</groupId>
+        <exclusion>
           <artifactId>commons-logging</artifactId>
-        </exclusion>    
-         <exclusion>          
-          <groupId>log4j</groupId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>log4j</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
+          <groupId>log4j</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.servlet</groupId>
+        <exclusion>
+          <artifactId>jdom</artifactId>
+          <groupId>jdom</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>javax.servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>junit</groupId>
+        <exclusion>
           <artifactId>junit</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>jdom</groupId>
+          <groupId>junit</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jdom</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>xpp3</groupId>
+          <groupId>jdom</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xpp3_min</artifactId>
+          <groupId>xpp3</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>commons-beanutils</groupId>
+        <exclusion>
           <artifactId>commons-beanutils-core</artifactId>
+          <groupId>commons-beanutils</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>org.apache.geronimo.specs</groupId>
+        <exclusion>
           <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+          <groupId>org.apache.geronimo.specs</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
+        <exclusion>
           <artifactId>stax-api</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+          <groupId>javax.xml.stream</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>org.jboss.javaee</groupId>
+        <exclusion>
           <artifactId>jboss-transaction-api</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>org.ow2.spec.ee</groupId>
-          <artifactId>ow2-jta-1.1-spec</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>rome</groupId>
-          <artifactId>modules</artifactId>
+          <groupId>org.jboss.javaee</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.xml.bind</groupId>
+        <exclusion>
+          <artifactId>ow2-jta-1.1-spec</artifactId>
+          <groupId>org.ow2.spec.ee</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>modules</artifactId>
+          <groupId>rome</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jaxb-api</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>xerces</groupId>
+          <groupId>javax.xml.bind</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>            
+          <groupId>xerces</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-component-common</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
-        </exclusion> 
-      </exclusions> 
+          <groupId>javax.activation</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.core</groupId>
@@ -110,9 +110,9 @@
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.servlet</groupId>
+        <exclusion>
           <artifactId>javax.servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -121,14 +121,12 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.identity</artifactId>
@@ -167,6 +165,5 @@
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 </project>

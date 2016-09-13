@@ -8,7 +8,7 @@
   </parent>
   <artifactId>calendar-webservice</artifactId>
   <packaging>jar</packaging>
-  <name>eXo Calendar Webservice</name>
+  <name>eXo PLF:: Calendar Webservice</name>
   <description>eXo Calendar Webservice</description>
   <dependencies>
     <dependency>
@@ -42,54 +42,54 @@
       <groupId>org.exoplatform.calendar</groupId>
       <artifactId>calendar-service</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>org.apache.ant</groupId>
+        <exclusion>
           <artifactId>ant</artifactId>
-        </exclusion>
-        <exclusion>          
           <groupId>org.apache.ant</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>ant-launcher</artifactId>
+          <groupId>org.apache.ant</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>commons-logging</groupId>
+        <exclusion>
           <artifactId>commons-logging</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>jdom</groupId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jdom</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>javax.servlet</groupId>
+          <groupId>jdom</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>javax.servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>junit</groupId>
+        <exclusion>
           <artifactId>junit</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>jdom</groupId>
+          <groupId>junit</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jdom</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>xpp3</groupId>
+          <groupId>jdom</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xpp3_min</artifactId>
+          <groupId>xpp3</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>commons-beanutils</groupId>
+        <exclusion>
           <artifactId>commons-beanutils-core</artifactId>
-        </exclusion> 
-        <exclusion>          
-          <groupId>org.apache.geronimo.specs</groupId>
-          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>rome</groupId>
-          <artifactId>modules</artifactId>
+          <groupId>commons-beanutils</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>xerces</groupId>
+        <exclusion>
+          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+          <groupId>org.apache.geronimo.specs</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>modules</artifactId>
+          <groupId>rome</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xmlParserAPIs</artifactId>
-        </exclusion> 
+          <groupId>xerces</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -110,26 +110,26 @@
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.core</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>xml-apis</groupId>
+        <exclusion>
           <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>xml-apis-ext</artifactId>
           <groupId>xml-apis</groupId>
-          <artifactId>xml-apis-ext</artifactId>          
-        </exclusion>   
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion>  
-        <exclusion>          
-          <groupId>org.jboss.javaee</groupId>
-          <artifactId>jboss-transaction-api</artifactId>
         </exclusion>
-        <exclusion>          
-          <groupId>org.ow2.spec.ee</groupId>
+        <exclusion>
+          <artifactId>stax-api</artifactId>
+          <groupId>javax.xml.stream</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jboss-transaction-api</artifactId>
+          <groupId>org.jboss.javaee</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>ow2-jta-1.1-spec</artifactId>
-        </exclusion>      
+          <groupId>org.ow2.spec.ee</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -140,45 +140,45 @@
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.component.command</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>xml-apis</groupId>
+        <exclusion>
           <artifactId>xml-apis</artifactId>
+          <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>xml-apis-ext</artifactId>
           <groupId>xml-apis</groupId>
-          <artifactId>xml-apis-ext</artifactId>          
-        </exclusion>        
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.component.common</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
-        </exclusion> 
-      </exclusions> 
+          <groupId>javax.activation</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
       <artifactId>exo.kernel.container</artifactId>
-      <exclusions>  
-        <exclusion>          
-          <groupId>javax.servlet</groupId>
+      <exclusions>
+        <exclusion>
           <artifactId>javax.servlet-api</artifactId>
+          <groupId>javax.servlet</groupId>
         </exclusion>
-      </exclusions> 
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.ws</groupId>
       <artifactId>exo.ws.rest.core</artifactId>
       <exclusions>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
-        </exclusion> 
-      </exclusions> 
+          <groupId>javax.activation</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.gatein.portal</groupId>
@@ -189,8 +189,8 @@
       <artifactId>commons-component-common</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>javax.activation</groupId>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -206,7 +206,7 @@
     </dependency>
     <dependency>
       <groupId>rome</groupId>
-      <artifactId>rome</artifactId> 
+      <artifactId>rome</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -235,18 +235,18 @@
     <dependency>
       <groupId>org.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
-      <exclusions>       
-        <exclusion>          
-          <groupId>com.sun.xml.bind</groupId>
+      <exclusions>
+        <exclusion>
           <artifactId>jaxb-api</artifactId>
+          <groupId>com.sun.xml.bind</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.activation</groupId>
+        <exclusion>
           <artifactId>activation</artifactId>
+          <groupId>javax.activation</groupId>
         </exclusion>
-        <exclusion>          
-          <groupId>javax.xml.stream</groupId>
+        <exclusion>
           <artifactId>stax-api</artifactId>
+          <groupId>javax.xml.stream</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -347,6 +347,14 @@
         <groupId>com.github.kongchen</groupId>
         <artifactId>swagger-maven-plugin</artifactId>
         <version>3.1.0</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
           <apiSources>
             <apiSource>
@@ -359,9 +367,7 @@
                 <title>Calendar</title>
                 <version>1</version>
                 <description>Calendar REST API documentation</description>
-                <termsOfService>
-                  https://github.com/exoplatform/calendar
-                </termsOfService>
+                <termsOfService>https://github.com/exoplatform/calendar</termsOfService>
                 <contact>
                   <name>eXo Platform</name>
                   <url>http://www.exoplatform.org</url>
@@ -378,16 +384,7 @@
             </apiSource>
           </apiSources>
         </configuration>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
-
     </plugins>
   </build>
 </project>
