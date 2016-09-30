@@ -139,7 +139,7 @@ public class ReminderJob extends MultiTenancyJob {
               } else {
                 message.setBody("");
               }
-              message.setFrom(jdatamap.getString("account"));
+              message.setFrom(System.getProperty("exo.email.smtp.from"));
               if (isRepeat) {
                 if (fromCalendar.getTimeInMillis() >= fromTime) {
                   reminder.setProperty(Utils.EXO_IS_OVER, true);
