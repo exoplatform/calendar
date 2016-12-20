@@ -37,12 +37,15 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.jcr.PathNotFoundException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.portlet.PortletPreferences;
 
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -167,7 +170,9 @@ public class CalendarUtils {
   final public static String ITEM_ASK = "ask".intern();
   final public static String emailRegex = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-.]+";
   final public static String contactRegex = ".\\("+ emailRegex + "\\)";
-
+  final public static String URL_REGEX = "(((https?|ftp|file):\\/\\/)|www\\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+  final public static Pattern PATTERN = Pattern.compile(URL_REGEX, Pattern.CASE_INSENSITIVE);
+  
   public final static String INVITATION_URL = "/invitation/".intern();
   public final static String INVITATION_IMPORT_URL = "/invitation/import/".intern();
   public final static String INVITATION_DETAIL_URL = "/invitation/detail/".intern();
@@ -989,6 +994,39 @@ public class CalendarUtils {
       resetViewInSetting(calendarSetting);
       return UICalendarViewContainer.TYPES[0];
     }
+  }
+  
+  public static String convertURLsAsLinks(String text) {
+    if (StringUtils.isNotBlank(text)) {
+      int tempIndex = 0;
+      String urlifiedText = "";
+      Matcher urlMatcher = PATTERN.matcher(text);
+      while (urlMatcher.find()) {
+        int startIndex = urlMatcher.start(0);
+        int endIndex = urlMatcher.end(0);
+        if (StringUtils.isBlank(urlifiedText)) {
+          if (startIndex > 0 ) {
+            urlifiedText += text.substring(0, startIndex);
+          }
+        } else {
+          if (startIndex - tempIndex > 0) {
+            urlifiedText += text.substring(tempIndex, startIndex);
+          }
+        }
+        String chunk = text.substring(startIndex, endIndex);
+        String url = chunk;
+        if (chunk.indexOf("www.") == 0) {
+          url = "http://" + url;
+        }
+        urlifiedText += "<a href=\"" + url + "\" target=\"_blank\">" + chunk + "</a>";
+        tempIndex = endIndex;
+      }
+      if (text.length() > tempIndex) {
+        urlifiedText += text.substring(tempIndex, text.length());
+      }
+      return urlifiedText;
+    }
+    return text;
   }
   
   // save a default view type for Calendar Setting when cannot get the view type
