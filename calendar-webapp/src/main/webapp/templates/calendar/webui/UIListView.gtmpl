@@ -186,7 +186,7 @@
         </td>
         <td ><%=uicomponent.getDateTimeString(event.getFromDateTime())%></td>
         <td ><%=uicomponent.getDateTimeString(event.getToDateTime())%></td>
-        <td ><%=(event.getDescription() == null)? "": event.getDescription()%></td>
+        <td ><%=(event.getDescription() == null)? "": CalendarUtils.convertURLsAsLinks(event.getDescription()).replaceAll("\n","<br/>")%></td>
         </tr>
 
         <%  }

@@ -48,5 +48,11 @@ public class TestCalendarUtils extends TestCase {
     values = "demo, root, exo/test  ,   platform/user ";
     assertEquals("demo,root,exo/test,platform/user", CalendarUtils.cleanValue(values));
   }
+  
+  public void testConvertURLsAsLinks() {
+    String text = "a\rb\nc  http://github.com/exodev\nawww.github.com/exodev\nhttps://github.com/exodev\n bbac";
+    String result = "a\rb\nc  <a href=\"http://github.com/exodev\" target=\"_blank\">http://github.com/exodev</a>\na<a href=\"http://www.github.com/exodev\" target=\"_blank\">www.github.com/exodev</a>\n<a href=\"https://github.com/exodev\" target=\"_blank\">https://github.com/exodev</a>\n bbac";
+    assertEquals(result, CalendarUtils.convertURLsAsLinks(text));
+  }
 }
 
