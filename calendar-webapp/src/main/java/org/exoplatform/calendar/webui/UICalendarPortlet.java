@@ -28,11 +28,13 @@ import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.RequestNavigationData;
+import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.social.common.router.ExoRouter;
+import org.exoplatform.social.core.space.SpaceUtils;
 import org.exoplatform.social.core.space.model.Space;
 import org.exoplatform.social.core.space.spi.SpaceService;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -46,6 +48,7 @@ import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
+
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import java.text.SimpleDateFormat;
@@ -57,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -152,6 +156,11 @@ public class UICalendarPortlet extends UIPortletApplication {
   public static String getSpaceId() {
     String spaceIdStr = "";
     PortalRequestContext pContext = Util.getPortalRequestContext();
+    if (!pContext.getSiteType().equals(SiteType.GROUP) ||
+        !pContext.getSiteName().startsWith(SpaceUtils.SPACE_GROUP)) {
+      return null;
+    }
+
     String requestPath = pContext.getControllerContext().getParameter(RequestNavigationData.REQUEST_PATH);
     ExoRouter.Route er = ExoRouter.route(requestPath);
     if(er == null) return spaceIdStr;
