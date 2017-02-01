@@ -245,7 +245,7 @@ public class TestCalendarRestApi extends TestRestApi {
     headers.putSingle("content-type", "application/json");
     headers.putSingle("content-length", "" + data.length);
     
-    login("root", "/platform/administrators:*");
+    login("root", "/platform/administrators:*", "/platform/users:*");
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service(HTTPMethods.PUT, CAL_BASE_URI + CALENDAR_URI + gCal.getId(), baseURI, headers, data, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());

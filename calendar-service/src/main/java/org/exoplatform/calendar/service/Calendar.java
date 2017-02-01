@@ -31,6 +31,8 @@ import org.exoplatform.services.security.ConversationState;
  */
 public class Calendar extends org.exoplatform.calendar.model.Calendar {
 
+  public static final Calendar NULL_OBJECT = new Calendar();
+
   private static final long serialVersionUID = 2638692203625602436L;
   
   private static final Log log = ExoLogger.getLogger(Calendar.class);
@@ -79,7 +81,9 @@ public class Calendar extends org.exoplatform.calendar.model.Calendar {
   private boolean              _isDataInit    = false;
 
   private int                  _calType;
-  
+
+  private boolean              calTypeChecked    = false;
+
   public static final String   CALENDAR_PREF = "calendar";
 
   public Calendar() {
@@ -122,6 +126,14 @@ public class Calendar extends org.exoplatform.calendar.model.Calendar {
     OrganizationService service = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
     return Calendar.Type.PERSONAL.type() == this.getCalType() && username != null 
         && !username.equals(this.getCalendarOwner()) && Utils.hasPermission(service, this.getViewPermission(), username);
+  }
+  
+  public boolean isCalTypeChecked() {
+    return calTypeChecked;
+  }
+  
+  public void setCalTypeChecked(boolean calTypeChecked) {
+    this.calTypeChecked = calTypeChecked;
   }
 
   public static Calendar build(org.exoplatform.calendar.model.Calendar newModel) {

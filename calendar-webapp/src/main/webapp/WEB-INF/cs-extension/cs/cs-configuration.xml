@@ -135,6 +135,38 @@
       <type>org.exoplatform.services.cache.ExoCacheConfigPlugin</type>
       <description></description>
       <init-params>
+        <!-- Calendar Cache By Id & Username -->
+        <object-param>
+          <name>calendar.Calendar</name>
+          <description></description>
+          <object type="org.exoplatform.services.cache.ExoCacheConfig">
+            <field name="name"><string>calendar.Calendar</string></field>
+            <field name="maxSize"><int>${cache.exo.calendar.Calendar.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${cache.exo.calendar.Calendar.TimeToLive:3600}</long></field>
+            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
+          </object>
+        </object-param>
+        <object-param profiles="cluster">
+          <name>calendar.Calendar</name>
+          <description></description>
+          <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
+            <field name="name"><string>calendar.Calendar</string></field>
+            <field name="strategy"><string>LIRS</string></field>
+            <field name="maxEntries"><int>${cache.exo.calendar.Calendar.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${cache.exo.calendar.Calendar.TimeToLive:3600}</long></field>
+            <field name="replicated"><boolean>true</boolean></field>
+          </object>
+        </object-param>
+        <object-param>
+          <name>calendar.dsNameById</name>
+          <description></description>
+          <object type="org.exoplatform.services.cache.ExoCacheConfig">
+            <field name="name"><string>calendar.dsNameById</string></field>
+            <field name="maxSize"><int>${cache.exo.calendar.dsNameById.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${cache.exo.calendar.dsNameById.TimeToLive:-1}</long></field>
+            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
+          </object>
+        </object-param>
         <!-- Group Calendar -->
         <object-param>
           <name>calendar.GroupCalendar</name>
