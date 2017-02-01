@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -64,6 +64,7 @@ import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.RRule;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.sun.syndication.feed.synd.SyndContent;
@@ -95,8 +96,8 @@ import org.exoplatform.calendar.service.RssData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
-import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.commons.utils.XPathUtils;
 import org.exoplatform.container.ExoContainer;
@@ -153,8 +154,20 @@ public class JCRDataStorage implements DataStorage {
 
   /** cache for event categories of users - store username as key */
   private final ExoCache<String, List<EventCategory>> userEventCategories;
-  
+
+  private final ExoCache<KeyValuePair, Calendar> exoCalendarCache;
+
   private FutureExoCache<String, CalendarEvent, JCRDataStorage> eventCache;
+
+  /** 
+   * Cache for storing calendar of type group (Public), user or shared.
+   * Key = CalID (mandatory) + Username (can be null), Value = Calendar DTO
+   * the key is composed of 
+   * - CalID for public/group & shared calendars
+   * - username for private calendars
+   **/
+  private FutureExoCache<KeyValuePair, Calendar, JCRDataStorage> calendarCache;
+
   private FutureExoCache<String, List<Calendar>, JCRDataStorage> userCalendarCache;
   private FutureExoCache<String, List<Calendar>, JCRDataStorage> groupCalendarCache;
   private FutureExoCache<String, CalendarSetting, JCRDataStorage> calendarSettingCache;
@@ -184,7 +197,10 @@ public class JCRDataStorage implements DataStorage {
 
     ExoCache<String, CalendarSetting> eXoSettingCache = cservice.getCacheInstance("calendar.UserCalendarSetting");
     calendarSettingCache = new FutureExoCache<String, CalendarSetting, JCRDataStorage>(new CalendarSettingLoader(), eXoSettingCache);
-    
+
+    exoCalendarCache = cservice.getCacheInstance("calendar.Calendar");
+    calendarCache = new FutureExoCache<KeyValuePair, Calendar, JCRDataStorage>(new CalendarLoader(), exoCalendarCache);
+
     groupCalendarEventCache = cservice.getCacheInstance("calendar.GroupCalendarEvent");    
     groupCalendarRecurrentEventCache = cservice.getCacheInstance("calendar.GroupCalendarRecurrentEvent");
     userEventCategories     = cservice.getCacheInstance("calendar.EventCategories");
@@ -334,13 +350,15 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public Calendar getUserCalendar(String username, String calendarId) throws Exception {
-    try {
-      Node calendarNode = getUserCalendarHome(username).getNode(calendarId);
-      return getCalendar(new String[] { calendarId }, username, calendarNode, true);
-    } catch (PathNotFoundException e) {
-      log.debug("Failed to get calendar, maybe the calendar has been removed or not created");
+    return getCalendar(calendarId, username);
+  }
+
+  private Calendar getCalendar(String calendarId, String username) {
+    Calendar calendar = calendarCache.get(this, new KeyValuePair(calendarId, username));
+    if(calendar == Calendar.NULL_OBJECT) {
       return null;
     }
+    return (Calendar) SerializationUtils.clone(calendar);
   }
 
   /**
@@ -388,6 +406,7 @@ public class JCRDataStorage implements DataStorage {
     session.save();
 
     userCalendarCache.remove(username);
+    clearCalendarCache(calendar.getId(), username);
   }
 
   /**
@@ -415,6 +434,7 @@ public class JCRDataStorage implements DataStorage {
       }
       eventCache.clear();
       userCalendarCache.remove(username);
+      clearCalendarCache(calendarId, username);
 
       try {
         removeFeed(username, calendarId);
@@ -430,8 +450,7 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public Calendar getGroupCalendar(String calendarId) throws Exception {
-    Node calendarNode = getPublicCalendarHome().getNode(calendarId);
-    return getCalendar(new String[] { calendarId }, null, calendarNode, true);
+    return getCalendar(calendarId, null);
   }
 
   /**
@@ -500,6 +519,7 @@ public class JCRDataStorage implements DataStorage {
     calendarHome.getSession().save();
     // Clear the cache to avoid inconsistency
     groupCalendarCache.clear(); 
+    clearCalendarCache(calendar.getId(), username);
   }
 
   /**
@@ -524,6 +544,7 @@ public class JCRDataStorage implements DataStorage {
       eventCache.clear();
       // Clear the cache to avoid inconsistency
       groupCalendarCache.clear(); 
+      clearCalendarCache(calendar.getId(), calendar.getCalendarOwner());
       return calendar;
     }
     return null;
@@ -3077,6 +3098,7 @@ public class JCRDataStorage implements DataStorage {
       sharedCalendarHome.getSession().save();
       calendarNode.getSession().save();
     }
+    clearCalendarCache(calendarId, username);
   }
 
   /**
@@ -3172,6 +3194,7 @@ public class JCRDataStorage implements DataStorage {
         }
       }
     }
+    clearCalendarCache(calendar.getId(), username);
   }
 
   /**
@@ -3192,7 +3215,7 @@ public class JCRDataStorage implements DataStorage {
           NodeIterator it = query.execute().getNodes();
           while (it.hasNext()) {
             calEvent = getEvent(it.nextNode());
-            calEvent.setCalType("1");
+            calEvent.setCalType(String.valueOf(Calendar.TYPE_SHARED));
             events.add(calEvent);
             if (eventQuery.getLimitedItems() == it.getPosition())
               break;
@@ -3298,6 +3321,13 @@ public class JCRDataStorage implements DataStorage {
       editPerms[i] = editValues[i].getString();
     }
     return Utils.hasPermission(oService, editPerms, username);
+  }
+
+  private void clearCalendarCache(String calendarId, String username) {
+    calendarCache.remove(new KeyValuePair(calendarId, username));
+    if(StringUtils.isNotBlank(username)) {
+      calendarCache.remove(new KeyValuePair(calendarId, null));
+    }
   }
 
   /**
@@ -5372,9 +5402,32 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public int getTypeOfCalendar(String userName, String calendarId) {
+    Calendar cal = exoCalendarCache.get(new KeyValuePair(calendarId, userName));
+    if(cal == null || cal == Calendar.NULL_OBJECT) {
+      cal = getCalendar(calendarId, null);
+      if(cal == null) {
+        cal = getCalendar(calendarId, userName);
+        if(cal == null) {
+          return Utils.INVALID_TYPE;
+        }
+      }
+    }
+    if(!cal.isCalTypeChecked()) {
+      int calType = getTypeOfCalendarFromStore(calendarId, userName);
+      if(calType == Utils.INVALID_TYPE) {
+        return Utils.INVALID_TYPE;
+      }
+      cal.setCalType(calType);
+      cal.setCalTypeChecked(true);
+    }
+    return cal.getCalType();
+  }
+
+  public int getTypeOfCalendarFromStore(String calendarId, String userName) {
+    int calType = Utils.INVALID_TYPE;
     try {
       getUserCalendarHome(userName).getNode(calendarId);
-      return Utils.PRIVATE_TYPE;
+      calType = Utils.PRIVATE_TYPE;
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
         log.debug(String.format("Failed to find calendar %s from user node of user %s",
@@ -5384,7 +5437,7 @@ public class JCRDataStorage implements DataStorage {
     }
     try {
       getPublicCalendarHome().getNode(calendarId);
-      return Utils.PUBLIC_TYPE;
+      calType = Utils.PUBLIC_TYPE;
     } catch (Exception e) {
       if (log.isDebugEnabled()) {
         log.debug(String.format("Failed to find calendar %s from public node of user %s",
@@ -5398,10 +5451,11 @@ public class JCRDataStorage implements DataStorage {
         Node userNode = sharedCalendarHome.getNode(userName);
         PropertyIterator iter = userNode.getReferences();
         Node calendar;
-        while (iter.hasNext()) {
+        while (iter.hasNext() && calType == Utils.INVALID_TYPE) {
           calendar = iter.nextProperty().getParent();
-          if (calendar.getProperty(Utils.EXO_ID).getString().equals(calendarId))
-            return Utils.SHARED_TYPE;
+          if (calendar.getProperty(Utils.EXO_ID).getString().equals(calendarId)) {
+            calType = Utils.SHARED_TYPE;
+          }
         }
       }
     } catch (Exception e) {
@@ -5411,7 +5465,7 @@ public class JCRDataStorage implements DataStorage {
                                 userName), e);
       }
     }
-    return Utils.INVALID_TYPE;
+    return calType;
   }
 
   /**
@@ -5490,8 +5544,9 @@ public class JCRDataStorage implements DataStorage {
       while (iter.hasNext()) {
         try {
           Node calendarNode = iter.nextProperty().getParent();
-          if (!sharedCalendars.contains(calendarNode.getProperty(Utils.EXO_ID).getString())) {
-            sharedCalendars.add(calendarNode.getProperty(Utils.EXO_ID).getString());
+          String calendarId = calendarNode.getProperty(Utils.EXO_ID).getString();
+          if (!sharedCalendars.contains(calendarId)) {
+            sharedCalendars.add(calendarId);
             Value[] viewPers = calendarNode.getProperty(Utils.EXO_VIEW_PERMISSIONS).getValues();
             for (Value viewPer : viewPers) {
               for (String groupId : groupsOfUser) {
@@ -5519,6 +5574,12 @@ public class JCRDataStorage implements DataStorage {
                     calendarNode.save();
                     sharedCalendarHome.getSession().save();
                     calendarNode.getSession().save();
+
+                    String username = null;
+                    if(calendarNode.hasProperty(Utils.EXO_CALENDAR_OWNER)) {
+                      username = calendarNode.getProperty(Utils.EXO_CALENDAR_OWNER).getString();
+                    }
+                    clearCalendarCache(calendarId, username);
                   }
                 }
               }
@@ -5575,6 +5636,8 @@ public class JCRDataStorage implements DataStorage {
                                editPerms.toArray(new String[editPerms.size()]));
           calendar.getSession().save();
           calendar.refresh(true);
+
+          clearCalendarCache(calendarId, username);
           break;
         }
       }
@@ -5630,6 +5693,7 @@ public class JCRDataStorage implements DataStorage {
                                newValues.toArray(new Value[newValues.size()]));
         }
         calendar.save();
+        clearCalendarCache(calendar.getProperty(Utils.EXO_ID).getString(), username);
       }
       userNode.remove();
       sharedCalendarHome.save();
@@ -5677,6 +5741,7 @@ public class JCRDataStorage implements DataStorage {
               deleteSharedCalendar(username, uuid, calSetting, calendar, map);
 
               calendar.getSession().save();
+              clearCalendarCache(calendar.getProperty(Utils.EXO_ID).getString(), username);
               calendar.refresh(true);
               break;
             }
@@ -5713,6 +5778,8 @@ public class JCRDataStorage implements DataStorage {
     calSetting.setSharedCalendarsColors(calColors.toArray(new String[calColors.size()]));
     saveCalendarSetting(calSetting, username);
     calendarNode.setProperty(Utils.EXO_SHARED_ID, newValues.toArray(new Value[newValues.size()]));
+
+    clearCalendarCache(calendarNode.getProperty(Utils.EXO_ID).getString(), username);
   }
 
   public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
@@ -5856,6 +5923,8 @@ public class JCRDataStorage implements DataStorage {
     Node calendarNode = getUserCalendarHome(username).getNode(calendarId);
     calendarNode.setProperty(Utils.EXO_REMOTE_LAST_UPDATED, timeGMT);
     calendarNode.save();
+
+    clearCalendarCache(calendarNode.getProperty(Utils.EXO_ID).getString(), username);
   }
 
   public Calendar getRemoteCalendar(String username, String remoteUrl, String remoteType) throws Exception {
@@ -5934,19 +6003,13 @@ public class JCRDataStorage implements DataStorage {
 
   @Override
   public Calendar getCalendarById(String calId) throws Exception {
-    Node calendarApp = nodeHierarchyCreator_.getPublicApplicationNode(Utils.createSystemProvider()); //Utils.getPublicServiceHome(Utils.createSystemProvider());
-    QueryManager queryManager = calendarApp.getSession().getWorkspace().getQueryManager();
-    String sql = "select * from exo:calendar where exo:id=" + "\'" + calId + "\'";
-    Query query = queryManager.createQuery(sql, Query.SQL);
-    QueryResult result = query.execute();
-    NodeIterator nodesIt = result.getNodes();
-    if(nodesIt.hasNext()) {
-      return loadCalendar(nodesIt.nextNode());
-    } else {
-      return null;
-    }
+    return getCalendar(calId, null);
   }
-  
+
+  public NodeHierarchyCreator getNodeHierarchyCreator() {
+    return nodeHierarchyCreator_;
+  }
+
   private static class CalendarSettingLoader implements Loader<String, CalendarSetting, JCRDataStorage> {
     @Override
     public CalendarSetting retrieve(JCRDataStorage context, String key) throws Exception {
@@ -5971,6 +6034,45 @@ public class JCRDataStorage implements DataStorage {
         calList.add(context.loadCalendar(iter.nextNode()));
       }
       return calList;
+    }
+  };
+
+  private static class CalendarLoader implements Loader<KeyValuePair, Calendar, JCRDataStorage> {
+    @Override
+    public Calendar retrieve(JCRDataStorage context, KeyValuePair calKey) throws Exception {
+      String calendarId = calKey.getKey();
+      String username = calKey.getValue();
+
+      if(StringUtils.isNotBlank(username)) {
+        if(context.getUserCalendarHome(username).hasNode(calendarId)) {
+          Node calendarNode = context.getUserCalendarHome(username).getNode(calendarId);
+          return context.getCalendar(new String[] { calendarId }, username, calendarNode, true);
+        } else {
+          return Calendar.NULL_OBJECT;
+        }
+      }
+
+      if(context.getPublicCalendarHome().hasNode(calendarId)) {
+        Node calendarNode = context.getPublicCalendarHome().getNode(calendarId);
+        Calendar loadedCalendar = context.getCalendar(new String[] { calendarId }, null, calendarNode, true);
+        if(loadedCalendar != null) {
+          loadedCalendar.setCalType(Utils.PUBLIC_TYPE);
+          loadedCalendar.setCalTypeChecked(true);
+        }
+        return loadedCalendar;
+      }
+
+      Node calendarApp = context.getNodeHierarchyCreator().getPublicApplicationNode(Utils.createSystemProvider());
+      QueryManager queryManager = calendarApp.getSession().getWorkspace().getQueryManager();
+      String sql = "select * from exo:calendar where exo:id=" + "\'" + calendarId + "\'";
+      Query query = queryManager.createQuery(sql, Query.SQL);
+      QueryResult result = query.execute();
+      NodeIterator nodesIt = result.getNodes();
+      if(nodesIt.hasNext()) {
+        return context.loadCalendar(nodesIt.nextNode());
+      } else {
+        return Calendar.NULL_OBJECT;
+      }
     }
   };
   
@@ -6186,4 +6288,17 @@ public class JCRDataStorage implements DataStorage {
     return occurrences;
   }
 
+  public static class KeyValuePair extends SimpleEntry<String, String> {
+    private static final long serialVersionUID = -2558703122631062086L;
+
+    public KeyValuePair(String key, String value) {
+      super(key, value);
+    }
+    
+    @Override
+    public int hashCode() {
+      return (getKey()   == null ? 0 :   getKey().hashCode()) ^
+          (getValue() == null ? 1 : getValue().hashCode());
+    }
+  }
 }

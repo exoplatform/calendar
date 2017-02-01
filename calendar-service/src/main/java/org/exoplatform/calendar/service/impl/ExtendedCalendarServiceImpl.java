@@ -19,7 +19,6 @@ package org.exoplatform.calendar.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +28,7 @@ import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.storage.Storage;
 import org.exoplatform.calendar.storage.jcr.JCRStorage;
 import org.exoplatform.container.component.ComponentPlugin;
+import org.exoplatform.services.cache.CacheService;
 
 public class ExtendedCalendarServiceImpl implements ExtendedCalendarService {
   
@@ -38,9 +38,9 @@ public class ExtendedCalendarServiceImpl implements ExtendedCalendarService {
   
   private Map<String, Storage> storages = new HashMap<String, Storage>();
   
-  public ExtendedCalendarServiceImpl() {
+  public ExtendedCalendarServiceImpl(CacheService cacheService) {
     this.calendarHandler = new CalendarHandlerImpl(this);
-    this.eventHandler = new EventHandlerImpl(this);
+    this.eventHandler = new EventHandlerImpl(this, cacheService);
   }
   
   @Override
