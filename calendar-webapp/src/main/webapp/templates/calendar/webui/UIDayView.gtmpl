@@ -11,6 +11,7 @@
   import org.exoplatform.webui.application.WebuiRequestContext;
   import java.util.SimpleTimeZone;
   import org.exoplatform.calendar.service.CalendarEvent;
+  import org.exoplatform.calendar.service.Utils;
 
   uiform.begin() ;
   Date currentDate = uicomponent.getCurrentDate();
@@ -98,7 +99,7 @@
 
 						  <div class="eventContainer $color">
                             <i class="uiIconCal<%=ce.getPriority()%>Priority" style="margin-right: 5px;"></i>
-							<%=ce.getSummary()%>
+							<%=Utils.escapeXssCharacters(ce.getSummary())%>
 						  </div>
 						</div>
 					<%}%>
@@ -192,11 +193,11 @@
 							<% if ( (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (ce.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
 							<!-- if the element is of type TASK check whether its completed -->
 							<div class="eventContainer " style="text-decoration:line-through;">
-							  <%=ce.getSummary()%>
+							  <%=Utils.escapeXssCharacters(ce.getSummary())%>
 							</div>
 							<% } else { %>
 							<div class="eventContainer ">
-								<%=ce.getSummary()%>
+								<%=Utils.escapeXssCharacters(ce.getSummary())%>
 							</div>
 							<% } %>
 							</div>	
@@ -223,11 +224,11 @@
 							<% if ( (ce.getEventType().equals(CalendarEvent.TYPE_TASK) ) && (ce.eventState.equals(CalendarEvent.COMPLETED) ) ) { %>
 							<!-- if the element is of type TASK check whether its completed -->
 							<div class="eventContainer" style=" text-decoration:line-through; ">
-							  <%=ce.getSummary()%>
+							  <%=Utils.escapeXssCharacters(ce.getSummary())%>
 							</div>
 							<% } else { %>
 							<div class="eventContainer">
-								<%=ce.getSummary()%>
+								<%=Utils.escapeXssCharacters(ce.getSummary())%>
 							</div>
 							<% } %>
 							<% } %>

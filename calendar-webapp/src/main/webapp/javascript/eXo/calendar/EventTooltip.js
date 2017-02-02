@@ -91,16 +91,17 @@
         request.process() ;
       },
       parseData: function(req){
+        var self = eXo.calendar.EventTooltip;
         var data = gj.parseJSON(req.responseText);
         var time = this.getRealTime(data);
         return {
           occurrence: data.occurrence,
           virtual: data.virtual,
           event: data.event,
-          title: data.summary,
-          description: data.description,
+          title: self.sanitize(data.summary),
+          description: self.sanitize(data.description),
           time:time,
-          location: data.location
+          location: self.sanitize(data.location)
         }
       },
       
@@ -144,6 +145,12 @@
 	  return '<a href="' + url + '" target="_blank">' + value + '</a>';
         }) 
       },
+
+      sanitize: function (text) {
+      return text.replace(/</g,"&lt")
+      .replace(/>/g,"&gt;").replace(/\(/g,"&#40;").replace(/\)/g,"&#41;").
+      replace(/#/g,"&#35;").replace(/&/g,"&amp;").replace(/\"/g,"&quot;");
+      },
       
       render: function(req) {
         var self = eXo.calendar.EventTooltip;
@@ -171,8 +178,8 @@
           }
           html += '<div class="time clearfix"><div class="pull-left"><i class="'+className+'"></i></div><div class="text">' + info + '</div></div>';
         }
-        if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + data.location + '</div></div>';
-        if(data.description) html += '<div class="description ">' + self.urlify(data.description) + '</div>';
+        if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + self.sanitize(data.location) + '</div></div>';
+        if(data.description) html += '<div class="description ">' + self.sanitize(self.urlify(data.description)) + '</div>';
         self._container.style.display = "block";
         var popoverContent = gj(self._container).find('.popover-content');
         popoverContent.text('');

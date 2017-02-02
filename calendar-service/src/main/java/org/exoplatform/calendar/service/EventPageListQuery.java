@@ -34,8 +34,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.exoplatform.commons.utils.HTMLSanitizer;
-import org.exoplatform.commons.utils.IOUtil;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -122,7 +120,7 @@ public class EventPageListQuery extends JCRPageList {
       event.setCalendarId(p.getString());
     }
     if ((p = getPropertyFromNode(eventNode, Utils.EXO_SUMMARY)) != null) {
-      event.setSummary(HTMLSanitizer.sanitize(p.getString()));
+      event.setSummary(p.getString());
     }
     if ((p = getPropertyFromNode(eventNode, Utils.EXO_EVENT_CATEGORYID)) != null) {
       event.setEventCategoryId(p.getString());
@@ -131,7 +129,7 @@ public class EventPageListQuery extends JCRPageList {
       event.setEventCategoryName(p.getString());
     }
     if ((p = getPropertyFromNode(eventNode, Utils.EXO_LOCATION)) != null) {
-      event.setLocation(HTMLSanitizer.sanitize(p.getString()));
+      event.setLocation(p.getString());
     }
     if ((p = getPropertyFromNode(eventNode, Utils.EXO_TASK_DELEGATOR)) != null) {
       event.setTaskDelegator(p.getString());
@@ -140,7 +138,7 @@ public class EventPageListQuery extends JCRPageList {
       event.setRepeatType(p.getString());
     }
     if ((p = getPropertyFromNode(eventNode, Utils.EXO_DESCRIPTION)) != null) {
-      event.setDescription(HTMLSanitizer.sanitize(p.getString()));
+      event.setDescription(p.getString());
     }
     if ((p = getPropertyFromNode(eventNode, Utils.EXO_FROM_DATE_TIME)) != null) {
       event.setFromDateTime(p.getDate().getTime());
@@ -258,15 +256,7 @@ public class EventPageListQuery extends JCRPageList {
             if (contentNode.hasProperty(Utils.JCR_MIMETYPE))
               attachment.setMimeType(contentNode.getProperty(Utils.JCR_MIMETYPE).getString());
             if (contentNode.hasProperty(Utils.JCR_DATA)) {
-              InputStream inputStream = null;
-              if ("text/html".compareTo(attachment.getMimeType()) == 0) {
-                String content = IOUtil.getStreamContentAsString(contentNode.getProperty(Utils.JCR_DATA).getStream());
-                content = HTMLSanitizer.sanitize(content);
-                inputStream = new ByteArrayInputStream(content.getBytes());
-              }
-              else {
-                inputStream = contentNode.getProperty(Utils.JCR_DATA).getStream();
-              }
+              InputStream inputStream = contentNode.getProperty(Utils.JCR_DATA).getStream();
               attachment.setSize(inputStream.available());
               attachment.setInputStream(inputStream);
             }

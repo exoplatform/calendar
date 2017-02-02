@@ -7,6 +7,7 @@
     import org.exoplatform.calendar.CalendarUtils;
     import org.exoplatform.calendar.service.CalendarEvent;
     import org.exoplatform.webui.form.input.UICheckBoxInput;
+    import org.exoplatform.calendar.service.Utils;
 
     uiform.begin() ;
 
@@ -181,12 +182,12 @@
         <% } else { %>
           <span>
         <% } %>
-          <%=event.getSummary() %>
+          <%=Utils.escapeXssCharacters(event.getSummary()) %>
 		  </span>
         </td>
         <td ><%=uicomponent.getDateTimeString(event.getFromDateTime())%></td>
         <td ><%=uicomponent.getDateTimeString(event.getToDateTime())%></td>
-        <td ><%=(event.getDescription() == null)? "": CalendarUtils.convertURLsAsLinks(event.getDescription()).replaceAll("\n","<br/>")%></td>
+        <td ><%=(event.getDescription() == null)? "": Utils.escapeXssCharacters(CalendarUtils.convertURLsAsLinks(event.getDescription()).replaceAll("\n","<br/>"))%></td>
         </tr>
 
         <%  }
