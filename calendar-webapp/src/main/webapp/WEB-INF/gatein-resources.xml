@@ -172,7 +172,6 @@
     </depends>
     <depends>
       <module>xss-utils</module>
-      <as>XSSUtils</as>
     </depends>
   </module>
   
