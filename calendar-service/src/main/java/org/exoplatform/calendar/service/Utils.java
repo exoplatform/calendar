@@ -1488,18 +1488,4 @@ public class Utils {
     return attachment;
   }
 
-  /**
-   *
-   * @param input the expression to be checked against Xss
-   * @return
-   */
-
-  public static String escapeXssCharacters(String input){
-    if (input == null){
-      return null;
-    }
-    return input.replace("<","&lt").replace(">","&gt;").replace("(","&#40;").replace(")","&#41;").
-            replace("#","&#35;").replace("&","&amp;").replace("\"","&quot;");
-  }
-
 }
