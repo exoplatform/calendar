@@ -94,14 +94,15 @@
         var self = eXo.calendar.EventTooltip;
         var data = gj.parseJSON(req.responseText);
         var time = this.getRealTime(data);
+        var xssUtils = XSSUtils;
         return {
           occurrence: data.occurrence,
           virtual: data.virtual,
           event: data.event,
-          title: self.sanitize(data.summary),
-          description: self.sanitize(data.description),
+          title: xssUtils.sanitizeString(data.summary),
+          description: xssUtils.sanitizeString(data.description),
           time:time,
-          location: self.sanitize(data.location)
+          location: xssUtils.sanitizeString(data.location)
         }
       },
       
@@ -146,15 +147,10 @@
         }) 
       },
 
-      sanitize: function (text) {
-      return text.replace(/</g,"&lt")
-      .replace(/>/g,"&gt;").replace(/\(/g,"&#40;").replace(/\)/g,"&#41;").
-      replace(/#/g,"&#35;").replace(/&/g,"&amp;").replace(/\"/g,"&quot;");
-      },
-      
       render: function(req) {
         var self = eXo.calendar.EventTooltip;
         var data = self.parseData(req);
+        var xssUtils = XSSUtils;
         if(!data) return ;
         var color = gj(self.currentEvent).attr('class').split(' ')[2];
         if(!color) {
@@ -178,8 +174,8 @@
           }
           html += '<div class="time clearfix"><div class="pull-left"><i class="'+className+'"></i></div><div class="text">' + info + '</div></div>';
         }
-        if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + self.sanitize(data.location) + '</div></div>';
-        if(data.description) html += '<div class="description ">' + self.sanitize(self.urlify(data.description)) + '</div>';
+        if(data.location)    html += '<div class="location clearfix"><div class="pull-left"><i class="uiIconCalCheckinMini"></i></div><div class="text">' + xssUtils.sanitizeString(data.location) + '</div></div>';
+        if(data.description) html += '<div class="description ">' + xssUtils.sanitizeString(self.urlify(data.description)) + '</div>';
         self._container.style.display = "block";
         var popoverContent = gj(self._container).find('.popover-content');
         popoverContent.text('');

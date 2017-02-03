@@ -170,6 +170,10 @@
     <depends>
       <module>jquery</module>
     </depends>
+    <depends>
+      <module>xss-utils</module>
+      <as>XSSUtils</as>
+    </depends>
   </module>
   
   <module>

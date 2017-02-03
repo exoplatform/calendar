@@ -7,7 +7,7 @@
   import org.exoplatform.calendar.CalendarUtils;
   import org.exoplatform.calendar.service.CalendarEvent;
   import org.exoplatform.webui.form.input.UICheckBoxInput;
-  import org.exoplatform.calendar.service.Utils;
+  import org.apache.commons.lang.StringEscapeUtils;
   uiform.begin() ;
   
   int currentDay = uicomponent.getCurrentDay() ;
@@ -179,12 +179,12 @@
         <%}%>
 			<%}%>
 		  <span>
-			  <%=Utils.escapeXssCharacters(event.getSummary())%>
+			  <%=StringEscapeUtils.escapeHtml(event.getSummary())%>
 		  </span>
 	  </td>
 	  <td ><%=uicomponent.getDateTimeString(event.getFromDateTime())%></td>
 	  <td ><%=uicomponent.getDateTimeString(event.getToDateTime())%></td>
-	  <td ><%=(event.getDescription() == null)? "": Utils.escapeXssCharacters(event.getDescription())%></td>
+	  <td ><%=(event.getDescription() == null)? "": StringEscapeUtils.escapeHtml(event.getDescription())%></td>
   </tr>
   <% }
   if (uicomponent.getEvents().size() <= 0) {

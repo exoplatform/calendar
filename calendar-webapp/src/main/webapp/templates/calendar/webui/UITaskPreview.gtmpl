@@ -108,7 +108,7 @@
 			<% } %>
 			<td valign="top" class="columnRight">
 			<div>
-			<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=Utils.escapeXssCharacters(task.getSummary())%></strong></div>
+			<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=StringEscapeUtils.escapeHtml(task.getSummary())%></strong></div>
 			<table class="tableListEvent" id="RowContainerDay" cellspacing="0" borderspacing="0">
 			  <tr>
 				<td class="right" >
@@ -176,7 +176,7 @@
 			  <td >
 				<div class="viewDescription">
 				<%
-				  String des = Utils.escapeXssCharacters(task.getDescription().replaceAll("\n","<br/>")) ;
+				  String des = StringEscapeUtils.escapeHtml(task.getDescription().replaceAll("\n","<br/>")) ;
 				  println des ;
 				%>
 				</div>
