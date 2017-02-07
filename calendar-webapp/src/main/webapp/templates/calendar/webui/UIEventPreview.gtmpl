@@ -3,6 +3,7 @@
 	import java.text.DateFormat;
 	import java.text.SimpleDateFormat;
 	import org.exoplatform.calendar.CalendarUtils;
+    import org.apache.commons.lang.StringEscapeUtils;
 
 	java.util.Locale locale = _ctx.getRequestContext().getParentAppRequestContext().getLocale() ;
 	
@@ -110,7 +111,7 @@
 <td valign="top" class="columnRight">
 <!-- event/ task description column -->
 	<div >
-		<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong>$event.summary</strong></div>
+		<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=StringEscapeUtils.escapeHtml(event.summary)%></strong></div>
 		<table class="tableListEvent" id="RowContainerDay" cellspacing="0" borderspacing="0">
 			
 			<% if(!CalendarUtils.isEmpty(event.getLocation())) { %>
@@ -122,7 +123,7 @@
 					<i class="$prio"></i>&nbsp;<%=uiform.getLabel('Place')%>
 				</td>
 				<td>
-					<%= event.getLocation()%>
+					<%= StringEscapeUtils.escapeHtml(event.getLocation())%>
 				</td>
 			</tr>
 			<% } %>
@@ -138,7 +139,7 @@
 				<td >
 					<div class="viewDescription">
 					<%
-					String des = CalendarUtils.convertURLsAsLinks(event.getDescription()).replaceAll("\n","<br/>");
+					String des = StringEscapeUtils.escapeHtml(CalendarUtils.convertURLsAsLinks(event.getDescription()).replaceAll("\n","<br/>"));
 					println des ;
 					%>
 					</div>
