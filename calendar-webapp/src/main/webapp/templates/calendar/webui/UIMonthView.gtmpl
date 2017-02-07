@@ -9,6 +9,7 @@
   import org.exoplatform.calendar.CalendarUtils;
   import org.exoplatform.webui.application.WebuiRequestContext;
   import org.exoplatform.calendar.service.CalendarEvent;
+  import org.apache.commons.lang.StringEscapeUtils;
 
   uiform.begin() ;
   
@@ -207,7 +208,7 @@
               <%} else {%>
               <span>
               <%}%>
-                $event.summary
+                <%=StringEscapeUtils.escapeHtml(event.summary)%>
               </span>
             </div>
            
