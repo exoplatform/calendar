@@ -74,7 +74,6 @@ public class ReminderJob extends MultiTenancyJob {
 
       try {
         MailService mailService = (MailService) container.getComponentInstanceOfType(MailService.class);
-        UserHandler userHandler = orgService.getUserHandler();
         CalendarService calendarService = (CalendarService) container.getComponentInstanceOfType(CalendarService.class);
         ResourceBundleService rbs = (ResourceBundleService) container.getComponentInstanceOfType(ResourceBundleService.class);
         if (log_.isDebugEnabled())

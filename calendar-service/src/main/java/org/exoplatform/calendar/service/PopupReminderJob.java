@@ -21,11 +21,13 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.quartz.JobExecutionContext;
+
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
@@ -34,11 +36,7 @@ import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.UserHandler;
-import org.exoplatform.services.organization.UserStatus;
-import org.exoplatform.services.organization.idm.PicketLinkIDMOrganizationServiceImpl;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.quartz.JobExecutionContext;
 
 public class PopupReminderJob extends MultiTenancyJob {
   private static Log log_ = ExoLogger.getLogger(PopupReminderJob.class);
@@ -70,7 +68,6 @@ public class PopupReminderJob extends MultiTenancyJob {
           log_.debug("Calendar popup reminder service");
         java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
         ContinuationService continuation = (ContinuationService) container.getComponentInstanceOfType(ContinuationService.class);
-        UserHandler userHandler = orgService.getUserHandler();
         Node calendarHome = Utils.getPublicServiceHome(provider);
         if (calendarHome == null)
           return;
@@ -123,7 +120,7 @@ public class PopupReminderJob extends MultiTenancyJob {
         if (!popupReminders.isEmpty()) {
           for (Reminder rmdObj : popupReminders) {
             for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
-              if (userHandler.findUserByName(user, UserStatus.DISABLED) == null) { 
+              if (!CommonsUtils.isUserEnabled(user)) {
                 continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
               }  
             }
