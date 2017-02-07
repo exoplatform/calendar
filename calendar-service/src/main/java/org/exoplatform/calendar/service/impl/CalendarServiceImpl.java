@@ -80,6 +80,7 @@ import org.exoplatform.calendar.service.ShareCalendarJob;
 import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.util.Constants;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ExoProperties;
 import org.exoplatform.commons.utils.ListAccess;
@@ -94,7 +95,6 @@ import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.resources.ResourceBundleService;
@@ -122,6 +122,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   private RemoteCalendarService               remoteCalendarService;
 
+  private OrganizationService organizationService;
+
   private static final Log LOG = ExoLogger.getExoLogger(CalendarServiceImpl.class);  
   
   protected List<CalendarEventListener>       eventListeners_       = new ArrayList<CalendarEventListener>(3); 
@@ -130,11 +132,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   
   protected JCRDataStorage                      storage_;
 
-  public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs, CacheService cservice) throws Exception {   
+  public CalendarServiceImpl(InitParams params, NodeHierarchyCreator nodeHierarchyCreator, RepositoryService reposervice, ResourceBundleService rbs, CacheService cservice, OrganizationService organizationService) throws Exception {   
     this.storage_ = new JCRDataStorage(nodeHierarchyCreator, reposervice, cservice);
-    
+    this.organizationService = organizationService;
     this.eventDAO = new EventDAOImpl(this, storage_);
-    
+
     calendarImportExport_.put(CalendarService.ICALENDAR, new ICalendarImportExport(storage_));
     calendarImportExport_.put(CalendarService.EXPORTEDCSV, new CsvImportExport(storage_));
     remoteCalendarService = new RemoteCalendarServiceImpl(storage_);    
@@ -183,16 +185,15 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         }
         break;
       case Calendar.TYPE_PUBLIC:
-        OrganizationService orgService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
-        Collection<Group> groups = orgService.getGroupHandler().findGroupsOfUser(username);
+        Collection<String> groups = CommonsUtils.getGroupsOfUser(username);
         if (groups == null || groups.isEmpty()) return new CalendarCollection<Calendar>(Collections.<Calendar>emptyList(), 0);
         
         Node node =  storage_.getPublicCalendarHome();
         sql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(node.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
         .append(node.getPath()).append("/%/%'");
         sql.append(" AND (");
-        for (Iterator<Group> i = groups.iterator(); i.hasNext();) {
-          sql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next().getId()).append("')");
+        for (Iterator<String> i = groups.iterator(); i.hasNext();) {
+          sql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next()).append("')");
           if (i.hasNext()) sql.append(" OR ");
         }
         sql.append(")");
@@ -219,15 +220,14 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         NodeIterator nIt1 = result.getNodes();
         rIt.addPeronalIterator(nIt1);
 
-        orgService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
-        groups = orgService.getGroupHandler().findGroupsOfUser(username);
+        groups = CommonsUtils.getGroupsOfUser(username);
         if (groups != null) {
           StringBuffer gSql = new StringBuffer(sql.toString());
           gSql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(pNode.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
           .append(pNode.getPath()).append("/%/%'");
           gSql.append(" AND (");
-          for (Iterator<Group> i = groups.iterator(); i.hasNext();) {
-            gSql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next().getId()).append("')");
+          for (Iterator<String> i = groups.iterator(); i.hasNext();) {
+            gSql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next()).append("')");
             if (i.hasNext()) gSql.append(" OR ");
           }
           gSql.append(")");
@@ -535,7 +535,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception {
-    if(Utils.isUserEnabled(username))
+    if(CommonsUtils.isUserEnabled(username))
     return storage_.getSharedCalendars(username, isShowAll);
     else return null;
   }
@@ -554,7 +554,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
-    if(Utils.isUserEnabled(username))
+    if(CommonsUtils.isUserEnabled(username))
     return storage_.getEvents(username, eventQuery, publicCalendarIds);
     else return new ArrayList<CalendarEvent>();
   }
@@ -701,7 +701,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
   
   public List<CalendarEvent> getSharedEventByCalendars(String username, List<String> calendarIds) throws Exception {
-    if(Utils.isUserEnabled(username))
+    if(CommonsUtils.isUserEnabled(username))
     return storage_.getSharedEventByCalendars(username, calendarIds);
     else return new ArrayList<CalendarEvent>();
   }
@@ -994,7 +994,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     }
 
     // get the user's full name
-    OrganizationService organizationService = (OrganizationService) ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(OrganizationService.class);
     User u = organizationService.getUserHandler().findUserByName(userName);
     String fullName = u.getFirstName();
     if (u.getLastName() != null && fullName != null) {
@@ -1018,13 +1017,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       saveCalendarSetting(userName, defaultCalendarSetting_);
     }
 
-    Object[] groupsOfUser = organizationService.getGroupHandler().findGroupsOfUser(userName).toArray();
-    List<String> groups = new ArrayList<String>();
-    for (Object object : groupsOfUser) {
-      String groupId = ((Group) object).getId();
-      groups.add(groupId);
-    }
-    storage_.autoShareCalendar(groups, userName);
+    Collection<String> groupsOfUser = CommonsUtils.getGroupsOfUser(userName);
+    storage_.autoShareCalendar(new ArrayList<String>(groupsOfUser), userName);
   }
 
   public void addEventListenerPlugin(CalendarEventListener listener) throws Exception {    

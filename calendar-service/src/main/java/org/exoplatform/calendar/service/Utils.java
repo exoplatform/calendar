@@ -16,12 +16,6 @@
  **/
 package org.exoplatform.calendar.service;
 
-import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.Session;
-import javax.jcr.Value;
-
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,7 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -40,6 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.Session;
+import javax.jcr.Value;
 
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
@@ -64,7 +63,11 @@ import net.fortuna.ical4j.model.property.TzName;
 import net.fortuna.ical4j.model.property.TzOffsetFrom;
 import net.fortuna.ical4j.model.property.TzOffsetTo;
 
+import org.quartz.JobExecutionContext;
+import org.quartz.impl.JobDetailImpl;
+
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
@@ -84,11 +87,12 @@ import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserStatus;
+import org.exoplatform.services.security.ConversationRegistry;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.services.security.IdentityConstants;
 import org.exoplatform.services.security.MembershipEntry;
-import org.quartz.JobExecutionContext;
-import org.quartz.impl.JobDetailImpl;
+import org.exoplatform.services.security.StateKey;
 
 /**
  * Created by The eXo Platform SARL
@@ -509,10 +513,6 @@ public class Utils {
   
   private static Log log = ExoLogger.getLogger(Utils.class);
 
-  public static boolean isUserEnabled(String userId) throws Exception{
-    return getOrganizationService().getUserHandler().findUserByName(userId, UserStatus.ANY).isEnabled();
-  }
-
   /**
    * The method creates an instance of calendar object with time zone is GMT 0
    * @return GregorianCalendar
@@ -559,6 +559,8 @@ public class Utils {
 
   public static boolean hasPermission(OrganizationService oService, String[] savePerms, String username) {
     if (savePerms != null) {
+        ConversationState conversationState = CommonsUtils.getConversationState(username);
+        Identity identity = conversationState == null ? null : conversationState.getIdentity();
         for (String savePer : savePerms) {
             PermissionOwner permission = PermissionOwner.createPermissionOwnerFrom(savePer);
             
@@ -570,18 +572,21 @@ public class Utils {
                 String groupId = permission.getGroupId();
                 String membershipType = permission.getMembership();
                 MembershipEntry expected = new MembershipEntry(groupId, membershipType);
-                
-                try {
-                  Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
-                  for (Membership ms : memberships) {
-                    //Core project care about * membership type
-                    MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
-                    if (userMS.equals(expected)) {
-                      return true;
+                if(identity == null) {
+                  try {
+                    Collection<Membership> memberships = oService.getMembershipHandler().findMembershipsByUserAndGroup(username, groupId);
+                    for (Membership ms : memberships) {
+                      //Core project care about * membership type
+                      MembershipEntry userMS = new MembershipEntry(groupId, ms.getMembershipType());
+                      if (userMS.equals(expected)) {
+                        return true;
+                      }
                     }
+                  } catch (Exception e) {
+                    LOG.error("Error while testing on user permissions", e);
                   }
-                } catch (Exception e) {
-                  LOG.error(e);
+                } else {
+                  return identity.isMemberOf(expected);
                 }
             }
         }        
