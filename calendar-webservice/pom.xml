@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.5.x-SNAPSHOT</version>
+    <version>5.0.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-webservice</artifactId>
   <packaging>jar</packaging>
@@ -181,7 +181,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.common</artifactId>
     </dependency>
     <dependency>
@@ -226,14 +226,14 @@
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.identity</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
       <exclusions>
         <exclusion>
@@ -252,13 +252,13 @@
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.jcr</artifactId>
       <scope>test</scope>
     </dependency>

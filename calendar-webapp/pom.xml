@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.5.x-SNAPSHOT</version>
+    <version>5.0.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-webapp</artifactId>
   <packaging>war</packaging>
@@ -206,7 +206,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.webui.core</artifactId>
     </dependency>
     <dependency>
@@ -252,11 +252,11 @@
       <artifactId>social-component-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
       <exclusions>
         <exclusion>
@@ -282,11 +282,11 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.web.controller</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.web.resources</artifactId>
       <exclusions>
         <exclusion>
@@ -304,19 +304,19 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.web.server</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.webui.eXo</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.webui.framework</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.webui.portal</artifactId>
       <exclusions>
         <exclusion>
@@ -402,12 +402,12 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.gatein.wci</groupId>
+      <groupId>org.exoplatform.gatein.wci</groupId>
       <artifactId>wci-wci</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.webui.portlet</artifactId>
     </dependency>
     <!-- commons-logging is forbidden and must be replaced by org.slf4j:jcl-over-slf4j -->
@@ -437,7 +437,7 @@
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
       <exclusions>

@@ -4,7 +4,7 @@
   <parent>
     <artifactId>calendar</artifactId>
     <groupId>org.exoplatform.calendar</groupId>
-    <version>4.5.x-SNAPSHOT</version>
+    <version>5.0.x-SNAPSHOT</version>
   </parent>
   <artifactId>calendar-injector</artifactId>
   <name>eXo PLF:: Calendar Data Injector</name>
@@ -128,19 +128,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.identity</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.portal</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <!--<dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
       <exclusions>
@@ -151,7 +151,7 @@
       </exclusions>
     </dependency>-->
     <dependency>
-      <groupId>org.gatein.portal</groupId>
+      <groupId>org.exoplatform.gatein.portal</groupId>
       <artifactId>exo.portal.component.test.jcr</artifactId>
       <scope>test</scope>
     </dependency>
