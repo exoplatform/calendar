@@ -139,7 +139,7 @@
 				<td >
 					<div class="viewDescription">
 					<%
-					String des = StringEscapeUtils.escapeHtml(CalendarUtils.convertURLsAsLinks(event.getDescription()).replaceAll("\n","<br/>"));
+					String des = CalendarUtils.convertURLsAsLinks(StringEscapeUtils.escapeHtml(event.getDescription()).replaceAll("\n","<br/>"));
 					println des ;
 					%>
 					</div>
