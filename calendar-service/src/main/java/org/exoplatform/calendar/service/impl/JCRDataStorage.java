@@ -467,7 +467,7 @@ public class JCRDataStorage implements DataStorage {
       String sQuery = queryString.toString();
 
       List<Calendar> calList = groupCalendarCache.get(this, sQuery);      
-      if (!calList.isEmpty()) {
+      if (calList != null && !calList.isEmpty()) {
         String[] defaultCalendars = null;
         if (username != null) {
           CalendarSetting calendarSetting = getCalendarSetting(username);
@@ -650,9 +650,8 @@ public class JCRDataStorage implements DataStorage {
         while (iter.hasNext()) {
           eventCategoryList.add(getEventCategory(iter.nextNode()));
         }
+        userEventCategories.put(username, eventCategoryList);
       }
-
-      userEventCategories.put(username, eventCategoryList);
     } finally {
       lock.unlock();
     }
@@ -6295,6 +6294,17 @@ public class JCRDataStorage implements DataStorage {
       super(key, value);
     }
     
+    @Override
+    public boolean equals(Object o) {
+      if(o  == null) {
+        return false;
+      }
+      if(o instanceof KeyValuePair) {
+        return hashCode() == o.hashCode();
+      }
+      return false;
+    }
+
     @Override
     public int hashCode() {
       return (getKey()   == null ? 0 :   getKey().hashCode()) ^

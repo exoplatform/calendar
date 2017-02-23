@@ -31,7 +31,7 @@ import org.exoplatform.services.security.ConversationState;
  */
 public class Calendar extends org.exoplatform.calendar.model.Calendar {
 
-  public static final Calendar NULL_OBJECT = new Calendar();
+  public static final Calendar NULL_OBJECT = new Calendar(null);
 
   private static final long serialVersionUID = 2638692203625602436L;
   

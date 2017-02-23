@@ -184,8 +184,16 @@ public class Calendar extends AbstractModel {
   @Override
   public boolean equals(Object o)
   {
+    if(o == null) {
+      return false;
+    }
     if (o instanceof Calendar) {
-      return getId().equals(((Calendar) o).getId());
+      
+      Calendar calendar = (Calendar) o;
+      if(getId() == null) {
+        return calendar.getId() == null;
+      }
+      return getId().equals(calendar.getId());
     }
 
     return false;

@@ -141,8 +141,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.Calendar</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.Calendar.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.Calendar.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.Calendar.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.Calendar.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -152,8 +152,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.Calendar</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.Calendar.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.Calendar.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.Calendar.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.Calendar.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
@@ -162,8 +162,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.dsNameById</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.dsNameById.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.dsNameById.TimeToLive:-1}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.dsNameById.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.dsNameById.TimeToLive:-1}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -173,8 +173,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendar</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.GroupCalendarCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.GroupCalendarCache.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarCache.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarCache.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -184,8 +184,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendar</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.GroupCalendarCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.GroupCalendarCache.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarCache.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarCache.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
@@ -195,8 +195,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendarEvent</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.GroupCalendarEventCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.GroupCalendarEventCache.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarEventCache.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarEventCache.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -206,8 +206,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendarEvent</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.GroupCalendarEventCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.GroupCalendarEventCache.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarEventCache.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarEventCache.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
@@ -217,8 +217,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendarRecurrentEvent</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.GroupCalendarRecurrentEventCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.GroupCalendarRecurrentEventCache.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarRecurrentEventCache.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarRecurrentEventCache.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -228,8 +228,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendarRecurrentEvent</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.GroupCalendarRecurrentEventCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.GroupCalendarRecurrentEventCache.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarRecurrentEventCache.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarRecurrentEventCache.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
@@ -239,8 +239,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.UserCalendar</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.UserCalendarCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.UserCalendarCache.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.UserCalendarCache.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.UserCalendarCache.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -250,8 +250,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.UserCalendar</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.UserCalendarCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.UserCalendarCache.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.UserCalendarCache.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.UserCalendarCache.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
@@ -261,8 +261,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.CalendarEvent</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.CalendarEvent.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.CalendarEvent.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.CalendarEvent.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.CalendarEvent.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -272,8 +272,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.CalendarEvent</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.CalendarEvent.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.CalendarEvent.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.CalendarEvent.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.CalendarEvent.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
@@ -283,8 +283,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.UserCalendarSetting</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.UserCalendarSettingCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.UserCalendarSettingCache.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.UserCalendarSettingCache.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.UserCalendarSettingCache.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -294,8 +294,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.UserCalendarSetting</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.UserCalendarSettingCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.UserCalendarSettingCache.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.UserCalendarSettingCache.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.UserCalendarSettingCache.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
@@ -305,8 +305,8 @@
           <description></description>
           <object type="org.exoplatform.services.cache.ExoCacheConfig">
             <field name="name"><string>calendar.EventCategories</string></field>
-            <field name="maxSize"><int>${cache.exo.calendar.EventCategoriesCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${cache.exo.calendar.EventCategoriesCache.TimeToLive:3600}</long></field>
+            <field name="maxSize"><int>${exo.cache.calendar.EventCategoriesCache.Capacity:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.EventCategoriesCache.TimeToLive:3600}</long></field>
             <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
           </object>
         </object-param>
@@ -316,8 +316,8 @@
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.EventCategories</string></field>
             <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${cache.exo.calendar.EventCategoriesCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${cache.exo.calendar.EventCategoriesCache.TimeToLive:3600}</long></field>
+            <field name="maxEntries"><int>${exo.cache.calendar.EventCategoriesCache.Capacity:1000}</int></field>
+            <field name="lifespan"><long>${exo.cache.calendar.EventCategoriesCache.TimeToLive:3600000}</long></field>
             <field name="replicated"><boolean>true</boolean></field>
           </object>
         </object-param>
