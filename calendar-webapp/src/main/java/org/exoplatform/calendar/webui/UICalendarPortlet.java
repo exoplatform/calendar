@@ -16,6 +16,7 @@
  **/
 package org.exoplatform.calendar.webui;
 
+import org.apache.commons.lang3.StringUtils;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -207,11 +208,11 @@ public class UICalendarPortlet extends UIPortletApplication {
 
 
   public static boolean isInSpace() {
-    return !getSpaceId().equals("");
+    return StringUtils.isNotEmpty(getSpaceId());
   }
 
   public boolean isInSpaceContext() {
-    return !getSpaceGroupId().equals("");
+    return StringUtils.isNotEmpty(getSpaceGroupId());
   }
 
   public void processInvitationURL(WebuiRequestContext context, PortalRequestContext pContext, String url) throws Exception
