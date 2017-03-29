@@ -1,5 +1,6 @@
 <%
   import org.exoplatform.calendar.CalendarUtils;
+  import org.apache.commons.lang.StringEscapeUtils;
   uiForm = uicomponent.getParentFrom() ;
   int timeInterval = 15;
   int blocks = 60/timeInterval ;
@@ -114,7 +115,7 @@
               <% Map parMap = uicomponent.getMap() ; %>
               <%
               	for(String p in uicomponent.getParticipants()) {
-              		fullname = uicomponent.getFullname(p); 
+              		fullname = StringEscapeUtils.escapeHtml(uicomponent.getFullname(p));
                %>
               <tr busytime="<%=parMap.get(p);%>">
                 <td>
