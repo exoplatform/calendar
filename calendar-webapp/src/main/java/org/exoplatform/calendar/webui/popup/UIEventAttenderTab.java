@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
@@ -112,7 +113,7 @@ public class UIEventAttenderTab extends UIFormInputWithActions {
     for(String id : parMap_.keySet()) {
       if(getCalUICheckBoxInput(id) == null) {
         org.exoplatform.calendar.webui.popup.UICheckBoxInput input = new org.exoplatform.calendar.webui.popup.UICheckBoxInput(id, id, false);
-        input.setLabel(getFullname(id));
+        input.setLabel(StringEscapeUtils.escapeHtml(getFullname(id)));
         addUIFormInput(input) ;
       }
     }
