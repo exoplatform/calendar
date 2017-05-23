@@ -4,10 +4,18 @@
  uiForm = uicomponent.getParentFrom() ;
  def rcontext = _ctx.getRequestContext() ;  
  def requireJS = rcontext.getJavascriptManager().getRequireJS();
+ def restUrl = uicomponent.getRestURL();
+ String placeholder = _ctx.appRes("UIUserInvitation.input.placeholder");
+ placeholder = placeholder.replace("'", "\\'").replace("&#39;", "\\&#39;");
  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
  requireJS.addScripts("cal.UICalendarPortlet.autoFocusFirstInput('" + uicomponent.id + "');");
 %>
 <%uiForm.begin();%>
+<style>
+	.selectize-input {
+	width:93% !important;
+	}
+</style>
 <div id="$uicomponent.id" class="uiInvitationForm resizable">
 	<div class="form-horizontal">
 		<div class="control-group">
@@ -23,6 +31,7 @@
 			  uiFormTextAreaInput.setRows(6);
 		  %>
 			<%uiForm.renderField(uicomponent.FIELD_PARTICIPANT)%>
+
 			</div>
 		</div>
 		<div class="control-group invitationGroup">
@@ -45,4 +54,7 @@
 	<%}%>
 	<%uicomponent.renderChild(UIPopupWindow.class);%>
 </div>
-<%uiForm.end();%>
+<%uiForm.end();
+requireJS.require("SHARED/userInvitation", "invite");
+requireJS.addScripts("invite.build('participant', '$restUrl', '$placeholder');");
+%>

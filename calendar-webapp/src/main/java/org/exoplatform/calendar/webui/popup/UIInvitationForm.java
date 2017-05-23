@@ -17,18 +17,18 @@
 package org.exoplatform.calendar.webui.popup;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserHandler;
-import org.exoplatform.web.application.AbstractApplicationMessage;
-import org.exoplatform.web.application.ApplicationMessage;
-import org.exoplatform.web.application.JavascriptManager;
-import org.exoplatform.web.application.RequireJS;
+import org.exoplatform.web.application.*;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.ComponentConfigs;
@@ -87,6 +87,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
   public final static String TOOLTIP_GROUP = "group-picker".intern() ;
 
   public static final String NEW_LINE = "\r\n";
+  public static final String COMBINED_SEPARATOR = "\\s|\r\n";
 
   protected CalendarEvent event_ ;
 
@@ -183,7 +184,7 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
       UserHandler userHandler = CalendarUtils.getOrganizationService().getUserHandler();
       Query query = new Query();
       StringBuilder builder = new StringBuilder();
-      for(String p : uiEventForm.participantList_.split(NEW_LINE)) {
+      for(String p : uiEventForm.participantList_.split(COMBINED_SEPARATOR)) {
         p = p.trim();
         String participant = p;
         if(p.indexOf('@') > -1) {
@@ -345,4 +346,17 @@ public class UIInvitationForm extends UIForm implements UIPopupComponent {
   public void deActivate() throws Exception {
 
   }
+
+  /**
+   *
+   * @return
+   */
+  public String getRestURL() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("/").append(PortalContainer.getCurrentRestContextName()).append("/social/people/suggest.json?");
+    builder.append("currentUser=").append(RequestContext.getCurrentInstance().getRemoteUser());
+    builder.append("&typeOfRelation=").append("confirmed");
+    return builder.toString();
+  }
+
 }
