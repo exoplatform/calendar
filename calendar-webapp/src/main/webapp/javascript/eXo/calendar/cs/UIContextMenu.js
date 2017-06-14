@@ -216,12 +216,12 @@ var UIContextMenu = {
 	  gj(tmpMenuElement).addClass(UIContextMenu.portletCssClass + " UIEmpty");
 	  UIContextMenu.menuElement = tmpMenuElement;
 	  var callback = UIContextMenu.getCallback(tmpMenuElement);  
-	  if (callback) {	
-		//Just a workaround for this case
-		//TODO: Add all "window." before all variables in callback string
-		//TODO: Please find a better solution or a better action flow!  
-		callback = "window."+callback + "(arguments[2])";
-		eval(callback);
+	  if (evt && callback) {
+	    //Just a workaround for this case
+	    //TODO: Add all "window." before all variables in callback string
+	    //TODO: Please find a better solution or a better action flow!
+	    callback = "window."+callback + "(arguments[2])";
+	    eval(callback);
 	  }
 	  var uiApplication = document.getElementById("UIPortalApplication");
 	  if (UIContextMenu.menuElement) {
