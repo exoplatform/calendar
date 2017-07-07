@@ -15,6 +15,9 @@
 <% uiform.begin()%>
 <div class="uiQuickAddEvent" id="QuickAddEventContainer">
 		<div class="quickAddEventContainer">
+		        <div class="uiFormInput">
+			        <div class="createName"><strong><%=uicomponent.getLabel(uicomponent.POPUP_TITLE )%></strong></div> 
+                       </div>
 			<div class="form-horizontal">
 				<div class="control-group title">
 					<label class="control-label"><%=uicomponent.getLabel(uicomponent.TITLE )%>:</label>
