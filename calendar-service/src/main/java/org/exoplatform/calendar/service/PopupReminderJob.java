@@ -120,7 +120,7 @@ public class PopupReminderJob extends MultiTenancyJob {
         if (!popupReminders.isEmpty()) {
           for (Reminder rmdObj : popupReminders) {
             for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
-              if (!CommonsUtils.isUserEnabled(user)) {
+              if (CommonsUtils.isUserEnabled(user)) {
                 continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
               }  
             }
