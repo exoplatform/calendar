@@ -384,10 +384,6 @@
         var layoutMan = _module.LayoutManager;
         var layoutcookie = base.Browser.getCookie(layoutMan.layoutId);
         UICalendarPortlet.checkLayoutCallback(layoutcookie);
-        if(gj.browser.mozilla != undefined && UICalendarPortlet.getElementById("UIWeekView") && (layout == 1))
-            _module.UIWeekView.onResize();
-        if(gj.browser.mozilla != undefined && UICalendarPortlet.getElementById("UIMonthView") && (layout == 1))
-            _module.UICalendarMan.initMonth();
     };
 
     UICalendarPortlet.prototype.checkLayoutCallback = function(layoutcookie){
@@ -409,8 +405,6 @@
         var layoutMan = _module.LayoutManager;
         var layoutcookie = base.Browser.getCookie(layoutMan.layoutId);
         UICalendarPortlet.checkLayoutCallback(layoutcookie);
-        if(gj.browser.mozilla != undefined && _module.UICalendarPortlet.getElementById("UIWeekView")) _module.UIWeekView.onResize();
-        if(gj.browser.mozilla != undefined && _module.UICalendarPortlet.getElementById("UIMonthView")) _module.UICalendarMan.initMonth();
     };
 
     /**
@@ -1061,7 +1055,7 @@
         selectBox = gj(_module.UICalendarPortlet.filterSelect);
         _module.lastSelectedCategory = selectBox.val();
 
-        if(gj('#UIListContainer').size() == 0) { //except List View
+        if(gj('#UIListContainer').length == 0) { //except List View
             var calendarsFiltered = new Array(),
                 UICalendarPortlet = _module.UICalendarPortlet,
                 uiCalendars       = UICalendarPortlet.filterForm,
@@ -2111,7 +2105,7 @@
             selectBox = gj(_module.UICalendarPortlet.filterSelect);
             selectBox.val(_module.lastSelectedCategory);
             //re-filter
-            if(gj('#UIListContainer').size() > 0) {//list view
+            if(gj('#UIListContainer').length > 0) {//list view
                 uiForm.submitEvent(_module.UICalendarPortlet.portletId +'#UIListView','Onchange','&objectId=eventCategories');
             }
         }
@@ -2337,21 +2331,11 @@
           height =  maxHeight - positionYofContentContainer - deltaHeight;
           gj(contentContainer).css("height", height);
           gj(contentContainer).css("overflow", "auto");
-          
-          if (gj.browser.mozilla) {
-            gj(contentContainer).css("overflow-x", "hidden");
-            if(gj("#LeftNavigation").height() > viewPortHeight) { //CAL-541
-              gj(contentContainer).css('height', height - 15);
-            }
-          }
         }
       } else {
         maxHeight = (gj("form#UIMiniCalendar").height() + gj("form#UICalendars").height()) - actionBarHeight;
         gj(".eventWeekContent").css("height", maxHeight);
         gj(contentContainer).css("overflow", "auto");
-        if (gj.browser.mozilla) {
-          gj(contentContainer).css("overflow-x", "hidden");
-        }
       }
     }
     

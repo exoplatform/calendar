@@ -7,8 +7,6 @@ DragDrop.findDropableTarget4Cal = function(dragObject, dropableTargets, mouseEve
   if(dropableTargets == null) return null ;
   var mousexInPage = mouseEvent.pageX;
   var mouseyInPage = mouseEvent.pageY;
-  if(gj.browser.msie != undefined && base.I18n.isRT())
-  	mousexInPage = mousexInPage / 2;
 
   var foundTarget = null ;
   var len = dropableTargets.length ;
@@ -139,7 +137,6 @@ var UICalendarDragDrop = {
     dragObject.style.top = mouseY + 'px' ;
     dragObject.style.left = mouseX + 'px' ;
     if (base.I18n.isRT()) {
-      if(gj.browser.msie != undefined) mouseX -= CSUtils.getScrollbarWidth();
       dragObject.style.right = (gj(window).width() - mouseX) + 'px' ;
       dragObject.style.left = '' ;
     }

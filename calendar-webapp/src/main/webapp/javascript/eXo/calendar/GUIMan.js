@@ -387,9 +387,6 @@ var GUIMan = {
    gj(moreEventContainer).css('position','absolute');
    gj(moreEventContainer).css('top',gj(moreNode).position().top - 6);
    var moreLeft = gj(moreNode).position().left;
-   if(gj.browser.webkit) {
-       moreLeft += 1;
-   }
    gj(moreEventContainer).css('left', moreLeft);
    DOMUtil.listHideElements(moreEventContainer);
    gj(moreEventContainer).off('click mousedown contextmenu').on({'click' : function(e) {e.stopPropagation();},
@@ -453,32 +450,7 @@ var GUIMan = {
          cindex = parseInt(dayInfo.cindex) + parseInt(i);
          beginId = "r"+dayInfo.rindex + "c"+cindex;
          var cellWidth = gj("td#"+beginId).width();
-
-         if(gj.browser.mozilla) {
-             cellWidth = gj("td#"+beginId).outerWidth(true);
-         } else if (gj.browser.msie) {
-             cellWidth = gj("td#"+beginId).outerWidth(true);
-         }
          eventLen = eventLen + cellWidth;
-     }
-     var boderWidth = (delta -1);
-     if( gj.browser.webkit) {
-         if(delta - parseInt(dayInfo.cindex) >= 3)
-             eventLen = eventLen + delta  -2;
-         else
-             eventLen = eventLen + delta -1;
-     } else
-     if(gj.browser.mozilla){
-         if(delta - parseInt(dayInfo.cindex) >= 3)
-             eventLen = eventLen  -2;
-         else
-             eventLen = eventLen  -1;
-     } else
-     if (gj.browser.msie) {
-         if(delta - parseInt(dayInfo.cindex) >= 3)
-             eventLen = eventLen  -3;
-         else
-             eventLen = eventLen  -1;
      }
      eventNode.style.top = topPos + 'px';
      eventNode.style.left = leftPos + 'px';
