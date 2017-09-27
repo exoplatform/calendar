@@ -111,7 +111,7 @@
 <td valign="top" class="columnRight">
 <!-- event/ task description column -->
 	<div >
-		<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=StringEscapeUtils.escapeHtml(event.summary)%></strong></div>
+		<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=StringEscapeUtils.escapeHtml((event.summary).replace("&#39", "'"))%></strong></div>
 		<table class="tableListEvent" id="RowContainerDay" cellspacing="0" borderspacing="0">
 			
 			<% if(!CalendarUtils.isEmpty(event.getLocation())) { %>

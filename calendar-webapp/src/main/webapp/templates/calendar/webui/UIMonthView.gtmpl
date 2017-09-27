@@ -208,7 +208,7 @@
               <%} else {%>
               <span>
               <%}%>
-                <%=StringEscapeUtils.escapeHtml(event.summary)%>
+                <%=StringEscapeUtils.escapeHtml((event.summary).replace("&#39", "'"))%>
               </span>
             </div>
            

@@ -108,7 +108,7 @@
 			<% } %>
 			<td valign="top" class="columnRight">
 			<div>
-			<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=StringEscapeUtils.escapeHtml(task.getSummary())%></strong></div>
+			<div class="titleList"><span class="eventDescription $color"></span>&nbsp;<strong><%=StringEscapeUtils.escapeHtml(task.getSummary().replace("&#39", "'"))%></strong></div>
 			<table class="tableListEvent" id="RowContainerDay" cellspacing="0" borderspacing="0">
 			  <tr>
 				<td class="right" >

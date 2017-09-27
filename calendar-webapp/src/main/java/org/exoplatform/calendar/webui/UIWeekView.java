@@ -326,7 +326,7 @@ public class UIWeekView extends UICalendarView {
           .append("\n<span></span>\n</div>");
       }
 
-      stringBuilder.append("\n<div class=\"eventAlldayContent " + color + "\">" + StringEscapeUtils.escapeHtml(event.getSummary()) + "</div>")
+      stringBuilder.append("\n<div class=\"eventAlldayContent " + color + "\">" + StringEscapeUtils.escapeHtml(event.getSummary().replace("&#39", "'")) + "</div>")
         .append("\n</div>");
     }
     stringBuilder.append("\n</div>\n</div>");
@@ -412,7 +412,7 @@ public class UIWeekView extends UICalendarView {
               stringBuilder.append("\n<div unselectable=\"on\" class=\"eventContainer\" style=\"text-decoration:line-through; \">" +
                   event.getSummary() + "</div>");
             } else {
-              stringBuilder.append("\n<div class=\"eventContainer \" >" + StringEscapeUtils.escapeHtml(event.getSummary()) + "</div>");
+              stringBuilder.append("\n<div class=\"eventContainer \" >" + StringEscapeUtils.escapeHtml(event.getSummary().replace("&#39", "'")) + "</div>");
             }
             stringBuilder.append("</div>");
           } else {
@@ -438,7 +438,7 @@ public class UIWeekView extends UICalendarView {
               stringBuilder.append("\n<div unselectable=\"on\" class=\"eventContainer\" style=\" text-decoration:line-through; \">")
                 .append(event.getSummary() + "</div>");
             } else {
-              stringBuilder.append("\n<div class=\"eventContainer\">" + StringEscapeUtils.escapeHtml(event.getSummary()) + "</div>");
+              stringBuilder.append("\n<div class=\"eventContainer\">" + StringEscapeUtils.escapeHtml(event.getSummary().replace("&#39", "'")) + "</div>");
             }
           }
 
