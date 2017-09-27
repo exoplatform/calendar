@@ -1428,13 +1428,10 @@
                 }
             }
 
-            var UIComboboxInputs = gj(form).find("input.UIComboboxInput");
-            for(var i = 0; i < UIComboboxInputs.length; i++) {
-                gj(UIComboboxInputs[i]).live('change', function() {
-                    _module.ScheduleSupport.syncTimeBetweenEventTabs();
-                    _module.ScheduleSupport.applyPeriod();
-                });
-            }
+            gj(form).on('change', "input.UIComboboxInput", function() {
+              _module.ScheduleSupport.syncTimeBetweenEventTabs();
+              _module.ScheduleSupport.applyPeriod();
+            });
 
             /**
              * Preselect calendar when add event/task
@@ -1593,13 +1590,10 @@
             _module.UICalendarPortlet.checkAllInBusy(this);
             _module.ScheduleSupport.applyPeriod();
         });
-        var UIComboboxInputs = gj(container).find("input.UIComboboxInput");
-        for(var i = 0; i < UIComboboxInputs.length; i++) {
-            gj(UIComboboxInputs[i]).live('change', function() {
-                _module.ScheduleSupport.applyPeriod();
-                _module.ScheduleSupport.syncTimeBetweenEventTabs();
-            });
-        }
+        gj(container).on('change', "input.UIComboboxInput", function() {
+          _module.ScheduleSupport.applyPeriod();
+          _module.ScheduleSupport.syncTimeBetweenEventTabs();
+        });
         _module.UICalendarPortlet.initSelectionX(firstTr);
     };
 
