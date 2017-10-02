@@ -2083,8 +2083,7 @@
     }
 
     UICalendarPortlet.prototype.checkEventCategoryName = function(textFieldId) {
-        var txtField = gj("input#"+textFieldId);
-        var val = txtField.attr("value");
+        var val = gj("input#"+textFieldId).val();
         var btn = gj("button#btnEventCategoryFormContainer");
         if (val == null || val == "") {
             btn.attr("disabled", "disabled");
