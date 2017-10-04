@@ -179,7 +179,7 @@
         <%}%>
 			<%}%>
 		  <span>
-			  <%=StringEscapeUtils.escapeHtml(event.getSummary().replace("&#39", "'"))%>
+			  <%=StringEscapeUtils.escapeHtml(event.getSummary())%>
 		  </span>
 	  </td>
 	  <td ><%=uicomponent.getDateTimeString(event.getFromDateTime())%></td>
