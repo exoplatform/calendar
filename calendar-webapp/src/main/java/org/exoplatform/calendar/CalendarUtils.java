@@ -893,29 +893,6 @@ public class CalendarUtils {
     }
   }
 
-  public static String enCodeTitle(String s) {
-    StringBuffer buffer = new StringBuffer();
-    if(s != null) {
-      s = s.replaceAll("(<p>((\\&nbsp;)*)(\\s*)?</p>)|(<p>((\\&nbsp;)*)?(\\s*)</p>)", "<br/>").trim();
-      s = s.replaceFirst("(<br/>)*", "");
-      s = s.replaceAll("(\\w|\\$)(>?,?\\.?\\*?\\!?\\&?\\%?\\]?\\)?\\}?)(<br/><br/>)*", "$1$2");
-      s.replaceAll("&", "&amp;").replaceAll("'", "&apos;");
-      for (int j = 0; j < s.trim().length(); j++) {
-        char c = s.charAt(j);
-        if(c == 60){
-          buffer.append("&lt;") ;
-        } else if(c == 62){
-          buffer.append("&gt;") ;
-        } else if(c == '\''){
-          buffer.append("&#39") ;
-        } else {
-          buffer.append(c) ;
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
   public static org.exoplatform.calendar.service.Calendar getCalendar(String calType, String calendarId) throws Exception {
     CalendarService calService = CalendarUtils.getCalendarService() ;
     String currentUser = CalendarUtils.getCurrentUser() ;

@@ -1461,7 +1461,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
     CalendarSetting calSetting = calendarPortlet.getCalendarSetting() ;
     CalendarService calService = CalendarUtils.getCalendarService() ;
     String summary = uiForm.getEventSumary().trim() ;
-    summary = CalendarUtils.enCodeTitle(summary);
     String location = uiForm.getEventPlace() ;
     if(!CalendarUtils.isEmpty(location)) {
       location = location.replaceAll(CalendarUtils.GREATER_THAN, "").replaceAll(CalendarUtils.SMALLER_THAN,"") ;

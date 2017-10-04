@@ -902,7 +902,6 @@ public class UITaskForm extends UIFormTabPane implements UIPopupComponent, UISel
         String username = CalendarUtils.getCurrentUser() ;
         String calendarId = uiForm.getCalendarId() ;
         String summary = uiForm.getEventSumary().trim() ;
-        summary = CalendarUtils.enCodeTitle(summary);
         String description = uiForm.getEventDescription() ;
         if(!CalendarUtils.isEmpty(description)) description = description.replaceAll(CalendarUtils.GREATER_THAN, "").replaceAll(CalendarUtils.SMALLER_THAN,"") ;
         CalendarEvent calendarEvent = null ;
