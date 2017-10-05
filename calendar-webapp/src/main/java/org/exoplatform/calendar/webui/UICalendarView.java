@@ -604,6 +604,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     List<org.exoplatform.calendar.model.Event> result = new LinkedList<org.exoplatform.calendar.model.Event>();
     for (org.exoplatform.calendar.model.Event evt : getEventInMonth()) {
       if (endTime >= evt.getFromDateTime().getTime() && startTime <= evt.getToDateTime().getTime()) {
+        evt.setSummary(evt.getSummary().replace("&#39", "'"));
         result.add(evt);
       }
     }

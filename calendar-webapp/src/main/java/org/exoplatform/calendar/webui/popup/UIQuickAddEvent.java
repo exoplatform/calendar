@@ -297,7 +297,6 @@ public class UIQuickAddEvent extends UIForm implements UIPopupComponent{
         return;
       }
       summary = summary.trim();
-      summary = CalendarUtils.enCodeTitle(summary);
 
       String description = uiForm.getEventDescription() ;
       if(!CalendarUtils.isEmpty(description)) description = description.replaceAll(CalendarUtils.GREATER_THAN, "").replaceAll(CalendarUtils.SMALLER_THAN,"") ;
