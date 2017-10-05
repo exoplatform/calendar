@@ -131,7 +131,6 @@ public class UICreateEvent extends UIForm {
         return;
       }
       summary = summary.trim();
-      summary = enCodeTitle(summary);
       UIFormDateTimeInput fromField = uiForm.getChildById(START_EVENT);
       UIFormDateTimeInput toField = uiForm.getChildById(END_EVENT);
       Date from = uiForm.getDateTime(fromField, UICreateEvent.START_TIME);
@@ -516,29 +515,6 @@ public class UICreateEvent extends UIForm {
 
   private String getEventSummary() {
     return getUIStringInput(TITLE).getValue();
-  }
-
-  public static String enCodeTitle(String s) {
-    StringBuffer buffer = new StringBuffer();
-    if (s != null) {
-      s = s.replaceAll("(<p>((\\&nbsp;)*)(\\s*)?</p>)|(<p>((\\&nbsp;)*)?(\\s*)</p>)", "<br/>").trim();
-      s = s.replaceFirst("(<br/>)*", "");
-      s = s.replaceAll("(\\w|\\$)(>?,?\\.?\\*?\\!?\\&?\\%?\\]?\\)?\\}?)(<br/><br/>)*", "$1$2");
-      s.replaceAll("&", "&amp;").replaceAll("'", "&apos;");
-      for (int j = 0; j < s.trim().length(); j++) {
-        char c = s.charAt(j);
-        if ((int) c == 60) {
-          buffer.append("&lt;");
-        } else if ((int) c == 62) {
-          buffer.append("&gt;");
-        } else if (c == '\'') {
-          buffer.append("&#39");
-        } else {
-          buffer.append(c);
-        }
-      }
-    }
-    return buffer.toString();
   }
 
   private String getEventCalendar() {
