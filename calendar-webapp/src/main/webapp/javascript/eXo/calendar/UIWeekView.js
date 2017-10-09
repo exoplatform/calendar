@@ -275,7 +275,7 @@
       var items = CSUtils.getElements(obj) ;
       var len = items.length ;
       if (len <= 0) return ;
-      var container = (gj.browser.mozilla != undefined) ? UIWeekView.container : items[0].offsetParent ;
+      var container = items[0].offsetParent ;
       var left = parseFloat((base.Browser.findPosXInContainer(obj, container) - 1)/container.offsetWidth)*100 ;
       var width = parseFloat((obj.offsetWidth - 2)/container.offsetWidth)*100 ;
       items = CSUtils.sortByAttribute(items, "startTime") ;
@@ -405,7 +405,6 @@
 
     isCol : function(evt) {
       if (!UIWeekView.dragElement) return false;
-      var isIE = (gj.browser.msie != undefined);
       var isDesktop = (document.getElementById("UIPageDesktop"))?true:false ;
       var mouseX = evt.pageX;
       if(base.I18n.isRT() && (base.Browser.isIE7() || base.Browser.isIE6())) mouseX = mouseX - 32; // 32 =  double of scrollbar width
@@ -414,7 +413,6 @@
       var uiControlWorkspace = document.getElementById("UIControlWorkspace") ;
       for(var i = 1 ; i < len ; i ++) {
         colX = base.Browser.findPosX(UIWeekView.cols[i]) ;
-        if(uiControlWorkspace && isIE && (!isDesktop || base.Browser.isIE7())) colX -= uiControlWorkspace.offsetWidth ;
         if ((mouseX > colX) && (mouseX < colX + UIWeekView.cols[i].offsetWidth)){
           return UIWeekView.currentCol = UIWeekView.cols[i] ;
         }

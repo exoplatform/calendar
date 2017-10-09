@@ -37,7 +37,6 @@
     
         if ((leftNavHeight !== null) && (leftNavContHeight !== null)) {
             if (leftNavContHeight > leftNavHeight) {
-                if (gj.browser.mozilla) resizedHeight += 12;
                 gj(leftNavCont).css('height', resizedHeight + 'px');
             }
         }
