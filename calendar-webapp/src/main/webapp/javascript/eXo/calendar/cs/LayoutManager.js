@@ -16,7 +16,7 @@
   LayoutManager.prototype.switchLayout = function(layout) {
   	arrowIcon = gj("#ShowHideAll").find('i');
   	arrowIcon.toggleClass('uiIconMiniArrowLeft').toggleClass('uiIconMiniArrowRight');
-  	var layoutcookie = base.Browser.getCookie(this.layoutId) ;
+  	var layoutcookie = (document.cookie.indexOf(this.layoutId) >= 0) ? base.Browser.getCookie(this.layoutId) : String(layout);
   	var status = this.setValue(layout,layoutcookie);
   	if (!status) {
       if (this.layouts[layout-1]) 

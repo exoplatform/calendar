@@ -42,7 +42,6 @@
     requireJS.require("SHARED/CheckBox","CheckBox");
     requireJS.addScripts('CheckBox.init("'+uiform.id+'") ;') ;
     requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
-    rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout');
     requireJS.require("SHARED/jquery","gj");
     requireJS.addScripts("gj('tr.uiListViewRow').click(function() {cal.UICalendarPortlet.listViewClickCallback(this); });");
 

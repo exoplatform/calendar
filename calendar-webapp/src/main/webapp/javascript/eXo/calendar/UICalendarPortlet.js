@@ -419,7 +419,6 @@
         _module.LayoutManager.switchCallback = _module.UICalendarPortlet.switchLayoutCallback;
         _module.LayoutManager.resetCallback = _module.UICalendarPortlet.resetLayoutCallback;
         _module.LayoutManager.check();
-        gj('#ShowHideAll').find('i').css('display','block');
     };
 
     /**
@@ -2299,37 +2298,6 @@
         CalDateTimePicker.datePattern = datePattern;
         var value = CalDateTimePicker.getDateTimeString();
         eToDate.val(value);
-    }
-    
-    /**
-     * Resize content container to stop at the bottom of the page
-     * @param {Object} contentContainer DOM element to be resized
-     * @param {int}    deltaHeight      additional height to add
-     * @param {int}    originalHeight   original height of content container
-     */
-    UICalendarPortlet.prototype.resizeHeight = function(contentContainer, deltaHeight, originalHeight) {
-      var viewPortHeight    = gj(window).height(),
-      positionYofContentContainer = gj(contentContainer).offset().top,
-      height,
-      totalYofContainer = gj(contentContainer).offset().top + contentContainer.offsetHeight,
-      originalTotalY    = gj(contentContainer).offset().top + originalHeight;
-      var actionBarHeight = 70 ;
-      if(gj("#LeftNavigation") != null && gj("#LeftNavigation").offset() != null) {
-        var leftNavigationY   = gj("#LeftNavigation").height() + gj("#LeftNavigation").offset().top,
-        maxHeight         = (leftNavigationY > viewPortHeight) ? leftNavigationY : viewPortHeight;
-        if (maxHeight > originalTotalY) {
-          gj(contentContainer).css("height", originalHeight);
-        }
-        else {
-          height =  maxHeight - positionYofContentContainer - deltaHeight;
-          gj(contentContainer).css("height", height);
-          gj(contentContainer).css("overflow", "auto");
-        }
-      } else {
-        maxHeight = (gj("form#UIMiniCalendar").height() + gj("form#UICalendars").height()) - actionBarHeight;
-        gj(".eventWeekContent").css("height", maxHeight);
-        gj(contentContainer).css("overflow", "auto");
-      }
     }
     
     UICalendarPortlet.prototype.setPosition = function(eventObj) {

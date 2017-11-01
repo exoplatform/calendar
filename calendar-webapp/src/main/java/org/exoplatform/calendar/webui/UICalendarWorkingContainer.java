@@ -33,6 +33,9 @@ import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.UIPopupWindow;
 import org.exoplatform.webui.core.model.SelectItem;
 import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
+import org.exoplatform.portal.webui.util.Util;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -52,6 +55,8 @@ import java.util.Map;
                  template =  "app:/templates/calendar/webui/UICalendarWorkingContainer.gtmpl"
 )
 public class UICalendarWorkingContainer extends UIContainer  {
+    
+  public static boolean SHOW_LEFT_CONTAINER_DEFAULT = true;
   
   private Map<String, List<Calendar>> calendars = new HashMap<String, List<Calendar>>();
   
@@ -67,10 +72,10 @@ public class UICalendarWorkingContainer extends UIContainer  {
   private ExtendedCalendarService xCalService = getApplicationComponent(ExtendedCalendarService.class);
   
   public UICalendarWorkingContainer() throws Exception {
-    addChild(UICalendarContainer.class, null, null).setRendered(true) ;
-    addChild(UICalendarViewContainer.class, null, null).setRendered(true) ;
+    addChild(UICalendarContainer.class, null, null);
+    addChild(UICalendarViewContainer.class, null, null);
   }
-  
+
   public void init() throws Exception {
     //UICalendarView#refresh method need to call this method
     //We add "initilized" context attribute to make sure this only called only 1 time per request
@@ -149,6 +154,24 @@ public class UICalendarWorkingContainer extends UIContainer  {
     uiWindowT.setUIComponent(quickAddTask) ;
     uiWindowT.setWindowSize(540, 0);
   }
+  
+  public static boolean isShowLeftContainer() {
+    HttpServletRequest req = Util.getPortalRequestContext().getRequest();
+    Cookie[] cookies = req.getCookies();
+    boolean showLeftContainer = SHOW_LEFT_CONTAINER_DEFAULT;
+    
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if(cookie.getName().equals("calendarlayout-" + req.getRemoteUser())) {
+          if (cookie.getValue().equals("")) {
+            showLeftContainer = false;
+          }
+          break;
+        }
+      }
+    }
+    return showLeftContainer;
+  }
 
   public Map<String, List<Calendar>> getCalendarMap() {
     return calendars;
@@ -156,5 +179,9 @@ public class UICalendarWorkingContainer extends UIContainer  {
   
   public Map<String, String> getColorMap() {
     return colorMap;
+  }
+
+  private boolean isInSpaceContext() {
+    return getAncestorOfType(UICalendarPortlet.class).isInSpaceContext();
   }
 }

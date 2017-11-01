@@ -1,13 +1,15 @@
 <%
+ import org.exoplatform.calendar.webui.UICalendarWorkingContainer;
  def rcontext = _ctx.getRequestContext();
  def requireJS = rcontext.getJavascriptManager().getRequireJS();
  requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
  requireJS.addScripts("gj('div#ShowHideAll').click(function() {cal.UICalendarPortlet.switchLayout(1);});");
+ def arrowPosition = UICalendarWorkingContainer.isShowLeftContainer() == false ? "Right" : "Left";
 %>
-<div class="uiCalendarViewContainer" id="$uicomponent.id" style="position: relative;">
+<div class="uiCalendarViewContainer" id="$uicomponent.id">
 <% if(!uicomponent.isInSpace()){%>
 <div id="ShowHideAll" class="resizeButton "  >
-  <i class="uiIconMiniArrowLeft uiIconLightGray" style="display:none;"></i>
+  <i class="uiIconMiniArrow$arrowPosition uiIconLightGray"></i>
 </div>
 <%}%>
   <%
@@ -20,7 +22,6 @@
   %>
 </div>  
 <%
-requireJS.addScripts("gj('#ShowHideAll').find('i').css('display','block');");
 requireJS.addScripts("cal.UICalendarPortlet.showLastSelectedCategory();");
 
 %>

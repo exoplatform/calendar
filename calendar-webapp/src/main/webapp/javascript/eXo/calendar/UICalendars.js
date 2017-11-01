@@ -34,15 +34,6 @@ var UICalendars = {
           var checkBox = gj(CalendarItem[j]).find('div.calendarCheckboxBlock')[0];
           checkBox.onclick = UICalendarPortlet.filterByCalendar;
       }
-
-      /*=== resize height ===*/
-      UICalendarPortlet.resizeHeight(contentContainer, 20, this.originalHeight);
-
-      /* resize content each time the window is resized */
-      var originalHeight = this.originalHeight;
-      gj(window).resize(function() {
-          UICalendarPortlet.resizeHeight(contentContainer, 20, originalHeight);
-      });
   },
 
   resetSettingButton : function(settingButton) {

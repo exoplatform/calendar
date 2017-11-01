@@ -40,60 +40,6 @@
   
        this.groupByWeek();
        this.sortByWeek();
-  
-       /*=== resize width ===*/
-       this.increaseWidth(rowContainerDay);
-  
-       /*=== resize height to stop at bottom of the page - for month view ===*/
-       if (this.originalHeightOfEventMonthContent === null) {
-           this.originalHeightOfEventMonthContent = gj(rowContainerDay).height();
-       }
-  
-       UICalendarPortlet.resizeHeight(rowContainerDay, 6, this.originalHeightOfEventMonthContent);
-  
-       /* resize content each time the window resizes */
-       var originalHeight = this.originalHeightOfEventMonthContent;
-       gj(window).resize(function() {
-           UICalendarPortlet.resizeHeight(rowContainerDay, 6, originalHeight);
-  
-           EventMan.resizeWidth(rowContainerDay);
-       });
-  
-   },
-  
-   /**
-    * Increase the width to include the scrollbar
-    */
-   increaseWidth : function(contentContainer) {
-       var originalWidth       = gj(contentContainer).width(),
-           eventMonthContainer = gj(contentContainer).parents(".eventMonthContainer")[0],
-           widthOfTitleBar     = gj(eventMonthContainer).siblings(".dayTitleBar")[0].offsetWidth;
-  
-       if (widthOfTitleBar !== originalWidth) {
-         gj(contentContainer).css("width", widthOfTitleBar);
-       }
-  
-       gj(contentContainer).css("width", (widthOfTitleBar + 20));
-       if (this.UIMonthViewGrid) {
-           gj(this.UIMonthViewGrid).css("width", widthOfTitleBar);
-       }
-       else {
-           this.UIMonthViewGrid = document.getElementById('UIMonthViewGrid');
-       }
-   },
-  
-   /**
-    * Resize width for month view to include the scrollbar
-    * @param {Object} contentContainer DOM element
-    */
-   resizeWidth : function(contentContainer) {
-     var eventMonthContainer = gj(contentContainer).parents(".eventMonthContainer")[0],
-         dayTitleBar         = gj(eventMonthContainer).siblings(".dayTitleBar")[0],
-         resizedWidth        = gj(dayTitleBar).width(),
-         eventTable          = gj(contentContainer).children("table#UIMonthViewGrid")[0];
-     
-     gj(eventTable).css("width", resizedWidth);
-     gj(contentContainer).css("width", (resizedWidth + 20));
    },  
   
    cleanUp : function() {

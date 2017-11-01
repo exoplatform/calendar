@@ -40,7 +40,6 @@
     var el = CSUtils.getElements(this.viewer);
     el = CSUtils.sortByAttribute(el, "startTime");
     if (el.length <= 0) {
-      this.resizeHeightForDayView(EventDayContainer, this.originalHeightOfEventDayContent);
       return;
     }
 
@@ -75,24 +74,8 @@
       gj(el[i]).css('display','block');
     }
     
-    this.resizeHeightForDayView(EventDayContainer, this.originalHeightOfEventDayContent);
-    
     this.items = null;
     this.viewer = null;
-  };
-  
-  /**
-   * resize height for day view to stop at bottom of the page
-   * @param {Object} contentContainer DOM element
-   * @param {int}    originalHeight   original height of content container
-   */
-  UIDayView.prototype.resizeHeightForDayView = function(contentContainer, originalHeight) {
-    var UICalendarPortlet = window.require("PORTLET/calendar/CalendarPortlet").UICalendarPortlet;
-    UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
-
-    gj(window).resize(function() {
-      UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
-    });
   };
   
   UIDayView.prototype.editAlldayEvent = function(cont) {

@@ -43,11 +43,6 @@
         /*=== RESIZE WIDTH AND HEIGHT WHEN NO EVENTS FOUND ===*/
         if (len <= 0) {     /* no events in view */
           this.initAllday() ;
-
-            this.increaseWidth(EventWeekContent);
-
-            this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
-            this.resizeWidth(EventWeekContent);
         
           return;
       }
@@ -88,59 +83,12 @@
       }
       this.cols = gj(firstTr).find("td") ;
 
-        /*=== resize width ===*/
-        this.increaseWidth(EventWeekContent);
-
-        /*=== resize height ===*/
-        this.resizeHeight(EventWeekContent, this.originalHeightOfEventWeekContent);
-        this.resizeWidth(EventWeekContent);
-
       this.distributeEvent() ;
       this.setSize() ;
       this.initAllday() ;
 
       //UICalendarPortlet.setFocus() ;
     },
-
-    /**
-     * Increase the width to include the scrollbar
-     */
-    increaseWidth : function(contentContainer) {
-      var originalWidth   = gj(contentContainer).width(),
-          widthOfTitleBar = gj(contentContainer).siblings(".eventWeekBar")[0].offsetWidth;
-
-      if (originalWidth !== widthOfTitleBar) {
-          gj(contentContainer).css("width", widthOfTitleBar);
-      }
-
-      gj(contentContainer).css("width", (widthOfTitleBar + 20));
-      var eventTable = gj(contentContainer).children("table.uiGrid")[0];
-      gj(eventTable).css("width", widthOfTitleBar);
-    },
-
-    /**
-     * Resize height for week view
-     * @param {Object} contentContainer DOM element
-     * @param {int}    originalHeight   original height of content container
-     */
-    resizeHeight : function(contentContainer, originalHeight) {
-        var UICalendarPortlet = eXo.calendar.UICalendarPortlet;
-        UICalendarPortlet.resizeHeight(contentContainer, 6, originalHeight);
-    },
-
-    /**
-     * Resize width for week view to include the scrollbar
-     * @param {Object} contentContainer DOM element
-     */
-    resizeWidth : function(contentContainer) {
-      var eventWeekBar = gj(contentContainer).siblings(".eventWeekBar")[0],
-          resizedWidth = gj(eventWeekBar).width(),
-          eventTable   = gj(contentContainer).children("table.uiGrid")[0];
-      
-      gj(eventTable).css("width", resizedWidth);
-      gj(contentContainer).css("width", (resizedWidth + 20));
-    },
-
 
     distributeEvent : function() {
         var len = UIWeekView.cols.length ;
