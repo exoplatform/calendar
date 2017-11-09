@@ -22,7 +22,6 @@
   requirejs.addScripts("gj('div#UICalendars_toggle-calendars').click(function() {cal.UICalendarPortlet.switchLayout(3);});");
   //rcontext.getJavascriptManager().addJavascript('eXo.calendar.UICalendarPortlet.checkFilter() ;') ;
 
-
   private void renderNoCalendarNote()
   {
 	  def addNewLink ;
@@ -79,8 +78,8 @@
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
 
 		        if (calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) icon = "SharedCalendarIcon";
-		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar)) css = "IconUnCheckBox checkbox";
-		        if(chk.isChecked()) css = "iconCheckBox checkbox";
+		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace(calendar)) css = "iconUnCheckBox checkbox";
+		        if(!chk.isChecked()) css = "iconUnCheckBox checkbox";
 		    %>
 		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="true" id="$compositeID" calType="0" isRemote="$isRemote">
 		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
@@ -128,8 +127,8 @@
 		        def css          = "iconCheckBox checkbox";
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId);
 
-		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar)) css = "IconUnCheckBox checkbox";
-		        if (chk.isChecked()) css = "iconCheckBox checkbox";
+		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace(calendar)) css = "iconUnCheckBox checkbox";
+		        if (!chk.isChecked()) css = "iconUnCheckBox checkbox";
 		      %>
 		      <li class="calendarItem CalendarItemShared" calColor="$color" id="$compositeID" calType="1" canEdit="$isEditable">
 		        <div id="UICalendars_CalendarPopupMenu2" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
@@ -183,8 +182,8 @@
 	      		        }
 	      		        groupList.deleteCharAt(groupList.lastIndexOf(","));
 
-	      		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace1(calendar)) css = "IconUnCheckBox checkbox";
-	      		        if (chk.isChecked()) css = "iconCheckBox checkbox";
+	      		        if (isInSpaceContext && !uicomponent.isCalendarOfSpace(calendar)) css = "iconUnCheckBox checkbox";
+	      		        if (!chk.isChecked()) css = "iconUnCheckBox checkbox";
 	      %>
 		      <li class="calendarItem calendarItemPublic " calColor="$color" canEdit="$isEditable" id="$compositeID" calType="2" >
 		        <div id="UICalendars_CalendarPopupMenu3" class="uiIconCalSettingMini uiIconLightGray pull-right" ></div>
@@ -227,7 +226,7 @@
 		        def isRemote     = calendar.isRemote();
 		        def css          = "iconCheckBox checkbox" ;
 		        def username 	 = CalendarUtils.getCurrentUser();
-		        def isEditable   = Utils.isCalendarEditable(username, calendar);		        
+		        def isEditable   = Utils.isCalendarEditable(username, calendar);
 		        UICheckBoxInput chk = (UICheckBoxInput) uicomponent.getChildById(calendarId) ;
 		        def calendarType = calendar.getCalType();
 
@@ -269,7 +268,7 @@
     <% renderSharedCalendarGroup(); %>
 
     <% renderPublicCalendarGroup(); %>
-    
+
     <% renderOtherGroup(); %>
 
     <% if (uicomponent.hasNoCalendarShown()) renderNoCalendarNote(); %>
@@ -400,9 +399,9 @@
 			</ul>
 	</div>
   <% /*End Popup Menu*/ %>
-    
+
   <% /*Arrow for menu*/ %>
-  
+
   <span class="uiArrowCalDropdown"></span>
 	</div>
 <%uiform.end()%>

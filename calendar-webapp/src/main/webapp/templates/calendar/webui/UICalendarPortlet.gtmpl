@@ -6,6 +6,8 @@
   import org.exoplatform.webui.core.UIConfirmation;
   import javax.portlet.PortletMode;
   import org.exoplatform.calendar.webui.UICalendarPortletEditMode;
+  import javax.portlet.MimeResponse;
+  import javax.portlet.ResourceURL;
   
   PortletMode appMode = _ctx.getRequestContext().getApplicationMode();
   if (PortletMode.EDIT.equals(appMode)) {
@@ -150,12 +152,16 @@
       //String restContext = uicomponent.getRestContextName();
       def rcontext = _ctx.getRequestContext() ;
       def requireJS = rcontext.getJavascriptManager().getRequireJS();
-	
+
+      MimeResponse res = _ctx.getRequestContext().getResponse();
+      ResourceURL resourceURL = res.createResourceURL();
+      resourceURL.setResourceID("_id_");
 
       requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
       requireJS.require("SHARED/Reminder","Reminder");
       requireJS.require("SHARED/CalContextMenu","uiContextMenu");
       requireJS.addScripts('cal.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
+      requireJS.addScripts('cal.UICalendarPortlet.resourceURL="' + resourceURL.toString() + '";') ;
 	
       //def params = "{restContext: $restContext,settingTimezone: $settingTimeZone}";
       //requireJS.addScripts('cal.UICalendarPortlet.onLoad($params);');	 

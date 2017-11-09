@@ -25,6 +25,10 @@ import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.webui.popup.UIEventForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
+import org.exoplatform.commons.api.settings.SettingService;
+import org.exoplatform.commons.api.settings.SettingValue;
+import org.exoplatform.commons.api.settings.data.Context;
+import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
@@ -55,13 +59,13 @@ import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
+import javax.portlet.ResourceRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -74,6 +78,9 @@ import javax.servlet.http.HttpServletRequest;
                  template = "app:/templates/calendar/webui/UICalendarPortlet.gtmpl"
     )
 public class UICalendarPortlet extends UIPortletApplication {
+
+  public static final String CALENDAR_APP_SETTING_SCOPE = "Calendar";
+  public static final String CALENDAR_INVISIBLE_SETTING_KEY = "InvisibleCalendars";
 
   private static Log log = ExoLogger.getLogger(UICalendarPortlet.class);
 
@@ -90,6 +97,23 @@ public class UICalendarPortlet extends UIPortletApplication {
     
     addChild(UICalendarPortletEditMode.class, null, null);
   }
+
+  @Override
+  public void serveResource(WebuiRequestContext context) throws Exception {
+    super.serveResource(context);
+
+    ResourceRequest req = context.getRequest();
+    SettingService settingService = getApplicationComponent(SettingService.class);
+    SettingValue<?> value = settingService.get(Context.USER, Scope.APPLICATION.id(CALENDAR_APP_SETTING_SCOPE), CALENDAR_INVISIBLE_SETTING_KEY);
+
+    String invisibleCalendarIds = req.getResourceID();
+    if (invisibleCalendarIds != null) {
+      settingService.set(Context.USER, Scope.APPLICATION.id(CALENDAR_APP_SETTING_SCOPE), CALENDAR_INVISIBLE_SETTING_KEY, SettingValue.create(invisibleCalendarIds));
+    } else {
+      settingService.remove(Context.USER, Scope.APPLICATION.id(CALENDAR_APP_SETTING_SCOPE), CALENDAR_INVISIBLE_SETTING_KEY);
+    }
+  }
+
   public CalendarSetting getCalendarSetting() throws Exception{
     return CalendarUtils.getCurrentUserCalendarSetting(); 
   }
