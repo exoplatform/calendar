@@ -29,8 +29,6 @@ requirejs.addScripts('cal.UICalendarPortlet.getWorkingdays('+numberOfDays+') ;')
 requirejs.require("SHARED/base","base");
 id = Integer.toString(Math.abs(new String("cal.UICalendarPortlet.onLoad").hashCode()));
 requirejs.addScripts("base.Browser.addOnLoadCallback('mid"+id+"',cal.UICalendarPortlet.onLoad);") ;
-
-rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.UICalendarPortlet.checkFilter') ;
 rcontext.getJavascriptManager().addOnResizeJavascript('UIWeekView.onResize');
 requirejs.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
 rcontext.getJavascriptManager().addCustomizedOnLoadScript('cal.CalendarLayout.updateUICalendarViewLayout(\'UIWeekView\');');

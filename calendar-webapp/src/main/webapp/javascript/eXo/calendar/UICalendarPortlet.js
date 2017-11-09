@@ -524,7 +524,6 @@
      */
     UICalendarPortlet.prototype.onLoad = function() {
         eXo.calendar.UICalendarPortlet.checkFilter() ;
-//        window.setTimeout("eXo.calendar.UICalendarPortlet.checkFilter() ;", 2000);
     };
 
     /**
@@ -1128,46 +1127,43 @@
 
     };
 
-
     /**
      * Filters calendar event by calendar
      */
     UICalendarPortlet.prototype.filterByCalendar = function() {
-        var calid      = this.getAttribute("calId"),
-            styleEvent = "none",
-            checkBox   = gj(this).find('input.checkbox')[0],
-            checked    = checkBox.checked,
-            imgChk     = gj(this).find('span.checkbox')[0],
-            events     = _module.UICalendarPortlet.getEvents();
+      var $this = gj(this);
+      var checkBox = $this.find('input.checkbox')[0],
+        checked = checkBox.checked,
+        imgChk = $this.find('span.checkbox')[0],
+        events = _module.UICalendarPortlet.getEvents();
 
-        if (checked) {
-            styleEvent = "none";
-            checkBox.checked = false;
-            imgChk.className = "iconUnCheckBox checkbox";
-        } else {
-            styleEvent = "block";
-            checkBox.checked = true;
-            imgChk.className = "iconCheckBox checkbox";
+
+      if (checked) {
+        checkBox.checked = false;
+        imgChk.className = "iconUnCheckBox checkbox";
+      } else {
+        checkBox.checked = true;
+        imgChk.className = "iconCheckBox checkbox";
+      }
+
+      if ((!events || events.length == 0) && _module.UICalendarPortlet.getElementById("UIListView")) {
+        uiForm.submitForm('UICalendars', 'Tick', true);
+      }
+      if (!events) return;
+
+      _module.UICalendarPortlet.filterEvents();
+
+      var hideCalendars = [];
+      gj(".contentContainer").find("input.checkbox").each(function () {
+        if (this.checked === false) {
+          hideCalendars.push(this.id);
         }
+      });
 
-        if ((!events || events.length == 0) && _module.UICalendarPortlet.getElementById("UIListView")) {
-            uiForm.submitForm('UICalendars','Tick', true);
-        }
-        if (!events) return;
-        var len = events.length;
-
-        for (var i = 0; i < len; i++) {
-            if (events[i].getAttribute("calId") == calid) {
-                events[i].style.display = styleEvent;
-                var chkEvent = gj(events[i]).find('input.checkbox')[0];
-                if (chkEvent) {
-                    chkEvent.checked = false;
-                    chkEvent.setAttribute('value', false);
-                }
-            }
-        }
-
-        _module.UICalendarPortlet.filterEvents();
+      gj.ajax({
+        url: _module.UICalendarPortlet.resourceURL.replace("_id_", hideCalendars.join()),
+        type: "GET"
+      });
     };
 
     /**

@@ -30,7 +30,6 @@ import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.CompositeID;
 import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -49,6 +48,10 @@ import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.calendar.webui.popup.UIRemoteCalendar;
 import org.exoplatform.calendar.webui.popup.UISharedForm;
 import org.exoplatform.calendar.webui.popup.UISubscribeForm;
+import org.exoplatform.commons.api.settings.SettingService;
+import org.exoplatform.commons.api.settings.SettingValue;
+import org.exoplatform.commons.api.settings.data.Context;
+import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -120,28 +123,38 @@ public class UICalendars extends UIForm  {
   }
 
   public void init() throws Exception {
+    String invisibleCalendars = "";
+    SettingService settingService = getApplicationComponent(SettingService.class);
+    SettingValue<?> value = settingService.get(Context.USER, Scope.APPLICATION.id(UICalendarPortlet.CALENDAR_APP_SETTING_SCOPE), UICalendarPortlet.CALENDAR_INVISIBLE_SETTING_KEY);
+    if (value != null) {
+      invisibleCalendars = (String) value.getValue();
+    }
+
     Map<String, List<Calendar>> tmp = getCalendars();
     for (List<Calendar> cals : tmp.values()) {
-      for (Calendar cal :cals) {
-        initCheckBox(cal);
+      for (Calendar calendar :cals) {
+        initCheckBox(calendar, invisibleCalendars.contains(calendar.getId()));
       }
     }
   }
-  
-  public Map<String, List<Calendar>> getCalendars() {
-    UICalendarWorkingContainer container = getAncestorOfType(UICalendarWorkingContainer.class);
-    return container.getCalendarMap();
-  }
 
-  private void initCheckBox(Calendar calendar) {
+  private void initCheckBox(Calendar calendar, boolean invisible) {
     UICheckBoxInput checkbox = getUICheckBoxInput(calendar.getId());
     if (checkbox == null) {
       checkbox = new UICheckBoxInput(calendar.getId(), calendar.getId(), false);
-      checkbox.setChecked(isCalendarOfSpace1(calendar));
       addUIFormInput(checkbox);
-    } else {
-      setCheckedCheckbox(checkbox, calendar);
     }
+
+    if (invisible) {
+      checkbox.setChecked(false);
+    } else {
+      checkbox.setChecked(isCalendarOfSpace(calendar));
+    }
+  }
+
+  public Map<String, List<Calendar>> getCalendars() {
+    UICalendarWorkingContainer container = getAncestorOfType(UICalendarWorkingContainer.class);
+    return container.getCalendarMap();
   }
 
   @Override
@@ -153,32 +166,6 @@ public class UICalendars extends UIForm  {
     }
   }
 
-  public void setShowTaskList(boolean isShowTaskList) {
-    this.isShowTaskList_ = isShowTaskList;
-  }
-
-  public boolean isShowTaskList() {
-    return isShowTaskList_;
-  }
-  
-  public java.util.Calendar getCurrentMiniBeginDate() {
-    UIMiniCalendar miniCal = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;
-    java.util.Calendar temCal = miniCal.getInstanceTempCalendar() ;
-    temCal.setTime(miniCal.getCurrentDate()) ;
-    return miniCal.getBeginDay(temCal) ;
-  }
-  
-  public java.util.Calendar getCurrentMiniEndDate() {
-    UIMiniCalendar miniCal = getAncestorOfType(UICalendarPortlet.class).findFirstComponentOfType(UIMiniCalendar.class) ;
-    java.util.Calendar temCal = miniCal.getInstanceTempCalendar() ;
-    temCal.setTime(miniCal.getCurrentDate()) ;
-    return miniCal.getEndDay(temCal) ;
-  }
-  
-  public String[] getTaskStatus() {
-    return CalendarEvent.TASK_STATUS ;
-  }
-
   public void checkAll() {
     //if (UICalendarPortlet.getSpaceGroupId() != null) {
     if (!getAncestorOfType(UICalendarPortlet.class).getSpaceGroupId().equals("")) {
@@ -186,7 +173,7 @@ public class UICalendars extends UIForm  {
         for (Calendar cal : getAllPublicCalendars()) {
           if (cal.getId().equals(component.getId())) {
             if(getUICheckBoxInput(component.getId()) != null) {
-              getUICheckBoxInput(component.getId()).setChecked(isCalendarOfSpace1(cal)) ;
+              getUICheckBoxInput(component.getId()).setChecked(isCalendarOfSpace(cal)) ;
             }
           }
         }
@@ -260,7 +247,7 @@ public class UICalendars extends UIForm  {
       }
       for(Calendar c : publicCalendars) {
         // Check if this public calendar belong to current space
-        if(isCalendarOfSpace1(c)) {
+        if(isCalendarOfSpace(c)) {
           return false;
         }
       }
@@ -325,49 +312,7 @@ public class UICalendars extends UIForm  {
     return filterHidden(cals);
   }
 
-  private void setCheckedCheckbox(UICheckBoxInput checkbox, Calendar calendar){
-    UICalendarPortlet calendarPortlet = this.getAncestorOfType(UICalendarPortlet.class);
-    UICalendarViewContainer uiViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
-    boolean isListView = false;
-    if(UICalendarViewContainer.LIST_VIEW.equals(uiViewContainer.getCurrentViewType())){
-      isListView = true;
-    }
-
-    if (isListView){
-      checkbox.setChecked(checkbox.isChecked());
-    } else{
-      checkbox.setChecked(isCalendarOfSpace1(calendar));
-    }
-  }
-
-
-  /**
-   * check whether calendar is calendar of space
-   * based on id of calendar and space id
-   *
-   * @param groupIds
-   * @return
-   */
-  protected boolean isCalendarOfSpace(String[] groupIds)
-  {
-    String spaceGroupId = UICalendarPortlet.getGroupIdOfSpace();
-    if (spaceGroupId == null) {
-      return true;
-    }
-    if (groupIds == null) {
-      return false;
-    }
-
-    for (String groupId : groupIds) {
-      if (spaceGroupId.equals(groupId)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-
-  protected boolean isCalendarOfSpace1(Calendar calendar)
+  protected boolean isCalendarOfSpace(Calendar calendar)
   {    
     UICalendarPortlet calendarPortlet = getAncestorOfType(UICalendarPortlet.class);
     UICalendarView calView = calendarPortlet.findFirstComponentOfType(UICalendarView.class);
@@ -502,7 +447,6 @@ public class UICalendars extends UIForm  {
       }
     }
   }
-
 
   static  public class AddCalendarActionListener extends EventListener<UICalendars> {
     @Override
@@ -926,7 +870,6 @@ public class UICalendars extends UIForm  {
   }
 
   public static class RemoteCalendarActionListener extends EventListener<UICalendars> {
-
     @Override
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiCalendars = event.getSource();
@@ -940,7 +883,6 @@ public class UICalendars extends UIForm  {
   }
 
   public static class RefreshRemoteCalendarActionListener extends EventListener<UICalendars> {
-
     @Override
     public void execute(Event<UICalendars> event) throws Exception {
       UICalendars uiCalendars = event.getSource();
