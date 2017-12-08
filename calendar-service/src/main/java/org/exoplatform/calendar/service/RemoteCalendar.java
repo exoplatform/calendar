@@ -16,6 +16,7 @@
  */
 package org.exoplatform.calendar.service;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -26,7 +27,7 @@ import java.util.GregorianCalendar;
  * Mar 9, 2011
  */
 
-public class RemoteCalendar {
+public class RemoteCalendar implements Serializable {
   private String   type;
 
   private String   username;
