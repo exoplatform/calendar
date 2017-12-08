@@ -154,7 +154,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.Calendar.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.Calendar.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.Calendar.Calendar.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <object-param>
@@ -186,7 +186,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarCache.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarCache.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.calendar.GroupCalendarCache.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- Group Calendar Event -->
@@ -208,7 +208,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarEventCache.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarEventCache.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.calendar.GroupCalendarEventCache.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- Group Calendar Recurrent Event -->
@@ -230,7 +230,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarRecurrentEventCache.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarRecurrentEventCache.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.calendar.GroupCalendarRecurrentEventCache.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- User Calendar -->
@@ -252,7 +252,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.UserCalendarCache.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.UserCalendarCache.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.calendar.UserCalendarCache.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- All event -->
@@ -274,7 +274,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.CalendarEvent.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.CalendarEvent.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.calendar.CalendarEvent.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- User Calendar Setting -->
@@ -296,7 +296,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.UserCalendarSettingCache.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.UserCalendarSettingCache.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.calendar.UserCalendarSettingCache.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- Event Categories -->
@@ -318,7 +318,7 @@
             <field name="strategy"><string>LIRS</string></field>
             <field name="maxEntries"><int>${exo.cache.calendar.EventCategoriesCache.Capacity:1000}</int></field>
             <field name="lifespan"><long>${exo.cache.calendar.EventCategoriesCache.TimeToLive:3600000}</long></field>
-            <field name="replicated"><boolean>true</boolean></field>
+            <field name="cacheMode"><string>${exo.cache.calendar.EventCategoriesCache.cacheMode:replication}</string></field>
           </object>
         </object-param>
     </init-params>

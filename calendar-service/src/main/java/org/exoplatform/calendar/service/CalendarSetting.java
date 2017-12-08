@@ -19,13 +19,8 @@ package org.exoplatform.calendar.service;
 import org.exoplatform.commons.utils.DateUtils;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by The eXo Platform SARL
@@ -275,5 +270,32 @@ public class CalendarSetting implements Serializable {
    */
   public Calendar createCalendar(Date time) {
     return time != null ? createCalendar(time.getTime()) : null;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    CalendarSetting that = (CalendarSetting) o;
+    return timeInterval == that.timeInterval &&
+            isShowWorkingTime == that.isShowWorkingTime &&
+            Objects.equals(viewType, that.viewType) &&
+            Objects.equals(weekStartOn, that.weekStartOn) &&
+            Objects.equals(dateFormat, that.dateFormat) &&
+            Objects.equals(timeFormat, that.timeFormat) &&
+            Objects.equals(timeZone, that.timeZone) &&
+            Objects.equals(baseURL, that.baseURL) &&
+            Objects.equals(workingTimeBegin, that.workingTimeBegin) &&
+            Objects.equals(workingTimeEnd, that.workingTimeEnd) &&
+            Arrays.equals(sharedCalendarsColors, that.sharedCalendarsColors) &&
+            Arrays.equals(filterPrivateCalendars, that.filterPrivateCalendars) &&
+            Arrays.equals(filterPublicCalendars, that.filterPublicCalendars) &&
+            Arrays.equals(filterSharedCalendars, that.filterSharedCalendars) &&
+            Objects.equals(sendOption, that.sendOption);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(viewType, timeInterval, weekStartOn, dateFormat, timeFormat, timeZone, baseURL, isShowWorkingTime, workingTimeBegin, workingTimeEnd, sharedCalendarsColors, filterPrivateCalendars, filterPublicCalendars, filterSharedCalendars, sendOption);
   }
 }

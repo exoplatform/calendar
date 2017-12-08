@@ -16,16 +16,7 @@
  */
 package org.exoplatform.calendar.model;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -790,5 +781,21 @@ public class Event extends AbstractModel {
       }
     }
     return status;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Event event = (Event) o;
+    return Objects.equals(eventCategoryId, event.eventCategoryId) &&
+            Objects.equals(eventCategoryName, event.eventCategoryName) &&
+            Objects.equals(calendarId, event.calendarId) &&
+            Objects.equals(activityId, event.activityId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(eventCategoryId, eventCategoryName, calendarId, activityId);
   }
 }
