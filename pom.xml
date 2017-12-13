@@ -18,7 +18,6 @@
     <module>calendar-service</module>
     <module>calendar-webservice</module>
     <module>calendar-webapp</module>
-    <module>calendar-injector</module>
     <module>calendar-statistics</module>
     <module>calendar-component-create</module>
   </modules>
