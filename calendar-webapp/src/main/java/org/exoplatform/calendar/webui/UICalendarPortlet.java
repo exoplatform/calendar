@@ -283,8 +283,9 @@ public class UICalendarPortlet extends UIPortletApplication {
       url = url.substring(url.indexOf(CalendarUtils.INVITATION_DETAIL_URL) + CalendarUtils.INVITATION_DETAIL_URL.length());
       String[] params = url.split("/");
       String eventId = params[1];
-      Date startDate = calService.getEventById(eventId).getFromDateTime();
-      Date endDate = calService.getEventById(eventId).getToDateTime();
+      CalendarEvent event = calService.getEventById(eventId);
+      Date startDate = event.getFromDateTime();
+      Date endDate = event.getToDateTime();
       UICalendarWorkingContainer uiCalendarWorkingContainer = this.getChild(UICalendarWorkingContainer.class);
       UICalendarViewContainer uiCalendarViewContainer = uiCalendarWorkingContainer.getChild(UICalendarViewContainer.class);
       uiCalendarViewContainer.setStartDate(startDate);
@@ -296,6 +297,7 @@ public class UICalendarPortlet extends UIPortletApplication {
         uiCalendarViewContainer.initView(UICalendarViewContainer.WEEK_VIEW, true);
         uiActionBar.setCurrentView(UICalendarViewContainer.TYPES[1]);
       }
+      openEventPreviewPopup(event, context);
       context.addUIComponentToUpdateByAjax(uiActionBar);
       context.addUIComponentToUpdateByAjax(uiCalendarViewContainer);
     }
