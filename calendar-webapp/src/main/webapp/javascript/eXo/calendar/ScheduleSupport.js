@@ -107,16 +107,16 @@ var ScheduleSupport = {
 		       hiddenInput0 = gj(detailsCombos[0]).prevAll('input')[0];
 		       hiddenInput1 = gj(detailsCombos[1]).prevAll('input')[0];
 		       if(hiddenInput0.name.toLowerCase().indexOf('from') > -1) {
-		           gj(detailsCombos[0]).attr("value",start);
-		           gj(hiddenInput0).attr("value",start);
-		           gj(detailsCombos[1]).attr("value",end);
-		           gj(hiddenInput1).attr("value",end);
+		           gj(detailsCombos[0]).val(start);
+		           gj(hiddenInput0).val(start);
+		           gj(detailsCombos[1]).val(end);
+		           gj(hiddenInput1).val(end);
 
 		       } else {
-		           gj(detailsCombos[1]).attr("value",start);
-		           gj(hiddenInput1).attr("value",start);
-		           gj(detailsCombos[0]).attr("value",end);
-		           gj(hiddenInput0).attr("value",start);
+		           gj(detailsCombos[1]).val(start);
+		           gj(hiddenInput1).val(start);
+		           gj(detailsCombos[0]).val(end);
+		           gj(hiddenInput0).val(start);
 		       }
 		   }
 		   // sync detail tab to schedule tab
@@ -133,16 +133,16 @@ var ScheduleSupport = {
 		       hiddenInput0 = gj(scheduleCombos[0]).prevAll('input')[0];
 		       hiddenInput1 = gj(scheduleCombos[1]).prevAll('input')[0];
 		       if(hiddenInput0.name.toLowerCase().indexOf('from') > -1) {
-		           gj(scheduleCombos[0]).attr("value",start);
-		           gj(hiddenInput0).attr("value",start);
-		           gj(scheduleCombos[1]).attr("value",end);
-		           gj(hiddenInput1).attr("value",end);
+		           gj(scheduleCombos[0]).val(start);
+		           gj(hiddenInput0).val(start);
+		           gj(scheduleCombos[1]).val(end);
+		           gj(hiddenInput1).val(end);
 
 		       } else {
-		           gj(scheduleCombos[1]).attr("value",start);
-		           gj(hiddenInput1).attr("value",start);
-		           gj(scheduleCombos[0]).attr("value",end);
-		           gj(hiddenInput0).attr("value",start);
+		           gj(scheduleCombos[1]).val(start);
+		           gj(hiddenInput1).val(start);
+		           gj(scheduleCombos[0]).val(end);
+		           gj(hiddenInput0).val(start);
 		       }
 		   }
 		}
