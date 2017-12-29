@@ -57,7 +57,7 @@
       }
       
       var item = jInput.parent().find('.UIComboboxLabel').get(idx);
-      jInput.attr('value', gj(item).html());
+      jInput.val(gj(item).html());
       wx.UICombobox.setSelectedItem(jInput.get(0));
     } else {
       wx.UICombobox.complete(this, e);
@@ -91,9 +91,9 @@
     var UICombobox = eXo.webui.UICombobox;
     var val = obj.getAttribute("value");
     var hiddenField = gj(UICombobox.list.parentNode).next("input");
-    hiddenField.attr("value", val);
+    hiddenField.val(val);
     var text = hiddenField.next("input");
-    text.attr("value", gj(obj).find(".UIComboboxLabel").first().html());
+    text.val(gj(obj).find(".UIComboboxLabel").first().html());
     ScheduleSupport.syncTimeBetweenEventTabs();
     
     ScheduleSupport.applyPeriod();
