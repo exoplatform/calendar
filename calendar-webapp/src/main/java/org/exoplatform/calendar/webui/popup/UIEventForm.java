@@ -2026,7 +2026,6 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       UIUserSelector uiUserSelector = uiPopupContainer.createUIComponent(UIUserSelector.class, null, null) ;
       uiUserSelector.setShowSearch(true);
       uiUserSelector.setShowSearchUser(true) ;
-      uiUserSelector.setShowSearchGroup(true);
       uiPopupWindow.setUIComponent(uiUserSelector);
       uiPopupWindow.setShow(true);
       uiPopupWindow.setWindowSize(740, 400) ;

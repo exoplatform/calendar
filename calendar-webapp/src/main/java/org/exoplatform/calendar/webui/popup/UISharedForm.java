@@ -586,7 +586,6 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       UIUserSelector userSelector = sharedForm.createUIComponent(UIUserSelector.class, null, null);
       userSelector.setShowSearch(true);
       userSelector.setShowSearchUser(true);
-      userSelector.setShowSearchGroup(false);
       openPopupAction(popupWindow, userSelector, 650, 0);
 
       event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm.getParent());
