@@ -36,6 +36,9 @@ public class CalendarEvent extends Event {
   
   private String               calType         = "0";
 
+  public static final CalendarEvent NULL_OBJECT = new CalendarEvent();
+
+
   public CalendarEvent() {
     super();
   }
