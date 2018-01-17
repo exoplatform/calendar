@@ -22,20 +22,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
@@ -104,7 +93,9 @@ import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.cache.CacheService;
+import org.exoplatform.services.cache.CachedObjectSelector;
 import org.exoplatform.services.cache.ExoCache;
+import org.exoplatform.services.cache.ObjectCacheInfo;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.AccessControlEntry;
 import org.exoplatform.services.jcr.access.PermissionType;
@@ -146,6 +137,10 @@ public class JCRDataStorage implements DataStorage {
 
   private final SessionProviderService sessionProviderService_;
 
+  private  ExoCache<String, List<Calendar>> eXoGroupCalendarCache;
+
+  private  ExoCache<String, CalendarEvent> eXoEventCache;
+
   /** cache for calendar events in a particular group calendar - store query as key */
   private final ExoCache<String, List<CalendarEvent>> groupCalendarEventCache;
 
@@ -186,13 +181,13 @@ public class JCRDataStorage implements DataStorage {
     ExoContainer container = ExoContainerContext.getCurrentContainer();
     sessionProviderService_ = (SessionProviderService) container.getComponentInstanceOfType(SessionProviderService.class);    
     
-    ExoCache<String, CalendarEvent> eXoEventCache       = cservice.getCacheInstance("calendar.CalendarEvent");
+    eXoEventCache       = cservice.getCacheInstance("calendar.CalendarEvent");
     eventCache = new FutureExoCache<String, CalendarEvent, JCRDataStorage>(new CalendarEventLoader(), eXoEventCache);
     
     ExoCache<String, List<Calendar>> eXoUserCalendarCache       = cservice.getCacheInstance("calendar.UserCalendar");
     userCalendarCache = new FutureExoCache<String, List<Calendar>, JCRDataStorage>(new UserCalendarLoader(), eXoUserCalendarCache);
     
-    ExoCache<String, List<Calendar>>  eXoGroupCalendarCache     = cservice.getCacheInstance("calendar.GroupCalendar");
+    eXoGroupCalendarCache     = cservice.getCacheInstance("calendar.GroupCalendar");
     groupCalendarCache = new FutureExoCache<String, List<Calendar>, JCRDataStorage>(new GroupCalendarLoader(), eXoGroupCalendarCache);
 
     ExoCache<String, CalendarSetting> eXoSettingCache = cservice.getCacheInstance("calendar.UserCalendarSetting");
@@ -432,7 +427,7 @@ public class JCRDataStorage implements DataStorage {
       } catch (Exception e) {
         log.error("Exception occurred when removing calendar " + calendarId, e);
       }
-      eventCache.clear();
+      eXoEventCache.select(new EventCalendarSelector(calendarId));
       userCalendarCache.remove(username);
       clearCalendarCache(calendarId, username);
 
@@ -453,6 +448,11 @@ public class JCRDataStorage implements DataStorage {
     return getCalendar(calendarId, null);
   }
 
+  private String buildGroupCalendarQuery(String groupId) {
+    StringBuilder queryString = new StringBuilder("/jcr:root").append(getGroupCalendarHomePath()).append("/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
+    return queryString.toString();
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -461,10 +461,10 @@ public class JCRDataStorage implements DataStorage {
                                                    String username) throws Exception {
     List<GroupCalendarData> groupCalendars = new LinkedList<GroupCalendarData>();
 
+    String sQuery;
+
     for (String groupId : groupIds) {
-      //StringBuilder queryString = new StringBuilder("/jcr:root" + calendarHome.getPath() + "//element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
-      StringBuilder queryString = new StringBuilder("/jcr:root").append(getGroupCalendarHomePath()).append("/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
-      String sQuery = queryString.toString();
+      sQuery = buildGroupCalendarQuery(groupId);
 
       List<Calendar> calList = groupCalendarCache.get(this, sQuery);      
       if (calList != null && !calList.isEmpty()) {
@@ -515,10 +515,26 @@ public class JCRDataStorage implements DataStorage {
     } else {
       calendarNode = calendarHome.getNode(calendar.getId());
     }
+    String[] oldCalendarGroups = loadCalendar(calendarNode).getGroups();
+    String[] calendarGroups = calendar.getGroups();
     setCalendarProperties(calendarNode, calendar);
     calendarHome.getSession().save();
     // Clear the cache to avoid inconsistency
-    groupCalendarCache.clear(); 
+
+    Set<String> keys = new HashSet<>();
+    if(calendarGroups != null){
+      for (String key : calendarGroups) {
+        keys.add(buildGroupCalendarQuery(key));
+      }
+    }
+    if(oldCalendarGroups != null){
+      for (String key : oldCalendarGroups) {
+        keys.add(buildGroupCalendarQuery(key));
+      }
+    }
+
+    eXoGroupCalendarCache.select(new GroupCalendarSelector(keys));
+
     clearCalendarCache(calendar.getId(), username);
   }
 
@@ -541,9 +557,16 @@ public class JCRDataStorage implements DataStorage {
       }
       calNode.remove();
       calendarHome.getSession().save();
-      eventCache.clear();
+      eXoEventCache.select(new EventCalendarSelector(calendarId));
       // Clear the cache to avoid inconsistency
-      groupCalendarCache.clear(); 
+      String[] groupIds = calendar.getGroups();
+      if(groupIds != null){
+        for (String groupId : groupIds) {
+          String queryKey = buildGroupCalendarQuery(groupId);
+          groupCalendarCache.remove(queryKey);
+        }
+      }
+
       clearCalendarCache(calendar.getId(), calendar.getCalendarOwner());
       return calendar;
     }
@@ -713,7 +736,7 @@ public class JCRDataStorage implements DataStorage {
           }
         }
       }
-      eventCache.clear();
+      eXoEventCache.select(new EventCategorySelector(eventCategory.getId()));
     }
     eventCategoryNode.setProperty(Utils.EXO_ID, eventCategory.getId());
     eventCategoryNode.setProperty(Utils.EXO_NAME, eventCategory.getName());
@@ -951,6 +974,7 @@ public class JCRDataStorage implements DataStorage {
     } else {
       saveEvent(calendarNode, event, null, isNew);
     }
+    userCalendarCache.remove(username);
   }
 
   /**
@@ -1193,7 +1217,7 @@ public class JCRDataStorage implements DataStorage {
       calendarNode.save();
       calendarNode.getSession().save();
       calendarNode.refresh(true);
-      userCalendarCache.clear();
+      userCalendarCache.remove(username);
       return event;
     }
     return null;
@@ -1287,8 +1311,8 @@ public class JCRDataStorage implements DataStorage {
     Node reminderFolder = getReminderFolder(event.getFromDateTime());
     saveEvent(calendarNode, event, reminderFolder, isNew);
 
-    groupCalendarEventCache.clearCache();
-    groupCalendarRecurrentEventCache.clearCache();
+    groupCalendarEventCache.select(new GroupCalendarEventSelector(calendarNode.getPath()));
+    groupCalendarRecurrentEventCache.select(new GroupCalendarEventSelector(calendarNode.getPath()));
   }
 
   /**
@@ -1312,9 +1336,18 @@ public class JCRDataStorage implements DataStorage {
           log.debug(e.getMessage());
       }
 
-      groupCalendarCache.clear();
-      groupCalendarEventCache.clearCache();
-      groupCalendarRecurrentEventCache.clearCache();
+      Calendar calendar = loadCalendar(calendarNode);
+      String[] calendarGroups = calendar.getGroups();
+      if(calendarGroups != null){
+        Set<String> keys = new HashSet<>();
+        for (String key : calendarGroups) {
+          keys.add(buildGroupCalendarQuery(key));
+        }
+        eXoGroupCalendarCache.select(new GroupCalendarSelector(keys));
+      }
+
+      groupCalendarEventCache.select(new GroupCalendarEventSelector(calendarNode.getPath()));
+      groupCalendarRecurrentEventCache.select(new GroupCalendarEventSelector(calendarNode.getPath()));
 
       return event;
     }
@@ -1561,8 +1594,18 @@ public class JCRDataStorage implements DataStorage {
     if(CalendarEvent.TYPE_EVENT.equals(event.getEventType())) {
       addEvent(event);
     }
-    userCalendarCache.clear();
-    groupCalendarCache.clear();
+
+    Calendar calendar = loadCalendar(calendarNode);
+    String[] calendarGroups = calendar.getGroups();
+    if (calendarGroups != null) {
+      Set<String> keys = new HashSet<>();
+      for (String key : calendarGroups) {
+        keys.add(buildGroupCalendarQuery(key));
+      }
+
+      eXoGroupCalendarCache.select(new GroupCalendarSelector(keys));
+    }
+
     eventCache.remove(event.getId());
   }
 
@@ -4892,7 +4935,7 @@ public class JCRDataStorage implements DataStorage {
           break;
         }
       }
-      userCalendarCache.clear();
+      userCalendarCache.remove(username);
     }
   }
 
@@ -5997,7 +6040,8 @@ public class JCRDataStorage implements DataStorage {
   }
 
   public CalendarEvent getEventById(String eventId) throws Exception {
-    return eventCache.get(this, eventId);
+    CalendarEvent event = eventCache.get(this, eventId);
+    return event.equals(CalendarEvent.NULL_OBJECT )|| event.getCalendarId() == null ? null : event;
   }
 
   @Override
@@ -6105,7 +6149,7 @@ public class JCRDataStorage implements DataStorage {
           if(nodesIt.hasNext()) {
             return context.getEvent(nodesIt.nextNode());
           } else {
-            return null;
+            return CalendarEvent.NULL_OBJECT;
           }
       }
     };
@@ -6309,6 +6353,86 @@ public class JCRDataStorage implements DataStorage {
     public int hashCode() {
       return (getKey()   == null ? 0 :   getKey().hashCode()) ^
           (getValue() == null ? 1 : getValue().hashCode());
+    }
+  }
+
+  private class EventCalendarSelector implements CachedObjectSelector<String, CalendarEvent> {
+
+    private String idCalendar;
+
+    public EventCalendarSelector(String calId) {
+      this.idCalendar = calId;
+    }
+
+    @Override
+    public boolean select(String key, ObjectCacheInfo<? extends CalendarEvent> ocinfo) {
+      CalendarEvent event = ocinfo.get();
+      return !event.equals(CalendarEvent.NULL_OBJECT) && event.getCalendarId().equals(idCalendar);
+    }
+
+    @Override
+    public void onSelect(ExoCache<? extends String, ? extends CalendarEvent> cache, String key, ObjectCacheInfo<? extends CalendarEvent> ocinfo) throws Exception {
+      cache.remove(key);
+    }
+  }
+
+  private class EventCategorySelector implements CachedObjectSelector<String, CalendarEvent> {
+
+    private String idCategory;
+
+    public EventCategorySelector(String idCategory) {
+      this.idCategory = idCategory;
+    }
+
+    @Override
+    public boolean select(String key, ObjectCacheInfo<? extends CalendarEvent> ocinfo) {
+      CalendarEvent event = ocinfo.get();
+      return event != null && event.getEventCategoryId().equals(idCategory);
+    }
+
+    @Override
+    public void onSelect(ExoCache<? extends String, ? extends CalendarEvent> cache, String key, ObjectCacheInfo<? extends CalendarEvent> ocinfo) throws Exception {
+      cache.remove(key);
+    }
+  }
+
+  private class GroupCalendarSelector implements CachedObjectSelector<String, List<Calendar>> {
+
+    private Set<String> groups;
+
+    public GroupCalendarSelector(Set<String> groups) {
+      this.groups = groups;
+    }
+
+    @Override
+    public boolean select(String key, ObjectCacheInfo<? extends List<Calendar>> ocinfo) {
+      return !groups.isEmpty() && groups.contains(key);
+    }
+
+    @Override
+    public void onSelect(ExoCache<? extends String, ? extends List<Calendar>> cache, String key, ObjectCacheInfo<? extends List<Calendar>> ocinfo) throws Exception {
+      cache.remove(key);
+    }
+  }
+
+  private class GroupCalendarEventSelector implements CachedObjectSelector<String, List<CalendarEvent>> {
+
+    private String pattern;
+
+    public GroupCalendarEventSelector(String calendarPath) {
+      StringBuilder queryEventsStatementSQL = new StringBuilder(" SELECT * FROM ").append("exo:calendarEvent")
+              .append(" WHERE jcr:path LIKE '").append(calendarPath);
+      this.pattern = queryEventsStatementSQL.toString();
+    }
+
+    @Override
+    public boolean select(String key, ObjectCacheInfo<? extends List<CalendarEvent>> ocinfo) {
+      return key.startsWith(pattern);
+    }
+
+    @Override
+    public void onSelect(ExoCache<? extends String, ? extends List<CalendarEvent>> cache, String key, ObjectCacheInfo<? extends List<CalendarEvent>> ocinfo) throws Exception {
+      cache.remove(key);
     }
   }
 }
