@@ -24,7 +24,7 @@ import org.exoplatform.calendar.service.Utils;
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
  * @version $Revision$
  */
-public class EventQuery implements Query {
+public class EventQuery implements Query, Cloneable {
 
   private String ds;
   
@@ -175,5 +175,10 @@ public class EventQuery implements Query {
 
   public void setDS(String id) {
     this.ds = id;
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }
