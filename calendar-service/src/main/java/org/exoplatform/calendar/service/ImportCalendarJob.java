@@ -16,6 +16,7 @@
  */
 package org.exoplatform.calendar.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Calendar;
 
@@ -47,7 +48,7 @@ public class ImportCalendarJob implements Job, InterruptableJob {
   public static final String IMPORT_UPLOADED_FILE = "import_uploaded_file";
   public static final String IMPORT_REMOTE_CALENDAR = "import_remote_calendar";
   public static final String REMOTE_CALENDAR = "remote_calendar";
-  public static final String INPUT_STREAM = "input_stream";
+  public static final String INPUT_BYTES = "input_bytes";
   public static final String CALENDAR_NAME = "calendar_name";
   public static final String IMPORT_FROM_TIME = "import_from_time";
   public static final String IMPORT_TO_TIME = "import_to_time";
@@ -93,10 +94,10 @@ public class ImportCalendarJob implements Job, InterruptableJob {
         Calendar from = (Calendar)jobDataMap.get(IMPORT_FROM_TIME);
         Calendar to = (Calendar)jobDataMap.get(IMPORT_TO_TIME);
         Boolean isNew = (Boolean)jobDataMap.get(IS_IMPORT_NEW);
-        InputStream icalInputStream = (InputStream)jobDataMap.get(INPUT_STREAM);
+        byte[] icalInput = (byte[])jobDataMap.get(INPUT_BYTES);
 
         ICalendarImportExport iCalImEx = (ICalendarImportExport) calendarService.getCalendarImportExports(CalendarService.ICALENDAR);
-        iCalImEx.importCalendar(username, icalInputStream, calendarId, calendarName, from, to, isNew);
+        iCalImEx.importCalendar(username, new ByteArrayInputStream(icalInput), calendarId, calendarName, from, to, isNew);
       } else {
         RemoteCalendar remoteCalendar = (RemoteCalendar)jobDataMap.get(REMOTE_CALENDAR);
         calendarService.importRemoteCalendar(remoteCalendar);
@@ -114,7 +115,7 @@ public class ImportCalendarJob implements Job, InterruptableJob {
   public static JobDetail getImportICSFileJobDetail(String username,
                              String calendarId,
                              String calendarName,
-                             InputStream icalInputStream,
+                             byte[] icalInput,
                              Calendar from,
                              Calendar to,
                              boolean isNew) {
@@ -127,7 +128,7 @@ public class ImportCalendarJob implements Job, InterruptableJob {
 
     job.getJobDataMap().put(IMPORT_OR_SUBSCRIBE,IMPORT_UPLOADED_FILE);
     job.getJobDataMap().put(USER_NAME, username);
-    job.getJobDataMap().put(INPUT_STREAM,icalInputStream);
+    job.getJobDataMap().put(INPUT_BYTES,icalInput);
     job.getJobDataMap().put(CALENDAR_ID, calendarId);
     job.getJobDataMap().put(CALENDAR_NAME, calendarName);
     job.getJobDataMap().put(IMPORT_FROM_TIME, from);
