@@ -107,7 +107,7 @@ public class EventHandlerImpl implements EventHandler {
     String[] calendarIds = eventQuery.getCalendarIds();
     if (eventQuery.getDS() == null && calendarIds != null && calendarIds.length > 0) {
       Set<String> allCalIds = Arrays.stream(calendarIds).collect(Collectors.toSet());
-      Map<String, List<String>> computedCalIdByDS = new HashMap<String, List<String>>();
+      Map<String, List<String>> computedCalIdByDS = new HashMap<>();
 
       for (String calendarId : calendarIds) {
         String ds = dsNameByCalId.get(calService, calendarId);
@@ -120,15 +120,20 @@ public class EventHandlerImpl implements EventHandler {
         addCalendarIdToDSMap(calendarId, ds, allCalIds, computedCalIdByDS);
       }
 
-      List<ListAccess<Event>> result = new LinkedList<ListAccess<Event>>();
+      List<ListAccess<Event>> result = new LinkedList<>();
       for (String dsName : computedCalIdByDS.keySet()) {
-        List<String> calIdsListByDSName = computedCalIdByDS.get(dsName);
-        eventQuery.setDS(dsName);
-        eventQuery.setCalendarIds(calIdsListByDSName.toArray(new String[0]));
-        EventDAO dao = calService.lookForDS(dsName).getEventDAO();
-        ListAccess<Event> tmp = dao.findEventsByQuery(eventQuery);
-        if (tmp != null) {
-          result.add(tmp);
+        try {
+          EventQuery eventQueryForDS = (EventQuery) eventQuery.clone();
+          List<String> calIdsListByDSName = computedCalIdByDS.get(dsName);
+          eventQueryForDS.setDS(dsName);
+          eventQueryForDS.setCalendarIds(calIdsListByDSName.toArray(new String[0]));
+          EventDAO dao = calService.lookForDS(dsName).getEventDAO();
+          ListAccess<Event> tmp = dao.findEventsByQuery(eventQueryForDS);
+          if (tmp != null) {
+            result.add(tmp);
+          }
+        } catch (CloneNotSupportedException e) {
+          log.error("Cannot get events for datasource " + dsName, e);
         }
       }
       return mergeListAccesses(result);
@@ -142,7 +147,7 @@ public class EventHandlerImpl implements EventHandler {
       daos.add(getEventDAOImpl(eventQuery.getDS()));
     }
 
-    List<ListAccess<Event>> result = new LinkedList<ListAccess<Event>>();
+    List<ListAccess<Event>> result = new LinkedList<>();
     for (EventDAO dao : daos) {
       ListAccess<Event> tmp = dao.findEventsByQuery(eventQuery);
       if (tmp != null) {
