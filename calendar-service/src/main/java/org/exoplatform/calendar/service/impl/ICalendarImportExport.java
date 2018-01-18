@@ -16,10 +16,7 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,10 +24,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.jcr.Node;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -735,7 +732,8 @@ public class ICalendarImportExport implements CalendarImportExport {
     JobDetail job = findImportJob(schedulerService, calendarId);
 
     if(job == null) {
-      job = ImportCalendarJob.getImportICSFileJobDetail(username, calendarId, calendarName, icalInputStream, from, to, isNew);
+      byte[] icalInput = IOUtils.toByteArray(icalInputStream);
+      job = ImportCalendarJob.getImportICSFileJobDetail(username, calendarId, calendarName, icalInput, from, to, isNew);
     }
 
     SimpleTriggerImpl trigger = new SimpleTriggerImpl();
