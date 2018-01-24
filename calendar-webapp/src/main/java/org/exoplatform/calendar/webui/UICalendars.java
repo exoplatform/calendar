@@ -892,7 +892,7 @@ public class UICalendars extends UIForm  {
       String username = CalendarUtils.getCurrentUser();
       Calendar calendar = Calendar.build(uiCalendars.xCalService.getCalendarHandler().getCalendarById(remoteCalendarId));
       try {
-        calService.refreshRemoteCalendar(username, remoteCalendarId);
+        calService.refreshRemoteCalendar(username, calendar.getId());
         event.getRequestContext().addUIComponentToUpdateByAjax(uiPortlet) ;
       }
       catch (Exception e) {
