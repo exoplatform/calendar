@@ -24,6 +24,7 @@
   requireJS.addScripts('cal.UICalendarPortlet.currentDate = ' + uicomponent.getDefaultStartTimeOfEvent() +';') ;
   requireJS.require("SHARED/jquery","gj");
   rcontext.getJavascriptManager().addOnResizeJavascript('function(){UICalendarMan.initMonth();}') ;
+  rcontext.getJavascriptManager().addOnResizeJavascript('cal.UICalendarPortlet.browserResizeCallback') ;
   
   int currentDay = uicomponent.getCurrentDay() ;
   int currentMonth = uicomponent.getCurrentMonth() ;
