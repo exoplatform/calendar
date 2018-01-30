@@ -4,6 +4,7 @@
 	import java.text.SimpleDateFormat;
 	import org.exoplatform.calendar.CalendarUtils;
 	import org.exoplatform.calendar.service.Utils;
+	import org.apache.commons.lang.StringEscapeUtils;
 	
 	java.util.Locale locale = _ctx.getRequestContext().getParentAppRequestContext().getLocale() ;
 
