@@ -1482,6 +1482,10 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       // Need to reload Event from JCR to check if it's still existing on calendar or not
       CalendarService calService = uiCalendarView.getApplicationComponent(CalendarService.class);
       eventCalendar = calService.getEventById(eventId);
+      if (eventCalendar == null) {
+        ExtendedCalendarService extendedCalendarService = uiCalendarView.getApplicationComponent(ExtendedCalendarService.class);
+        eventCalendar = CalendarEvent.build(extendedCalendarService.getEventHandler().getEventById(eventId));
+      }
       if (eventCalendar != null && eventCalendar.getCalendarId().equals(calendarId)) {
         Boolean isOccur = false;
         if (!Utils.isEmpty(event.getRequestContext().getRequestParameter(ISOCCUR))) {
