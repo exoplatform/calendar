@@ -2130,7 +2130,12 @@
         var eToTime = form.find('input[name="toTime"]');
         var values = gj(eFromTime).next("input.UIComboboxInput").attr("options");
         var arr = eval(values);
-        if(isNew == "false") this.dayDiff = dateUtils.dateDiff(new Date(eFromDate.val()).getTime(), new Date(eToDate.val()).getTime());
+        var datePattern = gj(eFromDate).attr("format");
+        var fromDate = dateUtils.dateParses(eFromDate.val(), datePattern);
+        var toDate = dateUtils.dateParses(eToDate.val(), datePattern);
+        if(isNew == "false") {
+            this.dayDiff = dateUtils.dateDiff(fromDate.getTime(), toDate.getTime());
+        }
         if(compid == "UIEventForm") {         
             var fromIndex = this.getTimeIndex(eFromTime.val());
             var toIndex = this.getTimeIndex(eToTime.val(), true);
@@ -2265,9 +2270,9 @@
 
         // If it is not validate set the date is current date
         if(!valid) {
-            cs.CalDateTimePicker.currentDate = new Date();
-            cs.CalDateTimePicker.datePattern = format;
-            var value = cs.CalDateTimePicker.getDateTimeString();
+            CalDateTimePicker.currentDate = new Date();
+            CalDateTimePicker.datePattern = format;
+            var value = CalDateTimePicker.getDateTimeString();
             $eDate.val(value);
         }
     }
