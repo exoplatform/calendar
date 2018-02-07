@@ -40,6 +40,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.web.application.ApplicationMessage;
+import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
@@ -95,6 +96,7 @@ public class UIDayView extends UICalendarView {
     eventData_.clear();
     allDayEvent_.clear();
     recurrenceEventsMap.clear();
+    PortletRequestContext.getCurrentInstance().setAttribute("", null);
 
     Calendar begin = getBeginDay(getCurrentCalendar());  
     Calendar end = getEndDay(getCurrentCalendar());
@@ -216,7 +218,7 @@ public class UIDayView extends UICalendarView {
               cal.set(Calendar.HOUR_OF_DAY, hoursBg) ;
               cal.set(Calendar.MINUTE, minutesBg) ;
               cal.set(Calendar.SECOND, 0) ;
-              isMove = (ce.getFromDateTime().getHours() != cal.get(Calendar.HOUR) && ce.getFromDateTime().getMinutes() != cal.get(Calendar.MINUTE)) ;
+              isMove = (ce.getFromDateTime().getHours() != cal.get(Calendar.HOUR) || ce.getFromDateTime().getMinutes() != cal.get(Calendar.MINUTE)) ;
               ce.setFromDateTime(cal.getTime());
               if(hoursEnd >= 24) {
                 hoursEnd = 23 ;
