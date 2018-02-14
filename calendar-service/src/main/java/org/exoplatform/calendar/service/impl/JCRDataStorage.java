@@ -350,7 +350,7 @@ public class JCRDataStorage implements DataStorage {
 
   private Calendar getCalendar(String calendarId, String username) {
     Calendar calendar = calendarCache.get(this, new KeyValuePair(calendarId, username));
-    if(calendar == Calendar.NULL_OBJECT) {
+    if(isNullCalendar(calendar)) {
       return null;
     }
     return (Calendar) SerializationUtils.clone(calendar);
@@ -5444,8 +5444,8 @@ public class JCRDataStorage implements DataStorage {
    * {@inheritDoc}
    */
   public int getTypeOfCalendar(String userName, String calendarId) {
-    Calendar cal = exoCalendarCache.get(new KeyValuePair(calendarId, userName));
-    if(cal == null || cal == Calendar.NULL_OBJECT) {
+    Calendar cal = calendarCache.get(this, new KeyValuePair(calendarId, userName));
+    if(isNullCalendar(cal)) {
       cal = getCalendar(calendarId, null);
       if(cal == null) {
         cal = getCalendar(calendarId, userName);
@@ -5463,6 +5463,10 @@ public class JCRDataStorage implements DataStorage {
       cal.setCalTypeChecked(true);
     }
     return cal.getCalType();
+  }
+
+  private boolean isNullCalendar(Calendar cal) {
+    return cal == null || cal == Calendar.NULL_OBJECT || cal.getId() == null;
   }
 
   public int getTypeOfCalendarFromStore(String calendarId, String userName) {
