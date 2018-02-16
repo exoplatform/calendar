@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.calendar.service.Calendar;
@@ -194,7 +196,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     setDescription(calendar.getDescription());
     setSelectColor(calendar.getCalendarColor());
     setSyncPeriod(remoteCalendar.getSyncPeriod());
-    setUseAuthentication(remoteCalendar.getUsername() != null);
+    setUseAuthentication(StringUtils.isNotBlank(remoteCalendar.getRemoteUser()));
     setRemoteUser(remoteCalendar.getRemoteUser());
     setRemotePassword(remoteCalendar.getRemotePassword());
     getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX).setValue(remoteCalendar.getBeforeDateSave()) ;

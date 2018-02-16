@@ -1439,6 +1439,10 @@ public class Utils {
   }
   
   public static boolean isCalendarEditable(String username, org.exoplatform.calendar.service.Calendar cal) {
+    return isCalendarEditable(username, cal, true);
+  }
+  
+  public static boolean isCalendarEditable(String username, org.exoplatform.calendar.service.Calendar cal, boolean checkRemote) {
     if (cal == null || username == null) {
       throw new IllegalArgumentException("username and cal parameter must not be null");
     }
@@ -1452,7 +1456,7 @@ public class Utils {
       // So, we can not use "calendarOwner" to check this is personal calendar or not
       // => I have to revert a part of CAL-1090 commit
       if (service.getUserCalendar(username, cal.getId()) != null) {
-        return !cal.isRemote();
+        return !checkRemote || !cal.isRemote();
       } else {
         if (ConversationState.getCurrent() != null) {
           Identity curr = ConversationState.getCurrent().getIdentity();
