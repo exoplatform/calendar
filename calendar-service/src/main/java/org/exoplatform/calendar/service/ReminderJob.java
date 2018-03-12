@@ -28,19 +28,20 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.ws.rs.core.MediaType;
+
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.services.jcr.impl.core.query.lucene.IndexOfflineRepositoryException;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.mail.Message;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
-import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.services.resources.LocaleContextInfo;
 import org.exoplatform.services.resources.ResourceBundleService;
@@ -164,6 +165,10 @@ public class ReminderJob extends MultiTenancyJob {
               mailService.sendMessage(message);
             }
           }
+        }
+      } catch (IndexOfflineRepositoryException e) {
+        if (log_.isTraceEnabled()) {
+          log_.trace("An Error occurred while running Calendar ReminderJob: " + e.getMessage(),e);
         }
       } catch (Exception e) {
         log_.error(e.getMessage(), e);
