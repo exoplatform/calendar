@@ -25,18 +25,19 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.quartz.JobExecutionContext;
-
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.job.MultiTenancyJob;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import org.exoplatform.services.jcr.impl.core.query.lucene.IndexOfflineRepositoryException;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
+import org.quartz.JobExecutionContext;
+
 
 public class PopupReminderJob extends MultiTenancyJob {
   private static Log log_ = ExoLogger.getLogger(PopupReminderJob.class);
@@ -125,6 +126,10 @@ public class PopupReminderJob extends MultiTenancyJob {
               }  
             }
           }
+        }
+      } catch (IndexOfflineRepositoryException e) {
+        if (log_.isTraceEnabled()) {
+          log_.trace("An Error occurred while running Calendar PopupReminderJob: " + e.getMessage(),e);
         }
       } catch (Exception e) {
         log_.error(e.getMessage(), e);
