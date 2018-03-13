@@ -209,6 +209,9 @@
     def others = uicomponent.getAllOtherCalendars();
     if (others == null || others.size() == 0) return;
     def otherTitle = _ctx.appRes("UICalendars.label.other");
+
+    UICalendarPortlet uiCalendarPortlet = uicomponent.getAncestorOfType(UICalendarPortlet.class);
+    def isInSpaceContext = uiCalendarPortlet.isInSpaceContext();
     %>
 	  <div class="myCalendar">
 	    <h6 class="calendarTitle">$otherTitle</h6>
@@ -231,6 +234,8 @@
 		        def calendarType = calendar.getCalType();
 
 		        if (calendar.getViewPermission()!= null && calendar.getViewPermission().length > 0) icon = "SharedCalendarIcon";
+
+		        if (!chk.isChecked() || (isInSpaceContext && !uicomponent.isCalendarOfSpace(calendar))) css = "iconUnCheckBox checkbox";
 		    %>
 		        <li class="calendarItem  CalendarItemPrivate" calColor="$color" canEdit="<%=isEditable%>" id="$compositeID" calType="<%=calendarType%>" isRemote="$isRemote">
 		        <div id="UICalendars_CalendarPopupMenu1" class="uiIconCalSettingMini uiIconLightGray pull-right"></div>
