@@ -16,13 +16,7 @@
  **/
 package org.exoplatform.calendar.webui;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 import javax.jcr.PathNotFoundException;
 
@@ -123,11 +117,12 @@ public class UICalendars extends UIForm  {
   }
 
   public void init() throws Exception {
-    String invisibleCalendars = "";
+    List<String> invisibleCalendars = new ArrayList<>();
     SettingService settingService = getApplicationComponent(SettingService.class);
     SettingValue<?> value = settingService.get(Context.USER, Scope.APPLICATION.id(UICalendarPortlet.CALENDAR_APP_SETTING_SCOPE), UICalendarPortlet.CALENDAR_INVISIBLE_SETTING_KEY);
     if (value != null) {
-      invisibleCalendars = (String) value.getValue();
+      String invisibleCalendarsValue = (String) value.getValue();
+      invisibleCalendars = Arrays.asList(invisibleCalendarsValue.split(","));
     }
 
     Map<String, List<Calendar>> tmp = getCalendars();
