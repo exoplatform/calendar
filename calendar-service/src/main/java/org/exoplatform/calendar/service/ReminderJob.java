@@ -136,11 +136,11 @@ public class ReminderJob extends MultiTenancyJob {
               message.setTo(mail);
               message.setSubject(subject);
               if (calEvent != null) {
-              CalendarSetting calendarSettings = calendarService.getCalendarSetting(user.getUserName());
-              if (calendarSettings != null) {
-                String userTimeZone = calendarSettings.getTimeZone();
-                message.setBody(buildBodyMessage(calEvent, res, userTimeZone));
-              }
+                CalendarSetting calendarSettings = calendarService.getCalendarSetting(user.getUserName());
+                if (calendarSettings != null) {
+                  String userTimeZone = calendarSettings.getTimeZone();
+                  message.setBody(buildBodyMessage(calEvent, res, userTimeZone));
+                }
               } else {
                 message.setBody("");
               }
@@ -221,12 +221,12 @@ public class ReminderJob extends MultiTenancyJob {
     if (userTimezone != null) {
       TimeZone timeZone = TimeZone.getTimeZone(userTimezone);
       fromTime.setTimeZone(timeZone);
-      fromTime.setTime(calEvent.getFromDateTime());
-      appendDateToSummary(from, fromTime, summary);
       toTime.setTimeZone(timeZone);
-      toTime.setTime(calEvent.getToDateTime());
-      appendDateToSummary(to, toTime, summary);
     }
+    fromTime.setTime(calEvent.getFromDateTime());
+    appendDateToSummary(from, fromTime, summary);
+    toTime.setTime(calEvent.getToDateTime());
+    appendDateToSummary(to, toTime, summary);
     return summary.toString();
   }
   private void appendDateToSummary(String label, java.util.Calendar cal, StringBuilder summary) {
