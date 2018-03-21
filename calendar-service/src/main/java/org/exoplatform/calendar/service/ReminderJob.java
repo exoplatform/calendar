@@ -136,9 +136,11 @@ public class ReminderJob extends MultiTenancyJob {
               message.setTo(mail);
               message.setSubject(subject);
               if (calEvent != null) {
-                  CalendarSetting calendarSettings = calendarService.getCalendarSetting(user.getUserName());
-                  String userTimeZone = calendarSettings.getTimeZone();
-                  message.setBody(buildBodyMessage(calEvent, res, userTimeZone));
+              CalendarSetting calendarSettings = calendarService.getCalendarSetting(user.getUserName());
+              if (calendarSettings != null) {
+                String userTimeZone = calendarSettings.getTimeZone();
+                message.setBody(buildBodyMessage(calEvent, res, userTimeZone));
+              }
               } else {
                 message.setBody("");
               }
@@ -188,7 +190,6 @@ public class ReminderJob extends MultiTenancyJob {
   private String buildBodyMessage(CalendarEvent calEvent, ResourceBundle res, String userTimezone) {
     java.util.Calendar fromTime = new GregorianCalendar();
     java.util.Calendar toTime = new GregorianCalendar();
-    TimeZone timeZone = TimeZone.getTimeZone(userTimezone);
     String type = "Type: ";
     String summaryLabel = "Summary: ";
     String description = "Description: ";
@@ -217,13 +218,15 @@ public class ReminderJob extends MultiTenancyJob {
       summary.append(calEvent.getLocation());
       summary.append("<br>");
     }
-    fromTime.setTimeZone(timeZone);
-    fromTime.setTime(calEvent.getFromDateTime());
-    appendDateToSummary(from, fromTime, summary);
-
-    toTime.setTimeZone(timeZone);
-    toTime.setTime(calEvent.getToDateTime());
-    appendDateToSummary(to, toTime, summary);
+    if (userTimezone != null) {
+      TimeZone timeZone = TimeZone.getTimeZone(userTimezone);
+      fromTime.setTimeZone(timeZone);
+      fromTime.setTime(calEvent.getFromDateTime());
+      appendDateToSummary(from, fromTime, summary);
+      toTime.setTimeZone(timeZone);
+      toTime.setTime(calEvent.getToDateTime());
+      appendDateToSummary(to, toTime, summary);
+    }
     return summary.toString();
   }
   private void appendDateToSummary(String label, java.util.Calendar cal, StringBuilder summary) {
