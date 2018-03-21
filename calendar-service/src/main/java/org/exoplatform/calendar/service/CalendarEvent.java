@@ -16,14 +16,15 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.services.security.ConversationState;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang
@@ -178,5 +179,19 @@ public class CalendarEvent extends Event {
       }      
     }
     return calEvent;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    CalendarEvent event = (CalendarEvent) o;
+    return Objects.equals(calType, event.calType);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), calType);
   }
 }

@@ -16,36 +16,10 @@
  */
 package org.exoplatform.calendar.service.test;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.jcr.PathNotFoundException;
-
 import net.fortuna.ical4j.data.ParserException;
-
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarCollection;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.RemoteCalendar;
-import org.exoplatform.calendar.service.RemoteCalendarService;
-import org.exoplatform.calendar.service.RssData;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
-import org.exoplatform.calendar.service.impl.CalendarServiceImpl;
-import org.exoplatform.calendar.service.impl.EventSearchConnector;
-import org.exoplatform.calendar.service.impl.JCRDataStorage;
-import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.service.impl.UnifiedQuery;
+import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.impl.*;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -53,6 +27,10 @@ import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserStatus;
+
+import javax.jcr.PathNotFoundException;
+import java.io.IOException;
+import java.util.*;
 
 public class CalendarTestCase extends BaseCalendarServiceTestCase {
   private RepositoryService repositoryService_ ;
@@ -398,7 +376,7 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
   public void testSaveGroupCalendar() throws Exception {
     Calendar calendar = createGroupCalendar(new String[]{"/platform/users", "/organization/management/executive-board"}, "CalendarName", "CalendarDesscription");
     assertNotNull(calendarService_.getGroupCalendar(calendar.getId())) ;
-    assertEquals(calendar, calendarService_.getCalendarById(calendar.getId()));
+    assertEquals(calendar.getId(), calendarService_.getCalendarById(calendar.getId()).getId());
   }
   
   public void testSaveSharedCalendar() throws Exception{

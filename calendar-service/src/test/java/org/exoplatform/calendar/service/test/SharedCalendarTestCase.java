@@ -18,19 +18,15 @@
  */
 package org.exoplatform.calendar.service.test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
 import org.exoplatform.calendar.service.impl.EventSearchConnector;
 import org.exoplatform.calendar.service.impl.UnifiedQuery;
 import org.exoplatform.commons.api.search.data.SearchResult;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class SharedCalendarTestCase extends BaseCalendarServiceTestCase {
 
@@ -42,6 +38,7 @@ public class SharedCalendarTestCase extends BaseCalendarServiceTestCase {
         eventSearchConnector_ = getService(EventSearchConnector.class);
     }
 
+
     public void testGetTypeOfCalendar() throws Exception {
       Calendar calendar = createPrivateCalendar(username, "myCalendar", "Description");
       Calendar publicCalendar = createGroupCalendar(userGroups, "publicCalendar", "publicDescription");
@@ -52,7 +49,7 @@ public class SharedCalendarTestCase extends BaseCalendarServiceTestCase {
       assertEquals(Utils.SHARED_TYPE, calendarService_.getTypeOfCalendar("john", sharedCalendar.getId()));
       assertEquals(Utils.INVALID_TYPE, calendarService_.getTypeOfCalendar(username, "Not exist id"));
       
-      assertEquals(sharedCalendar, calendarService_.getCalendarById(sharedCalendar.getId()));
+      assertEquals(sharedCalendar.getId(), calendarService_.getCalendarById(sharedCalendar.getId()).getId());
     }
 
     public void testSharedCalendar() throws Exception {

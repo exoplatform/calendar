@@ -23,6 +23,8 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.ConversationState;
 
+import java.util.Objects;
+
 /**
  * Created by The eXo Platform SARL
  * Author : Hung Nguyen Quang
@@ -164,5 +166,22 @@ public class Calendar extends org.exoplatform.calendar.model.Calendar {
     cal.setDS(newModel.getDS());
 
     return cal;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    Calendar calendar = (Calendar) o;
+    return _isDataInit == calendar._isDataInit &&
+            _calType == calendar._calType &&
+            calTypeChecked == calendar.calTypeChecked &&
+            Objects.equals(_calendarPath, calendar._calendarPath);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), _calendarPath, _isDataInit, _calType, calTypeChecked);
   }
 }
