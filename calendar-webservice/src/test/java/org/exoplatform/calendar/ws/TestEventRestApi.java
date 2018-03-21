@@ -18,34 +18,9 @@
  */
 package org.exoplatform.calendar.ws;
 
-import static org.exoplatform.calendar.ws.CalendarRestApi.ATTACHMENT_URI;
-import static org.exoplatform.calendar.ws.CalendarRestApi.CALENDAR_URI;
-import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
-import static org.exoplatform.calendar.ws.CalendarRestApi.EVENT_URI;
-import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
-import static org.exoplatform.calendar.ws.CalendarRestApi.OCCURRENCE_URI;
-
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.ws.bean.AttachmentResource;
-import org.exoplatform.calendar.ws.bean.CalendarResource;
-import org.exoplatform.calendar.ws.bean.CategoryResource;
-import org.exoplatform.calendar.ws.bean.CollectionResource;
-import org.exoplatform.calendar.ws.bean.EventResource;
+import org.exoplatform.calendar.ws.bean.*;
 import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.utils.ISO8601;
@@ -53,6 +28,15 @@ import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.exoplatform.calendar.ws.CalendarRestApi.*;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
@@ -381,8 +365,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     from.set(2013, 2, 1, 0, 0, 0);
     to.set(2013, 2, 12, 0, 0, 0);
 
-    String queryParams ="?start="+ISO8601.format(from)+"&end="+ISO8601.format(to)+"&offset=0&limit=4&returnSize=true";
-
+    String queryParams = "?start=" + URLEncoder.encode(ISO8601.format(from), "UTF-8") + "&end=" + URLEncoder.encode(ISO8601.format(to), "UTF-8") + "&offset=0&limit=4&returnSize=true";
     login("john");
     //
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
