@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -135,7 +136,11 @@ public class ReminderJob extends MultiTenancyJob {
               message.setTo(mail);
               message.setSubject(subject);
               if (calEvent != null) {
-                message.setBody(buildBodyMessage(calEvent, res));
+                CalendarSetting calendarSettings = calendarService.getCalendarSetting(user.getUserName());
+                if (calendarSettings != null) {
+                  String userTimeZone = calendarSettings.getTimeZone();
+                  message.setBody(buildBodyMessage(calEvent, res, userTimeZone));
+                }
               } else {
                 message.setBody("");
               }
@@ -182,7 +187,7 @@ public class ReminderJob extends MultiTenancyJob {
         log_.debug("File plan job done");
     }
   }
-  private String buildBodyMessage(CalendarEvent calEvent, ResourceBundle res) {
+  private String buildBodyMessage(CalendarEvent calEvent, ResourceBundle res, String userTimezone) {
     java.util.Calendar fromTime = new GregorianCalendar();
     java.util.Calendar toTime = new GregorianCalendar();
     String type = "Type: ";
@@ -213,9 +218,13 @@ public class ReminderJob extends MultiTenancyJob {
       summary.append(calEvent.getLocation());
       summary.append("<br>");
     }
+    if (userTimezone != null) {
+      TimeZone timeZone = TimeZone.getTimeZone(userTimezone);
+      fromTime.setTimeZone(timeZone);
+      toTime.setTimeZone(timeZone);
+    }
     fromTime.setTime(calEvent.getFromDateTime());
     appendDateToSummary(from, fromTime, summary);
-
     toTime.setTime(calEvent.getToDateTime());
     appendDateToSummary(to, toTime, summary);
     return summary.toString();
