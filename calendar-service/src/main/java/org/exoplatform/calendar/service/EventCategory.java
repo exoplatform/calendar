@@ -16,9 +16,6 @@
  **/
 package org.exoplatform.calendar.service;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import org.exoplatform.calendar.model.AbstractModel;
 import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.services.jcr.util.IdGenerator;
@@ -26,6 +23,10 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.RequestContext;
 import org.exoplatform.webui.application.WebuiRequestContext;
+
+import java.util.MissingResourceException;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 /**
  * Created by The eXo Platform SARL
@@ -80,5 +81,20 @@ public class EventCategory extends AbstractModel {
 
   public boolean isDataInit() {
     return isDataInit;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    EventCategory that = (EventCategory) o;
+    return isDataInit == that.isDataInit &&
+            Objects.equals(name, that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), name, isDataInit);
   }
 }

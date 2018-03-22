@@ -1,10 +1,12 @@
 package org.exoplatform.calendar.model;
 
-import java.util.Locale;
-import java.util.TimeZone;
-
 import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.services.jcr.util.IdGenerator;
+
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.TimeZone;
 
 /**
  * A new Calendar model for new Calendar Service API.
@@ -175,33 +177,31 @@ public class Calendar extends AbstractModel {
     this.hasChildren = children;
   }
 
-  /**
-   * used to compare 2 calendars or between a calendar and an object
-   *
-   * @param o a particular object
-   * @return true false
-   */
-  @Override
-  public boolean equals(Object o)
-  {
-    if(o == null) {
-      return false;
-    }
-    if (o instanceof Calendar) {
-      
-      Calendar calendar = (Calendar) o;
-      if(getId() == null) {
-        return calendar.getId() == null;
-      }
-      return getId().equals(calendar.getId());
-    }
 
-    return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Calendar calendar = (Calendar) o;
+    return _isPublic == calendar._isPublic &&
+            remote == calendar.remote &&
+            hasChildren == calendar.hasChildren &&
+            Objects.equals(name, calendar.name) &&
+            Objects.equals(calendarColor, calendar.calendarColor) &&
+            Objects.equals(description, calendar.description) &&
+            Objects.equals(timeZone, calendar.timeZone) &&
+            Objects.equals(locale, calendar.locale) &&
+            Objects.equals(calendarOwner, calendar.calendarOwner) &&
+            Arrays.equals(viewPermission, calendar.viewPermission) &&
+            Arrays.equals(editPermission, calendar.editPermission) &&
+            Arrays.equals(groups, calendar.groups) &&
+            Objects.equals(publicUrl, calendar.publicUrl) &&
+            Objects.equals(privateUrl, calendar.privateUrl);
   }
 
   @Override
-  public int hashCode()
-  {
-    return getId().hashCode();
+  public int hashCode() {
+    return Objects.hash(name, calendarColor, description, timeZone, locale, calendarOwner, viewPermission,
+            editPermission, groups, publicUrl, privateUrl, _isPublic, remote, hasChildren);
   }
 }

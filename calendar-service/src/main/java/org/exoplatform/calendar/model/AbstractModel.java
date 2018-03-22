@@ -17,6 +17,7 @@
 package org.exoplatform.calendar.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @SuppressWarnings("serial")
 public abstract class AbstractModel implements Serializable {
@@ -58,5 +59,20 @@ public abstract class AbstractModel implements Serializable {
   public void setLastModified(long lastModified) {
     lastModified = (lastModified / 1000) * 1000;
     this.lastModified = lastModified;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    AbstractModel that = (AbstractModel) o;
+    return lastModified == that.lastModified &&
+            Objects.equals(id, that.id) &&
+            Objects.equals(ds, that.ds);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, ds, lastModified);
   }
 }

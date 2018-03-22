@@ -16,14 +16,13 @@
  */
 package org.exoplatform.calendar.model;
 
-import java.util.*;
-
 import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Reminder;
-import org.exoplatform.portal.pom.config.tasks.SearchTask;
 import org.exoplatform.services.jcr.util.IdGenerator;
+
+import java.util.*;
 
 /**
  * @author <a href="trongtt@exoplatform.com">Trong Tran</a>
@@ -788,14 +787,56 @@ public class Event extends AbstractModel {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Event event = (Event) o;
-    return Objects.equals(eventCategoryId, event.eventCategoryId) &&
+    return repeatCount == event.repeatCount &&
+            repeatInterval == event.repeatInterval &&
+            isPrivate == event.isPrivate &&
+            Objects.equals(summary, event.summary) &&
+            Objects.equals(location, event.location) &&
+            Objects.equals(description, event.description) &&
+            Objects.equals(eventCategoryId, event.eventCategoryId) &&
             Objects.equals(eventCategoryName, event.eventCategoryName) &&
             Objects.equals(calendarId, event.calendarId) &&
+            Objects.equals(repeatType, event.repeatType) &&
+            Objects.equals(fromDateTime, event.fromDateTime) &&
+            Objects.equals(toDateTime, event.toDateTime) &&
+            Objects.equals(completedDateTime, event.completedDateTime) &&
+            Objects.equals(taskDelegator, event.taskDelegator) &&
+            Objects.equals(sendOption, event.sendOption) &&
+            Objects.equals(message, event.message) &&
+            Arrays.equals(participantStatus, event.participantStatus) &&
+            Objects.equals(recurrenceId, event.recurrenceId) &&
+            Objects.equals(isExceptionOccurrence, event.isExceptionOccurrence) &&
+            Objects.equals(exclusions, event.exclusions) &&
+            Objects.equals(originalReference, event.originalReference) &&
+            Objects.equals(repeatUntilDate, event.repeatUntilDate) &&
+            Arrays.equals(repeatBySecond, event.repeatBySecond) &&
+            Arrays.equals(repeatByMinute, event.repeatByMinute) &&
+            Arrays.equals(repeatByHour, event.repeatByHour) &&
+            Arrays.equals(repeatByDay, event.repeatByDay) &&
+            Arrays.equals(repeatByMonthDay, event.repeatByMonthDay) &&
+            Arrays.equals(repeatByYearDay, event.repeatByYearDay) &&
+            Arrays.equals(repeatByWeekNo, event.repeatByWeekNo) &&
+            Arrays.equals(repeatByMonth, event.repeatByMonth) &&
+            Arrays.equals(repeatBySetPos, event.repeatBySetPos) &&
+            Objects.equals(repeatWkst, event.repeatWkst) &&
+            Objects.equals(eventType, event.eventType) &&
+            Objects.equals(priority, event.priority) &&
+            Objects.equals(eventState, event.eventState) &&
+            Objects.equals(status, event.status) &&
+            Arrays.equals(invitation, event.invitation) &&
+            Arrays.equals(participant, event.participant) &&
+            Objects.equals(reminders, event.reminders) &&
+            Objects.equals(attachment, event.attachment) &&
             Objects.equals(activityId, event.activityId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(eventCategoryId, eventCategoryName, calendarId, activityId);
+    return Objects.hash(summary, location, description, eventCategoryId, eventCategoryName, calendarId,
+            repeatType, fromDateTime, toDateTime, completedDateTime, taskDelegator, sendOption, message,
+            participantStatus, recurrenceId, isExceptionOccurrence, exclusions, originalReference, repeatUntilDate,
+            repeatCount, repeatInterval, repeatBySecond, repeatByMinute, repeatByHour, repeatByDay, repeatByMonthDay,
+            repeatByYearDay, repeatByWeekNo, repeatByMonth, repeatBySetPos, repeatWkst, eventType, priority, isPrivate,
+            eventState, status, invitation, participant, reminders, attachment, activityId);
   }
 }
