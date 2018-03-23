@@ -61,6 +61,12 @@
       wx.UICombobox.setSelectedItem(jInput.get(0));
     } else {
       wx.UICombobox.complete(this, e);
+      // Check if the user enter the time manually without the ComboBox 
+      var regex=/^(2[0-3]|[01][0-9]):[0-5][0-9]$/;
+      if(regex.test(this.value)){
+       var hidden = gj(this).prev("input")[0];
+       hidden.value = this.value;
+      }
     }
     
   };
