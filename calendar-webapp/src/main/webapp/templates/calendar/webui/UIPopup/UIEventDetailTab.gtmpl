@@ -82,7 +82,7 @@
     </div>
 	<div class="control-group">
 		<div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_FROM)%>:</div>
-    <div class="controls">
+    <div class="controls" style="position: relative;z-index: 150;">
     <div class="date inputSmall pull-left">
     <%uiForm.renderField(uicomponent.FIELD_FROM)%>
     </div>
@@ -93,7 +93,7 @@
 	</div>
     <div class="control-group">
     <div class="control-label" ><%=uiForm.getLabel(uicomponent.FIELD_TO)%>:</div>
-		<div class="controls">
+		<div class="controls" style="position: relative;z-index: 120;">
 			<div class="date inputSmall pull-left">
 				<%uiForm.renderField(uicomponent.FIELD_TO)%>
 			</div>
