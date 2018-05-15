@@ -562,6 +562,9 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
                 CalendarEvent depEvt = CalendarEvent.build(evt);
                 Map<String, CalendarEvent> map = CalendarUtils.getCalendarService().getOccurrenceEvents(depEvt, beginMonth, cal, 
                         getCalendarSetting().getTimeZone());
+                if (map == null) {
+                  continue;
+                }
                 for (CalendarEvent e : map.values()) {
                     evtInMonth.add(e);
                 }
