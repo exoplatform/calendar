@@ -2043,8 +2043,28 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       String toType = event.getRequestContext().getRequestParameter("caltype");
       String currentUser = CalendarUtils.getCurrentUser();
       CalendarService calService = CalendarUtils.getCalendarService();
+      if (calService.isRemoteCalendar(currentUser,selectedCalendarId)) {
+        event.getRequestContext()
+            .getUIApplication()
+            .addMessage(new ApplicationMessage("UICalendarView.msg.cannot-move-remote-calendar-event",
+                                               null,
+                                               1));
+        uiComponent.refresh();
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent.getParent());
+        return;
+      }
       List<CalendarEvent> eventList = uiComponent.getSelectedEvents(eventIds);
       for (CalendarEvent ce : eventList) {
+        if (calService.isRemoteCalendar(currentUser,ce.getCalendarId())) {
+          event.getRequestContext()
+              .getUIApplication()
+              .addMessage(new ApplicationMessage("UICalendarView.msg.cannot-move-remote-calendar-event",
+                                                 null,
+                                                 1));
+          uiComponent.refresh();
+          event.getRequestContext().addUIComponentToUpdateByAjax(uiComponent.getParent());
+          return;
+        }
         calService.moveEvent(ce.getCalendarId(),
                 selectedCalendarId,
                 ce.getCalType(),
