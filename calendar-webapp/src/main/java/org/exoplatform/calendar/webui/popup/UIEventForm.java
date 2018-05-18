@@ -39,6 +39,7 @@ import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
 import org.exoplatform.portal.Constants;
+import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -1398,6 +1399,12 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
       uiForm.setSelectedTab(TAB_EVENTREMINDER) ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getAncestorOfType(UIPopupAction.class)) ;
       return ;
+    }
+    CalendarService calService =  CalendarUtils.getCalendarService() ;
+    if(calService.isRemoteCalendar(CalendarUtils.getCurrentUser(), uiForm.getCalendarId())) {
+      event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.cant-add-event-on-remote-calendar", null, AbstractApplicationMessage.WARNING));
+      ((PortalRequestContext) event.getRequestContext().getParentAppRequestContext()).ignoreAJAXUpdateOnPortlets(true);
+      return;
     }
 
     //. Ask user if he edit a recursive event
