@@ -269,6 +269,18 @@ public class UIMonthView extends UICalendarView {
         java.util.Calendar cal = CalendarUtils.getInstanceOfCurrentCalendar() ;
         for(CalendarEvent ce : list) {
           String calendarId = ce.getCalendarId() ;
+
+          if (calService.isRemoteCalendar(username,ce.getCalendarId())) {
+            event.getRequestContext()
+                .getUIApplication()
+                .addMessage(new ApplicationMessage("UICalendarView.msg.cannot-move-remote-calendar-event",
+                                                   null,
+                                                   1));
+            calendarview.refresh();
+            event.getRequestContext().addUIComponentToUpdateByAjax(calendarview.getParent());
+            return;
+          }
+
           if(ce != null) {
             org.exoplatform.calendar.service.Calendar calendar = null ;
             if(ce.getCalType().equals(CalendarUtils.PRIVATE_TYPE)) {

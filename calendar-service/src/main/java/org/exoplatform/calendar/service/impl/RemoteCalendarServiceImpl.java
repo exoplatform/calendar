@@ -55,6 +55,7 @@ import org.apache.jackrabbit.webdav.property.DavProperty;
 import org.apache.jackrabbit.webdav.property.DavPropertyName;
 import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
+import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.version.report.ReportInfo;
 import org.apache.jackrabbit.webdav.xml.DomUtil;
 import org.apache.jackrabbit.webdav.xml.Namespace;
@@ -238,6 +239,9 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
           DavPropertySet propSet = multiRes.getProperties(DavServletResponse.SC_OK);
           net.fortuna.ical4j.model.Calendar iCalEvent = getCalDavResource(remoteCalendar, href);
           DavProperty etag = propSet.get(DavPropertyName.GETETAG.getName(), DavConstants.NAMESPACE);
+          if(etag == null){
+            etag = new DefaultDavProperty(DavPropertyName.GETETAG,"");
+          }
           try {
             importCaldavEvent(remoteCalendar.getUsername(), eXoCalendar.getId(), null, iCalEvent, href, etag.getValue().toString(), true);
             storage_.setRemoteCalendarLastUpdated(remoteCalendar.getUsername(), eXoCalendar.getId(), Utils.getGreenwichMeanTime());
@@ -483,7 +487,15 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
         DavProperty calendarData = propSet.get(CALDAV_XML_CALENDAR_DATA, CALDAV_NAMESPACE);
         DavProperty etag = propSet.get(DavPropertyName.GETETAG.getName(), DavConstants.NAMESPACE);
         try {
-          net.fortuna.ical4j.model.Calendar iCalEvent = calendarBuilder.build(new StringReader(calendarData.getValue().toString()));
+          net.fortuna.ical4j.model.Calendar iCalEvent;
+          if(calendarData != null) {
+            iCalEvent = calendarBuilder.build(new StringReader(calendarData.getValue().toString()));
+          } else {
+            iCalEvent = new net.fortuna.ical4j.model.Calendar();
+          }
+          if(etag == null){
+            etag = new DefaultDavProperty(DavPropertyName.GETETAG,"");
+          }
           // add new event
           importCaldavEvent(username, remoteCalendarId, null, iCalEvent, href, etag.getValue().toString(), true);
         } catch (Exception e) {
@@ -502,6 +514,9 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
         href = multiRes.getHref();
         DavPropertySet propSet = multiRes.getProperties(DavServletResponse.SC_OK);
         DavProperty calendarData = propSet.get(CALDAV_XML_CALENDAR_DATA, CALDAV_NAMESPACE);
+        if(calendarData == null){
+          calendarData = new DefaultDavProperty(DavPropertyName.create(CALDAV_XML_CALENDAR_DATA,CALDAV_NAMESPACE),"");
+        }
         DavProperty etag = propSet.get(DavPropertyName.GETETAG.getName(), DavConstants.NAMESPACE);
         String eventId = updated.get(href);
         try {
@@ -548,11 +563,13 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
       Element calendarMultiGet = DomUtil.createElement(doc, CALDAV_XML_CALENDAR_MULTIGET, CALDAV_NAMESPACE);
       calendarMultiGet.setAttributeNS(Namespace.XMLNS_NAMESPACE.getURI(), Namespace.XMLNS_NAMESPACE.getPrefix() + ":" + DavConstants.NAMESPACE.getPrefix(), DavConstants.NAMESPACE.getURI());
 
-      ReportInfo reportInfo = new ReportInfo(calendarMultiGet, DavConstants.DEPTH_0);
-      DavPropertyNameSet propNameSet = reportInfo.getPropertyNameSet();
-      propNameSet.add(DavPropertyName.GETETAG);
-      DavPropertyName calendarData = DavPropertyName.create(CALDAV_XML_CALENDAR_DATA, CALDAV_NAMESPACE);
-      propNameSet.add(calendarData);
+      ReportInfo reportInfo = new ReportInfo(calendarMultiGet, DavConstants.DEPTH_1);
+      Element prop = DomUtil.createElement(doc,DavConstants.XML_PROP,DavConstants.NAMESPACE);
+      Element getETag = DomUtil.createElement(doc,DavConstants.PROPERTY_GETETAG,DavConstants.NAMESPACE);
+      Element calData = DomUtil.createElement(doc,CALDAV_XML_CALENDAR_DATA,CALDAV_NAMESPACE);
+      prop.appendChild(getETag);
+      prop.appendChild(calData);
+      reportInfo.setContentElement(prop);
 
       Element href;
       for (int i = 0; i < hrefs.length; i++) {
@@ -1031,11 +1048,14 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
 
       // root element
       Element calendarQuery = DomUtil.createElement(doc, CALDAV_XML_CALENDAR_QUERY, CALDAV_NAMESPACE);
-      calendarQuery.setAttributeNS(Namespace.XMLNS_NAMESPACE.getURI(), Namespace.XMLNS_NAMESPACE.getPrefix() + ":" + DavConstants.NAMESPACE.getPrefix(), DavConstants.NAMESPACE.getURI());
 
-      ReportInfo reportInfo = new ReportInfo(calendarQuery, DavConstants.DEPTH_0);
-      DavPropertyNameSet propNameSet = reportInfo.getPropertyNameSet();
-      propNameSet.add(DavPropertyName.GETETAG);
+      ReportInfo reportInfo = new ReportInfo(calendarQuery, DavConstants.DEPTH_1);
+      Element prop = DomUtil.createElement(doc,DavConstants.XML_PROP,DavConstants.NAMESPACE);
+      Element getETag = DomUtil.createElement(doc,DavConstants.PROPERTY_GETETAG,DavConstants.NAMESPACE);
+      Element calData = DomUtil.createElement(doc,CALDAV_XML_CALENDAR_DATA,CALDAV_NAMESPACE);
+      prop.appendChild(getETag);
+      prop.appendChild(calData);
+      reportInfo.setContentElement(prop);
 
       // filter element
       Element filter = DomUtil.createElement(doc, CALDAV_XML_FILTER, CALDAV_NAMESPACE);

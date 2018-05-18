@@ -49,6 +49,7 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Period;
 import net.fortuna.ical4j.model.Recur;
 
+import org.exoplatform.calendar.model.CompositeID;
 import org.picocontainer.Startable;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -1043,7 +1044,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public Calendar refreshRemoteCalendar(String username, String remoteCalendarId) throws Exception {
-    return remoteCalendarService.refreshRemoteCalendar(username, remoteCalendarId);
+    CompositeID compositeID = CompositeID.parse(remoteCalendarId);
+    return remoteCalendarService.refreshRemoteCalendar(username, compositeID.getId());
   }
 
   /**
