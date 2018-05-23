@@ -918,9 +918,9 @@ public class UICalendars extends UIForm  {
       String username = CalendarUtils.getCurrentUser() ;
       Calendar cal = Calendar.build(uiComponent.xCalService.getCalendarHandler().getCalendarById(selectedCalendarId));
 
-      if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(NewUserListener.defaultCalendarName))
+      if (cal.getId().equals(Utils.getDefaultCalendarId(username)) && cal.getName().equals(CalendarUtils.getCalendarService().getDefaultCalendarName()))
       {
-        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+        String newName = CalendarUtils.getResourceBundle("UICalendars.label." + CalendarUtils.getCalendarService().getDefaultCalendarId(), CalendarUtils.getCalendarService().getDefaultCalendarId());
         cal.setName(newName);
       }
 

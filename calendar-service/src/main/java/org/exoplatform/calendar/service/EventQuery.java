@@ -122,7 +122,7 @@ public class EventQuery {
     }
 
     for(String id : categoryIds) {
-      if(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL.equals(id)) {
+      if(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL.equals(id)) {
         return true;
       }
     }

@@ -144,7 +144,7 @@ public class TestAttachmentAndCategories extends TestRestApi {
     CollectionResource resource = (CollectionResource)response.getEntity();
     assertNotNull(response);
     assertEquals(HTTPStatus.OK, response.getStatus());
-    assertEquals(1, resource.getData().size());
+    assertEquals(7, resource.getData().size());
     assertNotNull(response.getHttpHeaders().get(HEADER_LINK));
 
     //jsonp

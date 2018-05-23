@@ -76,8 +76,12 @@ public abstract class TestRestApi extends AbstractResourceTest {
       }      
     }
     ConversationState.setCurrent(null);
+    try {
+      end();
+    } catch (Exception e) {
+      // Nothing to do
+    }
     super.tearDown();
-    RequestLifeCycle.end();
   }
   
   protected String currentUser() {

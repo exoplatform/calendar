@@ -274,9 +274,6 @@ public class JCRDataStorage implements DataStorage {
       return userApp.getNode(Utils.CALENDAR_APP);
     } catch (Exception e) {
       calendarRoot = userApp.addNode(Utils.CALENDAR_APP, Utils.NT_UNSTRUCTURED);
-      if (!calendarRoot.hasNode(CALENDAR_SETTING)) {
-        addCalendarSetting(calendarRoot, new CalendarSetting());
-      }
       userApp.getSession().save();
       return calendarRoot;
     }
@@ -756,18 +753,18 @@ public class JCRDataStorage implements DataStorage {
     if (eventCategoryHome.hasNode(eventCategoryId)) {
       Node eventCategoryNode = eventCategoryHome.getNode(eventCategoryId);
       for (CalendarEvent ce : getUserEventByCategory(username, eventCategoryId)) {
-        ce.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
-        ce.setEventCategoryName(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL);
+        ce.setEventCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
+        ce.setEventCategoryName(CalendarService.DEFAULT_EVENTCATEGORY_NAME_ALL);
         saveUserEvent(username, ce.getCalendarId(), ce, false);
       }
       for (CalendarEvent ce : getSharedEventByCategory(username, eventCategoryId)) {
-        ce.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
-        ce.setEventCategoryName(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL);
+        ce.setEventCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
+        ce.setEventCategoryName(CalendarService.DEFAULT_EVENTCATEGORY_NAME_ALL);
         saveEventToSharedCalendar(username, ce.getCalendarId(), ce, false);
       }
       for (CalendarEvent ce : getPublicEventByCategory(username, eventCategoryId)) {
-        ce.setEventCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
-        ce.setEventCategoryName(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL);
+        ce.setEventCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
+        ce.setEventCategoryName(CalendarService.DEFAULT_EVENTCATEGORY_NAME_ALL);
         savePublicEvent(ce.getCalendarId(), ce, false);
       }
       eventCategoryNode.remove();
@@ -6061,13 +6058,10 @@ public class JCRDataStorage implements DataStorage {
     @Override
     public CalendarSetting retrieve(JCRDataStorage context, String key) throws Exception {
       Node calendarHome = context.getUserCalendarServiceHome(key);
-      CalendarSetting calendarSetting = context.getCalendarSetting(calendarHome);
-      if (calendarSetting == null) {
-        calendarSetting = new CalendarSetting();
-        context.addCalendarSetting(calendarHome, calendarSetting);
+      if (!calendarHome.hasNode(CALENDAR_SETTING)) {
+        return null;
       }
-      
-      return calendarSetting;
+      return context.getCalendarSetting(calendarHome);
     }
   };
   

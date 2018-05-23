@@ -38,6 +38,65 @@ import org.quartz.JobDetail;
 
 public interface CalendarService {
 
+  final public static String EVENT_CATEGORIES = "defaultEventCategories".intern();
+
+  final public static String COMA = ",".intern();
+  
+  final public static String   DEFAULTGROUP       = "default".intern();
+
+  final public static String   ADDRESSESGROUP     = "addresses".intern();
+
+  final public static String   ADDRESSESGROUPNAME = "collected-email-adresses".intern();
+
+  final public static String   DEFAULTGROUPNAME   = "My contacts".intern();
+
+  final public static String   DEFAULTGROUPDES    = "Default address book".intern();
+
+  // Calendar Setting params
+  final public static String ST_VIEW_TYPE                           = "viewType".intern();
+
+  final public static String ST_TIME_INTEVAL                        = "timeInterval".intern();
+
+  final public static String ST_WEEK_START                          = "weekStartOn".intern();
+
+  final public static String ST_DATE_FORMAT                         = "dateFormat".intern();
+
+  final public static String ST_TIME_FORMAT                         = "timeFormat".intern();
+
+  final public static String ST_LOCALE                              = "localeId".intern();
+
+  final public static String ST_TIMEZONE                            = "timezoneId".intern();
+
+  final public static String ST_BASE_URL                            = "baseUrlForRss".intern();
+
+  final public static String ST_WORKINGTIME                         = "isShowWorkingTime".intern();
+
+  final public static String ST_TIME_BEGIN                          = "workingTimeBegin".intern();
+
+  final public static String ST_TIME_END                            = "workingTimeEnd".intern();
+
+  final public static String DEFAULT_CALENDAR_ID = "defaultCalendarId";
+  
+  final public static String DEFAULT_CALENDAR_NAME = "defaultCalendarName";
+  
+  final public static String DEFAULT_EVENTCATEGORY_ID_ALL = "defaultEventCategoryIdAll";
+  final public static String DEFAULT_EVENTCATEGORY_ID_MEETING = "defaultEventCategoryIdMeeting";
+  final public static String DEFAULT_EVENTCATEGORY_ID_CALLS = "defaultEventCategoryIdCalls";
+  final public static String DEFAULT_EVENTCATEGORY_ID_CLIENTS = "defaultEventCategoryIdClients";
+  final public static String DEFAULT_EVENTCATEGORY_ID_HOLIDAY = "defaultEventCategoryIdHoliday";
+  final public static String DEFAULT_EVENTCATEGORY_ID_ANNIVERSARY = "defaultEventCategoryIdAnniversary";
+  
+  final public static String[] DEFAULT_EVENT_CATEGORY_IDS = new String[] { DEFAULT_EVENTCATEGORY_ID_ALL,
+      DEFAULT_EVENTCATEGORY_ID_MEETING, DEFAULT_EVENTCATEGORY_ID_CALLS, DEFAULT_EVENTCATEGORY_ID_CLIENTS,
+      DEFAULT_EVENTCATEGORY_ID_HOLIDAY, DEFAULT_EVENTCATEGORY_ID_ANNIVERSARY };
+
+  final public static String DEFAULT_EVENTCATEGORY_NAME_ALL = "defaultEventCategoryNameAll";
+  final public static String DEFAULT_EVENTCATEGORY_NAME_MEETING = "defaultEventCategoryNameMeeting";
+  final public static String DEFAULT_EVENTCATEGORY_NAME_CALLS = "defaultEventCategoryNameCalls";
+  final public static String DEFAULT_EVENTCATEGORY_NAME_CLIENTS = "defaultEventCategoryNameClients";
+  final public static String DEFAULT_EVENTCATEGORY_NAME_HOLIDAY = "defaultEventCategoryNameHoliday";
+  final public static String DEFAULT_EVENTCATEGORY_NAME_ANNIVERSARY = "defaultEventCategoryNameAnniversary";
+
   public static final TimeZone PERSISTED_TIMEZONE = DateUtils.getTimeZone("GMT");
 
   final public static String ICALENDAR   = "ICalendar(.ics)";
@@ -112,6 +171,17 @@ public interface CalendarService {
    * @see CalendarSetting
    */
   public CalendarSetting getCalendarSetting(String username) throws Exception;
+
+  /**
+   * Test whether user has calendar settings or not
+   * 
+   * @param username
+   * @return
+   * @throws Exception
+   */
+  default public boolean hasCalendarSetting(String username) throws Exception {
+    return false;
+  }
 
   /**
    * Gets the object performing import/export by type of import/export.
@@ -1139,5 +1209,34 @@ public interface CalendarService {
   public List<CalendarEvent> getHighLightOriginalRecurrenceEvents(String username, java.util.Calendar from, java.util.Calendar to, String[] publicCalendarIds) throws Exception;
 
   public List<CalendarEvent> getHighLightOriginalRecurrenceEventsSQL(String username, java.util.Calendar from, java.util.Calendar to, EventQuery eventQuery,
-                                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;  
+                                                                     String[] privateCalendars, String[] publicCalendars, List<String> emptyCalendars) throws Exception;
+
+  /**
+   * @return calendar event category IDs
+   */
+  default String[] getDefaultEventCategoryIds() {
+    return null;
+  }
+
+  /**
+   * @return calendar event category Names
+   */
+  default String[] getDefaultEventCategoryNames() {
+    return null;
+  }
+
+  /**
+   * @return default user calendar id
+   */
+  default String getDefaultCalendarId() {
+    return null;
+  }
+
+  /**
+   * @return default user calendar name
+   */
+  default String getDefaultCalendarName() {
+    return null;
+  }
+
 }

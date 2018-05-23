@@ -206,7 +206,7 @@ public class CalendarUtils {
     return (value == null || value.trim().length() == 0) ;
   }
 
-  static public CalendarService getCalendarService() throws Exception {
+  static public CalendarService getCalendarService() {
     return (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class);
   }
 
@@ -915,9 +915,9 @@ public class CalendarUtils {
     for(EventCategory category : eventCategories) {
       // Check if EventCategory is default event category
       boolean isDefaultEventCategory = false;
-      for (int i = 0; i < NewUserListener.defaultEventCategoryIds.length; i++) {
-        if (category.getId().equals(NewUserListener.defaultEventCategoryIds[i])
-            && category.getName().equals(NewUserListener.defaultEventCategoryNames[i])) {
+      for (int i = 0; i < getCalendarService().getDefaultEventCategoryIds().length; i++) {
+        if (category.getId().equals(getCalendarService().getDefaultEventCategoryIds()[i])
+            && category.getName().equals(getCalendarService().getDefaultEventCategoryNames()[i])) {
           isDefaultEventCategory = true;
           break;
         }
@@ -1005,7 +1005,7 @@ public class CalendarUtils {
     }
     return text;
   }
-  
+
   // save a default view type for Calendar Setting when cannot get the view type
   private static void resetViewInSetting(CalendarSetting calendarSetting) {
     try {

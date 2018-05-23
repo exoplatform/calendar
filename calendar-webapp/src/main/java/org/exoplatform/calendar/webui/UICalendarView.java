@@ -652,8 +652,8 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     String username = CalendarUtils.getCurrentUser();
     List<EventCategory> eventCategories = calendarService.getEventCategories(username);
     List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
-    List<String> defaultEvCatId = Arrays.asList(NewUserListener.defaultEventCategoryIds);
-    List<String> defaultEvCatName = Arrays.asList(NewUserListener.defaultEventCategoryNames);
+    List<String> defaultEvCatId = Arrays.asList(CalendarUtils.getCalendarService().getDefaultEventCategoryIds());
+    List<String> defaultEvCatName = Arrays.asList(CalendarUtils.getCalendarService().getDefaultEventCategoryNames());
     for (EventCategory category : eventCategories) {
       if (defaultEvCatId.contains(category.getId())
               || defaultEvCatName.contains(category.getName())) {
@@ -674,7 +674,7 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       addUIFormInput(selectBox);
     }
     selectBox.setOptions(options);
-    selectBox.setValue(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+    selectBox.setValue(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
   }
 
   /**

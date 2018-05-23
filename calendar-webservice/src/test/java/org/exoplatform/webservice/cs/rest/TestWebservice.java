@@ -57,13 +57,8 @@ public class TestWebservice extends AbstractResourceTest {
     calendarWebservice = (CalendarWebservice) container.getComponentInstanceOfType(CalendarWebservice.class);
     calendarService = (CalendarService) container.getComponentInstanceOfType(CalendarService.class);
     binder.addResource(calendarWebservice, null);
-    login() ;
+    login();
     h.putSingle("username", username);
-  }
-
-  public void tearDown() throws Exception {
-    super.tearDown();
-    
   }
 
   protected Calendar createCalendar(String name) {

@@ -165,12 +165,6 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     ValueParam defaultEventCategoriesConfigParam = new ValueParam();
     defaultEventCategoriesConfigParam.setValue(defaultEventCategoriesConfig);
 
-    // Init config
-    InitParams params = new InitParams();
-    params.put(NewUserListener.EVENT_CATEGORIES, defaultEventCategoriesConfigParam);
-    NewUserListener newUserListener = new NewUserListener(calendarService_, params);
-    organizationService_.addListenerPlugin(newUserListener);
-
     // Create new user
     String newUserName = "testUser";
     User newUser = organizationService_.getUserHandler().createUserInstance(newUserName);
@@ -179,7 +173,7 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     // Create event category list from config
     String[] configValues = defaultEventCategoriesConfig.split(Utils.COMMA);
     List<String> defaultEventCategories = new ArrayList<String>();
-    defaultEventCategories.add(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+    defaultEventCategories.add(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
     for (int i = 0; i < configValues.length; i++) {
       defaultEventCategories.add(configValues[i].trim());
     }
@@ -248,11 +242,12 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
   }
 
   public void testEventCategory() throws Exception {
+    int initialSize = calendarService_.getEventCategories(username).size();
     EventCategory eventCategory = new EventCategory();
     String name = "eventCategoryName";
     eventCategory.setName(name);
     calendarService_.saveEventCategory(username, eventCategory, true);
-    assertEquals(1, calendarService_.getEventCategories(username).size());
+    assertEquals(initialSize + 1, calendarService_.getEventCategories(username).size());
     assertNotNull(calendarService_.getEventCategory(username, eventCategory.getId()));
   }
 
@@ -504,14 +499,14 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     // Check user event
     CalendarEvent calendarEvent3 = calendarService_.getEvent(username, userEvent.getId());
     assertNotNull(calendarEvent3);
-    assertEquals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL, calendarEvent3.getEventCategoryId());
-    assertEquals(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL, calendarEvent3.getEventCategoryName());
+    assertEquals(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL, calendarEvent3.getEventCategoryId());
+    assertEquals(CalendarService.DEFAULT_EVENTCATEGORY_NAME_ALL, calendarEvent3.getEventCategoryName());
     
     // Check public event
     CalendarEvent calendarEvent4 = calendarService_.getGroupEvent(groupCalendar.getId(), publicEvent.getId());
     assertNotNull(calendarEvent4);
-    assertEquals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL, calendarEvent4.getEventCategoryId());
-    assertEquals(NewUserListener.DEFAULT_EVENTCATEGORY_NAME_ALL, calendarEvent4.getEventCategoryName());
+    assertEquals(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL, calendarEvent4.getEventCategoryId());
+    assertEquals(CalendarService.DEFAULT_EVENTCATEGORY_NAME_ALL, calendarEvent4.getEventCategoryName());
   }
 
   public void testCheckFreeBusy() throws Exception {

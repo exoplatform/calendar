@@ -1695,7 +1695,7 @@ public class CalendarRestApi implements ResourceContainer {
         evObject.setSubject(DEFAULT_EVENT_NAME);
       }
       if (evObject.getCategoryId() == null) {
-        evObject.setCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+        evObject.setCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
       }
       Response error = buildEvent(evt, evObject);
       if (error != null) {
@@ -2155,7 +2155,7 @@ public class CalendarRestApi implements ResourceContainer {
         evObject.setName(DEFAULT_EVENT_NAME);
       }
       if (evObject.getCategoryId() == null) {
-        evObject.setCategoryId(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL);
+        evObject.setCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
       }
       Response error = buildEventFromTask(evt, evObject);
       if (error != null) {

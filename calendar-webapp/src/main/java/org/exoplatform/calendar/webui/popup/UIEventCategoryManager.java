@@ -21,9 +21,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.webui.UIActionBar;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
@@ -118,7 +116,7 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
       String username = CalendarUtils.getCurrentUser() ;
       EventCategory category = calService.getEventCategory(username, categoryId) ;
       uiForm.setEventCategory(category);
-      uiForm.setCategoryName(category.getLocalizedName());
+      uiForm.setCategoryName(Utils.getLocalizedName(category));
       event.getRequestContext().addUIComponentToUpdateByAjax(uiManager) ;
     }
   }
@@ -128,7 +126,7 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
       UIEventCategoryManager uiManager = event.getSource() ;
       UICalendarPortlet calendarPortlet = uiManager.getAncestorOfType(UICalendarPortlet.class) ;
       String eventCategoryId = event.getRequestContext().getRequestParameter(OBJECTID) ;
-      if (eventCategoryId.equalsIgnoreCase(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL)) {
+      if (eventCategoryId.equalsIgnoreCase(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL)) {
         event.getRequestContext()
              .getUIApplication()
              .addMessage(new ApplicationMessage("UIEventCategoryManager.msg.cannot-delete", null));
@@ -194,7 +192,7 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
 
         UIEventCategoryManager uiManager = event.getSource() ;
         UICalendarPortlet calendarPortlet = uiManager.getAncestorOfType(UICalendarPortlet.class) ;
-        if (uiManager.confirmedCategoryId_.equalsIgnoreCase(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL)) {
+        if (uiManager.confirmedCategoryId_.equalsIgnoreCase(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL)) {
           event.getRequestContext()
                   .getUIApplication()
                   .addMessage(new ApplicationMessage("UIEventCategoryManager.msg.cannot-delete", null));

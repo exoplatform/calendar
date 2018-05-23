@@ -143,7 +143,7 @@ public class UIListView extends UICalendarView {
     query = new EventQuery();
     query.setOwner(CalendarUtils.getCurrentUser());
     if (!CalendarUtils.isEmpty(categoryId_) && !categoryId_.toLowerCase().equals("null")
-        && !categoryId_.equals("calId") && !categoryId_.equals(NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL)) {
+        && !categoryId_.equals("calId") && !categoryId_.equals(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL)) {
       query.setCategoryIds(new String[] { categoryId_ });
     }
 

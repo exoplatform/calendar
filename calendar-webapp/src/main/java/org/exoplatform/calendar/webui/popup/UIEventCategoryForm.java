@@ -16,13 +16,12 @@
  **/
 package org.exoplatform.calendar.webui.popup;
 
+import java.util.*;
+
 import javax.jcr.ItemExistsException;
 
-import java.util.List;
-
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.EventCategory;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.webui.CalendarView;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;
@@ -109,7 +108,7 @@ public class UIEventCategoryForm extends UIForm {
       try {
         if(uiForm.isAddNew_) {
           for (EventCategory cat : categories) {
-            if (cat.getLocalizedName().equalsIgnoreCase(eventCat.getName())) {
+            if (Utils.getLocalizedName(cat).equalsIgnoreCase(eventCat.getName())) {
               throw new ItemExistsException();
             }
           }
@@ -117,7 +116,7 @@ public class UIEventCategoryForm extends UIForm {
         } else { 
           eventCat = uiForm.getEventCategory() ;
           for (EventCategory cat : categories) {
-            if (cat.getLocalizedName().equalsIgnoreCase(name) && !eventCat.getName().equalsIgnoreCase(name)) {
+            if (Utils.getLocalizedName(cat).equalsIgnoreCase(name) && !eventCat.getName().equalsIgnoreCase(name)) {
               throw new ItemExistsException();
             }
           }

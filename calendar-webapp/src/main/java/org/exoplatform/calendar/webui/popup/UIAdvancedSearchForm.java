@@ -126,9 +126,9 @@ public class UIAdvancedSearchForm extends UIForm implements UIPopupComponent{
     for(EventCategory cat : cservice.getEventCategories(CalendarUtils.getCurrentUser())) {
       // Check if EventCategory is default event category
       boolean isDefaultEventCategory = false;
-      for (int i = 0; i < NewUserListener.defaultEventCategoryIds.length; i++) {
-        if (cat.getId().equals(NewUserListener.defaultEventCategoryIds[i])
-            && cat.getName().equals(NewUserListener.defaultEventCategoryNames[i])) {
+      for (int i = 0; i < CalendarUtils.getCalendarService().getDefaultEventCategoryIds().length; i++) {
+        if (cat.getId().equals(CalendarUtils.getCalendarService().getDefaultEventCategoryIds()[i])
+            && cat.getName().equals(CalendarUtils.getCalendarService().getDefaultEventCategoryNames()[i])) {
           isDefaultEventCategory = true;
           break;
         }

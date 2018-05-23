@@ -19,20 +19,8 @@ package org.exoplatform.calendar.service;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -93,6 +81,8 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.services.security.IdentityConstants;
 import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.services.security.StateKey;
+import org.exoplatform.web.application.RequestContext;
+import org.exoplatform.webui.application.WebuiRequestContext;
 
 /**
  * Created by The eXo Platform SARL
@@ -510,7 +500,7 @@ public class Utils {
   public static final Object JCR_PATH = "jcr:path";
 
   public static final int UNLIMITED = -1;
-  
+
   private static Log log = ExoLogger.getLogger(Utils.class);
 
   /**
@@ -619,7 +609,7 @@ public class Utils {
   }
 
   public static String getDefaultCalendarId(String username) {
-    return new StringBuilder(username).append(MINUS).append(NewUserListener.defaultCalendarId).toString();
+    return new StringBuilder(username).append(MINUS).append(getCalendarService().getDefaultCalendarId()).toString();
   }
 
   public static PortalContainer getPortalContainer(JobExecutionContext context) {
@@ -1447,8 +1437,9 @@ public class Utils {
       throw new IllegalArgumentException("username and cal parameter must not be null");
     }
     
+    CalendarService service = getCalendarService();
+
     ExoContainer container = ExoContainerContext.getCurrentContainer();
-    CalendarService service = (CalendarService)container.getComponentInstanceOfType(CalendarService.class);
     OrganizationService oService = (OrganizationService)container.getComponentInstanceOfType(OrganizationService.class);    
     try {
       // To fix issue CAL-1119 we have to bring calendarOwner back to group calendar
@@ -1472,7 +1463,11 @@ public class Utils {
     
     return false;
   }
-  
+
+  private static CalendarService getCalendarService() {
+    return ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+  }
+
   public static Attachment loadAttachment(Node attchmentNode) throws Exception{
     Attachment attachment = null;
     if (attchmentNode.isNodeType(Utils.EXO_EVEN_TATTACHMENT)) {
@@ -1495,6 +1490,24 @@ public class Utils {
       attachment.setWorkspace(attchmentNode.getSession().getWorkspace().getName());
     }
     return attachment;
+  }
+
+  public static String getLocalizedName(EventCategory cat) {
+    WebuiRequestContext context = RequestContext.getCurrentInstance();
+    ResourceBundle res = context.getApplicationResourceBundle();
+    for (int i = 0; i < getCalendarService().getDefaultEventCategoryIds().length; i++) {
+      if (cat.getId().equals(getCalendarService().getDefaultEventCategoryIds()[i])
+          && cat.getName().equals(getCalendarService().getDefaultEventCategoryNames()[i])) {
+        try {
+          if (res != null) {
+            return res.getString("UICalendarView.label." + cat.getId());
+          }
+        } catch (MissingResourceException e) {
+          log.debug("Can not find resource bundle for key: UICalendarView.label." + cat.getId());
+        }
+      }
+    }
+    return cat.getName();
   }
 
 }

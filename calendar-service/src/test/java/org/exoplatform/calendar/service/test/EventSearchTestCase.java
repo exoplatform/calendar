@@ -51,13 +51,13 @@ public class EventSearchTestCase extends BaseCalendarServiceTestCase {
     assertContain(event.getId(), list);
 
     //. With all category
-    query.setCategoryId(new String[] {NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.searchEvent(username, query, new String[0]).getAll();
     assertContain(event.getId(), list);
     list = calendarService_.getEvents(username, query, new String[0]);
     assertContain(event.getId(), list);
 
-    query.setCategoryId(new String[] {category2.getId(), NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {category2.getId(), CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.searchEvent(username, query, new String[0]).getAll();
     assertContain(event.getId(), list);
     list = calendarService_.getEvents(username, query, new String[0]);
@@ -110,13 +110,13 @@ public class EventSearchTestCase extends BaseCalendarServiceTestCase {
     assertContain(event.getId(), list);
 
     //. With all category
-    query.setCategoryId(new String[] {NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.searchEvent(user, query, new String[0]).getAll();
     assertContain(event.getId(), list);
     list = calendarService_.getEvents(user, query, new String[0]);
     assertContain(event.getId(), list);
 
-    query.setCategoryId(new String[] {category2.getId(), NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {category2.getId(), CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.searchEvent(user, query, new String[0]).getAll();
     assertContain(event.getId(), list);
     list = calendarService_.getEvents(user, query, new String[0]);
@@ -167,7 +167,7 @@ public class EventSearchTestCase extends BaseCalendarServiceTestCase {
 
     //. With all category
     query.setCalendarId(null);
-    query.setCategoryId(new String[] {NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.searchEvent(username, query, new String[]{calendar.getId()}).getAll();
     assertContain(event.getId(), list);
     query.setCalendarId(null);
@@ -175,7 +175,7 @@ public class EventSearchTestCase extends BaseCalendarServiceTestCase {
     assertContain(event.getId(), list);
 
     query.setCalendarId(null);
-    query.setCategoryId(new String[] {category2.getId(), NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {category2.getId(), CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.searchEvent(username, query, new String[]{calendar.getId()}).getAll();
     assertContain(event.getId(), list);
     query.setCalendarId(null);
@@ -242,14 +242,14 @@ public class EventSearchTestCase extends BaseCalendarServiceTestCase {
     assertContain(groupEvent.getId(), list);
 
     query.setCalendarId(null);
-    query.setCategoryId(new String[] {NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.getAllNoRepeatEventsSQL(user, query, new String[]{calendar.getId()}, new String[]{groupCalendar.getId()}, Collections.<String>emptyList());
     assertContain(event.getId(), list);
     assertContain(sharedEvent.getId(), list);
     assertContain(groupEvent.getId(), list);
 
     query.setCalendarId(null);
-    query.setCategoryId(new String[] {category2.getId(), NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL});
+    query.setCategoryId(new String[] {category2.getId(), CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL});
     list = calendarService_.getAllNoRepeatEventsSQL(user, query, new String[]{calendar.getId()}, new String[]{groupCalendar.getId()}, Collections.<String>emptyList());
     assertContain(event.getId(), list);
     assertContain(sharedEvent.getId(), list);

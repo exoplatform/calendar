@@ -77,8 +77,8 @@ public class TestCalendarRestApi extends TestRestApi {
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + queryParams, baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     calR = (CollectionResource<CalendarResource>)response.getEntity();
-    assertEquals(3, calR.getData().size());
-    assertEquals(3, calR.getSize());
+    assertEquals(4, calR.getData().size());
+    assertEquals(4, calR.getSize());
 
     for(int i = 0; i < 10; i ++) {
       createPersonalCalendar("root" + " myCalendar2" + i, "root");
@@ -87,9 +87,9 @@ public class TestCalendarRestApi extends TestRestApi {
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + queryParams, baseURI, headers, null, writer);
     calR = (CollectionResource)response.getEntity();
     assertEquals(10, calR.getData().size());
-    assertEquals(13, calR.getSize());
+    assertEquals(14, calR.getSize());
     String header = "[</v1/calendar/calendars/?offset=10&limit=10>;rel=\"next\"," + 
-                              "</v1/calendar/calendars/?offset=0&limit=10>;rel=\"first\",</v1/calendar/calendars/?offset=10&limit=3>;rel=\"last\"]";    
+                              "</v1/calendar/calendars/?offset=0&limit=10>;rel=\"first\",</v1/calendar/calendars/?offset=10&limit=4>;rel=\"last\"]";    
     assertEquals(header, response.getHttpHeaders().get(HEADER_LINK).toString());
   }
 

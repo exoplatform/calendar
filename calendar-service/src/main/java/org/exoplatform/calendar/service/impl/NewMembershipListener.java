@@ -24,25 +24,26 @@ import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipEventListener;
 
 /**
- * Created by The eXo Platform SARL
- * Author : Hung Nguyen Quang
- *          hung.nguyen@exoplatform.com
- * Nov 23, 2007 3:09:21 PM
+ * Created by The eXo Platform SARL Author : Hung Nguyen Quang
+ * hung.nguyen@exoplatform.com Nov 23, 2007 3:09:21 PM
  */
 public class NewMembershipListener extends MembershipEventListener {
 
-  private CalendarService calendarService_; 
-  
+  private CalendarService calendarService_;
+
   public NewMembershipListener(CalendarService calendarService) throws Exception {
-    calendarService_ = calendarService; 
+    this.calendarService_ = calendarService;
   }
+
   public void postSave(Membership m, boolean isNew) throws Exception {
     String username = m.getUserName();
+    if (!calendarService_.hasCalendarSetting(username)) {
+      return;
+    }
     String groupId = m.getGroupId();
     List<String> group = new ArrayList<String>();
     group.add(groupId);
     calendarService_.autoShareCalendar(group, username);
-
   }
 
   public void preDelete(Membership m) throws Exception {

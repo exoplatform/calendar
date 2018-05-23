@@ -16,17 +16,10 @@
  **/
 package org.exoplatform.calendar.service;
 
-import org.exoplatform.calendar.model.AbstractModel;
-import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.services.jcr.util.IdGenerator;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.web.application.RequestContext;
-import org.exoplatform.webui.application.WebuiRequestContext;
-
-import java.util.MissingResourceException;
 import java.util.Objects;
-import java.util.ResourceBundle;
+
+import org.exoplatform.calendar.model.AbstractModel;
+import org.exoplatform.services.jcr.util.IdGenerator;
 
 /**
  * Created by The eXo Platform SARL
@@ -37,8 +30,6 @@ import java.util.ResourceBundle;
 public class EventCategory extends AbstractModel {
   
   private static final long serialVersionUID = 3773092354485644604L;
-
-  private static final Log log = ExoLogger.getLogger(EventCategory.class);
 
   private String  name;
 
@@ -57,22 +48,7 @@ public class EventCategory extends AbstractModel {
   }
   
   public String getLocalizedName() {
-    WebuiRequestContext context = RequestContext.getCurrentInstance();
-    ResourceBundle res = context.getApplicationResourceBundle();
-    
-    for (int i = 0; i < NewUserListener.defaultEventCategoryIds.length; i++) {
-      if (getId().equals(NewUserListener.defaultEventCategoryIds[i])
-          && getName().equals(NewUserListener.defaultEventCategoryNames[i])) {
-        try {
-          if (res != null) {
-            return res.getString("UICalendarView.label." + getId());            
-          }
-        } catch (MissingResourceException e) {
-            log.debug("Can not find resource bundle for key: UICalendarView.label." + getId());
-        }
-      }
-    }
-    return getName();
+    return Utils.getLocalizedName(this);
   }
 
   public void setDataInit(boolean isDataInit) {

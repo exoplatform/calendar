@@ -22,6 +22,7 @@ import org.exoplatform.component.test.AbstractKernelTest;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
 import org.exoplatform.component.test.ContainerScope;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.services.organization.OrganizationService;
@@ -57,8 +58,14 @@ public abstract class BaseTest extends AbstractKernelTest {
 
   protected ChromatticManager chromatticManager;
 
+  public BaseTest() {
+    setForceContainerReload(true);
+  }
+
   public void setUp() throws Exception {
-    container = PortalContainer.getInstance();
+    super.setUp();
+    container = getContainer();
+    ExoContainerContext.setCurrentContainer(container);
     chromatticManager = (ChromatticManager)container.getComponentInstanceOfType(ChromatticManager.class);
     orgService = (OrganizationService) container.getComponentInstanceOfType(OrganizationService.class);
     binder = (ResourceBinder) container.getComponentInstanceOfType(ResourceBinder.class);
@@ -67,6 +74,7 @@ public abstract class BaseTest extends AbstractKernelTest {
     providers = ProviderBinder.getInstance();
     ApplicationContextImpl.setCurrent(new ApplicationContextImpl(null, null, providers));
     binder.clear();
+    begin();
   }
 
   protected void start() {
@@ -76,7 +84,4 @@ public abstract class BaseTest extends AbstractKernelTest {
   protected void stop() {
     ((ComponentRequestLifecycle)orgService).endRequest(container);
   }  
-
-  public void tearDown() throws Exception {
-  }
 }

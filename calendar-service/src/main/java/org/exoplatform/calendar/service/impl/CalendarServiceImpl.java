@@ -17,74 +17,26 @@
 package org.exoplatform.calendar.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
+import javax.jcr.*;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.Recur;
+import javax.jcr.query.*;
 
 import org.exoplatform.calendar.model.CompositeID;
+import org.apache.commons.lang3.StringUtils;
 import org.picocontainer.Startable;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
+import org.quartz.*;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.SimpleTriggerImpl;
 
-import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarCollection;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarException;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarIterator;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.CalendarUpdateEventListener;
-import org.exoplatform.calendar.service.DeleteShareJob;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.FeedData;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.ImportCalendarJob;
-import org.exoplatform.calendar.service.RemoteCalendar;
-import org.exoplatform.calendar.service.RemoteCalendarService;
-import org.exoplatform.calendar.service.RssData;
-import org.exoplatform.calendar.service.ShareCalendarJob;
-import org.exoplatform.calendar.service.SynchronizeRemoteCalendarJob;
-import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.util.Constants;
-import org.exoplatform.commons.utils.CommonsUtils;
-import org.exoplatform.commons.utils.DateUtils;
-import org.exoplatform.commons.utils.ExoProperties;
-import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.commons.utils.*;
 import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
@@ -99,10 +51,10 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.resources.ResourceBundleService;
-import org.exoplatform.services.scheduler.JobInfo;
-import org.exoplatform.services.scheduler.JobSchedulerService;
-import org.exoplatform.services.scheduler.PeriodInfo;
+import org.exoplatform.services.scheduler.*;
 import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
+
+import net.fortuna.ical4j.model.*;
 
 
 /**
@@ -110,6 +62,20 @@ import org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl;
  * hung.nguyen@exoplatform.com Jul 11, 2007
  */
 public class CalendarServiceImpl implements CalendarService, Startable {
+
+  private static final String[] DEFAULT_EVENT_CATEGORY_NAMES = new String[] { DEFAULT_EVENTCATEGORY_NAME_ALL,
+      DEFAULT_EVENTCATEGORY_NAME_MEETING, DEFAULT_EVENTCATEGORY_NAME_CALLS, DEFAULT_EVENTCATEGORY_NAME_CLIENTS,
+      DEFAULT_EVENTCATEGORY_NAME_HOLIDAY, DEFAULT_EVENTCATEGORY_NAME_ANNIVERSARY };
+
+  public String[] defaultEventCategoryIds = DEFAULT_EVENT_CATEGORY_IDS;
+
+  public String[] defaultEventCategoryNames = DEFAULT_EVENT_CATEGORY_NAMES;
+
+  public String defaultCalendarId = DEFAULT_CALENDAR_ID;
+
+  public String defaultCalendarName = DEFAULT_CALENDAR_NAME;
+
+  private CalendarSetting defaultCalendarSetting_;
 
   private final AtomicBoolean                 isRBLoaded_           = new AtomicBoolean(); 
 
@@ -145,6 +111,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     ExoProperties props = params.getPropertiesParam("eventNumber.info").getProperties();
     String eventNumber = props.getProperty("eventNumber");
     Utils.EVENT_NUMBER = Integer.parseInt(eventNumber);
+    initUserDefaultSettings(params);
   }
   
 
@@ -155,6 +122,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   @Override
   public CalendarCollection<Calendar> getAllCalendars(String username, int calType, int offset, int limit) {
+    try {
+      initNewUser(username, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + username + "' calendar settings", e1);
+    }
     Collection<Calendar> cals = new ArrayList<Calendar>();
     int fullSize = 0;
     try {
@@ -285,6 +257,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public Calendar getUserCalendar(String username, String calendarId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getUserCalendar(username, calendarId);
   }
 
@@ -292,6 +265,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<Calendar> getUserCalendars(String username, boolean isShowAll) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getUserCalendars(username, isShowAll);
   }
 
@@ -337,13 +311,19 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public void saveUserCalendar(String username, Calendar calendar, boolean isNew) {
     try {
+      initNewUser(username, defaultCalendarSetting_);
       storage_.saveUserCalendar(username, calendar, isNew);
     } catch (Exception e) {
-      throw new CalendarException();
+      throw new CalendarException(e);
     }
   }
 
   public Calendar saveCalendar(String username, Calendar calendar, int caltype , boolean isNew){
+    try {
+      initNewUser(username, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + username + "' calendar settings", e1);
+    }
     Calendar instance = null;
     try {
       switch (caltype) {
@@ -386,6 +366,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<GroupCalendarData> getGroupCalendars(String[] groupIds, boolean isShowAll, String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getGroupCalendars(groupIds, isShowAll, username);
   }
 
@@ -411,10 +392,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public boolean isRemoteCalendar(String username, String calendarId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.isRemoteCalendar(username, calendarId);
   }
 
   public int getTypeOfCalendar(String userName, String calendarId) throws Exception {
+    initNewUser(userName, defaultCalendarSetting_);
     return storage_.getTypeOfCalendar(userName, calendarId);
   }
   
@@ -422,6 +405,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void autoShareCalendar(List<String> groupsOfUser, String receiver) throws Exception {
+    initNewUser(receiver, defaultCalendarSetting_);
     storage_.autoShareCalendar(groupsOfUser, receiver);
   }
 
@@ -429,6 +413,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void autoRemoveShareCalendar(String groupId, String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.autoRemoveShareCalendar(groupId, username);
   }
 
@@ -436,6 +421,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void shareCalendarByRunJob(String username, String calendarId, List<String> sharedGroups) throws Exception{
+    initNewUser(username, defaultCalendarSetting_);
+
     JobSchedulerServiceImpl  schedulerService = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().getComponentInstance(JobSchedulerService.class) ;
     JobInfo jobInfo = new JobInfo(sharedGroups.toString(),Utils.SHARE_CALENDAR_GROUP, ShareCalendarJob.class);
     List<String> newSharedGroups = new ArrayList<String>();
@@ -470,6 +457,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void removeSharedCalendarByJob(String username, List<String> unsharedGroups, String calendarId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     JobSchedulerServiceImpl  schedulerService_ = (JobSchedulerServiceImpl)ExoContainerContext.getCurrentContainer().getComponentInstance(JobSchedulerService.class) ;
     JobInfo jobInfo = new JobInfo(unsharedGroups.toString(), Utils.DELETE_SHARED_GROUP, DeleteShareJob.class);
 
@@ -495,10 +483,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void removeSharedCalendar(String username, String calendarId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.removeSharedCalendar(username, calendarId);
   }
 
   public void removeSharedCalendarFolder(String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.removeSharedCalendarFolder(username);
   }
 
@@ -522,6 +512,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void saveSharedCalendar(String username, Calendar calendar) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.saveSharedCalendar(username, calendar);
   }
 
@@ -529,6 +520,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void shareCalendar(String username, String calendarId, List<String> receiverUsers) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.shareCalendar(username, calendarId, receiverUsers);
   }
 
@@ -536,6 +528,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public GroupCalendarData getSharedCalendars(String username, boolean isShowAll) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     if(CommonsUtils.isUserEnabled(username))
     return storage_.getSharedCalendars(username, isShowAll);
     else return null;
@@ -548,6 +541,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
   
   public CalendarEvent getEvent(String username, String eventId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getEvent(username, eventId);
   }
   
@@ -555,6 +549,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<CalendarEvent> getEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     if(CommonsUtils.isUserEnabled(username))
     return storage_.getEvents(username, eventQuery, publicCalendarIds);
     else return new ArrayList<CalendarEvent>();
@@ -564,6 +559,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public EventPageList searchEvent(String username, EventQuery query, String[] publicCalendarIds) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.searchEvent(username, query, publicCalendarIds);
   }
   
@@ -571,6 +567,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<CalendarEvent> getUserEventByCalendar(String username, List<String> calendarIds) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getUserEventByCalendar(username, calendarIds);
   }
 
@@ -578,6 +575,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<CalendarEvent> getUserEvents(String username, EventQuery eventQuery) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getUserEvents(username, eventQuery);
   }
 
@@ -585,6 +583,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.saveUserEvent(username, calendarId, event, isNew);
   }
 
@@ -592,6 +591,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public CalendarEvent removeUserEvent(String username, String calendarId, String eventId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.removeUserEvent(username, calendarId, eventId);
   }
 
@@ -683,10 +683,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.saveEventToSharedCalendar(username, calendarId, event, isNew);
   }
   
   public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
+    initNewUser(assignee, defaultCalendarSetting_);
     storage_.assignGroupTask(taskId, calendarId, assignee);
   }
 
@@ -698,10 +700,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void removeSharedEvent(String username, String calendarId, String eventId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.removeSharedEvent(username, calendarId, eventId);
   }
   
   public List<CalendarEvent> getSharedEventByCalendars(String username, List<String> calendarIds) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     if(CommonsUtils.isUserEnabled(username))
     return storage_.getSharedEventByCalendars(username, calendarIds);
     else return new ArrayList<CalendarEvent>();
@@ -712,6 +716,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * @see org.exoplatform.calendar.service.CalendarService#getSharedEvent(java.lang.String, java.lang.String, java.lang.String)
    */
   public CalendarEvent getSharedEvent(String username, String calendarId, String eventId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getSharedEvent(username, calendarId, eventId);
   }
   
@@ -722,6 +727,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   
   @Override
   public Collection<CalendarEvent> getAllExcludedEvent(CalendarEvent originEvent,Date from, Date to, String userId) {
+    try {
+      initNewUser(userId, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + userId + "' calendar settings", e1);
+    }
     java.util.Calendar f = new GregorianCalendar();
     f.setTime(from);
     java.util.Calendar t = new GregorianCalendar();
@@ -731,6 +741,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   
   @Override
   public Collection<CalendarEvent> buildSeries(CalendarEvent originEvent,Date from, Date to, String userId) {
+    try {
+      initNewUser(userId, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + userId + "' calendar settings", e1);
+    }
     java.util.Calendar f = new GregorianCalendar();
     f.setTime(from);
     java.util.Calendar t = new GregorianCalendar();
@@ -740,6 +755,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   
   @Override
   public String buildRecurrenceId(Date formTime, String username) {
+    try {
+      initNewUser(username, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + username + "' calendar settings", e1);
+    }
     String timezone = TimeZone.getDefault().getID();
     try {
       timezone = storage_.getCalendarSetting(username).getTimeZone();
@@ -756,13 +776,15 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<EventCategory> getEventCategories(String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getEventCategories(username);
   }
-  
+
   public CalendarCollection<EventCategory> getEventCategories(String username, int offset, int limit) throws Exception {
     if (username == null) {
       throw new IllegalArgumentException("username must not null");
     }
+    initNewUser(username, defaultCalendarSetting_);
     List<EventCategory> categories = storage_.getEventCategories(username);
     int fullSize = categories.size();
     
@@ -773,6 +795,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void saveEventCategory(String username, EventCategory eventCategory, boolean isNew) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     EventCategory ev = getEventCategoryByName(username, eventCategory.getName());
     if (ev != null && (isNew || !ev.getId().equals(eventCategory.getId())))
       throw new ItemExistsException();
@@ -783,6 +806,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void saveEventCategory(String username, EventCategory eventCategory, String[] values, boolean isNew) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     saveEventCategory(username, eventCategory, isNew);
   }
 
@@ -790,6 +814,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void removeEventCategory(String username, String eventCategoryId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     storage_.removeEventCategory(username, eventCategoryId);
   }
 
@@ -818,13 +843,22 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public CalendarSetting getCalendarSetting(String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getCalendarSetting(username);
   }
 
   /**
    * {@inheritDoc}
    */
+  public boolean hasCalendarSetting(String username) throws Exception {
+    return storage_.getCalendarSetting(username) != null;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   public int generateRss(String username, LinkedHashMap<String, Calendar> calendars, RssData rssData) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.generateRss(username, calendars, rssData, calendarImportExport_.get(CalendarService.ICALENDAR));
   }
 
@@ -832,6 +866,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public List<FeedData> getFeeds(String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getFeeds(username);
   }
 
@@ -839,6 +874,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public Node getRssHome(String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getRssHome(username);
   }
 
@@ -846,6 +882,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public EventCategory getEventCategory(String username, String eventCategoryId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getEventCategory(username, eventCategoryId);
   }
 
@@ -853,16 +890,19 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public Map<Integer, String> searchHightLightEvent(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.searchHightLightEvent(username, eventQuery, publicCalendarIds);
   }
 
   public List<Map<Integer, String>> searchHightLightEventSQL(String username, EventQuery eventQuery,
                                                              String[] privateCalendars, String[] publicCalendars) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.searchHightLightEventSQL(username, eventQuery, privateCalendars, publicCalendars);
   }
 
   @Override
   public List<CalendarEvent> getAllNoRepeatEvents(String username, EventQuery eventQuery, String[] publicCalendarIds) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getAllNoRepeatEvents(username, eventQuery, publicCalendarIds);
   }
 
@@ -871,6 +911,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public List<CalendarEvent> getAllNoRepeatEventsSQL(String username, EventQuery eventQuery, String[] privateCalendars,
                                                      String[] publicCalendars, List<String> emptyCalendars) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.getAllNoRepeatEventsSQL(username, eventQuery, privateCalendars, publicCalendars, emptyCalendars);
   }
 
@@ -885,6 +926,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void moveEvent(String fromCalendar, String toCalendar, String fromType, String toType, List<CalendarEvent> calEvents, String username) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     Map<String,  CalendarEvent> oldEventList = new HashMap<String, CalendarEvent>();
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEvent event : calEvents) {
@@ -918,6 +960,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void confirmInvitation(String fromUserId, String toUserId, int calType, String calendarId, String eventId, int answer) {
+    try {
+      initNewUser(toUserId, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + toUserId + "' calendar settings", e1);
+    }
     storage_.confirmInvitation(fromUserId, toUserId, calType, calendarId, eventId, answer);
   }
 
@@ -925,6 +972,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public void confirmInvitation(String fromUserId, String confirmingEmail, String confirmingUser, int calType, String calendarId, String eventId, int answer) throws Exception {
+    try {
+      initNewUser(confirmingUser, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + confirmingUser + "' calendar settings", e1);
+    }
     storage_.confirmInvitation(fromUserId, confirmingEmail, confirmingUser, calType, calendarId, eventId, answer);
   }
 
@@ -945,6 +997,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   public int generateRss(String username, List<String> calendarIds, RssData rssData) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     return storage_.generateRss(username, calendarIds, rssData, calendarImportExport_.get(CalendarService.ICALENDAR));
   }
 
@@ -965,6 +1018,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   public EventCategory getEventCategoryByName(String username, String eventCategoryName) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     for (EventCategory ev : storage_.getEventCategories(username)) {
       if (ev.getName().equalsIgnoreCase(eventCategoryName)) {
         return ev;
@@ -974,28 +1028,49 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   public void removeFeedData(String username, String title) {
+    try {
+      initNewUser(username, defaultCalendarSetting_);
+    } catch (Exception e1) {
+      LOG.warn("Error while initializing user '" + username + "' calendar settings", e1);
+    }
     storage_.removeFeedData(username, title);
   }
 
-  public void initNewUser(String userName, CalendarSetting defaultCalendarSetting_) throws Exception {
+  /**
+   * Initializes calendar personal data and default settings.
+   * The Calendar user profile isn't initialized on user creation, so this method is called
+   * when accessing any user personnal data
+   */
+  public void initNewUser(String username, CalendarSetting defaultCalendarSetting_) throws Exception {
+    if (StringUtils.isBlank(username) || hasCalendarSetting(username)) {
+      return;
+    }
     EventCategory eventCategory = new EventCategory();
     eventCategory.setDataInit(true);
-    for (int id = 0; id < NewUserListener.defaultEventCategoryIds.length; id++) {
-      if (NewUserListener.DEFAULT_EVENTCATEGORY_ID_ALL.equals(id)) continue;
-      String savingCategoryName = NewUserListener.defaultEventCategoryNames[id];
-      if (getEventCategoryByName(userName, savingCategoryName) != null) {
+    for (int id = 0; id < defaultEventCategoryIds.length; id++) {
+      if (DEFAULT_EVENTCATEGORY_ID_ALL.equals(id)) continue;
+      String savingCategoryName = defaultEventCategoryNames[id];
+
+      EventCategory storedEventCategory = null;
+      for (EventCategory ev : storage_.getEventCategories(username)) {
+        if (ev.getName().equalsIgnoreCase(savingCategoryName)) {
+          storedEventCategory = ev;
+        }
+      }
+
+      if (storedEventCategory != null) {
         if (LOG.isDebugEnabled()) {
-          LOG.debug("Calendar data for " + userName + " already exist.");
+          LOG.debug("Calendar data for " + username + " already exist.");
         }
         return;
       }
-      eventCategory.setId(NewUserListener.defaultEventCategoryIds[id]);
+      eventCategory.setId(defaultEventCategoryIds[id]);
       eventCategory.setName(savingCategoryName);
-      saveEventCategory(userName, eventCategory, true);
+      storage_.saveEventCategory(username, eventCategory, true);
     }
 
     // get the user's full name
-    User u = organizationService.getUserHandler().findUserByName(userName);
+    User u = organizationService.getUserHandler().findUserByName(username);
     String fullName = u.getFirstName();
     if (u.getLastName() != null && fullName != null) {
       fullName = new StringBuilder().append(fullName).append(" ").append(u.getLastName()).toString();
@@ -1003,23 +1078,23 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     if (fullName == null) fullName = u.getUserName();
     // save default calendar
     Calendar cal = new Calendar();
-    cal.setId(Utils.getDefaultCalendarId(userName));
+    cal.setId(Utils.getDefaultCalendarId(username));
     cal.setName(fullName); // name the default calendar after the user's full name, cf CAL-86
     cal.setDataInit(true);
-    cal.setCalendarOwner(userName);
+    cal.setCalendarOwner(username);
     cal.setCalendarColor(Constants.COLORS[0]);
     if (defaultCalendarSetting_ != null) {
       if (defaultCalendarSetting_.getTimeZone() != null)
         cal.setTimeZone(defaultCalendarSetting_.getTimeZone());
     }
-    saveUserCalendar(userName, cal, true);
+    storage_.saveUserCalendar(username, cal, true);
 
     if (defaultCalendarSetting_ != null) {
-      saveCalendarSetting(userName, defaultCalendarSetting_);
+      storage_.saveCalendarSetting(username, defaultCalendarSetting_);
     }
 
-    Collection<String> groupsOfUser = CommonsUtils.getGroupsOfUser(userName);
-    storage_.autoShareCalendar(new ArrayList<String>(groupsOfUser), userName);
+    Collection<String> groupsOfUser = CommonsUtils.getGroupsOfUser(username);
+    storage_.autoShareCalendar(new ArrayList<String>(groupsOfUser), username);
   }
 
   public void addEventListenerPlugin(CalendarEventListener listener) throws Exception {    
@@ -1059,6 +1134,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    * {@inheritDoc}
    */
   public RemoteCalendar getRemoteCalendar(String owner, String calendarId) throws Exception {
+    initNewUser(owner, defaultCalendarSetting_);
     return storage_.getRemoteCalendar(owner, calendarId);
   }
 
@@ -1070,10 +1146,12 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   }
 
   public Calendar getRemoteCalendar(String owner, String remoteUrl, String remoteType) throws Exception {
+    initNewUser(owner, defaultCalendarSetting_);
     return storage_.getRemoteCalendar(owner, remoteUrl, remoteType);
   }
 
   public String getCalDavResourceHref(String username, String calendarId, String eventId) throws Exception {
+    initNewUser(username, defaultCalendarSetting_);
     Node eventNode = storage_.getUserCalendarHome(username).getNode(calendarId).getNode(eventId);
     try {
       return eventNode.getProperty(Utils.EXO_CALDAV_HREF).getString();
@@ -1728,6 +1806,26 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     return exceptions;
   }
 
+  @Override
+  public String[] getDefaultEventCategoryIds() {
+    return defaultEventCategoryIds;
+  }
+
+  @Override
+  public String[] getDefaultEventCategoryNames() {
+    return defaultEventCategoryNames;
+  }
+
+  @Override
+  public String getDefaultCalendarId() {
+    return defaultCalendarId;
+  }
+
+  @Override
+  public String getDefaultCalendarName() {
+    return defaultCalendarName;
+  }
+
   /* Utils for repetitive event */
 
   /*
@@ -1824,5 +1922,94 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   public JCRDataStorage getDataStorage() {
     return storage_;
+  }
+
+  public void initUserDefaultSettings(InitParams params) {
+    // Get default event categories
+    if (params.getValueParam(EVENT_CATEGORIES) != null) {
+      // Get config value
+      String eventCategoryConfig = params.getValueParam(EVENT_CATEGORIES).getValue();
+      String[] configValue = eventCategoryConfig.split(COMA);
+      
+      // Create array to store default event categories
+      defaultEventCategoryIds = new String[configValue.length + 1];
+      defaultEventCategoryNames = new String[defaultEventCategoryIds.length];
+      
+      // First element is DEFAULT_EVENTCATEGORY_ID_ALL
+      defaultEventCategoryIds[0] = DEFAULT_EVENTCATEGORY_ID_ALL;
+      defaultEventCategoryNames[0] = DEFAULT_EVENTCATEGORY_NAME_ALL;
+      
+      for (int i = 0; i < configValue.length; i++) {
+        defaultEventCategoryIds[i + 1] = configValue[i].trim();
+        // Check if this is default event category
+        int defaultEventCategoryIndex = -1;
+        for (int j = 0; j < DEFAULT_EVENT_CATEGORY_IDS.length; j++) {
+          if (DEFAULT_EVENT_CATEGORY_IDS[j].equals(defaultEventCategoryIds[i + 1])) {
+            defaultEventCategoryIndex = j;
+            break;
+          }
+        }
+
+        // If this is default event category
+        if (defaultEventCategoryIndex > -1) {
+          defaultEventCategoryNames[i + 1] = DEFAULT_EVENT_CATEGORY_NAMES[defaultEventCategoryIndex];
+        } else {
+          defaultEventCategoryNames[i + 1] = configValue[i].trim();
+        }
+      }
+    } else {
+      LOG.warn("Config for Default event categories does not exist!");
+    }
+
+    // Get calendar setting
+    defaultCalendarSetting_ = new CalendarSetting();
+    if (params.getValueParam(ST_VIEW_TYPE) != null) {
+      defaultCalendarSetting_.setViewType(params.getValueParam(ST_VIEW_TYPE).getValue());
+    } else {
+      defaultCalendarSetting_.setViewType(CalendarSetting.WORKING_VIEW);
+    }
+    if (params.getValueParam(ST_WEEK_START) != null) {
+      defaultCalendarSetting_.setWeekStartOn(params.getValueParam(ST_WEEK_START).getValue());
+    }
+    if (params.getValueParam(ST_DATE_FORMAT) != null) {
+      defaultCalendarSetting_.setDateFormat(params.getValueParam(ST_DATE_FORMAT).getValue());
+    }
+    if (params.getValueParam(ST_TIME_FORMAT) != null) {
+      defaultCalendarSetting_.setTimeFormat(params.getValueParam(ST_TIME_FORMAT).getValue());
+    }
+    if (params.getValueParam(ST_TIMEZONE) != null) {
+      defaultCalendarSetting_.setTimeZone(params.getValueParam(ST_TIMEZONE).getValue());
+    }
+    if (params.getValueParam(ST_BASE_URL) != null) {
+      defaultCalendarSetting_.setBaseURL(params.getValueParam(ST_BASE_URL).getValue());
+    }
+    if (params.getValueParam(ST_WORKINGTIME) != null) {
+      defaultCalendarSetting_.setShowWorkingTime(Boolean.parseBoolean(params.getValueParam(ST_WORKINGTIME).getValue()));
+      if (defaultCalendarSetting_.isShowWorkingTime()) {
+        if (params.getValueParam(ST_TIME_BEGIN) != null) {
+          defaultCalendarSetting_.setWorkingTimeBegin(params.getValueParam(ST_TIME_BEGIN).getValue());
+        } else {
+          defaultCalendarSetting_.setWorkingTimeBegin("09:00");
+        }
+        if (params.getValueParam(ST_TIME_END) != null) {
+          defaultCalendarSetting_.setWorkingTimeEnd(params.getValueParam(ST_TIME_END).getValue());
+        } else {
+          defaultCalendarSetting_.setWorkingTimeEnd("18:00");
+        }
+      }
+    } else {
+      defaultCalendarSetting_.setShowWorkingTime(true);
+      if (params.getValueParam(ST_TIME_BEGIN) != null) {
+        defaultCalendarSetting_.setWorkingTimeBegin(params.getValueParam(ST_TIME_BEGIN).getValue());
+      } else {
+        defaultCalendarSetting_.setWorkingTimeBegin("09:00");
+      }
+      if (params.getValueParam(ST_TIME_END) != null) {
+        defaultCalendarSetting_.setWorkingTimeEnd(params.getValueParam(ST_TIME_END).getValue());
+      } else {
+        defaultCalendarSetting_.setWorkingTimeEnd("18:00");
+      }
+
+    }
   }
 }

@@ -28,11 +28,16 @@ public class CalendarException extends RuntimeException {
   private final CalendarError error;
 
   public CalendarException() {
-    this(null);
+    this((CalendarError) null);
   }
-  
+
+  public CalendarException(Exception e) {
+    super(e);
+    error = null;
+  }
+
   public CalendarException(CalendarError error) {
-      super(error.toString());
+      super(error == null ? null : error.toString());
       this.error = error;
   }
 

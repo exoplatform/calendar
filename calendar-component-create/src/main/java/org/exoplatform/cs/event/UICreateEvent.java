@@ -165,8 +165,10 @@ public class UICreateEvent extends UIForm {
 
           } else {
             if( calService.getSharedCalendars(username,true).getCalendarById(uiForm.getEventCalendar())!=null){
-              if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner())) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(NewUserListener.defaultCalendarName)) {
-                calName = getResourceBundle("UICreateEvent.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+              String defaultCalendarName = getCalendarService().getDefaultCalendarName();
+              if (calService.getUserCalendar(username,uiForm.getEventCalendar()).getId().equals(Utils.getDefaultCalendarId(calService.getUserCalendar(username,uiForm.getEventCalendar()).getCalendarOwner())) && calService.getUserCalendar(username,uiForm.getEventCalendar()).getName().equals(defaultCalendarName)) {
+                String defaultCalendarId = getCalendarService().getDefaultCalendarId();
+                calName = getResourceBundle("UICreateEvent.label." + defaultCalendarId, defaultCalendarId);
 
               }
               String owner = "";
@@ -375,9 +377,10 @@ public class UICreateEvent extends UIForm {
     // private calendars group
     SelectOptionGroup privGrp = new SelectOptionGroup(PRIVATE_CALENDARS);
     List<org.exoplatform.calendar.service.Calendar> calendars = calendarService.getUserCalendars(username, true);
+    String defaultCalendarId = getCalendarService().getDefaultCalendarId();
     for (org.exoplatform.calendar.service.Calendar c : calendars) {
-      if (c.getId().equals(Utils.getDefaultCalendarId(username)) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-        String newName = getResourceBundle("UICreateEvent.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+      if (c.getId().equals(Utils.getDefaultCalendarId(username)) && c.getName().equals(getCalendarService().getDefaultCalendarName())) {
+        String newName = getResourceBundle("UICreateEvent.label." + defaultCalendarId, defaultCalendarId);
         c.setName(newName);
       }
       if (!hash.containsKey(c.getId())) {
@@ -392,8 +395,8 @@ public class UICreateEvent extends UIForm {
       SelectOptionGroup sharedGrp = new SelectOptionGroup(SHARED_CALENDARS);
       for (org.exoplatform.calendar.service.Calendar c : gcd.getCalendars()) {
         if (canEdit(null, Utils.getEditPerUsers(c), username)) {
-          if (c.getId().equals(Utils.getDefaultCalendarId(c.getCalendarOwner())) && c.getName().equals(NewUserListener.defaultCalendarName)) {
-            String newName = getResourceBundle("UICreateEvent.label." + NewUserListener.defaultCalendarId, NewUserListener.defaultCalendarId);
+          if (c.getId().equals(Utils.getDefaultCalendarId(c.getCalendarOwner())) && c.getName().equals(getCalendarService().getDefaultCalendarName())) {
+            String newName = getResourceBundle("UICreateEvent.label." + defaultCalendarId, defaultCalendarId);
             c.setName(newName);
           }
           String owner = "";
