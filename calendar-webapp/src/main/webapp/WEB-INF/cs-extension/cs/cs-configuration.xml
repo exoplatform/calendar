@@ -139,186 +139,105 @@
         <object-param>
           <name>calendar.Calendar</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.Calendar</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.Calendar.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.Calendar.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.Calendar</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.Calendar</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.Calendar.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.Calendar.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.Calendar.Calendar.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.Calendar.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.Calendar.MaxNodes:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.Calendar.TimeToLive:86400}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.Calendar.Calendar.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <object-param>
           <name>calendar.dsNameById</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
+          <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.dsNameById</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.dsNameById.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.dsNameById.TimeToLive:-1}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.dsNameById.MaxNodes:2200}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.dsNameById.TimeToLive:86400}</long></field>
           </object>
         </object-param>
         <!-- Group Calendar -->
         <object-param>
           <name>calendar.GroupCalendar</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.GroupCalendar</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarCache.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.GroupCalendar</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendar</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarCache.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.calendar.GroupCalendarCache.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.GroupCalendar.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendar.MaxNodes:100}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendar.TimeToLive:86400}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.calendar.GroupCalendar.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- Group Calendar Event -->
         <object-param>
           <name>calendar.GroupCalendarEvent</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.GroupCalendarEvent</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarEventCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarEventCache.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.GroupCalendarEvent</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendarEvent</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarEventCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarEventCache.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.calendar.GroupCalendarEventCache.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.GroupCalendarEvent.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarEvent.MaxNodes:4000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarEvent.TimeToLive:86400}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.calendar.GroupCalendarEvent.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- Group Calendar Recurrent Event -->
         <object-param>
           <name>calendar.GroupCalendarRecurrentEvent</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.GroupCalendarRecurrentEvent</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarRecurrentEventCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarRecurrentEventCache.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.GroupCalendarRecurrentEvent</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.GroupCalendarRecurrentEvent</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.GroupCalendarRecurrentEventCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.GroupCalendarRecurrentEventCache.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.calendar.GroupCalendarRecurrentEventCache.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.GroupCalendarRecurrentEvent.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.GroupCalendarRecurrentEvent.MaxNodes:500}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.GroupCalendarRecurrentEvent.TimeToLive:86400}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.calendar.GroupCalendarRecurrentEvent.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- User Calendar -->
         <object-param>
           <name>calendar.UserCalendar</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.UserCalendar</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.UserCalendarCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.UserCalendarCache.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.UserCalendar</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.UserCalendar</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.UserCalendarCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.UserCalendarCache.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.calendar.UserCalendarCache.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.UserCalendar.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.UserCalendar.MaxNodes:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.UserCalendar.TimeToLive:3600}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.calendar.UserCalendar.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- All event -->
         <object-param>
           <name>calendar.CalendarEvent</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.CalendarEvent</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.CalendarEvent.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.CalendarEvent.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.CalendarEvent</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.CalendarEvent</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.CalendarEvent.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.CalendarEvent.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.calendar.CalendarEvent.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.CalendarEvent.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.CalendarEvent.MaxNodes:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.CalendarEvent.TimeToLive:3600}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.calendar.CalendarEvent.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- User Calendar Setting -->
         <object-param>
           <name>calendar.UserCalendarSetting</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.UserCalendarSetting</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.UserCalendarSettingCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.UserCalendarSettingCache.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.UserCalendarSetting</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.UserCalendarSetting</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.UserCalendarSettingCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.UserCalendarSettingCache.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.calendar.UserCalendarSettingCache.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.UserCalendarSetting.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.UserCalendarSetting.MaxNodes:1000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.UserCalendarSetting.TimeToLive:86400}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.calendar.UserCalendarSetting.cacheMode:replication}</string></field>
           </object>
         </object-param>
         <!-- Event Categories -->
         <object-param>
           <name>calendar.EventCategories</name>
           <description></description>
-          <object type="org.exoplatform.services.cache.ExoCacheConfig">
-            <field name="name"><string>calendar.EventCategories</string></field>
-            <field name="maxSize"><int>${exo.cache.calendar.EventCategoriesCache.Capacity:1000}</int></field>
-            <field name="liveTime"><long>${exo.cache.calendar.EventCategoriesCache.TimeToLive:3600}</long></field>
-            <field name="implementation"><string>org.exoplatform.services.cache.concurrent.ConcurrentFIFOExoCache</string></field>
-          </object>
-        </object-param>
-        <object-param profiles="cluster">
-          <name>calendar.EventCategories</name>
-          <description></description>
           <object type="org.exoplatform.services.cache.impl.infinispan.generic.GenericExoCacheConfig">
             <field name="name"><string>calendar.EventCategories</string></field>
-            <field name="strategy"><string>LIRS</string></field>
-            <field name="maxEntries"><int>${exo.cache.calendar.EventCategoriesCache.Capacity:1000}</int></field>
-            <field name="lifespan"><long>${exo.cache.calendar.EventCategoriesCache.TimeToLive:3600000}</long></field>
-            <field name="cacheMode"><string>${exo.cache.calendar.EventCategoriesCache.cacheMode:replication}</string></field>
+            <field name="strategy"  profiles="cluster"><string>${exo.cache.calendar.EventCategories.strategy:LIRS}</string></field>
+            <field name="maxSize"><int>${exo.cache.calendar.EventCategories.MaxNodes:50000}</int></field>
+            <field name="liveTime"><long>${exo.cache.calendar.EventCategories.TimeToLive:86400}</long></field>
+            <field name="cacheMode"  profiles="cluster"><string>${exo.cache.calendar.EventCategories.cacheMode:replication}</string></field>
           </object>
         </object-param>
     </init-params>
