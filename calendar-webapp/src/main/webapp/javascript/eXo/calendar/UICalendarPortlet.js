@@ -569,7 +569,8 @@
             str += arr[j] + "</i>";
         }
 
-        var delta = parseInt(events.getAttribute("endTime")) - parseInt(events.getAttribute("startTime")) ;
+        var startTime=events.getAttribute("startTime");
+        var delta = parseInt(events.getAttribute("endTime")) - parseInt(startTime) ;
         timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
             am: "AM",
             pm: "PM"
@@ -577,7 +578,7 @@
 
         var timeValue;
         if (type == 1) {
-            timeValue = dateUtils.minToTime(min, timeFormat) + " - " + dateUtils.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
+            timeValue = dateUtils.minToTime(startTime, timeFormat) + " - " + dateUtils.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
             title.innerHTML = str + timeValue;
             events.setAttribute('titleHTML', timeValue);
         }
