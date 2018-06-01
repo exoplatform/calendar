@@ -577,7 +577,9 @@
         }
 
         var startTime=events.getAttribute("startTime");
-        var delta = parseInt(events.getAttribute("endTime")) - parseInt(startTime) ;
+        var endTime=events.getAttribute("endTime");
+        var endTimeMinute=endTime % 30;
+        var delta = parseInt(endTime) - parseInt(startTime) ;
         timeFormat = (timeFormat) ? gj.globalEval(timeFormat) : {
             am: "AM",
             pm: "PM"
@@ -585,7 +587,7 @@
 
         var timeValue;
         if (type == 1) {
-            timeValue = dateUtils.minToTime(startTime, timeFormat) + " - " + dateUtils.minToTime(min + this.pixelsToMins(events.offsetHeight), timeFormat);
+            timeValue = dateUtils.minToTime(startTime, timeFormat) + " - " + dateUtils.minToTime(min + endTimeMinute + this.pixelsToMins(events.offsetHeight), timeFormat);
             title.innerHTML = str + timeValue;
             events.setAttribute('titleHTML', timeValue);
         }
@@ -2496,3 +2498,4 @@
     return _module;
 })(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
     uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, DateUtils);
+
