@@ -16,16 +16,14 @@
  */
 package org.exoplatform.calendar.webui.popup;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.organization.Group;
+import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.form.UIForm;
@@ -59,6 +57,8 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
    * used to determine which groups are deleted
    */
   private Set<String> groupsListInitial;
+
+  private Set<String> userGroups;
 
   protected UIForm getParentFrom() {
     return (UIForm)getParent() ;
@@ -194,8 +194,34 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
    */
   public boolean addGroupToDisplay(String groupId) throws Exception
   {
-    if (!UICalendarForm.isGroupBelongingToUserGroups(groupId)) return false;
+    if (!isGroupBelongingToUserGroups(groupId)) {
+      return false;
+    }
     return groupsList.add(groupId);
+  }
+
+  public boolean isGroupBelongingToUserGroups(String groupId) throws Exception {
+    return getCurrentUserGroupsIds() != null && getCurrentUserGroupsIds().contains(groupId);
+  }
+
+  /**
+   * get all user groups ids
+   *
+   * @return
+   * @throws Exception
+   */
+  private Set<String> getCurrentUserGroupsIds() throws Exception
+  {
+    if(userGroups == null) {
+      userGroups = getPublicGroups().stream().map(group -> group.getId()).collect(Collectors.toSet());
+    }
+    return userGroups;
+  }
+
+  private Collection<Group> getPublicGroups() throws Exception {
+    OrganizationService organization = getApplicationComponent(OrganizationService.class);
+    String currentUser = CalendarUtils.getCurrentUser();
+    return organization.getGroupHandler().findGroupsOfUser(currentUser);
   }
 
   public void removeGroup(String groupId)

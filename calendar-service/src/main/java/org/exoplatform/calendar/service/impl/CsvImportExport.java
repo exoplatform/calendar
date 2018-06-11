@@ -53,7 +53,7 @@ import org.exoplatform.services.log.Log;
 public class CsvImportExport implements CalendarImportExport {
   public static final String                    CSV_PATTERN         = "\"([^\"]+?)\",?|([^,]+),?|,";
 
-  private static Pattern                        csvRE;
+  private static Pattern                        csvRE = Pattern.compile(CSV_PATTERN);
 
   public static String                          EV_SUMMARY          = "Subject".intern();
 
@@ -110,7 +110,6 @@ public class CsvImportExport implements CalendarImportExport {
   /** Construct a regex-based CSV parser. */
 
   public CsvImportExport(JCRDataStorage dataStore) {
-    csvRE = Pattern.compile(CSV_PATTERN);
     storage_ = dataStore;
   }
 

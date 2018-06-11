@@ -47,8 +47,6 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
   public void testInitServices() throws Exception{
 
     assertNotNull(repositoryService_) ;
-    assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getName(), "repository");
-    assertEquals(repositoryService_.getDefaultRepository().getConfiguration().getDefaultWorkspaceName(), "portal-test");
     assertNotNull(organizationService_) ;
 
     assertEquals(9, organizationService_.getUserHandler().findAllUsers(UserStatus.ANY).getSize());

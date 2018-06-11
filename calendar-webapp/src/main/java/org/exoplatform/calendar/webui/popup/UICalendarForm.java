@@ -143,15 +143,9 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   private boolean isAddNew_ = true ;
   public String groupCalId_ = null ;
 
-  /* contains group id of user groups */
-  private static Set<String> userGroups;
-
   public UICalendarForm() throws Exception
   {
     super("UICalendarForm");
-
-    /* init user groups */
-    userGroups = getCurrentUserGroups();
 
     UICalendarDetailTab calendarDetail = new UICalendarDetailTab(INPUT_CALENDAR) ;
     calendarDetail.addUIFormInput(new UIFormStringInput(DISPLAY_NAME, DISPLAY_NAME, null).addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class)) ;
@@ -178,28 +172,6 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
     addChild(calendarDetail) ;
 
     initGroupTab();
-  }
-
-  /**
-   * get all user groups
-   *
-   * @return
-   * @throws Exception
-   */
-  private Set<String> getCurrentUserGroups() throws Exception
-  {
-    Object[] groups = getPublicGroups();
-    Set<String> userGroups = new HashSet<String>();
-    for (Object aGroup : groups)
-    {
-      userGroups.add(((Group) aGroup).getId());
-    }
-    return userGroups;
-  }
-
-  public static boolean isGroupBelongingToUserGroups(String groupId)
-  {
-    return userGroups.contains(groupId);
   }
 
   /**

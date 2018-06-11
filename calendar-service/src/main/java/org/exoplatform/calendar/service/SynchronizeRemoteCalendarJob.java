@@ -53,8 +53,6 @@ public class SynchronizeRemoteCalendarJob extends MultiTenancyJob {
 
   final private static String CALENDARS                         = "calendars".intern();
 
-  public static Boolean       isExecuting                       = false;
-
   private static Log          log_                              = ExoLogger.getLogger(SynchronizeRemoteCalendarJob.class);
 
   public static final String  USERNAME                          = "username";
@@ -76,7 +74,6 @@ public class SynchronizeRemoteCalendarJob extends MultiTenancyJob {
     @Override
     public void run() {
       super.run();
-      isExecuting = true;
       PortalContainer container = Utils.getPortalContainer(context);
       if (container == null)
         return;
@@ -179,7 +176,6 @@ public class SynchronizeRemoteCalendarJob extends MultiTenancyJob {
       } finally {
         provider.close(); // release sessions
         ExoContainerContext.setCurrentContainer(oldContainer);
-        isExecuting = false;
         if (currentRepo != null) {
           try {
             repositoryService.setCurrentRepositoryName(currentRepo);

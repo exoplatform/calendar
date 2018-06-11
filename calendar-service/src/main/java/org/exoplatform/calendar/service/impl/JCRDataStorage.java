@@ -6389,7 +6389,8 @@ public class JCRDataStorage implements DataStorage {
     }
 
     @Override
-    public void onSelect(ExoCache<? extends String, ? extends CalendarEvent> cache, String key, ObjectCacheInfo<? extends CalendarEvent> ocinfo) throws Exception {
+    public void onSelect(ExoCache<? extends String, ? extends CalendarEvent> cache,
+                         String key, ObjectCacheInfo<? extends CalendarEvent> ocinfo) throws Exception {
       cache.remove(key);
     }
   }
@@ -6408,7 +6409,8 @@ public class JCRDataStorage implements DataStorage {
     }
 
     @Override
-    public void onSelect(ExoCache<? extends String, ? extends List<Calendar>> cache, String key, ObjectCacheInfo<? extends List<Calendar>> ocinfo) throws Exception {
+    public void onSelect(ExoCache<? extends String, ? extends List<Calendar>> cache, String key,
+                         ObjectCacheInfo<? extends List<Calendar>> ocinfo) throws Exception {
       cache.remove(key);
     }
   }
@@ -6429,7 +6431,8 @@ public class JCRDataStorage implements DataStorage {
     }
 
     @Override
-    public void onSelect(ExoCache<? extends String, ? extends List<CalendarEvent>> cache, String key, ObjectCacheInfo<? extends List<CalendarEvent>> ocinfo) throws Exception {
+    public void onSelect(ExoCache<? extends String, ? extends List<CalendarEvent>> cache, String key,
+                         ObjectCacheInfo<? extends List<CalendarEvent>> ocinfo) throws Exception {
       cache.remove(key);
     }
   }

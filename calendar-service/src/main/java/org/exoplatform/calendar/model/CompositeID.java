@@ -17,6 +17,8 @@
   
 package org.exoplatform.calendar.model;
 
+import java.util.Objects;
+
 public class CompositeID {
   private String id;
   private String ds;
@@ -53,6 +55,11 @@ public class CompositeID {
       }
     }
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, ds);
   }
 
   @Override

@@ -802,7 +802,8 @@ public class UICalendars extends UIForm  {
         Calendar calendar = Calendar.build(cal);
         if (calendar == null) {
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-calendar", null, 1)) ;
-        } else if (!Utils.isCalendarEditable(username, calendar, false)) { // Color could be changed even if it's a remote calendar
+        } else if (!Utils.isCalendarEditable(username, calendar, false)) {
+          // Color could be changed even if it's a remote calendar
           event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null, AbstractApplicationMessage.WARNING)) ;          
         } else {
           if (calendar.isShared(username)) {
