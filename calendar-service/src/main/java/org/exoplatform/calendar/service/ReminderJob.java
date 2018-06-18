@@ -30,6 +30,9 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.ws.rs.core.MediaType;
 
+import org.exoplatform.commons.api.notification.model.UserSetting;
+import org.exoplatform.commons.api.notification.service.setting.UserSettingService;
+import org.exoplatform.commons.notification.impl.setting.UserSettingServiceImpl;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
@@ -80,14 +83,14 @@ public class ReminderJob extends MultiTenancyJob {
         ResourceBundleService rbs = (ResourceBundleService) container.getComponentInstanceOfType(ResourceBundleService.class);
         if (log_.isDebugEnabled())
           log_.debug("Calendar email reminder service");
-        java.util.Calendar fromCalendar = GregorianCalendar.getInstance();
+        java.util.Calendar now = GregorianCalendar.getInstance();
         JobDataMap jdatamap = context.getJobDetail().getJobDataMap();
         Node calendarHome = Utils.getPublicServiceHome(provider);
         if (calendarHome == null)
           return;
-        StringBuffer path = new StringBuffer(PopupReminderJob.getReminderPath(fromCalendar, provider));
+        StringBuffer path = new StringBuffer(PopupReminderJob.getReminderPath(now, provider));
         path.append("//element(*,exo:reminder)");
-        path.append("[@exo:remindDateTime <= xs:dateTime('" + ISO8601.format(fromCalendar)
+        path.append("[@exo:remindDateTime <= xs:dateTime('" + ISO8601.format(now)
             + "') and @exo:isOver = 'false' and @exo:reminderType = 'email' ]");
         QueryManager queryManager = Utils.getSession(provider).getWorkspace().getQueryManager();
         Query query = queryManager.createQuery(path.toString(), Query.XPATH);
@@ -100,9 +103,9 @@ public class ReminderJob extends MultiTenancyJob {
           String eventId = reminder.getProperty(Utils.EXO_EVENT_ID).getString();
           CalendarEvent calEvent = calendarService.getEventById(eventId);
           boolean isRepeat = reminder.getProperty(Utils.EXO_IS_REPEAT).getBoolean();
-          long fromTime = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
-          long remindTime = reminder.getProperty(Utils.EXO_REMINDER_DATE).getDate().getTimeInMillis();
-          long interval = reminder.getProperty(Utils.EXO_TIME_INTERVAL).getLong() * 60 * 1000;
+          long endReminderDateTime = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
+          long lastRemindTime = reminder.getProperty(Utils.EXO_REMINDER_DATE).getDate().getTimeInMillis();
+          long intervalMillis = reminder.getProperty(Utils.EXO_TIME_INTERVAL).getLong() * 60 * 1000;
           String to = reminder.getProperty(Utils.EXO_EMAIL).getString();
           String language = null;
           org.exoplatform.services.organization.Query q = new org.exoplatform.services.organization.Query();
@@ -146,21 +149,17 @@ public class ReminderJob extends MultiTenancyJob {
               }
               message.setFrom(System.getProperty("exo.email.smtp.from"));
               if (isRepeat) {
-                if (fromCalendar.getTimeInMillis() >= fromTime) {
+                long currentTimeMillis = now.getTimeInMillis();
+                if (currentTimeMillis >= endReminderDateTime) {
                   reminder.setProperty(Utils.EXO_IS_OVER, true);
                 } else {
-                  if ((remindTime + interval) > fromTime) {
+                  if ((lastRemindTime + intervalMillis) > endReminderDateTime) {
                     reminder.setProperty(Utils.EXO_IS_OVER, true);
                   } else {
-                    long currentTime = fromCalendar.getTimeInMillis();
-                    long nextReminderTime = remindTime + interval;
-                    while(nextReminderTime <= currentTime) {
-                      nextReminderTime += interval;
-                    }
+                    long nextReminderTime = lastRemindTime + intervalMillis;
                     java.util.Calendar cal = new GregorianCalendar();
                     cal.setTimeInMillis(nextReminderTime);
                     reminder.setProperty(Utils.EXO_REMINDER_DATE, cal);
-                    reminder.setProperty(Utils.EXO_IS_OVER, false);
                   }
                 }
               } else {
