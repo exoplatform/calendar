@@ -43,7 +43,7 @@
       else if (action.actionName == UICalendarForm.ACTION_DELETE_PERMISSION) action.cssIconClass = "uiIconDelete uiIconLightGray";
 
 	    /* disable group popup when all groups are added */
-      if ((calendarGroups.length == UICalendarForm.userGroups.size()) && (action.actionName == UICalendarForm.OPEN_SELECT_GROUP_FORM))
+      if ((calendarGroups.length == uicomponent.getCurrentUserGroupsIds().size()) && (action.actionName == UICalendarForm.OPEN_SELECT_GROUP_FORM))
       {
         actionLink  = "javascript:void(0);";
         actionLabel = _ctx.appRes(uiCalendarForm.getId() + ".msg." + "can-not-add-group");
@@ -52,7 +52,7 @@
       else if (action.actionName == UICalendarForm.OPEN_SELECT_GROUP_FORM) action.cssIconClass = "uiIconGroup uiIconLightGray";
 
 	    /* disable add group button when all groups are added */
-      if ((calendarGroups.length == UICalendarForm.userGroups.size())
+      if ((calendarGroups.length == uicomponent.getCurrentUserGroupsIds().size())
               && (action.actionName == UICalendarForm.ADD_GROUP))
       {
         actionLink  = "javascript:void(0);";

@@ -210,7 +210,7 @@ public class UIGroupCalendarTab extends UIFormInputWithActions
    * @return
    * @throws Exception
    */
-  private Set<String> getCurrentUserGroupsIds() throws Exception
+  public Set<String> getCurrentUserGroupsIds() throws Exception
   {
     if(userGroups == null) {
       userGroups = getPublicGroups().stream().map(group -> group.getId()).collect(Collectors.toSet());
