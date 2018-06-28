@@ -187,6 +187,7 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
   public final static String RP_END_BYDATE = "endByDate";
   public final static String RP_END_AFTER = "endAfter";
   public final static String RP_END_NEVER = "neverEnd";
+  private static final String EXO_EMAIL_SMTP_FROM = System.getProperty("exo.email.smtp.from");
 
   public boolean isAddNew_ = true ;
   private boolean isChangedSignificantly = false;
@@ -1215,7 +1216,8 @@ public class UIEventForm extends UIFormTabPane implements UIPopupComponent, UISe
               eXoIdMap, userEmail, invitor, event, res)) ;
       message.setTo(userEmail);
       message.setMimeType(Utils.MIMETYPE_TEXTHTML) ;
-      message.setFrom(user.getEmail()) ;
+      message.setFrom(user.getDisplayName() + "<" + EXO_EMAIL_SMTP_FROM + ">") ;
+      message.setReplyTo(user.getEmail());
       
       if (icsFile != null) {
         ByteArrayInputStream is = new ByteArrayInputStream(icsFile) ;
