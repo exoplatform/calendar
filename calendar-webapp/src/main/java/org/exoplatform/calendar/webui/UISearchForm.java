@@ -58,7 +58,7 @@ public class UISearchForm extends UIForm {
   final static  private String FIELD_SEARCHVALUE = "value" ;
 
   public UISearchForm() throws Exception {
-    addChild(new UIFormStringInput(FIELD_SEARCHVALUE, FIELD_SEARCHVALUE, null).addValidator(SpecialCharacterValidator.class)) ;
+    addChild(new UIFormStringInput(FIELD_SEARCHVALUE, FIELD_SEARCHVALUE, null)) ;
   }
   public String getSearchValue() {
     return getUIStringInput(FIELD_SEARCHVALUE).getValue() ;
@@ -88,7 +88,7 @@ public class UISearchForm extends UIForm {
      
       try {
         EventQuery eventQuery = new EventQuery() ;
-        eventQuery.setText(CalendarUtils.encodeJCRText(text)) ;
+        eventQuery.setText(text) ;
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
         UICalendarViewContainer calendarViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
         String currentView = calendarViewContainer.getRenderedChild().getId() ;
