@@ -90,6 +90,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
   private static final String FIELD_AFTER_DATE_SELECTBOX = "afterDate".intern();
   protected static final String LAST_UPDATED = "lastUpdated".intern();
   
+  private static Locale locale_ = null;
   private String remoteType;
   private boolean isAddNew_ = true; 
   private String calendarId_ = null;
@@ -122,9 +123,28 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       options.add(new SelectItemOption<String>(s, s));
     }
     addUIFormInput(new UIFormSelectBox(AUTO_REFRESH, AUTO_REFRESH, options));  
-    addUIFormInput(new UIFormColorPicker(COLOR, COLOR)); 
+    addUIFormInput(new UIFormColorPicker(COLOR, COLOR));
   }
-  
+
+  @Override
+  public void processRender(WebuiRequestContext context) throws Exception {
+    setLocale();
+    super.processRender(context);
+  }
+
+  protected void setLocale() throws Exception {
+    PortalRequestContext portalContext = Util.getPortalRequestContext();
+    Locale locale = portalContext.getLocale();
+    if (locale_ == null || !locale.getLanguage().equals(locale_.getLanguage())) {
+      locale_ = locale;
+      List<SelectItemOption<String>> ls = getOptionsSelectBox();
+      UIFormSelectBox beforeDate = getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX);
+      beforeDate.setOptions(ls);
+      UIFormSelectBox afterDate = getUIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX);
+      afterDate.setOptions(ls);
+    }
+  }
+
   /*
    * previous : None, 1 week, 2 weeks, 1 month, 3 months, 6 months, 1 year
    * next : Forever, 1 week, 2 weeks, 1 month, 3 months, 6 months, 1 year
