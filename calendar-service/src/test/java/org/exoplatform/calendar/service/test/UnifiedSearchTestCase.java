@@ -178,6 +178,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     // test search context to build url
     SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), siteName);
     assertNotNull(sc);
+    sc.lang("en");
     Router rt = sc.getRouter();
     assertNotNull(rt);
     ExoContainerContext context = (ExoContainerContext) ExoContainerContext.getCurrentContainer()
@@ -227,6 +228,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
 
     // site name null
     sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"), null);
+    sc.lang("en");
     siteName = Utils.DEFAULT_SITENAME;
     spaceGroupId = null;
     url = unifiedSearchService_.getUrl(rt,
