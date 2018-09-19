@@ -24,18 +24,10 @@ import javax.jcr.query.Row;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang.LocaleUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
@@ -233,7 +225,11 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
         String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
         String detailValue = Utils.EMPTY_STR;
         String imageUrl = buildImageUrl(iter);
-        detail.append(buildDetail(iter, calSeting.getTimeZone()));
+        String lang = "en";
+        if (sc != null) {
+          lang = sc.getParamValue(SearchContext.RouterParams.LANG.create());
+        }
+        detail.append(buildDetail(iter, calSeting.getTimeZone(), lang));
         if(detail.length() > 0) detailValue = detail.toString();
         long relevancy = buildScore(iter);
         long date = buildDate(iter);
@@ -355,8 +351,9 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     return Utils.EMPTY_STR;
   }
 
-  private String buildDetail(Object iter, String timeZone) throws RepositoryException{
-    SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT) ;
+  private String buildDetail(Object iter, String timeZone, String lang) throws RepositoryException{
+    Locale locale = LocaleUtils.toLocale(lang);
+    SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT, locale) ;
     df.setTimeZone(DateUtils.getTimeZone(timeZone));
     StringBuffer detail = new StringBuffer();
     if(iter instanceof Row){

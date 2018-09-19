@@ -249,6 +249,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
     SearchContext sc = new SearchContext(loadConfiguration("conf/portal/controller.xml"),
         "classic");
     assertNotNull(sc);
+    sc.lang("en");
     
     // Case build url for event detail in calendar
     rs = eventSearchConnector_.search(sc,
