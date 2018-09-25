@@ -19,9 +19,7 @@ package org.exoplatform.calendar.webui.popup;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -90,7 +88,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
   private static final String FIELD_AFTER_DATE_SELECTBOX = "afterDate".intern();
   protected static final String LAST_UPDATED = "lastUpdated".intern();
   
-  private static Locale locale_ = null;
+  private static Map<Locale, List<SelectItemOption<String>>> selectBoxOptionsByLocale = new HashMap<>();
   private String remoteType;
   private boolean isAddNew_ = true; 
   private String calendarId_ = null;
@@ -135,14 +133,15 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
   protected void setLocale() throws Exception {
     PortalRequestContext portalContext = Util.getPortalRequestContext();
     Locale locale = portalContext.getLocale();
-    if (locale_ == null || !locale.getLanguage().equals(locale_.getLanguage())) {
-      locale_ = locale;
-      List<SelectItemOption<String>> ls = getOptionsSelectBox();
-      UIFormSelectBox beforeDate = getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX);
-      beforeDate.setOptions(ls);
-      UIFormSelectBox afterDate = getUIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX);
-      afterDate.setOptions(ls);
+    List<SelectItemOption<String>> selectBoxOptions = selectBoxOptionsByLocale.get(locale);
+    if (selectBoxOptions == null) {
+      selectBoxOptions = getOptionsSelectBox();
+      selectBoxOptionsByLocale.put(locale, selectBoxOptions);
     }
+    UIFormSelectBox beforeDate = getUIFormSelectBox(FIELD_BEFORE_DATE_SELECTBOX);
+    beforeDate.setOptions(selectBoxOptions);
+    UIFormSelectBox afterDate = getUIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX);
+    afterDate.setOptions(selectBoxOptions);
   }
 
   /*
