@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
@@ -136,8 +137,6 @@ public class UISharedForm extends UIForm implements UIPopupComponent
 
   public static final String INPUT_PERMISSION_OWNER = "PermissionOwnerInput";
 
-  public static String INPUT_PERMISSION_OWNER_LABEL = "Select recipient";
-
   /* define a button type for action data */
   public static final int    TYPE_BUTTON = 5;
 
@@ -188,8 +187,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
     /* a form containing button and input for selecting permission */
     WebuiRequestContext context = WebuiRequestContext.getCurrentInstance();
     ResourceBundle res = context.getApplicationResourceBundle();
-    INPUT_PERMISSION_OWNER_LABEL = res.getString("UISharedForm.label.UIPermissionOwnerInput");
-    addUIFormInput(new UIFormStringInput(INPUT_PERMISSION_OWNER, null, INPUT_PERMISSION_OWNER_LABEL));
+    addUIFormInput(new UIFormStringInput(INPUT_PERMISSION_OWNER, null, "", res.getString("UISharedForm.label.UIPermissionOwnerInput")));
     setActionField(INPUT_PERMISSION_OWNER, actions);
 
     addPopupWindow();
@@ -360,10 +358,11 @@ public class UISharedForm extends UIForm implements UIPopupComponent
     if (permissionOwner.getValue() == null) permissionOwner.setValue("");
     if (permissionOwner.getValue().contains(permissionId) || permissionId.equals(CalendarUtils.getCurrentUser())) return;
 
-    if (permissionOwner.getValue().equals(INPUT_PERMISSION_OWNER_LABEL) || permissionOwner.getValue().isEmpty())
+    if (StringUtils.isEmpty(permissionOwner.getValue())) {
       permissionOwner.setValue(permissionId);
-    else
+    } else {
       permissionOwner.setValue(permissionOwner.getValue() + CalendarUtils.COMMA + " " + permissionId);
+    }
   }
 
   /**
@@ -780,7 +779,7 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       }
 
       /* reset input to Select Owner*/
-      permissionOwner.setValue(INPUT_PERMISSION_OWNER_LABEL);
+      permissionOwner.reset();
       event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
     }
   }
