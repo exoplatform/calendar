@@ -10,6 +10,9 @@
   <packaging>jar</packaging>
   <name>eXo PLF:: Calendar Webservice</name>
   <description>eXo Calendar Webservice</description>
+  <properties>
+    <exo.test.coverage.ratio>0.68</exo.test.coverage.ratio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>commons-chain</groupId>

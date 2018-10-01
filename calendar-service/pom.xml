@@ -10,6 +10,9 @@
   <packaging>jar</packaging>
   <name>eXo PLF:: Calendar Service</name>
   <description>eXo Calendar Service</description>
+  <properties>
+    <exo.test.coverage.ratio>0.46</exo.test.coverage.ratio>
+  </properties>
   <dependencies>
     <!-- Replace the old versions of xstream with new one under com.thoughtworks.xstream:xstream -->
     <dependency>
