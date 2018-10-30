@@ -93,8 +93,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
   private boolean isAddNew_ = true; 
   private String calendarId_ = null;
   private String lastUpdated_ = null;
-  private static RemoteCalendar remoteCalendar = new RemoteCalendar();
-  
+
   public UIRemoteCalendar() throws Exception {
     UIFormStringInput remoteUrl = new UIFormStringInput(URL, URL, null);
     remoteUrl.addValidator(MandatoryValidator.class);
@@ -107,7 +106,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     beforeDate.setDefaultValue("0t");
     addUIFormInput(beforeDate);
     List<SelectItemOption<String>> ls = getOptionsSelectBox();
-    ls.set(0, new SelectItemOption<String>(getLabel("Forever"), "0t"));
+    ls.set(0, new SelectItemOption<>(getLabel("Forever"), "0t"));
     UIFormSelectBox afterDate = new UIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX, FIELD_AFTER_DATE_SELECTBOX, ls);
     afterDate.setDefaultValue("0t");
     addUIFormInput(afterDate);
@@ -116,9 +115,9 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     UIFormStringInput password = new UIFormStringInput(PASSWORD, PASSWORD, null);
     password.setType(UIFormStringInput.PASSWORD_TYPE);
     addUIFormInput(password);
-    List<SelectItemOption<String>> options = new ArrayList<SelectItemOption<String>>();
+    List<SelectItemOption<String>> options = new ArrayList<>();
     for (String s : Utils.SYNC_PERIOD) {
-      options.add(new SelectItemOption<String>(s, s));
+      options.add(new SelectItemOption<>(s, s));
     }
     addUIFormInput(new UIFormSelectBox(AUTO_REFRESH, AUTO_REFRESH, options));  
     addUIFormInput(new UIFormColorPicker(COLOR, COLOR));
@@ -176,7 +175,6 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       if (rCalendar != null) {
         setCalendarName(rCalendar.getCalendarName());
         setDescription(rCalendar.getDescription());
-        remoteCalendar = rCalendar;
       }
     } catch (Exception e) {
       if (logger.isDebugEnabled()) logger.debug(String.format("Loading the remote calendar information from %s failed", url), e);
@@ -193,7 +191,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
     String username = CalendarUtils.getCurrentUser();
     CalendarService calService = CalendarUtils.getCalendarService();
     CalendarSetting calSettings = calService.getCalendarSetting(username);
-    remoteCalendar = calService.getRemoteCalendar(username, calendarId_);
+    RemoteCalendar remoteCalendar = calService.getRemoteCalendar(username, calendarId_);
     this.remoteType = remoteCalendar.getType();
     setUrl(remoteCalendar.getRemoteUrl());
     this.getUIStringInput(URL).setReadOnly(false);
@@ -303,6 +301,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       UIRemoteCalendar uiform = event.getSource();
       UICalendarPortlet calendarPortlet = uiform.getAncestorOfType(UICalendarPortlet.class);
       CalendarService calService = CalendarUtils.getCalendarService();
+      RemoteCalendar remoteCalendar = new RemoteCalendar();
       remoteCalendar.setType(uiform.remoteType);
       remoteCalendar.setUsername(CalendarUtils.getCurrentUser());
       remoteCalendar.setRemoteUrl(uiform.getUrl());
@@ -313,8 +312,7 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
       remoteCalendar.setAfterDateSave(uiform.getUIFormSelectBox(FIELD_AFTER_DATE_SELECTBOX).getValue());
       remoteCalendar.setCalendarColor(uiform.getSelectColor());
       remoteCalendar.setDescription(uiform.getDescription());
-      Calendar eXoCalendar = null;
-      try {       
+      try {
         if (!uiform.getUseAuthentication()) {
           // check valid url
           if(!calService.isValidRemoteUrl(remoteCalendar.getRemoteUrl(), remoteCalendar.getType(), "", "")) {
@@ -359,14 +357,14 @@ public class UIRemoteCalendar extends UIForm implements UIPopupComponent {
           if(CalendarService.ICALENDAR.equals(remoteCalendar.getType())) {
             calService.importRemoteCalendarByJob(remoteCalendar);
           } else {
-            eXoCalendar = calService.importRemoteCalendar(remoteCalendar);
+            calService.importRemoteCalendar(remoteCalendar);
           }
         } else {
           remoteCalendar.setCalendarId(uiform.calendarId_) ;
           // update remote calendar info
-          eXoCalendar = calService.updateRemoteCalendarInfo(remoteCalendar);
+          calService.updateRemoteCalendarInfo(remoteCalendar);
           // refresh calendar
-          eXoCalendar = calService.refreshRemoteCalendar(remoteCalendar.getUsername(), uiform.calendarId_);
+          calService.refreshRemoteCalendar(remoteCalendar.getUsername(), uiform.calendarId_);
         }
       }
       catch (Exception e) {
