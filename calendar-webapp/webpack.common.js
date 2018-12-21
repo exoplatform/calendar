@@ -4,7 +4,7 @@ const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 let config = {
   context: path.resolve(__dirname, './'),
   entry: {
-    uiVueEventForm: './src/main/webapp/javascript/eXo/calendar/vue/uiVueEventForm.js'
+    uiVueEventForm: './src/main/webapp/vue-app/ExoEventForm.js'
   },
   output: {
     filename: 'js/[name].bundle.js',

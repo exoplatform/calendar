@@ -90,7 +90,7 @@
 	     <module>DateUtils</module>
 	   </depends>
      <depends>
-       <module>UIVueEventForm</module>
+       <module>ExoEventForm</module>
      </depends>
     </module>
   </portlet>
@@ -676,10 +676,10 @@
   </module>
 
   <module>
-    <name>UIVueEventForm</name>
+    <name>ExoEventForm</name>
     <script>
       <minify>false</minify>
-      <path>/js/uiVueEventForm.bundle.js</path>
+      <path>/js/ExoEventForm.bundle.js</path>
     </script>
     <depends>
       <module>vue</module>

@@ -1,11 +1,11 @@
-import UIVueEventForm from './components/UIVueEventForm.vue';
+import ExoEventForm from './components/ExoEventForm.vue';
 
 export function init() {
-  Vue.component('ui-vue-event-form', UIVueEventForm);
+  Vue.component('exo-event-form', ExoEventForm);
 
   new Vue({
-    el: '#UIVueEventForm',
-    template: '<ui-vue-event-form></ui-vue-event-form>'
+    el: '#ExoEventForm',
+    template: '<exo-event-form></exo-event-form>'
   });
 }
 
