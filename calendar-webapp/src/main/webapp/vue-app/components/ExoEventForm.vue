@@ -1,6 +1,6 @@
 <template>
-  <div>
-    UIVueEventForm
+  <div id="ExoEventForm">
+    ExoEventForm
   </div>
 </template>
 

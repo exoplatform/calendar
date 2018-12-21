@@ -1,6 +1,0 @@
-<div id="$uicomponent.id"></div>
-<script>
-    require(['SHARED/uiVueEventForm'], function(eventForm) {
-      eventForm.init();
-    });
-</script>
