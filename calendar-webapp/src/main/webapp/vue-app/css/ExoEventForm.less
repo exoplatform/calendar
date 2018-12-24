@@ -1,0 +1,128 @@
+.drawer {
+  width: 0px;
+  position: fixed;
+  top: 42px;
+  right: 0;
+  bottom: 0px;
+  overflow: hidden;
+  transition: 0.3s;
+  background: #fff;
+  font-size: 15px;
+}
+
+.drawer.open {
+  width: 500px;
+}
+
+.drawer .header span {
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.drawer .control-label {
+  line-height: 25px;
+}
+
+.drawer .content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 80%;
+}
+
+.drawer .content .eventTitle {
+  width: 67%;
+}
+
+.drawer .content .category {
+  width: 30%;
+  margin-left: 5px;
+}
+
+.drawer .content .calDate {
+  width: 49%;
+  display: inline-block;
+}
+
+.drawer .content .location {
+  width: 100%;
+}
+
+.drawer .content .participants {
+  width: 100%;
+}
+
+.drawer .content .calDate input {
+  width: 48%;
+  padding: 0px;
+}
+
+.drawer .content .allday {
+  margin-top: -16px;
+}
+
+.drawer .content .allday input {
+  float: left;
+  margin-right: 3px;
+}
+
+.drawer .content .calendarSelector {
+  width: 40%;
+  display: inline-block;
+}
+
+.drawer .content .calendarSelector select {
+  width: 100%;
+}
+
+.drawer .content .description textarea {
+  width: 100%;
+  height: 120px;
+}
+
+.drawer .content .attachments textarea {
+  margin-top: 15px;
+  width: 100%;
+}
+
+.drawer .content .reminder {
+  width: 25%;
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.drawer .content .repeat {
+  width: 25%;
+  display: inline-block;
+}
+
+.drawer > div {
+  padding: 20px;
+}
+
+.drawer .content {
+  padding-top: 10px;
+}
+
+.drawer .footer {
+  margin-top: -20px;
+}
+
+.drawer .footer button {
+  float: right;
+}
+
+.drawer .footer button.clearBtn {
+  float: left;
+}
+
+.drawer .closebtn {
+  font-size: 36px;
+  float: right;
+}
+
+@media (max-width: 767px) {
+  .drawer.open {
+    width: 100%;
+  }
+}

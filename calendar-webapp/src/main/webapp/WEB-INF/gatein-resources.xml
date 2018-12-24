@@ -679,7 +679,7 @@
     <name>ExoEventForm</name>
     <script>
       <minify>false</minify>
-      <path>/js/ExoEventForm.bundle.js</path>
+      <path>/vue-app/js/exoEventForm.bundle.js</path>
     </script>
     <depends>
       <module>vue</module>

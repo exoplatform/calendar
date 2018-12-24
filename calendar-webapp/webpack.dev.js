@@ -8,10 +8,11 @@ const apiMocker = require('connect-api-mocker');
 const exoServerPath = "../../../exo-servers/platform-5.2.x-create-event-SNAPSHOT/";
 
 let config = merge(webpackCommonConfig, {
+  mode: 'development',
   output: {
-    path: path.resolve(__dirname, exoServerPath + 'webapps/calendar/')
-  }
-  devtool: 'inline-source-map'
+    path: exoServerPath + 'webapps/calendar/'
+  },
+  devtool: 'source-map'
 });
 
 config.plugins.push(new CopyWebpackPlugin([{from: 'src/main/webapp/lang/*.json', to: './lang', flatten: true}]));
