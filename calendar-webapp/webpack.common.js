@@ -4,18 +4,14 @@ const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 let config = {
   context: path.resolve(__dirname, './'),
   entry: {
-    uiVueEventForm: './src/main/webapp/vue-app/ExoEventForm.js'
+    exoEventForm: './src/main/webapp/vue-app/ExoEventForm.js'
   },
   output: {
-    filename: 'js/[name].bundle.js',
+    filename: 'vue-app/js/[name].bundle.js',
     libraryTarget: 'amd'
   },
   module: {
     rules: [
-      {
-        test: /\.css$/,
-        use: ['vue-style-loader', 'css-loader']
-      },
       {
         test: /\.less$/,
         use: ExtractTextWebpackPlugin.extract({
@@ -37,24 +33,28 @@ let config = {
         })
       },
       {
+        test: /\.css$/,
+        use: ['vue-style-loader', 'css-loader']
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         use: [
           'babel-loader',
-          'eslint-loader',
+          'eslint-loader'
         ]
       },
       {
         test: /\.vue$/,
         use: [
           'vue-loader',
-          'eslint-loader',
+          'eslint-loader'
         ]
       }
     ]
   },
   plugins: [
-    new ExtractTextWebpackPlugin('css/[name].css')
+    new ExtractTextWebpackPlugin('vue-app/css/[name].css')
   ]
 };
 

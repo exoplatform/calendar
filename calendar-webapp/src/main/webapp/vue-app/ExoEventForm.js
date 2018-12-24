@@ -1,12 +1,37 @@
+import {calConstants} from './calConstants.js';
 import ExoEventForm from './components/ExoEventForm.vue';
 
-export function init() {
-  Vue.component('exo-event-form', ExoEventForm);
+const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
+const url = `${calConstants.PORTAL}/${calConstants.PORTAL_REST}/i18n/bundle/locale.portlet.calendar.CalendarPortlet-${lang}.json`;
 
-  new Vue({
-    el: '#ExoEventForm',
-    template: '<exo-event-form></exo-event-form>'
-  });
+//
+let vm = null;
+export function init() {
+  if ($('#ExoEventForm').length && vm == null) {
+    exoi18n.loadLanguageAsync(lang, url).then(i18n => {
+      vm = new Vue({
+        el: '#ExoEventForm',
+        components: {
+          'exo-event-form': ExoEventForm
+        },
+        data: {
+          openDrawer: false
+        },
+        methods: {
+          toggleDrawer() {
+            this.openDrawer = !this.openDrawer;
+          }
+        },
+        template: '<exo-event-form v-model="openDrawer"></exo-event-form>',
+        i18n
+      });
+      setTimeout(() => {
+        vm.toggleDrawer();
+      },0);
+    });
+  } else {
+    vm.toggleDrawer();
+  }
 }
 
 // A global data
