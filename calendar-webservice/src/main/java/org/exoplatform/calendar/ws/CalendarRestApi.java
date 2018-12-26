@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.Calendar.Type;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.ws.bean.*;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.calendar.ws.common.RestAPIConstants;
@@ -1107,36 +1106,25 @@ public class CalendarRestApi implements ResourceContainer {
 		  @ApiParam(value = "Identity of the event to update", required = true) @PathParam("id") String id,
 		  EventResource evObject) {
     try {
-      CalendarEvent old = calendarServiceInstance().getEventById(id);
-      if(old == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+      CalendarEvent event = calendarServiceInstance().getEventById(id);
+      if(event == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
 
-      Calendar cal = calendarServiceInstance().getCalendarById(old.getCalendarId());
+      Calendar cal = calendarServiceInstance().getCalendarById(event.getCalendarId());
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
-        Response error = buildEvent(old, evObject);
+        Response error = buildEvent(event, evObject);
         if (error != null) {
           return error;
         }
 
         int calType = -1;
         try {
-          calType = Integer.parseInt(old.getCalType());
+          calType = Integer.parseInt(event.getCalType());
         }catch (NumberFormatException e) {
-          calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), old.getCalendarId());
+          calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), event.getCalendarId());
         }
-        switch (calType) {
-        case Calendar.TYPE_PRIVATE:
-          calendarServiceInstance().saveUserEvent(currentUserId(), old.getCalendarId(), old, false);
-          break;
-        case Calendar.TYPE_PUBLIC:
-          calendarServiceInstance().savePublicEvent(old.getCalendarId(), old, false);
-          break;
-        case Calendar.TYPE_SHARED:
-          calendarServiceInstance().saveEventToSharedCalendar(currentUserId(), old.getCalendarId(),old,false);
-          break;
 
-        default:
-          break;
-        }
+        saveEvent(calType, event, false);
+
         return Response.ok().cacheControl(nc).build();
       }
 
@@ -1393,21 +1381,21 @@ public class CalendarRestApi implements ResourceContainer {
 		  @ApiParam(value = "Identity of an event where the attachment is created", required = true) @PathParam("id") String id,
 		  Iterator<FileItem> iter) {
     try {
-      CalendarEvent ev = calendarServiceInstance().getEventById(id);
-      if (ev == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+      CalendarEvent event = calendarServiceInstance().getEventById(id);
+      if (event == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
 
-      Calendar cal = calendarServiceInstance().getCalendarById(ev.getCalendarId());
+      Calendar cal = calendarServiceInstance().getCalendarById(event.getCalendarId());
 
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
         int calType = Calendar.TYPE_ALL;
         List<Attachment> attachment = new ArrayList<Attachment>();
         try {
-          calType = Integer.parseInt(ev.getCalType());
+          calType = Integer.parseInt(event.getCalType());
         } catch (NumberFormatException e) {
-          calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), ev.getCalendarId());
+          calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), event.getCalendarId());
         }
 
-        attachment.addAll(ev.getAttachment());
+        attachment.addAll(event.getAttachment());
         while (iter.hasNext()) {
           FileItem file  = iter.next();
           String fileName = file.getName();
@@ -1421,24 +1409,12 @@ public class CalendarRestApi implements ResourceContainer {
             attachment.add(at);
           }
         }
-        ev.setAttachment(attachment);
+        event.setAttachment(attachment);
 
-        switch (calType) {
-          case Calendar.TYPE_PRIVATE:
-            calendarServiceInstance().saveUserEvent(currentUserId(), ev.getCalendarId(), ev, false);
-            break;
-          case Calendar.TYPE_PUBLIC:
-            calendarServiceInstance().savePublicEvent(ev.getCalendarId(), ev, false);
-            break;
-          case Calendar.TYPE_SHARED:
-            calendarServiceInstance().saveEventToSharedCalendar(currentUserId(), ev.getCalendarId(), ev, false);
-            break;
-          default:
-            break;
-        }
+        saveEvent(calType, event, false);
 
         StringBuilder attUri = new StringBuilder(getBasePath(uriInfo));
-        attUri.append("/").append(ev.getId());
+        attUri.append("/").append(event.getId());
         attUri.append(ATTACHMENT_URI);
         return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, attUri.toString()).cacheControl(nc).build();
       }
@@ -1690,34 +1666,24 @@ public class CalendarRestApi implements ResourceContainer {
     try {
       Calendar cal = calendarServiceInstance().getCalendarById(id);
       if (cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
-      CalendarEvent evt = new CalendarEvent();
+      CalendarEvent newEvent = new CalendarEvent();
       if (evObject.getSubject() == null) {
         evObject.setSubject(DEFAULT_EVENT_NAME);
       }
       if (evObject.getCategoryId() == null) {
         evObject.setCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
       }
-      Response error = buildEvent(evt, evObject);
+      Response error = buildEvent(newEvent, evObject);
       if (error != null) {
         return error;
       }
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
         int calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), id);
-        switch (calType) {
-        case Calendar.TYPE_PRIVATE:
-          calendarServiceInstance().saveUserEvent(currentUserId(), id, evt, true);
-          break;
-        case Calendar.TYPE_PUBLIC:
-          calendarServiceInstance().savePublicEvent(id, evt, true);
-          break;
-        case Calendar.TYPE_SHARED:
-          calendarServiceInstance().saveEventToSharedCalendar(currentUserId(), id, evt, true);
-          break;
-        default:
-          break;
-        }
 
-        String location = new StringBuilder(getBasePath(uriInfo)).append(EVENT_URI).append(evt.getId()).toString();
+        newEvent.setCalendarId(id);
+        saveEvent(calType, newEvent, true);
+
+        String location = new StringBuilder(getBasePath(uriInfo)).append(EVENT_URI).append(newEvent.getId()).toString();
         return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, location).cacheControl(nc).build();
       } else {
         return Response.status(HTTPStatus.UNAUTHORIZED).cacheControl(nc).build();
@@ -2149,35 +2115,25 @@ public class CalendarRestApi implements ResourceContainer {
       Calendar cal = calendarServiceInstance().getCalendarById(id);
       if (cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
 
-      CalendarEvent evt = new CalendarEvent();
-      evt.setEventType(CalendarEvent.TYPE_TASK);
+      CalendarEvent newEvent = new CalendarEvent();
+      newEvent.setEventType(CalendarEvent.TYPE_TASK);
       if (evObject.getName() == null) {
         evObject.setName(DEFAULT_EVENT_NAME);
       }
       if (evObject.getCategoryId() == null) {
         evObject.setCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
       }
-      Response error = buildEventFromTask(evt, evObject);
+      Response error = buildEventFromTask(newEvent, evObject);
       if (error != null) {
         return error;
       }
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
         int calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), id);
-        switch (calType) {
-        case Calendar.TYPE_PRIVATE:
-          calendarServiceInstance().saveUserEvent(currentUserId(), id, evt, true);
-          break;
-        case Calendar.TYPE_PUBLIC:
-          calendarServiceInstance().savePublicEvent(id, evt, true);
-          break;
-        case Calendar.TYPE_SHARED:
-          calendarServiceInstance().saveEventToSharedCalendar(currentUserId(), id, evt, true);
-          break;
-        default:
-          break;
-        }
 
-        String location = new StringBuilder(getBasePath(uriInfo)).append(TASK_URI).append(evt.getId()).toString();
+        newEvent.setCalendarId(id);
+        saveEvent(calType, newEvent, true);
+
+        String location = new StringBuilder(getBasePath(uriInfo)).append(TASK_URI).append(newEvent.getId()).toString();
         return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, location).cacheControl(nc).build();
       } else {
         return Response.status(HTTPStatus.UNAUTHORIZED).cacheControl(nc).build();
@@ -2386,33 +2342,22 @@ public class CalendarRestApi implements ResourceContainer {
 		  @ApiParam(value = "Identity of the task to update", required = true) @PathParam("id") String id,
 		  TaskResource evObject) {
     try {
-      CalendarEvent old = calendarServiceInstance().getEventById(id);
-      if (old == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
-      Calendar cal = calendarServiceInstance().getCalendarById(old.getCalendarId());
+      CalendarEvent event = calendarServiceInstance().getEventById(id);
+      if (event == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+      Calendar cal = calendarServiceInstance().getCalendarById(event.getCalendarId());
       if (cal == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
 
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
         int calType = -1;
         try {
-          calType = Integer.parseInt(old.getCalType());
+          calType = Integer.parseInt(event.getCalType());
         }catch (NumberFormatException e) {
-          calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), old.getCalendarId());
+          calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), event.getCalendarId());
         }
-        buildEventFromTask(old, evObject);
-        switch (calType) {
-        case Calendar.TYPE_PRIVATE:
-          calendarServiceInstance().saveUserEvent(currentUserId(), old.getCalendarId(), old, false);
-          break;
-        case Calendar.TYPE_PUBLIC:
-          calendarServiceInstance().savePublicEvent(old.getCalendarId(), old, false);
-          break;
-        case Calendar.TYPE_SHARED:
-          calendarServiceInstance().saveEventToSharedCalendar(currentUserId(), old.getCalendarId(), old,false);
-          break;
+        buildEventFromTask(event, evObject);
 
-        default:
-          break;
-        }
+        saveEvent(calType, event, false);
+
         return Response.ok().cacheControl(nc).build();
       } else {
         return Response.status(HTTPStatus.UNAUTHORIZED).cacheControl(nc).build();
@@ -4242,6 +4187,23 @@ public class CalendarRestApi implements ResourceContainer {
       cal.setCalType(calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId()));
     } catch (Exception e) {
       log.error(e);
+    }
+  }
+
+  private void saveEvent(int calType, CalendarEvent event, boolean bln) throws Exception {
+    CalendarService calService = calendarServiceInstance();
+    switch (calType) {
+      case Calendar.TYPE_PRIVATE:
+        calService.saveUserEvent(currentUserId(), event.getCalendarId(), event, bln);
+        break;
+      case Calendar.TYPE_PUBLIC:
+        calService.savePublicEvent(event.getCalendarId(), event, bln);
+        break;
+      case Calendar.TYPE_SHARED:
+        calService.saveEventToSharedCalendar(currentUserId(), event.getCalendarId(), event,bln);
+        break;
+      default:
+        break;
     }
   }
 

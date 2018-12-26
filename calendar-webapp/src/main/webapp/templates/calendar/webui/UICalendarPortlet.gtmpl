@@ -160,7 +160,7 @@
       requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
       requireJS.require("SHARED/Reminder","Reminder");
       requireJS.require("SHARED/CalContextMenu","uiContextMenu");
-      requireJS.require("SHARED/ExoEventForm","exoEventForm");
+      requireJS.require("SHARED/CalendarVue","calendarVue");
       requireJS.addScripts('cal.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
       requireJS.addScripts('cal.UICalendarPortlet.resourceURL="' + resourceURL.toString() + '";') ;
 	
@@ -179,7 +179,7 @@
       requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
       requireJS.addScripts('cal.CalendarLayout.init();');
       requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
-      requireJS.addScripts("exoEventForm.init();");
+      requireJS.addScripts("calendarVue.init();");
     %>
       <div class="calendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>
