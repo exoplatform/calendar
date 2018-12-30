@@ -26,7 +26,7 @@
 .drawer .content {
     overflow-y: auto;
     overflow-x: hidden;
-    height: 80%;
+    height: 76%;
 }
 
 .drawer .content .eventTitle {
@@ -119,6 +119,58 @@
 .drawer .closebtn {
   font-size: 36px;
   float: right;
+}
+
+.drawer .fileDrop,
+.drawer [class^="uiIcon"] {
+  color: #2f5e92;
+}
+
+.drawer .fileDrop .dropZone {
+  border-radius: 5px;
+  border: 3px dashed #e6e6e6;
+  font-size: 14px;
+  height: 50px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.drawer .fileDrop .attachFile {
+  display: none;
+}
+
+.drawer .fileDrop .attachFileIcon:before {
+  content: "\e780";
+  font-weight: bold;
+}
+
+.drawer .fileDrop .uploadContainer .file .info {
+  width: 230px;
+}
+
+.drawer .fileDrop .uploadContainer .fileNameLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+.drawer .fileDrop .uploadContainer .file {
+  margin-top: 10px;
+}
+
+.drawer .fileDrop .uploadContainer .file .fileSize {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.drawer .fileDrop .uploadContainer > .uploadError {
+  text-align: center;
+}
+
+.drawer .fileDrop .uploadContainer .uploadError {
+  color: red;
 }
 
 @media (max-width: 767px) {
