@@ -692,6 +692,12 @@
       <as>$</as>
     </depends>
     <depends>
+      <module>suggester</module>
+    </depends>
+    <depends>
+      <module>filedrop</module>
+    </depends>
+    <depends>
       <module>iphoneStyleCheckbox</module>
     </depends>
     <depends>

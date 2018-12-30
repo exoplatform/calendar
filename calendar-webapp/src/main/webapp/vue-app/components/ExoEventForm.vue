@@ -51,7 +51,7 @@
         <div class="control-group">
           <div class="control-label">{{ $t('ExoEventForm.label.participants') }}</div>
           <div class="controls">
-            <input :placeholder="$t('ExoEventForm.placeholder.participants')" type="text" class="participants"/>
+            <suggester :placeholder="$t('ExoEventForm.placeholder.participants')" :source-providers="['exo:calendar-participants']" class="participants"/>
           </div>
         </div>
         <div class="control-group calendarSelector">
@@ -81,13 +81,13 @@
         <div class="control-group reminder">
           <div class="control-label">{{ $t('ExoEventForm.label.reminder') }}</div>
           <div class="controls">
-            <input type="checkbox" class="iphone"/>
+            <iphone-checkbox/>
           </div>
         </div>
         <div class="control-group repeat">
           <div class="control-label">{{ $t('ExoEventForm.label.repeat') }}</div>
           <div class="controls">
-            <input type="checkbox" class="iphone"/>
+            <iphone-checkbox/>
           </div>
         </div>
         <div class="control-group description">
@@ -99,7 +99,7 @@
         <div class="control-group attachments">
           <div class="control-label">{{ $t('ExoEventForm.label.attachments') }}</div>
           <div class="controls">
-            <textarea></textarea>
+            <filedrop v-model="attachedFiles"/>
           </div>
         </div>
       </form>
@@ -115,7 +115,16 @@
 </template>
 
 <script>
+import IphoneStyleCheckbox from './IphoneStyleCheckbox.vue';
+import Suggester from './Suggester.vue';
+import FileDrop from './FileDrop.vue';
+
 export default {
+  components: {
+    'iphone-checkbox': IphoneStyleCheckbox,
+    'suggester': Suggester,
+    'filedrop': FileDrop
+  },
   model: {
     prop: 'open',
     event: 'toggle-open'
@@ -124,16 +133,8 @@ export default {
     open: {
       type: Boolean,
       default: false
-    }
-  },
-  mounted() {
-    $('.drawer .iphone').iphoneStyle({
-      disabledClass: 'switchBtnDisabled',
-      containerClass: 'uiSwitchBtn',
-      labelOnClass: 'switchBtnLabelOn',
-      labelOffClass: 'switchBtnLabelOff',
-      handleClass: 'switchBtnHandle',
-    });
+    },
+    attachedFiles: []
   },
   methods: {
     toggleOpen() {

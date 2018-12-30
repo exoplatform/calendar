@@ -1,5 +1,9 @@
 export const calConstants = {
   PORTAL: eXo.env.portal.context || '',
   PORTAL_NAME: eXo.env.portal.portalName || '',
-  PORTAL_REST: eXo.env.portal.rest
+  PORTAL_REST: eXo.env.portal.rest,
+  CAL_SERVER_API: `${eXo.env.portal.context}/${eXo.env.portal.rest}/v1/calendar/`,
+  UPLOAD_API: `${eXo.env.portal.context}/upload`,
+  MAX_UPLOAD_FILES: 10,
+  MAX_UPLOAD_SIZE: 10
 };
