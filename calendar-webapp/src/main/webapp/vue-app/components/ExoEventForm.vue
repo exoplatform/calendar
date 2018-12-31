@@ -12,12 +12,7 @@
 
             <span class="uiSelectbox">
               <select class="selectbox category" name="category">
-                <option value="defaultEventCategoryIdAll">All</option>
-                <option value="defaultEventCategoryIdMeeting">Meeting</option>
-                <option value="defaultEventCategoryIdCalls">Calls</option>
-                <option value="defaultEventCategoryIdClients">Clients</option>
-                <option value="defaultEventCategoryIdHoliday">Holiday</option>
-                <option value="defaultEventCategoryIdAnniversary">Anniversary</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">{{ $t(`UICalendarView.label.${category.id}`) }}</option>
               </select>
             </span>
           </div>
@@ -59,20 +54,8 @@
           <div class="controls">
             <span class="uiSelectbox">
               <select class="selectbox" name="calendar">
-                <optgroup label="Personal Calendars">
-                  <option value="0:root-defaultCalendarId">Root Root</option>
-                </optgroup>
-                <optgroup label="Group Calendars">
-                  <option value="2:space2_space_calendar">space2</option>
-                  <option value="2:calendarcfaff4877f0001011b34ddb064abdf27">Administration</option>
-                  <option value="2:space1_space_calendar">space1</option>
-                  <option value="2:calendarcfaff60c7f0001013e5b9a310aa25ea7">Users</option>
-                  <option value="2:calendarcfaffdf97f00010130765e9cda51ccd7">Executive Board</option>
-                  <option value="2:space5_space_calendar">space5</option>
-                  <option value="2:calendarcfafff7e7f00010109a4ccbdfb7d7d60">Employees</option>
-                  <option value="2:space4_space_calendar">space4</option>
-                  <option value="2:space3_space_calendar">space3</option>
-                  <option value="2:calendarcfaff8767f00010117208e2d9d8a58a4">Content Management</option>
+                <optgroup v-for="group in calendarGroups" :key="group.id" :label="$t(`UICalendarSettingForm.label.${group.name}`)">
+                  <option v-for="calendar in group.calendars" :key="calendar.id" :value="`${group.id}:${calendar.id}`">{{ calendar.name }}</option>
                 </optgroup>
               </select>
             </span>
@@ -115,6 +98,7 @@
 </template>
 
 <script>
+import * as calServices from '../calServices.js';
 import IphoneStyleCheckbox from './IphoneStyleCheckbox.vue';
 import Suggester from './Suggester.vue';
 import FileDrop from './FileDrop.vue';
@@ -133,14 +117,32 @@ export default {
     open: {
       type: Boolean,
       default: false
-    },
-    attachedFiles: []
+    }
+  },
+  data() {
+    return {
+      categories: [],
+      calendarGroups: [],
+      attachedFiles: []
+    }
   },
   methods: {
     toggleOpen() {
       this.open = !this.open;
       this.$emit('toggle-open', this.open);
     }
+  },
+  mounted() {
+    calServices.getCategories().then(categories => {
+      if(categories) {
+        this.categories = categories;
+      }
+    });
+    calServices.getCalendars().then(calendarGroups => {
+      if(calendarGroups) {
+        this.calendarGroups = calendarGroups;
+      }
+    });
   }
 };
 </script>
