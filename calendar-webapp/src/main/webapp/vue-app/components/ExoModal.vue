@@ -1,5 +1,5 @@
 <template>
-  <div class="uiPopup" v-show="show">
+  <div v-show="show" class="uiPopup">
     <div class="popupHeader clearfix">
       <a class="uiIconClose pull-right"></a>
       <span class="popupTitle">{{ title }}</span>
