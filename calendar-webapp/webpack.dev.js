@@ -10,7 +10,7 @@ const exoServerPath = "../../../exo-servers/platform-5.2.x-create-event-SNAPSHOT
 let config = merge(webpackCommonConfig, {
   mode: 'development',
   output: {
-    path: exoServerPath + 'webapps/calendar/'
+    path: path.resolve(__dirname, exoServerPath + 'webapps/calendar/')
   },
   devtool: 'source-map'
 });
