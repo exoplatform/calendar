@@ -182,11 +182,12 @@
 
         }
         if(parseInt(type) == 1) {
-            var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
-            uiform.reset();
-            this.fillData(uiform, data, data.isAllday) ;
-            uiPopupWindow.show("UIQuickAddEventPopupWindow");
-            uiPopup.hide("UIQuickAddTaskPopupWindow") ;
+//            var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
+//            uiform.reset();
+//            this.fillData(uiform, data, data.isAllday) ;
+//            uiPopupWindow.show("UIQuickAddEventPopupWindow");
+//            uiPopup.hide("UIQuickAddTaskPopupWindow") ;
+              CalendarVue.openEventForm(data);
         } else if(parseInt(type) == 2) {
             var uiform = gj(UIQuickAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
             uiform.reset() ;
