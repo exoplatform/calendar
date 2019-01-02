@@ -1,19 +1,98 @@
 import {calConstants} from './calConstants.js';
 
+function buildDate(date, time) {
+  let d = new Date(date);
+  const t = time.split(':');
+  d.setHours(parseInt(t[0]));
+  d.setMinutes(parseInt(t[1]));
+  return d;
+}
+
+export function saveEvent(evt) {
+  const fromDate = buildDate(evt.fromDate, evt.fromTime);
+  const toDate = buildDate(evt.toDate, evt.toTime);
+
+  let event = {
+    subject: evt.title,
+    description: evt.description,
+    from: fromDate,
+    to: toDate,
+    categoryId: evt.category,
+    location: evt.location,
+    attachments: evt.attachedFiles,
+    participants: evt.participants,
+    categoryId: evt.category
+  }
+
+    if (evt.enableReminder) {
+      let reminder = [];
+      if (evt.reminder.mailReminder) {
+        reminder.push({
+          reminderType: 'TYPE_EMAIL',
+          alarmBefore: evt.reminder.mailReminderTime
+        });
+      }
+      if (evt.reminder.popupReminder) {
+        reminder.push({
+          reminderType: 'TYPE_POPUP',
+          alarmBefore: evt.reminder.popupReminderTime
+        });
+      }
+      event.reminder = reminder;
+    }
+
+    if (evt.enableRecurring) {
+      let repeat = {
+        every: evt.recurring.interval,
+        end: {}
+      };
+
+      if (evt.recurring.repeatType == 'daily') {
+        repeat.type = 'RP_DAILY';
+        repeat.end.type = 'RP_DAILY';
+      } else if (evt.recurring.repeatType == 'weekly') {
+        repeat.type = 'RP_WEEKLY';
+        repeat.end.type = 'RP_WEEKLY';
+        repeat.repeatOn = evt.recurring.weekly;
+      } else if (evt.recurring.repeatType == 'monthly') {
+        repeat.type = 'RP_MONTHLY';
+        repeat.end.type = 'RP_MONTHLY';
+        if (evt.recurring.monthly == 'monthlyByMonthDay') {
+          repeat.repeateBy = new Date().getDate();
+        }
+      } else if (evt.recurring.repeatType == 'yearly') {
+        repeat.type = 'RP_YEARLY';
+        repeat.end.type = 'RP_YEARLY';
+      }
+
+      if (evt.recurring.endRepeat == 'endAfter') {
+        repeat.end.value = evt.recurring.endAfterNumber;
+      } else if (evt.recurring.endRepeat == 'endByDate') {
+        repeat.end.value = new Date(evt.recurring.endDate).toISOString();
+      }
+
+      event.repeat = repeat;
+    }
+
+  return fetch(`${calConstants.CAL_SERVER_API}calendars/${evt.calendar}/events`, {
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    }),
+    method: 'post',
+    body: JSON.stringify(event)
+  }).catch(error => {
+    console.log(arguments);
+  });
+}
+
 export function findParticipants(filter, limit) {
-//  if(!limit) {
-//    limit = DEFAULT_USER_LIMIT;
-//  }
-//  return fetch(`${calConstants.CAL_SERVER_API}participants?filter=${filter}&limit=${limit}`)
-//    .then(resp =>  resp.json());
-  console.log(filter + limit);
+  if(!limit) {
+    limit = 20;
+  }
+  return fetch(`${calConstants.CAL_SERVER_API}participants?filter=${filter}&limit=${limit}`)
+    .then(resp =>  resp.json());
   return new Promise((resolve) => {
-    resolve([
-      {'id': 'root', 'name': 'root name', 'avatar': ''},
-      {'id': 'demo', 'name': 'demo name', 'avatar': ''},
-      {'id': 'john', 'name': 'john name', 'avatar': ''},
-      {'id': 'mary', 'name': 'mary name', 'avatar': ''}
-    ]);
+    resolve(results);
   });
 }
 

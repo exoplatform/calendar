@@ -15,45 +15,25 @@ export function init() {
           'exo-event-form': ExoEventForm
         },
         data: {
-          openDrawer: false
+          calEvt: {},
+          showEventForm: false
         },
         methods: {
-          toggleDrawer() {
-            this.openDrawer = !this.openDrawer;
+          openEventForm(calEvt) {
+            this.calEvt = calEvt;
+            this.showEventForm = true;
+          },
+          refresh() {
+            window.location.reload();
           }
         },
-        template: '<exo-event-form v-model="openDrawer"></exo-event-form>',
+        template: '<exo-event-form v-model="showEventForm" :initEvt="calEvt" @save="refresh"></exo-event-form>',
         i18n
       });
-      setTimeout(() => {
-        vm.toggleDrawer();
-      },0);
     });
-  } else {
-    vm.toggleDrawer();
   }
 }
 
-// A global data
-Vue.mixin({
-  data: function() {
-    return {
-      mq: ''
-    };
-  },
-  created() {
-    this.handleMediaQuery();
-    window.addEventListener('resize', this.handleMediaQuery);
-  },
-  methods: {
-    handleMediaQuery() {
-      if (window.matchMedia('(max-width: 767px)').matches) {
-        this.mq = 'mobile';
-      } else if (window.matchMedia('(max-width: 1024px)').matches) {
-        this.mq = 'tablet';
-      } else {
-        this.mq = 'desktop';
-      }
-    }
-  }
-});
+export function openEventForm(calEvt) {
+  vm.openEventForm(calEvt);
+}

@@ -6,25 +6,40 @@
 import * as calServices from '../calServices.js';
 
 function findUsers(query, callback) {
-  if (!query.length) {
-    return callback();
+  if (!query || !query.length) {
+    callback([]);
+  } else {
+    calServices.findParticipants(query).then(users => {
+      if(users) {
+        callback(users);
+      }
+    });
   }
-  console.log(query);
-  calServices.findParticipants(query).then(users => {
-    if(users) {
-      callback(users);
-    }
-  });
 }
 
 export default {
+  model: {
+    prop: 'participants',
+    event: 'change'
+  },
   props: {
     sourceProviders: {
       type: Array,
       default: []
+    },
+    participants: {
+      type: Array,
+      default: []
+    }
+  },
+  watch: {
+    participants() {
+      this.$emit('change', this.participants);
     }
   },
   mounted() {
+    const thiss = this;
+
     const suggesterData = {
       type: 'tag',
       create: false,
@@ -39,18 +54,23 @@ export default {
       dropdownParent: 'body',
       hideSelected: true,
       plugins: ['remove_button'],
-      renderMenuItem (item, escape) {
-        return `<li data-value="${item.id}"><div class="avatarSmall" style="display: inline-block;"><img src="${item.avatar}"></div>${escape(item.name)} (${item.id})</li>`;
-      },
-      renderItem(item) {
-        return `<span class="item">${item.name}</span>`;
-      },
       providers: {
         'exo:calendar-participants': findUsers
+      },
+      onChange(items) {
+        this.participants = items.split(',');
       }
     };
     //init suggester
     $(this.$el).suggester(suggesterData);
+
+    const selectize = $(this.$el)[0].selectize;
+    findUsers(this.participants, users => {
+      users.forEach(user => {
+        selectize.addOption(user);
+        selectize.addItem(user.id);
+      });
+    });
   }
 };
 </script>

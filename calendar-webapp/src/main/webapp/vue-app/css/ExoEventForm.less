@@ -7,7 +7,6 @@
   overflow: hidden;
   transition: 0.3s;
   background: #fff;
-  font-size: 15px;
 }
 
 .drawer.open {
@@ -52,8 +51,15 @@
 }
 
 .drawer .content .calDate input {
-  width: 48%;
   padding: 0px;
+}
+
+.drawer .content .calDate [type="date"] {
+  width: 56%;
+}
+
+.drawer .content .calDate [type="time"] {
+  width: 42%;
 }
 
 .drawer .content .allday {
@@ -171,6 +177,38 @@
 
 .drawer .fileDrop .uploadContainer .uploadError {
   color: red;
+}
+
+.drawer .uiPopup {
+  top: 10% !important;
+  left: 50% !important;
+  transform: translate(-50%, 0%);
+  position: absolute !important;
+  z-index: 1;
+}
+
+.drawer .uiPopup .form-horizontal .controls [type="date"] {
+  width: 145px;
+}
+
+.drawer .uiPopup .uiEventReminder {
+  width: 325px;
+}
+
+.drawer .uiPopup .uiRepeatEventForm [name="endAfterNumber"] {
+  margin-left: -18px;
+  width: 53px;
+}
+
+@media (min-width: 1024px) {
+  .drawer .uiPopup .form-horizontal .control-label {
+    width: 100px;
+  }
+
+  .drawer .uiPopup .form-horizontal .controls {
+    margin-left: 110px;
+    width: 295px;
+  }
 }
 
 @media (max-width: 767px) {
