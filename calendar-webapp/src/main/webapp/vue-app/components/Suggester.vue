@@ -25,11 +25,11 @@ export default {
   props: {
     sourceProviders: {
       type: Array,
-      default: []
+      default: () => []
     },
     participants: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   watch: {
@@ -38,8 +38,6 @@ export default {
     }
   },
   mounted() {
-    const thiss = this;
-
     const suggesterData = {
       type: 'tag',
       create: false,

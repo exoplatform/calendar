@@ -1,11 +1,24 @@
 <template>
   <div class="iphoneCheckbox" @click.stop.prevent="onChange">
-    <input v-iphone type="checkbox" class="iphone" :checked="checked"/>
+    <input v-iphone :checked="checked" type="checkbox" class="iphone"/>
   </div>
 </template>
 
 <script>
 export default {
+  directives: {
+    'iphone': {
+      inserted(el) {
+        $(el).iphoneStyle({
+          disabledClass: 'switchBtnDisabled',
+          containerClass: 'uiSwitchBtn',
+          labelOnClass: 'switchBtnLabelOn',
+          labelOffClass: 'switchBtnLabelOff',
+          handleClass: 'switchBtnHandle',
+        });
+      }
+    }
+  },
   model: {
     prop: 'checked',
     event: 'change'
@@ -18,26 +31,13 @@ export default {
   },
   watch: {
     checked() {
-      $(this.$el).find('input').iphoneStyle().prop('checked', this.checked).iphoneStyle("refresh");
+      $(this.$el).find('input').iphoneStyle().prop('checked', this.checked).iphoneStyle('refresh');
     }
   },
   methods: {
     onChange() {
       const value = $(this.$el).find('input').is(':checked');
       this.$emit('change', value);
-    }
-  },
-  directives: {
-    'iphone': {
-      inserted(el) {
-        $(el).iphoneStyle({
-          disabledClass: 'switchBtnDisabled',
-          containerClass: 'uiSwitchBtn',
-          labelOnClass: 'switchBtnLabelOn',
-          labelOffClass: 'switchBtnLabelOff',
-          handleClass: 'switchBtnHandle',
-        });
-      }
     }
   }
 };
