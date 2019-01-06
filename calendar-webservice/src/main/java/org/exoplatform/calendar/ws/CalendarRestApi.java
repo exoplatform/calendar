@@ -47,6 +47,9 @@ import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.profile.ProfileFilter;
 import org.exoplatform.webservice.cs.bean.End;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
@@ -105,6 +108,7 @@ public class CalendarRestApi implements ResourceContainer {
   public static final String HEADER_LOCATION = "Location";
   
   private OrganizationService orgService;
+  private IdentityManager identityManager;
   private int query_limit = 10;
   private SubResourceHrefBuilder subResourcesBuilder = new SubResourceHrefBuilder(this);
 
@@ -157,8 +161,9 @@ public class CalendarRestApi implements ResourceContainer {
    * @param  params
    *         Object contains the configuration parameters.
    */
-  public CalendarRestApi(OrganizationService orgService, InitParams params) {
+  public CalendarRestApi(OrganizationService orgService, IdentityManager identityManager, InitParams params) {
     this.orgService = orgService;
+    this.identityManager = identityManager;
     
     int maxAge = 604800;
     if (params != null) {
@@ -3523,6 +3528,99 @@ public class CalendarRestApi implements ResourceContainer {
     } else {
       return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
     }
+  }
+
+    /**
+     * Suggest participant for specific user.
+     *
+     * @param name of participant
+     *
+     * @param offset The starting point when paging the result. Default is *0*.
+     *
+     * @param limit Maximum number of participants returned.
+     *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
+     *
+     * @param returnSize Default is *false*. If set to *true*, the total number of matched participants will be returned in JSON,
+     *        and a "Link" header is added. This header contains "first", "last", "next" and "previous" links.
+     *
+     * @param fields Comma-separated list of selective participant attributes to be returned. All returned if not specified.
+     *
+     * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+     *        If not specified, only JSON object is returned.
+     *
+     * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/participants?name=mary&fields=id,name}
+     *
+     * @format  JSON
+     *
+     * @response
+     *
+     * @return  List of participants in JSON.
+     *
+     * @authentication
+     *
+     * @anchor  CalendarRestApi.suggestParticipants
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @GET
+    @RolesAllowed("users")
+    @Path("/participants/")
+    @Produces({MediaType.APPLICATION_JSON})
+    @ApiOperation(
+            value = "Returns all suggested participants",
+            notes = "This method lists all the participants a specific user can invite in a calendar.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful retrieval of all participants"),
+            @ApiResponse(code = 503, message = "Can't generate JSON file") })
+    public Response suggestParticipants(
+        @ApiParam(value = "The participant name to search for", required = false) @QueryParam("name") String name,
+        @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+        @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+        @ApiParam(value = "Tell the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
+        @ApiParam(value = "This is a list of comma-separated property's names of response json object", required = false) @QueryParam("fields") String fields,
+        @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
+        @Context UriInfo uri) {
+    try {
+        limit = parseLimit(limit);
+
+        ProfileFilter filter = new ProfileFilter();
+        filter.setName(name);
+        filter.setCompany("");
+        filter.setPosition("");
+        filter.setSkills("");
+        filter.setExcludedIdentityList(Collections.emptyList());
+
+        ListAccess<org.exoplatform.social.core.identity.model.Identity> list = identityManager.getIdentitiesByProfileFilter(OrganizationIdentityProvider.NAME, filter, true);
+
+        Collection data = new LinkedList();
+        for (org.exoplatform.social.core.identity.model.Identity identity : list.load(offset, limit)) {
+            data.add(extractObject(new ParticipantResource(identity), fields));
+        }
+
+        CollectionResource parData = new CollectionResource(data, returnSize ? list.getSize() : -1);
+        parData.setOffset(offset);
+        parData.setLimit(limit);
+
+        ResponseBuilder okResult;
+        if (jsonp != null) {
+            JsonValue value = new JsonGeneratorImpl().createJsonObject(parData);
+            StringBuilder sb = new StringBuilder(jsonp);
+            sb.append("(").append(value).append(");");
+            okResult = Response.ok(sb.toString(), new MediaType("text", "javascript"));
+        } else {
+            okResult = Response.ok(parData, MediaType.APPLICATION_JSON);
+        }
+
+        if (returnSize) {
+            okResult.header(HEADER_LINK, buildFullUrl(uri, offset, limit, parData.getSize()));
+        }
+
+        //
+        return okResult.cacheControl(nc).build();
+    } catch (Exception e) {
+        if(log.isDebugEnabled()) log.debug(e.getMessage());
+    }
+    return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
+
   }
 
   private Response buildBadResponse(ErrorResource error) {
