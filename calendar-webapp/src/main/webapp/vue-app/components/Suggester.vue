@@ -35,6 +35,7 @@ export default {
   watch: {
     participants() {
       this.$emit('change', this.participants);
+      this.bindParticipants();
     }
   },
   mounted() {
@@ -62,14 +63,33 @@ export default {
     };
     //init suggester
     $(this.$el).suggester(suggesterData);
-
-    const selectize = $(this.$el)[0].selectize;
-    findUsers(this.participants, users => {
-      users.forEach(user => {
-        selectize.addOption(user);
-        selectize.addItem(user.id);
+  },
+  methods: {
+    bindParticipants() {
+      const selectize = $(this.$el)[0].selectize;
+      //
+      this.participants.forEach(par => {
+        if (!selectize.items.includes(par)) {
+          findUsers(par, users => {
+            users.forEach(user => {
+              selectize.addOption(user);
+              selectize.addItem(user.id);
+            });
+          });
+        }
       });
-    });
+
+
+      const removeItems = [];
+      selectize.items.forEach(item => {
+        if (!this.participants.includes(item)) {
+          removeItems.push(item);
+        }
+      });
+      removeItems.forEach(item => {
+        selectize.removeItem(item, true);
+      });
+    }
   }
 };
 </script>
