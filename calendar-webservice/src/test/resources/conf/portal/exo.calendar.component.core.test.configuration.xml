@@ -116,6 +116,9 @@
     <type>org.exoplatform.calendar.MockIdentityManager</type>
   </component>
   <component>
+    <type>org.exoplatform.upload.UploadService</type>
+  </component>
+  <component>
     <type>org.exoplatform.calendar.ws.CalendarRestApi</type>
   </component>
   

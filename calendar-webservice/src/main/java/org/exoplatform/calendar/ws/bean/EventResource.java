@@ -51,6 +51,7 @@ public class EventResource extends Resource {
   private Serializable                    originalEvent;
   private Reminder[]                reminder;
   private Serializable[]              attachments;
+  private UploadResource[]        uploadResources;
   private String[]                  participants;
   private String                    privacy;
   private String                    availability;  
@@ -241,6 +242,14 @@ public class EventResource extends Resource {
 
   public void setAtts(Serializable[] attachments) {
     this.attachments = attachments;
+  }
+
+  public UploadResource[] getUploadResources() {
+    return uploadResources;
+  }
+
+  public void setUploadResources(UploadResource[] uploadResources) {
+    this.uploadResources = uploadResources;
   }
 
   public String[] getParticipants() {

@@ -19,7 +19,7 @@ export function saveEvent(evt) {
     to: toDate,
     categoryId: evt.category,
     location: evt.location,
-    attachments: evt.attachedFiles,
+    uploadResources: [],
     participants: evt.participants
   };
 
@@ -71,6 +71,17 @@ export function saveEvent(evt) {
     }
 
     event.repeat = repeat;
+  }
+
+  if (evt.attachedFiles && evt.attachedFiles.length) {
+    event.uploadResources = evt.attachedFiles.map(attachFile => {
+      return {
+        id: attachFile.uploadId,
+        name: attachFile.name,
+        weight: attachFile.file.size,
+        mimeType: attachFile.file.type
+      };
+    });
   }
 
   return fetch(`${calConstants.CAL_SERVER_API}calendars/${evt.calendar}/events`, {

@@ -50,6 +50,8 @@ import org.exoplatform.services.security.Identity;
 import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
 import org.exoplatform.social.core.manager.IdentityManager;
 import org.exoplatform.social.core.profile.ProfileFilter;
+import org.exoplatform.upload.UploadResource;
+import org.exoplatform.upload.UploadService;
 import org.exoplatform.webservice.cs.bean.End;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
@@ -63,12 +65,15 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // Swagger //
 import io.swagger.annotations.Api;
@@ -109,6 +114,8 @@ public class CalendarRestApi implements ResourceContainer {
   
   private OrganizationService orgService;
   private IdentityManager identityManager;
+  private UploadService uploadService;
+
   private int query_limit = 10;
   private SubResourceHrefBuilder subResourcesBuilder = new SubResourceHrefBuilder(this);
 
@@ -161,9 +168,10 @@ public class CalendarRestApi implements ResourceContainer {
    * @param  params
    *         Object contains the configuration parameters.
    */
-  public CalendarRestApi(OrganizationService orgService, IdentityManager identityManager, InitParams params) {
+  public CalendarRestApi(OrganizationService orgService, IdentityManager identityManager, UploadService uploadService, InitParams params) {
     this.orgService = orgService;
     this.identityManager = identityManager;
+    this.uploadService = uploadService;
     
     int maxAge = 604800;
     if (params != null) {
@@ -3907,6 +3915,37 @@ public class CalendarRestApi implements ResourceContainer {
         old.setEventState(eventState);
       }
     }
+
+    if (evObject.getParticipants() != null) {
+      old.setParticipant(evObject.getParticipants());
+      List<String> parStatus = Stream.of(evObject.getParticipants()).map(par -> {
+        return par + ":";
+      }).collect(Collectors.toList());
+      old.setParticipantStatus(parStatus.toArray(new String[parStatus.size()]));
+    }
+
+    if (evObject.getUploadResources() != null) {
+      List<Attachment> attachments = Stream.of(evObject.getUploadResources()).map((upload) -> {
+        String uploadId = upload.getId();
+        UploadResource uploadResource = uploadService.getUploadResource(uploadId);
+        try {
+          Attachment attachment = new Attachment();
+          attachment.setInputStream(new FileInputStream(uploadResource.getStoreLocation()));
+          attachment.setMimeType(uploadResource.getMimeType());
+          attachment.setName(uploadResource.getFileName());
+          long fileSize = ((long)uploadResource.getUploadedSize()) ;
+          attachment.setSize(fileSize);
+          attachment.setResourceId(uploadId);
+
+          return attachment;
+        } catch (Exception ex) {
+          log.error("Can not save event with upload resource: " + uploadId, ex);
+        }
+        return null;
+      }).collect(Collectors.toList());
+      old.setAttachment(attachments);
+    }
+
     if (evObject.getRepeat() != null) {
       RepeatResource repeat = evObject.getRepeat();
       if (repeat.getExclude() != null) {
