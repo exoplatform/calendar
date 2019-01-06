@@ -82,13 +82,13 @@ export function saveEvent(evt) {
   });
 }
 
-const DEFAULT_LIMIT = 20;
+const DEFAULT_LIMIT = 30;
 export function findParticipants(filter, limit) {
   if(!limit) {
     limit = DEFAULT_LIMIT;
   }
-  return fetch(`${calConstants.CAL_SERVER_API}participants?filter=${filter}&limit=${limit}`)
-    .then(resp =>  resp.json());
+  return fetch(`${calConstants.CAL_SERVER_API}participants?name=${filter}&limit=${limit}`)
+    .then(resp =>  resp.json()).then(json => json.data);
 }
 
 export function getCategories() {
