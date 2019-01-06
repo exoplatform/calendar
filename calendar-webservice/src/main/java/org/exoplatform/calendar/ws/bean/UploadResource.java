@@ -18,19 +18,15 @@
 package org.exoplatform.calendar.ws.bean;
 
 import org.exoplatform.calendar.ws.common.Resource;
-import org.exoplatform.social.core.identity.model.Identity;
 
-public class ParticipantResource extends Resource {
+public class UploadResource extends Resource {
 
     private String name;
+    private String mimeType;
+    private long weight;
 
-    public ParticipantResource() {
+    public UploadResource() {
         super(null);
-    }
-
-    public ParticipantResource(Identity data) {
-        super(data.getRemoteId());
-        this.name = data.getProfile().getFullName();
     }
 
     public String getName() {
@@ -39,5 +35,21 @@ public class ParticipantResource extends Resource {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public long getWeight() {
+        return weight;
+    }
+
+    public void setWeight(long weight) {
+        this.weight = weight;
     }
 }

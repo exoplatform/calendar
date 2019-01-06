@@ -38,6 +38,7 @@ export default {
     }
   },
   mounted() {
+    const thiss = this;
     const suggesterData = {
       type: 'tag',
       create: false,
@@ -56,7 +57,7 @@ export default {
         'exo:calendar-participants': findUsers
       },
       onChange(items) {
-        this.participants = items.split(',');
+        thiss.participants = items.split(',');
       }
     };
     //init suggester
