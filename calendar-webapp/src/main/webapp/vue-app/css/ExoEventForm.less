@@ -1,3 +1,8 @@
+.hide-scroll {
+  height: 100%;
+  overflow: hidden;
+}
+
 .drawer {
   width: 0px;
   position: fixed;
@@ -14,6 +19,17 @@
   width: 500px;
 }
 
+#ExoEventForm .backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.5;
+  z-index:998;
+  background-color: #000;
+}
+
 .drawer .header span {
   font-size: 17px;
   font-weight: bold;
@@ -26,7 +42,7 @@
 .drawer .content {
     overflow-y: auto;
     overflow-x: hidden;
-    height: 76%;
+    height: calc(100% - 150px);
 }
 
 .drawer .content .eventTitle {
@@ -184,8 +200,8 @@
   top: 10% !important;
   left: 50% !important;
   transform: translate(-50%, 0%);
-  position: absolute !important;
-  z-index: 1;
+  position: fixed !important;
+  z-index: 1000;
 }
 
 .drawer .uiPopup .form-horizontal .controls [type="date"] {
@@ -215,5 +231,11 @@
 @media (max-width: 767px) {
   .drawer.open {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .drawer .content {
+    height: calc(100% - 190px);
   }
 }

@@ -18,6 +18,11 @@ export function init() {
           calEvt: {},
           showEventForm: false
         },
+        watch: {
+          showEventForm() {
+            $(document.body).toggleClass('hide-scroll');
+          }
+        },
         methods: {
           openEventForm(calEvt) {
             this.calEvt = calEvt;
