@@ -6,7 +6,7 @@
 .drawer {
   width: 0px;
   position: fixed;
-  top: 42px;
+  top: 58px;
   right: 0;
   bottom: 0px;
   overflow: hidden;
@@ -40,9 +40,11 @@
 }
 
 .drawer .content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: calc(100% - 150px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: absolute;
+  top: 50px;
+  bottom: 70px;
 }
 
 .drawer .content .eventTitle {
@@ -120,16 +122,20 @@
 }
 
 .drawer > div {
-  padding: 20px;
-}
-
-.drawer .content {
-  padding-top: 10px;
+  padding: 15px;
 }
 
 .drawer .footer {
-  margin-top: -20px;
+  box-sizing: border-box;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
 }
+
+.drawer .footer .uiAction {
+  padding: 0;
+}
+
 
 .drawer .footer button {
   float: right;
