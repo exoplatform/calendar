@@ -2,7 +2,7 @@
   <div id="ExoEventForm">
     <div :class="{open}" class="drawer">
       <div class="header">
-        <span>{{ $t('ExoEventForm.title.addEvent') }}</span>
+        <span>{{ getFormTitle() }}</span>
         <a href="javascript:void(0)" class="closebtn" @click="toggleOpen">&times;</a>
       </div>
       <div class="content">
@@ -231,6 +231,13 @@ export default {
     toggleOpen() {
       this.open = !this.open;
       this.$emit('toggle-open', this.open);
+    },
+    getFormTitle() {
+      if (this.id) {
+        return this.$t('ExoEventForm.title.editEvent');
+      } else {
+        return this.$t('ExoEventForm.title.addEvent');
+      }
     },
     closeRecurringForm() {
       this.showRecurring = false;
