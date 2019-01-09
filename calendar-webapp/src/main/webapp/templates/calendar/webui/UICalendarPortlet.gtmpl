@@ -179,7 +179,7 @@
       requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
       requireJS.addScripts('cal.CalendarLayout.init();');
       requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
-      requireJS.addScripts("calendarVue.init();");
+      requireJS.addScripts("calendarVue.init({timezone: " + uicomponent.getSettingTimeZone() + "});");
     %>
       <div class="calendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>

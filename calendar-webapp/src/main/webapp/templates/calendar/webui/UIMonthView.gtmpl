@@ -252,20 +252,20 @@
       </a>
   </li>
   <li>
-      <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+      <a class="eventAction editAction" href="javascript:void(0);">
         <i class="uiIconEdit uiIconLightGray"></i>
         <%=_ctx.appRes("ContextMenu.label.Edit")%>
       </a>
   </li>
   <li>
-      <a class="eventAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>"
+      <a class="eventAction deleteAction" href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>"
                             deleteActionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
         <i class="uiIconDelete uiIconLightGray"></i>
         <%=_ctx.appRes("ContextMenu.label.Delete")%>
       </a>
   </li>
   <li>
-      <a class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
+      <a class="eventAction exportAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype")%>">
         <i class="uiIconCalExportCalendar uiIconLightGray"></i>
         <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
       </a>

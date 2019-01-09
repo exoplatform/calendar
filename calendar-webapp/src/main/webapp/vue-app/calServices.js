@@ -8,6 +8,86 @@ function buildDate(date, time) {
   return d;
 }
 
+function buildEvent(event) {
+  let calendarId = event.calendar;
+  const idx = calendarId.lastIndexOf('/');
+  if (idx !== -1) {
+    calendarId = calendarId.slice(idx + 1);
+  }
+
+  const minute = 60;
+  const fromDate = new Date(event.from);
+  const timezone = (fromDate.getTimezoneOffset() * -1 - calConstants.SETTINGS.timezone) / minute;
+  fromDate.setHours(fromDate.getHours() + timezone);
+  const toDate = new Date(event.to);
+  toDate.setHours(toDate.getHours() + timezone);
+
+  return {
+    id: event.id,
+    title: event.subject,
+    calendar: calendarId,
+    category: event.categoryId,
+    from: fromDate.getTime(),
+    to: toDate.getTime(),
+    isAllday: false,
+    location: event.location,
+    participants: event.participants,
+    description: event.description,
+    attachedFiles: [],
+    reminder: {
+      mailReminder: true,
+      popupReminder: false,
+      mailReminderTime: 5,
+      popupReminderTime: 5
+    },
+    recurring: {
+    }
+  };
+}
+
+export function getCalendarById(calendarId) {
+  return fetch(`${calConstants.CAL_SERVER_API}calendars/${calendarId}`, {headers: calConstants.HEADER_NO_CACHE})
+    .then(resp =>  resp.json()).then(calendar => {
+      if (calendar) {
+        return {
+          id: calendar.id,
+          name: calendar.name,
+          description: calendar.description,
+          type: calendar.type,
+          timeZone: calendar.timeZone
+        };
+      } else {
+        return null;
+      }
+    });
+}
+
+export function getEventById(eventId, recurId, startTime, endTime) {
+  if (recurId) {
+    const start = new Date(parseInt(startTime));
+    const end = new Date(parseInt(endTime));
+    return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/occurrences?start=${start.toISOString()}&end=${end.toISOString()}`, {headers: calConstants.HEADER_NO_CACHE})
+      .then(resp =>  resp.json())
+      .then(event =>  {
+        if (event) {
+          return buildEvent(event);
+        } else {
+          return null;
+        }
+      }).then(resp => resp.json());
+  } else {
+    return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/`, {headers: calConstants.HEADER_NO_CACHE})
+      .then(resp =>  resp.json())
+      .then(event =>  {
+        if (event) {
+          return buildEvent(event);
+        } else {
+          return null;
+        }
+      });
+  }
+}
+
 export function saveEvent(evt) {
   const fromDate = buildDate(evt.fromDate, evt.fromTime);
   const toDate = buildDate(evt.toDate, evt.toTime);
@@ -15,8 +95,8 @@ export function saveEvent(evt) {
   const event = {
     subject: evt.title,
     description: evt.description,
-    from: fromDate,
-    to: toDate,
+    from: fromDate.toISOString(),
+    to: toDate.toISOString(),
     categoryId: evt.category,
     location: evt.location,
     uploadResources: [],
@@ -84,13 +164,23 @@ export function saveEvent(evt) {
     });
   }
 
-  return fetch(`${calConstants.CAL_SERVER_API}calendars/${evt.calendar}/events`, {
-    headers: new Headers({
-      'Content-Type': 'application/json'
-    }),
-    method: 'post',
-    body: JSON.stringify(event)
-  });
+  if (evt.id) {
+    return fetch(`${calConstants.CAL_SERVER_API}events/${evt.id}`, {
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      method: 'PUT',
+      body: JSON.stringify(event)
+    });
+  } else {
+    return fetch(`${calConstants.CAL_SERVER_API}calendars/${evt.calendar}/events`, {
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      method: 'POST',
+      body: JSON.stringify(event)
+    });
+  }
 }
 
 const DEFAULT_LIMIT = 30;
@@ -98,12 +188,12 @@ export function findParticipants(filter, limit) {
   if(!limit) {
     limit = DEFAULT_LIMIT;
   }
-  return fetch(`${calConstants.CAL_SERVER_API}participants?name=${filter}&limit=${limit}`)
+  return fetch(`${calConstants.CAL_SERVER_API}participants?name=${filter}&limit=${limit}`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json()).then(json => json.data);
 }
 
 export function getCategories() {
-  return fetch(`${calConstants.CAL_SERVER_API}categories`)
+  return fetch(`${calConstants.CAL_SERVER_API}categories`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json()).then(json => {
       if (json && json.data) {
         return json.data;
@@ -120,7 +210,7 @@ export function getCalendars() {
     'GROUP': {'id': 2, 'name': 'publicCalendar'}
   };
 
-  return fetch(`${calConstants.CAL_SERVER_API}calendars`)
+  return fetch(`${calConstants.CAL_SERVER_API}calendars`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json()).then(json => {
       if (json && json.data) {
         const calendarGroups = [];
