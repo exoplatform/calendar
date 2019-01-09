@@ -653,7 +653,7 @@
                         items[i].parentNode.style.display = "none";
                     }
                 } else if ($item.hasClass('editAction')) {
-                    $item.one('click', (event) => {
+                    $item.one('click', function(event) {
                         CalendarVue.openEventForm({
                             id: eventId,
                             recurId: recurId,
@@ -749,7 +749,7 @@
                 }
                 else if ($item.hasClass('editAction'))
                 {
-                    $item.one('click', (event) => {
+                    $item.one('click', function (event) {
                         CalendarVue.openEventForm({
                             id: eventId,
                             recurId: recurId,
@@ -813,7 +813,7 @@
             } else obj = null;
 
             for (var i = 0; i < items.length; i++) {
-                let $item = gj(items[i]);
+                var $item = gj(items[i]);
                 if ($item.hasClass("eventAction")) {
                     items[i].parentNode.style.display = "block";
                     if (isEditable && (isEditable == "false"))
@@ -827,7 +827,7 @@
                     }
                     else if ($item.hasClass('editAction'))
                     {
-                        $item.one('click', (event) => {
+                        $item.one('click', function (event) {
                             CalendarVue.openEventForm({
                                 id: eventId,
                                 recurId: recurId,
@@ -961,7 +961,7 @@
                         items[i].parentNode.style.display = "none";
                     }
                 } else if ($item.hasClass('editAction')) {
-                    $item.one('click', (event) => {
+                    $item.one('click', function (event) {
                         CalendarVue.openEventForm({
                             id: eventId,
                             recurId: recurId,
