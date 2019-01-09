@@ -22,19 +22,19 @@
             <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
             <div class="controls">
               <input v-model="fromDate" format="MM/dd/yyyy" type="date" value="12/24/2018"/>
-              <input v-model="fromTime" type="time" min="0:00" max="23:30" step="1800"/>
+              <input :disabled="isAllDay" v-model="fromTime" type="time" min="0:00" max="23:30" step="1800"/>
             </div>
           </div>
           <div class="control-group calDate">
             <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
             <div class="controls">
               <input v-model="toDate" format="MM/dd/yyyy" type="date" value="12/24/2018"/>
-              <input v-model="toTime" type="time" min="0:00" max="23:30" step="1800"/>
+              <input :disabled="isAllDay" v-model="toTime" type="time" min="0:00" max="23:30" step="1800"/>
             </div>
           </div>
           <div class="control-group allday">
             <div class="controls">
-              <input v-model="isAllday" type="checkbox"/>
+              <input id="allday" v-model="isAllDay" type="checkbox"/>
               <label for="allday">{{ $t('ExoEventForm.label.allDay') }}</label>
             </div>
           </div>
@@ -158,7 +158,7 @@ function getDefaultData() {
     fromTime: '01:00',
     toDate: fromDate,
     toTime: '01:30',
-    isAllday: false,
+    isAllDay: false,
     location: '',
     participants: [],
     description: '',
@@ -223,6 +223,12 @@ export default {
         this.showReminder = true;
       }
     },
+    isAllDay() {
+      if (this.isAllDay) {
+        this.fromTime = '00:00';
+        this.toTime = '23:59';
+      }
+    },
     initEvt() {
       this.clear();
     }
@@ -261,6 +267,9 @@ export default {
         const toDate = new Date(evt.to);
         this.toDate = formatDate(toDate);
         this.toTime = formatTime(toDate);
+      }
+      if (this.fromTime === '00:00' && this.toTime === '23:59') {
+        this.isAllDay = true;
       }
     },
     save() {

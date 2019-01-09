@@ -29,7 +29,6 @@ function buildEvent(event) {
     category: event.categoryId,
     from: fromDate.getTime(),
     to: toDate.getTime(),
-    isAllday: false,
     location: event.location,
     participants: event.participants,
     description: event.description,
