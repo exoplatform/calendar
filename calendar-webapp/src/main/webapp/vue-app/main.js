@@ -1,12 +1,15 @@
 import {calConstants} from './calConstants.js';
 import ExoEventForm from './components/ExoEventForm.vue';
+import * as calServices from './calServices.js';
 
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
 const url = `${calConstants.PORTAL}/${calConstants.PORTAL_REST}/i18n/bundle/locale.portlet.calendar.CalendarPortlet-${lang}.json`;
 
 //
 let vm = null;
-export function init() {
+export function init(settings) {
+  calConstants.SETTINGS = settings;
+
   if ($('#ExoEventForm').length && vm == null) {
     exoi18n.loadLanguageAsync(lang, url).then(i18n => {
       vm = new Vue({
@@ -25,8 +28,17 @@ export function init() {
         },
         methods: {
           openEventForm(calEvt) {
-            this.calEvt = calEvt;
-            this.showEventForm = true;
+            if (calEvt.id) {
+              calServices.getEventById(calEvt.id, calEvt.recurId, calEvt.startTime, calEvt.endTime).then(evt => {
+                if (evt) {
+                  this.calEvt = evt;
+                  this.showEventForm = true;
+                }
+              });
+            } else {
+              this.calEvt = calEvt;
+              this.showEventForm = true;
+            }
           },
           refresh() {
             window.location.reload();

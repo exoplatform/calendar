@@ -150,6 +150,7 @@ function getDefaultData() {
   const endRecurring = formatDate(date);
 
   return {
+    id: '',
     title: '',
     calendar: '',
     category: '',
@@ -242,12 +243,8 @@ export default {
       Object.entries(data).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
 
       const evt = this.initEvt;
-      if (evt.calendar) {
-        this.calendar = evt.calendar;
-      }
-      if (evt.category) {
-        this.category = evt.category;
-      }
+      Object.entries(evt).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
+
       if (evt.from) {
         const fromDate = new Date(evt.from);
         this.fromDate = formatDate(fromDate);
@@ -257,9 +254,6 @@ export default {
         const toDate = new Date(evt.to);
         this.toDate = formatDate(toDate);
         this.toTime = formatTime(toDate);
-      }
-      if (evt.isAllday) {
-        this.isAllday = evt.isAllday;
       }
     },
     save() {

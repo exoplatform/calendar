@@ -374,6 +374,7 @@ public class UIWeekView extends UICalendarView {
           stringBuilder.append("\n<div class=\"eventContainerBorder weekViewEventBoxes " + color + "\" eventindex=\"" + dayOfWeek + "\"")
             .append(" style=\"position: absolute;display:none\" eventcat=\"" + event.getEventCategoryId() + "\" caltype=\"" + calType + "\"")
             .append(" eventid=\"" + eventId + "\" calid=\"" + event.getCalendarId() + "\" actionlink=\"" + actionLink + "\" unselectable=\"on\"")
+            .append(" starttimefull=\"" + event.getFromDateTime().getTime() + "\" endtimefull=\"" + event.getToDateTime().getTime() + "\"")
             .append(" startTime=\"" + beginTime + "\" endTime=\"" + endTime + "\" isOccur=\"" + isOccur + "\" recurId=\"" + recurId + "\" isEditable=\"" + isEditable + "\">");
 
           if (!eventList.contains(eventId)) {
