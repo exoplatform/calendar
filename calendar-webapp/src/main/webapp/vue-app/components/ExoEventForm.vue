@@ -268,11 +268,22 @@ export default {
         this.toDate = formatDate(toDate);
         this.toTime = formatTime(toDate);
       }
+
+      if (evt.reminder) {
+        if (evt.reminder.mailReminder || evt.reminder.popupReminder) {
+          this.enableReminder = true;
+          Vue.nextTick(() => {
+            this.showReminder = false;
+          });
+        }
+      }
+
       if (this.fromTime === '00:00' && this.toTime === '23:59') {
         this.isAllDay = true;
       }
     },
     save() {
+      this.toggleOpen();
       calServices.saveEvent(this.$data).then(() => {
         this.$emit('save');
       });
