@@ -22,6 +22,26 @@ function buildEvent(event) {
   const toDate = new Date(event.to);
   toDate.setHours(toDate.getHours() + timezone);
 
+  const reminder = {
+    mailReminderTime: 5,
+    popupReminderTime: 5
+  };
+  if (event.reminder && event.reminder.length) {
+    event.reminder.forEach(r => {
+      if (r.reminderType === 'TYPE_EMAIL') {
+        reminder.mailReminder = true;
+        reminder.mailReminderTime = r.alarmBefore;
+        reminder.mailReminderId = r.id;
+        reminder.mailReminderFrom = r.fromDateTime;
+      } else {
+        reminder.popupReminder = true;
+        reminder.popupReminderTime = r.alarmBefore;
+        reminder.popupReminderId = r.id;
+        reminder.popupReminderFrom = r.fromDateTime;
+      }
+    });
+  }
+
   return {
     id: event.id,
     title: event.subject,
@@ -33,12 +53,7 @@ function buildEvent(event) {
     participants: event.participants,
     description: event.description,
     attachedFiles: [],
-    reminder: {
-      mailReminder: true,
-      popupReminder: false,
-      mailReminderTime: 5,
-      popupReminderTime: 5
-    },
+    reminder: reminder,
     recurring: {
     }
   };
@@ -106,14 +121,18 @@ export function saveEvent(evt) {
     const reminder = [];
     if (evt.reminder.mailReminder) {
       reminder.push({
+        id: evt.reminder.mailReminderId,
         reminderType: 'TYPE_EMAIL',
-        alarmBefore: evt.reminder.mailReminderTime
+        alarmBefore: evt.reminder.mailReminderTime,
+        fromDateTime: evt.reminder.mailReminderFrom
       });
     }
     if (evt.reminder.popupReminder) {
       reminder.push({
+        id: evt.reminder.popupReminderId,
         reminderType: 'TYPE_POPUP',
-        alarmBefore: evt.reminder.popupReminderTime
+        alarmBefore: evt.reminder.popupReminderTime,
+        fromDateTime: evt.reminder.popupReminderFrom
       });
     }
     event.reminder = reminder;
