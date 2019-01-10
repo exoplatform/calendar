@@ -102,7 +102,7 @@
         </div>
       </div>
     </div>
-    <div v-if="open" class="backdrop" @click="toggleOpen"></div>
+    <div v-if="open" class="backdrop"></div>
   </div>
 </template>
 

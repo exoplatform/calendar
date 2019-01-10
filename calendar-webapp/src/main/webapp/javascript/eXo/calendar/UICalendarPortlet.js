@@ -141,6 +141,9 @@
         }
         var CalendarWorkingWorkspace =  _module.UICalendarPortlet.getElementById("UICalendarWorkingContainer");
         var id = (id)?id:this.getCheckedCalendar(this.filterForm);
+        if (id && id.includes(':')) {
+          id = id.split(':')[1];
+        }
         DOMUtil.cleanUpHiddenElements();
         var UIQuickAddEventPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddEventPopupWindow")[0];
         var UIQuickAddTaskPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddTaskPopupWindow")[0];
