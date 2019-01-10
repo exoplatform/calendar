@@ -1,10 +1,18 @@
 import {calConstants} from './calConstants.js';
 
+function getTimezoneOffset() {
+  const date = new Date();
+  const minute = 60;
+  const offset = (date.getTimezoneOffset() * -1 - calConstants.SETTINGS.timezone) / minute;
+  return offset;
+}
+
 function buildDate(date, time) {
+  const minute = 60;
   const d = new Date(date);
   const t = time.split(':');
-  d.setHours(parseInt(t[0]));
-  d.setMinutes(parseInt(t[1]));
+  d.setUTCHours(parseInt(t[0]) - calConstants.SETTINGS.timezone / minute);
+  d.setUTCMinutes(parseInt(t[1]));
   return d;
 }
 
@@ -15,12 +23,11 @@ function buildEvent(event) {
     calendarId = calendarId.slice(idx + 1);
   }
 
-  const minute = 60;
+  const offset = getTimezoneOffset();
   const fromDate = new Date(event.from);
-  const timezone = (fromDate.getTimezoneOffset() * -1 - calConstants.SETTINGS.timezone) / minute;
-  fromDate.setHours(fromDate.getHours() + timezone);
+  fromDate.setHours(fromDate.getHours() - offset);
   const toDate = new Date(event.to);
-  toDate.setHours(toDate.getHours() + timezone);
+  toDate.setHours(toDate.getHours() - offset);
 
   const reminder = {
     mailReminderTime: 5,
