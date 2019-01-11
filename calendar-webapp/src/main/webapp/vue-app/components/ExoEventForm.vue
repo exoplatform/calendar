@@ -10,26 +10,27 @@
           <div class="control-group">
             <div class="controls">
               <input v-model="title" :placeholder="$t('ExoEventForm.placeholder.eventTitle')" name="eventName" class="eventTitle" type="text"/>
-
-              <span class="uiSelectbox">
+              <span class="uiSelectbox form-horizontal">
                 <select v-model="category" class="selectbox category" name="category">
                   <option v-for="category in categories" :key="category.id" :value="category.id">{{ $t(`UICalendarView.label.${category.id}`) }}</option>
                 </select>
               </span>
             </div>
           </div>
-          <div class="control-group calDate">
-            <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
-            <div class="controls">
-              <input v-model="fromDate" format="MM/dd/yyyy" type="date" value="12/24/2018"/>
-              <input :disabled="isAllDay" v-model="fromTime" type="time" min="0:00" max="23:30" step="1800"/>
+          <div class="control-group">
+            <div class="calDate">
+              <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
+              <div class="controls">
+                <input v-model="fromDate" type="text"/>
+                <input :disabled="isAllDay" v-model="fromTime" type="text"/>
+              </div>
             </div>
-          </div>
-          <div class="control-group calDate">
-            <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
-            <div class="controls">
-              <input v-model="toDate" format="MM/dd/yyyy" type="date" value="12/24/2018"/>
-              <input :disabled="isAllDay" v-model="toTime" type="time" min="0:00" max="23:30" step="1800"/>
+            <div class="calDate">
+              <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
+              <div class="controls">
+                <input v-model="toDate" type="text"/>
+                <input :disabled="isAllDay" v-model="toTime" type="text"/>
+              </div>
             </div>
           </div>
           <div class="control-group allday">
@@ -50,34 +51,36 @@
               <suggester v-model="participants" :placeholder="$t('ExoEventForm.placeholder.participants')" :source-providers="['exo:calendar-participants']" class="participants"/>
             </div>
           </div>
-          <div class="control-group calendarSelector">
-            <div class="control-label">{{ $t('ExoEventForm.label.calendar') }}</div>
-            <div class="controls">
-              <span class="uiSelectbox">
+          <div class="control-group">
+            <div class="calendarSelector pull-left">
+              <div class="control-label">{{ $t('ExoEventForm.label.calendar') }}</div>
+              <div class="controls">
+              <span class="uiSelectbox form-horizontal">
                 <select v-model="calendar" class="selectbox" name="calendar">
                   <optgroup v-for="group in calendarGroups" :key="group.id" :label="$t(`UICalendarSettingForm.label.${group.name}`)">
                     <option v-for="calendar in group.calendars" :key="calendar.id" :value="`${calendar.id}`">{{ calendar.name }}</option>
                   </optgroup>
                 </select>
               </span>
+              </div>
             </div>
-          </div>
-          <div class="control-group reminder">
-            <div class="control-label">{{ $t('ExoEventForm.label.reminder') }}</div>
-            <div class="controls">
-              <exo-modal :show="enableReminder && showReminder" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
-                <reminder-form v-model="reminder" @closeForm="closeReminderForm"/>
-              </exo-modal>
-              <iphone-checkbox v-model="enableReminder"/>
+            <div class="reminder pull-left">
+              <div class="control-label">{{ $t('ExoEventForm.label.reminder') }}</div>
+              <div class="controls">
+                <exo-modal :show="enableReminder && showReminder" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
+                  <reminder-form v-model="reminder" @closeForm="closeReminderForm"/>
+                </exo-modal>
+                <iphone-checkbox v-model="enableReminder"/>
+              </div>
             </div>
-          </div>
-          <div class="control-group repeat">
-            <div class="control-label">{{ $t('ExoEventForm.label.repeat') }}</div>
-            <div class="controls">
-              <exo-modal :show="enableRecurring && showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
-                <recurring-form v-model="recurring" @closeForm="closeRecurringForm"/>
-              </exo-modal>
-              <iphone-checkbox v-model="enableRecurring"/>
+            <div class="repeat">
+              <div class="control-label">{{ $t('ExoEventForm.label.repeat') }}</div>
+              <div class="controls">
+                <exo-modal :show="enableRecurring && showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
+                  <recurring-form v-model="recurring" @closeForm="closeRecurringForm"/>
+                </exo-modal>
+                <iphone-checkbox v-model="enableRecurring"/>
+              </div>
             </div>
           </div>
           <div class="control-group description">
