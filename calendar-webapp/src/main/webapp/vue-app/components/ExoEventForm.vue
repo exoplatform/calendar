@@ -55,13 +55,13 @@
             <div class="calendarSelector pull-left">
               <div class="control-label">{{ $t('ExoEventForm.label.calendar') }}</div>
               <div class="controls">
-              <span class="uiSelectbox form-horizontal">
-                <select v-model="calendar" class="selectbox" name="calendar">
-                  <optgroup v-for="group in calendarGroups" :key="group.id" :label="$t(`UICalendarSettingForm.label.${group.name}`)">
-                    <option v-for="calendar in group.calendars" :key="calendar.id" :value="`${calendar.id}`">{{ calendar.name }}</option>
-                  </optgroup>
-                </select>
-              </span>
+                <span class="uiSelectbox form-horizontal">
+                  <select v-model="calendar" class="selectbox" name="calendar">
+                    <optgroup v-for="group in calendarGroups" :key="group.id" :label="$t(`UICalendarSettingForm.label.${group.name}`)">
+                      <option v-for="calendar in group.calendars" :key="calendar.id" :value="`${calendar.id}`">{{ calendar.name }}</option>
+                    </optgroup>
+                  </select>
+                </span>
               </div>
             </div>
             <div class="reminder pull-left">
