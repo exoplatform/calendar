@@ -31,7 +31,7 @@
         <div class="control-label">{{ $t('UIRepeatEventForm.label.weeklyByDay') }}:</div>
         <div class="controls">
           <div class="checkBoxArea">
-            <div v-for="day in ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']" :key="day" class="pull-left">
+            <div v-for="day in weekdays" :key="day" class="pull-left">
               <div class="pull-left checkboxContainer">
                 <span class="uiCheckbox">
                   <input :id="day" :name="day" :value="day" v-model="recurring.weekly" type="checkbox" class="checkbox"><span></span>
@@ -97,6 +97,8 @@
 </template>
 
 <script>
+import {calConstants} from '../calConstants.js';
+
 export default {
   model: {
     prop: 'recurring',
@@ -107,6 +109,11 @@ export default {
       type: Object,
       default: {}
     }
+  },
+  data() {
+    return {
+      weekdays: calConstants.WEEK_DAYS
+    };
   },
   watch: {
     recurring: {
