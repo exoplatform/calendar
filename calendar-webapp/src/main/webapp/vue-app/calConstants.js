@@ -10,6 +10,7 @@ export const calConstants = {
   UPLOAD_API: `${eXo.env.portal.context}/upload`,
   HEADER_NO_CACHE: headers,
   SETTINGS: {},
+  WEEK_DAYS: ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'],
   MAX_UPLOAD_FILES: 10,
   MAX_UPLOAD_SIZE: 10
 };

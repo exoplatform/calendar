@@ -130,7 +130,13 @@ public class CalendarRestApi implements ResourceContainer {
   public static final String[] EVENT_AVAILABILITY = {CalendarEvent.ST_AVAILABLE, CalendarEvent.ST_BUSY, CalendarEvent.ST_OUTSIDE};
   
   public static final String[] REPEATTYPES = CalendarEvent.REPEATTYPES.clone();
-  
+
+  public final static String RP_END_BYDATE = "endByDate";
+
+  public final static String RP_END_AFTER = "endAfter";
+
+  public final static String RP_END_NEVER = "neverEnd";
+
   public static final String[] PRIORITY = CalendarEvent.PRIORITY.clone();
   
   public static final String[] TASK_STATUS = CalendarEvent.TASK_STATUS.clone();
@@ -3948,9 +3954,12 @@ public class CalendarRestApi implements ResourceContainer {
 
     if (evObject.getRepeat() != null) {
       RepeatResource repeat = evObject.getRepeat();
+      old.setRepeatType(repeat.getType());
+
       if (repeat.getExclude() != null) {
         old.setExceptionIds(Arrays.asList(repeat.getExclude()));
       }
+
       if (repeat.getRepeatOn() != null) {
         String[] reptOns = repeat.getRepeatOn().split(",");
         for (String on : reptOns) {
@@ -3976,29 +3985,28 @@ public class CalendarRestApi implements ResourceContainer {
         old.setRepeatByMonthDay(by);
       }
 
+      Date untilDate = null;
+      long count = 0;
       if (repeat.getEnd() != null) {
         End end = repeat.getEnd();
         String val = end.getValue();
-        if (val != null) {
+
+        if (RP_END_AFTER.equals(end.getType())) {
           try {
-            old.setRepeatUntilDate(ISO8601.parse(val).getTime());
-          } catch (Exception e) {
-            try {
-              old.setRepeatCount(Long.parseLong(end.getValue()));
-            } catch (Exception ex) {
-                log.debug(ex);
-            }
+            count = Long.parseLong(val);
+          } catch (Exception ex) {
+            log.debug("Can not set repeat count, count is invalid: {}", val);
           }
-        }
-        String reptType = end.getType();
-        if (reptType != null) {
-          if (Arrays.binarySearch(REPEATTYPES, reptType) < 0) {
-            return buildBadResponse(new ErrorResource("repeat type must be one of " + StringUtils.join(REPEATTYPES, ","), "end.type"));
-          } else {
-            old.setRepeatType(end.getType());
+        } else if (RP_END_BYDATE.equals(end.getType())) {
+          try {
+            untilDate = ISO8601.parse(val).getTime();
+          } catch (Exception e) {
+            log.debug("Can not set repeat until date, date is invalid: {}", val);
           }
         }
       }
+      old.setRepeatUntilDate(untilDate);
+      old.setRepeatCount(count);
 
       int every = repeat.getEvery();
       if (every < 1 || every > 30) {

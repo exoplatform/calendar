@@ -29,10 +29,7 @@ function buildEvent(event) {
   const toDate = new Date(event.to);
   toDate.setHours(toDate.getHours() - offset);
 
-  const reminder = {
-    mailReminderTime: 5,
-    popupReminderTime: 5
-  };
+  const reminder = null;
   if (event.reminder && event.reminder.length) {
     event.reminder.forEach(r => {
       if (r.reminderType === 'TYPE_EMAIL') {
@@ -49,6 +46,44 @@ function buildEvent(event) {
     });
   }
 
+  let recurring = null;
+  if (event.repeat && event.repeat.enabled) {
+    recurring = {
+      interval: event.repeat.every,
+      exclude: event.repeat.exclude,
+      endRepeat: 'neverEnd',
+      endAfterNumber: 5,
+      weekly: calConstants.WEEK_DAYS[new Date().getDay()],
+      monthly: 'monthlyByMonthDay'
+    };
+
+    const type = event.repeat.type;
+    if (type === 'RP_DAILY') {
+      recurring.repeatType = 'daily';
+    } else if (type === 'RP_WEEKLY') {
+      recurring.repeatType = 'weekly';
+      recurring.weekly = event.repeat.repeatOn;
+    } else if (type === 'RP_MONTHLY') {
+      recurring.repeatType = 'monthly';
+      if (event.repeat.repeateBy) {
+        recurring.monthly = 'monthlyByMonthDay';
+      } else {
+        recurring.monthly = 'monthlyByDay';
+      }
+    } else if (type === 'RP_YEARLY') {
+      recurring.repeatType = 'yearly';
+    }
+
+    if (event.end) {
+      recurring.endRepeat = event.end.type;
+      if (event.end.type === 'endAfter') {
+        recurring.endAfterNumber = parseInt(event.end.value);
+      } else if (event.end.type === 'endByDate') {
+        recurring.endDate = new Date(event.end.value);
+      }
+    }
+  }
+
   return {
     id: event.id,
     title: event.subject,
@@ -61,8 +96,8 @@ function buildEvent(event) {
     description: event.description,
     attachedFiles: [],
     reminder: reminder,
-    recurring: {
-    }
+    recurring: recurring,
+    recurrenceId: event.recurrenceId
   };
 }
 
@@ -147,32 +182,29 @@ export function saveEvent(evt) {
 
   if (evt.enableRecurring) {
     const repeat = {
+      type: evt.recurring.repeatType,
       every: evt.recurring.interval,
-      end: {}
+      end: {
+        type: 'neverEnd'
+      }
     };
 
-    if (evt.recurring.repeatType === 'daily') {
-      repeat.type = 'RP_DAILY';
-      repeat.end.type = 'RP_DAILY';
-    } else if (evt.recurring.repeatType === 'weekly') {
-      repeat.type = 'RP_WEEKLY';
-      repeat.end.type = 'RP_WEEKLY';
+    if (evt.recurring.repeatType === 'weekly') {
       repeat.repeatOn = evt.recurring.weekly;
     } else if (evt.recurring.repeatType === 'monthly') {
-      repeat.type = 'RP_MONTHLY';
-      repeat.end.type = 'RP_MONTHLY';
       if (evt.recurring.monthly === 'monthlyByMonthDay') {
         repeat.repeateBy = new Date().getDate();
+      } else {
+        repeat.repeatOn = calConstants.WEEK_DAYS[new Date().getDay()];
       }
-    } else if (evt.recurring.repeatType === 'yearly') {
-      repeat.type = 'RP_YEARLY';
-      repeat.end.type = 'RP_YEARLY';
     }
 
     if (evt.recurring.endRepeat === 'endAfter') {
       repeat.end.value = evt.recurring.endAfterNumber;
+      repeat.end.type = 'endAfter';
     } else if (evt.recurring.endRepeat === 'endByDate') {
       repeat.end.value = new Date(evt.recurring.endDate).toISOString();
+      repeat.end.type = 'endByDate';
     }
 
     event.repeat = repeat;
