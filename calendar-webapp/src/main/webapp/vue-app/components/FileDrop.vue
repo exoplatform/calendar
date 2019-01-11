@@ -10,8 +10,8 @@
       <div v-show="error" class="uploadError">
         {{ error }}
       </div>
-      <div v-for="file in files" :key="file.name" class="file">
-        <div class="info clearfix pull-left">
+      <div v-for="file in files" :key="file.name" class="file clearfix">
+        <div class="info">
           <div :title="file.name" class="fileNameLabel pull-left" data-toggle="tooltip" rel="tooltip" data-placement="top">{{ file.name }}</div>
           <div class="fileSize pull-left">({{ file.size }})</div>
           <div v-show="file.progress == 100" class="removeFile">
