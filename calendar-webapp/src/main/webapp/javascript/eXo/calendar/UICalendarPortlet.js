@@ -659,6 +659,7 @@
                     $item.one('click', function(event) {
                         CalendarVue.openEventForm({
                             id: eventId,
+                            isOccur: isOccur,
                             recurId: recurId,
                             startTime: startTime,
                             endTime: endTime
@@ -755,6 +756,7 @@
                     $item.one('click', function (event) {
                         CalendarVue.openEventForm({
                             id: eventId,
+                            isOccur: isOccur,
                             recurId: recurId,
                             startTime: startTime,
                             endTime: endTime
@@ -833,6 +835,7 @@
                         $item.one('click', function (event) {
                             CalendarVue.openEventForm({
                                 id: eventId,
+                                isOccur: isOccur,
                                 recurId: recurId,
                                 startTime: startTime,
                                 endTime: endTime
@@ -967,6 +970,7 @@
                     $item.one('click', function (event) {
                         CalendarVue.openEventForm({
                             id: eventId,
+                            isOccur: isOccur,
                             recurId: recurId,
                             startTime: startTime,
                             endTime: endTime
@@ -1345,6 +1349,7 @@
         if (recurid == "null") recurid = "";
         CalendarVue.openEventForm({
             id: eventId,
+            isOccur: isoccur,
             recurId: recurid,
             startTime: startTime,
             endTime: endTime
@@ -1919,6 +1924,7 @@
 
       CalendarVue.openEventForm({
           id: eventId,
+          isOccur: isOccur,
           recurId: recurId,
           startTime: startTime,
           endTime: endTime

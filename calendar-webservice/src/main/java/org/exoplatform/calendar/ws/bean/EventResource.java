@@ -50,6 +50,7 @@ public class EventResource extends Resource {
   private RepeatResource            repeat;
   private String                    recurrenceId;
   private Serializable                    originalEvent;
+  private boolean                   isOccur;
   private Reminder[]                reminder;
   private Serializable[]              attachments;
   private UploadResource[]        uploadResources;
@@ -112,7 +113,7 @@ public class EventResource extends Resource {
     }
     
     boolean isRepeat = (data.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(data.getRepeatType()));    
-    repeat = new RepeatResource(isRepeat,
+    repeat = new RepeatResource(data.getRecurrenceId(), isRepeat,
                                 data.getRepeatType(),
                                 (int)data.getRepeatInterval(),
                                 StringUtils.join(data.getRepeatByDay(), ","),
@@ -125,6 +126,7 @@ public class EventResource extends Resource {
           .append(data.getOriginalReference())
           .toString();
     }
+    isOccur = data.getIsExceptionOccurrence() == null || !data.getIsExceptionOccurrence();
     if (data.getReminders() != null)
       reminder = data.getReminders().toArray(new Reminder[] {});
     
@@ -285,5 +287,13 @@ public class EventResource extends Resource {
 
   public void setCategoryId(String categoryId) {
     this.categoryId = categoryId;
+  }
+
+  public Boolean getIsOccur() {
+    return isOccur;
+  }
+
+  public void setIsOccur(Boolean isOccur) {
+    isOccur = isOccur;
   }
 }

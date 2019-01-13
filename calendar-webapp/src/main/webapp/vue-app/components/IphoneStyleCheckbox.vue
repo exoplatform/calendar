@@ -1,6 +1,6 @@
 <template>
   <div class="iphoneCheckbox" @click.stop.prevent="onChange">
-    <input v-iphone :checked="checked" type="checkbox" class="iphone"/>
+    <input v-iphone :checked="checked && !disabled" :disabled="disabled" type="checkbox" class="iphone"/>
   </div>
 </template>
 
@@ -27,11 +27,18 @@ export default {
     checked: {
       type: Boolean,
       default: false
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
     checked() {
       $(this.$el).find('input').iphoneStyle().prop('checked', this.checked).iphoneStyle('refresh');
+    },
+    disabled() {
+      $(this.$el).find('input').iphoneStyle().prop('disabled', this.disabled).iphoneStyle('refresh');
     }
   },
   methods: {
