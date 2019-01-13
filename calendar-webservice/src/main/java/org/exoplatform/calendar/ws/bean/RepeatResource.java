@@ -25,8 +25,6 @@ import org.exoplatform.webservice.cs.bean.End;
 public class RepeatResource implements Serializable {
   private static final long serialVersionUID = 5586869269014670514L;
 
-  private String                    id;
-
   private boolean                   enabled;
 
   private String                    type;
@@ -50,17 +48,6 @@ public class RepeatResource implements Serializable {
                         String repeatBy,
                         Collection<String> exclude,
                         End end) {
-    this(null, enabled, type, every, repeatOn, repeatBy, exclude, end);
-  }
-
-  public RepeatResource(String id, boolean enabled,
-                        String type,
-                        int every,
-                        String repeatOn,
-                        String repeatBy,
-                        Collection<String> exclude,
-                        End end) {
-    this.id = id;
     this.enabled = enabled;
     this.type = type;
     this.every = every;
@@ -69,14 +56,6 @@ public class RepeatResource implements Serializable {
     if (exclude != null)
       this.exclude = exclude.toArray(new String[exclude.size()]);
     this.end = end;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public boolean isEnabled() {

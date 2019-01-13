@@ -28,6 +28,7 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Version;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.Calendar.Type;
@@ -142,6 +143,10 @@ public class CalendarRestApi implements ResourceContainer {
   public static final String[] TASK_STATUS = CalendarEvent.TASK_STATUS.clone();
 
   private static final String[] INVITATION_STATUS = {"", "maybe", "yes", "no"};
+
+  public static enum RecurringUpdateType {
+    ALL, FOLLOWING, ONE
+  }
   
   static {
     Arrays.sort(RP_WEEKLY_BYDAY);
@@ -1123,10 +1128,15 @@ public class CalendarRestApi implements ResourceContainer {
   })
   public Response updateEventById(
 		  @ApiParam(value = "Identity of the event to update", required = true) @PathParam("id") String id,
+      @ApiParam(value = "Recurring update type, can be ALL, FOLLOWING or ONE, by default, it's ONE", required = false) @QueryParam("recurringUpdateType") RecurringUpdateType recurringUpdateType,
 		  EventResource evObject) {
     try {
       CalendarEvent event = calendarServiceInstance().getEventById(id);
       if(event == null) return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+      if (recurringUpdateType != null) {
+        //clone the event to build occurrent event
+        event = CalendarEvent.build(event);
+      }
 
       Calendar cal = calendarServiceInstance().getCalendarById(event.getCalendarId());
       if (Utils.isCalendarEditable(currentUserId(), cal)) {
@@ -1142,7 +1152,7 @@ public class CalendarRestApi implements ResourceContainer {
           calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), event.getCalendarId());
         }
 
-        saveEvent(calType, event, false);
+        saveEvent(calType, event, recurringUpdateType, false);
 
         return Response.ok().cacheControl(nc).build();
       }
@@ -4014,7 +4024,7 @@ public class CalendarRestApi implements ResourceContainer {
       }
       old.setRepeatInterval(repeat.getEvery());
     }
-    old.setIsExceptionOccurrence(!evObject.getIsOccur());
+    old.setRecurrenceId(evObject.getRecurrenceId());
 
     java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());
     if (fromTo[0].after(fromTo[1]) || fromTo[0].equals(fromTo[1])) {
@@ -4337,19 +4347,41 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   private void saveEvent(int calType, CalendarEvent event, boolean bln) throws Exception {
+    saveEvent(calType, event, null, bln);
+  }
+
+  private void saveEvent(int calType, CalendarEvent event, RecurringUpdateType recurringUpdateType, boolean bln) throws Exception {
     CalendarService calService = calendarServiceInstance();
-    switch (calType) {
-      case Calendar.TYPE_PRIVATE:
-        calService.saveUserEvent(currentUserId(), event.getCalendarId(), event, bln);
-        break;
-      case Calendar.TYPE_PUBLIC:
-        calService.savePublicEvent(event.getCalendarId(), event, bln);
-        break;
-      case Calendar.TYPE_SHARED:
-        calService.saveEventToSharedCalendar(currentUserId(), event.getCalendarId(), event,bln);
-        break;
-      default:
-        break;
+    if (recurringUpdateType == null) {
+      //create new event or update non-repeat event
+      switch (calType) {
+        case Calendar.TYPE_PRIVATE:
+          calService.saveUserEvent(currentUserId(), event.getCalendarId(), event, bln);
+          break;
+        case Calendar.TYPE_PUBLIC:
+          calService.savePublicEvent(event.getCalendarId(), event, bln);
+          break;
+        case Calendar.TYPE_SHARED:
+          calService.saveEventToSharedCalendar(currentUserId(), event.getCalendarId(), event,bln);
+          break;
+        default:
+          break;
+      }
+    } else {
+      //update repeat event
+      CalendarEvent original = calService.getRepetitiveEvent(event);
+      recurringUpdateType = recurringUpdateType == null ? RecurringUpdateType.ONE : recurringUpdateType;
+      switch (recurringUpdateType) {
+        case ALL:
+          calService.saveAllSeriesEvents(event, currentUserId());
+          break;
+        case FOLLOWING:
+          calService.saveFollowingSeriesEvents(original, event, currentUserId());
+          break;
+        case ONE:
+          calService.saveOneOccurrenceEvent(original, event, currentUserId());
+          break;
+      }
     }
   }
 

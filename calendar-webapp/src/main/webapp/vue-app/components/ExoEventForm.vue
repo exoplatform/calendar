@@ -76,6 +76,9 @@
             <div class="repeat">
               <div class="control-label">{{ $t('ExoEventForm.label.repeat') }}</div>
               <div class="controls">
+                <exo-modal :show="showRecurringUpdateType" :title="$t('UICalendarChildPopupWindow.title.RecurringUpdateTypeForm')">
+                  <recurring-update-type-form v-model="recurringUpdateType" @cancelForm="cancelRecurringUpdateTypeForm" @saveForm="saveRecurringUpdateTypeForm"/>
+                </exo-modal>
                 <exo-modal :show="enableRecurring && showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
                   <recurring-form v-model="recurring" @closeForm="closeRecurringForm"/>
                 </exo-modal>
@@ -116,6 +119,7 @@ import Suggester from './Suggester.vue';
 import FileDrop from './FileDrop.vue';
 import ExoModal from './ExoModal.vue';
 import RecurringForm from './RecurringForm.vue';
+import RecurringUpdateTypeForm from './RecurringUpdateTypeForm.vue';
 import ReminderForm from './ReminderForm.vue';
 
 function formatDate(date) {
@@ -173,7 +177,6 @@ function getDefaultData() {
       popupReminderTime: 5
     },
     recurring: {
-      id: null,
       repeatType: 'weekly',
       interval: 1,
       weekly: ['TU'],
@@ -183,7 +186,10 @@ function getDefaultData() {
       endDate: endRecurring
     },
     isOccur: null,
+    recurrenceId: null,
+    recurringUpdateType: '',
 
+    showRecurringUpdateType: false,
     enableRecurring: false,
     showRecurring: false,
     enableReminder: false,
@@ -200,6 +206,7 @@ export default {
     'filedrop': FileDrop,
     'exo-modal': ExoModal,
     'recurring-form': RecurringForm,
+    'recurring-update-type-form': RecurringUpdateTypeForm,
     'reminder-form': ReminderForm
   },
   model: {
@@ -256,6 +263,13 @@ export default {
     closeReminderForm() {
       this.showReminder = false;
     },
+    cancelRecurringUpdateTypeForm() {
+      this.showRecurringUpdateType = false;
+    },
+    saveRecurringUpdateTypeForm() {
+      this.showRecurringUpdateType = false;
+      this.save();
+    },
     clear() {
       const data = getDefaultData();
       Object.entries(data).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
@@ -302,10 +316,14 @@ export default {
       }
     },
     save() {
-      this.toggleOpen();
-      calServices.saveEvent(this.$data).then(() => {
-        this.$emit('save');
-      });
+      if (this.id && this.isOccur && !this.recurringUpdateType) {
+        this.showRecurringUpdateType = true;
+      } else {
+        this.toggleOpen();
+        calServices.saveEvent(this.$data).then(() => {
+          this.$emit('save');
+        });
+      }
     }
   }
 };

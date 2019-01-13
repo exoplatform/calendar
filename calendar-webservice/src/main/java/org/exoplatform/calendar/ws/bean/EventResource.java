@@ -113,14 +113,14 @@ public class EventResource extends Resource {
     }
     
     boolean isRepeat = (data.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(data.getRepeatType()));    
-    repeat = new RepeatResource(data.getRecurrenceId(), isRepeat,
+    repeat = new RepeatResource(isRepeat,
                                 data.getRepeatType(),
                                 (int)data.getRepeatInterval(),
                                 StringUtils.join(data.getRepeatByDay(), ","),
                                 repeatByMonthDay.toString(),
                                 data.getExceptionIds(),
                                 end);    
-    recurrenceId = data.getOriginalReference();
+    recurrenceId = data.getRecurrenceId();
     if (data.getOriginalReference() != null) {
       originalEvent = new StringBuilder(basePath).append(EVENT_URI)
           .append(data.getOriginalReference())
