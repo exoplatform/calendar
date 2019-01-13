@@ -79,7 +79,7 @@
                 <exo-modal :show="enableRecurring && showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
                   <recurring-form v-model="recurring" @closeForm="closeRecurringForm"/>
                 </exo-modal>
-                <iphone-checkbox v-model="enableRecurring"/>
+                <iphone-checkbox v-model="enableRecurring" :disabled="isOccur === false"/>
               </div>
             </div>
           </div>
@@ -173,6 +173,7 @@ function getDefaultData() {
       popupReminderTime: 5
     },
     recurring: {
+      id: null,
       repeatType: 'weekly',
       interval: 1,
       weekly: ['TU'],
@@ -181,6 +182,7 @@ function getDefaultData() {
       endAfterNumber: 5,
       endDate: endRecurring
     },
+    isOccur: null,
 
     enableRecurring: false,
     showRecurring: false,

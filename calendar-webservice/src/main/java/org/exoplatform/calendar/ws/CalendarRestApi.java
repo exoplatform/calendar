@@ -4014,6 +4014,7 @@ public class CalendarRestApi implements ResourceContainer {
       }
       old.setRepeatInterval(repeat.getEvery());
     }
+    old.setIsExceptionOccurrence(!evObject.getIsOccur());
 
     java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());
     if (fromTo[0].after(fromTo[1]) || fromTo[0].equals(fromTo[1])) {

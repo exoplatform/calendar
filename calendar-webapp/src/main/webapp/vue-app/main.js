@@ -29,7 +29,7 @@ export function init(settings) {
         methods: {
           openEventForm(calEvt) {
             if (calEvt.id) {
-              calServices.getEventById(calEvt.id, calEvt.recurId, calEvt.startTime, calEvt.endTime).then(evt => {
+              calServices.getEventById(calEvt.id, calEvt.isOccur, calEvt.recurId, calEvt.startTime, calEvt.endTime).then(evt => {
                 if (evt) {
                   this.calEvt = evt;
                   this.showEventForm = true;

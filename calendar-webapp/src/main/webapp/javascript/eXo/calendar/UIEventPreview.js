@@ -15,6 +15,7 @@ var UIEventPreview = {
 
       CalendarVue.openEventForm({
           id: eventId,
+          isOccur: isoccur,
           recurId: recurid,
           startTime: startTime,
           endTime: endTime

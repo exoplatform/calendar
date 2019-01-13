@@ -47,7 +47,7 @@ function buildEvent(event) {
     });
   }
 
-  let recurring = null;
+  let recurring = null, recurrenceId = null;
   if (event.repeat && event.repeat.enabled) {
     recurring = {
       repeatType: event.repeat.type,
@@ -78,6 +78,8 @@ function buildEvent(event) {
         recurring.endDate = new Date(event.repeat.end.value);
       }
     }
+
+    recurrenceId = event.repeat.id;
   }
 
   return {
@@ -93,7 +95,8 @@ function buildEvent(event) {
     attachedFiles: [],
     reminder: reminder,
     recurring: recurring,
-    recurrenceId: event.recurrenceId
+    recurrenceId: recurrenceId,
+    isOccur: event.isOccur
   };
 }
 
@@ -114,8 +117,8 @@ export function getCalendarById(calendarId) {
     });
 }
 
-export function getEventById(eventId, recurId, startTime, endTime) {
-  if (recurId) {
+export function getEventById(eventId, isOccur, recurId, startTime, endTime) {
+  if (isOccur && isOccur !== 'false' && recurId) {
     const start = new Date(parseInt(startTime));
     const end = new Date(parseInt(endTime));
     return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/occurrences?start=${start.toISOString()}&end=${end.toISOString()}`, {headers: calConstants.HEADER_NO_CACHE})
@@ -219,6 +222,7 @@ export function saveEvent(evt) {
   }
 
   if (evt.id) {
+    //update
     return fetch(`${calConstants.CAL_SERVER_API}events/${evt.id}`, {
       headers: new Headers({
         'Content-Type': 'application/json'
@@ -227,6 +231,7 @@ export function saveEvent(evt) {
       body: JSON.stringify(event)
     });
   } else {
+    //create
     return fetch(`${calConstants.CAL_SERVER_API}calendars/${evt.calendar}/events`, {
       headers: new Headers({
         'Content-Type': 'application/json'
