@@ -259,7 +259,11 @@ export default {
       Object.entries(data).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
 
       const evt = this.initEvt;
-      Object.entries(evt).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
+      Object.entries(evt).forEach(entry => {
+        if (entry[1] !== null) {
+          Vue.set(this.$data, entry[0], entry[1]);
+        }
+      });
 
       if (evt.from) {
         const fromDate = new Date(evt.from);
@@ -279,6 +283,16 @@ export default {
             this.showReminder = false;
           });
         }
+      }
+
+      if (evt.recurring) {
+        this.enableRecurring = true;
+        if (this.recurring.endDate && typeof this.recurring.endDate !== 'string') {
+          this.recurring.endDate = formatDate(this.recurring.endDate);
+        }
+        Vue.nextTick(() => {
+          this.showRecurring = false;
+        });
       }
 
       if (this.fromTime === '00:00' && this.toTime === '23:59') {

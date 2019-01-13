@@ -31,6 +31,7 @@ import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.ws.CalendarRestApi;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.webservice.cs.bean.End;
@@ -93,10 +94,12 @@ public class EventResource extends Resource {
     if (data.getRepeatUntilDate() != null) {
       java.util.Calendar tmp = java.util.Calendar.getInstance();
       tmp.setTime(data.getRepeatUntilDate());      
-      end = new End(data.getRepeatType(), ISO8601.format(tmp));      
+      end = new End(CalendarRestApi.RP_END_BYDATE, ISO8601.format(tmp));
+    } else if (data.getRepeatCount() > 0) {
+      end = new End(CalendarRestApi.RP_END_AFTER, String.valueOf(data.getRepeatCount()));
     } else {
-      end = new End(data.getRepeatType(), String.valueOf(data.getRepeatCount()));
-    }    
+      end = new End(CalendarRestApi.RP_END_NEVER, null);
+    }
     
     StringBuilder repeatByMonthDay = new StringBuilder();
     if (data.getRepeatByMonthDay() != null) {
