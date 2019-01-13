@@ -29,10 +29,11 @@ function buildEvent(event) {
   const toDate = new Date(event.to);
   toDate.setHours(toDate.getHours() - offset);
 
-  const reminder = null;
+  let reminder = null;
   if (event.reminder && event.reminder.length) {
+    reminder = {};
     event.reminder.forEach(r => {
-      if (r.reminderType === 'TYPE_EMAIL') {
+      if (r.reminderType === 'email') {
         reminder.mailReminder = true;
         reminder.mailReminderTime = r.alarmBefore;
         reminder.mailReminderId = r.id;
@@ -49,6 +50,7 @@ function buildEvent(event) {
   let recurring = null;
   if (event.repeat && event.repeat.enabled) {
     recurring = {
+      repeatType: event.repeat.type,
       interval: event.repeat.every,
       exclude: event.repeat.exclude,
       endRepeat: 'neverEnd',
@@ -58,28 +60,22 @@ function buildEvent(event) {
     };
 
     const type = event.repeat.type;
-    if (type === 'RP_DAILY') {
-      recurring.repeatType = 'daily';
-    } else if (type === 'RP_WEEKLY') {
-      recurring.repeatType = 'weekly';
-      recurring.weekly = event.repeat.repeatOn;
-    } else if (type === 'RP_MONTHLY') {
-      recurring.repeatType = 'monthly';
+    if (type === 'weekly') {
+      recurring.weekly = event.repeat.repeatOn.split(',');
+    } else if (type === 'monthly') {
       if (event.repeat.repeateBy) {
         recurring.monthly = 'monthlyByMonthDay';
       } else {
         recurring.monthly = 'monthlyByDay';
       }
-    } else if (type === 'RP_YEARLY') {
-      recurring.repeatType = 'yearly';
     }
 
-    if (event.end) {
-      recurring.endRepeat = event.end.type;
-      if (event.end.type === 'endAfter') {
-        recurring.endAfterNumber = parseInt(event.end.value);
-      } else if (event.end.type === 'endByDate') {
-        recurring.endDate = new Date(event.end.value);
+    if (event.repeat.end) {
+      recurring.endRepeat = event.repeat.end.type;
+      if (event.repeat.end.type === 'endAfter') {
+        recurring.endAfterNumber = parseInt(event.repeat.end.value);
+      } else if (event.repeat.end.type === 'endByDate') {
+        recurring.endDate = new Date(event.repeat.end.value);
       }
     }
   }
@@ -124,13 +120,13 @@ export function getEventById(eventId, recurId, startTime, endTime) {
     const end = new Date(parseInt(endTime));
     return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/occurrences?start=${start.toISOString()}&end=${end.toISOString()}`, {headers: calConstants.HEADER_NO_CACHE})
       .then(resp =>  resp.json())
-      .then(event =>  {
-        if (event) {
-          return buildEvent(event);
+      .then(json =>  {
+        if (json && json.data && json.data.length) {
+          return buildEvent(json.data[0]);
         } else {
           return null;
         }
-      }).then(resp => resp.json());
+      });
   } else {
     return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/`, {headers: calConstants.HEADER_NO_CACHE})
       .then(resp =>  resp.json())
@@ -156,7 +152,8 @@ export function saveEvent(evt) {
     categoryId: evt.category,
     location: evt.location,
     uploadResources: [],
-    participants: evt.participants
+    participants: evt.participants,
+    reminder: []
   };
 
   if (evt.enableReminder) {
@@ -164,7 +161,7 @@ export function saveEvent(evt) {
     if (evt.reminder.mailReminder) {
       reminder.push({
         id: evt.reminder.mailReminderId,
-        reminderType: 'TYPE_EMAIL',
+        reminderType: 'email',
         alarmBefore: evt.reminder.mailReminderTime,
         fromDateTime: evt.reminder.mailReminderFrom
       });
@@ -172,7 +169,7 @@ export function saveEvent(evt) {
     if (evt.reminder.popupReminder) {
       reminder.push({
         id: evt.reminder.popupReminderId,
-        reminderType: 'TYPE_POPUP',
+        reminderType: 'popup',
         alarmBefore: evt.reminder.popupReminderTime,
         fromDateTime: evt.reminder.popupReminderFrom
       });
@@ -190,12 +187,12 @@ export function saveEvent(evt) {
     };
 
     if (evt.recurring.repeatType === 'weekly') {
-      repeat.repeatOn = evt.recurring.weekly;
+      repeat.repeatOn = evt.recurring.weekly.join(',');
     } else if (evt.recurring.repeatType === 'monthly') {
       if (evt.recurring.monthly === 'monthlyByMonthDay') {
-        repeat.repeateBy = new Date().getDate();
+        repeat.repeateBy = fromDate.getDate();
       } else {
-        repeat.repeatOn = calConstants.WEEK_DAYS[new Date().getDay()];
+        repeat.repeatOn = calConstants.WEEK_DAYS[fromDate.getDay()];
       }
     }
 
