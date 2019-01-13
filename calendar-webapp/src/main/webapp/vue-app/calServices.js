@@ -47,7 +47,7 @@ function buildEvent(event) {
     });
   }
 
-  let recurring = null, recurrenceId = null;
+  let recurring = null;
   if (event.repeat && event.repeat.enabled) {
     recurring = {
       repeatType: event.repeat.type,
@@ -78,8 +78,6 @@ function buildEvent(event) {
         recurring.endDate = new Date(event.repeat.end.value);
       }
     }
-
-    recurrenceId = event.repeat.id;
   }
 
   return {
@@ -95,7 +93,7 @@ function buildEvent(event) {
     attachedFiles: [],
     reminder: reminder,
     recurring: recurring,
-    recurrenceId: recurrenceId,
+    recurrenceId: event.recurrenceId,
     isOccur: event.isOccur
   };
 }
@@ -156,7 +154,8 @@ export function saveEvent(evt) {
     location: evt.location,
     uploadResources: [],
     participants: evt.participants,
-    reminder: []
+    reminder: [],
+    recurrenceId: evt.recurrenceId
   };
 
   if (evt.enableReminder) {
@@ -223,7 +222,7 @@ export function saveEvent(evt) {
 
   if (evt.id) {
     //update
-    return fetch(`${calConstants.CAL_SERVER_API}events/${evt.id}`, {
+    return fetch(`${calConstants.CAL_SERVER_API}events/${evt.id}?recurringUpdateType=${evt.recurringUpdateType}`, {
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
