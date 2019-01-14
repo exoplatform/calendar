@@ -21,15 +21,17 @@
             <div class="calDate">
               <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
               <div class="controls">
-                <input v-model="fromDate" type="text"/>
-                <input :disabled="isAllDay" v-model="fromTime" type="text"/>
+                <input class="date" v-model="fromDate" type="text"/>
+                <span class="separator">-</span>
+                <input class="time" :disabled="isAllDay" v-model="fromTime" type="text"/>
               </div>
             </div>
             <div class="calDate">
               <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
               <div class="controls">
-                <input v-model="toDate" type="text"/>
-                <input :disabled="isAllDay" v-model="toTime" type="text"/>
+                <input class="date" v-model="toDate" type="text"/>
+                <span class="separator">-</span>
+                <input class="time" :disabled="isAllDay" v-model="toTime" type="text"/>
               </div>
             </div>
           </div>
