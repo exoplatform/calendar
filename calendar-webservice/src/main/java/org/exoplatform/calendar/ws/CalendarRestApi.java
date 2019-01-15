@@ -4023,6 +4023,8 @@ public class CalendarRestApi implements ResourceContainer {
         every = 1;
       }
       old.setRepeatInterval(repeat.getEvery());
+    } else {
+      old.setRepeatType(Event.RP_NOREPEAT);
     }
     old.setRecurrenceId(evObject.getRecurrenceId());
 
