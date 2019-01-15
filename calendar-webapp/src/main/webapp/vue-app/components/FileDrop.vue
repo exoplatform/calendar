@@ -13,7 +13,7 @@
       <div v-for="file in files" :key="file.name" class="file clearfix">
         <div class="info">
           <div :title="file.name" class="fileNameLabel pull-left" data-toggle="tooltip" rel="tooltip" data-placement="top">{{ file.name }}</div>
-          <div class="fileSize pull-left">({{ file.size }})</div>
+          <div class="fileSize pull-left">({{ getFileSize(file.size) }})</div>
           <div v-show="file.progress == 100" class="removeFile">
             <a :title="$t('ExoEventForm.btn.delete')" href="#" rel="tooltip" data-placement="top" @click="deleteFile(file.name)">
               <i class="uiIconClose"></i>
@@ -95,7 +95,7 @@ export default {
         thiss.files.push({
           'uploadId': uploadId,
           'name': n,
-          'size': thiss.getFileSize(file.size),
+          'size': file.size,
           'progress': 0,
           'file': file
         });
@@ -127,10 +127,12 @@ export default {
       this.files.splice(idx, 1);
       this.$emit('change', this.files);
 
-      fetch(`${calConstants.UPLOAD_API}?uploadId=${file.uploadId}&action=delete`, {
-        method: 'post',
-        credentials: 'include'
-      });
+      if (file.uploadId) {
+        fetch(`${calConstants.UPLOAD_API}?uploadId=${file.uploadId}&action=delete`, {
+          method: 'post',
+          credentials: 'include'
+        });
+      }
     },
     setErrorCode(code, param) {
       this.error = this.$t(code, param);
