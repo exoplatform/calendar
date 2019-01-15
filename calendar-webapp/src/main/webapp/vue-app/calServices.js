@@ -222,7 +222,8 @@ export function saveEvent(evt) {
 
   if (evt.id) {
     //update
-    return fetch(`${calConstants.CAL_SERVER_API}events/${evt.id}?recurringUpdateType=${evt.recurringUpdateType}`, {
+    const queryString = evt.recurringUpdateType ? `?recurringUpdateType=${evt.recurringUpdateType}` : '';
+    return fetch(`${calConstants.CAL_SERVER_API}events/${evt.id}${queryString}`, {
       headers: new Headers({
         'Content-Type': 'application/json'
       }),

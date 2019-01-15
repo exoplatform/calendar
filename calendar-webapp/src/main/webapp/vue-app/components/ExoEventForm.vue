@@ -21,17 +21,17 @@
             <div class="calDate">
               <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
               <div class="controls">
-                <input class="date" v-model="fromDate" type="text"/>
+                <input v-model="fromDate" class="date" type="text"/>
                 <span class="separator">-</span>
-                <input class="time" :disabled="isAllDay" v-model="fromTime" type="text"/>
+                <input :disabled="isAllDay" v-model="fromTime" class="time" type="text"/>
               </div>
             </div>
             <div class="calDate">
               <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
               <div class="controls">
-                <input class="date" v-model="toDate" type="text"/>
+                <input v-model="toDate" class="date" type="text"/>
                 <span class="separator">-</span>
-                <input class="time" :disabled="isAllDay" v-model="toTime" type="text"/>
+                <input :disabled="isAllDay" v-model="toTime" class="time" type="text"/>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@
                 <exo-modal :show="enableRecurring && showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
                   <recurring-form v-model="recurring" @closeForm="closeRecurringForm"/>
                 </exo-modal>
-                <iphone-checkbox v-model="enableRecurring" :disabled="isOccur === false"/>
+                <iphone-checkbox v-model="enableRecurring" :disabled="isExceptionOccurence"/>
               </div>
             </div>
           </div>
@@ -226,6 +226,11 @@ export default {
     }
   },
   data: getDefaultData,
+  computed: {
+    isExceptionOccurence() {
+      return !this.isOccur && this.recurrenceId;
+    }
+  },
   watch: {
     enableRecurring() {
       if (this.enableRecurring) {
