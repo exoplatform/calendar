@@ -37,8 +37,9 @@
           </div>
           <div class="control-group allday">
             <div class="controls">
-              <input id="allday" v-model="isAllDay" type="checkbox"/>
-              <label for="allday">{{ $t('ExoEventForm.label.allDay') }}</label>
+              <label class="uiCheckbox">
+                <input id="allday" v-model="isAllDay" type="checkbox"/><span>{{ $t('ExoEventForm.label.allDay') }}</span>
+              </label>
             </div>
           </div>
           <div class="control-group">
