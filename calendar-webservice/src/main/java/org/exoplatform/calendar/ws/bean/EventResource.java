@@ -126,7 +126,7 @@ public class EventResource extends Resource {
           .append(data.getOriginalReference())
           .toString();
     }
-    isOccur = data.getIsExceptionOccurrence() == null || !data.getIsExceptionOccurrence();
+    isOccur = isRepeat && (data.getIsExceptionOccurrence() == null || !data.getIsExceptionOccurrence());
     if (data.getReminders() != null)
       reminder = data.getReminders().toArray(new Reminder[] {});
     
