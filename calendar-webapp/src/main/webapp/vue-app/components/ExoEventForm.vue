@@ -70,7 +70,7 @@
             <div class="reminder pull-left">
               <div class="control-label">{{ $t('ExoEventForm.label.reminder') }}</div>
               <div class="controls">
-                <exo-modal :show="enableReminder && showReminder" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
+                <exo-modal :show="enableReminder && showReminder" :title="$t('ExoEventForm.label.reminder')">
                   <reminder-form v-model="reminder" @closeForm="closeReminderForm"/>
                 </exo-modal>
                 <iphone-checkbox v-model="enableReminder"/>
