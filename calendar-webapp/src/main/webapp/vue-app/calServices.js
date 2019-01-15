@@ -80,6 +80,17 @@ function buildEvent(event) {
     }
   }
 
+  let attachedFiles = [];
+  if (event.attachments) {
+    attachedFiles = event.attachments.map(att => {
+      return {
+        'name': att.name,
+        'size': att.weight,
+        'progress': 100
+      };
+    });
+  }
+
   return {
     id: event.id,
     title: event.subject,
@@ -90,7 +101,7 @@ function buildEvent(event) {
     location: event.location,
     participants: event.participants,
     description: event.description,
-    attachedFiles: [],
+    attachedFiles: attachedFiles,
     reminder: reminder,
     recurring: recurring,
     recurrenceId: event.recurrenceId,
@@ -119,7 +130,7 @@ export function getEventById(eventId, isOccur, recurId, startTime, endTime) {
   if (isOccur && isOccur !== 'false' && recurId) {
     const start = new Date(parseInt(startTime));
     const end = new Date(parseInt(endTime));
-    return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/occurrences?start=${start.toISOString()}&end=${end.toISOString()}`, {headers: calConstants.HEADER_NO_CACHE})
+    return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/occurrences?start=${start.toISOString()}&end=${end.toISOString()}&expand=attachments`, {headers: calConstants.HEADER_NO_CACHE})
       .then(resp =>  resp.json())
       .then(json =>  {
         if (json && json.data && json.data.length) {
@@ -129,7 +140,7 @@ export function getEventById(eventId, isOccur, recurId, startTime, endTime) {
         }
       });
   } else {
-    return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/`, {headers: calConstants.HEADER_NO_CACHE})
+    return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/?expand=attachments`, {headers: calConstants.HEADER_NO_CACHE})
       .then(resp =>  resp.json())
       .then(event =>  {
         if (event) {
@@ -209,16 +220,28 @@ export function saveEvent(evt) {
     event.repeat = repeat;
   }
 
+  const uploadResources = [];
+  const attachments = [];
   if (evt.attachedFiles && evt.attachedFiles.length) {
-    event.uploadResources = evt.attachedFiles.map(attachFile => {
-      return {
-        id: attachFile.uploadId,
-        name: attachFile.name,
-        weight: attachFile.file.size,
-        mimeType: attachFile.file.type
-      };
+    evt.attachedFiles.map(attachFile => {
+      if (attachFile.uploadId) {
+        uploadResources.push({
+          id: attachFile.uploadId,
+          name: attachFile.name,
+          weight: attachFile.file.size,
+          mimeType: attachFile.file.type
+        });
+      } else {
+        attachments.push({
+          name: attachFile.name,
+          weight: attachFile.file.size,
+          mimeType: attachFile.file.type
+        });
+      }
     });
   }
+  event.uploadResources = uploadResources;
+  event.attachments = attachments;
 
   if (evt.id) {
     //update

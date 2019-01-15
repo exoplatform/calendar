@@ -3940,8 +3940,18 @@ public class CalendarRestApi implements ResourceContainer {
       old.setParticipantStatus(parStatus.toArray(new String[parStatus.size()]));
     }
 
+    List<Attachment> attachments = new ArrayList<>();
+    if (evObject.getAttachments() != null && old.getAttachment() != null) {
+      Stream<Serializable> resources = Arrays.stream(evObject.getAttachments());
+      old.getAttachment().stream().forEach(att -> {
+        if (resources.anyMatch(resource -> att.getName().equals(((AttachmentResource)resource).getName()))) {
+          attachments.add(att);
+        }
+      });
+    }
+
     if (evObject.getUploadResources() != null) {
-      List<Attachment> attachments = Stream.of(evObject.getUploadResources()).map((upload) -> {
+      Stream.of(evObject.getUploadResources()).forEach((upload) -> {
         String uploadId = upload.getId();
         UploadResource uploadResource = uploadService.getUploadResource(uploadId);
         try {
@@ -3953,14 +3963,13 @@ public class CalendarRestApi implements ResourceContainer {
           attachment.setSize(fileSize);
           attachment.setResourceId(uploadId);
 
-          return attachment;
+          attachments.add(attachment);
         } catch (Exception ex) {
           log.error("Can not save event with upload resource: " + uploadId, ex);
         }
-        return null;
-      }).collect(Collectors.toList());
-      old.setAttachment(attachments);
+      });
     }
+    old.setAttachment(attachments);
 
     if (evObject.getRepeat() != null) {
       RepeatResource repeat = evObject.getRepeat();
