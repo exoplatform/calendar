@@ -139,19 +139,6 @@ function formatTime(date) {
   return `${hours}:${minutes}`;
 }
 
-let categories = [];
-calServices.getCategories().then(results => {
-  if(results) {
-    categories = results;
-  }
-});
-let calendarGroups = [];
-calServices.getCalendars().then(results => {
-  if(results) {
-    calendarGroups = results;
-  }
-});
-
 function getDefaultData() {
   const date = new Date();
   const fromDate = formatDate(date);
@@ -197,8 +184,8 @@ function getDefaultData() {
     showRecurring: false,
     enableReminder: false,
     showReminder: false,
-    categories: categories,
-    calendarGroups: calendarGroups
+    categories: [],
+    calendarGroups: []
   };
 }
 
@@ -278,7 +265,24 @@ export default {
       this.showRecurringUpdateType = false;
       this.save();
     },
+    refreshCalendar() {
+      calServices.getCalendars().then(results => {
+        if(results) {
+          this.calendarGroups = results;
+        }
+      });
+    },
+    refreshCategories() {
+      calServices.getCategories().then(results => {
+        if(results) {
+          this.categories = results;
+        }
+      });
+    },
     clear() {
+      this.refreshCalendar();
+      this.refreshCategories();
+
       const data = getDefaultData();
       Object.entries(data).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
 
