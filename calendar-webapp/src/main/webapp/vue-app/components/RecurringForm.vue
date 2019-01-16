@@ -77,7 +77,7 @@
               <span>{{ $t('UIRepeatEventForm.label.endByDate') }}</span>
             </label>
             <div id="endDate" class="inputSmall pull-left">
-              <input v-model="recurring.endDate" :disabled="recurring.endRepeat != 'endByDate'" lang="en" format="MM/dd/yyyy" type="date" name="endDate">
+              <input :value="endDate" :disabled="recurring.endRepeat != 'endByDate'" lang="en" format="MM/dd/yyyy" type="date" name="endDate" @change="updateDate(recurring.endDate, $event.target.value)">
             </div>
           </div>
         </div>
@@ -85,11 +85,11 @@
 
     </div>
     <div class="uiAction uiActionBorder">
-      <button class="btn" type="button" @click="closeForm">
+      <button class="btn" type="button" @click="save">
         {{ $t('ExoEventForm.btn.save') }}
       </button>
 
-      <button class="btn" type="button" @click="closeForm">
+      <button class="btn" type="button" @click="cancel">
         {{ $t('ExoEventForm.btn.cancel') }}
       </button>
     </div>
@@ -98,6 +98,7 @@
 
 <script>
 import {calConstants} from '../calConstants.js';
+import Utils from '../model/utils.js';
 
 export default {
   model: {
@@ -115,6 +116,11 @@ export default {
       weekdays: calConstants.WEEK_DAYS
     };
   },
+  computed: {
+    endDate() {
+      return Utils.formatDate(this.recurring.endDate);
+    }
+  },
   watch: {
     recurring: {
       handler() {
@@ -124,8 +130,17 @@ export default {
     }
   },
   methods: {
-    closeForm() {
-      this.$emit('closeForm');
+    save() {
+      this.$emit('save');
+    },
+    cancel() {
+      this.$emit('cancel');
+    },
+    updateDate(date, val) {
+      const parsedVal = Utils.parseDate(val);
+      if (parsedVal) {
+        date.setFullYear(parsedVal.getFullYear(),parsedVal.getMonth(), parsedVal.getDate());
+      }
     }
   }
 };

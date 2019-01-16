@@ -1,38 +1,23 @@
 import {calConstants} from './calConstants.js';
+import Utils from './model/utils.js';
 
-function getTimezoneOffset() {
-  const date = new Date();
-  const minute = 60;
-  const offset = (date.getTimezoneOffset() * -1 - calConstants.SETTINGS.timezone) / minute;
-  return offset;
-}
-
-function buildDate(date, time) {
-  const minute = 60;
-  const d = new Date(date);
-  const t = time.split(':');
-  d.setUTCHours(parseInt(t[0]) - calConstants.SETTINGS.timezone / minute);
-  d.setUTCMinutes(parseInt(t[1]));
-  return d;
-}
-
-function buildEvent(event) {
-  let calendarId = event.calendar;
+function buildEvent(eventJSON) {
+  let calendarId = eventJSON.calendar;
   const idx = calendarId.lastIndexOf('/');
   if (idx !== -1) {
     calendarId = calendarId.slice(idx + 1);
   }
 
-  const offset = getTimezoneOffset();
-  const fromDate = new Date(event.from);
+  const offset = Utils.getTimezoneOffset();
+  const fromDate = new Date(eventJSON.from);
   fromDate.setHours(fromDate.getHours() - offset);
-  const toDate = new Date(event.to);
+  const toDate = new Date(eventJSON.to);
   toDate.setHours(toDate.getHours() - offset);
 
   let reminder = null;
-  if (event.reminder && event.reminder.length) {
+  if (eventJSON.reminder && eventJSON.reminder.length) {
     reminder = {};
-    event.reminder.forEach(r => {
+    eventJSON.reminder.forEach(r => {
       if (r.reminderType === 'email') {
         reminder.mailReminder = true;
         reminder.mailReminderTime = r.alarmBefore;
@@ -48,41 +33,41 @@ function buildEvent(event) {
   }
 
   let recurring = null;
-  if (event.repeat && event.repeat.enabled) {
+  if (eventJSON.repeat && eventJSON.repeat.enabled) {
     recurring = {
-      repeatType: event.repeat.type,
-      interval: event.repeat.every,
-      exclude: event.repeat.exclude,
+      repeatType: eventJSON.repeat.type,
+      interval: eventJSON.repeat.every,
+      exclude: eventJSON.repeat.exclude,
       endRepeat: 'neverEnd',
       endAfterNumber: 5,
       weekly: calConstants.WEEK_DAYS[new Date().getDay()],
       monthly: 'monthlyByMonthDay'
     };
 
-    const type = event.repeat.type;
+    const type = eventJSON.repeat.type;
     if (type === 'weekly') {
-      recurring.weekly = event.repeat.repeatOn.split(',');
+      recurring.weekly = eventJSON.repeat.repeatOn.split(',');
     } else if (type === 'monthly') {
-      if (event.repeat.repeateBy) {
+      if (eventJSON.repeat.repeateBy) {
         recurring.monthly = 'monthlyByMonthDay';
       } else {
         recurring.monthly = 'monthlyByDay';
       }
     }
 
-    if (event.repeat.end) {
-      recurring.endRepeat = event.repeat.end.type;
-      if (event.repeat.end.type === 'endAfter') {
-        recurring.endAfterNumber = parseInt(event.repeat.end.value);
-      } else if (event.repeat.end.type === 'endByDate') {
-        recurring.endDate = new Date(event.repeat.end.value);
+    if (eventJSON.repeat.end) {
+      recurring.endRepeat = eventJSON.repeat.end.type;
+      if (eventJSON.repeat.end.type === 'endAfter') {
+        recurring.endAfterNumber = parseInt(eventJSON.repeat.end.value);
+      } else if (eventJSON.repeat.end.type === 'endByDate') {
+        recurring.endDate = new Date(eventJSON.repeat.end.value);
       }
     }
   }
 
   let attachedFiles = [];
-  if (event.attachments) {
-    attachedFiles = event.attachments.map(att => {
+  if (eventJSON.attachments) {
+    attachedFiles = eventJSON.attachments.map(att => {
       return {
         'name': att.name,
         'size': att.weight,
@@ -92,38 +77,21 @@ function buildEvent(event) {
   }
 
   return {
-    id: event.id,
-    title: event.subject,
+    id: eventJSON.id,
+    title: eventJSON.subject,
     calendar: calendarId,
-    category: event.categoryId,
-    from: fromDate.getTime(),
-    to: toDate.getTime(),
-    location: event.location,
-    participants: event.participants,
-    description: event.description,
+    category: eventJSON.categoryId,
+    fromDate: fromDate,
+    toDate: toDate,
+    location: eventJSON.location,
+    participants: eventJSON.participants,
+    description: eventJSON.description,
     attachedFiles: attachedFiles,
     reminder: reminder,
     recurring: recurring,
-    recurrenceId: event.recurrenceId,
-    isOccur: event.isOccur
+    recurrenceId: eventJSON.recurrenceId,
+    isOccur: eventJSON.isOccur
   };
-}
-
-export function getCalendarById(calendarId) {
-  return fetch(`${calConstants.CAL_SERVER_API}calendars/${calendarId}`, {headers: calConstants.HEADER_NO_CACHE})
-    .then(resp =>  resp.json()).then(calendar => {
-      if (calendar) {
-        return {
-          id: calendar.id,
-          name: calendar.name,
-          description: calendar.description,
-          type: calendar.type,
-          timeZone: calendar.timeZone
-        };
-      } else {
-        return null;
-      }
-    });
 }
 
 export function getEventById(eventId, isOccur, recurId, startTime, endTime) {
@@ -152,68 +120,71 @@ export function getEventById(eventId, isOccur, recurId, startTime, endTime) {
   }
 }
 
-export function saveEvent(evt) {
-  const fromDate = buildDate(evt.fromDate, evt.fromTime);
-  const toDate = buildDate(evt.toDate, evt.toTime);
+export function saveEvent(form) {
+  const fromDate = Utils.buildUTCDate(form.event.fromDate);
+  const minute = 60;
+  fromDate.setHours(fromDate.getHours() - calConstants.SETTINGS.timezone / minute);
+  const toDate = Utils.buildUTCDate(form.event.toDate);
+  toDate.setHours(toDate.getHours() - calConstants.SETTINGS.timezone / minute);
 
   const event = {
-    subject: evt.title,
-    description: evt.description,
+    subject: form.event.title,
+    description: form.event.description,
     from: fromDate.toISOString(),
     to: toDate.toISOString(),
-    categoryId: evt.category,
-    location: evt.location,
+    categoryId: form.event.category,
+    location: form.event.location,
     uploadResources: [],
-    participants: evt.participants,
+    participants: form.event.participants,
     reminder: [],
-    recurrenceId: evt.recurrenceId
+    recurrenceId: form.event.recurrenceId
   };
 
-  if (evt.enableReminder) {
+  if (form.enableReminder) {
     const reminder = [];
-    if (evt.reminder.mailReminder) {
+    if (form.event.reminder.mailReminder) {
       reminder.push({
-        id: evt.reminder.mailReminderId,
+        id: form.event.reminder.mailReminderId,
         reminderType: 'email',
-        alarmBefore: evt.reminder.mailReminderTime,
-        fromDateTime: evt.reminder.mailReminderFrom
+        alarmBefore: form.event.reminder.mailReminderTime,
+        fromDateTime: form.event.reminder.mailReminderFrom
       });
     }
-    if (evt.reminder.popupReminder) {
+    if (form.event.reminder.popupReminder) {
       reminder.push({
-        id: evt.reminder.popupReminderId,
+        id: form.event.reminder.popupReminderId,
         reminderType: 'popup',
-        alarmBefore: evt.reminder.popupReminderTime,
-        fromDateTime: evt.reminder.popupReminderFrom
+        alarmBefore: form.event.reminder.popupReminderTime,
+        fromDateTime: form.event.reminder.popupReminderFrom
       });
     }
     event.reminder = reminder;
   }
 
-  if (evt.enableRecurring) {
+  if (form.enableRecurring) {
     const repeat = {
-      type: evt.recurring.repeatType,
-      every: evt.recurring.interval,
+      type: form.event.recurring.repeatType,
+      every: form.event.recurring.interval,
       end: {
         type: 'neverEnd'
       }
     };
 
-    if (evt.recurring.repeatType === 'weekly') {
-      repeat.repeatOn = evt.recurring.weekly.join(',');
-    } else if (evt.recurring.repeatType === 'monthly') {
-      if (evt.recurring.monthly === 'monthlyByMonthDay') {
+    if (form.event.recurring.repeatType === 'weekly') {
+      repeat.repeatOn = form.event.recurring.weekly.join(',');
+    } else if (form.event.recurring.repeatType === 'monthly') {
+      if (form.event.recurring.monthly === 'monthlyByMonthDay') {
         repeat.repeateBy = fromDate.getDate();
       } else {
         repeat.repeatOn = calConstants.WEEK_DAYS[fromDate.getDay()];
       }
     }
 
-    if (evt.recurring.endRepeat === 'endAfter') {
-      repeat.end.value = evt.recurring.endAfterNumber;
+    if (form.event.recurring.endRepeat === 'endAfter') {
+      repeat.end.value = form.event.recurring.endAfterNumber;
       repeat.end.type = 'endAfter';
-    } else if (evt.recurring.endRepeat === 'endByDate') {
-      repeat.end.value = new Date(evt.recurring.endDate).toISOString();
+    } else if (form.event.recurring.endRepeat === 'endByDate') {
+      repeat.end.value = form.event.recurring.endDate.toISOString();
       repeat.end.type = 'endByDate';
     }
 
@@ -222,8 +193,8 @@ export function saveEvent(evt) {
 
   const uploadResources = [];
   const attachments = [];
-  if (evt.attachedFiles && evt.attachedFiles.length) {
-    evt.attachedFiles.map(attachFile => {
+  if (form.event.attachedFiles && form.event.attachedFiles.length) {
+    form.event.attachedFiles.map(attachFile => {
       if (attachFile.uploadId) {
         uploadResources.push({
           id: attachFile.uploadId,
@@ -243,10 +214,10 @@ export function saveEvent(evt) {
   event.uploadResources = uploadResources;
   event.attachments = attachments;
 
-  if (evt.id) {
+  if (form.event.id) {
     //update
-    const queryString = evt.recurringUpdateType ? `?recurringUpdateType=${evt.recurringUpdateType}` : '';
-    return fetch(`${calConstants.CAL_SERVER_API}events/${evt.id}${queryString}`, {
+    const queryString = form.recurringUpdateType ? `?recurringUpdateType=${form.recurringUpdateType}` : '';
+    return fetch(`${calConstants.CAL_SERVER_API}events/${form.event.id}${queryString}`, {
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
@@ -255,7 +226,7 @@ export function saveEvent(evt) {
     });
   } else {
     //create
-    return fetch(`${calConstants.CAL_SERVER_API}calendars/${evt.calendar}/events`, {
+    return fetch(`${calConstants.CAL_SERVER_API}calendars/${form.event.calendar}/events`, {
       headers: new Headers({
         'Content-Type': 'application/json'
       }),

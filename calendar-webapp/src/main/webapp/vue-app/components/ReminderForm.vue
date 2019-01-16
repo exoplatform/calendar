@@ -49,11 +49,11 @@
       </div>
     </div>
     <div class="uiAction uiActionBorder">
-      <button class="btn" type="button" @click="closeForm">
+      <button class="btn" type="button" @click="save">
         {{ $t('ExoEventForm.btn.save') }}
       </button>
 
-      <button class="btn" type="button" @click="closeForm">
+      <button class="btn" type="button" @click="cancel">
         {{ $t('ExoEventForm.btn.cancel') }}
       </button>
     </div>
@@ -81,8 +81,11 @@ export default {
     }
   },
   methods: {
-    closeForm() {
-      this.$emit('closeForm');
+    save() {
+      this.$emit('save');
+    },
+    cancel() {
+      this.$emit('cancel');
     }
   }
 };
