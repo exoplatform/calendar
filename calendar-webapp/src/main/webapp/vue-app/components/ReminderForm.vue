@@ -6,21 +6,13 @@
           <input id="mailReminder" v-model="mailReminder" type="checkbox" class="checkbox" name="mailReminder"><span>{{ $t('UIEventForm.label.mailReminder') }}</span>
         </label>
       </div>
-      <div>
-        <table v-show="mailReminder" class="uiFormGrid reminderTable">
-          <tbody>
-            <tr>
-              <td class="fieldComponent selectboxSmall">
-                <span class="uiSelectbox">
-                  <select id="mailReminderTime" v-model="mailReminderTime" class="selectbox" name="mailReminderTime">
-                    <option v-for="i in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]" :key="i" :value="i">{{ i }} {{ $t('UIEventForm.label.minutes') }}</option>
-                  </select>
-                </span>
-                {{ $t('UIEventForm.label.mailReminderTime') }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-show="mailReminder" class="selectboxSmall">
+        <span class="uiSelectbox">
+          <select id="mailReminderTime" v-model="reminder.mailReminderTime" class="selectbox" name="mailReminderTime">
+            <option v-for="i in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]" :key="i" :value="i">{{ i }} {{ $t('UIEventForm.label.minutes') }}</option>
+          </select>
+        </span>
+        {{ $t('UIEventForm.label.mailReminderTime') }}
       </div>
     </div>
     <div>
