@@ -170,7 +170,7 @@ export default {
     },
     reminderLabel() {
       if (this.enableReminder && this.event.reminder.isEnabled()) {
-        return this.$t('ExoEventForm.label.reminder');
+        return this.$t('ExoEventForm.label.reminderTime', [this.event.reminder.getNearest()]);
       }
     },
     recurringLabel() {
