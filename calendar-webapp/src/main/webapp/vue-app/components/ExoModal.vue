@@ -1,7 +1,7 @@
 <template>
   <div v-show="show" class="uiPopup">
     <div class="popupHeader clearfix">
-      <a class="uiIconClose pull-right"></a>
+      <a class="uiIconClose pull-right" @click="$emit('close')"></a>
       <span class="popupTitle">{{ title }}</span>
     </div>
     <div class="popupContent">

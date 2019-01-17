@@ -1,5 +1,7 @@
 import {calConstants} from './calConstants.js';
 import Utils from './model/utils.js';
+import Reminder from './model/reminder.js';
+import Recurring from './model/recurring.js';
 
 function buildEvent(eventJSON) {
   let calendarId = eventJSON.calendar;
@@ -14,9 +16,8 @@ function buildEvent(eventJSON) {
   const toDate = new Date(eventJSON.to);
   toDate.setHours(toDate.getHours() - offset);
 
-  let reminder = null;
+  const reminder = new Reminder();
   if (eventJSON.reminder && eventJSON.reminder.length) {
-    reminder = {};
     eventJSON.reminder.forEach(r => {
       if (r.reminderType === 'email') {
         reminder.mailReminder = true;
@@ -32,17 +33,15 @@ function buildEvent(eventJSON) {
     });
   }
 
-  let recurring = null;
+  const recurring = new Recurring();
   if (eventJSON.repeat && eventJSON.repeat.enabled) {
-    recurring = {
-      repeatType: eventJSON.repeat.type,
-      interval: eventJSON.repeat.every,
-      exclude: eventJSON.repeat.exclude,
-      endRepeat: 'neverEnd',
-      endAfterNumber: 5,
-      weekly: calConstants.WEEK_DAYS[new Date().getDay()],
-      monthly: 'monthlyByMonthDay'
-    };
+    recurring.repeatType = eventJSON.repeat.type;
+    recurring.interval = eventJSON.repeat.every;
+    recurring.exclude = eventJSON.repeat.exclude;
+    recurring.endRepeat = 'neverEnd';
+    recurring.endAfterNumber = 5;
+    recurring.weekly = calConstants.WEEK_DAYS[new Date().getDay()];
+    recurring.monthly = 'monthlyByMonthDay';
 
     const type = eventJSON.repeat.type;
     if (type === 'weekly') {
