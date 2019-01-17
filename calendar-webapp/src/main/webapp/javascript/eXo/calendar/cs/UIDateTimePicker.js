@@ -8,6 +8,11 @@ var UIDateTimePicker = {
   months : ['${months.jan}','${months.feb}','${months.mar}','${months.apr}','${months.may}','${months.jun}','${months.jul}','${months.aug}','${months.sep}','${months.oct}','${months.nov}','${months.dec}'],
   weekdays : ['${weekdays.sun}','${weekdays.mon}','${weekdays.tue}','${weekdays.wed}','${weekdays.thu}','${weekdays.fri}','${weekdays.sat}'],
   tooltip : ['${PreviousYear}', '${PreviousMonth}', '${NextMonth}', '${NextYear}'],
+  listeners: [],
+
+  addListener: function(name, callback) {
+    UIDateTimePicker.listeners[name] = callback;
+  },
 
 init : function(field, isDisplayTime) {
   UIDateTimePicker.isDisplayTime = isDisplayTime ;
@@ -122,16 +127,16 @@ setDate : function(year, month, day) {
       dateString = dateString.replace(/m{2}/, currentMinutes) ;
       dateString = dateString.replace(/s{2}/, currentSeconds) ;
     } else {
-      dateString = dateString.split(' ') ;
-      UIDateTimePicker.dateField.value = dateString[0] ;
-      UIDateTimePicker.hide() ;
-      return ;
+      dateString = dateString.split(' ')[0];
     }
     
     UIDateTimePicker.dateField.value = dateString ;
+    var callback = UIDateTimePicker.listeners['setDate'];
+    if (callback && typeof callback === "function") {
+      callback.call(UIDateTimePicker.dateField);
+    }
     UIDateTimePicker.hide() ;
   }
-  return ;
 },
 
 renderCalendar : function() {

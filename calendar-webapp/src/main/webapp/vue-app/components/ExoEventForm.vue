@@ -21,7 +21,7 @@
             <div class="calDate">
               <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
               <div class="controls">
-                <input :value="fromDate" class="date" type="text" @change="updateDate(event.fromDate, $event.target.value)"/>
+                <input :value="fromDate" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.fromDate, $event.target.value)"/>
                 <span class="separator">-</span>
                 <input :disabled="isAllDay" :value="fromTime" class="time" type="text" @change="updateTime(event.fromDate, $event.target.value)"/>
               </div>
@@ -29,7 +29,7 @@
             <div class="calDate">
               <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
               <div class="controls">
-                <input :value="toDate" class="date" type="text" @change="updateDate(event.toDate, $event.target.value)"/>
+                <input :value="toDate" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.toDate, $event.target.value)"/>
                 <span class="separator">-</span>
                 <input :disabled="isAllDay" :value="toTime" class="time" type="text" @change="updateTime(event.toDate, $event.target.value)"/>
               </div>
@@ -220,6 +220,21 @@ export default {
       this.reset();
     }
   },
+  mounted: function() {
+    const dateInput = $(this.$el).find('input.date');
+    dateInput.focus(function() {
+      timePicker.init(this, false);
+    });
+    dateInput.keyup(function() {
+      timePicker.show();
+    });
+    dateInput.focus(function(event) {
+      event.cancelBubble = true;
+    });
+    timePicker.addListener('setDate', function() {
+      this.dispatchEvent(new Event('change'));
+    });
+  },
   methods: {
     getDefaultData() {
       const data = {
@@ -242,6 +257,7 @@ export default {
       return data;
     },
     updateDate(date, val) {
+      console.log('abc');
       const parsedVal = Utils.parseDate(val);
       if (parsedVal) {
         date.setFullYear(parsedVal.getFullYear(),parsedVal.getMonth(), parsedVal.getDate());
