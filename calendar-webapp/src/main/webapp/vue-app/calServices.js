@@ -4,11 +4,7 @@ import Reminder from './model/reminder.js';
 import Recurring from './model/recurring.js';
 
 function buildEvent(eventJSON) {
-  let calendarId = eventJSON.calendar;
-  const idx = calendarId.lastIndexOf('/');
-  if (idx !== -1) {
-    calendarId = calendarId.slice(idx + 1);
-  }
+  const calendarId = eventJSON.calendarId;
 
   const offset = Utils.getTimezoneOffset();
   const fromDate = new Date(eventJSON.from);
@@ -128,10 +124,12 @@ export function saveEvent(form) {
   toDate.setHours(toDate.getHours() - calConstants.SETTINGS.timezone / minute);
 
   const event = {
+    id: form.event.id,
     subject: form.event.title,
     description: form.event.description,
     from: fromDate.toISOString(),
     to: toDate.toISOString(),
+    calendarId: form.event.calendar,
     categoryId: form.event.category,
     location: form.event.location,
     uploadResources: [],
