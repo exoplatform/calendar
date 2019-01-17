@@ -712,6 +712,10 @@
     <depends>
       <module>iePolyfills</module>
     </depends>
+    <depends>
+      <module>CalDateTimePicker</module>
+      <as>timePicker</as>
+    </depends>
   </module>
 
 </gatein-resources>
