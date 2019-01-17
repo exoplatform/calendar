@@ -1,5 +1,5 @@
 <template>
-  <div class="iphoneCheckbox" @click.stop.prevent="onChange">
+  <div class="iphoneCheckbox">
     <input v-iphone :checked="checked && !disabled" :disabled="disabled" type="checkbox" class="iphone"/>
   </div>
 </template>
@@ -8,13 +8,16 @@
 export default {
   directives: {
     'iphone': {
-      inserted(el) {
+      inserted(el, binding, vnode) {
         $(el).iphoneStyle({
           disabledClass: 'switchBtnDisabled',
           containerClass: 'uiSwitchBtn',
           labelOnClass: 'switchBtnLabelOn',
           labelOffClass: 'switchBtnLabelOff',
           handleClass: 'switchBtnHandle',
+          onChange: function() {
+            vnode.context.onChange();
+          }
         });
       }
     }
@@ -44,7 +47,9 @@ export default {
   methods: {
     onChange() {
       const value = $(this.$el).find('input').is(':checked');
-      this.$emit('change', value);
+      if (this.checked !== value) {
+        this.$emit('change', value);
+      }
     }
   }
 };
