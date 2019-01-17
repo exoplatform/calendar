@@ -12,6 +12,16 @@ class Reminder {
     return this.mailReminder || this.popupReminder;
   }
 
+  getNearest() {
+    if (this.mailReminder && this.popupReminder) {
+      return Math.min(this.mailReminderTime, this.popupReminderTime);
+    } else if (this.mailReminder) {
+      return this.mailReminderTime;
+    } else {
+      return this.popupReminderTime;
+    }
+  }
+
   clone() {
     const data = new Reminder();
     Utils.copyObj(data, this);
