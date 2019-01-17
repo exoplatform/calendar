@@ -80,7 +80,7 @@
             <div class="repeat">
               <div class="control-label">{{ $t('ExoEventForm.label.repeat') }}</div>
               <div class="controls">
-                <exo-modal :show="showRecurringUpdateType" :title="$t('UICalendarChildPopupWindow.title.RecurringUpdateTypeForm')" @close="cancelRecurringUpdateTypeForm">
+                <exo-modal :show="showRecurringUpdateType" :title="$t('ExoEventForm.title.RecurringUpdateTypeForm')" @close="cancelRecurringUpdateTypeForm">
                   <recurring-update-type-form v-model="recurringUpdateType" @cancelForm="cancelRecurringUpdateTypeForm" @saveForm="saveRecurringUpdateTypeForm"/>
                 </exo-modal>
                 <exo-modal :show="showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')" @close="cancelRecurring">
