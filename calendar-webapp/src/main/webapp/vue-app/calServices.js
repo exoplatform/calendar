@@ -95,8 +95,9 @@ function buildEvent(eventJSON) {
 
 export function getEventById(eventId, isOccur, recurId, startTime, endTime) {
   if (isOccur && isOccur !== 'false' && recurId) {
-    const start = new Date(parseInt(startTime));
-    const end = new Date(parseInt(endTime));
+    const hour = 3600000;
+    const start = new Date(parseInt(startTime) - hour);
+    const end = new Date(parseInt(endTime) + hour);
     return fetch(`${calConstants.CAL_SERVER_API}events/${eventId}/occurrences?start=${start.toISOString()}&end=${end.toISOString()}&expand=attachments`, {headers: calConstants.HEADER_NO_CACHE})
       .then(resp =>  resp.json())
       .then(json =>  {
