@@ -41,7 +41,7 @@ export function init(settings) {
             }
           },
           refresh() {
-            //window.location.reload();
+            window.location.reload();
           }
         },
         template: '<exo-event-form v-model="showEventForm" :initEvt="calEvt" @save="refresh"></exo-event-form>',
