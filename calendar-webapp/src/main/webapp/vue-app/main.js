@@ -10,7 +10,7 @@ let vm = null;
 export function init(settings) {
   calConstants.SETTINGS = settings;
 
-  if ($('#ExoEventForm').length && vm == null) {
+  if ($('#ExoEventForm').length) {
     exoi18n.loadLanguageAsync(lang, url).then(i18n => {
       vm = new Vue({
         el: '#ExoEventForm',
