@@ -3,16 +3,16 @@
     <div class="reminderByEmail">
       <div id="mailReminder" class="mailReminder">
         <label class="uiCheckbox">
-          <input id="mailReminder" v-model="reminder.mailReminder" type="checkbox" class="checkbox" name="mailReminder"><span>{{ $t('UIEventForm.label.mailReminder') }}</span>
+          <input id="mailReminder" v-model="mailReminder" type="checkbox" class="checkbox" name="mailReminder"><span>{{ $t('UIEventForm.label.mailReminder') }}</span>
         </label>
       </div>
       <div>
-        <table v-show="reminder.mailReminder" class="uiFormGrid reminderTable">
+        <table v-show="mailReminder" class="uiFormGrid reminderTable">
           <tbody>
             <tr>
               <td class="fieldComponent selectboxSmall">
                 <span class="uiSelectbox">
-                  <select id="mailReminderTime" v-model="reminder.mailReminderTime" class="selectbox" name="mailReminderTime">
+                  <select id="mailReminderTime" v-model="mailReminderTime" class="selectbox" name="mailReminderTime">
                     <option v-for="i in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]" :key="i" :value="i">{{ i }} {{ $t('UIEventForm.label.minutes') }}</option>
                   </select>
                 </span>
@@ -27,17 +27,17 @@
       <div class="reminderByPopup">
         <div id="popupReminder" class="popupReminder">
           <label class="uiCheckbox">
-            <input id="popupReminder" v-model="reminder.popupReminder" type="checkbox" class="checkbox" name="popupReminder"><span>Display a notification pop-up</span>
+            <input id="popupReminder" v-model="popupReminder" type="checkbox" class="checkbox" name="popupReminder"><span>Display a notification pop-up</span>
           </label>
         </div>
       </div>
       <div>
-        <table v-show="reminder.popupReminder" class="uiFormGrid">
+        <table v-show="popupReminder" class="uiFormGrid">
           <tbody>
             <tr>
               <td class="fieldComponent selectboxSmall">
                 <span class="uiSelectbox">
-                  <select id="popupReminderTime" v-model="reminder.popupReminderTime" class="selectbox" name="popupReminderTime">
+                  <select id="popupReminderTime" v-model="popupReminderTime" class="selectbox" name="popupReminderTime">
                     <option v-for="i in [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]" :key="i" :value="i">{{ i }} {{ $t('UIEventForm.label.minutes') }}</option>
                   </select>
                 </span>
@@ -61,6 +61,9 @@
 </template>
 
 <script>
+import Utils from '../model/utils.js';
+import Reminder from '../model/reminder.js';
+
 export default {
   model: {
     prop: 'reminder',
@@ -72,20 +75,31 @@ export default {
       default: {}
     }
   },
+  data() {
+    return new Reminder();
+  },
   watch: {
-    reminder: {
-      handler() {
-        this.$emit('change', this.reminder);
-      },
-      deep: true
+    reminder() {
+      this.reset();
     }
   },
   methods: {
     save() {
+      Utils.copyObj(this.reminder, this.$data);
       this.$emit('save');
     },
     cancel() {
+      this.reset();
       this.$emit('cancel');
+    },
+    reset() {
+      const data = new Reminder();
+      Utils.copyObj(data, this.reminder);
+      Object.entries(data).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
+
+      if (!this.reminder.isEnabled()) {
+        this.mailReminder = true;
+      }
     }
   }
 };

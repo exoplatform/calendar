@@ -72,5 +72,9 @@ export default {
     const minute = 60;
     const offset = (date.getTimezoneOffset() * -1 - calConstants.SETTINGS.timezone) / minute;
     return offset;
+  },
+
+  copyObj(target, source) {
+    $.extend(true, target, source);
   }
 };

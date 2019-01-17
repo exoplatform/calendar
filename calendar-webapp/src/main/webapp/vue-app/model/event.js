@@ -50,7 +50,11 @@ class CalendarEvent {
     if (evt) {
       Object.entries(evt).forEach(entry => {
         if (entry[1] !== null) {
-          Vue.set(this, entry[0], entry[1]);
+          if (typeof entry[1] === 'object' && entry[1].clone) {
+            Vue.set(this, entry[0], entry[1].clone());
+          } else {
+            Vue.set(this, entry[0], entry[1]);
+          }
         }
       });
 

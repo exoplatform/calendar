@@ -70,8 +70,8 @@
             <div class="reminder pull-left">
               <div class="control-label">{{ $t('ExoEventForm.label.reminder') }}</div>
               <div class="controls">
-                <exo-modal :show="showReminder" :title="$t('ExoEventForm.label.reminder')">
-                  <reminder-form v-model="event.reminder" @save="closeReminderForm" @cancel="resetReminder"/>
+                <exo-modal :show="showReminder" :title="$t('ExoEventForm.label.reminder')" @close="cancelReminder">
+                  <reminder-form v-model="event.reminder" @save="saveReminder" @cancel="cancelReminder"/>
                 </exo-modal>
                 <iphone-checkbox v-model="enableReminder"/>
                 <a @click.prevent="showReminder = true">{{ reminderLabel }}</a>
@@ -80,11 +80,11 @@
             <div class="repeat">
               <div class="control-label">{{ $t('ExoEventForm.label.repeat') }}</div>
               <div class="controls">
-                <exo-modal :show="showRecurringUpdateType" :title="$t('UICalendarChildPopupWindow.title.RecurringUpdateTypeForm')">
+                <exo-modal :show="showRecurringUpdateType" :title="$t('UICalendarChildPopupWindow.title.RecurringUpdateTypeForm')" @close="cancelRecurringUpdateTypeForm">
                   <recurring-update-type-form v-model="recurringUpdateType" @cancelForm="cancelRecurringUpdateTypeForm" @saveForm="saveRecurringUpdateTypeForm"/>
                 </exo-modal>
-                <exo-modal :show="showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')">
-                  <recurring-form v-model="event.recurring" @save="closeRecurringForm" @cancel="resetRecurring"/>
+                <exo-modal :show="showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')" @close="cancelRecurring">
+                  <recurring-form v-model="event.recurring" @save="saveRecurring" @cancel="cancelRecurring"/>
                 </exo-modal>
                 <iphone-checkbox v-model="enableRecurring" :disabled="isExceptionOccurence"/>
                 <a @click.prevent="showRecurring = true">{{ recurringLabel }}</a>
@@ -169,12 +169,12 @@ export default {
       }
     },
     reminderLabel() {
-      if (this.enableReminder && this.event.reminder) {
+      if (this.enableReminder && this.event.reminder.isEnabled()) {
         return this.$t('ExoEventForm.label.reminder');
       }
     },
     recurringLabel() {
-      if (this.enableRecurring && this.event.recurring) {
+      if (this.enableRecurring && this.event.recurring.isEnabled()) {
         return this.$t('ExoEventForm.label.repeat');
       }
     },
@@ -197,6 +197,7 @@ export default {
         this.showRecurring = true;
       } else {
         this.resetRecurring();
+        this.showRecurring = false;
       }
     },
     enableReminder() {
@@ -204,6 +205,7 @@ export default {
         this.showReminder = true;
       } else {
         this.resetReminder();
+        this.showReminder = false;
       }
     },
     isAllDay() {
@@ -252,21 +254,31 @@ export default {
       this.open = !this.open;
       this.$emit('toggle-open', this.open);
     },
-    closeRecurringForm() {
+    saveRecurring() {
+      this.showRecurring = false;
+    },
+    cancelRecurring() {
+      if (!this.event.recurring.isEnabled()) {
+        this.enableRecurring = false;
+      }
       this.showRecurring = false;
     },
     resetRecurring() {
       const data = this.getDefaultData();
       this.event.recurring = data.event.recurring;
-      this.closeRecurringForm();
     },
-    closeReminderForm() {
+    saveReminder() {
+      this.showReminder = false;
+    },
+    cancelReminder() {
+      if (!this.event.reminder.isEnabled()) {
+        this.enableReminder = false;
+      }
       this.showReminder = false;
     },
     resetReminder() {
       const data = this.getDefaultData();
       this.event.reminder = data.event.reminder;
-      this.closeReminderForm();
     },
     cancelRecurringUpdateTypeForm() {
       this.showRecurringUpdateType = false;
@@ -280,7 +292,7 @@ export default {
       Object.entries(data).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
 
       if (this.initEvt.reminder) {
-        if (this.initEvt.reminder.mailReminder || this.initEvt.reminder.popupReminder) {
+        if (this.initEvt.reminder.isEnabled()) {
           this.enableReminder = true;
           Vue.nextTick(() => {
             this.showReminder = false;
@@ -289,10 +301,12 @@ export default {
       }
 
       if (this.initEvt.recurring) {
-        this.enableRecurring = true;
-        Vue.nextTick(() => {
-          this.showRecurring = false;
-        });
+        if (this.initEvt.recurring.isEnabled()) {
+          this.enableRecurring = true;
+          Vue.nextTick(() => {
+            this.showRecurring = false;
+          });
+        }
       }
 
       this.isAllDay = this.event.isAllDay();
