@@ -1138,21 +1138,28 @@ public class CalendarRestApi implements ResourceContainer {
         event = CalendarEvent.build(event);
       }
 
+      Calendar moveToCal = null;
+      if (evObject.getCalendarId() != null && !event.getCalendarId().equals(evObject.getCalendarId())) {
+        moveToCal = calendarServiceInstance().getCalendarById(evObject.getCalendarId());
+      }
+
       Calendar cal = calendarServiceInstance().getCalendarById(event.getCalendarId());
-      if (Utils.isCalendarEditable(currentUserId(), cal)) {
-        Response error = buildEvent(event, evObject);
+      int fromType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), cal.getId());
+      if (Utils.isCalendarEditable(currentUserId(), cal) && (moveToCal == null || Utils.isCalendarEditable(currentUserId(), moveToCal))) {
+        Response error = buildEvent(event, evObject, moveToCal);
         if (error != null) {
           return error;
         }
 
-        int calType = -1;
+        int toType = -1;
         try {
-          calType = Integer.parseInt(event.getCalType());
+          toType = Integer.parseInt(event.getCalType());
         }catch (NumberFormatException e) {
-          calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), event.getCalendarId());
+          toType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), event.getCalendarId());
         }
 
-        saveEvent(calType, event, recurringUpdateType, false);
+        moveToCal = moveToCal == null ? cal : moveToCal;
+        saveEvent(cal.getId(), moveToCal.getId(), fromType, toType, event, recurringUpdateType, false);
 
         return Response.ok().cacheControl(nc).build();
       }
@@ -1702,7 +1709,7 @@ public class CalendarRestApi implements ResourceContainer {
       if (evObject.getCategoryId() == null) {
         evObject.setCategoryId(CalendarService.DEFAULT_EVENTCATEGORY_ID_ALL);
       }
-      Response error = buildEvent(newEvent, evObject);
+      Response error = buildEvent(newEvent, evObject, null);
       if (error != null) {
         return error;
       }
@@ -3917,7 +3924,17 @@ public class CalendarRestApi implements ResourceContainer {
     return ConversationState.getCurrent().getIdentity().getUserId();
   }
 
-  private Response buildEvent(CalendarEvent old, EventResource evObject) {
+  private Response buildEvent(CalendarEvent old, EventResource evObject, Calendar moveToCal) {
+    if (moveToCal != null) {
+      old.setCalendarId(moveToCal.getId());
+      try {
+        int calType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), moveToCal.getId());
+        old.setCalType(String.valueOf(calType));
+      } catch (Exception ex) {
+        return buildBadResponse(new ErrorResource("Can not get type of calendar " + moveToCal.getId()));
+      }
+    }
+
     String catId = evObject.getCategoryId();
     setEventCategory(old, catId);
     if (evObject.getDescription() != null) {
@@ -4358,25 +4375,34 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   private void saveEvent(int calType, CalendarEvent event, boolean bln) throws Exception {
-    saveEvent(calType, event, null, bln);
+    saveEvent(event.getCalendarId(), event.getCalendarId(), calType, calType, event, null, bln);
   }
 
-  private void saveEvent(int calType, CalendarEvent event, RecurringUpdateType recurringUpdateType, boolean bln) throws Exception {
+  private void saveEvent(String fromCal, String toCal, int fromType, int toType, CalendarEvent event, RecurringUpdateType recurringUpdateType, boolean bln) throws Exception {
     CalendarService calService = calendarServiceInstance();
     if (recurringUpdateType == null) {
       //create new event or update non-repeat event
-      switch (calType) {
-        case Calendar.TYPE_PRIVATE:
-          calService.saveUserEvent(currentUserId(), event.getCalendarId(), event, bln);
-          break;
-        case Calendar.TYPE_PUBLIC:
-          calService.savePublicEvent(event.getCalendarId(), event, bln);
-          break;
-        case Calendar.TYPE_SHARED:
-          calService.saveEventToSharedCalendar(currentUserId(), event.getCalendarId(), event,bln);
-          break;
-        default:
-          break;
+      if (bln) {
+        switch (toType) {
+          case Calendar.TYPE_PRIVATE:
+            calService.saveUserEvent(currentUserId(), event.getCalendarId(), event, bln);
+            break;
+          case Calendar.TYPE_PUBLIC:
+            calService.savePublicEvent(event.getCalendarId(), event, bln);
+            break;
+          case Calendar.TYPE_SHARED:
+            calService.saveEventToSharedCalendar(currentUserId(), event.getCalendarId(), event,bln);
+            break;
+          default:
+            break;
+        }
+      } else {
+        List<CalendarEvent> listEvent = Arrays.asList(event);
+        if (org.exoplatform.calendar.service.Utils.isExceptionOccurrence(event)) {
+          calService.updateOccurrenceEvent(fromCal, toCal, String.valueOf(fromType), String.valueOf(toType), listEvent, currentUserId());
+        } else {
+          calService.moveEvent(fromCal, toCal, String.valueOf(fromType), String.valueOf(toType), listEvent, currentUserId()) ;
+        }
       }
     } else {
       //update repeat event

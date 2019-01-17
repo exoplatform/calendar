@@ -58,6 +58,7 @@ public class EventResource extends Resource {
   private String                    privacy;
   private String                    availability;  
   private String                categoryId;
+  private String                calendarId;
   
   public EventResource() {
     super(null);
@@ -82,6 +83,7 @@ public class EventResource extends Resource {
     calendar = new StringBuilder(basePath).append(CALENDAR_URI)
                                              .append(data.getCalendarId())
                                              .toString();
+    calendarId = data.getCalendarId();
     if (data.getEventCategoryId() != null) {
       categories = new String[] { new StringBuilder(basePath).append(CATEGORY_URI)
           .append(data.getEventCategoryId())
@@ -287,6 +289,14 @@ public class EventResource extends Resource {
 
   public void setCategoryId(String categoryId) {
     this.categoryId = categoryId;
+  }
+
+  public String getCalendarId() {
+    return calendarId;
+  }
+
+  public void setCalendarId(String calendarId) {
+    this.calendarId = calendarId;
   }
 
   public Boolean getIsOccur() {
