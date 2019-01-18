@@ -267,7 +267,6 @@ export default {
       return data;
     },
     updateDate(date, val) {
-      console.log('abc');
       const parsedVal = Utils.parseDate(val);
       if (parsedVal) {
         date.setFullYear(parsedVal.getFullYear(),parsedVal.getMonth(), parsedVal.getDate());
@@ -364,8 +363,18 @@ export default {
         const errors = this.event.validate();
         if (errors && errors.length) {
           this.errors = errors;
+
         } else {
-          calServices.saveEvent(this.$data).then(resp => resp.json()).then((data) => {
+          calServices.saveEvent(this.$data).then(resp => {
+            if (resp && resp.bodyUsed) {
+              try {
+                return resp.json();
+              } catch (err) {
+                return null;
+              }
+            }
+            return null;
+          }).then((data) => {
             if (data && data.developerMessage) {
               this.errors.push(data.developerMessage);
             } else {
@@ -373,7 +382,7 @@ export default {
               this.$emit('save');
             }
           }).catch((err) => {
-            this.errors.push(err);
+            this.errors.push(err.message);
           });
         }
       }
