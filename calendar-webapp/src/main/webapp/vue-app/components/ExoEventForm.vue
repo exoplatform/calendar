@@ -12,7 +12,7 @@
               <input v-model="event.title" :placeholder="$t('ExoEventForm.placeholder.eventTitle')" name="eventName" class="eventTitle" type="text"/>
               <span class="uiSelectbox form-horizontal">
                 <select v-model="event.category" class="selectbox category" name="category">
-                  <option v-for="category in categories" :key="category.id" :value="category.id">{{ $t(`UICalendarView.label.${category.id}`) }}</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.id">{{ trim($t(`UICalendarView.label.${category.id}`), 16) }}</option>
                 </select>
               </span>
             </div>
@@ -61,7 +61,7 @@
                 <span class="uiSelectbox form-horizontal">
                   <select v-model="event.calendar" class="selectbox" name="calendar">
                     <optgroup v-for="group in calendarGroups" :key="group.id" :label="$t(`UICalendarSettingForm.label.${group.name}`)">
-                      <option v-for="calendar in group.calendars" :key="calendar.id" :value="`${calendar.id}`">{{ calendar.name }}</option>
+                      <option v-for="calendar in group.calendars" :key="calendar.id" :value="`${calendar.id}`">{{ trim(calendar.name, 21) }}</option>
                     </optgroup>
                   </select>
                 </span>
@@ -286,6 +286,12 @@ export default {
     saveRecurringUpdateTypeForm() {
       this.showRecurringUpdateType = false;
       this.save();
+    },
+    trim(str, length) {
+      if (str && str.length > length) {
+        str = `${str.slice(0, length)}...`;
+      }
+      return str;
     },
     reset() {
       const data = this.getDefaultData();
