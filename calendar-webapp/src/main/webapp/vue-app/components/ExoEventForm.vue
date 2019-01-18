@@ -107,7 +107,7 @@
       </div>
       <div class="footer">
         <div class="uiAction">
-          <button type="button" class="btn btn-primary" @click="save">{{ $t('ExoEventForm.btn.save') }}</button>
+          <button :disabled="!isAllowToSave" type="button" class="btn btn-primary" @click="save">{{ $t('ExoEventForm.btn.save') }}</button>
           <button type="button" class="btn" @click="toggleOpen">{{ $t('ExoEventForm.btn.cancel') }}</button>
           <button type="button" class="btn clearBtn" @click="reset">{{ $t('ExoEventForm.btn.clear') }}</button>
         </div>
@@ -160,6 +160,9 @@ export default {
   computed: {
     isExceptionOccurence() {
       return !this.event.isOccur && this.event.recurrenceId;
+    },
+    isAllowToSave() {
+      return this.event.title && this.event.title.trim();
     },
     formTitle() {
       if (this.event.id) {
