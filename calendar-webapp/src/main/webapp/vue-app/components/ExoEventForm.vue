@@ -104,6 +104,9 @@
             </div>
           </div>
         </form>
+        <exo-modal :show="hasErrors" :title="$t('ExoEventForm.title.message')" @close="errors = []">
+          <error-message v-model="errors"/>
+        </exo-modal>
       </div>
       <div class="footer">
         <div class="uiAction">
@@ -129,6 +132,7 @@ import ExoModal from './ExoModal.vue';
 import RecurringForm from './RecurringForm.vue';
 import RecurringUpdateTypeForm from './RecurringUpdateTypeForm.vue';
 import ReminderForm from './ReminderForm.vue';
+import ErrorMessage from './ErrorMessage.vue';
 
 export default {
   components: {
@@ -138,7 +142,8 @@ export default {
     'exo-modal': ExoModal,
     'recurring-form': RecurringForm,
     'recurring-update-type-form': RecurringUpdateTypeForm,
-    'reminder-form': ReminderForm
+    'reminder-form': ReminderForm,
+    'error-message': ErrorMessage
   },
   model: {
     prop: 'open',
@@ -163,6 +168,9 @@ export default {
     },
     isAllowToSave() {
       return this.event.title && this.event.title.trim();
+    },
+    hasErrors() {
+      return this.errors && this.errors.length;
     },
     formTitle() {
       if (this.event.id) {
@@ -247,7 +255,9 @@ export default {
         isAllDay: false,
 
         calendarGroups: [],
-        categories: []
+        categories: [],
+
+        errors: []
       };
 
       const event = new CalendarEvent();
@@ -351,10 +361,21 @@ export default {
       if (this.event.id && this.event.isOccur && !this.recurringUpdateType) {
         this.showRecurringUpdateType = true;
       } else {
-        this.toggleOpen();
-        calServices.saveEvent(this.$data).then(() => {
-          this.$emit('save');
-        });
+        const errors = this.event.validate();
+        if (errors && errors.length) {
+          this.errors = errors;
+        } else {
+          calServices.saveEvent(this.$data).then(resp => resp.json()).then((data) => {
+            if (data && data.developerMessage) {
+              this.errors.push(data.developerMessage);
+            } else {
+              this.toggleOpen();
+              this.$emit('save');
+            }
+          }).catch((err) => {
+            this.errors.push(err);
+          });
+        }
       }
     }
   }

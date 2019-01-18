@@ -3935,6 +3935,14 @@ public class CalendarRestApi implements ResourceContainer {
       }
     }
 
+    try {
+      if (calendarServiceInstance().isRemoteCalendar(currentUserId(), old.getCalendarId())) {
+        return buildBadResponse(new ErrorResource("Can not add/update event in remote calendar", "cant-add-event-on-remote-calendar"));
+      }
+    } catch (Exception ex) {
+      return buildBadResponse(new ErrorResource("Can not check remote calendar " + moveToCal.getId(), "cant-check-remote"));
+    }
+
     String catId = evObject.getCategoryId();
     setEventCategory(old, catId);
     if (evObject.getDescription() != null) {
@@ -4056,7 +4064,7 @@ public class CalendarRestApi implements ResourceContainer {
 
     java.util.Calendar[] fromTo = parseDate(evObject.getFrom(), evObject.getTo());
     if (fromTo[0].after(fromTo[1]) || fromTo[0].equals(fromTo[1])) {
-      return buildBadResponse(new ErrorResource("\"from\" date must be before \"to\" date", "from"));
+      return buildBadResponse(new ErrorResource("\"from\" date must be before \"to\" date", "event-date-time-logic"));
     }
     old.setFromDateTime(fromTo[0].getTime());
     if (evObject.getLocation() != null) {

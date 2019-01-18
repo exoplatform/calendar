@@ -46,6 +46,19 @@ class CalendarEvent {
       && this.toDate.getMinutes() === MID_NIGHT_MINUTE;
   }
 
+  validate() {
+    const errors = [];
+    if (!this.fromDate) {
+      errors.push('event-fromdate-required');
+    } else if (!this.toDate) {
+      errors.push('event-todate-required');
+    } else if (this.fromDate.getTime() > this.toDate.getTime()) {
+      errors.push('event-date-time-logic');
+    }
+
+    return errors;
+  }
+
   buildFrom(evt) {
     if (evt) {
       Object.entries(evt).forEach(entry => {
