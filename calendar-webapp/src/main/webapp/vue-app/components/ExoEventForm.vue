@@ -206,6 +206,13 @@ export default {
     enableRecurring() {
       if (this.enableRecurring) {
         this.showRecurring = true;
+        if (this.showReminder) {
+          if (this.reminderLabel) {
+            this.showReminder = false;
+          } else {
+            this.enableReminder = false;
+          }
+        }
       } else {
         this.resetRecurring();
         this.showRecurring = false;
@@ -214,6 +221,13 @@ export default {
     enableReminder() {
       if (this.enableReminder) {
         this.showReminder = true;
+        if (this.showRecurring) {
+          if (this.recurringLabel) {
+            this.showRecurring = false;
+          } else {
+            this.enableRecurring = false;
+          }
+        }
       } else {
         this.resetReminder();
         this.showReminder = false;
