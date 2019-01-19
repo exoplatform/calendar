@@ -377,8 +377,9 @@ export default {
         const errors = this.event.validate();
         if (errors && errors.length) {
           this.errors = errors;
-
         } else {
+          this.toggleOpen();
+
           calServices.saveEvent(this.$data).then(resp => {
             if (resp && resp.bodyUsed) {
               try {
@@ -392,7 +393,6 @@ export default {
             if (data && data.developerMessage) {
               this.errors.push(data.developerMessage);
             } else {
-              this.toggleOpen();
               this.$emit('save');
             }
           }).catch((err) => {
