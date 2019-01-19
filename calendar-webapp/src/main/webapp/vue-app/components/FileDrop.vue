@@ -12,7 +12,7 @@
       </div>
       <div v-for="file in files" :key="file.name" class="file clearfix">
         <div class="info">
-          <div :title="file.name" class="fileNameLabel pull-left" data-toggle="tooltip" rel="tooltip" data-placement="top">{{ file.name }}</div>
+          <div :title="file.name" class="fileNameLabel pull-left" data-toggle="tooltip" rel="tooltip" data-placement="top">{{ decodeURIComponent(file.name) }}</div>
           <div class="fileSize pull-left">({{ getFileSize(file.size) }})</div>
           <div v-show="file.progress == 100" class="removeFile">
             <a :title="$t('ExoEventForm.btn.delete')" href="#" rel="tooltip" data-placement="top" @click="deleteFile(file.name)">

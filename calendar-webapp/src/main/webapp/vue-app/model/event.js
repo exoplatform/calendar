@@ -68,6 +68,8 @@ class CalendarEvent {
               Vue.set(this, entry[0], entry[1].clone());
             } else if (entry[1].constructor.name === 'Date') {
               Vue.set(this, entry[0], new Date(entry[1].getTime()));
+            } else {
+              Vue.set(this, entry[0], entry[1]);
             }
           } else {
             Vue.set(this, entry[0], entry[1]);
