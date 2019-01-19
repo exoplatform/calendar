@@ -14,17 +14,17 @@
       <div class="confirmRadio">
         <div>
           <label class="uiRadio">
-            <input id="confirm" v-model="recurringUpdateType" class="radio" type="radio" name="confirm" value="ONE"> <span>{{ $t('confirm.label.save_one') }}</span>
+            <input id="confirm" v-model="type" class="radio" type="radio" name="confirm" value="ONE"> <span>{{ $t('confirm.label.save_one') }}</span>
           </label>
         </div>
         <div>
           <label class="uiRadio">
-            <input id="confirm" v-model="recurringUpdateType" class="radio" type="radio" name="confirm" value="FOLLOWING"> <span>{{ $t('confirm.label.save_follow') }}</span>
+            <input id="confirm" v-model="type" class="radio" type="radio" name="confirm" value="FOLLOWING"> <span>{{ $t('confirm.label.save_follow') }}</span>
           </label>
         </div>
         <div>
           <label class="uiRadio">
-            <input id="confirm" v-model="recurringUpdateType" class="radio" type="radio" name="confirm" value="ALL"> <span>{{ $t('confirm.label.save_all') }}</span>
+            <input id="confirm" v-model="type" class="radio" type="radio" name="confirm" value="ALL"> <span>{{ $t('confirm.label.save_all') }}</span>
           </label>
         </div>
       </div>
@@ -53,17 +53,20 @@ export default {
       default: ''
     }
   },
-  watch: {
-    recurringUpdateType() {
-      this.$emit('change', this.recurringUpdateType);
-    }
+  data() {
+    return {
+      type: 'ONE'
+    };
   },
   methods: {
     cancelForm() {
-      this.recurringUpdateType = '';
+      this.type = 'ONE';
       this.$emit('cancelForm');
     },
     saveForm() {
+      this.recurringUpdateType = this.type;
+      this.type = 'ONE';
+      this.$emit('change', this.recurringUpdateType);
       this.$emit('saveForm');
     }
   }
