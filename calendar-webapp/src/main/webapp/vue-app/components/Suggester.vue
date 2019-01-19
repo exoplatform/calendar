@@ -72,8 +72,10 @@ export default {
         if (!selectize.items.includes(par)) {
           findUsers(par, users => {
             users.forEach(user => {
-              selectize.addOption(user);
-              selectize.addItem(user.id);
+              if (user.id === par) {
+                selectize.addOption(user);
+                selectize.addItem(user.id);
+              }
             });
           });
         }
