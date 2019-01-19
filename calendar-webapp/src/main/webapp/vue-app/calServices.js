@@ -203,8 +203,7 @@ export function saveEvent(form) {
       } else {
         attachments.push({
           name: attachFile.name,
-          weight: attachFile.file.size,
-          mimeType: attachFile.file.type
+          weight: attachFile.size
         });
       }
     });
