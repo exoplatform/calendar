@@ -58,13 +58,7 @@
             <div class="calendarSelector pull-left">
               <div class="control-label">{{ $t('ExoEventForm.label.calendar') }}</div>
               <div class="controls">
-                <span class="uiSelectbox form-horizontal">
-                  <select v-model="event.calendar" class="selectbox" name="calendar">
-                    <optgroup v-for="group in calendarGroups" :key="group.id" :label="$t(`UICalendarSettingForm.label.${group.name}`)">
-                      <option v-for="calendar in group.calendars" :key="calendar.id" :value="`${calendar.id}`">{{ trim(calendar.name, 21) }}</option>
-                    </optgroup>
-                  </select>
-                </span>
+                <calendar-selector v-model="event.calendar" :groups="calendarGroups"/>
               </div>
             </div>
             <div class="reminder pull-left">
@@ -132,6 +126,7 @@ import ExoModal from './ExoModal.vue';
 import RecurringForm from './RecurringForm.vue';
 import RecurringUpdateTypeForm from './RecurringUpdateTypeForm.vue';
 import ReminderForm from './ReminderForm.vue';
+import CalendarSelector from './CalendarSelector.vue';
 import ErrorMessage from './ErrorMessage.vue';
 
 export default {
@@ -143,6 +138,7 @@ export default {
     'recurring-form': RecurringForm,
     'recurring-update-type-form': RecurringUpdateTypeForm,
     'reminder-form': ReminderForm,
+    'calendar-selector': CalendarSelector,
     'error-message': ErrorMessage
   },
   model: {

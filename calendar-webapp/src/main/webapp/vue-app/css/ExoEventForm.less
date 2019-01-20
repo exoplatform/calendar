@@ -47,6 +47,65 @@
   bottom: 70px;
 }
 
+.drawer .content .dropdown {
+  padding: 0 10px;
+  color: #333333;
+  box-shadow: inset 0 2px 1px rgba(0, 0, 0, 0.075);
+  font-size: 13px;
+  box-sizing: border-box;
+  height: 30px;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
+  transition: border linear .2s, box-shadow linear .2s;
+  display: inline-block;
+  line-height: 30px;
+  border-radius: 3px;
+  vertical-align: middle;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.drawer .content .dropdown .caret {
+   margin-top: 12px;
+   float: right;
+}
+
+.drawer .content .dropdown .dropdown-menu {
+  width: 100%;
+  overflow: hidden;
+}
+
+.drawer .content .dropdown .dropdown-menu .dropdown-header {
+  padding: 0px 10px;
+  font-weight: bold;
+}
+
+.drawer .content .dropdown .dropdown-menu li {
+  line-height: 25px;
+}
+
+.drawer .content .dropdown .dropdown-menu li > a {
+  padding: 0px 6px;
+  width: 100%;
+  display: inline-block;
+  font-weight: normal;
+}
+
+.drawer .content .dropdown .color {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 3px;
+}
+
+.drawer .content .calendarSelector {
+  width: 40%;
+  display: inline-block;
+}
+
+.drawer .content .calendarSelector .dropdown {
+  width: 100%;
+}
+
 .drawer .content .eventTitle {
   width: 67%;
 }
@@ -93,15 +152,6 @@
 .drawer .content .allday input {
   float: left;
   margin-right: 3px;
-}
-
-.drawer .content .calendarSelector {
-  width: 40%;
-  display: inline-block;
-}
-
-.drawer .content .calendarSelector select {
-  width: 100%;
 }
 
 .drawer .content .description textarea {
