@@ -1,15 +1,17 @@
 <template>
   <div class="dropdown">
     <div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
-      <span :class="selectedCal.color" class="color"></span> {{ trim(selectedCal.name, 18) }}
+      <div class="trimText">
+        <span :class="selectedCal.color" class="color"></span> {{ selectedCal.name }}
+      </div>
       <span class="caret"></span>
     </div>
     <ul class="dropdown-menu">
-      <li v-for="group in groups" :key="group.id" class="dropdown-header">
-        {{ trim($t(`UICalendarSettingForm.label.${group.name}`), 21) }}
+      <li v-for="group in groups" :key="group.id" class="dropdown-header trimText">
+        {{ $t(`UICalendarSettingForm.label.${group.name}`) }}
         <ul class="dropdown-submenu">
           <li v-for="cal in group.calendars" :key="cal.id" @click="select(cal.id)">
-            <a href="javascript:void(0)"><span :class="cal.color" class="color"></span> {{ trim(cal.name, 18) }}</a>
+            <a href="javascript:void(0)" class="trimText"><span :class="cal.color" class="color"></span> {{ cal.name }}</a>
           </li>
         </ul>
       </li>
@@ -51,12 +53,6 @@ export default {
     }
   },
   methods: {
-    trim(str, length) {
-      if (str && str.length > length) {
-        str = `${str.slice(0, length)}...`;
-      }
-      return str;
-    },
     select(calId) {
       this.selectedId = calId;
       this.$emit('change', this.selectedId);

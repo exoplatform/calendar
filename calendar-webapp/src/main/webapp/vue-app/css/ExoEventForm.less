@@ -47,6 +47,12 @@
   bottom: 70px;
 }
 
+.drawer .content .trimText {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .drawer .content .dropdown {
   padding: 0 10px;
   color: #333333;
@@ -64,6 +70,11 @@
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+.drawer .content .dropdown .dropdown-toggle > div {
+  max-width: 140px;
+  display: inline-block;
+}
+
 .drawer .content .dropdown .caret {
    margin-top: 12px;
    float: right;
@@ -75,12 +86,12 @@
 }
 
 .drawer .content .dropdown .dropdown-menu .dropdown-header {
-  padding: 0px 10px;
+  padding: 0px 7px;
   font-weight: bold;
 }
 
 .drawer .content .dropdown .dropdown-menu li {
-  line-height: 25px;
+  line-height: 20px;
 }
 
 .drawer .content .dropdown .dropdown-menu li > a {
