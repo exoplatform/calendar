@@ -4079,6 +4079,23 @@ public class CalendarRestApi implements ResourceContainer {
       }
     }
     if (evObject.getReminder() != null) {
+      Arrays.stream(evObject.getReminder()).forEach(reminder -> {
+        if (reminder.getReminderOwner() == null) {
+          reminder.setReminderOwner(currentUserId());
+        }
+        try {
+          if (reminder.getReminderType().equals(Reminder.TYPE_EMAIL) &&
+                  reminder.getEmailAddress() == null) {
+            String email = orgService.getUserHandler().findUserByName(currentUserId()).getEmail();
+            reminder.setEmailAddress(email);
+          }
+        } catch (Exception ex) {
+          log.error("Can not set default email for reminder of user " + currentUserId(), ex);
+        }
+        if (reminder.getFromDateTime() == null) {
+          reminder.setFromDateTime(old.getFromDateTime());
+        }
+      });
       old.setReminders(Arrays.asList(evObject.getReminder()));
     }
     String privacy = evObject.getPrivacy();
