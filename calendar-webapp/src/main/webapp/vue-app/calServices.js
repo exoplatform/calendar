@@ -20,6 +20,7 @@ function buildEvent(eventJSON) {
         reminder.mailReminderTime = r.alarmBefore;
         reminder.mailReminderId = r.id;
         reminder.mailReminderFrom = r.fromDateTime;
+        reminder.emailAddress = r.emailAddress;
       } else {
         reminder.popupReminder = true;
         reminder.popupReminderTime = r.alarmBefore;
@@ -145,15 +146,14 @@ export function saveEvent(form) {
         id: form.event.reminder.mailReminderId,
         reminderType: 'email',
         alarmBefore: form.event.reminder.mailReminderTime,
-        fromDateTime: form.event.reminder.mailReminderFrom
+        emailAddress: form.event.reminder.emailAddress
       });
     }
     if (form.event.reminder.popupReminder) {
       reminder.push({
         id: form.event.reminder.popupReminderId,
         reminderType: 'popup',
-        alarmBefore: form.event.reminder.popupReminderTime,
-        fromDateTime: form.event.reminder.popupReminderFrom
+        alarmBefore: form.event.reminder.popupReminderTime
       });
     }
     event.reminder = reminder;
