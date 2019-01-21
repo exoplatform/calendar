@@ -2,7 +2,10 @@ package org.exoplatform.calendar;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.social.core.identity.IdentityProvider;
@@ -76,7 +79,22 @@ public class MockIdentityManager implements IdentityManager {
 
     @Override
     public ListAccess<Identity> getIdentitiesByProfileFilter(String s, ProfileFilter profileFilter, boolean b) {
-        return null;
+        Map<String, Identity> identities = new HashMap<>();
+        identities.put("root", new Identity("root"));
+        identities.put("john", new Identity("mary"));
+
+        return new ListAccess<Identity>() {
+            @Override
+            public Identity[] load(int i, int i1) throws Exception, IllegalArgumentException {
+                Identity identity = identities.get(profileFilter.getName());
+                return new Identity[] {identity};
+            }
+
+            @Override
+            public int getSize() throws Exception {
+                return 1;
+            }
+        };
     }
 
     @Override
