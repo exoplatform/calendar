@@ -107,6 +107,7 @@ public class CalendarRestApi implements ResourceContainer {
   public final static String ATTACHMENT_URI = "/attachments/";
   public final static String OCCURRENCE_URI = "/occurrences";
   public final static String CATEGORY_URI = "/categories/";
+  public final static String PARTICIPANT_URI = "/participants/";
   public final static String FEED_URI = "/feeds/";
   public final static String RSS_URI = "/rss";
   public final static String INVITATION_URI ="/invitations/";
@@ -3612,6 +3613,7 @@ public class CalendarRestApi implements ResourceContainer {
         @Context UriInfo uri) {
     try {
         limit = parseLimit(limit);
+        name = name == null ? "" : name;
 
         ProfileFilter filter = new ProfileFilter();
         filter.setName(name);
@@ -3623,8 +3625,10 @@ public class CalendarRestApi implements ResourceContainer {
         ListAccess<org.exoplatform.social.core.identity.model.Identity> list = identityManager.getIdentitiesByProfileFilter(OrganizationIdentityProvider.NAME, filter, true);
 
         Collection data = new LinkedList();
-        for (org.exoplatform.social.core.identity.model.Identity identity : list.load(offset, limit)) {
+        if (list != null) {
+          for (org.exoplatform.social.core.identity.model.Identity identity : list.load(offset, limit)) {
             data.add(extractObject(new ParticipantResource(identity), fields));
+          }
         }
 
         CollectionResource parData = new CollectionResource(data, returnSize ? list.getSize() : -1);
