@@ -335,7 +335,7 @@
   display: none;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 767px) {
   .drawer.open {
     width: 100%;
   }
@@ -443,5 +443,25 @@
 
   .drawer.open .mobile-content .uiPopup .uiEventReminder {
     width: auto;
+  }
+
+  .drawer.open .mobile-content .calDate {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .drawer.open .mobile-content .calDate .control-label {
+    display: inline-block;
+  }
+
+  .drawer.open .mobile-content .calDate .controls {
+    float: right;
+    width: 83%;
+  }
+
+  .drawer.open .mobile-content .allday {
+    padding: 5px;
+    margin-left: 45px;
   }
 }
