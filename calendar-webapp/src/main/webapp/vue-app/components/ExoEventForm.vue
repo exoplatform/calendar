@@ -104,7 +104,7 @@
             </div>
           </div>
         </form>
-        <exo-modal :show="hasErrors" :title="$t('ExoEventForm.title.message')" @close="errors = []" class="popup-message">
+        <exo-modal :show="hasErrors" :title="$t('ExoEventForm.title.message')" class="popup-message" @close="errors = []">
           <error-message v-model="errors"/>
         </exo-modal>
       </div>
