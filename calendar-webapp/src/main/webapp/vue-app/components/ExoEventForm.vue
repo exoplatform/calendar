@@ -296,6 +296,9 @@ export default {
     },
     toggleOpen() {
       this.open = !this.open;
+      this.cancelRecurring();
+      this.cancelReminder();
+      this.errors = [];
       this.$emit('toggle-open', this.open);
     },
     saveRecurring() {
