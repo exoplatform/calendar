@@ -26,17 +26,17 @@
               <div class="calDate clearfix">
                 <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
                 <div class="controls">
-                  <input :value="fromDate" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.fromDate, $event.target.value)"/>
+                  <input :value="fromDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.fromDate, $event.target.value)"/>
                   <span class="separator">-</span>
-                  <input :disabled="isAllDay" :value="fromTime" class="time" type="text" @change="updateTime(event.fromDate, $event.target.value)"/>
+                  <input :disabled="isAllDay" :value="fromTime()" class="time" type="text" @change="updateTime(event.fromDate, $event.target.value)"/>
                 </div>
               </div>
               <div class="calDate clearfix">
                 <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
                 <div class="controls">
-                  <input :value="toDate" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.toDate, $event.target.value)"/>
+                  <input :value="toDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.toDate, $event.target.value)"/>
                   <span class="separator">-</span>
-                  <input :disabled="isAllDay" :value="toTime" class="time" type="text" @change="updateTime(event.toDate, $event.target.value)"/>
+                  <input :disabled="isAllDay" :value="toTime()" class="time" type="text" @change="updateTime(event.toDate, $event.target.value)"/>
                 </div>
               </div>
             </div>
@@ -73,7 +73,7 @@
                     <reminder-form v-model="event.reminder" @save="saveReminder" @cancel="cancelReminder"/>
                   </exo-modal>
                   <iphone-checkbox v-model="enableReminder"/>
-                  <a @click.prevent="showReminder = true">{{ reminderLabel }}</a>
+                  <a @click.prevent="showReminder = true">{{ reminderLabel() }}</a>
                 </div>
               </div>
               <div class="repeat">
@@ -86,7 +86,7 @@
                     <recurring-form v-model="event.recurring" @save="saveRecurring" @cancel="cancelRecurring"/>
                   </exo-modal>
                   <iphone-checkbox v-model="enableRecurring" :disabled="isExceptionOccurence"/>
-                  <a @click.prevent="showRecurring = true">{{ recurringLabel }}</a>
+                  <a @click.prevent="showRecurring = true">{{ recurringLabel() }}</a>
                 </div>
               </div>
             </div>
@@ -180,28 +180,6 @@ export default {
       } else {
         return this.$t('ExoEventForm.title.addEvent');
       }
-    },
-    reminderLabel() {
-      if (this.enableReminder && this.event.reminder.isEnabled()) {
-        return this.$t('ExoEventForm.label.reminderTime', [this.event.reminder.getNearest()]);
-      }
-    },
-    recurringLabel() {
-      if (this.enableRecurring && this.event.recurring.isEnabled()) {
-        return this.$t('ExoEventForm.label.repeat');
-      }
-    },
-    fromDate() {
-      return Utils.formatDate(this.event.fromDate);
-    },
-    fromTime() {
-      return Utils.formatTime(this.event.fromDate);
-    },
-    toDate() {
-      return Utils.formatDate(this.event.toDate);
-    },
-    toTime() {
-      return Utils.formatTime(this.event.toDate);
     }
   },
   watch: {
@@ -209,7 +187,7 @@ export default {
       if (this.enableRecurring) {
         this.showRecurring = true;
         if (this.showReminder) {
-          if (this.reminderLabel) {
+          if (this.reminderLabel()) {
             this.showReminder = false;
           } else {
             this.enableReminder = false;
@@ -224,7 +202,7 @@ export default {
       if (this.enableReminder) {
         this.showReminder = true;
         if (this.showRecurring) {
-          if (this.recurringLabel) {
+          if (this.recurringLabel()) {
             this.showRecurring = false;
           } else {
             this.enableRecurring = false;
@@ -292,6 +270,28 @@ export default {
       const parsedVal = Utils.parseTime(val);
       if (parsedVal) {
         date.setHours(parsedVal.getHours(), parsedVal.getMinutes(), parsedVal.getSeconds(), parsedVal.getMilliseconds());
+      }
+    },
+    fromDate() {
+      return Utils.formatDate(this.event.fromDate);
+    },
+    fromTime() {
+      return Utils.formatTime(this.event.fromDate);
+    },
+    toDate() {
+      return Utils.formatDate(this.event.toDate);
+    },
+    toTime() {
+      return Utils.formatTime(this.event.toDate);
+    },
+    reminderLabel() {
+      if (this.enableReminder && this.event.reminder.isEnabled()) {
+        return this.$t('ExoEventForm.label.reminderTime', [this.event.reminder.getNearest()]);
+      }
+    },
+    recurringLabel() {
+      if (this.enableRecurring && this.event.recurring.isEnabled()) {
+        return this.$t('ExoEventForm.label.repeat');
       }
     },
     toggleOpen() {
