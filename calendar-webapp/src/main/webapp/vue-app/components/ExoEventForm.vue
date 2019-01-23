@@ -86,7 +86,7 @@
                   <exo-modal :show="showRecurringUpdateType" :title="$t('ExoEventForm.title.RecurringUpdateTypeForm')" @close="cancelRecurringUpdateTypeForm">
                     <recurring-update-type-form v-model="recurringUpdateType" @cancelForm="cancelRecurringUpdateTypeForm" @saveForm="saveRecurringUpdateTypeForm"/>
                   </exo-modal>
-                  <exo-modal :show="showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')" @close="cancelRecurring">
+                  <exo-modal :show="showRecurring" :title="$t('UICalendarChildPopupWindow.title.UIRepeatEventForm')" class="recurring-popup" @close="cancelRecurring">
                     <recurring-form v-model="event.recurring" @save="saveRecurring" @cancel="cancelRecurring"/>
                   </exo-modal>
                   <iphone-checkbox v-model="enableRecurring" :disabled="isExceptionOccurence"/>
