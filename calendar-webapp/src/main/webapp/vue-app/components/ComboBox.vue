@@ -1,0 +1,131 @@
+<template>
+  <div class="cbb">
+    <input :disabled="disabled" :placeholder="placeholder" v-model="value" class="cbb_input" type="text" @click="showAutocompleteDropdown = true" @keyup.enter.prevent="select(selectedIndex)" @keydown.down.prevent="selectNext()" @keydown.up.prevent="selectPrev()" @keyup.8="handleBackspace()" />
+    <div class="cbb_list_wrapper">
+      <ul v-if="showAutocompleteDropdown" class="cbb_list">
+        <li v-for="(value, index) in filteredOptions" :key="value" :class="{'cbb_item_selected': index == selectedIndex}" class="cbb_item" @click="select(index)">{{ value }}</li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    value: {
+      type: String,
+      default: ''
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    options: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data: function() {
+    return {
+      showAutocompleteDropdown: false,
+      selectedIndex: 0
+    };
+  },
+  computed: {
+    filteredOptions: function() {
+      const self = this;
+      return self.options.filter(function (opt) {
+        return opt.indexOf(self.value) !== -1;
+      });
+    }
+  },
+  methods: {
+    handleBackspace: function () {
+      this.showAutocompleteDropdown = true;
+    },
+    select: function(index) {
+      this.showAutocompleteDropdown = false;
+      this.value = this.filteredOptions[index];
+      this.$emit('input', this.value);
+    },
+    selectNext: function() {
+
+      if (this.showAutocompleteDropdown) {
+        if (this.selectedIndex < this.filteredOptions.length - 1) {
+          this.selectedIndex++;
+        } else {
+          this.selectedIndex = 0;
+        }
+      } else {
+        this.showAutocompleteDropdown = true;
+      }
+
+    },
+    selectPrev: function() {
+      if (this.selectedIndex > 0) {
+        this.selectedIndex--;
+      } else {
+        this.selectedIndex = this.filteredOptions.length - 1;
+      }
+    }
+  }
+};
+</script>
+
+<style>
+
+  .cbb input {
+    width: 100%;
+  }
+
+  .cbb_list_wrapper {
+    position: absolute;
+    z-index: 9;
+  }
+
+  .cbb_input {
+    padding: 0.5rem;
+    width: 100%;
+    font-size: 15px;
+    -webkit-appearance: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+    text-align: left;
+    background: white;
+  }
+
+  .cbb_list:focus {
+    box-shadow: none;
+    -webkit-appearance: none;
+    outline: 0;
+  }
+
+  .cbb_list {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    overflow-y: scroll;
+    max-height: 150px;
+  }
+
+  .cbb_item {
+    margin: 0;
+    list-style-type: none;
+    padding: 8px 10px;
+    font-size: 14px;
+    display: block;
+    cursor: pointer;
+    width: 50px;
+  }
+
+  .cbb_item:hover {
+    opacity: 0.5;
+  }
+
+  .cbb_item_selected {
+    background: rgba(0, 0, 0, 0.1);
+  }
+</style>
