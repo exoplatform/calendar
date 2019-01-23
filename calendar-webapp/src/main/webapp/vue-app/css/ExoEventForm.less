@@ -163,9 +163,19 @@
   text-align: center;
 }
 
+.drawer .content .allday .uiCheckbox {
+  margin: 0 0px;
+}
+
 .drawer .content .allday input {
   float: left;
   margin-right: 3px;
+}
+
+.drawer .content .findtime {
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 10px;
 }
 
 .drawer .content .description textarea {
@@ -312,6 +322,27 @@
 .drawer .popup-message {
   width: 432px;
   height: 146px;
+}
+
+/*chrome bug: blurring when using translate() if the size is odd*/
+.drawer .findtime-popup {
+  width: 696px;
+}
+
+.drawer .uiPopup.findtime-popup .popupContent {
+  max-width: none;
+}
+
+.drawer .findtime-popup .popupContent .checktime-lbl {
+  margin-right: 5px;
+}
+
+.drawer .findtime-popup .popupContent .allDay {
+  line-height: 25px;  
+}
+
+.drawer .findtime-popup .popupContent .allDay .allday-lbl {
+  margin-right: 5px;
 }
 
 .drawer .uiPopup .form-horizontal .controls [type="date"] {
@@ -492,5 +523,9 @@
   .drawer.open .mobile-content .allday {
     padding: 5px;
     margin-left: 45px;
+  }
+
+  .drawer.open .mobile-content .findtime {
+    display: none;
   }
 }

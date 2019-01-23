@@ -1749,22 +1749,28 @@
         var timeFormat = this.getTimeFormat(null);
         start = dateUtils.minToTime(start, timeFormat);
         end = dateUtils.minToTime(end, timeFormat);
-        if (dateValue) {
-            var DateContainer = gj(uiTabContentContainer).parents("form")[0];
-            DateContainer.from.value = dateValue;
-            DateContainer.to.value = dateValue;
-        }
-        for (var i = 0; i < len; i++) {
-            name = this.synTime(UIComboboxInputs[i]).name.toLowerCase();
-            if (name.indexOf("from") >= 0) {
-                UIComboboxInputs[i].value = start;
-                this.synTime(UIComboboxInputs[i],start);
-            }
-            else {
-                UIComboboxInputs[i].value = end;
-                this.synTime(UIComboboxInputs[i],end);
-            }
-        }
+
+        UIComboboxInputs[0].value = start;
+        UIComboboxInputs[1].value = end;
+        gj(UIComboboxInputs[0]).trigger('change');
+        gj(UIComboboxInputs[1]).trigger('change');
+
+        // if (dateValue) {
+            // var DateContainer = gj(uiTabContentContainer).parents("form")[0];
+            // DateContainer.from.value = dateValue;
+            // DateContainer.to.value = dateValue;
+        // }
+        // for (var i = 0; i < len; i++) {
+        //     name = this.synTime(UIComboboxInputs[i]).name.toLowerCase();
+        //     if (name.indexOf("from") >= 0) {
+        //         UIComboboxInputs[i].value = start;
+        //         this.synTime(UIComboboxInputs[i],start);
+        //     }
+        //     else {
+        //         UIComboboxInputs[i].value = end;
+        //         this.synTime(UIComboboxInputs[i],end);
+        //     }
+        // }
         var cells = gj(UIHSelection.firstCell.parentNode).children("td");
         UIHSelection.setAttr(UIHSelection.firstCell.cellIndex, UIHSelection.lastCell.cellIndex, cells);
         _module.ScheduleSupport.syncTimeBetweenEventTabs();

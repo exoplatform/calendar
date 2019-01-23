@@ -108,6 +108,7 @@ public class CalendarRestApi implements ResourceContainer {
   public final static String OCCURRENCE_URI = "/occurrences";
   public final static String CATEGORY_URI = "/categories/";
   public final static String PARTICIPANT_URI = "/participants/";
+  public final static String AVAILABILITY_URI = "availability/";
   public final static String FEED_URI = "/feeds/";
   public final static String RSS_URI = "/rss";
   public final static String INVITATION_URI ="/invitations/";
@@ -3655,7 +3656,99 @@ public class CalendarRestApi implements ResourceContainer {
         if(log.isDebugEnabled()) log.debug(e.getMessage());
     }
     return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
+  }
 
+  /**
+   * Return availability (free/busy time) of users in period of time.
+   *
+   * @param usernames list of user name separated by comma
+   *
+   * @param fromDate count from this date
+   *
+   * @param toDate count to this date
+   *
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
+   *
+   * @request  {@code GET: http://localhost:8080/rest/private/v1/events/?users=root,mary}
+   *
+   * @format  JSON
+   *
+   * @response
+   *
+   * @return  Map of availability time in JSON.
+   *
+   * @authentication
+   *
+   * @anchor  CalendarRestApi.getAvailability
+   */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @GET
+  @RolesAllowed("users")
+  @Path("/events/availability")
+  @Produces({MediaType.APPLICATION_JSON})
+  @ApiOperation(
+          value = "Return availability of users.",
+          notes = "(free/busy time)")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Successful retrieval"),
+          @ApiResponse(code = 503, message = "Can't generate JSON file") })
+  public Response getAvailability(
+          @ApiParam(value = "usernames to check availability", required = true) @QueryParam("usernames") String usernames,
+          @ApiParam(value = "usernames to check availability", required = true) @QueryParam("fromDate") Long fromDate,
+          @ApiParam(value = "usernames to check availability", required = true) @QueryParam("toDate") Long toDate,
+          @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
+          @Context UriInfo uri) {
+    try {
+      Map<String, String> parMap_ = new HashMap<String, String>() ;
+      parMap_.clear() ;
+      Map<String, String> tmpMap = new HashMap<String, String>() ;
+      List<String> newPars = new ArrayList<String>() ;
+      if(StringUtils.isNotBlank(usernames)) {
+        for(String par : usernames.split(",")) {
+          if(orgService.getUserHandler().findUserByName(par) != null)  {
+            String vl = tmpMap.get(par) ;
+            parMap_.put(par.trim(), vl) ;
+            if(vl == null) newPars.add(par.trim()) ;
+          }
+        }
+      }
+      if(newPars.size() > 0) {
+        EventQuery eventQuery = new EventQuery() ;
+
+        java.util.Calendar from = java.util.Calendar.getInstance();
+        from.setTimeInMillis(fromDate);
+        from = getBeginDay(from);
+        eventQuery.setFromDate(from);
+
+        java.util.Calendar to = java.util.Calendar.getInstance();
+        to.setTimeInMillis(toDate);
+        to = getEndDay(to);
+        eventQuery.setToDate(to);
+        //
+        eventQuery.setParticipants(newPars.toArray(new String[]{})) ;
+        eventQuery.setNodeType("exo:calendarPublicEvent") ;
+
+        Map<String, String> parsMap = calendarServiceInstance().checkFreeBusy(eventQuery);
+        parMap_.putAll(parsMap) ;
+      }
+
+      ResponseBuilder okResult;
+      if (jsonp != null) {
+        JsonValue value = new JsonGeneratorImpl().createJsonObject(parMap_);
+        StringBuilder sb = new StringBuilder(jsonp);
+        sb.append("(").append(value).append(");");
+        okResult = Response.ok(sb.toString(), new MediaType("text", "javascript"));
+      } else {
+        okResult = Response.ok(parMap_, MediaType.APPLICATION_JSON);
+      }
+
+      //
+      return okResult.cacheControl(nc).build();
+    } catch (Exception e) {
+      if(log.isDebugEnabled()) log.debug(e.getMessage());
+    }
+    return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
   }
 
   private Response buildBadResponse(ErrorResource error) {
@@ -4449,6 +4542,25 @@ public class CalendarRestApi implements ResourceContainer {
           break;
       }
     }
+  }
+
+  private java.util.Calendar getBeginDay(java.util.Calendar cal) {
+    java.util.Calendar newCal = (java.util.Calendar) cal.clone();
+
+    newCal.set(java.util.Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(java.util.Calendar.MINUTE, 0) ;
+    newCal.set(java.util.Calendar.SECOND, 0) ;
+    newCal.set(java.util.Calendar.MILLISECOND, 0) ;
+    return newCal ;
+  }
+  private java.util.Calendar getEndDay(java.util.Calendar cal)  {
+    java.util.Calendar newCal = (java.util.Calendar) cal.clone();
+    newCal.set(java.util.Calendar.HOUR_OF_DAY, 0) ;
+    newCal.set(java.util.Calendar.MINUTE, 0) ;
+    newCal.set(java.util.Calendar.SECOND, 0) ;
+    newCal.set(java.util.Calendar.MILLISECOND, 0) ;
+    newCal.add(java.util.Calendar.HOUR_OF_DAY, 24) ;
+    return newCal ;
   }
 
   public static class Expand {

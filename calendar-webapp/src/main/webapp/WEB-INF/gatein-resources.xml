@@ -716,6 +716,9 @@
       <module>CalDateTimePicker</module>
       <as>timePicker</as>
     </depends>
+    <depends>
+      <module>ScheduleSupport</module>
+    </depends>
   </module>
 
 </gatein-resources>
