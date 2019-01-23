@@ -87,7 +87,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     assertEquals(calHref, calR0.getCalendar());
     
     //expand=calendar
-    response = service(HTTPMethods.GET, CAL_BASE_URI + EVENT_URI + 
+    response = service(HTTPMethods.GET, CAL_BASE_URI + EVENT_URI +
                                          uEvt.getId() + "?expand=calendar", baseURI, headers, null, writer);
     calR0 = (EventResource)response.getEntity();
     assertTrue(calR0.getCalendar() instanceof CalendarResource);
@@ -154,6 +154,21 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     ContainerResponse response = service(HTTPMethods.PUT, CAL_BASE_URI + EVENT_URI
             + uEvt.getId() + "?recurringUpdateType=ONE", baseURI, headers, data, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
+  }
+
+  public void testGetAvailability() throws Exception {
+    CalendarEvent gEvt = createEvent(groupCalendar);
+    gEvt.setParticipant(new String[] {"root"});
+    gEvt.setEventType(CalendarEvent.TYPE_EVENT);
+    calendarService.savePublicEvent(groupCalendar.getId(), gEvt, true);
+
+    login("root");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + EVENT_URI + AVAILABILITY_URI
+            + "?usernames=root&fromDate=" + gEvt.getFromDateTime().getTime() + "&toDate=" + gEvt.getToDateTime().getTime(), baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    assertNotNull(((Map)response.getEntity()).get("root"));
   }
 
   public void testDeleteEventById() throws Exception {

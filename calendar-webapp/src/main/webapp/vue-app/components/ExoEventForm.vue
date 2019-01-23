@@ -45,6 +45,10 @@
                 <label class="uiCheckbox">
                   <input id="allday" v-model="isAllDay" type="checkbox"/><span>{{ $t('ExoEventForm.label.allDay') }}</span>
                 </label>
+                <exo-modal :show="showFindTime" :title="$t('ExoEventForm.btn.findTime')" class="findtime-popup" @close="cancelFindTime()">
+                  <findtime-form :from="event.fromDate" :to="event.toDate" :participants="event.participants" @save="saveFindTime($event)" @cancel="cancelFindTime"/>
+                </exo-modal>
+                <a class="findtime" @click.prevent="showFindTime = true">{{ $t('ExoEventForm.btn.findTime') }}</a>
               </div>
             </div>
             <div class="control-group">
@@ -93,7 +97,7 @@
             <div class="control-group description">
               <div class="control-label">{{ $t('ExoEventForm.label.description') }}</div>
               <div class="controls">
-                <textarea v-model="event.description" :placeholder="$t('ExoEventForm.placeholder.description')"></textarea>
+                <textarea v-model="event.description" :placeholder="$t('ExoEventForm.placeholder.description')" @focus="$event.target.placeholder = ''" @blur="$event.target.placeholder = $t('ExoEventForm.placeholder.description')"></textarea>
               </div>
             </div>
             <div class="control-group attachments">
@@ -132,6 +136,7 @@ import ExoModal from './ExoModal.vue';
 import RecurringForm from './RecurringForm.vue';
 import RecurringUpdateTypeForm from './RecurringUpdateTypeForm.vue';
 import ReminderForm from './ReminderForm.vue';
+import FindTimeForm from './FindTimeForm.vue';
 import CalendarSelector from './CalendarSelector.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import ComboBox from './ComboBox.vue';
@@ -145,6 +150,7 @@ export default {
     'recurring-form': RecurringForm,
     'recurring-update-type-form': RecurringUpdateTypeForm,
     'reminder-form': ReminderForm,
+    'findtime-form': FindTimeForm,
     'calendar-selector': CalendarSelector,
     'error-message': ErrorMessage,
     'combobox': ComboBox
@@ -265,6 +271,7 @@ export default {
         enableReminder: false,
         showReminder: false,
         isAllDay: false,
+        showFindTime: false,
 
         calendarGroups: [],
         categories: [],
@@ -351,6 +358,14 @@ export default {
     saveRecurringUpdateTypeForm() {
       this.showRecurringUpdateType = false;
       this.save();
+    },
+    saveFindTime(evt) {
+      this.event.fromDate = new Date(evt.from.getTime());
+      this.event.toDate = new Date(evt.to.getTime());
+      this.showFindTime = false;
+    },
+    cancelFindTime() {
+      this.showFindTime = false;
     },
     trim(str, length) {
       if (str && str.length > length) {

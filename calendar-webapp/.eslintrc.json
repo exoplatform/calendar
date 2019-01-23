@@ -15,7 +15,9 @@
         "$": true,
         "global": true,
         "exoi18n": true,
-        "timePicker": true
+        "timePicker": true,
+        "eXo.calendar.UICalendarPortlet": true,
+        "ScheduleSupport": true
     },
     "parserOptions": {
         "sourceType": "module",

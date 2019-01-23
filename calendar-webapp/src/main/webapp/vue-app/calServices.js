@@ -242,6 +242,11 @@ export function findParticipants(filter, limit) {
     .then(resp =>  resp.json()).then(json => json.data);
 }
 
+export function getAvailability(usernames, fromDate, toDate) {
+  return fetch(`${calConstants.CAL_SERVER_API}events/availability?usernames=${usernames.join(',')}&fromDate=${fromDate}&toDate=${toDate}`, {headers: calConstants.HEADER_NO_CACHE})
+    .then(resp =>  resp.json());
+}
+
 export function getCategories() {
   return fetch(`${calConstants.CAL_SERVER_API}categories`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json()).then(json => {
