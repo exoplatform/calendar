@@ -190,7 +190,6 @@ export function saveEvent(form) {
   }
 
   const uploadResources = [];
-  const attachments = [];
   if (form.event.attachedFiles && form.event.attachedFiles.length) {
     form.event.attachedFiles.map(attachFile => {
       if (attachFile.uploadId) {
@@ -201,7 +200,7 @@ export function saveEvent(form) {
           mimeType: attachFile.file.type
         });
       } else {
-        attachments.push({
+        uploadResources.push({
           name: attachFile.name,
           weight: attachFile.size
         });
@@ -209,7 +208,6 @@ export function saveEvent(form) {
     });
   }
   event.uploadResources = uploadResources;
-  event.attachments = attachments;
 
   if (form.event.id) {
     //update

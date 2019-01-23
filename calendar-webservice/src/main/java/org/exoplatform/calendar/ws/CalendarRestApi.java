@@ -4063,13 +4063,14 @@ public class CalendarRestApi implements ResourceContainer {
     }
 
     List<Attachment> attachments = new ArrayList<>();
-    if (evObject.getAttachments() != null && old.getAttachment() != null) {
-      Stream<Serializable> resources = Arrays.stream(evObject.getAttachments());
-      old.getAttachment().stream().forEach(att -> {
-        if (resources.anyMatch(resource -> att.getName().equals(((AttachmentResource)resource).getName()))) {
-          attachments.add(att);
+    if (old.getAttachment() != null && evObject.getUploadResources() != null) {
+      for (Attachment att : old.getAttachment()) {
+        for (org.exoplatform.calendar.ws.bean.UploadResource resource : evObject.getUploadResources()) {
+          if (att.getName().equals(resource.getName()) && StringUtils.isBlank(resource.getId())) {
+            attachments.add(att);
+          }
         }
-      });
+      }
     }
 
     if (evObject.getUploadResources() != null) {
