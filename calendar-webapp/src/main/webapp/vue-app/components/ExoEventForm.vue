@@ -23,20 +23,20 @@
           </div>
           <div class="mobile-content">
             <div class="control-group">
-              <div class="calDate clearfix">
+              <div class="calDate">
                 <div class="control-label">{{ $t('ExoEventForm.label.from') }}</div>
-                <div class="controls">
-                  <input :value="fromDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.fromDate, $event.target.value)"/>
-                  <span class="separator">-</span>
-                  <input :disabled="isAllDay" :value="fromTime()" class="time" type="text" @change="updateTime(event.fromDate, $event.target.value)"/>
+                <div class="controls clearfix">
+                  <div class="pull-left"><input :value="fromDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.fromDate, $event.target.value)"/></div>
+                  <div class="separator pull-left">-</div>
+                  <combobox :disabled="isAllDay" :value="fromTime()" :options="times" class="time pull-left" @input="updateTime(event.fromDate, $event)" />
                 </div>
               </div>
-              <div class="calDate clearfix">
+              <div class="calDate">
                 <div class="control-label">{{ $t('ExoEventForm.label.to') }}</div>
-                <div class="controls">
-                  <input :value="toDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.toDate, $event.target.value)"/>
-                  <span class="separator">-</span>
-                  <input :disabled="isAllDay" :value="toTime()" class="time" type="text" @change="updateTime(event.toDate, $event.target.value)"/>
+                <div class="controls clearfix">
+                  <div class="pull-left"><input :value="toDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.toDate, $event.target.value)"/></div>
+                  <div class="separator pull-left">-</div>
+                  <combobox :disabled="isAllDay" :value="toTime()" :options="times" class="time pull-left" @input="updateTime(event.toDate, $event)" />
                 </div>
               </div>
             </div>
@@ -134,6 +134,7 @@ import RecurringUpdateTypeForm from './RecurringUpdateTypeForm.vue';
 import ReminderForm from './ReminderForm.vue';
 import CalendarSelector from './CalendarSelector.vue';
 import ErrorMessage from './ErrorMessage.vue';
+import ComboBox from './ComboBox.vue';
 
 export default {
   components: {
@@ -145,7 +146,8 @@ export default {
     'recurring-update-type-form': RecurringUpdateTypeForm,
     'reminder-form': ReminderForm,
     'calendar-selector': CalendarSelector,
-    'error-message': ErrorMessage
+    'error-message': ErrorMessage,
+    'combobox': ComboBox
   },
   model: {
     prop: 'open',
@@ -180,6 +182,22 @@ export default {
       } else {
         return this.$t('ExoEventForm.title.addEvent');
       }
+    },
+    times: function() {
+      const a = [];
+      const maxTime = 24;
+      const percent = 10;
+      for (let i = 0; i < maxTime; i++) {
+        let n = i;
+        if (i < percent) {
+          n = `0${i}`;
+        }
+        a.push(`${n}:00`);
+        a.push(`${n}:15`);
+        a.push(`${n}:30`);
+        a.push(`${n}:45`);
+      }
+      return a;
     }
   },
   watch: {
