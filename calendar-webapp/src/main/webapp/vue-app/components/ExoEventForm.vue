@@ -187,7 +187,7 @@ export default {
       if (this.event.id) {
         return this.$t('ExoEventForm.title.editEvent');
       } else {
-        return this.$t('ExoEventForm.title.addEvent');
+        return this.$t('UICalendars.label.AddEvent');
       }
     },
     times: function() {
