@@ -452,6 +452,9 @@ export default {
             if (data && data.developerMessage) {
               this.errors.push(data.developerMessage);
             } else {
+              //This should be improved by
+              //only update the calendar portlet
+              window.location.reload();
               this.$emit('save');
             }
           }).catch((err) => {

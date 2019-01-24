@@ -240,8 +240,19 @@ export function findParticipants(filter, limit) {
     .then(resp =>  resp.json()).then(json => json.data);
 }
 
-export function getAvailability(usernames, fromDate, toDate) {
-  return fetch(`${calConstants.CAL_SERVER_API}events/availability?usernames=${usernames.join(',')}&fromDate=${fromDate}&toDate=${toDate}`, {headers: calConstants.HEADER_NO_CACHE})
+export function getAvailabilities(usernames, fromDate, toDate) {
+  const from = new Date(fromDate);
+  from.setHours(0, 0, 0, 0);
+  const to = new Date(toDate);
+  to.setDate(to.getDate() + 1);
+  to.setHours(0, 0, 0, 0);
+
+  const miliseconds = 3600000;
+  const offset = Utils.getTimezoneOffset() * miliseconds;
+  fromDate = from.getTime() + offset;
+  toDate = to.getTime() + offset;
+
+  return fetch(`${calConstants.CAL_SERVER_API}availabilities?usernames=${usernames.join(',')}&fromDate=${fromDate}&toDate=${toDate}`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json());
 }
 

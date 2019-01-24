@@ -105,6 +105,34 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     runTestUpdateEvent(CAL_BASE_URI + EVENT_URI, CalendarEvent.TYPE_EVENT);
   }
 
+  public void testUpdateEventParticipant() throws Exception {
+    CalendarEvent uEvt = createEvent(userCalendar);
+    uEvt.setEventType(CalendarEvent.TYPE_EVENT);
+    uEvt.setParticipant(new String[] {"root", "john"});
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
+
+    Resource resource = new EventResource(uEvt, "");
+    ((EventResource)resource).setParticipants(new String[] {"root"});
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+    JsonValue json = generatorImpl.createJsonObject(resource);
+
+    byte[] data = json.toString().getBytes("UTF-8");
+
+    headers.putSingle("content-type", "application/json");
+    headers.putSingle("content-length", "" + data.length);
+
+    login("root");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.PUT, CAL_BASE_URI + EVENT_URI
+            + uEvt.getId(), baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+
+    CalendarEvent event = calendarService.getEventById(uEvt.getId());
+    assertEquals(1, event.getParticipant().length);
+    assertEquals("root", event.getParticipant()[0]);
+  }
+
   public void testUpdateEventCalendar() throws Exception {
     CalendarEvent uEvt = createEvent(userCalendar);
     uEvt.setEventType(CalendarEvent.TYPE_EVENT);
@@ -156,7 +184,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());
   }
 
-  public void testGetAvailability() throws Exception {
+  public void testGetAvailabilities() throws Exception {
     CalendarEvent gEvt = createEvent(groupCalendar);
     gEvt.setParticipant(new String[] {"root"});
     gEvt.setEventType(CalendarEvent.TYPE_EVENT);
@@ -165,7 +193,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     login("root");
     //
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
-    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + EVENT_URI + AVAILABILITY_URI
+    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + AVAILABILITY_URI
             + "?usernames=root&fromDate=" + gEvt.getFromDateTime().getTime() + "&toDate=" + gEvt.getToDateTime().getTime(), baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     assertNotNull(((Map)response.getEntity()).get("root"));

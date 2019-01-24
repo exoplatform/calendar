@@ -39,12 +39,9 @@ export function init(settings) {
               this.calEvt = calEvt;
               this.showEventForm = true;
             }
-          },
-          refresh() {
-            window.location.reload();
           }
         },
-        template: '<exo-event-form v-model="showEventForm" :initEvt="calEvt" @save="refresh"></exo-event-form>',
+        template: '<exo-event-form v-model="showEventForm" :initEvt="calEvt"></exo-event-form>',
         i18n
       });
     });

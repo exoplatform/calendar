@@ -7,7 +7,7 @@
     </div>
     <div class="uiAction uiActionBorder">
       <button class="btn" type="button" @click="close">
-        {{ $t('ExoEventForm.btn.close') }}
+        {{ $t('ExoCalendarEventForm.btn.close') }}
       </button>
     </div>
   </div>
@@ -33,7 +33,7 @@ export default {
       let msg = this.$t(key);
 
       if (msg === key) {
-        key = `ExoEventForm.error.${error}`;
+        key = `ExoCalendarEventForm.error.${error}`;
         msg = this.$t(key);
       }
       msg = msg === key ? this.$t(error) : msg;
