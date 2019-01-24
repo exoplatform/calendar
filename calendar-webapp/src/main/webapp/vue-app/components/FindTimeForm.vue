@@ -363,7 +363,11 @@ export default {
     cancel() {
       this.fromDate.setTime(this.from.getTime());
       this.toDate.setTime(this.to.getTime());
-      this.usernames = [];
+      if (this.participants.length && this.participants[0]) {
+        this.usernames = this.participants.slice();
+      } else {
+        this.usernames = [];
+      }
       this.refreshDate();
       this.$emit('cancel');
     }
