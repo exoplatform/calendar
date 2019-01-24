@@ -3,7 +3,7 @@
     <input :disabled="disabled" :placeholder="placeholder" v-model="value" class="cbb_input" type="text" @click="showAutocompleteDropdown = true" @keyup.enter.prevent="select(selectedIndex)" @keydown.down.prevent="selectNext()" @keydown.up.prevent="selectPrev()" @keyup.8="handleBackspace()" />
     <div class="cbb_list_wrapper">
       <ul v-if="showAutocompleteDropdown" class="cbb_list">
-        <li v-for="(value, index) in filteredOptions" :key="value" :class="{'cbb_item_selected': index == selectedIndex}" class="cbb_item" @click="select(index)">{{ value }}</li>
+        <li v-for="(value, index) in filteredOptions" :key="value" :class="{'selected': index == selectedIndex}" class="cbb_item" @click="select(index)">{{ value }}</li>
       </ul>
     </div>
   </div>
@@ -77,7 +77,6 @@ export default {
 </script>
 
 <style>
-
   .cbb input {
     width: 100%;
   }
@@ -107,8 +106,10 @@ export default {
   .cbb_list {
     background: white;
     border: 1px solid rgba(0, 0, 0, 0.08);
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 150px;
+    min-width: 85px;
+    color: #333;
   }
 
   .cbb_item {
@@ -118,14 +119,10 @@ export default {
     font-size: 14px;
     display: block;
     cursor: pointer;
-    width: 50px;
   }
 
-  .cbb_item:hover {
-    opacity: 0.5;
-  }
-
-  .cbb_item_selected {
-    background: rgba(0, 0, 0, 0.1);
+  .cbb_item:hover, .cbb_item.selected {
+    background-color: #82aad7;
+    color: #fff;
   }
 </style>
