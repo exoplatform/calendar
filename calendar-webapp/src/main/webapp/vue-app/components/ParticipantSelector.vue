@@ -4,9 +4,9 @@
       <div class="uiSearch clearfix">
         <span class="searchByUser">
           <span class="inputXLarge">
-            <a :title="$t('ExoEventForm.btn.quickSearch')" class="btnSearchUser" data-placement="left" rel="tooltip" href="javascript:void(0);">
+            <a :title="$t('ExoCalendarEventForm.btn.quickSearch')" class="btnSearchUser" data-placement="left" rel="tooltip" href="javascript:void(0);">
               <i class="uiIconSearch uiIconLightGray">
-                <span class="skipHidden">{{ $t('ExoEventForm.btn.quickSearch') }}</span>
+                <span class="skipHidden">{{ $t('ExoCalendarEventForm.btn.quickSearch') }}</span>
               </i>
             </a>
             <input v-model="username" type="text" placeholder="Search">
@@ -25,10 +25,10 @@
               </span>
             </th>
 
-            <th>{{ $t('ExoEventForm.label.username') }}</th>
-            <th>{{ $t('ExoEventForm.label.firstName') }}</th>
-            <th>{{ $t('ExoEventForm.label.lastName') }}</th>
-            <th>{{ $t('ExoEventForm.label.email') }}</th>
+            <th>{{ $t('ExoCalendarEventForm.label.username') }}</th>
+            <th>{{ $t('ExoCalendarEventForm.label.firstName') }}</th>
+            <th>{{ $t('ExoCalendarEventForm.label.lastName') }}</th>
+            <th>{{ $t('ExoCalendarEventForm.label.email') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -58,8 +58,8 @@
     </div>
 
     <div class="uiAction uiActionBorder">
-      <a href="javascript:void(0);" class="btn" @click="save">{{ $t('ExoEventForm.btn.add') }}</a>    
-      <a href="javascript:void(0);" class="btn" @click="cancel">{{ $t('ExoEventForm.btn.close') }}</a>
+      <a href="javascript:void(0);" class="btn" @click="save">{{ $t('ExoCalendarEventForm.btn.add') }}</a>
+      <a href="javascript:void(0);" class="btn" @click="cancel">{{ $t('ExoCalendarEventForm.btn.close') }}</a>
     </div>
   </div>
 </template>

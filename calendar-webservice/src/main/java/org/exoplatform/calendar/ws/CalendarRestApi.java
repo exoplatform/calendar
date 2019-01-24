@@ -109,7 +109,7 @@ public class CalendarRestApi implements ResourceContainer {
   public final static String OCCURRENCE_URI = "/occurrences";
   public final static String CATEGORY_URI = "/categories/";
   public final static String PARTICIPANT_URI = "/participants/";
-  public final static String AVAILABILITY_URI = "availability/";
+  public final static String AVAILABILITY_URI = "/availabilities/";
   public final static String FEED_URI = "/feeds/";
   public final static String RSS_URI = "/rss";
   public final static String INVITATION_URI ="/invitations/";
@@ -3686,7 +3686,7 @@ public class CalendarRestApi implements ResourceContainer {
   @SuppressWarnings({ "unchecked", "rawtypes" })
   @GET
   @RolesAllowed("users")
-  @Path("/events/availability")
+  @Path("/availabilities")
   @Produces({MediaType.APPLICATION_JSON})
   @ApiOperation(
           value = "Return availability of users.",
@@ -3694,7 +3694,7 @@ public class CalendarRestApi implements ResourceContainer {
   @ApiResponses(value = {
           @ApiResponse(code = 200, message = "Successful retrieval"),
           @ApiResponse(code = 503, message = "Can't generate JSON file") })
-  public Response getAvailability(
+  public Response getAvailabilities(
           @ApiParam(value = "usernames to check availability", required = true) @QueryParam("usernames") String usernames,
           @ApiParam(value = "usernames to check availability", required = true) @QueryParam("fromDate") Long fromDate,
           @ApiParam(value = "usernames to check availability", required = true) @QueryParam("toDate") Long toDate,
@@ -3720,16 +3720,10 @@ public class CalendarRestApi implements ResourceContainer {
         CalendarSetting setting = calendarServiceInstance().getCalendarSetting(currentUserId());
         TimeZone timeZone = DateUtils.getTimeZone(setting.getTimeZone());
 
-        java.util.Calendar from = java.util.Calendar.getInstance();
-        from.setTimeZone(timeZone);
-        from.setTimeInMillis(fromDate);
-        from = getBeginDay(from);
+        java.util.Calendar from = buildTimeFrom(fromDate, timeZone);
         eventQuery.setFromDate(from);
 
-        java.util.Calendar to = java.util.Calendar.getInstance();
-        to.setTimeZone(timeZone);
-        to.setTimeInMillis(toDate);
-        to = getEndDay(to);
+        java.util.Calendar to = buildTimeFrom(toDate, timeZone);
         eventQuery.setToDate(to);
         //
         eventQuery.setParticipants(newPars.toArray(new String[]{})) ;
@@ -3752,9 +3746,16 @@ public class CalendarRestApi implements ResourceContainer {
       //
       return okResult.cacheControl(nc).build();
     } catch (Exception e) {
-      if(log.isDebugEnabled()) log.debug(e.getMessage());
+      log.error("Can not check availability", e);
     }
     return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
+  }
+
+  private java.util.Calendar buildTimeFrom(Long miliseconds, TimeZone timeZone) {
+    java.util.Calendar cal = java.util.Calendar.getInstance();
+    cal.setTimeZone(timeZone);
+    cal.setTimeInMillis(miliseconds);
+    return cal;
   }
 
   private Response buildBadResponse(ErrorResource error) {
@@ -4549,25 +4550,6 @@ public class CalendarRestApi implements ResourceContainer {
           break;
       }
     }
-  }
-
-  private java.util.Calendar getBeginDay(java.util.Calendar cal) {
-    java.util.Calendar newCal = (java.util.Calendar) cal.clone();
-
-    newCal.set(java.util.Calendar.HOUR_OF_DAY, 0) ;
-    newCal.set(java.util.Calendar.MINUTE, 0) ;
-    newCal.set(java.util.Calendar.SECOND, 0) ;
-    newCal.set(java.util.Calendar.MILLISECOND, 0) ;
-    return newCal ;
-  }
-  private java.util.Calendar getEndDay(java.util.Calendar cal)  {
-    java.util.Calendar newCal = (java.util.Calendar) cal.clone();
-    newCal.set(java.util.Calendar.HOUR_OF_DAY, 0) ;
-    newCal.set(java.util.Calendar.MINUTE, 0) ;
-    newCal.set(java.util.Calendar.SECOND, 0) ;
-    newCal.set(java.util.Calendar.MILLISECOND, 0) ;
-    newCal.add(java.util.Calendar.HOUR_OF_DAY, 24) ;
-    return newCal ;
   }
 
   public static class Expand {

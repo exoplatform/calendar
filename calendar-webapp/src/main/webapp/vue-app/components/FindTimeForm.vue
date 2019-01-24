@@ -119,11 +119,11 @@
 
     <div class="uiAction uiActionBorder">
       <button class="btn" type="button" @click="save">
-        {{ $t('ExoEventForm.btn.save') }}
+        {{ $t('ExoCalendarEventForm.btn.save') }}
       </button>
 
       <button class="btn" type="button" @click="cancel">
-        {{ $t('ExoEventForm.btn.cancel') }}
+        {{ $t('ExoCalendarEventForm.btn.cancel') }}
       </button>
     </div>
   </div>
@@ -307,7 +307,7 @@ export default {
       const names = this.users.filter(u => !u.availability).map(u => u.id);
 
       if (names.length) {
-        calServices.getAvailability(names, this.fromDate.getTime(), this.toDate.getTime()).then(availMap => {
+        calServices.getAvailabilities(names, this.fromDate.getTime(), this.toDate.getTime()).then(availMap => {
           if (availMap) {
             Object.entries(availMap).forEach(entry => {
               const username = entry[0];
