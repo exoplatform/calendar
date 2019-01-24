@@ -362,6 +362,7 @@ export default {
     saveFindTime(evt) {
       this.event.fromDate = new Date(evt.from.getTime());
       this.event.toDate = new Date(evt.to.getTime());
+      this.event.participants = evt.participants.slice();
       this.showFindTime = false;
     },
     cancelFindTime() {
