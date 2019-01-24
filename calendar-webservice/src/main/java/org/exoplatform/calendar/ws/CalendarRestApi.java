@@ -3653,7 +3653,7 @@ public class CalendarRestApi implements ResourceContainer {
         //
         return okResult.cacheControl(nc).build();
     } catch (Exception e) {
-        if(log.isDebugEnabled()) log.debug(e.getMessage());
+        log.error("Can not suggest participant", e);
     }
     return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
   }
