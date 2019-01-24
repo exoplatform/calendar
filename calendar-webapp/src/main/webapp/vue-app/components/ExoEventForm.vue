@@ -342,6 +342,7 @@ export default {
       this.open = !this.open;
       this.cancelRecurring();
       this.cancelReminder();
+      this.cancelFindTime();
       this.errors = [];
       this.$emit('toggle-open', this.open);
     },
