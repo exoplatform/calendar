@@ -208,7 +208,7 @@ export default {
             s = ' PM';
           }
         }
-        if (i < percent) {
+        if (n < percent) {
           n = `0${n}`;
         }
         a.push(`${n}:00${s}`);

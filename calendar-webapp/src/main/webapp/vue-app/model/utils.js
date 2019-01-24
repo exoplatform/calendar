@@ -23,7 +23,7 @@ export default {
         s = ' PM';
       }
       hours = hours % MID_DAY;
-      hours = `0${date.getHours()}`.slice(sub);
+      hours = `0${hours}`.slice(sub);
     }
 
     return `${hours}:${minutes}${s}`;
