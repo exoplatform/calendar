@@ -147,6 +147,7 @@
       workingStart = uicomponent.getCalendarSetting().getWorkingTimeBegin() ;
       CalendarSetting calendarSetting = uicomponent.getCalendarSetting() ;
       String timeFormat = calendarSetting.getTimeFormat() ;
+      String dateFormat = calendarSetting.getDateFormat();
       String settingTimeZone = uicomponent.getSettingTimeZone() ;
       String weekStartOn = uicomponent.getWeekStartOn();
       //String restContext = uicomponent.getRestContextName();
@@ -179,7 +180,7 @@
       requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
       requireJS.addScripts('cal.CalendarLayout.init();');
       requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
-      requireJS.addScripts("calendarVue.init({timezone: " + uicomponent.getSettingTimeZone() + "});");
+      requireJS.addScripts("calendarVue.init({timezone: " + uicomponent.getSettingTimeZone() + ", timeFormat: '" + timeFormat + "', dateFormat:'" + dateFormat +"'});");
     %>
       <div class="calendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>
