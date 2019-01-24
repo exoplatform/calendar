@@ -71,8 +71,11 @@
                     <div class="leftSide">
                       <span class="title">
                         {{ $t('UIEventForm.label.Participants') }}
-                      </span>					
-                      <a :title="$t('UIEventForm.label.action.AddUser')" class="actionIcon" rel="tooltip" data-placement="bottom" @click="showAddParticipant">
+                      </span>
+                      <exo-modal :show="showParSelector" :title="$t('UICalendarChildPopupWindow.title.UISelectUserForm')" class="par-selector" @close="cancelParSelector">
+                        <participant-selector @save="saveParSelector($event)" @cancel="cancelParSelector"/>
+                      </exo-modal>
+                      <a :title="$t('UIEventForm.label.action.AddUser')" class="actionIcon" rel="tooltip" data-placement="bottom" @click="showParSelector = true">
                         <i class="uiIconCalInviteUser uiIconLightGray" ></i>
                       </a>
                       <a :title="$t('UIEventForm.label.DeleteUsername')" class="actionIcon" rel="tooltip" data-placement="bottom" @click="removeParticipant">
@@ -90,7 +93,7 @@
                     <div class="leftSide">
                       <div class="input">
                         <label class="uiCheckbox">
-                          <input :id="user.id" :name="user.id" type="checkbox" class="checkbox"><span>{{ user.name }}</span>
+                          <input :id="user.id" v-model="selectedPars" :value="user.id" type="checkbox" class="checkbox"><span>{{ user.name }}</span>
                         </label>
                       </div>
                     </div>
@@ -130,11 +133,17 @@
 import {calConstants} from '../calConstants.js';
 import Utils from '../model/utils.js';
 import * as calServices from '../calServices.js';
+import ExoModal from './ExoModal.vue';
+import ParticipantSelector from './ParticipantSelector.vue';
 
 const MID_NIGHT_HOUR = 23;
 const MID_NIGHT_MINUTE = 59;
 
 export default {
+  components: {
+    'exo-modal': ExoModal,
+    'participant-selector': ParticipantSelector
+  },
   props: {
     'participants': {
       type: Array,
@@ -150,42 +159,50 @@ export default {
     }
   },
   data() {
-    return {
-      fromDate: new Date(),
-      toDate: new Date(),
-      usernames: [],
-      users: [],
-      isAllDay: false
-    };
+    return this.getDefaultData();
   },
   watch: {    
     participants() {
-      this.usernames = this.participants.slice();
+      if (this.participants.length && this.participants[0]) {
+        this.usernames = this.participants.slice();
+      } else {
+        this.usernames = [];
+      }
     },
     usernames() {
-      this.users = [];
+      const remove = this.users.filter(u => {
+        return !this.usernames.includes(u.id);
+      });
+      remove.forEach(u => {
+        this.users.splice(this.users.findIndex(user => user.id === u.id), 1);
+      });
 
       this.usernames.forEach(username => {
-        calServices.findParticipants(username).then(resp => {
-          if(resp) {
-            resp.forEach(user => {
-              if (user.id === username) {
-                const par = this.users.find(u => {
-                  return u.id = user.id;
-                });
-                if (par) {
-                  Vue.set(par, 'name', user.name);     
-                } else {
-                  this.users.push({
-                    id: user.id,
-                    name: user.name,
-                    availability: ''
+        if (!this.users.some(u => u.id === username)) {
+          this.users.push({
+            id: username,
+            name: '',
+            availability: ''
+          });
+        }
+      });
+
+      this.users.forEach(user => {
+        if (!user.name)  {
+          const username = user.id;
+          calServices.findParticipants(username).then(resp => {
+            if(resp) {
+              resp.forEach(respU => {
+                if (respU.id === username) {
+                  const par = this.users.find(u => {
+                    return u.id === username;
                   });
+                  Vue.set(par, 'name', respU.name);                
                 }
-              }
-            });       
-          }
-        });
+              });       
+            }
+          }); 
+        }
       });
       
       this.checkTime();
@@ -204,13 +221,11 @@ export default {
     },
     isAllDay() {
       if (this.isAllDay) {
-        const fromDate = new Date();
-        fromDate.setTime(this.fromDate.getTime());
+        const fromDate = new Date(this.fromDate.getTime());
         fromDate.setHours(0, 0, 0, 0);
         this.fromDate = fromDate;
 
-        const toDate = new Date();
-        toDate.setTime(this.toDate.getTime());
+        const toDate = new Date(this.toDate.getTime());
         toDate.setHours(MID_NIGHT_HOUR, MID_NIGHT_MINUTE, 0, 0);
         this.toDate = toDate;
       }
@@ -218,6 +233,7 @@ export default {
   },
   mounted() {
     const thiss = this;
+    //workaround: using old calendar javascript ScheduleSupport for updating time
     $('.findTimeForm .time').each(function(idx, input) {
       $(input).on('change', function() {
         if ($(input).hasClass('fromTime')) {
@@ -229,6 +245,17 @@ export default {
     });
   },
   methods: {
+    getDefaultData() {
+      return {
+        fromDate: new Date(),
+        toDate: new Date(),
+        usernames: [],
+        users: [],
+        isAllDay: false,
+        selectedPars: [],
+        showParSelector: false
+      };
+    },
     fromTime() {
       return Utils.formatTime(this.fromDate);
     },
@@ -264,49 +291,67 @@ export default {
       const sub = -2;
       return `0${hour}`.slice(sub);
     },    
-    showAddParticipant() {
-      // console.log('show');
-    },
-    removeParticipant() {
-      // console.log('remove');
-    },
     checkTime() {
-      calServices.getAvailability(this.usernames, this.fromDate.getTime(), this.toDate.getTime()).then(availMap => {
-        if (availMap) {
-          Object.entries(availMap).forEach(entry => {
-            const username = entry[0];
-            const avail = entry[1];
+      const names = this.users.filter(u => !u.availability).map(u => u.id);
 
-            const par = this.users.find(u => {
-              return u.id = username;
-            });
-            if (par) {
-              Vue.set(par, 'availability', avail);
-            } else {
-              this.users.push({
-                id: username,
-                name: '',
-                availability: avail
+      if (names.length) {
+        calServices.getAvailability(names, this.fromDate.getTime(), this.toDate.getTime()).then(availMap => {
+          if (availMap) {
+            Object.entries(availMap).forEach(entry => {
+              const username = entry[0];
+              const avail = entry[1];
+  
+              const par = this.users.find(u => {
+                return u.id === username;
               });
-            }
+              Vue.set(par, 'availability', avail);
+            });
+          }
+  
+          Vue.nextTick(() => {
+            const timezone = calConstants.SETTINGS.timezone;           
+            eXo.calendar.UICalendarPortlet.initCheck('eventAttender-tab', timezone * -1);
+            ScheduleSupport.applyPeriod();
           });
-        }
-
+        });
+      } else {
         Vue.nextTick(() => {
           const timezone = calConstants.SETTINGS.timezone;           
           eXo.calendar.UICalendarPortlet.initCheck('eventAttender-tab', timezone * -1);
           ScheduleSupport.applyPeriod();
         });
+      }
+    },
+    removeParticipant() {
+      this.selectedPars.forEach(par => {
+        const idx = this.usernames.indexOf(par);
+        if (idx >= 0) {         
+          this.usernames.splice(idx, 1);
+        }
       });
+      this.selectedPars = [];
+    },
+    saveParSelector(names) {
+      names.forEach(name => {
+        if (!this.usernames.includes(name)) {
+          this.usernames.push(name);
+        }
+      });
+      this.showParSelector = false;
+    },
+    cancelParSelector() {
+      this.showParSelector = false;
     },
     save() {
       this.from.setTime(this.fromDate.getTime());
       this.to.setTime(this.toDate.getTime());
-      this.$emit('save', {from: this.from, to: this.to});
+      this.participants = this.usernames.slice();
+      this.$emit('save', {from: this.from, to: this.to, participants: this.participants});
     },
     cancel() {
       this.fromDate.setTime(this.from.getTime());
       this.toDate.setTime(this.to.getTime());
+      this.usernames = [];
       this.refreshDate();
       this.$emit('cancel');
     }
