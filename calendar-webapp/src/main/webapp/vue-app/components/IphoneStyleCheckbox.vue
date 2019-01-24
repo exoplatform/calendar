@@ -55,4 +55,4 @@ export default {
 };
 </script>
 
-<style src="../css/ExoEventForm.less"></style>
+<style src="../css/ExoCalendarEventForm.less"></style>

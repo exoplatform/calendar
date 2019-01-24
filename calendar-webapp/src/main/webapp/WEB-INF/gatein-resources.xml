@@ -90,7 +90,7 @@
 	     <module>DateUtils</module>
 	   </depends>
      <depends>
-       <module>CalendarVue</module>
+       <module>calendarEvent</module>
      </depends>
     </module>
   </portlet>
@@ -342,7 +342,7 @@
       <as>gj</as>
     </depends>
     <depends>
-      <module>CalendarVue</module>
+      <module>calendarEvent</module>
     </depends>
   </module>
   
@@ -679,7 +679,7 @@
   </module>
 
   <module>
-    <name>CalendarVue</name>
+    <name>calendarEvent</name>
     <script>
       <minify>false</minify>
       <path>/vue-app/js/calendar.bundle.js</path>
