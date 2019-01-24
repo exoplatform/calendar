@@ -36,6 +36,7 @@ import org.exoplatform.calendar.ws.bean.*;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.calendar.ws.common.RestAPIConstants;
 import org.exoplatform.common.http.HTTPStatus;
+import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.commons.utils.MimeTypeResolver;
@@ -3716,12 +3717,17 @@ public class CalendarRestApi implements ResourceContainer {
       if(newPars.size() > 0) {
         EventQuery eventQuery = new EventQuery() ;
 
+        CalendarSetting setting = calendarServiceInstance().getCalendarSetting(currentUserId());
+        TimeZone timeZone = DateUtils.getTimeZone(setting.getTimeZone());
+
         java.util.Calendar from = java.util.Calendar.getInstance();
+        from.setTimeZone(timeZone);
         from.setTimeInMillis(fromDate);
         from = getBeginDay(from);
         eventQuery.setFromDate(from);
 
         java.util.Calendar to = java.util.Calendar.getInstance();
+        to.setTimeZone(timeZone);
         to.setTimeInMillis(toDate);
         to = getEndDay(to);
         eventQuery.setToDate(to);
