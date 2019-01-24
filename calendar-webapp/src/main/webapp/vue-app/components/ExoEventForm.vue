@@ -125,6 +125,7 @@
 </template>
 
 <script>
+import {calConstants} from '../calConstants.js';
 import * as calServices from '../calServices.js';
 import CalendarEvent from '../model/event.js';
 import Utils from '../model/utils.js';
@@ -191,19 +192,31 @@ export default {
     },
     times: function() {
       const a = [];
+      const ampm = calConstants.SETTINGS.timeFormat === 'hh:mm a';
+
+      const MID_DAY = 12;
       const maxTime = 24;
       const percent = 10;
       for (let i = 0; i < maxTime; i++) {
         let n = i;
-        if (i < percent) {
-          n = `0${i}`;
+        let s = '';
+        if (ampm) {
+          n = n % MID_DAY;
+          if (i < MID_DAY) {
+            s = ' AM';
+          } else {
+            s = ' PM';
+          }
         }
-        a.push(`${n}:00`);
-        a.push(`${n}:15`);
-        a.push(`${n}:30`);
-        a.push(`${n}:45`);
+        if (i < percent) {
+          n = `0${n}`;
+        }
+        a.push(`${n}:00${s}`);
+        a.push(`${n}:15${s}`);
+        a.push(`${n}:30${s}`);
+        a.push(`${n}:45${s}`);
       }
-      return a;
+      return a;     
     }
   },
   watch: {
@@ -285,17 +298,23 @@ export default {
 
       return data;
     },
+    refreshDate() {
+      this.event.fromDate = new Date(this.event.fromDate.getTime());
+      this.event.toDate = new Date(this.event.toDate.getTime());
+    },
     updateDate(date, val) {
       const parsedVal = Utils.parseDate(val);
       if (parsedVal) {
         date.setFullYear(parsedVal.getFullYear(),parsedVal.getMonth(), parsedVal.getDate());
       }
+      this.refreshDate();
     },
     updateTime(date, val) {
       const parsedVal = Utils.parseTime(val);
       if (parsedVal) {
         date.setHours(parsedVal.getHours(), parsedVal.getMinutes(), parsedVal.getSeconds(), parsedVal.getMilliseconds());
       }
+      this.refreshDate();
     },
     fromDate() {
       return Utils.formatDate(this.event.fromDate);

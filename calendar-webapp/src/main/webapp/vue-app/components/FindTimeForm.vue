@@ -256,11 +256,17 @@ export default {
         showParSelector: false
       };
     },
+    formatTime(date) {
+      const sub = -2;
+      const hours = `0${date.getHours()}`.slice(sub);
+      const minutes = `0${date.getMinutes()}`.slice(sub);
+      return `${hours}:${minutes}`;
+    },
     fromTime() {
-      return Utils.formatTime(this.fromDate);
+      return this.formatTime(this.fromDate);
     },
     toTime() {
-      return Utils.formatTime(this.toDate);
+      return this.formatTime(this.toDate);
     },
     updateTime(date, val) {
       const parsedVal = Utils.parseTime(val);
@@ -286,6 +292,12 @@ export default {
     refreshDate() {
       this.fromDate = new Date(this.fromDate.getTime());
       this.toDate = new Date(this.toDate.getTime());
+
+      Vue.nextTick(() => {
+        const timezone = calConstants.SETTINGS.timezone;           
+        eXo.calendar.UICalendarPortlet.initCheck('eventAttender-tab', timezone * -1);
+        ScheduleSupport.applyPeriod();
+      });
     },
     formatHour(hour) {
       const sub = -2;
