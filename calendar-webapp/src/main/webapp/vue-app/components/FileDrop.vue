@@ -2,7 +2,7 @@
   <div class="fileDrop">
     <div class="dropZone">
       <label class="dropMsg" for="cal-attach-file">
-        <i class="uiIcon attachFileIcon"></i> {{ $t('ExoEventForm.label.attachFile') }}
+        <i class="uiIcon attachFileIcon"></i> {{ $t('ExoCalendarEventForm.label.attachFile') }}
       </label>
       <input id="cal-attach-file" :value="selectedFile" type="file" class="attachFile"/>
     </div>
@@ -15,7 +15,7 @@
           <div :title="file.name" class="fileNameLabel pull-left" data-toggle="tooltip" rel="tooltip" data-placement="top">{{ decodeURIComponent(file.name) }}</div>
           <div class="fileSize pull-left">({{ getFileSize(file.size) }})</div>
           <div v-show="file.progress == 100" class="removeFile">
-            <a :title="$t('ExoEventForm.btn.delete')" href="#" rel="tooltip" data-placement="top" @click="deleteFile(file.name)">
+            <a :title="$t('ExoCalendarEventForm.btn.delete')" href="#" rel="tooltip" data-placement="top" @click="deleteFile(file.name)">
               <i class="uiIconClose"></i>
             </a>
           </div>
@@ -24,7 +24,7 @@
           <div :style="{width: (file.progress * 2) + 'px'}" class="bar">{{ file.progress }} %</div>
         </div>
         <div v-show="file.progress < 100" class="abortFile pull-right">
-          <a :title="$t('ExoEventForm.btn.cancel')" href="#" rel="tooltip" data-placement="top" @click="abortUpload(file.name)">
+          <a :title="$t('ExoCalendarEventForm.btn.cancel')" href="#" rel="tooltip" data-placement="top" @click="abortUpload(file.name)">
             <i class="uiIconRemove"></i>
           </a>
         </div>
@@ -74,15 +74,15 @@ export default {
         switch (err) {
         case 'ErrorBrowserNotSupported':
         case 'BrowserNotSupported':
-          thiss.setErrorCode('ExoEventForm.error.BrowserNotSupported');
+          thiss.setErrorCode('ExoCalendarEventForm.error.BrowserNotSupported');
           break;
         case 'ErrorTooManyFiles':
         case 'TooManyFiles':
-          thiss.setErrorCode('ExoEventForm.error.TooManyFiles', [calConstants.MAX_UPLOAD_FILES]);
+          thiss.setErrorCode('ExoCalendarEventForm.error.TooManyFiles', [calConstants.MAX_UPLOAD_FILES]);
           break;
         case 'ErrorFileTooLarge':
         case 'FileTooLarge':
-          thiss.setErrorCode('ExoEventForm.error.FileTooLarge', [calConstants.MAX_UPLOAD_SIZE]);
+          thiss.setErrorCode('ExoCalendarEventForm.error.FileTooLarge', [calConstants.MAX_UPLOAD_SIZE]);
           break;
         }
       },
@@ -108,7 +108,7 @@ export default {
       },
       beforeEach: function() {
         if (thiss.files.length === calConstants.MAX_UPLOAD_FILES) {
-          thiss.setErrorCode('ExoEventForm.error.TooManyFiles', [calConstants.MAX_UPLOAD_FILES]);
+          thiss.setErrorCode('ExoCalendarEventForm.error.TooManyFiles', [calConstants.MAX_UPLOAD_FILES]);
           return false;
         }
       },
@@ -163,4 +163,4 @@ export default {
 };
 </script>
 
-<style src="../css/ExoEventForm.less"></style>
+<style src="../css/ExoCalendarEventForm.less"></style>

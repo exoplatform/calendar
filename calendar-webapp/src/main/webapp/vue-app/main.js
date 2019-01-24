@@ -1,5 +1,5 @@
 import {calConstants} from './calConstants.js';
-import ExoEventForm from './components/ExoEventForm.vue';
+import ExoCalendarEventForm from './components/ExoCalendarEventForm.vue';
 import * as calServices from './calServices.js';
 
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
@@ -10,12 +10,12 @@ let vm = null;
 export function init(settings) {
   calConstants.SETTINGS = settings;
 
-  if ($('#ExoEventForm').length) {
+  if ($('#ExoCalendarEventForm').length) {
     exoi18n.loadLanguageAsync(lang, url).then(i18n => {
       vm = new Vue({
-        el: '#ExoEventForm',
+        el: '#ExoCalendarEventForm',
         components: {
-          'exo-event-form': ExoEventForm
+          'exo-event-form': ExoCalendarEventForm
         },
         data: {
           calEvt: {},

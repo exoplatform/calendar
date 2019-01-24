@@ -13,7 +13,7 @@ var UIEventPreview = {
       var endTime = $editBtn.attr("endtimefull");
       if (recurid == "null") recurid = "";
 
-      CalendarVue.openEventForm({
+      calendarEvent.openEventForm({
           id: eventId,
           isOccur: isoccur,
           recurId: recurid,

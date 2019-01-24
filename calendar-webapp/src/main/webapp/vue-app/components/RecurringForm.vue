@@ -86,11 +86,11 @@
     </div>
     <div class="uiAction uiActionBorder">
       <button class="btn" type="button" @click="save">
-        {{ $t('ExoEventForm.btn.save') }}
+        {{ $t('ExoCalendarEventForm.btn.save') }}
       </button>
 
       <button class="btn" type="button" @click="cancel">
-        {{ $t('ExoEventForm.btn.cancel') }}
+        {{ $t('ExoCalendarEventForm.btn.cancel') }}
       </button>
     </div>
   </div>

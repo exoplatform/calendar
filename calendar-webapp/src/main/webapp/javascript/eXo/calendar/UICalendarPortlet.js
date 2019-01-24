@@ -185,12 +185,7 @@
 
         }
         if(parseInt(type) == 1) {
-//            var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
-//            uiform.reset();
-//            this.fillData(uiform, data, data.isAllday) ;
-//            uiPopupWindow.show("UIQuickAddEventPopupWindow");
-//            uiPopup.hide("UIQuickAddTaskPopupWindow") ;
-              CalendarVue.openEventForm(data);
+              calendarEvent.openEventForm(data);
         } else if(parseInt(type) == 2) {
             var uiform = gj(UIQuickAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
             uiform.reset() ;
@@ -657,7 +652,7 @@
                     }
                 } else if ($item.hasClass('editAction')) {
                     $item.one('click', function(event) {
-                        CalendarVue.openEventForm({
+                        calendarEvent.openEventForm({
                             id: eventId,
                             isOccur: isOccur,
                             recurId: recurId,
@@ -754,7 +749,7 @@
                 else if ($item.hasClass('editAction'))
                 {
                     $item.one('click', function (event) {
-                        CalendarVue.openEventForm({
+                        calendarEvent.openEventForm({
                             id: eventId,
                             isOccur: isOccur,
                             recurId: recurId,
@@ -833,7 +828,7 @@
                     else if ($item.hasClass('editAction'))
                     {
                         $item.one('click', function (event) {
-                            CalendarVue.openEventForm({
+                            calendarEvent.openEventForm({
                                 id: eventId,
                                 isOccur: isOccur,
                                 recurId: recurId,
@@ -968,7 +963,7 @@
                     }
                 } else if ($item.hasClass('editAction')) {
                     $item.one('click', function (event) {
-                        CalendarVue.openEventForm({
+                        calendarEvent.openEventForm({
                             id: eventId,
                             isOccur: isOccur,
                             recurId: recurId,
@@ -1347,14 +1342,13 @@
         var endTime = obj.getAttribute("endtimefull");
 
         if (recurid == "null") recurid = "";
-        CalendarVue.openEventForm({
+        calendarEvent.openEventForm({
             id: eventId,
             isOccur: isoccur,
             recurId: recurid,
             startTime: startTime,
             endTime: endTime
         });
-//        uiForm.submitEvent(_module.UICalendarPortlet.portletId+'#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isoccur + '&recurId='+recurid);
     };
 
     UICalendarPortlet.prototype.listViewDblClickCallback = function() {
@@ -1755,22 +1749,6 @@
         gj(UIComboboxInputs[0]).trigger('change');
         gj(UIComboboxInputs[1]).trigger('change');
 
-        // if (dateValue) {
-            // var DateContainer = gj(uiTabContentContainer).parents("form")[0];
-            // DateContainer.from.value = dateValue;
-            // DateContainer.to.value = dateValue;
-        // }
-        // for (var i = 0; i < len; i++) {
-        //     name = this.synTime(UIComboboxInputs[i]).name.toLowerCase();
-        //     if (name.indexOf("from") >= 0) {
-        //         UIComboboxInputs[i].value = start;
-        //         this.synTime(UIComboboxInputs[i],start);
-        //     }
-        //     else {
-        //         UIComboboxInputs[i].value = end;
-        //         this.synTime(UIComboboxInputs[i],end);
-        //     }
-        // }
         var cells = gj(UIHSelection.firstCell.parentNode).children("td");
         UIHSelection.setAttr(UIHSelection.firstCell.cellIndex, UIHSelection.lastCell.cellIndex, cells);
         _module.ScheduleSupport.syncTimeBetweenEventTabs();
@@ -1928,16 +1906,13 @@
       var endTime = this.getAttribute("endtimefull");
 
 
-      CalendarVue.openEventForm({
+      calendarEvent.openEventForm({
           id: eventId,
           isOccur: isOccur,
           recurId: recurId,
           startTime: startTime,
           endTime: endTime
       });
-//      uiForm.submitEvent(UICalendarPortlet.portletId + '#' + UICalendarPortlet.viewType,
-//          'Edit', '&subComponentId=' + UICalendarPortlet.viewType + '&objectId=' + eventId +
-//          '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isOccur + '&recurId=' + recurId);
     }
     
     /**
