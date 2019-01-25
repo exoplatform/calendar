@@ -31,6 +31,7 @@ import org.exoplatform.calendar.service.Attachment;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.Reminder;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.ws.CalendarRestApi;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.webservice.cs.bean.End;
@@ -49,12 +50,15 @@ public class EventResource extends Resource {
   private RepeatResource            repeat;
   private String                    recurrenceId;
   private Serializable                    originalEvent;
+  private boolean                   isOccur;
   private Reminder[]                reminder;
   private Serializable[]              attachments;
+  private UploadResource[]        uploadResources;
   private String[]                  participants;
   private String                    privacy;
   private String                    availability;  
   private String                categoryId;
+  private String                calendarId;
   
   public EventResource() {
     super(null);
@@ -79,6 +83,7 @@ public class EventResource extends Resource {
     calendar = new StringBuilder(basePath).append(CALENDAR_URI)
                                              .append(data.getCalendarId())
                                              .toString();
+    calendarId = data.getCalendarId();
     if (data.getEventCategoryId() != null) {
       categories = new String[] { new StringBuilder(basePath).append(CATEGORY_URI)
           .append(data.getEventCategoryId())
@@ -92,10 +97,12 @@ public class EventResource extends Resource {
     if (data.getRepeatUntilDate() != null) {
       java.util.Calendar tmp = java.util.Calendar.getInstance();
       tmp.setTime(data.getRepeatUntilDate());      
-      end = new End(data.getRepeatType(), ISO8601.format(tmp));      
+      end = new End(CalendarRestApi.RP_END_BYDATE, ISO8601.format(tmp));
+    } else if (data.getRepeatCount() > 0) {
+      end = new End(CalendarRestApi.RP_END_AFTER, String.valueOf(data.getRepeatCount()));
     } else {
-      end = new End(data.getRepeatType(), String.valueOf(data.getRepeatCount()));
-    }    
+      end = new End(CalendarRestApi.RP_END_NEVER, null);
+    }
     
     StringBuilder repeatByMonthDay = new StringBuilder();
     if (data.getRepeatByMonthDay() != null) {
@@ -115,12 +122,13 @@ public class EventResource extends Resource {
                                 repeatByMonthDay.toString(),
                                 data.getExceptionIds(),
                                 end);    
-    recurrenceId = data.getOriginalReference();
+    recurrenceId = data.getRecurrenceId();
     if (data.getOriginalReference() != null) {
       originalEvent = new StringBuilder(basePath).append(EVENT_URI)
           .append(data.getOriginalReference())
           .toString();
     }
+    isOccur = isRepeat && (data.getIsExceptionOccurrence() == null || !data.getIsExceptionOccurrence());
     if (data.getReminders() != null)
       reminder = data.getReminders().toArray(new Reminder[] {});
     
@@ -243,6 +251,14 @@ public class EventResource extends Resource {
     this.attachments = attachments;
   }
 
+  public UploadResource[] getUploadResources() {
+    return uploadResources;
+  }
+
+  public void setUploadResources(UploadResource[] uploadResources) {
+    this.uploadResources = uploadResources;
+  }
+
   public String[] getParticipants() {
     return participants;
   }
@@ -273,5 +289,21 @@ public class EventResource extends Resource {
 
   public void setCategoryId(String categoryId) {
     this.categoryId = categoryId;
+  }
+
+  public String getCalendarId() {
+    return calendarId;
+  }
+
+  public void setCalendarId(String calendarId) {
+    this.calendarId = calendarId;
+  }
+
+  public Boolean getIsOccur() {
+    return isOccur;
+  }
+
+  public void setIsOccur(Boolean isOccur) {
+    isOccur = isOccur;
   }
 }

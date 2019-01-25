@@ -146,12 +146,14 @@
                     "&calType="+ calType + "&isOccur=" + isOccur + "&recurId=" + recurId);
             def color = uicomponent.getColors().get(event.getCalendarId()) ;
             boolean isEditable;
+            def starttimefull = event.getFromDateTime().getTime();
+            def endtimefull = event.getToDateTime().getTime();
             if (calType != CalendarUtils.PRIVATE_TYPE) isEditable = uicomponent.isEventEditable(event);
             else isEditable = "true";
             UICheckBoxInput checkbox = uicomponent.getChildById(event.getId() + ((recurId == null || !uicomponent.isDisplaySearchResult()) ? "" : "-" + recurId));
             if (isEditable == false) checkbox.setDisabled(true);
         %>
-        <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>" calid="<%=event.getCalendarId()%>" calType=<%=calType%> isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
+        <tr actionLink="$actionLink" class="uiListViewRow" style="$rowStyle" eventid="<%=event.getId()%>"  calid="<%=event.getCalendarId()%>" starttimefull="$starttimefull" endtimefull="$endtimefull" calType=<%=calType%> isOccur="$isOccur" recurId="$recurId" isEditable="$isEditable">
         <% if (!searchDisplay) { %>
         <td class="center"><% uicomponent.renderField(checkbox) %></td>
         <% } %>
@@ -224,13 +226,13 @@
             </a>
         </li>
         <li>
-            <a class="eventAction" href="<%= uicomponent.event("Edit",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>">
+            <a class="eventAction editAction" href="javascript:void(0);">
                 <i class="uiIconEdit uiIconLightGray"></i>
                 <%=_ctx.appRes("ContextMenu.label.Edit")%>
             </a>
         </li>
         <li>
-            <a class="eventAction"
+            <a class="eventAction deleteAction"
                href="<%= uicomponent.event("Delete",uicomponent.id,"id&$uicomponent.CALENDARID=calId&calType=caltype&isOccur=isOccur&recurId=recurId") ; %>"
                deleteActionLink="<%=uicomponent.event("DeleteEvent",uicomponent.id,"id")%>">
                 <i class="uiIconDelete uiIconLightGray"></i>
@@ -238,7 +240,7 @@
             </a>
         </li>
         <li>
-            <a class="eventAction" class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype&isOccur=isOccur&recurId=recurId")%>">
+            <a class="eventAction exportAction" class="eventAction" href="<%=uicomponent.event("ExportEvent","id&$uicomponent.CALENDARID=calId&$uicomponent.CALTYPE=caltype&isOccur=isOccur&recurId=recurId")%>">
                 <i class="uiIconCalExportCalendar uiIconLightGray"></i>
                 <%=_ctx.appRes("ContextMenu.label.ExportEvent")%>
             </a>

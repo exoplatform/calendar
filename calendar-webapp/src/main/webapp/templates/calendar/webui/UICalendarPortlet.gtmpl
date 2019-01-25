@@ -147,6 +147,7 @@
       workingStart = uicomponent.getCalendarSetting().getWorkingTimeBegin() ;
       CalendarSetting calendarSetting = uicomponent.getCalendarSetting() ;
       String timeFormat = calendarSetting.getTimeFormat() ;
+      String dateFormat = calendarSetting.getDateFormat();
       String settingTimeZone = uicomponent.getSettingTimeZone() ;
       String weekStartOn = uicomponent.getWeekStartOn();
       //String restContext = uicomponent.getRestContextName();
@@ -160,6 +161,7 @@
       requireJS.require("PORTLET/calendar/CalendarPortlet","cal");
       requireJS.require("SHARED/Reminder","Reminder");
       requireJS.require("SHARED/CalContextMenu","uiContextMenu");
+      requireJS.require("SHARED/calendarEvent","calendarEvent");
       requireJS.addScripts('cal.UICalendarPortlet.portletId="' + uicomponent.id + '";') ;
       requireJS.addScripts('cal.UICalendarPortlet.resourceURL="' + resourceURL.toString() + '";') ;
 	
@@ -178,10 +180,12 @@
       requireJS.addScripts('cal.UICalendarPortlet.checkLayout();');
       requireJS.addScripts('cal.CalendarLayout.init();');
       requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
+      requireJS.addScripts("calendarEvent.init({timezone: " + uicomponent.getSettingTimeZone() + ", timeFormat: '" + timeFormat + "', dateFormat:'" + dateFormat +"'});");
     %>
       <div class="calendarWorkingWorkspace">
         <%uicomponent.renderChild(UIActionBar.class)%>
-        <%uicomponent.renderChild(UICalendarWorkingContainer.class)%>        
+        <%uicomponent.renderChild(UICalendarWorkingContainer.class)%>
+        <div id="ExoCalendarEventForm"></div>
       </div>
     
     </div>

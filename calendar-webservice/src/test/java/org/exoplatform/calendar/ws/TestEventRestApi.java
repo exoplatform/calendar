@@ -18,9 +18,11 @@
  */
 package org.exoplatform.calendar.ws;
 
+import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.ws.bean.*;
+import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
 import org.exoplatform.commons.utils.ISO8601;
@@ -85,7 +87,7 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     assertEquals(calHref, calR0.getCalendar());
     
     //expand=calendar
-    response = service(HTTPMethods.GET, CAL_BASE_URI + EVENT_URI + 
+    response = service(HTTPMethods.GET, CAL_BASE_URI + EVENT_URI +
                                          uEvt.getId() + "?expand=calendar", baseURI, headers, null, writer);
     calR0 = (EventResource)response.getEntity();
     assertTrue(calR0.getCalendar() instanceof CalendarResource);
@@ -101,6 +103,100 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
   
   public void testUpdateEvent() throws Exception {
     runTestUpdateEvent(CAL_BASE_URI + EVENT_URI, CalendarEvent.TYPE_EVENT);
+  }
+
+  public void testUpdateEventParticipant() throws Exception {
+    CalendarEvent uEvt = createEvent(userCalendar);
+    uEvt.setEventType(CalendarEvent.TYPE_EVENT);
+    uEvt.setParticipant(new String[] {"root", "john"});
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
+
+    Resource resource = new EventResource(uEvt, "");
+    ((EventResource)resource).setParticipants(new String[] {"root"});
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+    JsonValue json = generatorImpl.createJsonObject(resource);
+
+    byte[] data = json.toString().getBytes("UTF-8");
+
+    headers.putSingle("content-type", "application/json");
+    headers.putSingle("content-length", "" + data.length);
+
+    login("root");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.PUT, CAL_BASE_URI + EVENT_URI
+            + uEvt.getId(), baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+
+    CalendarEvent event = calendarService.getEventById(uEvt.getId());
+    assertEquals(1, event.getParticipant().length);
+    assertEquals("root", event.getParticipant()[0]);
+  }
+
+  public void testUpdateEventCalendar() throws Exception {
+    CalendarEvent uEvt = createEvent(userCalendar);
+    uEvt.setEventType(CalendarEvent.TYPE_EVENT);
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
+
+    Resource resource = new EventResource(uEvt, "");
+    ((EventResource)resource).setCalendarId(sharedCalendar.getId());
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+    JsonValue json = generatorImpl.createJsonObject(resource);
+
+    byte[] data = json.toString().getBytes("UTF-8");
+
+    headers.putSingle("content-type", "application/json");
+    headers.putSingle("content-length", "" + data.length);
+
+    login("root");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.PUT, CAL_BASE_URI + EVENT_URI
+            + uEvt.getId(), baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+
+    CalendarEvent event = calendarService.getEventById(uEvt.getId());
+    assertEquals(sharedCalendar.getId(), event.getCalendarId());
+  }
+
+  public void testUpdateRecurringEvent() throws Exception {
+    CalendarEvent uEvt = createEvent(userCalendar);
+    uEvt.setEventType(CalendarEvent.TYPE_EVENT);
+    uEvt.setRepeatType(Event.RP_DAILY);
+    uEvt.setRepeatCount(5);
+    uEvt.setRepeatInterval(1);
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
+
+    Resource resource = new EventResource(uEvt, "");
+    ((EventResource)resource).getRepeat().setEvery(2);
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+    JsonValue json = generatorImpl.createJsonObject(resource);
+
+    byte[] data = json.toString().getBytes("UTF-8");
+    headers.putSingle("content-type", "application/json");
+    headers.putSingle("content-length", "" + data.length);
+
+    login("root");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.PUT, CAL_BASE_URI + EVENT_URI
+            + uEvt.getId() + "?recurringUpdateType=ONE", baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+  }
+
+  public void testGetAvailabilities() throws Exception {
+    CalendarEvent gEvt = createEvent(groupCalendar);
+    gEvt.setParticipant(new String[] {"root"});
+    gEvt.setEventType(CalendarEvent.TYPE_EVENT);
+    calendarService.savePublicEvent(groupCalendar.getId(), gEvt, true);
+
+    login("root");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + AVAILABILITY_URI
+            + "?usernames=root&fromDate=" + gEvt.getFromDateTime().getTime() + "&toDate=" + gEvt.getToDateTime().getTime(), baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    assertNotNull(((Map)response.getEntity()).get("root"));
   }
 
   public void testDeleteEventById() throws Exception {

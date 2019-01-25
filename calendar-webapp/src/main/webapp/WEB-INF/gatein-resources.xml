@@ -89,6 +89,9 @@
 	   <depends>
 	     <module>DateUtils</module>
 	   </depends>
+     <depends>
+       <module>calendarEvent</module>
+     </depends>
     </module>
   </portlet>
   
@@ -337,6 +340,9 @@
     <depends>
       <module>jquery</module>
       <as>gj</as>
+    </depends>
+    <depends>
+      <module>calendarEvent</module>
     </depends>
   </module>
   
@@ -669,6 +675,49 @@
     </script>
     <depends>
       <module>jquery</module>
+    </depends>
+  </module>
+
+  <module>
+    <name>calendarEvent</name>
+    <script>
+      <minify>false</minify>
+      <path>/vue-app/js/calendar.bundle.js</path>
+    </script>
+    <depends>
+      <module>vue</module>
+    </depends>
+    <depends>
+      <module>eXoVueI18n</module>
+    </depends>
+    <depends>
+      <module>jquery</module>
+      <as>$</as>
+    </depends>
+    <depends>
+      <module>suggester</module>
+    </depends>
+    <depends>
+      <module>filedrop</module>
+    </depends>
+    <depends>
+      <module>iphoneStyleCheckbox</module>
+    </depends>
+    <depends>
+      <module>fetchPolyfill</module>
+    </depends>
+    <depends>
+      <module>customEventPolyfill</module>
+    </depends>
+    <depends>
+      <module>iePolyfills</module>
+    </depends>
+    <depends>
+      <module>CalDateTimePicker</module>
+      <as>timePicker</as>
+    </depends>
+    <depends>
+      <module>ScheduleSupport</module>
     </depends>
   </module>
 

@@ -1,5 +1,8 @@
 *.class
 
+# Npm
+node_modules/
+
 # Package Files #
 *.jar
 *.war

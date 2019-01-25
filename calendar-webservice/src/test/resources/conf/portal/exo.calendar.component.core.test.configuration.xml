@@ -112,6 +112,13 @@
     <type>org.exoplatform.webservice.cs.calendar.CalendarWebservice</type>
   </component>
   <component>
+    <key>org.exoplatform.social.core.manager.IdentityManager</key>
+    <type>org.exoplatform.calendar.MockIdentityManager</type>
+  </component>
+  <component>
+    <type>org.exoplatform.upload.UploadService</type>
+  </component>
+  <component>
     <type>org.exoplatform.calendar.ws.CalendarRestApi</type>
   </component>
   

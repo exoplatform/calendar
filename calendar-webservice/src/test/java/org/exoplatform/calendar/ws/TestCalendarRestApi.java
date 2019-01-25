@@ -22,6 +22,7 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.CALENDAR_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
 import static org.exoplatform.calendar.ws.CalendarRestApi.ICS_URI;
+import static org.exoplatform.calendar.ws.CalendarRestApi.PARTICIPANT_URI;
 
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class TestCalendarRestApi extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());    
     Map<String, String[]> subResources = (Map<String, String[]>)response.getEntity();
     String[] resources = subResources.get("subResourcesHref");
-    assertEquals(32, resources.length);
+    assertEquals(34, resources.length);
     System.out.println(resources[0]);
   }
   
@@ -342,5 +343,18 @@ public class TestCalendarRestApi extends TestRestApi {
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + groupCalendar.getId() + ICS_URI, baseURI, headers, null, writer);
     //test is not in group of groupCalendar
     assertEquals(HTTPStatus.NOT_FOUND, response.getStatus());
+  }
+
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  public void testGetParticipants() throws Exception {
+    login("john");
+
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    String queryParams ="?name=root&offset=0&limit=20";
+    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + PARTICIPANT_URI + queryParams, baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    CollectionResource<CalendarResource> calR = (CollectionResource<CalendarResource>)response.getEntity();
+    assertEquals(1, calR.getData().size());
+    assertEquals(-1, calR.getSize());
   }
 }

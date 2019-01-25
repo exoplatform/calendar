@@ -141,6 +141,9 @@
         }
         var CalendarWorkingWorkspace =  _module.UICalendarPortlet.getElementById("UICalendarWorkingContainer");
         var id = (id)?id:this.getCheckedCalendar(this.filterForm);
+        if (id && id.includes(':')) {
+          id = id.split(':')[1];
+        }
         DOMUtil.cleanUpHiddenElements();
         var UIQuickAddEventPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddEventPopupWindow")[0];
         var UIQuickAddTaskPopupWindow = gj(CalendarWorkingWorkspace).find("#UIQuickAddTaskPopupWindow")[0];
@@ -182,11 +185,7 @@
 
         }
         if(parseInt(type) == 1) {
-            var uiform = gj(UIQuickAddEventPopupWindow).find("#UIQuickAddEvent")[0] ;
-            uiform.reset();
-            this.fillData(uiform, data, data.isAllday) ;
-            uiPopupWindow.show("UIQuickAddEventPopupWindow");
-            uiPopup.hide("UIQuickAddTaskPopupWindow") ;
+              calendarEvent.openEventForm(data);
         } else if(parseInt(type) == 2) {
             var uiform = gj(UIQuickAddTaskPopupWindow).find("#UIQuickAddTask")[0] ;
             uiform.reset() ;
@@ -614,6 +613,10 @@
         var isOccur = src.getAttribute("isOccur");
         var recurId = src.getAttribute("recurId");
         var isEditable = src.getAttribute("isEditable");
+        var startTime = src.getAttribute("starttimefull");
+        var endTime = src.getAttribute("endtimefull");
+
+        if (recurId == "null") recurId = "";
 
         map = {
             "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
@@ -635,17 +638,29 @@
 
         var items = gj(UIContextMenu.menuElement).find("a");
         for (var i = 0; i < items.length; i++) {
+            var $item = gj(items[i]);
             if (gj(items[i]).hasClass("eventAction")) {
                 items[i].parentNode.style.display = "block";
 
                 if (isEditable && (isEditable == "false"))
                 {
-                    if ((items[i].href.indexOf("Edit") >= 0) ||
-                        (items[i].href.indexOf("Delete") >= 0) ||
-                        (items[i].href.indexOf("ExportEvent") >= 0))
+                    if ($item.hasClass("editAction") ||
+                        $item.hasClass("deleteAction") ||
+                        $item.hasClass("exportAction"))
                     {
                         items[i].parentNode.style.display = "none";
                     }
+                } else if ($item.hasClass('editAction')) {
+                    $item.one('click', function(event) {
+                        calendarEvent.openEventForm({
+                            id: eventId,
+                            isOccur: isOccur,
+                            recurId: recurId,
+                            startTime: startTime,
+                            endTime: endTime
+                        });
+                        event.preventDefault();
+                    });
                 } else if($checked.length > 1 && items[i].href.indexOf("Delete") > 0) {
                   items[i].href = items[i].getAttribute('deleteActionLink');
                 }
@@ -694,6 +709,8 @@
             var isOccur = src.getAttribute("isOccur");
             var recurId = src.getAttribute("recurId");
             isEditable  = src.getAttribute("isEditable");
+            var startTime = src.getAttribute("starttimefull");
+            var endTime = src.getAttribute("endtimefull");
 
             if (recurId == "null") recurId = "";
 
@@ -716,17 +733,31 @@
 
         var items = gj(UIContextMenu.menuElement).find("a");
         for (var i = 0; i < items.length; i++) {
+            var $item = gj(items[i]);
             if (gj(items[i]).hasClass("eventAction")) {
                 items[i].parentNode.style.display = "block";
 
                 if (isEditable && (isEditable == "false"))
                 {
-                    if ((items[i].href.indexOf("Edit") >= 0) ||
-                        (items[i].href.indexOf("Delete") >= 0) ||
-                        (items[i].href.indexOf("ExportEvent") >= 0))
+                    if ($item.hasClass("editAction") ||
+                        $item.hasClass("deleteAction") ||
+                        $item.hasClass("exportAction"))
                     {
                         items[i].parentNode.style.display = "none";
                     }
+                }
+                else if ($item.hasClass('editAction'))
+                {
+                    $item.one('click', function (event) {
+                        calendarEvent.openEventForm({
+                            id: eventId,
+                            isOccur: isOccur,
+                            recurId: recurId,
+                            startTime: startTime,
+                            endTime: endTime
+                        });
+                        event.preventDefault();
+                    });
                 }
             }
         }
@@ -750,6 +781,8 @@
             var isOccur = obj.getAttribute("isOccur");
             var recurId = obj.getAttribute("recurId");
             var isEditable = obj.getAttribute("isEditable");
+            var startTime = obj.getAttribute("starttimefull");
+            var endTime = obj.getAttribute("endtimefull");
 
             if (recurId == "null") recurId = "";
             map = {
@@ -780,30 +813,42 @@
             } else obj = null;
 
             for (var i = 0; i < items.length; i++) {
-                if (gj(items[i]).hasClass("eventAction")) {
+                var $item = gj(items[i]);
+                if ($item.hasClass("eventAction")) {
                     items[i].parentNode.style.display = "block";
-                    items[i].href = UIContextMenu.replaceall(String(items[i].href), map);
-
                     if (isEditable && (isEditable == "false"))
                     {
-                        if ((items[i].href.indexOf("Edit") >= 0) ||
-                            (items[i].href.indexOf("Delete") >= 0) ||
-                            (items[i].href.indexOf("ExportEvent") >= 0))
+                        if ($item.hasClass("editAction") ||
+                            $item.hasClass("deleteAction") ||
+                            $item.hasClass("exportAction"))
                         {
                             items[i].parentNode.style.display = "none";
                         }
                     }
-
+                    else if ($item.hasClass('editAction'))
+                    {
+                        $item.one('click', function (event) {
+                            calendarEvent.openEventForm({
+                                id: eventId,
+                                isOccur: isOccur,
+                                recurId: recurId,
+                                startTime: startTime,
+                                endTime: endTime
+                            });
+                        });
+                    } else {
+                        items[i].href = UIContextMenu.replaceall(String(items[i].href), map);
+                    }
                 }
-                else {
-                    if(gj(items[i]).hasClass("createEvent")){
+                else
+                {
+                    if($item.hasClass("createEvent")){
                         items[i].style.display="none" ;
                     } else if (gj(items[i]).hasClass("createTask")) {
                         items[i].style.display="none" ;
                     }
                 }
             }
-
         } else {
             var container = gj(src).parents(".eventWeekContent")[0];
             var timeShiftE = parseInt(gj("#UIQuickAddEvent").closest("#QuickAddEventContainer").attr("timeshift"));
@@ -877,6 +922,9 @@
                 var isOccur = objvalue.getAttribute("isOccur");
                 var recurId = objvalue.getAttribute("recurId");
                 isEditable  = src.getAttribute("isEditable");
+                var startTime = objvalue.getAttribute("starttimefull");
+                var endTime = objvalue.getAttribute("endtimefull");
+
                 if (recurId == "null") recurId = "";
                 var map = {
                     "objectId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "objectId=" + eventId,
@@ -902,16 +950,28 @@
 
         var items = gj(UIContextMenu.menuElement).find("a");
         for (var i = 0; i < items.length; i++) {
+            var $item = gj(items[i]);
             if (gj(items[i]).hasClass("eventAction")) {
                 items[i].parentNode.style.display = "block";
 
                 if (isEditable && (isEditable == "false")) {
-                    if ((items[i].href.indexOf("Edit") >= 0) ||
-                        (items[i].href.indexOf("Delete") >= 0) ||
-                        (items[i].href.indexOf("ExportEvent") >= 0))
+                    if ($item.hasClass("editAction") ||
+                        $item.hasClass("deleteAction") ||
+                        $item.hasClass("exportAction"))
                     {
                         items[i].parentNode.style.display = "none";
                     }
+                } else if ($item.hasClass('editAction')) {
+                    $item.one('click', function (event) {
+                        calendarEvent.openEventForm({
+                            id: eventId,
+                            isOccur: isOccur,
+                            recurId: recurId,
+                            startTime: startTime,
+                            endTime: endTime
+                        });
+                        event.preventDefault();
+                    });
                 } else if($checked.length > 1 && items[i].href.indexOf("Delete") > 0) {
                     items[i].href = items[i].getAttribute('deleteActionLink');
                 }
@@ -1278,7 +1338,17 @@
         var calendarType = obj.getAttribute("caltype");
         var recurid = obj.getAttribute("recurid");
         var isoccur = obj.getAttribute('isoccur');
-        uiForm.submitEvent(_module.UICalendarPortlet.portletId+'#' + _module.UICalendarPortlet.viewType, 'Edit', '&subComponentId=' + _module.UICalendarPortlet.viewType + '&objectId=' + eventId + '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isoccur + '&recurId='+recurid);
+        var startTime = obj.getAttribute("starttimefull");
+        var endTime = obj.getAttribute("endtimefull");
+
+        if (recurid == "null") recurid = "";
+        calendarEvent.openEventForm({
+            id: eventId,
+            isOccur: isoccur,
+            recurId: recurid,
+            startTime: startTime,
+            endTime: endTime
+        });
     };
 
     UICalendarPortlet.prototype.listViewDblClickCallback = function() {
@@ -1673,22 +1743,12 @@
         var timeFormat = this.getTimeFormat(null);
         start = dateUtils.minToTime(start, timeFormat);
         end = dateUtils.minToTime(end, timeFormat);
-        if (dateValue) {
-            var DateContainer = gj(uiTabContentContainer).parents("form")[0];
-            DateContainer.from.value = dateValue;
-            DateContainer.to.value = dateValue;
-        }
-        for (var i = 0; i < len; i++) {
-            name = this.synTime(UIComboboxInputs[i]).name.toLowerCase();
-            if (name.indexOf("from") >= 0) {
-                UIComboboxInputs[i].value = start;
-                this.synTime(UIComboboxInputs[i],start);
-            }
-            else {
-                UIComboboxInputs[i].value = end;
-                this.synTime(UIComboboxInputs[i],end);
-            }
-        }
+
+        UIComboboxInputs[0].value = start;
+        UIComboboxInputs[1].value = end;
+        gj(UIComboboxInputs[0]).trigger('change');
+        gj(UIComboboxInputs[1]).trigger('change');
+
         var cells = gj(UIHSelection.firstCell.parentNode).children("td");
         UIHSelection.setAttr(UIHSelection.firstCell.cellIndex, UIHSelection.lastCell.cellIndex, cells);
         _module.ScheduleSupport.syncTimeBetweenEventTabs();
@@ -1842,9 +1902,17 @@
       var isOccur = this.getAttribute("isOccur");
       var recurId = this.getAttribute("recurId");
       if (recurId == "null") recurId = "";
-      uiForm.submitEvent(UICalendarPortlet.portletId + '#' + UICalendarPortlet.viewType, 
-          'Edit', '&subComponentId=' + UICalendarPortlet.viewType + '&objectId=' + eventId + 
-          '&calendarId=' + calendarId + '&calType=' + calendarType + '&isOccur=' + isOccur + '&recurId=' + recurId);
+      var startTime = this.getAttribute("starttimefull");
+      var endTime = this.getAttribute("endtimefull");
+
+
+      calendarEvent.openEventForm({
+          id: eventId,
+          isOccur: isOccur,
+          recurId: recurId,
+          startTime: startTime,
+          endTime: endTime
+      });
     }
     
     /**

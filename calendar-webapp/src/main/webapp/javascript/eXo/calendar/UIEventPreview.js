@@ -2,7 +2,27 @@
 	
 var UIEventPreview = {
   hiddenThumbnail : null,
-  
+
+  init: function() {
+    var $editBtn = gj('.uiPreview .editAction');
+    $editBtn.click(function() {
+      var eventId = $editBtn.attr("eventid");
+      var recurid = $editBtn.attr("recurid");
+      var isoccur = $editBtn.attr('isoccur');
+      var startTime = $editBtn.attr("starttimefull");
+      var endTime = $editBtn.attr("endtimefull");
+      if (recurid == "null") recurid = "";
+
+      calendarEvent.openEventForm({
+          id: eventId,
+          isOccur: isoccur,
+          recurId: recurid,
+          startTime: startTime,
+          endTime: endTime
+      });
+    });
+  },
+
   /**
    * captures onclick on the thumbnail image, 
    * display the thumbnail in the image preview 
