@@ -15,46 +15,48 @@
         </span>
       </div>
 
-      <table id="UIListUsers" class="uiGrid table table-hover table-striped">
-        <thead>
-          <tr>
-            <th class="center">
-              <span class="uiCheckbox">
-                <input v-model="checkall" type="checkbox" class="checkbox" name="selectall">
-                <span></span>
-              </span>
-            </th>
+      <div class="list-user-container">
+        <table id="UIListUsers" class="uiGrid table table-hover table-striped">
+          <thead>
+            <tr>
+              <th class="center">
+                <span class="uiCheckbox">
+                  <input v-model="checkall" type="checkbox" class="checkbox" name="selectall">
+                  <span></span>
+                </span>
+              </th>
 
-            <th>{{ $t('ExoCalendarEventForm.label.username') }}</th>
-            <th>{{ $t('ExoCalendarEventForm.label.firstName') }}</th>
-            <th>{{ $t('ExoCalendarEventForm.label.lastName') }}</th>
-            <th>{{ $t('ExoCalendarEventForm.label.email') }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="user in users" :key="user.id">
-            <td class="center">
-              <span class="uiCheckbox">
-                <input v-model="selectedUsers" :id="user.id" :value="user.id" type="checkbox" class="checkbox">
-                <span></span>
-              </span>
-            </td>
+              <th>{{ $t('ExoCalendarEventForm.label.username') }}</th>
+              <th>{{ $t('ExoCalendarEventForm.label.firstName') }}</th>
+              <th>{{ $t('ExoCalendarEventForm.label.lastName') }}</th>
+              <th>{{ $t('ExoCalendarEventForm.label.email') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users" :key="user.id">
+              <td class="center">
+                <span class="uiCheckbox">
+                  <input v-model="selectedUsers" :id="user.id" :value="user.id" type="checkbox" class="checkbox">
+                  <span></span>
+                </span>
+              </td>
 
-            <td>
-              <span class="text">{{ user.id }}</span>
-            </td>
-            <td>
-              <span class="text">{{ parseName(user.name)[0] }}</span>
-            </td>
-            <td>
-              <span class="text">{{ parseName(user.name)[1] }}</span>
-            </td>
-            <td>
-              <a href="javascript:void(0);" class="text">{{ user.email }}</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <td>
+                <span class="text">{{ user.id }}</span>
+              </td>
+              <td>
+                <span class="text">{{ parseName(user.name)[0] }}</span>
+              </td>
+              <td>
+                <span class="text">{{ parseName(user.name)[1] }}</span>
+              </td>
+              <td>
+                <a href="javascript:void(0);" class="text">{{ user.email }}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="uiAction uiActionBorder">
@@ -83,7 +85,16 @@ export default {
       }
     },
     username() {
-      calServices.findParticipants(this.username).then(pars => {
+      this.findPars();
+    }
+  },
+  mounted() {
+    this.findPars();
+  },
+  methods: {
+    findPars() {
+      const limit = 20;
+      calServices.findParticipants(this.username, limit).then(pars => {
         this.users = [];
         if (pars) {
           pars.forEach(par => {
@@ -95,9 +106,7 @@ export default {
           });
         }
       });
-    }
-  },
-  methods: {
+    },
     parseName(name) {
       if (name) {
         const parts = name.split(' ').map(p => p.trim()).filter(p => p !== '');
@@ -120,6 +129,6 @@ export default {
     cancel() {
       this.$emit('cancel');
     }
-  }
+  }  
 };
 </script>
