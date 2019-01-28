@@ -10,7 +10,7 @@
                 <div :title="$t('UIEventForm.label.checkTimeHelp')" class="applySelectedDate pull-left" rel="tooltip" data-placement="bottom">
                   <div class="pull-right">
                     <span class="uiCheckbox">
-                      <input id="checkTime" type="checkbox" class="checkbox" name="checkTime" @click="checkTime"><span></span>
+                      <input id="checkTime" type="checkbox" class="checkbox" name="checkTime" checked @click="checkTime"><span></span>
                     </span>
                   </div>
                   <span class="checktime-lbl">
