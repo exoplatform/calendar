@@ -466,5 +466,3 @@ export default {
   }
 };
 </script>
-
-<style src="../css/ExoCalendarEventForm.less"></style>
