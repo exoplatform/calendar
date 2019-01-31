@@ -1,9 +1,9 @@
 <template>
   <div class="cbb">
-    <input :disabled="disabled" :placeholder="placeholder" v-model="value" class="cbb_input" type="text" @click="showOptions()" @keyup.enter.prevent="select(selectedIndex)" @keydown.down.prevent="selectNext()" @keydown.up.prevent="selectPrev()" @keyup.8="handleBackspace()" />
-    <div class="cbb_list_wrapper">
-      <ul v-if="showAutocompleteDropdown" class="cbb_list">
-        <li v-for="(value, index) in options" :key="value" :class="{'selected': isSelected(index)}" class="cbb_item" @click="select(index)">{{ value }}</li>
+    <input :disabled="disabled" :placeholder="placeholder" v-model="value" class="cbb_input" type="text" @click="showOptions()" @keyup.enter.prevent="select(selectedIndex)" @keydown.down.prevent="selectNext()" @keydown.up.prevent="selectPrev()" @keyup.delete="showOptions()" @keyup.esc="closeOptions()" />
+    <div v-if="showAutocompleteDropdown" class="cbb_list_wrapper">
+      <ul ref="optList" class="cbb_list">
+        <li v-for="(value, index) in options" :key="index" :class="{'selected': isSelected(index)}" class="cbb_item" @click="select(index)">{{ value }}</li>
       </ul>
     </div>
   </div>
@@ -37,17 +37,33 @@ export default {
   },
   methods: {
     isSelected: function(index) {
-      return this.value === this.options[index];
+      return this.selectedIndex === index;
     },
     showOptions: function() {
+      for (let i = 0; i < this.options.length; i++) {
+        if (this.options[i] === this.value) {
+          this.selectedIndex = i;
+          break;
+        }
+      }
       this.showAutocompleteDropdown = true;
+      Vue.nextTick(function() {
+        const el = this.$refs.optList.querySelector('li.selected');
+        this.$refs.optList.scrollTop = el.offsetTop;
+        document.addEventListener('click', this.closeOptions);
+      }, this);
     },
-    handleBackspace: function () {
-      this.showAutocompleteDropdown = true;
+    closeOptions: function() {
+      this.showAutocompleteDropdown = false;
+      Vue.nextTick(function() {
+        document.removeEventListener('click', this.closeOptions);
+      }, this);
+
     },
     select: function(index) {
-      this.showAutocompleteDropdown = false;
+      this.closeOptions();
       this.value = this.options[index];
+      this.selectedIndex = index;
       this.$emit('input', this.value);
     },
     selectNext: function() {
@@ -58,9 +74,8 @@ export default {
           this.selectedIndex = 0;
         }
       } else {
-        this.showAutocompleteDropdown = true;
+        this.showOptions();
       }
-
     },
     selectPrev: function() {
       if (this.selectedIndex > 0) {
