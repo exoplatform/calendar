@@ -293,6 +293,10 @@ export default {
       this.fromDate = new Date(this.fromDate.getTime());
       this.toDate = new Date(this.toDate.getTime());
 
+      //allDay value is not stored in the database and therefore must be calculated from the from and to date
+      this.isAllDay = this.fromDate.getHours() === 0 && this.fromDate.getMinutes() === 0 &&
+        this.toDate.getHours() === MID_NIGHT_HOUR && this.toDate.getMinutes() === MID_NIGHT_MINUTE;
+
       Vue.nextTick(() => {
         const timezone = calConstants.SETTINGS.timezone;           
         eXo.calendar.UICalendarPortlet.initCheck('eventAttender-tab', timezone * -1);
