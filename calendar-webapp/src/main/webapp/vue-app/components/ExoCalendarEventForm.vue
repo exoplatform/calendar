@@ -382,6 +382,8 @@ export default {
     saveFindTime(evt) {
       this.event.fromDate = new Date(evt.from.getTime());
       this.event.toDate = new Date(evt.to.getTime());
+      //allDay value is not stored in the database and therefore must be calculated from the from and to date
+      this.isAllDay = this.event.isAllDay();
       this.event.participants = evt.participants.slice();
       this.showFindTime = false;
     },
