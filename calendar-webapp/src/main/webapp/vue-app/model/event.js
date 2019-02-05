@@ -52,7 +52,7 @@ class CalendarEvent {
       errors.push('event-fromdate-required');
     } else if (!this.toDate) {
       errors.push('event-todate-required');
-    } else if (this.fromDate.getTime() > this.toDate.getTime()) {
+    } else if (this.fromDate.getTime() >= this.toDate.getTime()) {
       errors.push('event-date-time-logic');
     }
 

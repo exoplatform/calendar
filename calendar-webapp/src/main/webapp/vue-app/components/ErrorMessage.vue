@@ -2,7 +2,7 @@
   <div id="errorMessage" class="errorMessage">
     <div>
       <ul>
-        <li v-for="error in errors" :key="error">- <span>{{ errorMsg(error) }}</span></li>
+        <li v-for="error in errors" :key="error"><span>{{ errorMsg(error) }}</span></li>
       </ul>
     </div>
     <div class="uiAction uiActionBorder">
