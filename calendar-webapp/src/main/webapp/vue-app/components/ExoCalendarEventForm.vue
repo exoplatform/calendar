@@ -13,7 +13,7 @@
               <button type="button" class="btn cancel" @click="toggleOpen">{{ $t('ExoCalendarEventForm.btn.cancel') }}</button>
             </div>
             <div class="controls">
-              <input v-model="event.title" :placeholder="$t('ExoCalendarEventForm.placeholder.eventTitle')" name="eventName" class="eventTitle" type="text"/>
+              <input ref="title" v-model="event.title" :placeholder="$t('ExoCalendarEventForm.placeholder.eventTitle')" name="eventName" class="eventTitle" type="text"/>
               <span class="uiSelectbox form-horizontal">
                 <select v-model="event.category" class="selectbox category" name="category">
                   <option v-for="category in categories" :key="category.id" :value="category.id">{{ trim($t(`UICalendarView.label.${category.id}`), 16) }}</option>
@@ -257,6 +257,7 @@ export default {
     },
     initEvt() {
       this.reset();
+      this.$refs.title.focus();
     }
   },
   mounted: function() {
