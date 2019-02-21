@@ -5,7 +5,7 @@
   <component profiles="all">
     <type>org.exoplatform.webservice.cs.calendar.CalendarWebservice</type>
   </component>
-  <component>
+  <component profiles="all">
     <type>org.exoplatform.calendar.ws.CalendarRestApi</type>
     <init-params>
     	<value-param>
