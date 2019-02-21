@@ -315,7 +315,6 @@ export default {
       if (parsedVal) {
         date.setHours(parsedVal.getHours(), parsedVal.getMinutes(), parsedVal.getSeconds(), parsedVal.getMilliseconds());
       }
-      this.refreshDate();
     },
     fromDate() {
       return Utils.formatDate(this.event.fromDate);
