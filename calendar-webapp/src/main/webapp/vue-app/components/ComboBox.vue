@@ -35,6 +35,11 @@ export default {
       selectedIndex: 0
     };
   },
+  watch: {
+    value: function(val) {
+      this.$emit('input', val);
+    }
+  },
   methods: {
     isSelected: function(index) {
       return this.selectedIndex === index;
@@ -62,9 +67,8 @@ export default {
     },
     select: function(index) {
       this.closeOptions();
-      this.value = this.options[index];
       this.selectedIndex = index;
-      this.$emit('input', this.value);
+      this.value = this.options[index];
     },
     selectNext: function() {
       if (this.showAutocompleteDropdown) {
