@@ -83,7 +83,8 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
       @EventConfig(listeners = UISharedForm.OpenSelectMembershipFormActionListener.class),
       @EventConfig(listeners = UISharedForm.SelectMembershipActionListener.class, phase = Phase.DECODE),
       @EventConfig(listeners = UISharedForm.AddEntryActionListener.class),
-      @EventConfig(listeners = UISharedForm.DeleteEntryActionListener.class)
+      @EventConfig(listeners = UISharedForm.DeleteEntryActionListener.class),
+      @EventConfig(listeners = UIPopupWindow.CloseActionListener.class, name = "Close", phase = Phase.DECODE)
     }
   ),     
 
@@ -92,7 +93,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
     type     = UIPopupWindow.class,
     template = "system:/groovy/webui/core/UIPopupWindow.gtmpl",
     events = {
-      @EventConfig(listeners = UIPopupWindow.CloseActionListener.class, name = "ClosePopup")  ,
+      @EventConfig(listeners = UIPopupWindow.CloseActionListener.class, name = "ClosePopup"),
       @EventConfig(listeners = UISharedForm.SelectUserActionListener.class, name = "Add", phase = Phase.DECODE),
       @EventConfig(listeners = UITaskForm.CloseActionListener.class, name = "Close", phase = Phase.DECODE)
     }

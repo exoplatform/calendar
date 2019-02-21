@@ -1,5 +1,5 @@
 <template>
-  <div id="UIUserSelector" class="uiUserSelector">
+  <div class="uiUserSelector">
     <div class="selectUserContainer">
       <div class="uiSearch clearfix">
         <span class="searchByUser">
