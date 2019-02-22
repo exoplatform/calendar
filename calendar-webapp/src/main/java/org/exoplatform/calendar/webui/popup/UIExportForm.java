@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2003-2007 eXo Platform SAS.
+ * Copyright (C) 2003-2019 eXo Platform SAS.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License
@@ -29,14 +29,14 @@ import java.util.ResourceBundle;
 
 import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.CompositeID;
-import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
+import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadResource;
 import org.exoplatform.download.DownloadService;
 import org.exoplatform.download.InputStreamDownloadResource;
+import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;
@@ -75,9 +75,9 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
   private static final String EXPORT_TYPE = "ICalendar(.ics)";
 
   private String calType = "0" ;
-  private Map<String,String> names_ = new HashMap<String, String>() ;
+  private Map<String,String> names_ = new HashMap<>() ;
 
-  private Map<String,String> longNames_ = new HashMap<String, String>() ;
+  private Map<String,String> longNames_ = new HashMap<>() ;
 
   public String eventId = null ;
   public UIExportForm() throws Exception {
@@ -145,9 +145,12 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
     @Override
     public void execute(Event<UIExportForm> event) throws Exception {
       UIExportForm uiForm = event.getSource() ;
-      CalendarService calendarService = CalendarUtils.getCalendarService() ;
+
+      CalendarService calendarService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(CalendarService.class);
+      ExtendedCalendarService extendedCalendarService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ExtendedCalendarService.class);
+
       List<UIComponent> children = uiForm.getChildren() ;
-      List<String> calendarIds = new ArrayList<String> () ;
+      List<String> calendarIds = new ArrayList<> () ;
       for(UIComponent child : children) {
         if(child instanceof UICheckBoxInput) {
           UICheckBoxInput input =   ((UICheckBoxInput)child) ;
@@ -162,22 +165,33 @@ public class UIExportForm extends UIForm implements UIPopupComponent{
         return ;
       }
 
+      String currentUser = CalendarUtils.getCurrentUser();
+
+      for(String calendarId : calendarIds) {
+        Calendar calendar = Calendar.build(extendedCalendarService.getCalendarHandler().getCalendarById(calendarId));
+        if (!Utils.isCalendarEditable(currentUser, calendar)) {
+          event.getRequestContext().getUIApplication().addMessage(new ApplicationMessage("UICalendars.msg.have-no-permission-to-edit", null));
+          Util.getPortalRequestContext().ignoreAJAXUpdateOnPortlets(true);
+          return;
+        }
+      }
+
       String name = uiForm.getUIStringInput(NAME).getValue() ;
       CalendarImportExport importExport = calendarService.getCalendarImportExports(EXPORT_TYPE) ;
       OutputStream out = null ;
       try {
         // export a single event
-        List<String> calIds = new LinkedList<String>();
+        List<String> calIds = new LinkedList<>();
         for (String id : calendarIds) {
           calIds.add(CompositeID.parse(id).getId());
         }
         if(uiForm.eventId != null) {
-          out = importExport.exportEventCalendar(CalendarUtils.getCurrentUser(), calIds.get(0), uiForm.calType, uiForm.eventId) ;
+          out = importExport.exportEventCalendar(currentUser, calIds.get(0), uiForm.calType, uiForm.eventId) ;
         }
-        else out = importExport.exportCalendar(CalendarUtils.getCurrentUser(), calIds, uiForm.calType, -1) ;
+        else out = importExport.exportCalendar(currentUser, calIds, uiForm.calType, -1) ;
         ByteArrayInputStream is = new ByteArrayInputStream(out.toString().getBytes()) ;
         DownloadResource dresource = new InputStreamDownloadResource(is, "text/iCalendar") ;
-        DownloadService dservice = (DownloadService)PortalContainer.getInstance().getComponentInstanceOfType(DownloadService.class) ;
+        DownloadService dservice = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(DownloadService.class) ;
         if(name != null && name.length() > 0) {
           if(name.length() > 4 && name.substring(name.length() - 4).equals(".ics") )dresource.setDownloadName(name);
           else dresource.setDownloadName(name + ".ics");
