@@ -162,16 +162,6 @@
                  %>
             </td>
 		</tr>
-		<tr>
-			<td class="right">
-			<%=uiform.getLabel('EventSharing')%>
-			</td>
-			<td ><%=(CalendarUtils.isEmpty(String.valueOf(event.isPrivate())))? "" : uicomponent.getLabel(String.valueOf(!event.isPrivate()))%></td>
-		</tr>
-		<tr>
-			<td class="right"><%=uiform.getLabel('ShowAs')%></td>
-			<td ><%=(CalendarUtils.isEmpty(event.getEventState()))? "" : uicomponent.getLabel(event.getEventState())%></td>
-		</tr>
 		<% if(event.getInvitation().length > 0) { %>
 		<tr>
 			<td class="right">
