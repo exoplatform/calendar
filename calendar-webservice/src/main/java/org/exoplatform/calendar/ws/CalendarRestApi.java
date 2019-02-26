@@ -47,6 +47,7 @@ import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
+import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.rest.resource.ResourceContainer;
 import org.exoplatform.services.security.ConversationState;
@@ -1652,6 +1653,190 @@ public class CalendarRestApi implements ResourceContainer {
 
     //
     return response.build();
+  }
+
+  /**
+   * Returns events of the authenticated user.
+   *
+   * @param start Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.
+   *        Default: current server time.
+   *
+   * @param end Date that complies ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date.
+   *        Default: current server time + 1 week.
+   *
+   * @param category Search for this category only. If not specified, search events of all categories.
+   *
+   * @param offset The starting point when paging the result. Default is *0*.
+   *
+   * @param limit Maximum number of events returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
+   *
+   * @param returnSize Default is *false*. If set to *true*, the total number of matched calendars will be returned in JSON,
+   *        and a "Link" header is added. This header contains "first", "last", "next" and "previous" links.
+   *
+   * @param fields Comma-separated list of selective event properties to be returned. All returned if not specified.
+   *
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
+   *
+   * @param expand Used to ask for more attributes of a sub-resource, instead of its link only.
+   *        This is a comma-separated list of event attribute names. For example: expand=calendar,categories. In case of collections,
+   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
+   *        Instead of:
+   *        {
+   *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *        }
+   *        It returns:
+   *        {
+   *            "calendar": {
+   *            "editPermission": "",
+   *            "viewPermission": "",
+   *            "privateURL": null,
+   *            "publicURL": null,
+   *            "icsURL": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId/ics",
+   *            "description": null,
+   *            "color": "asparagus",
+   *            "timeZone": "Europe/Brussels",
+   *            "name": "John Smith",
+   *            "type": "0",
+   *            "owner": "john",
+   *            "groups": null,
+   *            "href": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *            "id": "john-defaultCalendarId"
+   *            },
+   *        }
+   *
+   * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/calendars/myCalId/events?category=meeting&expand=calendar,categories(1,5)}
+   *
+   * @format JSON
+   *
+   * @response
+   * {
+   *   "limit": 10,
+   *   "data": [
+   *     {
+   *       "to": "2015-07-24T01:30:00.000Z",
+   *       "attachments": [],
+   *       "from": "2015-07-24T01:00:00.000Z",
+   *       "categories": [
+   *         "http://localhost:8080/rest/private/v1/calendar/categories/defaultEventCategoryIdAll"
+   *       ],
+   *       "categoryId": "defaultEventCategoryIdAll",
+   *       "availability": "busy",
+   *       "repeat": {},
+   *       "reminder": [],
+   *       "privacy": "private",
+   *       "recurrenceId": null,
+   *       "participants": [
+   *         "john"
+   *       ],
+   *       "originalEvent": null,
+   *       "description": null,
+   *       "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
+   *       "subject": "event123",
+   *       "location": null,
+   *       "priority": "none",
+   *       "href": "http://localhost:8080/rest/private/v1/calendar/events/Eventa9c5b87b7f00010178ce661a6beb020d",
+   *       "id": "Eventa9c5b87b7f00010178ce661a6beb020d"
+   *     }
+   *   ],
+   *   "size": -1,
+   *   "offset": 0
+   * }
+   *
+   * @return  List of events in JSON, or HTTP status 404 if the calendar is not found.
+   *
+   * @authentication
+   *
+   * @anchor CalendarRestApi.getEventsByCalendar
+   */
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @GET
+  @RolesAllowed("users")
+  @Path("/events")
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiOperation(
+          value = "Returns the events of a calendar identified by its ID",
+          notes = "Returns events of an calendar with specified id when:<br/>"
+                  + "- the calendar is public<br/>"
+                  + "- the authenticated user is the owner of the calendar of the event<br/>"
+                  + "- the authenticated user belongs to the group of the calendar of the event<br/>"
+                  + "- the authenticated user is a participant of the event<br/>"
+                  + "- the calendar of the event has been shared with the authenticated user or with a group of the authenticated user")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Successful retrieval of all events from the calendar"),
+          @ApiResponse(code = 404, message = "Calendar with provided ID Not Found")
+  })
+  public Response getEvents(
+          @ApiParam(value = "Date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date", required = false, defaultValue = "Current server time") @QueryParam("startTime") String start,
+          @ApiParam(value = "Date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date", required = false, defaultValue = "Current server time + 1 week") @QueryParam("endTime") String end,
+          @ApiParam(value = "Search for this category only. If not specified, search event of any category", required = false) @QueryParam("category") String category,
+          @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+          @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+          @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false) @QueryParam("fields") String fields,
+          @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
+          @ApiParam(value = "Used to ask for a full representation of a subresource, instead of only its link", required = false) @QueryParam("expand") String expand,
+          @ApiParam(value = "Tells the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
+          @Context UriInfo uri) throws Exception {
+    limit = parseLimit(limit);
+    String username = currentUserId();
+
+    CalendarService service = calendarServiceInstance();
+    EventDAO evtDAO = service.getEventDAO();
+
+    long fullSize = returnSize ? 0 : -1;
+    List data = new LinkedList();
+    List<Calendar> calendarList;
+    try {
+      calendarList = getCalendarsOfUser(service, username);
+    } catch (Exception e) {
+      log.error("Cannot find calendars of user " + username, e);
+      return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+    }
+
+    EventQuery eventQuery = buildEventQuery(start, end, category, calendarList,
+            null, username, CalendarEvent.TYPE_EVENT);
+    ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
+
+    //
+    for (CalendarEvent event : events.load(offset, limit)) {
+      data.add(buildEventResource(event, uri, expand, fields));
+    }
+    if (returnSize) {
+      fullSize = events.getSize();
+    }
+    CollectionResource evData = new CollectionResource(data, fullSize);
+    evData.setOffset(offset);
+    evData.setLimit(limit);
+
+    ResponseBuilder response = buildJsonP(evData, jsonp);
+
+    if (returnSize) {
+      response.header(HEADER_LINK, buildFullUrl(uri, offset, limit, fullSize));
+    }
+
+    //
+    return response.build();
+  }
+
+  private List<Calendar> getCalendarsOfUser(CalendarService service, String username) throws Exception {
+    List<Calendar> list = new ArrayList<>();
+    List<GroupCalendarData> listgroupCalendar = service.getGroupCalendars(getUserGroups(username), true, username);
+    for (GroupCalendarData group : listgroupCalendar) {
+      Optional.ofNullable(group.getCalendars()).ifPresent(list::addAll);
+    }
+    Optional.ofNullable(service.getUserCalendars(username, true)).ifPresent(list::addAll);
+    return list;
+  }
+
+  private String[] getUserGroups(String username) throws Exception {
+    String [] groupsList;
+    Object[] objs = orgService.getGroupHandler().findGroupsOfUser(username).toArray();
+    groupsList = new String[objs.length];
+    for (int i = 0; i < objs.length; i++) {
+      groupsList[i] = ((Group) objs[i]).getId();
+    }
+    return groupsList;
   }
 
   /**
@@ -3988,7 +4173,9 @@ public class CalendarRestApi implements ResourceContainer {
     //Find all invitations that user is participant
     EventQuery uQuery = new RestEventQuery();
     uQuery.setQueryType(Query.SQL);
-    uQuery.setCalendarPath(calendarPath);
+    if (calendarPath != null) {
+      uQuery.setCalendarPath(calendarPath);
+    }
     List<String> calIds = new LinkedList<String>();
     if (calendars != null) {
       for (Calendar cal : calendars) {
