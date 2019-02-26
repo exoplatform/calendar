@@ -286,6 +286,10 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
     runTestGetEventsByCalendar(EVENT_URI, CalendarEvent.TYPE_EVENT);
   }
 
+  public void testGetEventsOfUser() throws Exception {
+    runTestGetEventsOfUser(EVENT_URI, CalendarEvent.TYPE_EVENT);
+  }
+
   public void testGetEventsByCalendar_Public() throws Exception {
     CalendarEvent uEvt = createEvent(userCalendar);
     calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);

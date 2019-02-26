@@ -22,7 +22,9 @@ import static org.exoplatform.calendar.ws.CalendarRestApi.CALENDAR_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.CAL_BASE_URI;
 import static org.exoplatform.calendar.ws.CalendarRestApi.HEADER_LINK;
 
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.exoplatform.calendar.model.Event;
@@ -34,6 +36,7 @@ import org.exoplatform.calendar.ws.bean.TaskResource;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.common.http.HTTPMethods;
 import org.exoplatform.common.http.HTTPStatus;
+import org.exoplatform.commons.utils.ISO8601;
 import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
@@ -302,6 +305,77 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     //john can read private event because he's event participant or task delegator
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + userCalendar.getId() +
                        uri , baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    calR = (CollectionResource)response.getEntity();
+    assertEquals(1, calR.getData().size());
+  }
+
+  public void runTestGetEventsOfUser(String uri, String eventType) throws Exception {
+    login("john");
+    //
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + uri , baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    assertEquals(0, ((CollectionResource)response.getEntity()).getData().size());
+
+    CalendarEvent uEvt = createEvent(userCalendar);
+    uEvt.setEventType(eventType);
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
+
+    login("john");
+    //john can't read private calendar
+    response = service(HTTPMethods.GET, CAL_BASE_URI + uri , baseURI, headers, null, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+    CollectionResource calR = (CollectionResource)response.getEntity();
+    assertEquals(0, calR.getData().size());
+    assertEquals(-1, calR.getSize());
+    assertNull(response.getHttpHeaders().get(HEADER_LINK));
+
+    login("root");
+    String queryParams = "?returnSize=true";
+    response = service(HTTPMethods.GET, CAL_BASE_URI + uri + queryParams , baseURI, headers, null, writer);
+    calR = (CollectionResource)response.getEntity();
+    assertEquals(1, calR.getData().size());
+    assertEquals(1, calR.getSize());
+    assertNotNull(response.getHttpHeaders().get(HEADER_LINK));
+    Calendar cal = GregorianCalendar.getInstance();;
+    cal.set(java.util.Calendar.HOUR, 0);
+    cal.set(java.util.Calendar.MINUTE, 0);
+    cal.set(java.util.Calendar.SECOND, 0);
+    cal.set(java.util.Calendar.MILLISECOND, 0);
+    String from = ISO8601.format(cal);
+    cal.add(Calendar.DAY_OF_WEEK, 1);
+    cal.set(java.util.Calendar.HOUR, 0);
+    cal.set(java.util.Calendar.MINUTE, 0);
+    cal.set(java.util.Calendar.SECOND, 0);
+    cal.set(java.util.Calendar.MILLISECOND, 0);
+    String to = ISO8601.format(cal);
+    String queryParams1 = queryParams + "&startTime=" + from + "&endTime=" + to;
+    response = service(HTTPMethods.GET, CAL_BASE_URI + uri + queryParams1 , baseURI, headers, null, writer);
+    calR = (CollectionResource)response.getEntity();
+    assertEquals(1, calR.getData().size());
+    assertEquals(1, calR.getSize());
+    assertNotNull(response.getHttpHeaders().get(HEADER_LINK));
+
+    cal.add(Calendar.DAY_OF_WEEK, 1);
+    String laterDate = ISO8601.format(cal);
+    String queryParams2 = queryParams + "&startTime=" + laterDate + "&endTime=" + laterDate;
+    response = service(HTTPMethods.GET, CAL_BASE_URI + uri + queryParams2 , baseURI, headers, null, writer);
+    calR = (CollectionResource)response.getEntity();
+    assertEquals(0, calR.getData().size());
+    assertEquals(0, calR.getSize());
+    assertNotNull(response.getHttpHeaders().get(HEADER_LINK));
+
+    if (CalendarEvent.TYPE_EVENT.equals(eventType)) {
+      uEvt.addParticipant("john", "");
+    } else {
+      uEvt.setTaskDelegator("john");
+    }
+    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, false);
+
+    login("john");
+    //john can read private event because he's event participant or task delegator
+    response = service(HTTPMethods.GET, CAL_BASE_URI + uri , baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     calR = (CollectionResource)response.getEntity();
     assertEquals(1, calR.getData().size());
