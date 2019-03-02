@@ -56,9 +56,6 @@
 	     <module>UICalendars</module>
 	   </depends>
 	   <depends>
-	     <module>ScheduleSupport</module>
-	   </depends>
-	   <depends>
 	     <module>CSUtils</module>
 	   </depends>
 	   <depends>
@@ -107,9 +104,6 @@
     <depends>
      <module>webui-ext</module>
      <as>wx</as>
-    </depends>
-    <depends>
-     <module>ScheduleSupport</module>
     </depends>
   </module>
   
@@ -318,18 +312,6 @@
     </depends>
     <depends>
       <module>uiCalendar</module>
-    </depends>
-  </module>
-     
-  <module>
-    <name>ScheduleSupport</name>
-    <load-group>calendar</load-group>
-    <script>
-      <path>/javascript/eXo/calendar/ScheduleSupport.js</path>
-    </script>
-    <depends>
-      <module>jquery</module>
-      <as>gj</as>
     </depends>
   </module>
   
@@ -716,9 +698,6 @@
     <depends>
       <module>CalDateTimePicker</module>
       <as>timePicker</as>
-    </depends>
-    <depends>
-      <module>ScheduleSupport</module>
     </depends>
     <depends>
       <module>extensionRegistry</module>

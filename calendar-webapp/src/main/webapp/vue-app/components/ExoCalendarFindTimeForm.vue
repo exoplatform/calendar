@@ -48,7 +48,7 @@
               </div>
             </div>
 
-            <table id="RowContainerDay" :dateValue="fromDate.toISOString()" class="uiGrid" cellspacing="0" borderspacing="0" exocallback="eXo.calendar.UICalendarPortlet.callbackSelectionX() ;">
+            <table id="RowContainerDay" :dateValue="fromDate.toISOString()" class="uiGrid" cellspacing="0" borderspacing="0">
               <tbody>
                 <tr class="titleBar">
                   <td style="width:28%;">
@@ -79,13 +79,14 @@
                         <i class="uiIconCalRejectUser uiIconLightGray" ></i>
                       </a>
                     </div>
-                  </td>                 
-                  <td v-for="i in 96" :key="i" class="participantsFreeTime uiCellBlock" >
+                  </td>
+                  <td v-for="i in 96" :key="i" :class="{'userSelection': isTimeSelected(i), 'busyTime': isBusyTime(i), 'busySelected': isTimeSelected(i) && isBusyTime(i)}"
+                      class="participantsFreeTime uiCellBlock" @mousedown="startSelectTime(i)" @mouseup="stopSelectTime" @mouseover="selectTime(i)">
                     <span :title="$t('UIEventForm.label.ScheduleDragDrop')" rel="tooltip" data-placement="bottom">&nbsp;</span>
                   </td>
                 </tr>
                 
-                <tr v-for="user in users" :key="user.id" :busytime="user.availability">
+                <tr v-for="user in users" :key="user.id">
                   <td>
                     <div class="leftSide">
                       <div class="input">
@@ -95,7 +96,7 @@
                       </div>
                     </div>
                   </td>                  
-                  <td v-for="j in 96" :key="j" class="freeTime">
+                  <td v-for="j in 96" :key="j" :class="{'busyDotTime': isUserBusyTime(j, user)}" class="freeTime">
                     &nbsp;
                   </td>
                 </tr>
@@ -131,7 +132,6 @@
 </template>
 
 <script>
-import {calConstants} from '../calConstants.js';
 import Utils from '../model/utils.js';
 import * as calServices from '../calServices.js';
 import ExoModal from './ExoModal.vue';
@@ -222,29 +222,6 @@ export default {
       }
     }
   },
-  mounted() {
-    this.fromDate = new Date(this.from.getTime());
-    this.toDate = new Date(this.from.getTime());
-    //
-    const hours = this.to.getHours();
-    const minutes = this.to.getMinutes();
-    const seconds = this.to.getSeconds();
-    const miliseconds = this.to.getMilliseconds();
-    this.toDate.setHours(hours, minutes, seconds, miliseconds);
-    this.refreshDate();
-
-    const thiss = this;
-    //workaround: using old calendar javascript ScheduleSupport for updating time
-    $('.findTimeForm .time').each(function(idx, input) {
-      $(input).on('change', function() {
-        if ($(input).hasClass('fromTime')) {
-          thiss.updateTime(thiss.fromDate, $(input).val());
-        } else {
-          thiss.updateTime(thiss.toDate, $(input).val());
-        }
-      });
-    });
-  },
   methods: {
     getDefaultData() {
       return {
@@ -254,7 +231,8 @@ export default {
         users: [],
         isAllDay: false,
         selectedPars: [],
-        showParSelector: false
+        showParSelector: false,
+        selectingTime: false
       };
     },
     formatTime(date) {
@@ -269,12 +247,75 @@ export default {
     toTime() {
       return this.formatTime(this.toDate);
     },
+    startSelectTime(idx) {
+      this.selectingTime = true;
+      this.updateTimeBySelection(this.fromDate, idx - 1);
+      this.updateTimeBySelection(this.toDate, idx);
+      this.refreshDate();
+    },
+    stopSelectTime() {
+      this.selectingTime = false;
+    },
+    selectTime(idx) {
+      if (this.selectingTime) {
+        const date = new Date(this.toDate.getTime());
+        this.updateTimeBySelection(date, idx);
+
+        if (date.getTime() <= this.fromDate.getTime()) {
+          this.updateTimeBySelection(this.fromDate, idx);
+        } else {
+          this.toDate = date;
+        }
+        this.refreshDate();
+      }
+    },
+    updateTimeBySelection(date, idx) {
+      const timePiece = 4;
+      const fifteenM = 15;
+      const fullday = 24;
+
+      const hour = idx / timePiece;
+      const minute = idx % timePiece * fifteenM;
+      //
+      if (hour === fullday) {
+        date.setHours(MID_NIGHT_HOUR, MID_NIGHT_MINUTE, MID_NIGHT_SECOND, MID_NIGHT_MILLISECOND);
+      } else {
+        date.setHours(hour, minute, 0, 0);
+      }
+      return date;
+    },
+    isTimeSelected(idx) {
+      const time = this.updateTimeBySelection(new Date(this.fromDate.getTime()), idx).getTime();
+      return this.fromDate.getTime() < time && time <= this.toDate.getTime();
+    },
+    isBusyTime(idx) {
+      return this.users.some(u => {
+        if (this.isUserBusyTime(idx, u)) {
+          return true;
+        }
+      });
+    },
+    isUserBusyTime(idx, user) {
+      let time = this.updateTimeBySelection(new Date(this.fromDate.getTime()), idx).getTime();
+      const MILI = 3600000;
+      time += Utils.getTimezoneOffset() * MILI;
+
+      if (user.availability) {
+        const even = 2;
+        const avails = user.availability.split(',');
+        for (let i = 0; i < avails.length; i += even) {
+          if (parseInt(avails[i]) < time && time <= parseInt(avails[i + 1])) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
     updateTime(date, val) {
       const parsedVal = Utils.parseTime(val);
       if (parsedVal) {
         date.setHours(parsedVal.getHours(), parsedVal.getMinutes(), parsedVal.getSeconds(), parsedVal.getMilliseconds());
       }
-      ScheduleSupport.applyPeriod();
       this.refreshDate();
     },
     currDate() {
@@ -297,12 +338,6 @@ export default {
       //allDay value is not stored in the database and therefore must be calculated from the from and to date
       this.isAllDay = this.fromDate.getHours() === 0 && this.fromDate.getMinutes() === 0 &&
         this.toDate.getHours() === MID_NIGHT_HOUR && this.toDate.getMinutes() === MID_NIGHT_MINUTE;
-
-      Vue.nextTick(() => {
-        const timezone = calConstants.SETTINGS.timezone;           
-        eXo.calendar.UICalendarPortlet.initCheck('eventAttender-tab', timezone * -1);
-        ScheduleSupport.applyPeriod();
-      });
     },
     formatHour(hour) {
       const sub = -2;
@@ -324,18 +359,6 @@ export default {
               Vue.set(par, 'availability', avail);
             });
           }
-  
-          Vue.nextTick(() => {
-            const timezone = calConstants.SETTINGS.timezone;           
-            eXo.calendar.UICalendarPortlet.initCheck('eventAttender-tab', timezone * -1);
-            ScheduleSupport.applyPeriod();
-          });
-        });
-      } else {
-        Vue.nextTick(() => {
-          const timezone = calConstants.SETTINGS.timezone;           
-          eXo.calendar.UICalendarPortlet.initCheck('eventAttender-tab', timezone * -1);
-          ScheduleSupport.applyPeriod();
         });
       }
     },

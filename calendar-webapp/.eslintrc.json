@@ -17,7 +17,6 @@
         "exoi18n": true,
         "timePicker": true,
         "eXo.calendar.UICalendarPortlet": true,
-        "ScheduleSupport": true,
         "extensionRegistry": true
     },
     "parserOptions": {

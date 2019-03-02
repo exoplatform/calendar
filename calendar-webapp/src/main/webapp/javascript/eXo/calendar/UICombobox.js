@@ -1,4 +1,4 @@
-(function(gj, wx, ScheduleSupport) {
+(function(gj, wx) {
   /**
    * Override Combobox
    * TODO : remove this method when portal fix it
@@ -100,10 +100,7 @@
     hiddenField.val(val);
     var text = hiddenField.next("input");
     text.val(gj(obj).find(".UIComboboxLabel").first().html());
-    ScheduleSupport.syncTimeBetweenEventTabs();
-    
-    ScheduleSupport.applyPeriod();
     UICombobox.list.style.display = "none";
   };
   return wx.UICombobox;
-})($, wx, ScheduleSupport);
+})($, wx);

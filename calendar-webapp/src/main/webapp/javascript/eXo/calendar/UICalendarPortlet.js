@@ -1,5 +1,5 @@
 (function(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, uiPopupWindow, 
-    ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, dateUtils) {
+    CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, dateUtils) {
     var _module = {};
     eXo.calendar = eXo.calendar || {};
     function UICalendarPortlet() {
@@ -1510,7 +1510,6 @@
                 timeField.style.display = "block";
             }
         }
-        _module.ScheduleSupport.applyPeriod();
     };
 
     /**
@@ -1558,105 +1557,6 @@
     };
 
     /**
-     * Checks free/busy in day of an user
-     * @param {Object} chk Checkbox element
-     */
-    UICalendarPortlet.prototype.checkAllInBusy = function(chk) {
-        var UICalendarPortlet = _module.UICalendarPortlet;
-        var isChecked = chk.checked;
-        var timeField = gj(chk.form).find('div.timeField')[0];
-        if (isChecked) {
-            timeField.style.display = "none";
-        }
-        else {
-            timeField.style.display = "block";
-        }
-        if (UICalendarPortlet.allDayStatus) {
-            UICalendarPortlet.allDayStatus.checked = isChecked;
-            UICalendarPortlet.showHideTime(UICalendarPortlet.allDayStatus);
-        }
-    };
-
-    /**
-     * Init scripts for Schedule tab
-     */
-    UICalendarPortlet.prototype.initCheck = function(container, userSettingTimezone) {
-        if (typeof(container) == "string")
-            container = document.getElementById(container);
-        var dateAll = gj(container).find("input.checkbox")[1];
-        var table = gj(container).find('table.uiGrid')[0];
-        var tr = gj(table).find("tr");
-        var firstTr = tr[1];
-        this.busyCell = gj(firstTr).find("td").slice(1);
-        var len = tr.length;
-        for (var i = 2; i < len; i++) {
-            this.showBusyTime(tr[i], userSettingTimezone);
-        }
-        if (_module.UICalendarPortlet.allDayStatus)
-            dateAll.checked = _module.UICalendarPortlet.allDayStatus.checked;
-        _module.UICalendarPortlet.checkAllInBusy(dateAll);
-        gj(dateAll).on('click', function(){
-            _module.UICalendarPortlet.checkAllInBusy(this);
-            _module.ScheduleSupport.applyPeriod();
-        });
-        gj(container).on('change', "input.UIComboboxInput", function() {
-          _module.ScheduleSupport.applyPeriod();
-          _module.ScheduleSupport.syncTimeBetweenEventTabs();
-        });
-        _module.UICalendarPortlet.initSelectionX(firstTr);
-    };
-
-    /**
-     * Shows free/busy on UI
-     * @param {Object} tr Tr tag contains event data
-     * @param {Object} serverTimezone Server timezone
-     */
-    UICalendarPortlet.prototype.showBusyTime = function(tr, userSettingTimezoneOffset) {
-        var stringTime = tr.getAttribute("busytime");
-        var browserTimezone = (new Date).getTimezoneOffset();
-        var extraTime = browserTimezone - userSettingTimezoneOffset;
-        if (!stringTime)
-            return;
-        var time = dateUtils.parseTime(stringTime, extraTime);
-        var len = time.length;
-        var from = null;
-        var to = null;
-        for (var i = 0; i < len; i++) {
-            from = parseInt(time[i].from);
-            to = parseInt(time[i].to);
-            this.setBusyTime(from, to, tr)
-        }
-    };
-
-    /**
-     * Show free/busy time in a tr tag
-     * @param {Object} from Time in minutes
-     * @param {Object} to Time in minutes
-     * @param {Object} tr Tr tag contains event data
-     */
-    UICalendarPortlet.prototype.setBusyTime = function(from, to, tr) {
-        var cell = gj(tr).find("td").slice(1);
-        var start = CSUtils.ceil(from, 15) / 15;
-        var end = CSUtils.ceil(to, 15) / 15;
-        for (var i = start; i < end; i++) {
-            cell[i].className = "busyDotTime";
-            gj(this.busyCell[i]).addClass("busyTime");
-        }
-    };
-
-    /**
-     * Sets up dragging selection for free/busy time table
-     * @param {Object} tr Tr tag contains event data
-     */
-    UICalendarPortlet.prototype.initSelectionX = function(tr) {
-        cell = gj(tr).find("td.uiCellBlock");
-        var len = cell.length;
-        for (var i = 0; i < len; i++) {
-            gj(cell[i]).on('mousedown', UIHSelection.start);
-        }
-    };
-
-    /**
      * Gets AM/PM from input value
      * @param {Object} input Input contains time
      * @return Object contains two properties that are AM and PM
@@ -1666,33 +1566,6 @@
             "am": gj("#AMString")[0].getAttribute("name"),
             "pm": gj("#PMString")[0].getAttribute("name")
         };
-    };
-
-    /**
-     * Callback method when dragging selection end
-     */
-    UICalendarPortlet.prototype.callbackSelectionX = function() {
-        var len = Math.abs(UIHSelection.firstCell.cellIndex - UIHSelection.lastCell.cellIndex - 1);
-        var start = (UIHSelection.firstCell.cellIndex - 1) * 15;
-        var end = start + len * 15;
-        var timeTable = gj(UIHSelection.firstCell).parents("table")[0];
-        var dateValue = timeTable.getAttribute("datevalue");
-        var uiTabContentContainer = gj('#eventAttender-tab')[0];
-        var UIComboboxInputs = gj(uiTabContentContainer).find("input.UIComboboxInput");
-        len = UIComboboxInputs.length;
-        var name = null;
-        var timeFormat = this.getTimeFormat(null);
-        start = dateUtils.minToTime(start, timeFormat);
-        end = dateUtils.minToTime(end, timeFormat);
-
-        UIComboboxInputs[0].value = start;
-        UIComboboxInputs[1].value = end;
-        gj(UIComboboxInputs[0]).trigger('change');
-        gj(UIComboboxInputs[1]).trigger('change');
-
-        var cells = gj(UIHSelection.firstCell.parentNode).children("td");
-        UIHSelection.setAttr(UIHSelection.firstCell.cellIndex, UIHSelection.lastCell.cellIndex, cells);
-        _module.ScheduleSupport.syncTimeBetweenEventTabs();
     };
 
     UICalendarPortlet.prototype.synTime = function(o,v){
@@ -2133,7 +2006,6 @@
         gj(arrowIcon).toggleClass('uiIconArrowUp uiIconArrowDown');
     }
 
-    _module.ScheduleSupport = ScheduleSupport;
     _module.LayoutManager = CalendarLayout.LayoutManager;
     _module.CalendarLayout = CalendarLayout.CalendarLayout;
     _module.UIWeekView = UIWeekView ;
@@ -2143,5 +2015,5 @@
     var uiPopup = uiPopupWindow ;
     return _module;
 })(base, CalendarLayout, UIWeekView, UICalendarMan, gj, Reminder, UICalendars, uiForm, 
-    uiPopupWindow, ScheduleSupport, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, DateUtils);
+    uiPopupWindow, CSUtils, DOMUtil, UIContextMenu, CalDateTimePicker, DateTimeFormatter, UIHSelection, UISelection, UIDayView, DateUtils);
 
