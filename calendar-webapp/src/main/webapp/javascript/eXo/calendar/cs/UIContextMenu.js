@@ -134,7 +134,7 @@ var UIContextMenu = {
 		}
 	},
 
-	replaceall : function(string, obj) {			
+	replaceAll : function(string, obj) {
 		var p = new Array() ;
 		var i = 0 ;
 		for(var reg in obj) {
@@ -164,7 +164,7 @@ var UIContextMenu = {
 		} else if (typeof(id) == "object") {
 			for(var i = 0 ; i < len ; i++) {
 				href = String(actions[i].href) ;			
-				actions[i].href = UIContextMenu.replaceall(href, id);
+				actions[i].href = UIContextMenu.replaceAll(href, id);
 			}
 		} else {
 			return  ;

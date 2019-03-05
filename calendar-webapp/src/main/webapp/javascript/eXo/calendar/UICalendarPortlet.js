@@ -836,9 +836,9 @@
                                 endTime: endTime
                             });
                         });
-                    } else {
-                        items[i].href = UIContextMenu.replaceall(String(items[i].href), map);
                     }
+
+                    items[i].href = UIContextMenu.replaceAll(String(items[i].href), map);
                 }
                 else
                 {
@@ -1006,7 +1006,7 @@
                   "isOccur\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "isOccur=" + isOccur,
                   "recurId\s*=\s*[A-Za-z0-9_]*(?=&|'|\")": "recurId=" + recurId
                 };
-                action = UIContextMenu.replaceall(action, map);
+                action = UIContextMenu.replaceAll(action, map);
                 gj.globalEval(action);
             }
         }
