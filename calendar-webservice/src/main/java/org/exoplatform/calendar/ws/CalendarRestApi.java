@@ -1154,11 +1154,11 @@ public class CalendarRestApi implements ResourceContainer {
           return error;
         }
 
-        int toType = -1;
-        try {
-          toType = Integer.parseInt(event.getCalType());
-        }catch (NumberFormatException e) {
-          toType = calendarServiceInstance().getTypeOfCalendar(currentUserId(), event.getCalendarId());
+        int toType;
+        if(moveToCal != null) {
+          toType = moveToCal.getCalType();
+        } else {
+          toType = fromType;
         }
 
         moveToCal = moveToCal == null ? cal : moveToCal;
