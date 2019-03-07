@@ -96,7 +96,7 @@ import org.exoplatform.webui.organization.account.UIUserSelector;
     events = {
       @EventConfig(listeners = UIPopupWindow.CloseActionListener.class, name = "ClosePopup"),
       @EventConfig(listeners = UISharedForm.SelectUserActionListener.class, name = "Add", phase = Phase.DECODE),
-      @EventConfig(listeners = UITaskForm.CloseActionListener.class, name = "Close", phase = Phase.DECODE)
+      @EventConfig(listeners = UISharedForm.CloseActionListener.class, name = "Close", phase = Phase.DECODE)
     }
   )
 })
@@ -807,6 +807,18 @@ public class UISharedForm extends UIForm implements UIPopupComponent
       sharedForm.removePermission(aPermission.getId());
       event.getRequestContext().addUIComponentToUpdateByAjax(sharedForm);
     }
+  }
+
+  public static class CloseActionListener extends EventListener<UISharedForm> {
+    @Override
+    public void execute(Event<UISharedForm> event) throws Exception {
+      UISharedForm uiSharedForm = event.getSource();
+      UIPopupWindow uiPoupPopupWindow = uiSharedForm.getParent() ;
+      UIPopupContainer uiContainer = uiPoupPopupWindow.getAncestorOfType(UIPopupContainer.class) ;
+      uiPoupPopupWindow.setUIComponent(null) ;
+      uiPoupPopupWindow.setShow(false) ;
+      event.getRequestContext().addUIComponentToUpdateByAjax(uiContainer) ;
+      }
   }
 
   /**

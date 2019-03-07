@@ -19,12 +19,10 @@ package org.exoplatform.calendar.webui;
 import javax.jcr.PathNotFoundException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +36,6 @@ import org.exoplatform.calendar.webui.popup.UIConfirmForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.security.MembershipEntry;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
@@ -56,16 +53,13 @@ import org.exoplatform.webui.event.EventListener;
                  lifecycle = UIFormLifecycle.class,
                  template = "app:/templates/calendar/webui/UIDayView.gtmpl", 
                  events = {
-                   @EventConfig(listeners = UICalendarView.AddEventActionListener.class),  
                    @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
                    @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
-                   @EventConfig(listeners = UICalendarView.EditActionListener.class), 
                    @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
                    @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
                    @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
-                   @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
                    @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
                    @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class), 
                    @EventConfig(listeners = UICalendarView.ExportEventActionListener.class),

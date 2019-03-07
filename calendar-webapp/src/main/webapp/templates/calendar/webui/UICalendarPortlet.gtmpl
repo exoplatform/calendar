@@ -8,7 +8,7 @@
   import org.exoplatform.calendar.webui.UICalendarPortletEditMode;
   import javax.portlet.MimeResponse;
   import javax.portlet.ResourceURL;
-  
+
   PortletMode appMode = _ctx.getRequestContext().getApplicationMode();
   if (PortletMode.EDIT.equals(appMode)) {
 %>
@@ -181,8 +181,10 @@
       requireJS.addScripts('cal.CalendarLayout.init();');
       requireJS.addScripts("cal.UICalendarPortlet.loadTitle();");
       requireJS.addScripts("calendarEvent.init({timezone: " + uicomponent.getSettingTimeZone() + ", timeFormat: '" + timeFormat + "', dateFormat:'" + dateFormat +"'});");
+
+      def timeshift = uicomponent.getTimeShift();
     %>
-      <div class="calendarWorkingWorkspace">
+      <div class="calendarWorkingWorkspace" timeshift="$timeshift">
         <%uicomponent.renderChild(UIActionBar.class)%>
         <%uicomponent.renderChild(UICalendarWorkingContainer.class)%>
         <div id="ExoCalendarEventForm"></div>

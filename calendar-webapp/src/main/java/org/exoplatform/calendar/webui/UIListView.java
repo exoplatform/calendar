@@ -34,7 +34,6 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.webui.popup.UIAdvancedSearchForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.commons.utils.ListAccess;
@@ -57,7 +56,6 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
 @ComponentConfig(
                  lifecycle = UIFormLifecycle.class,
                  events = {
-                   @EventConfig(listeners = UICalendarView.AddEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
                    @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
@@ -66,7 +64,6 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
                    @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
                    @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
-                   @EventConfig(listeners = UICalendarView.EditActionListener.class),
                    @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
                    @EventConfig(listeners = UIListView.CloseSearchActionListener.class),
                    @EventConfig(listeners = UIListView.ViewDetailActionListener.class),
