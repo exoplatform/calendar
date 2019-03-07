@@ -1,7 +1,6 @@
 <%
 import java.util.Map;
 import java.util.Map.Entry;
-import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
 
   uiform.begin() ;   
   private void renderActions(String fieldKey) {

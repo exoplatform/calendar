@@ -229,18 +229,6 @@ public class UIEventCategoryManager extends UIContainer implements UIPopupCompon
       if(currentPage <= uiManager.getAvailablePage()) uiManager.setCurrentPage(currentPage.intValue()) ;
       uiManager.resetForm() ;
       event.getRequestContext().addUIComponentToUpdateByAjax(uiManager.getAncestorOfType(UIPopupAction.class)) ;
-      UIEventDetailTab uiEventDetailTab = calendarPortlet.findFirstComponentOfType(UIEventDetailTab.class) ;
-      UITaskDetailTab uiTaskDetailTab = calendarPortlet.findFirstComponentOfType(UITaskDetailTab.class) ;
-      if(uiEventDetailTab != null) {
-        uiEventDetailTab.getUIFormSelectBox(UIEventDetailTab.FIELD_CATEGORY).setOptions(CalendarUtils.getCategory());
-        uiEventDetailTab.getUIFormSelectBox(UIEventDetailTab.FIELD_CATEGORY).setValue(uiManager.categoryId_) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiEventDetailTab) ;
-      }
-      if(uiTaskDetailTab != null) {
-        uiTaskDetailTab.getUIFormSelectBox(UITaskDetailTab.FIELD_CATEGORY).setOptions(CalendarUtils.getCategory());
-        uiTaskDetailTab.getUIFormSelectBox(UITaskDetailTab.FIELD_CATEGORY).setValue(uiManager.categoryId_) ;
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiTaskDetailTab) ;
-      }
       event.getRequestContext().addUIComponentToUpdateByAjax(calendarPortlet) ;
       }
     }

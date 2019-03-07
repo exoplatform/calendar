@@ -22,7 +22,6 @@ import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.webui.popup.UIEventForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.commons.api.settings.SettingService;
@@ -30,6 +29,7 @@ import org.exoplatform.commons.api.settings.SettingValue;
 import org.exoplatform.commons.api.settings.data.Context;
 import org.exoplatform.commons.api.settings.data.Scope;
 import org.exoplatform.commons.utils.DateUtils;
+import org.exoplatform.commons.utils.PropertyManager;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.application.RequestNavigationData;
@@ -54,6 +54,7 @@ import org.exoplatform.webui.core.UIPortletApplication;
 import org.exoplatform.webui.core.lifecycle.UIApplicationLifecycle;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
 
+import org.json.JSONObject;
 import org.mortbay.cometd.continuation.EXoContinuationBayeux;
 
 import java.text.SimpleDateFormat;
@@ -259,19 +260,15 @@ public class UICalendarPortlet extends UIPortletApplication {
         // update status
         event.setCalType(String.valueOf(calType));
         calService.confirmInvitation(inviter, user.getEmail(), username, calType, event.getCalendarId(), eventId, Utils.ACCEPT);
-        // pop-up event form
-        UIPopupAction uiParentPopup = this.getChild(UIPopupAction.class);
-        UIPopupContainer uiPopupContainer = uiParentPopup.activate(UIPopupContainer.class, 800);
-        uiPopupContainer.setId(UIPopupContainer.UIEVENTPOPUP);
-        UIEventForm uiEventForm =  uiPopupContainer.addChild(UIEventForm.class, null, null) ;
-        uiEventForm.initForm(this.getCalendarSetting(), null, formTime);
-        uiEventForm.update(CalendarUtils.PRIVATE_TYPE, CalendarUtils.getCalendarOption()) ;
-        uiEventForm.importInvitationEvent(this.getCalendarSetting(), event, Utils.getDefaultCalendarId(username), formTime);
-        uiEventForm.setSelectedEventState(UIEventForm.ITEM_BUSY) ;
-        uiEventForm.setEmailRemindBefore(String.valueOf(5));
-        uiEventForm.setEmailReminder(false) ;
-        uiEventForm.setEmailRepeat(false) ;
-        context.addUIComponentToUpdateByAjax(uiParentPopup);
+
+        JSONObject evtObj = new JSONObject();
+        evtObj.put("id", event.getId());
+        evtObj.put("isOccur", Utils.isOccurrence(event));
+        evtObj.put("startTime", event.getFromDateTime().getTime());
+        evtObj.put("endTime", event.getToDateTime().getTime());
+        //
+        context.getJavascriptManager().require("SHARED/calendarEvent","calendarEvent")
+                .addScripts("calendarEvent.openEventForm(" + evtObj.toString() + ")");
       } else {
         context.getUIApplication().addMessage(new ApplicationMessage("UICalendarPortlet.msg.event-was-not-found", null, ApplicationMessage.ERROR));
       }
@@ -454,4 +451,19 @@ public class UICalendarPortlet extends UIPortletApplication {
     actionConfirms.add(new UIConfirmation.ActionConfirm("AbortClose", no));
     uiConfirmation.setActions(actionConfirms);
   }
+
+  /**
+   * use in template
+   */
+  public int getTimeShift(){
+    int defaultTime = 2;
+    try {
+      defaultTime = Integer.parseInt(PropertyManager.getProperty("exo.calendar.default.event.suggest"));
+    } catch (NumberFormatException e) {
+      defaultTime = 1;
+      log.error("exo.calendar.default.event.suggest must be int, this setting will be reset to {}", defaultTime);
+    }
+    return defaultTime;
+  }
+
 }

@@ -17,27 +17,21 @@
 package org.exoplatform.calendar.webui;
 
 import org.exoplatform.calendar.CalendarUtils;
-import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.CalendarQuery;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.ExtendedCalendarService;
-import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
-import org.exoplatform.webui.core.UIPopupWindow;
-import org.exoplatform.webui.core.model.SelectItem;
-import org.exoplatform.webui.form.UIFormSelectBoxWithGroups;
 import org.exoplatform.portal.webui.util.Util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Cookie;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -124,35 +118,7 @@ public class UICalendarWorkingContainer extends UIContainer  {
   @Override
   public void processRender(WebuiRequestContext context) throws Exception {
     init();
-    active() ;
     super.processRender(context);
-  }
-
-  public void active() throws Exception {
-    UIPopupWindow uiWindowE = getChildById("UIQuickAddEventPopupWindow") ;
-    if(uiWindowE == null) uiWindowE = addChild(UIPopupWindow.class, null, "UIQuickAddEventPopupWindow") ;
-    UIQuickAddEvent quickAddForm = (UIQuickAddEvent)uiWindowE.getUIComponent();
-    if(quickAddForm == null) quickAddForm = createUIComponent(UIQuickAddEvent.class, null, null) ; 
-    List<SelectItem> calendarOption = CalendarUtils.getCalendarOption();
-    ((UIFormSelectBoxWithGroups)quickAddForm.getChildById(UIQuickAddEvent.FIELD_CALENDAR)).setOptions(calendarOption) ;
-    quickAddForm.getUIFormSelectBox(UIQuickAddEvent.FIELD_CATEGORY).setOptions(CalendarUtils.getCategory()) ;
-    quickAddForm.setEvent(true) ;
-    quickAddForm.setId("UIQuickAddEvent") ;
-    quickAddForm.init(CalendarUtils.getCalendarService().getCalendarSetting(CalendarUtils.getCurrentUser()), String.valueOf(new Date().getTime()), String.valueOf(new Date().getTime())) ;
-    uiWindowE.setUIComponent(quickAddForm) ;
-    uiWindowE.setWindowSize(540, 0);
-
-    UIPopupWindow uiWindowT =  getChildById("UIQuickAddTaskPopupWindow") ;
-    if(uiWindowT == null) uiWindowT = addChild(UIPopupWindow.class, null, "UIQuickAddTaskPopupWindow") ;
-    UIQuickAddEvent quickAddTask = (UIQuickAddEvent)uiWindowT.getUIComponent();
-    if(quickAddTask == null) quickAddTask = createUIComponent(UIQuickAddEvent.class, null, null) ; 
-    quickAddTask.setEvent(false) ;
-    quickAddTask.setId("UIQuickAddTask") ;
-    quickAddTask.init(CalendarUtils.getCalendarService().getCalendarSetting(CalendarUtils.getCurrentUser()),String.valueOf(new Date().getTime()), String.valueOf(new Date().getTime())) ;
-    ((UIFormSelectBoxWithGroups)quickAddTask.getChildById(UIQuickAddEvent.FIELD_CALENDAR)).setOptions(calendarOption) ;
-    quickAddTask.getUIFormSelectBox(UIQuickAddEvent.FIELD_CATEGORY).setOptions(CalendarUtils.getCategory()) ;
-    uiWindowT.setUIComponent(quickAddTask) ;
-    uiWindowT.setWindowSize(540, 0);
   }
   
   public static boolean isShowLeftContainer() {

@@ -48,18 +48,12 @@ import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.ExtendedCalendarService;
-import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.calendar.storage.jcr.JCREventQuery;
 import org.exoplatform.calendar.webui.popup.UIConfirmForm;
-import org.exoplatform.calendar.webui.popup.UIEventForm;
-import org.exoplatform.calendar.webui.popup.UIEventShareTab;
 import org.exoplatform.calendar.webui.popup.UIExportForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
-import org.exoplatform.calendar.webui.popup.UIQuickAddEvent;
-import org.exoplatform.calendar.webui.popup.UITaskForm;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.log.ExoLogger;
@@ -1087,71 +1081,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     return CalendarUtils.getEndDay(temCal) ;  
   }
 
-  static public class AddEventActionListener extends EventListener<UICalendarView> {
-    @Override
-    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
-      UICalendarView uiForm = event.getSource();
-      String username = CalendarUtils.getCurrentUser();
-      if (CalendarUtils.getCalendarOption().isEmpty()) {
-        event.getRequestContext()
-                .getUIApplication()
-                .addMessage(new ApplicationMessage("UICalendarView.msg.calendar-list-empty", null));
-        return;
-      }
-      List<EventCategory> eventCategories = CalendarUtils.getCalendarService()
-              .getEventCategories(username);
-      if (eventCategories.isEmpty()) {
-        event.getRequestContext()
-                .getUIApplication()
-                .addMessage(new ApplicationMessage("UICalendarView.msg.event-category-list-empty",
-                        null));
-        return;
-      }
-      String type = event.getRequestContext().getRequestParameter(OBJECTID);
-      String formTime = uiForm.getDefaultStartTimeOfEvent();
-      String value = uiForm.getUIFormSelectBox(EVENT_CATEGORIES).getValue();
-      UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
-      UIPopupAction uiParenPopup = uiPortlet.getChild(UIPopupAction.class);
-      UIPopupContainer uiPopupContainer = uiParenPopup.activate(UIPopupContainer.class, 750);
-      if (CalendarEvent.TYPE_TASK.equals(type)) {
-        uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP);
-        UITaskForm uiTaskForm = uiPopupContainer.addChild(UITaskForm.class, null, null);
-        uiTaskForm.initForm(uiPortlet.getCalendarSetting(), null, formTime);
-        uiTaskForm.setEmailAddress(CalendarUtils.getOrganizationService()
-                .getUserHandler()
-                .findUserByName(username)
-                .getEmail());
-        uiTaskForm.update(CalendarUtils.PRIVATE_TYPE, CalendarUtils.getCalendarOption());
-        if (CalendarUtils.isEmpty(value))
-          uiTaskForm.setSelectedCategory("All");
-        else
-          uiTaskForm.setSelectedCategory(value);
-      } else {
-        uiPopupContainer.setId(UIPopupContainer.UIEVENTPOPUP);
-        UIEventForm uiEventForm = uiPopupContainer.addChild(UIEventForm.class, null, null);
-        uiEventForm.initForm(uiPortlet.getCalendarSetting(), null, formTime);
-        uiEventForm.update(CalendarUtils.PRIVATE_TYPE, CalendarUtils.getCalendarOption());
-        uiEventForm.setSelectedEventState(UIEventForm.ITEM_BUSY);
-        uiEventForm.setParticipant(username);
-        uiEventForm.setParticipantStatus(username);
-        uiEventForm.getChild(UIEventShareTab.class)
-                .setParticipantStatusList(uiEventForm.getParticipantStatusList());
-        uiEventForm.setEmailAddress(CalendarUtils.getOrganizationService()
-                .getUserHandler()
-                .findUserByName(username)
-                .getEmail());
-        uiEventForm.setEmailRemindBefore(String.valueOf(5));
-        uiEventForm.setEmailReminder(true);
-        uiEventForm.setEmailRepeat(false);
-        if (CalendarUtils.isEmpty(value))
-          uiEventForm.setSelectedCategory("All");
-        else
-          uiEventForm.setSelectedCategory(value);
-      }
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiParenPopup);
-    }
-  }
-
   //, confirm="UICalendarView.msg.confirm-delete"
   public static class DeleteEventActionListener extends EventListener<UICalendarView> {
     @Override
@@ -1470,126 +1399,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
     }
   }
 
-  static public class EditActionListener extends EventListener<UICalendarView> {
-    @Override
-    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
-      UICalendarView uiCalendarView = event.getSource();
-      UICalendarPortlet uiPortlet = uiCalendarView.getAncestorOfType(UICalendarPortlet.class);
-      UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
-      UIPopupContainer uiPopupContainer = uiPortlet.createUIComponent(UIPopupContainer.class, null, null);
-      CalendarEvent eventCalendar = null;
-      String eventId = event.getRequestContext().getRequestParameter(OBJECTID);
-      
-      String calendarId = event.getRequestContext().getRequestParameter(CALENDARID);
-
-      // Need to reload Event from JCR to check if it's still existing on calendar or not
-      CalendarService calService = uiCalendarView.getApplicationComponent(CalendarService.class);
-      eventCalendar = calService.getEventById(eventId);
-      if (eventCalendar == null) {
-        ExtendedCalendarService extendedCalendarService = uiCalendarView.getApplicationComponent(ExtendedCalendarService.class);
-        eventCalendar = CalendarEvent.build(extendedCalendarService.getEventHandler().getEventById(eventId));
-      }
-      if (eventCalendar != null && eventCalendar.getCalendarId().equals(calendarId)) {
-        Boolean isOccur = false;
-        if (!Utils.isEmpty(event.getRequestContext().getRequestParameter(ISOCCUR))) {
-          isOccur = Boolean.parseBoolean(event.getRequestContext().getRequestParameter(ISOCCUR));
-        }
-        // need to get recurrence-id
-        String recurId = null;
-        if (isOccur) {
-          recurId = event.getRequestContext().getRequestParameter(RECURID);
-        }
-
-        if (isOccur && !Utils.isEmpty(recurId)) {
-          eventCalendar = uiCalendarView.getRecurrenceMap().get(eventId).get(recurId);
-          // Recover recurring info from GMT (persisted timezone) to user timezone
-          CalendarSetting setting = calService.getCalendarSetting(event.getRequestContext().getRemoteUser());
-          TimeZone tz = DateUtils.getTimeZone(setting.getTimeZone());
-          Utils.adaptRepeatRule(eventCalendar, CalendarService.PERSISTED_TIMEZONE, tz);
-        } else {
-          eventCalendar = CalendarEvent.build(uiCalendarView.getDataMap().get(eventId));
-        }
-
-        String calType = event.getRequestContext().getRequestParameter(CALTYPE);
-
-        CalendarService calendarService = CalendarUtils.getCalendarService();
-        boolean canEdit = false;
-        if (CalendarUtils.PRIVATE_TYPE.equals(calType)) {
-          canEdit = true;
-        } else if (CalendarUtils.SHARED_TYPE.equals(calType)) {
-          GroupCalendarData calendarData = calendarService.getSharedCalendars(CalendarUtils.getCurrentUser(),
-                  true);
-          if (calendarData != null && calendarData.getCalendarById(calendarId) != null)
-            canEdit = Utils.hasPermission(Utils.getEditPerUsers(calendarData.getCalendarById(calendarId)));
-        } else if (CalendarUtils.PUBLIC_TYPE.equals(calType)) {
-          org.exoplatform.calendar.model.Calendar cal = uiCalendarView.xCalService.getCalendarHandler().getCalendarById(calendarId);
-          if (cal != null) {
-            canEdit = Utils.hasPermission(cal.getEditPermission());
-          }
-        }
-
-        if (canEdit) {
-          if (CalendarEvent.TYPE_EVENT.equals(eventCalendar.getEventType())) {
-            if (isOccur && !Utils.isEmpty(recurId)) {
-              uiCalendarView.setCurrentOccurrence(eventCalendar);
-            }
-
-            uiPopupContainer.setId(UIPopupContainer.UIEVENTPOPUP);
-            UIEventForm uiEventForm = uiPopupContainer.createUIComponent(UIEventForm.class,
-                    null,
-                    null);
-            uiEventForm.update(calType, CalendarUtils.getCalendarOption());
-            uiEventForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
-            if (!uiEventForm.isAddNew_ && !uiEventForm.isReminderByEmail(eventCalendar.getReminders())) {
-              OrganizationService orgService = CalendarUtils.getOrganizationService();
-              String email = orgService.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()).getEmail();
-              uiEventForm.setEmailAddress(email);
-            }
-            uiEventForm.setSelectedCalendarId(calendarId);
-            uiPopupContainer.addChild(uiEventForm);
-            uiPopupAction.activate(uiPopupContainer, 750, 0);
-            event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
-          } else if (CalendarEvent.TYPE_TASK.equals(eventCalendar.getEventType())) {
-            uiPopupContainer.setId(UIPopupContainer.UITASKPOPUP);
-            UITaskForm uiTaskForm = uiPopupContainer.createUIComponent(UITaskForm.class, null, null);
-            uiTaskForm.update(calType, CalendarUtils.getCalendarOption());
-            uiTaskForm.initForm(uiPortlet.getCalendarSetting(), eventCalendar, null);
-            if (!uiTaskForm.isAddNew_ && !uiTaskForm.isReminderByEmail(eventCalendar.getReminders())) {
-              OrganizationService orgService = CalendarUtils.getOrganizationService();
-              String email = orgService.getUserHandler().findUserByName(CalendarUtils.getCurrentUser()).getEmail();
-              uiTaskForm.setEmailAddress(email);
-            }
-            uiTaskForm.setSelectedCalendarId(calendarId);
-            uiPopupContainer.addChild(uiTaskForm);
-            uiPopupAction.activate(uiPopupContainer, 750, 0);
-            event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
-          }
-        } else {
-          event.getRequestContext()
-                  .getUIApplication()
-                  .addMessage(new ApplicationMessage("UICalendarView.msg.have-no-edit-permission",
-                          null));
-          return;
-        }
-      } else {
-        if (uiCalendarView instanceof UIListView) {
-          UIListView uiListView = (UIListView) uiCalendarView;
-          long pageNum = uiListView.getCurrentPage();
-          uiCalendarView.refresh();
-          uiListView.updateCurrentPage(pageNum);
-        } else {
-          uiCalendarView.refresh();
-        }
-
-        event.getRequestContext().addUIComponentToUpdateByAjax(uiCalendarView.getParent());
-
-        event.getRequestContext().getUIApplication()
-                .addMessage(new ApplicationMessage("UICalendarView.msg.event-not-found", null));
-      }
-
-    }
-  }
-
   static public class DeleteActionListener extends EventListener<UICalendarView> {
     @Override
     public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
@@ -1877,59 +1686,6 @@ public abstract class UICalendarView extends UIForm implements CalendarView {
       }
       uiView.refresh();
       event.getRequestContext().addUIComponentToUpdateByAjax(uiView.getParent());
-    }
-  }
-
-  static public class QuickAddActionListener extends EventListener<UICalendarView> {
-    @Override
-    public void execute(org.exoplatform.webui.event.Event<UICalendarView> event) throws Exception {
-      UICalendarView uiForm = event.getSource();
-      if (CalendarUtils.getCalendarOption().isEmpty()) {
-        event.getRequestContext()
-                .getUIApplication()
-                .addMessage(new ApplicationMessage("UICalendarView.msg.calendar-list-empty", null));
-        return;
-      }
-      List<EventCategory> eventCategories = CalendarUtils.getCalendarService()
-              .getEventCategories(CalendarUtils.getCurrentUser());
-      if (eventCategories.isEmpty()) {
-        event.getRequestContext()
-                .getUIApplication()
-                .addMessage(new ApplicationMessage("UICalendarView.msg.event-category-list-empty",
-                        null));
-        return;
-      }
-      String type = event.getRequestContext().getRequestParameter(OBJECTID);
-      String startTime = event.getRequestContext().getRequestParameter("startTime");
-      String finishTime = event.getRequestContext().getRequestParameter("finishTime");
-      String selectedCategory = uiForm.getUIFormSelectBox(EVENT_CATEGORIES).getValue();
-      UICalendarPortlet uiPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class);
-      UIPopupAction uiPopupAction = uiPortlet.getChild(UIPopupAction.class);
-      UIQuickAddEvent uiQuickAddEvent = uiPopupAction.activate(UIQuickAddEvent.class, 600);
-      if (!CalendarUtils.isEmpty(selectedCategory))
-        uiQuickAddEvent.setSelectedCategory(selectedCategory);
-      else
-        uiQuickAddEvent.setSelectedCategory("Meeting");
-      if (CalendarEvent.TYPE_TASK.equals(type)) {
-        uiQuickAddEvent.setEvent(false);
-        uiQuickAddEvent.setId("UIQuickAddTask");
-      } else {
-        uiQuickAddEvent.setEvent(true);
-        uiQuickAddEvent.setId("UIQuickAddEvent");
-      }
-      try {
-        Long.parseLong(startTime);
-      } catch (Exception e) {
-        startTime = null;
-      }
-      try {
-        Long.parseLong(finishTime);
-      } catch (Exception e) {
-        finishTime = null;
-      }
-      uiQuickAddEvent.init(uiPortlet.getCalendarSetting(), startTime, finishTime);
-      uiQuickAddEvent.update(CalendarUtils.PRIVATE_TYPE, null);
-      event.getRequestContext().addUIComponentToUpdateByAjax(uiPopupAction);
     }
   }
 

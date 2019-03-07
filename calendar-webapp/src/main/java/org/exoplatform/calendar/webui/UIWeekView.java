@@ -20,7 +20,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,15 +62,12 @@ import org.exoplatform.webui.event.EventListener;
                  lifecycle =UIFormLifecycle.class,
                  template = "app:/templates/calendar/webui/UIWeekView.gtmpl",
                  events = {
-                   @EventConfig(listeners = UICalendarView.AddEventActionListener.class),  
                    @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class),
                    @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
                    @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
                    @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
                    @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),
-                   @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
                    @EventConfig(listeners = UICalendarView.ViewActionListener.class),
-                   @EventConfig(listeners = UICalendarView.EditActionListener.class), 
                    @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
                    @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
                    @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),

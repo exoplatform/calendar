@@ -135,7 +135,6 @@ public class UIEventCategoryForm extends UIForm {
         UICalendarPortlet calendarPortlet = uiForm.getAncestorOfType(UICalendarPortlet.class) ;
         UIMiniCalendar uiMiniCalendar = calendarPortlet.findFirstComponentOfType(UIMiniCalendar.class) ;
         uiMiniCalendar.setCategoryId(null) ;
-        UIPopupContainer uiPopupContainer = uiForm.getAncestorOfType(UIPopupContainer.class) ;
         UICalendarViewContainer uiViewContainer = calendarPortlet.findFirstComponentOfType(UICalendarViewContainer.class) ;
         uiViewContainer.refresh() ;
         uiViewContainer.updateCategory() ;
@@ -145,24 +144,6 @@ public class UIEventCategoryForm extends UIForm {
         event.getRequestContext().addUIComponentToUpdateByAjax(uiMiniCalendar) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiViewContainer.getParent()) ;
         event.getRequestContext().addUIComponentToUpdateByAjax(uiForm.getParent()) ;
-        if(uiPopupContainer != null) {
-          UIEventForm uiEventForm = uiPopupContainer.getChild(UIEventForm.class) ;
-          UITaskForm uiTaskForm = uiPopupContainer.getChild(UITaskForm.class) ;
-          if(uiEventForm != null){ 
-            uiEventForm.setSelectedTab(UIEventForm.TAB_EVENTDETAIL) ;
-            uiEventForm.refreshCategory() ;
-            uiEventForm.setSelectedCategory(uiManager.categoryId_) ;
-            uiEventForm.setSelectedCategory(eventCat.getId()) ;
-            event.getRequestContext().addUIComponentToUpdateByAjax(uiEventForm.getChildById(UIEventForm.TAB_EVENTDETAIL)) ;
-          }
-          
-          if(uiTaskForm != null) { 
-            uiTaskForm.setSelectedTab(UITaskForm.TAB_TASKDETAIL) ;
-            uiTaskForm.refreshCategory() ;
-            uiTaskForm.setSelectedCategory(eventCat.getName()) ;
-            event.getRequestContext().addUIComponentToUpdateByAjax(uiTaskForm.getChildById(UITaskForm.TAB_TASKDETAIL)) ;
-          }
-        }
       } catch (ItemExistsException e) {
         event.getRequestContext()
              .getUIApplication()

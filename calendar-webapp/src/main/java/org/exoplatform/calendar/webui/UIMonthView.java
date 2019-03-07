@@ -17,7 +17,6 @@
 package org.exoplatform.calendar.webui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,19 +52,16 @@ import org.exoplatform.webui.form.input.UICheckBoxInput;
     lifecycle = UIFormLifecycle.class,
     template = "app:/templates/calendar/webui/UIMonthView.gtmpl", 
     events = {
-      @EventConfig(listeners = UICalendarView.AddEventActionListener.class),      
       @EventConfig(listeners = UICalendarView.DeleteEventActionListener.class),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteEvent.class),
       @EventConfig(listeners = UICalendarView.ConfirmDeleteCancel.class),
       @EventConfig(listeners = UICalendarView.ChangeCategoryActionListener.class),
       @EventConfig(listeners = UICalendarView.EventSelectActionListener.class), 
       @EventConfig(listeners = UICalendarView.ViewActionListener.class),
-      @EventConfig(listeners = UICalendarView.EditActionListener.class), 
       @EventConfig(listeners = UICalendarView.DeleteActionListener.class),
       @EventConfig(listeners = UICalendarView.ConfirmCloseActionListener.class),
       @EventConfig(listeners = UICalendarView.AbortCloseActionListener.class),
       @EventConfig(listeners = UICalendarView.GotoDateActionListener.class),
-      @EventConfig(listeners = UICalendarView.QuickAddActionListener.class), 
       @EventConfig(listeners = UICalendarView.MoveNextActionListener.class), 
       @EventConfig(listeners = UICalendarView.MovePreviousActionListener.class),
       @EventConfig(listeners = UICalendarView.SwitchViewActionListener.class),

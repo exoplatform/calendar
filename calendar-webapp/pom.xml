@@ -10,6 +10,9 @@
   <packaging>war</packaging>
   <name>eXo PLF:: Calendar Application</name>
   <description>eXo Calendar Application</description>
+  <properties>
+    <exo.test.coverage.ratio>0.02</exo.test.coverage.ratio>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>commons-lang</groupId>

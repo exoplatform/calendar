@@ -2,7 +2,6 @@
   import java.util.Map;
   import java.util.Map.Entry;
   import org.exoplatform.calendar.CalendarUtils;
-  import org.exoplatform.calendar.webui.popup.UIEventForm.ParticipantStatus;
   import org.apache.commons.lang.StringEscapeUtils;
 
   def rcontext = _ctx.getRequestContext() ;
