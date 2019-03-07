@@ -72,9 +72,6 @@
                       <span class="title">
                         {{ $t('UIEventForm.label.Participants') }}
                       </span>
-                      <exo-modal :show="showParSelector" :title="$t('UICalendarChildPopupWindow.title.UISelectUserForm')" class="par-selector" @close="cancelParSelector">
-                        <participant-selector @save="saveParSelector($event)" @cancel="cancelParSelector"/>
-                      </exo-modal>
                       <a :title="$t('UIEventForm.label.action.AddUser')" class="actionIcon" rel="tooltip" data-placement="bottom" @click="showParSelector = true">
                         <i class="uiIconCalInviteUser uiIconLightGray" ></i>
                       </a>
@@ -126,6 +123,10 @@
         {{ $t('ExoCalendarEventForm.btn.cancel') }}
       </button>
     </div>
+
+    <exo-modal :show="showParSelector" :title="$t('UICalendarChildPopupWindow.title.UISelectUserForm')" class="par-selector" @close="cancelParSelector">
+      <participant-selector @save="saveParSelector($event)" @cancel="cancelParSelector"/>
+    </exo-modal>
   </div>
 </template>
 
