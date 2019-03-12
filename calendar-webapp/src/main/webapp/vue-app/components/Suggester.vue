@@ -49,6 +49,7 @@ export default {
       sourceProviders: this.sourceProviders,
       valueField: 'id',
       labelField: 'name',
+      optionIconField: 'avatar',
       searchField: ['name'],
       closeAfterSelect: true,
       dropdownParent: 'body',
@@ -80,8 +81,6 @@ export default {
           });
         }
       });
-
-
       const removeItems = [];
       selectize.items.forEach(item => {
         if (!this.participants.includes(item)) {
