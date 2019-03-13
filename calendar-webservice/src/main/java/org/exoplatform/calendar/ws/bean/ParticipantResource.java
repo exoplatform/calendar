@@ -26,6 +26,8 @@ public class ParticipantResource extends Resource {
 
     private String email;
 
+    private String avatar;
+
     public ParticipantResource() {
         super(null);
     }
@@ -34,6 +36,7 @@ public class ParticipantResource extends Resource {
         super(data.getRemoteId());
         this.name = data.getProfile().getFullName();
         this.email = data.getProfile().getEmail();
+        this.avatar = data.getProfile().getAvatarUrl();
     }
 
     public String getName() {
@@ -51,4 +54,8 @@ public class ParticipantResource extends Resource {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getAvatar() { return avatar; }
+
+    public void setAvatar(String avatar) { this.avatar = avatar; }
 }

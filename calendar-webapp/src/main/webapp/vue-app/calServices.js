@@ -237,15 +237,7 @@ export function findParticipants(filter, limit) {
     limit = DEFAULT_LIMIT;
   }
   return fetch(`${calConstants.CAL_SERVER_API}participants?name=${filter}&limit=${limit}`, {headers: calConstants.HEADER_NO_CACHE})
-    .then(resp =>  resp.json()).then(json => {
-      const participants = [];
-      for (const usr of json.data ) {
-        const av = {avatar: `/rest/v1/social/users/${usr.id}/avatar`};
-        const usrWithAvatar = Object.assign({}, usr, av);
-          participants.push(usrWithAvatar);
-      }
-      return  participants;
-    });
+    .then(resp =>  resp.json()).then(json => json.data);
 }
 
 export function getAvailabilities(usernames, fromDate, toDate) {
