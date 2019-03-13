@@ -19,6 +19,7 @@ package org.exoplatform.calendar.ws.bean;
 
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.service.LinkProvider;
 
 public class ParticipantResource extends Resource {
 
@@ -36,7 +37,7 @@ public class ParticipantResource extends Resource {
         super(data.getRemoteId());
         this.name = data.getProfile().getFullName();
         this.email = data.getProfile().getEmail();
-        this.avatar = data.getProfile().getAvatarUrl();
+        this.avatar = LinkProvider.buildAvatarURL(data.getProviderId(), data.getRemoteId());
     }
 
     public String getName() {
