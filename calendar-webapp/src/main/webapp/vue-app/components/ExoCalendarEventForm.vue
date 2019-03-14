@@ -16,7 +16,7 @@
               <input ref="title" v-model="event.title" :placeholder="$t('ExoCalendarEventForm.placeholder.eventTitle')" name="eventName" class="eventTitle" type="text"/>
               <span class="uiSelectbox form-horizontal">
                 <select v-model="event.category" class="selectbox category" name="category">
-                  <option v-for="category in categories" :key="category.id" :value="category.id">{{ trim($t(`UICalendarView.label.${category.id}`), 16) }}</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.id">{{ trim(translateCatName(category), 16) }}</option>
                 </select>
               </span>
             </div>
@@ -301,6 +301,13 @@ export default {
       data.event = event;
 
       return data;
+    },
+    translateCatName(category) {
+      let name = this.$t(`UICalendarView.label.${category.id}`);
+      if (name.startsWith('UICalendarView.label.')) {
+        name = category.name;
+      }
+      return name;
     },
     refreshDate() {
       this.event.fromDate = new Date(this.event.fromDate.getTime());
