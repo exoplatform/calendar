@@ -4,6 +4,8 @@ import Recurring from './recurring.js';
 const HALF_HOUR = 30;
 const MID_NIGHT_HOUR = 23;
 const MID_NIGHT_MINUTE = 59;
+const MID_NIGHT_SECOND = 59;
+const MID_NIGHT_MILLISECOND = 999;
 
 class CalendarEvent {
   constructor() {
@@ -37,7 +39,7 @@ class CalendarEvent {
 
     const toDate = new Date();
     toDate.setTime(this.toDate.getTime());
-    toDate.setHours(MID_NIGHT_HOUR, MID_NIGHT_MINUTE, 0, 0);
+    toDate.setHours(MID_NIGHT_HOUR, MID_NIGHT_MINUTE, MID_NIGHT_SECOND, MID_NIGHT_MILLISECOND);
     this.toDate = toDate;
   }
 

@@ -321,9 +321,11 @@ export default {
       this.refreshDate();
     },
     updateTime(date, val) {
-      const parsedVal = Utils.parseTime(val);
-      if (parsedVal) {
-        date.setHours(parsedVal.getHours(), parsedVal.getMinutes(), parsedVal.getSeconds(), parsedVal.getMilliseconds());
+      if (!this.isAllDay) {
+        const parsedVal = Utils.parseTime(val);
+        if (parsedVal) {
+          date.setHours(parsedVal.getHours(), parsedVal.getMinutes(), parsedVal.getSeconds(), parsedVal.getMilliseconds());
+        }
       }
     },
     fromDate() {
