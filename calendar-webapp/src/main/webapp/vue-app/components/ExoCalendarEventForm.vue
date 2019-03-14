@@ -294,6 +294,9 @@ export default {
       };
 
       const event = new CalendarEvent();
+      //add event creator as default participants
+      event.participants.push(eXo.env.portal.userName);
+      //if initEvt has participants, it will override above default value
       event.buildFrom(this.initEvt);
       data.event = event;
 
