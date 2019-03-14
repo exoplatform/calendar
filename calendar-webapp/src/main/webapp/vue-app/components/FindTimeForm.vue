@@ -139,6 +139,8 @@ import ParticipantSelector from './ParticipantSelector.vue';
 
 const MID_NIGHT_HOUR = 23;
 const MID_NIGHT_MINUTE = 59;
+const MID_NIGHT_SECOND = 59;
+const MID_NIGHT_MILLISECOND = 999;
 
 export default {
   components: {
@@ -227,7 +229,7 @@ export default {
         this.fromDate = fromDate;
 
         const toDate = new Date(this.toDate.getTime());
-        toDate.setHours(MID_NIGHT_HOUR, MID_NIGHT_MINUTE, 0, 0);
+        toDate.setHours(MID_NIGHT_HOUR, MID_NIGHT_MINUTE, MID_NIGHT_SECOND, MID_NIGHT_MILLISECOND);
         this.toDate = toDate;
       }
     }
