@@ -1,10 +1,8 @@
 <template>
-  <div id="errorMessage" class="errorMessage">
-    <div>
-      <ul>
-        <li v-for="error in errors" :key="error"><span>{{ errorMsg(error) }}</span></li>
-      </ul>
-    </div>
+  <div class="errorMessage">
+    <ul class="singleMessage popupMessage">
+      <li v-for="msg in errors" :key="msg"><span class="warningIcon">{{ displayMsg(msg) }}</span></li>
+    </ul>
     <div class="uiAction uiActionBorder">
       <button class="btn" type="button" @click="close">
         {{ $t('ExoCalendarEventForm.btn.close') }}
@@ -28,7 +26,7 @@ export default {
     }
   },
   methods: {
-    errorMsg(error) {
+    displayMsg(error) {
       let key = `UIEventForm.msg.${error}`;
       let msg = this.$t(key);
 
