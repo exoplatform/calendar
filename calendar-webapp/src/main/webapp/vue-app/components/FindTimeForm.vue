@@ -210,18 +210,6 @@ export default {
       
       this.checkTime();
     },
-    from() {
-      this.fromDate = new Date(this.from.getTime());
-      this.toDate = new Date(this.from.getTime());
-    },
-    to() {
-      const hours = this.to.getHours();
-      const minutes = this.to.getMinutes();
-      const seconds = this.to.getSeconds();
-      const miliseconds = this.to.getMilliseconds();
-      this.toDate.setHours(hours, minutes, seconds, miliseconds);
-      this.refreshDate();
-    },
     isAllDay() {
       if (this.isAllDay) {
         const fromDate = new Date(this.fromDate.getTime());
@@ -235,6 +223,16 @@ export default {
     }
   },
   mounted() {
+    this.fromDate = new Date(this.from.getTime());
+    this.toDate = new Date(this.from.getTime());
+    //
+    const hours = this.to.getHours();
+    const minutes = this.to.getMinutes();
+    const seconds = this.to.getSeconds();
+    const miliseconds = this.to.getMilliseconds();
+    this.toDate.setHours(hours, minutes, seconds, miliseconds);
+    this.refreshDate();
+
     const thiss = this;
     //workaround: using old calendar javascript ScheduleSupport for updating time
     $('.findTimeForm .time').each(function(idx, input) {
@@ -375,7 +373,6 @@ export default {
       } else {
         this.usernames = [];
       }
-      this.refreshDate();
       this.$emit('cancel');
     }
   }  

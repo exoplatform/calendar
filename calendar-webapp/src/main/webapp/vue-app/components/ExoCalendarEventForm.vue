@@ -46,7 +46,7 @@
                   <input id="allday" v-model="isAllDay" type="checkbox"/><span>{{ $t('ExoCalendarEventForm.label.allDay') }}</span>
                 </label>
                 <exo-modal :show="showFindTime" :title="$t('ExoCalendarEventForm.btn.findTime')" class="findtime-popup" @close="cancelFindTime()">
-                  <findtime-form :from="event.fromDate" :to="event.toDate" :participants="event.participants" @save="saveFindTime($event)" @cancel="cancelFindTime"/>
+                  <findtime-form v-if="showFindTime" :from="event.fromDate" :to="event.toDate" :participants="event.participants" @save="saveFindTime($event)" @cancel="cancelFindTime"/>
                 </exo-modal>
                 <a class="findtime" @click.prevent="showFindTime = true">{{ $t('ExoCalendarEventForm.btn.findTime') }}</a>
               </div>
