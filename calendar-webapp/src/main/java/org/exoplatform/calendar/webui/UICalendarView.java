@@ -34,11 +34,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.TimeZone;
 
 import javax.jcr.PathNotFoundException;
 
-import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Attachment;
@@ -50,6 +48,7 @@ import org.exoplatform.calendar.service.EventPageList;
 import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.storage.jcr.JCREventQuery;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UIConfirmForm;
 import org.exoplatform.calendar.webui.popup.UIExportForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;

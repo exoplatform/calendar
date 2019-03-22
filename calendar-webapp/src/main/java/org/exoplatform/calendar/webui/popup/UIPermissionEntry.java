@@ -1,6 +1,6 @@
 package org.exoplatform.calendar.webui.popup;
 
-import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UISharedForm.Permission;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;

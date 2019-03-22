@@ -26,12 +26,12 @@ import java.util.Map;
 
 import javax.jcr.PathNotFoundException;
 
-import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.web.application.ApplicationMessage;

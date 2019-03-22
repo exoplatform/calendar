@@ -1,7 +1,8 @@
 package org.exoplatform.calendar.webui;
 
 import java.io.Writer;
-import org.exoplatform.calendar.CalendarUtils;
+
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.webui.application.WebuiRequestContext;

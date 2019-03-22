@@ -20,7 +20,6 @@ import java.util.*;
 
 import javax.jcr.PathNotFoundException;
 
-import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.model.CompositeID;
 import org.exoplatform.calendar.model.query.EventQuery;
 import org.exoplatform.calendar.service.Calendar;
@@ -29,6 +28,7 @@ import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.ExtendedCalendarService;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UICalendarForm;
 import org.exoplatform.calendar.webui.popup.UICalendarSettingForm;
 import org.exoplatform.calendar.webui.popup.UIEventCategoryManager;

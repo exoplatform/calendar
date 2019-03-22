@@ -1,5 +1,5 @@
 <%
-  import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.util.CalendarUtils;
   import org.apache.commons.lang.StringEscapeUtils;
   uiForm = uicomponent.getParentFrom() ;
   int timeInterval = 15;

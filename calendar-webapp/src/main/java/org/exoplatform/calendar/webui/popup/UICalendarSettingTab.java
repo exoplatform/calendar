@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import org.exoplatform.calendar.CalendarUtils;
+
 import org.exoplatform.calendar.service.CalendarSetting;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.model.SelectItemOption;

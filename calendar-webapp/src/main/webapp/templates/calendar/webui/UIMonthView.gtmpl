@@ -6,7 +6,7 @@
   import java.util.Date;
   import java.util.GregorianCalendar;
   import java.util.Locale;
-  import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.util.CalendarUtils;
   import org.exoplatform.webui.application.WebuiRequestContext;
   import org.exoplatform.calendar.service.CalendarEvent;
   import org.apache.commons.lang.StringEscapeUtils;

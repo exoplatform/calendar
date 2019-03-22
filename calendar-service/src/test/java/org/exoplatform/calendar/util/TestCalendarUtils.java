@@ -1,7 +1,9 @@
-package org.exoplatform.calendar;
+package org.exoplatform.calendar.util;
 
 
 import java.util.Locale;
+
+import org.exoplatform.calendar.util.CalendarUtils;
 
 import junit.framework.TestCase;
 

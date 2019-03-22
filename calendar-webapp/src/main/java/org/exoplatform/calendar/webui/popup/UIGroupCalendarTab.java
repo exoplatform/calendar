@@ -19,7 +19,7 @@ package org.exoplatform.calendar.webui.popup;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;

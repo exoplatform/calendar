@@ -21,7 +21,7 @@ package org.exoplatform.calendar.webui;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletPreferences;
 
-import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.commons.serialization.api.annotations.Serialized;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.portal.webui.workspace.UIPortalApplication;

@@ -1,7 +1,7 @@
 <% 
   import org.exoplatform.web.application.Parameter;
   import org.exoplatform.calendar.webui.UISearchForm;
-  import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.util.CalendarUtils;
    
   def rcontext = _ctx.getRequestContext() ;
   def requireJS = rcontext.getJavascriptManager().getRequireJS();

@@ -1,5 +1,5 @@
 <%
-  import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.util.CalendarUtils;
   
   String serverBaseUrl = CalendarUtils.getServerBaseUrl();
 %>

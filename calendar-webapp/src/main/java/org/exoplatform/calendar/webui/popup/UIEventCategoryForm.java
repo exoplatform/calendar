@@ -20,8 +20,8 @@ import java.util.*;
 
 import javax.jcr.ItemExistsException;
 
-import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.CalendarView;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;

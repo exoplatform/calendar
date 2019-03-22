@@ -148,7 +148,11 @@
           </properties-param>
    </init-params>      
   </component>
-  
+
+  <component>
+    <key>org.exoplatform.services.mail.MailService</key>
+    <type>org.exoplatform.commons.testing.mock.MockMailService</type>
+  </component>
   
   <component>
     <key>org.exoplatform.calendar.service.impl.EventSearchConnector</key>
