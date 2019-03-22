@@ -17,11 +17,12 @@
 package org.exoplatform.calendar.webui;
 
 import org.apache.commons.lang3.StringUtils;
-import org.exoplatform.calendar.CalendarUtils;
+
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.calendar.webui.popup.UIPopupContainer;
 import org.exoplatform.commons.api.settings.SettingService;

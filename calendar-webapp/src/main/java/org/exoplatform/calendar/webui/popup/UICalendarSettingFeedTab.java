@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.FeedData;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccessImpl;

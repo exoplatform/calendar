@@ -27,10 +27,11 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.exoplatform.calendar.CalendarUtils;
+
 import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;

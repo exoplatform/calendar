@@ -33,12 +33,13 @@ import java.util.Map;
 import javax.jcr.PathNotFoundException;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.exoplatform.calendar.CalendarUtils;
+
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarHandler;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.popup.UIConfirmForm;
 import org.exoplatform.calendar.webui.popup.UIPopupAction;
 import org.exoplatform.services.log.ExoLogger;

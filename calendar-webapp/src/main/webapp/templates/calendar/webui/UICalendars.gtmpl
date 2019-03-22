@@ -1,7 +1,7 @@
 <%
   import org.exoplatform.calendar.service.GroupCalendarData;
   import org.exoplatform.calendar.service.CalendarEvent;
-  import org.exoplatform.calendar.CalendarUtils;
+  import org.exoplatform.calendar.util.CalendarUtils;
   import org.exoplatform.calendar.service.Utils;
   import org.exoplatform.webui.form.input.UICheckBoxInput;
   import org.exoplatform.calendar.webui.UICalendarPortlet;

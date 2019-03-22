@@ -28,11 +28,12 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.exoplatform.calendar.CalendarUtils;
+
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.PermissionOwner;
 import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendars;
 import org.exoplatform.container.PortalContainer;

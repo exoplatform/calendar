@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  **/
-package org.exoplatform.calendar;
+package org.exoplatform.calendar.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -44,6 +44,7 @@ import javax.jcr.PathNotFoundException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.portlet.PortletPreferences;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.Attachment;
@@ -54,7 +55,6 @@ import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
-import org.exoplatform.calendar.webui.UICalendarViewContainer;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadService;
@@ -66,10 +66,10 @@ import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
+import org.exoplatform.services.rest.impl.EnvironmentContext;
 import org.exoplatform.services.security.ConversationState;
 import org.exoplatform.services.security.Identity;
 import org.exoplatform.web.application.RequestContext;
-import org.exoplatform.webservice.cs.calendar.CalendarWebservice;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.application.portlet.PortletRequestContext;
 import org.exoplatform.webui.core.UIComponent;
@@ -173,12 +173,25 @@ public class CalendarUtils {
   final public static String URL_REGEX = "(((https?|ftp|file):\\/\\/)|www\\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
   final public static Pattern PATTERN = Pattern.compile(URL_REGEX, Pattern.CASE_INSENSITIVE);
   
-  public final static String INVITATION_URL = "/invitation/".intern();
-  public final static String INVITATION_IMPORT_URL = "/invitation/import/".intern();
-  public final static String INVITATION_DETAIL_URL = "/invitation/detail/".intern();
+  public final static String INVITATION_URL = "/invitation/";
+  public final static String INVITATION_IMPORT_URL = "/invitation/import/";
+  public final static String INVITATION_DETAIL_URL = "/invitation/detail/";
   public static final String DETAILS_URL = "/details/";
   public static final String DETAIL_URL = "/detail/";
   public static final String IS_CLOSING = "closingPopup";
+  
+  final public static String DAY_VIEW = "UIDayView";
+  final public static String WEEK_VIEW = "UIWeekView";
+  final public static String MONTH_VIEW = "UIMonthView" ;
+  final public static String LIST_VIEW = "UIListContainer" ;
+  final public static String WORKING_VIEW = "UIWorkingView" ;
+  
+  public final static String PRIVATE = "/private";
+  public final static String BASE_URL = "/cs/calendar";
+  final public static String BASE_URL_PUBLIC = "/cs/calendar/subscribe/";
+  final public static String BASE_URL_PRIVATE = PRIVATE + BASE_URL + "/";
+  
+  final public static String[] TYPES = {DAY_VIEW, WEEK_VIEW, MONTH_VIEW, LIST_VIEW, WORKING_VIEW} ;
 
   private static Log log = ExoLogger.getLogger(CalendarUtils.class);
 
@@ -541,14 +554,29 @@ public class CalendarUtils {
   }
 
   public static String getServerBaseUrl() {
-    PortletRequestContext portletRequestContext = RequestContext.getCurrentInstance() ;
-    String url = portletRequestContext.getRequest().getScheme() + "://" + 
-        portletRequestContext.getRequest().getServerName() + ":" +
-        String.format("%s",portletRequestContext.getRequest().getServerPort()) 
-        + "/" ;
-    return url ;
+    HttpServletRequest currentServletRequest = getCurrentServletRequest();
+    if(currentServletRequest != null) {
+      return currentServletRequest.getScheme() + "://" + currentServletRequest.getServerName() +
+              ":" + currentServletRequest.getServerPort();
+    } else {
+      return null;
+    }
   }
 
+  /**
+   * Gets current http servlet request provided by Rest Service Framework.
+   *
+   * @return the current http servlet request
+   */
+  public static HttpServletRequest getCurrentServletRequest() {
+    EnvironmentContext environmentContext = EnvironmentContext.getCurrent();
+    if(environmentContext != null) {
+      return (HttpServletRequest) environmentContext.get(HttpServletRequest.class);
+    } else {
+      return null;
+    }
+  }
+  
   static public String getTimeZone(String timezone) {
     TimeZone timeZone = DateUtils.getTimeZone(timezone) ;
     int rawOffset = timeZone.getRawOffset()  ;
@@ -946,7 +974,7 @@ public class CalendarUtils {
   }
   public static String buildSubscribeUrl(String calId, String calType, boolean isPrivate){
     try {
-      String baseUrl = isPrivate ? CalendarWebservice.BASE_URL_PRIVATE : CalendarWebservice.BASE_URL_PUBLIC;
+      String baseUrl = isPrivate ? BASE_URL_PRIVATE : BASE_URL_PUBLIC;
       return new StringBuffer(SLASH).append(PortalContainer.getCurrentRestContextName())
           .append(baseUrl).append(getCurrentUser()).append(SLASH)
           .append(calId).append(SLASH).append(calType).toString();
@@ -963,13 +991,13 @@ public class CalendarUtils {
   public static String getViewInSetting() {
     CalendarSetting calendarSetting = getCurrentUserCalendarSetting();
     try {
-      return UICalendarViewContainer.TYPES[Integer.parseInt(calendarSetting.getViewType())];
+      return TYPES[Integer.parseInt(calendarSetting.getViewType())];
     } catch (ArrayIndexOutOfBoundsException e) {
       resetViewInSetting(calendarSetting);
-      return UICalendarViewContainer.TYPES[0];
+      return TYPES[0];
     } catch (NumberFormatException nfe) {
       resetViewInSetting(calendarSetting);
-      return UICalendarViewContainer.TYPES[0];
+      return TYPES[0];
     }
   }
   

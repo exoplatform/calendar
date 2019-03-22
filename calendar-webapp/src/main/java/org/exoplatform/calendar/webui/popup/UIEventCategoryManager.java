@@ -20,8 +20,8 @@ import java.io.Writer;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.exoplatform.calendar.CalendarUtils;
 import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.UIActionBar;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.calendar.webui.UICalendarViewContainer;

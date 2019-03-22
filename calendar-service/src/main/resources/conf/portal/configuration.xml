@@ -47,5 +47,5 @@
         </values-param>
       </init-params>
     </component-plugin>
-  </external-component-plugins>
+  </external-component-plugins> 
 </configuration>

@@ -23,7 +23,7 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.exoplatform.calendar.CalendarUtils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarService;

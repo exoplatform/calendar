@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import org.exoplatform.calendar.CalendarUtils;
+
 import org.exoplatform.calendar.service.CalendarService;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.webui.UICalendarPortlet;
 import org.exoplatform.web.application.AbstractApplicationMessage;
 import org.exoplatform.web.application.ApplicationMessage;
