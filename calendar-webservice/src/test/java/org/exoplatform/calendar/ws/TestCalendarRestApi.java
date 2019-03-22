@@ -81,16 +81,16 @@ public class TestCalendarRestApi extends TestRestApi {
     assertEquals(4, calR.getData().size());
     assertEquals(4, calR.getSize());
 
-    for(int i = 0; i < 10; i ++) {
+    for(int i = 0; i < 20; i ++) {
       createPersonalCalendar("root" + " myCalendar2" + i, "root");
     }
 
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + queryParams, baseURI, headers, null, writer);
     calR = (CollectionResource)response.getEntity();
-    assertEquals(10, calR.getData().size());
-    assertEquals(14, calR.getSize());
-    String header = "[</v1/calendar/calendars/?offset=10&limit=10>;rel=\"next\"," + 
-                              "</v1/calendar/calendars/?offset=0&limit=10>;rel=\"first\",</v1/calendar/calendars/?offset=10&limit=4>;rel=\"last\"]";    
+    assertEquals(15, calR.getData().size());
+    assertEquals(24, calR.getSize());
+    String header = "[</v1/calendar/calendars/?offset=15&limit=15>;rel=\"next\"," +
+                              "</v1/calendar/calendars/?offset=0&limit=15>;rel=\"first\",</v1/calendar/calendars/?offset=15&limit=9>;rel=\"last\"]";
     assertEquals(header, response.getHttpHeaders().get(HEADER_LINK).toString());
   }
 
