@@ -120,7 +120,9 @@ public class CalendarRestApi implements ResourceContainer {
   private IdentityManager identityManager;
   private UploadService uploadService;
 
-  private int query_limit = 10;
+  private int defaultLimit = 10;
+  private int hardLimit = 100;
+
   private SubResourceHrefBuilder subResourcesBuilder = new SubResourceHrefBuilder(this);
 
   private final static CacheControl nc = new CacheControl();
@@ -173,7 +175,8 @@ public class CalendarRestApi implements ResourceContainer {
    * Constructor helps to configure the rest service with parameters.
    *
    * Here is the configuration parameters:
-   * - query_limit        maximum number of objects returned by a collection query, default value: 10.
+   * - default.limit      default number of objects returned by a collection query, default value: 10.
+   * - hard.limit         maximum number of objects returned by a collection query, default value: 100.
    * - cache_maxage       time in milliseconds returned in the cache-control header, default value:  604800.
    *
    * @param  orgService
@@ -189,10 +192,13 @@ public class CalendarRestApi implements ResourceContainer {
     
     int maxAge = 604800;
     if (params != null) {
-      if (params.getValueParam("query_limit") != null) {
-        query_limit = Integer.parseInt(params.getValueParam("query_limit").getValue());        
+      if (params.getValueParam("default.limit") != null) {
+        defaultLimit = Integer.parseInt(params.getValueParam("default.limit").getValue());
       }
-      
+      if (params.getValueParam("hard.limit") != null) {
+        hardLimit = Integer.parseInt(params.getValueParam("hard.limit").getValue());
+      }
+
       ValueParam cacheConfig = params.getValueParam("cache_maxage");
       if (cacheConfig != null) {
         try {
@@ -331,7 +337,7 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getCalendars(
 		  @ApiParam(value = "The calendar type to search for. It can be one of \"personal, group, shared\"", required = false, allowableValues = "personal, group, shared") @QueryParam("type") String type,
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-		  @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+		  @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
 		  @ApiParam(value = "Tell the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
 		  @ApiParam(value = "This is a list of comma-separated property's names of response json object", required = false) @QueryParam("fields") String fields,
 		  @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
@@ -959,7 +965,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
    *        This is a comma-separated list of property names. For example: expand=calendar,categories. In case of collections, 
-   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
+   *        you can specify offset (default: 0), limit (default: *defaultLimit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
    *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
@@ -1317,7 +1323,7 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getAttachmentsFromEvent(
 		  @ApiParam(value = "Identity of an event to query for attachments", required = true) @PathParam("id") String id,
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-		  @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+		  @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used*", required = false) @QueryParam("limit") int limit,
 		  @ApiParam(value = "This is a list of comma-separated property's names of response json object", required = false) @QueryParam("fields") String fields,
 		  @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
 		  @Context UriInfo uriInfo) {
@@ -1499,7 +1505,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
    *        This is a comma-separated list of event attribute names. For example: expand=calendar,categories. In case of collections, 
-   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
+   *        you can specify offset (default: 0), limit (default: *defaultLimit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
    *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
@@ -1591,7 +1597,7 @@ public class CalendarRestApi implements ResourceContainer {
 		  @ApiParam(value = "Date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date", required = false, defaultValue = "Current server time + 1 week") @QueryParam("endTime") String end,
 		  @ApiParam(value = "Search for this category only. If not specified, search event of any category", required = false) @QueryParam("category") String category,
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-		  @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+		  @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
 		  @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false) @QueryParam("fields") String fields,
 		  @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
 		  @ApiParam(value = "Used to ask for a full representation of a subresource, instead of only its link", required = false) @QueryParam("expand") String expand,
@@ -1765,7 +1771,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
    *        This is a comma-separated list of property names. For example: expand=calendar,categories. In case of collections, 
-   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
+   *        you can specify offset (default: 0), limit (default: *defaultLimit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
    *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
@@ -1854,7 +1860,7 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getOccurrencesFromEvent(
 		  @ApiParam(value = "Identity of the recurrent event", required = true) @PathParam("id") String id,
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-		  @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+		  @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
 		  @ApiParam(value = "Date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *from* this date.", required = false, defaultValue = "current server time") @QueryParam("start") String start,
 		  @ApiParam(value = "Date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date.", required = false, defaultValue = "current server time + 1 week") @QueryParam("end") String end,
 		  @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false) @QueryParam("fields") String fields,
@@ -1950,7 +1956,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
    *        This is a comma-separated list of property names. For example: expand=calendar,categories. In case of collections, 
-   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
+   *        you can specify offset (default: 0), limit (default: *defaultLimit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
    *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
@@ -2037,7 +2043,7 @@ public class CalendarRestApi implements ResourceContainer {
 		  @ApiParam(value = "Date follow ISO8601 (YYYY-MM-DDThh:mm:ssTZD). Search for events *to* this date.", required = false, defaultValue = "current server time + 1 week") @QueryParam("endTime") String end,
 		  @ApiParam(value = "Search for this category only", required = false, defaultValue = "If not specified, search task of any category") @QueryParam("category") String category,
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-		  @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+		  @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
 		  @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false) @QueryParam("fields") String fields,
 		  @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
 		  @ApiParam(value = "used to ask for a full representation of a subresource, instead of only its link", required = false) @QueryParam("expand") String expand,
@@ -2202,7 +2208,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
    *        This is a comma-separated list of task attributes names. For example: expand=calendar,categories. In case of collections, 
-   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
+   *        you can specify offset (default: 0), limit (default: *defaultLimit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
    *            "calendar": "http://localhost:8080/rest/private/v1/calendar/calendars/john-defaultCalendarId",
@@ -2703,7 +2709,7 @@ public class CalendarRestApi implements ResourceContainer {
   })
   public Response getEventCategories(
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-		  @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+		  @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
 		  @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false) @QueryParam("fields") String fields,
 		  @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
 		  @Context UriInfo uriInfo) {
@@ -2839,7 +2845,7 @@ public class CalendarRestApi implements ResourceContainer {
    * 
    * @param expand Used to ask for more attributes of a sub-resource, instead of its link only. 
    *        This is a comma-separated list of attribute names. For example: expand=calendar,categories. In case of collections, 
-   *        you can specify offset (default: 0), limit (default: *query_limit*). For example, expand=categories(1,5).
+   *        you can specify offset (default: 0), limit (default: *defaultLimit*). For example, expand=categories(1,5).
    *        Instead of: 
    *        {
    *            "id": "...", 
@@ -3428,7 +3434,7 @@ public class CalendarRestApi implements ResourceContainer {
   public Response getInvitationsFromEvent(
 		  @ApiParam(value = "Identity of the event to search for invitations", required = true) @PathParam("id") String id,
 		  @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-		  @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+		  @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
 		  @ApiParam(value = "Tells the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
 		  @ApiParam(value = "search for this status only", required = false, defaultValue = "If not specified, search invitation of any status ('', 'maybe', 'yes', 'no')") @QueryParam("status") String status,
 		  @ApiParam(value = "This is a list of comma separated property's names of response json object", required = false) @QueryParam("fields") String fields,
@@ -3608,7 +3614,7 @@ public class CalendarRestApi implements ResourceContainer {
     public Response suggestParticipants(
         @ApiParam(value = "The participant name to search for", required = false) @QueryParam("name") String name,
         @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
-        @ApiParam(value = "The maximum number of results when paging through a list of entities. If not specified or exceed the *query_limit* configuration of calendar rest service, it will use the *query_limit*", required = false) @QueryParam("limit") int limit,
+        @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
         @ApiParam(value = "Tell the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
         @ApiParam(value = "This is a list of comma-separated property's names of response json object", required = false) @QueryParam("fields") String fields,
         @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
@@ -3796,10 +3802,18 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Doesn't allow limit parameter to exceed the default query_limit
+   * Use default value if limit is not set. And do not allow to exceed the hard limit 100.
    */
   private int parseLimit(int limit) {
-    return (limit <=0 || limit > query_limit) ? query_limit : limit;
+    if (limit <= 0) {
+      return defaultLimit;
+    }
+
+    if (limit > hardLimit) {
+      return hardLimit;
+    }
+
+    return limit;
   }
 
   private String getBasePath(UriInfo uriInfo) {

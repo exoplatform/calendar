@@ -274,7 +274,7 @@ export function getCalendars() {
     'GROUP': {'id': 2, 'name': 'publicCalendar'}
   };
 
-  return fetch(`${calConstants.CAL_SERVER_API}calendars`, {headers: calConstants.HEADER_NO_CACHE})
+  return fetch(`${calConstants.CAL_SERVER_API}calendars?limit=100`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json()).then(json => {
       if (json && json.data) {
         const calendarGroups = [];

@@ -333,7 +333,7 @@ public class TestInvitationRestApi extends TestRestApi {
    //prepare 1 invitation for root in uEvt
     //20 invitations in gEvt
     uEvt.addParticipant("root", "yes");
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 30; i++) {
       uEvt.addParticipant("user" + i, "");
     }
     calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, false);
@@ -448,15 +448,15 @@ public class TestInvitationRestApi extends TestRestApi {
       assertEquals(-1, invitation.getSize());      
     }
     
-    queryParams = "?offset=10&limit=11&returnSize=true";
+    queryParams = "?offset=10&limit=20&returnSize=true";
     response = service(HTTPMethods.GET, uri + queryParams, baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     invitation = (CollectionResource)response.getEntity();
     InvitationResource ivt = (InvitationResource)invitation.getData().iterator().next();
     assertEquals(expected, ivt.getParticipant());
-    //By default, rest api only allow to load maximum 10 results
-    assertEquals(10, invitation.getData().size());
-    assertEquals(21, invitation.getSize());
+    //By default, rest api only allow to load maximum 15 results
+    assertEquals(15, invitation.getData().size());
+    assertEquals(31, invitation.getSize());
     assertNotNull(response.getHttpHeaders().get(CalendarRestApi.HEADER_LINK));
   }
 }
