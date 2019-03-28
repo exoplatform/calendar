@@ -26,10 +26,6 @@
           <groupId>xml-apis</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>activation</artifactId>
-          <groupId>javax.activation</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>jboss-transaction-api</artifactId>
           <groupId>org.jboss.javaee</groupId>
         </exclusion>

@@ -47,10 +47,6 @@
           <groupId>javax.xml.stream</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>activation</artifactId>
-          <groupId>javax.activation</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>jboss-transaction-api</artifactId>
           <groupId>org.jboss.javaee</groupId>
         </exclusion>
@@ -84,10 +80,6 @@
           <artifactId>ant-launcher</artifactId>
           <groupId>org.apache.ant</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>jaxb-impl</artifactId>
-          <groupId>com.sun.xml.bind</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -102,25 +94,11 @@
           <artifactId>stax-api</artifactId>
           <groupId>javax.xml.stream</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>activation</artifactId>
-          <groupId>javax.activation</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jaxb-api</artifactId>
-          <groupId>javax.xml.bind</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.commons</groupId>
       <artifactId>commons-component-common</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>activation</artifactId>
-          <groupId>javax.activation</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.gatein.portal</groupId>
