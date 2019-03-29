@@ -22,6 +22,9 @@
             </div>
           </div>
           <div class="mobile-content">
+            <exo-modal :show="showConfirmClose" :title="$t('ExoCalendarEventForm.label.cancel')" @close="cancelConfirm">
+              <confirm-form @confirm="confirmClose" @cancel="cancelConfirm"/>
+            </exo-modal>
             <div class="control-group">
               <div class="calDate">
                 <div class="control-label">{{ $t('ExoCalendarEventForm.label.from') }}</div>
@@ -132,13 +135,14 @@ import Utils from '../model/utils.js';
 
 import IphoneStyleCheckbox from './IphoneStyleCheckbox.vue';
 import Suggester from './Suggester.vue';
-import FileDrop from './FileDrop.vue';
+import FileDrop from './ExoCalendarFileDrop.vue';
 import ExoModal from './ExoModal.vue';
-import RecurringForm from './RecurringForm.vue';
-import RecurringUpdateTypeForm from './RecurringUpdateTypeForm.vue';
-import ReminderForm from './ReminderForm.vue';
-import FindTimeForm from './FindTimeForm.vue';
-import CalendarSelector from './CalendarSelector.vue';
+import RecurringForm from './ExoCalendarRecurringForm.vue';
+import RecurringUpdateTypeForm from './ExoCalendarRecurringUpdateTypeForm.vue';
+import ReminderForm from './ExoCalendarReminderForm.vue';
+import FindTimeForm from './ExoCalendarFindTimeForm.vue';
+import ConfirmForm from './ExoCalendarConfirmForm.vue';
+import CalendarSelector from './ExoCalendarSelector.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import ComboBox from './ComboBox.vue';
 
@@ -152,6 +156,7 @@ export default {
     'recurring-update-type-form': RecurringUpdateTypeForm,
     'reminder-form': ReminderForm,
     'findtime-form': FindTimeForm,
+    'confirm-form': ConfirmForm,
     'calendar-selector': CalendarSelector,
     'error-message': ErrorMessage,
     'combobox': ComboBox
@@ -222,6 +227,7 @@ export default {
   watch: {
     enableRecurring() {
       if (this.enableRecurring) {
+        this.isFilled = true;
         this.showRecurring = true;
         if (this.showReminder) {
           if (this.reminderLabel()) {
@@ -237,6 +243,7 @@ export default {
     },
     enableReminder() {
       if (this.enableReminder) {
+        this.isFilled = true;
         this.showReminder = true;
         if (this.showRecurring) {
           if (this.recurringLabel()) {
@@ -252,6 +259,7 @@ export default {
     },
     isAllDay() {
       if (this.isAllDay) {
+        this.isFilled = true;
         this.event.setAllDay();
       }
     },
@@ -274,6 +282,12 @@ export default {
     timePicker.addListener('setDate', function() {
       this.dispatchEvent(new Event('change'));
     });
+    window.addEventListener('keyup', this.handleKeyup);
+    window.addEventListener('click', this.handleClick);
+  },
+  destroyed: function() {
+    window.removeEventListener('click');
+    window.removeEventListener('keyup');
   },
   methods: {
     getDefaultData() {
@@ -286,6 +300,8 @@ export default {
         showReminder: false,
         isAllDay: false,
         showFindTime: false,
+        isFilled: false,
+        showConfirmClose: false,
 
         calendarGroups: [],
         categories: [],
@@ -474,6 +490,43 @@ export default {
           }).catch((err) => {
             this.errors.push(err.message);
           });
+        }
+      }
+    },
+    confirmClose() {
+      if (this.open) {
+        this.toggleOpen();
+      }
+      this.showConfirmClose = false;
+    },
+    cancelConfirm() {
+      this.showConfirmClose = false;
+    },
+    filled() {
+      return this.isFilled
+          || this.$data.event.title !== ''
+          || this.$data.event.category !== 'defaultEventCategoryIdAll'
+          || this.$data.event.location !== ''
+          || this.$data.event.attachedFiles.length > 0
+          || this.$data.event.description !== ''
+          || this.$data.event.participants.length !== 1;
+    },
+    handleKeyup() {
+      const escapeKeyCode = 27;
+      if (this.open && event.keyCode === escapeKeyCode) {
+        if (this.filled()) {
+          this.showConfirmClose = true;
+        } else {
+          this.toggleOpen();
+        }
+      }
+    },
+    handleClick() {
+      if (this.open && event.srcElement.className === 'backdrop') {
+        if (this.filled()) {
+          this.showConfirmClose = true;
+        } else {
+          this.toggleOpen();
         }
       }
     }

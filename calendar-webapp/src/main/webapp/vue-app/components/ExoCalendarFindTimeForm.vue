@@ -135,7 +135,7 @@ import {calConstants} from '../calConstants.js';
 import Utils from '../model/utils.js';
 import * as calServices from '../calServices.js';
 import ExoModal from './ExoModal.vue';
-import ParticipantSelector from './ParticipantSelector.vue';
+import ParticipantSelector from './ExoCalendarParticipantSelector.vue';
 
 const MID_NIGHT_HOUR = 23;
 const MID_NIGHT_MINUTE = 59;
