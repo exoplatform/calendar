@@ -123,7 +123,7 @@
         </div>
       </div>
     </div>
-    <div v-if="open" class="backdrop"></div>
+    <div v-if="open" class="drawer-backdrop"></div>
   </div>
 </template>
 
