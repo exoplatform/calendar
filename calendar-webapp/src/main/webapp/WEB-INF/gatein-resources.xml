@@ -720,6 +720,9 @@
     <depends>
       <module>ScheduleSupport</module>
     </depends>
+    <depends>
+      <module>extensionRegistry</module>
+    </depends>
   </module>
 
 </gatein-resources>

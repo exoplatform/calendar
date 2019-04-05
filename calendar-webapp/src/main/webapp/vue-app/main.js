@@ -5,6 +5,7 @@ import * as calServices from './calServices.js';
 const lang = typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en';
 const url = `${calConstants.PORTAL}/${calConstants.PORTAL_REST}/i18n/bundle/locale.portlet.calendar.CalendarPortlet-${lang}.json`;
 
+Vue.component('exo-event-form', ExoCalendarEventForm);
 //
 let vm = null;
 export function init(settings) {
@@ -14,9 +15,6 @@ export function init(settings) {
     exoi18n.loadLanguageAsync(lang, url).then(i18n => {
       vm = new Vue({
         el: '#ExoCalendarEventForm',
-        components: {
-          'exo-event-form': ExoCalendarEventForm
-        },
         data: {
           calEvt: {},
           showEventForm: false
@@ -50,4 +48,14 @@ export function init(settings) {
 
 export function openEventForm(calEvt) {
   vm.openEventForm(calEvt);
+}
+
+// get overrided components if exists
+if (extensionRegistry) {
+  const components = extensionRegistry.loadComponents('calendar');
+  if (components && components.length > 0) {
+    components.forEach(cmp => {
+      Vue.component(cmp.componentName, cmp.componentOptions);
+    });
+  }
 }
