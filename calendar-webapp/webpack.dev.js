@@ -12,7 +12,7 @@ let config = merge(webpackCommonConfig, {
   output: {
     path: path.resolve(__dirname, exoServerPath + 'webapps/calendar/')
   },
-  devtool: 'source-map'
+  devtool: 'cheap-module-eval-source-map'
 });
 
 config.plugins.push(new CopyWebpackPlugin([{from: 'src/main/webapp/lang/*.json', to: './lang', flatten: true}]));
