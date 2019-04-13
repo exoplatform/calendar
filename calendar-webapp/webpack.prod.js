@@ -6,7 +6,7 @@ let config = merge(webpackCommonConfig, {
   output: {
     path: path.resolve(__dirname, './target/calendar/')
   },
-  devtool: 'cheap-module-eval-source-map'
+  devtool: 'source-map'
 });
 
 module.exports = config;
