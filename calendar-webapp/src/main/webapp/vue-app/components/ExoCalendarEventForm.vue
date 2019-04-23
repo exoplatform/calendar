@@ -358,7 +358,15 @@ export default {
     },
     reminderLabel() {
       if (this.enableReminder && this.event.reminder.isEnabled()) {
-        return this.$t('ExoCalendarEventForm.label.reminderTime', [this.event.reminder.getNearest()]);
+        const time = this.event.reminder.getNearest();
+        if (time % (calConstants.ONE_HOUR_MINUTES * calConstants.ONE_DAY_HOURS * calConstants.ONE_WEEK_DAYS) === 0) {
+          return this.$t('ExoCalendarEventForm.label.reminderTime.weeks', [time / (calConstants.ONE_HOUR_MINUTES * calConstants.ONE_DAY_HOURS * calConstants.ONE_WEEK_DAYS)]);
+        } else if (time % (calConstants.ONE_HOUR_MINUTES * calConstants.ONE_DAY_HOURS) === 0) {
+          return this.$t('ExoCalendarEventForm.label.reminderTime.days', [time / (calConstants.ONE_HOUR_MINUTES * calConstants.ONE_DAY_HOURS)]);
+        } else if (time % calConstants.ONE_HOUR_MINUTES === 0) {
+          return this.$t('ExoCalendarEventForm.label.reminderTime.hours', [time / calConstants.ONE_HOUR_MINUTES]);
+        }
+        return this.$t('ExoCalendarEventForm.label.reminderTime.minutes', [time]);
       }
     },
     recurringLabel() {
@@ -388,6 +396,9 @@ export default {
       this.event.recurring = data.event.recurring;
     },
     saveReminder() {
+      if (!this.event.reminder.isEnabled()) {
+        this.enableReminder = false;
+      }
       this.showReminder = false;
     },
     cancelReminder() {

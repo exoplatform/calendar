@@ -13,5 +13,8 @@ export const calConstants = {
   NO_REPEAT: 'norepeat',
   WEEK_DAYS: ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'],
   MAX_UPLOAD_FILES: 10,
-  MAX_UPLOAD_SIZE: 10
+  MAX_UPLOAD_SIZE: 10,
+  ONE_HOUR_MINUTES: 60,
+  ONE_DAY_HOURS: 24,
+  ONE_WEEK_DAYS: 7
 };

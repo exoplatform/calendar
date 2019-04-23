@@ -4,8 +4,8 @@ class Reminder {
   constructor() {
     this.mailReminder = false;
     this.popupReminder = false;
-    this.mailReminderTime = 5;
-    this.popupReminderTime = 5;
+    this.mailReminderTime = 10;
+    this.popupReminderTime = 10;
   }
 
   isEnabled() {
