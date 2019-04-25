@@ -222,6 +222,18 @@ export default {
       }
     }
   },
+  mounted() {
+    this.fromDate = new Date(this.from.getTime());
+    this.toDate = new Date(this.from.getTime());
+    //
+    const hours = this.to.getHours();
+    const minutes = this.to.getMinutes();
+    const seconds = this.to.getSeconds();
+    const miliseconds = this.to.getMilliseconds();
+    this.toDate.setHours(hours, minutes, seconds, miliseconds);
+    this.refreshDate();
+  },
+
   methods: {
     getDefaultData() {
       return {
