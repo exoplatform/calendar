@@ -29,7 +29,7 @@
               <div class="calDate">
                 <div class="control-label">{{ $t('ExoCalendarEventForm.label.from') }}</div>
                 <div class="controls clearfix">
-                  <div class="pull-left"><input :value="fromDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.fromDate, $event.target.value)"/></div>
+                  <div class="periodDate pull-left"><input :value="fromDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.fromDate, $event.target.value)"/></div>
                   <div class="separator pull-left">-</div>
                   <combobox :disabled="isAllDay" :value="fromTime()" :options="times" class="time pull-left" @input="updateTime(event.fromDate, $event)" />
                 </div>
@@ -37,7 +37,7 @@
               <div class="calDate">
                 <div class="control-label">{{ $t('ExoCalendarEventForm.label.to') }}</div>
                 <div class="controls clearfix">
-                  <div class="pull-left"><input :value="toDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.toDate, $event.target.value)"/></div>
+                  <div class="periodDate pull-left"><input :value="toDate()" class="date" type="text" format="MM-dd-yyyy" @change="updateDate(event.toDate, $event.target.value)"/></div>
                   <div class="separator pull-left">-</div>
                   <combobox :disabled="isAllDay" :value="toTime()" :options="times" class="time pull-left" @input="updateTime(event.toDate, $event)" />
                 </div>
