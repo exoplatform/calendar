@@ -22,7 +22,7 @@
       <div class="reminderByPopup">
         <div id="popupReminder" class="popupReminder">
           <label class="uiCheckbox">
-            <input id="popupReminder" v-model="popupReminder" type="checkbox" class="checkbox" name="popupReminder"><span>Display a notification pop-up</span>
+            <input id="popupReminder" v-model="popupReminder" type="checkbox" class="checkbox" name="popupReminder"><span>{{ $t('UIEventForm.label.popupReminder') }}</span>
           </label>
         </div>
       </div>
