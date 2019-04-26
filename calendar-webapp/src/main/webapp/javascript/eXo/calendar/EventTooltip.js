@@ -65,7 +65,7 @@
         self.outTimer = setTimeout(function(){
           self.hideElement();
         },self.timer);
-        eXo.calendar.EventTooltip.isDnD == false;
+        eXo.calendar.EventTooltip.isDnD = false;
       },
       hideElement: function() {
         gj(eXo.calendar.EventTooltip._container).css('display','none');

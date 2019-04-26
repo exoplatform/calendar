@@ -235,21 +235,18 @@
                     break;
                 }
             }
-        else
-            for(i=0; i < calendar.options.length;  i++) {
-                calendar.options[i].selected = true;
-                break;
-            }
+        else if (calendar.options.length > 0) {
+            calendar.options[0].selected = true;
+        }
+
         if(data.category != 'all')
             for(i=0; i < category.options.length;  i++) {
                 var value = category.options[i].value ;
                 category.options[i].selected = (value.match(data.category) != null);
             }
-        else
-            for(i=0; i < category.options.length;  i++) {
-                category.options[i].selected = true;
-                break;
-            }
+        else if (category.options.length > 0) {
+            category.options[0].selected = true;
+        }
     }
     
 
@@ -1526,7 +1523,6 @@
         var len = fields.length;
         for (var i = 0; i < len; i++) {
             fields[i].style.visibility = display;
-            i
         }
     };
 
