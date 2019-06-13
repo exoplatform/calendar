@@ -533,7 +533,7 @@ export default {
       }
     },
     handleClick() {
-      if (this.open && event.srcElement.className === 'backdrop') {
+      if (this.open && event.srcElement.className === 'drawer-backdrop') {
         if (this.filled()) {
           this.showConfirmClose = true;
         } else {
