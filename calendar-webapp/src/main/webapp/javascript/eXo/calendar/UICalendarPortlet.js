@@ -1118,6 +1118,8 @@
                 UICalendarPortlet = _module.UICalendarPortlet,
                 uiCalendars       = UICalendarPortlet.filterForm,
                 events            = UICalendarPortlet.getEvents();
+                isSpace = _module.UICalendarPortlet.isSpace;
+
 
             if (!events) { return ; }
 
@@ -1144,14 +1146,20 @@
                 eventCategory = events[i].getAttribute("eventCat");
                 calendarId    = events[i].getAttribute("calId");
 
-                if (selectedCategory === "defaultEventCategoryIdAll") {
-                    if (gj.inArray(calendarId,  calendarsFiltered) > -1) {
-                        events[i].style.display = "block";
-                    }
+                if (isSpace != null && isSpace != ""){
+                    events[i].style.display = "block";
+
                 }
                 else {
-                    if ((gj.inArray(calendarId, calendarsFiltered) > -1) && (eventCategory === selectedCategory)) {
-                        events[i].style.display = "block";
+                    if (selectedCategory === "defaultEventCategoryIdAll") {
+                        if (gj.inArray(calendarId,  calendarsFiltered) > -1) {
+                            events[i].style.display = "block";
+                        }
+                    }
+                    else {
+                        if ((gj.inArray(calendarId, calendarsFiltered) > -1) && (eventCategory === selectedCategory)) {
+                            events[i].style.display = "block";
+                        }
                     }
                 }
             }
