@@ -16,41 +16,26 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
-import javax.jcr.query.Row;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.LocaleUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.commons.api.search.SearchServiceConnector;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.container.ExoContainer;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
-import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.mop.SiteType;
-import org.exoplatform.portal.mop.navigation.NavigationContext;
-import org.exoplatform.portal.mop.navigation.NavigationService;
-import org.exoplatform.portal.mop.navigation.NodeContext;
-import org.exoplatform.portal.mop.navigation.NodeModel;
-import org.exoplatform.portal.mop.navigation.Scope;
-import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.OrganizationService;
@@ -105,7 +90,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       return events;
     }
 
-    SessionProvider provider = SessionProvider.createSystemProvider();
     OrganizationService orgService = (OrganizationService)ExoContainerContext.getCurrentContainer()
               .getComponentInstanceOfType(OrganizationService.class);    
     Set<String> readOnlyCalendars = new HashSet<String>();
@@ -162,20 +146,12 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
       calIds.addAll(sCals);
       
       EventQuery uEventQuery = createQuery(dataType, query, sort, order, calIds.toArray(new String[calIds.size()]), readOnlyCalendars);
-      ListAccess<?> listAccess = new EventRowListAccess((EventDAOImpl)calendarService_.getEventDAO(), uEventQuery);
+      EventSearchListAccess listAccess = new EventSearchListAccess((EventDAOImpl) calendarService_.getEventDAO(), uEventQuery);
 
-      Object[] rows = listAccess.load(offset, limit);
-      CalendarSetting calSetting = calendarService_.getCalendarSetting(userId);
-
-      for (Object row : rows) {
-        SearchResult rs = buildResult(context, sites, dataType, row, calSetting);
-        if(rs != null) events.add(rs);
-      }
+      events = listAccess.load(offset, limit, context, sites, dataType);
     }
     catch (Exception e) {
       if (log.isDebugEnabled()) log.debug("Could not execute unified seach " + dataType , e) ; 
-    } finally {
-      provider.close();
     }
     return events;
   }
@@ -202,272 +178,6 @@ public class CalendarSearchServiceConnector extends SearchServiceConnector {
     
     return eventQuery;
   }
-
-
-  private SearchResult buildResult(SearchContext sc, Collection<String> siteKeys, String dataType, Object iter, CalendarSetting calSeting) {
-    try {
-      String calId = null;
-      if(iter instanceof Row) {
-        Row row = (Row) iter;
-        calId = row.getValue(Utils.EXO_CALENDAR_ID).getString() ;
-      } else {
-        Node eventNode = (Node) iter;
-        if(eventNode.hasProperty(Utils.EXO_CALENDAR_ID))
-          calId = eventNode.getProperty(Utils.EXO_CALENDAR_ID).getString() ;
-      }
-      if(getCalendarMap().keySet().contains(calId)) {
-        Calendar cal = getCalendarMap().get(calId);
-
-        StringBuffer detail = new StringBuffer();
-        String title = buildValue(Utils.EXO_SUMMARY, iter);
-        detail.append(cal.getName());
-        String url = buildLink(sc,siteKeys, calId, buildValue(Utils.EXO_ID, iter));
-        String excerpt = buildValue(Utils.EXO_DESCRIPTION, iter);
-        String detailValue = Utils.EMPTY_STR;
-        String imageUrl = buildImageUrl(iter);
-        String lang = "en";
-        if (sc != null) {
-          lang = sc.getParamValue(SearchContext.RouterParams.LANG.create());
-        }
-        detail.append(buildDetail(iter, calSeting.getTimeZone(), lang));
-        if(detail.length() > 0) detailValue = detail.toString();
-        long relevancy = buildScore(iter);
-        long date = buildDate(iter);
-        TimeZone userTimezone = DateUtils.getTimeZone(calSeting.getTimeZone());
-        CalendarSearchResult result = new CalendarSearchResult(url, title, excerpt, detailValue, imageUrl, date, relevancy);
-        result.setDataType(dataType);
-        result.setTimeZoneName(calSeting.getTimeZone());
-        result.setTimeZoneOffset(userTimezone.getOffset(date));
-        if(CalendarEvent.TYPE_EVENT.equals(dataType)) {
-          result.setFromDateTime(buildDate(iter, Utils.EXO_FROM_DATE_TIME).getTimeInMillis());
-        } else if (CalendarEvent.TYPE_TASK.equals(dataType)) {
-          result.setTaskStatus(buildValue(Utils.EXO_EVENT_STATE, iter));
-        }
-        return result;
-      }
-    }catch (Exception e) {
-      if (log.isDebugEnabled())  log.debug("Error when building result object from result data " + e);
-    }
-    return null;
-  }
-
-  private String buildExcerpt(Object iter) throws RepositoryException{
-    StringBuffer origin = new StringBuffer(Utils.EMPTY_STR);
-    try {
-      if(iter instanceof Row){
-        Row row = (Row) iter;
-        int counter = 0 ;
-        for(String field : Utils.SEARCH_FIELDS)
-          if(row.getValue(field) != null) {
-            if(counter > 0) origin.append(Utils.SPACE);
-            origin.append(row.getValue(field).getString());
-            counter++;
-          }
-      } else {
-        Node eventNode = (Node) iter;
-        int counter = 0 ;
-        for(String field : Utils.SEARCH_FIELDS)
-          if(eventNode.hasProperty(field)){
-            if(counter > 0) origin.append(Utils.SPACE);
-            origin.append(eventNode.getProperty(field).getString());
-            counter++;
-          }
-      }
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) log.debug("Error when building customer exerpt property from data " + e);
-    }
-    return origin.toString();
-  }
-
-  private String buildImageUrl(Object iter) throws RepositoryException{
-    String icon = null;
-    if(iter instanceof Row) {
-      Row row = (Row) iter;
-      if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
-        if(CalendarEvent.TYPE_TASK.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString())) 
-          icon = Utils.TASK_ICON_URL;
-        else icon = Utils.EVENT_ICON_URL; 
-    } else {
-      Node eventNode = (Node) iter;
-      if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)) {
-        if(CalendarEvent.TYPE_TASK.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString())) 
-          icon = Utils.TASK_ICON_URL;
-        else icon = Utils.EVENT_ICON_URL;
-      }
-    }
-    return icon;
-  }
-
-  private long buildDate(Object iter) {
-    try {
-      return buildDate(iter, Utils.EXO_DATE_CREATED).getTimeInMillis();
-    } catch (NullPointerException e) {
-      if (log.isDebugEnabled()) log.debug("Clould not build date value to long from data " + e);
-      return 0;
-    }
-  }
-
-  private java.util.Calendar buildDate(Object iter, String readProperty){
-    try {
-      if(iter instanceof Row){
-        Row row = (Row) iter;
-        return row.getValue(readProperty).getDate();
-      } else {
-        Node eventNode = (Node) iter;
-        if(eventNode.hasProperty(readProperty)){
-          return eventNode.getProperty(readProperty).getDate();
-        } else {
-          return null ;
-        }
-      }
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) log.debug("Could not build date value from " + readProperty + " : " + e);
-      return null;
-    }
-  }
-
-  private long buildScore(Object iter) {
-    try {
-      if(iter instanceof Row){
-        Row row = (Row) iter;
-        return row.getValue(Utils.JCR_SCORE).getLong() ;
-      }
-    } catch (Exception e) {
-      if (log.isDebugEnabled()) log.debug("No score return by query " + e);
-    }
-    return 0;
-  }
-
-  private String buildValue(String property, Object iter) throws RepositoryException{
-    if(iter instanceof Row){
-      Row row = (Row) iter;
-      if(row.getValue(property) != null) return row.getValue(property).getString() ;
-    } else {
-      Node eventNode = (Node) iter;
-      if(eventNode.hasProperty(property)){
-        return eventNode.getProperty(property).getString();
-      }
-    } 
-    return Utils.EMPTY_STR;
-  }
-
-  private String buildDetail(Object iter, String timeZone, String lang) throws RepositoryException{
-    Locale locale = LocaleUtils.toLocale(lang);
-    SimpleDateFormat df = new SimpleDateFormat(Utils.DATE_TIME_FORMAT, locale) ;
-    df.setTimeZone(DateUtils.getTimeZone(timeZone));
-    StringBuffer detail = new StringBuffer();
-    if(iter instanceof Row){
-      Row row = (Row) iter;
-      if(row.getValue(Utils.EXO_EVENT_TYPE) != null)
-        if(CalendarEvent.TYPE_EVENT.equals(row.getValue(Utils.EXO_EVENT_TYPE).getString())) {
-          if(row.getValue(Utils.EXO_FROM_DATE_TIME) != null)
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(df.format(row.getValue(Utils.EXO_FROM_DATE_TIME).getDate().getTime())) ;
-          if(row.getValue(Utils.EXO_LOCATION) != null)
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(row.getValue(Utils.EXO_LOCATION).getString()) ;
-        } else {
-          if(row.getValue(Utils.EXO_TO_DATE_TIME) != null)
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(Utils.DUE_FOR).append(df.format(row.getValue(Utils.EXO_TO_DATE_TIME).getDate().getTime()));
-        }
-    } else {
-      Node eventNode = (Node) iter;
-      if(eventNode.hasProperty(Utils.EXO_EVENT_TYPE)){
-        if(CalendarEvent.TYPE_EVENT.equals(eventNode.getProperty(Utils.EXO_EVENT_TYPE).getString())) {
-          if(eventNode.hasProperty(Utils.EXO_FROM_DATE_TIME)) {
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(df.format(eventNode.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTime())) ;
-          }
-          if(eventNode.hasProperty(Utils.EXO_LOCATION)) {
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(eventNode.getProperty(Utils.EXO_LOCATION).getString()) ;
-          }
-        } else {
-          if(eventNode.hasProperty(Utils.EXO_TO_DATE_TIME)) {
-            detail.append(Utils.SPACE).append(Utils.MINUS).append(Utils.SPACE).append(Utils.DUE_FOR).append(df.format(eventNode.getProperty(Utils.EXO_TO_DATE_TIME).getDate().getTime())) ;
-          }
-        }
-      }
-    }  
-    return detail.toString();
-  }
-
-  private String buildLink(SearchContext sc, Collection<String> siteKeys, String calendarId, String eventId) {
-    String url = Utils.NONE_NAGVIGATION;
-    if(sc != null)
-      try {
-        SiteKey siteKey = null ;
-        String spaceGroupId = null;
-        String siteName = sc.getSiteName() != null ? sc.getSiteName():Utils.DEFAULT_SITENAME;
-
-        if (calendarId.indexOf(Utils.SPACE_CALENDAR_ID_SUFFIX) > 0) {
-          Calendar cal = getCalendarMap().get(calendarId);
-
-          // In case of space calendar, calendarOwner always not null
-          String ownerGroup = cal.getCalendarOwner();
-          String[] groups = cal.getGroups();
-
-          // Because user can remove space-group from calendar in portal-calendar page
-          // In this case, we will redirect to portal-calendar page instead of space-calendar page when user click
-          // to view event-detail (keep siteKey = null) to avoid he can not see event detail
-          for (String g : groups) {
-            if (g.equals(ownerGroup)) {
-              spaceGroupId = ownerGroup;
-              siteKey = SiteKey.group(spaceGroupId);
-            }
-          }
-        }
-
-        if (siteKey == null) {
-            siteKey = SiteKey.portal(siteName);
-        }
-        
-        String pageName = findCalendarPageNode(siteKey);
-        if(Utils.isEmpty(pageName)) {
-          siteKey = SiteKey.portal(siteName);
-          pageName = findCalendarPageNode(siteKey);
-        }
-
-        Router router = sc.getRouter();
-        ExoContainerContext context = (ExoContainerContext)ExoContainerContext.getCurrentContainer()
-            .getComponentInstanceOfType(ExoContainerContext.class);
-        String handler = context.getPortalContainerName();
-        url = new StringBuffer(getUrl(router, handler, siteKey.getName(), spaceGroupId, pageName)).append(Utils.SLASH).append(Utils.DETAIL_PATH).append(Utils.SLASH).append(eventId).toString();
-      } catch (Exception e) {
-        if (log.isDebugEnabled()) log.debug("build link error !");
-      }
-    return url;
-  }
-
-  private static String findCalendarPageNode(SiteKey siteKey) {
-    try {
-      ExoContainer container = ExoContainerContext.getCurrentContainer();
-      NavigationService navService = (NavigationService) container.getComponentInstance(NavigationService.class);
-      NavigationContext nav = navService.loadNavigation(siteKey);
-      
-      Scope scope;
-      if (siteKey.getType().equals(SiteType.GROUP)) {
-        scope = Scope.GRANDCHILDREN;
-      } else {
-        scope = Scope.CHILDREN;
-      }
-      NodeContext<NodeContext<?>> parentNodeCtx = navService.loadNode(NodeModel.SELF_MODEL, nav, scope, null);
-      if (parentNodeCtx.getSize() >= 1) {
-        Collection<NodeContext<?>> children = parentNodeCtx.getNodes();
-        if (siteKey.getType() == SiteType.GROUP) {
-          children = parentNodeCtx.get(0).getNodes();
-        }
-        Iterator<NodeContext<?>> it = children.iterator();
-        NodeContext<?> child = null;
-        while (it.hasNext()) {
-          child = it.next();
-          if (Utils.PAGE_NAGVIGATION.equals(child.getName()) || child.getName().indexOf(Utils.PORTLET_NAME) >= 0) {
-            return child.getName();
-          }
-        }
-      }
-    } catch (NullPointerException e) {
-      return Utils.EMPTY_STR;
-    }
-    return Utils.EMPTY_STR;
-  }
-
   public String getUrl(Router router, String handler, String siteName, String spaceGroupId, String pageName) {
     HashedMap qualifiedName = new HashedMap();
     qualifiedName.put(QualifiedName.create("gtn", "handler"), handler);

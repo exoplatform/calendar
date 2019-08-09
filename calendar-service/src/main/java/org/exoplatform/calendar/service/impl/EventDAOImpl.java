@@ -42,6 +42,7 @@ import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -62,7 +63,7 @@ public class EventDAOImpl implements EventDAO {
 
   @Override
   public ListAccess<CalendarEvent> findEventsByQuery(EventQuery eventQuery) throws CalendarException {
-    return new EventList(new EventNodeListAccess(this, eventQuery));
+    return new EventListAccess(this, eventQuery);
   }
   
   @Override
@@ -197,8 +198,8 @@ public class EventDAOImpl implements EventDAO {
     }
   }
   
-  public QueryImpl createJCRQuery(String queryStm, String queryType) throws RepositoryException {
-    QueryManager qm = getSession().getWorkspace().getQueryManager();
+  public QueryImpl createJCRQuery(SessionProvider provider,String queryStm, String queryType) throws Exception {
+    QueryManager qm = storage.getSession(provider).getWorkspace().getQueryManager();
     return (QueryImpl)qm.createQuery(queryStm, queryType);
   }
 
@@ -290,32 +291,6 @@ public class EventDAOImpl implements EventDAO {
     }
     return event;
   }
-  
-  public class EventList implements ListAccess<CalendarEvent> {
-
-    private EventNodeListAccess list;
-    
-    public EventList(EventNodeListAccess list) {
-      this.list = list;
-    }
-
-    @Override
-    public int getSize() throws Exception {
-      return list.getSize();
-    }
-
-    @Override
-    public CalendarEvent[] load(int offset, int limit) throws Exception, IllegalArgumentException {
-      Node[] results = list.load(offset, limit);
-      List<CalendarEvent> events = new LinkedList<CalendarEvent>();
-      for (Node node : results) {         
-        events.add(storage.getEventById(node.getProperty(Utils.EXO_ID).getString()));
-      }
-      
-      return events.toArray(new CalendarEvent[events.size()]);
-    }
-    
-  }
 
   private Node getReminderFolder(Date fromDate) throws Exception {
     Node publicApp = storage.getPublicCalendarServiceHome();
@@ -362,15 +337,5 @@ public class EventDAOImpl implements EventDAO {
     } catch (PathNotFoundException e) {
       return monthNode.addNode(day, Utils.NT_UNSTRUCTURED);
     }
-  }
-
-  private Session getSession() {
-    Session session = null;
-    try {
-      session = storage.getSession(storage.createSessionProvider());
-    } catch (Exception ex) {
-        log.error("Can not get JCR session", ex);
-    }
-    return session;
   }
 }
