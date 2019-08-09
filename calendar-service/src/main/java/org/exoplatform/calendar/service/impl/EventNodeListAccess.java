@@ -21,11 +21,14 @@ package org.exoplatform.calendar.service.impl;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Session;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -38,7 +41,7 @@ public class EventNodeListAccess extends AbstractEventListAccess<Node> {
     super(evtDAO, eventQuery);
   }
 
-  public Node[] load(int offset, int limit) {
+  public Node[] load(int offset, int limit) throws Exception {
     try {
       QueryResultImpl queryResult = super.loadData(offset, limit);
       if (queryResult != null) {
@@ -53,7 +56,17 @@ public class EventNodeListAccess extends AbstractEventListAccess<Node> {
       }
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
+    } finally {
+      getCurrentSession().logout();
+      
     }
     return null;
+  }
+  public Session getCurrentSession() throws Exception {
+    RepositoryService repoService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(RepositoryService.class);
+    String defaultWorkspace = repoService.getCurrentRepository()
+            .getConfiguration()
+            .getDefaultWorkspaceName();
+    return repoService.getCurrentRepository().getSystemSession(defaultWorkspace);
   }
 }

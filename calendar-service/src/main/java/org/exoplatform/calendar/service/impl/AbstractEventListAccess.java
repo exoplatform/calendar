@@ -64,7 +64,7 @@ public abstract class AbstractEventListAccess<T> implements ListAccess<T> {
     return null;
   }
 
-  public abstract T[] load(int offset, int limit);
+  public abstract T[] load(int offset, int limit) throws Exception;
   
   @Override
   public int getSize() throws Exception {
