@@ -19,40 +19,50 @@
 
 package org.exoplatform.calendar.service.impl;
 
-import javax.jcr.query.Row;
-import javax.jcr.query.RowIterator;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Session;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.EventQuery;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-public class EventRowListAccess extends AbstractEventListAccess<Row> {
+public class EventListAccess extends AbstractEventListAccess<CalendarEvent> {
 
-  private static Log log = ExoLogger.getLogger(EventRowListAccess.class);
+  private static Log log = ExoLogger.getLogger(EventListAccess.class);
 
-  public EventRowListAccess(EventDAOImpl evtDAO, EventQuery eventQuery) {
+  private EventDAOImpl evtDAO;
+
+  public EventListAccess(EventDAOImpl evtDAO, EventQuery eventQuery) {
     super(evtDAO, eventQuery);
+    this.evtDAO = evtDAO;
   }
 
-  public Row[] load(int offset, int limit) {
+  public CalendarEvent[] load(int offset, int limit) {
+    SessionProvider provider = SessionProvider.createSystemProvider();
     try {
-      QueryResultImpl queryResult = super.loadData(offset, limit);
+      QueryResultImpl queryResult = super.loadData(provider, offset, limit);
       if (queryResult != null) {
-        RowIterator rows = queryResult.getRows();
-        
-        List<Row> results = new LinkedList<Row>();
-        while (rows.hasNext()) {
-          results.add(rows.nextRow());
-        }      
-        
-        return results.toArray(new Row[results.size()]);        
+        NodeIterator nodes = queryResult.getNodes();
+
+        List<CalendarEvent> results = new LinkedList<>();
+        while (nodes.hasNext()) {
+          results.add(this.evtDAO.storage.getEvent(nodes.nextNode()));
+        }
+
+        return results.toArray(new CalendarEvent[results.size()]);  
       }
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
+    } finally {
+      provider.close();
+      
     }
     return null;
   }
