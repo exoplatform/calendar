@@ -6139,16 +6139,24 @@ public class JCRDataStorage implements DataStorage {
   private static class CalendarEventLoader implements Loader<String, CalendarEvent, JCRDataStorage> {
       @Override
       public CalendarEvent retrieve(JCRDataStorage context, String key) throws Exception {
-          QueryManager queryManager = context.getSession(context.createSessionProvider()).getWorkspace().getQueryManager();
+        SessionProvider provider = null;
+        try {
+          provider = context.createSessionProvider();
+          QueryManager queryManager = context.getSession(provider).getWorkspace().getQueryManager();
           String sql = "select * from exo:calendarEvent where exo:id=" + "\'" + key + "\'";
           Query query = queryManager.createQuery(sql, Query.SQL);
           QueryResult result = query.execute();
           NodeIterator nodesIt = result.getNodes();
-          if(nodesIt.hasNext()) {
+          if (nodesIt.hasNext()) {
             return context.getEvent(nodesIt.nextNode());
           } else {
             return CalendarEvent.NULL_OBJECT;
           }
+        } finally {
+          if (provider != null) {
+            provider.close();
+          }
+        }
       }
     };
   
