@@ -166,11 +166,7 @@ export default {
   },
   watch: {    
     participants() {
-      if (this.participants.length && this.participants[0]) {
-        this.usernames = this.participants.slice();
-      } else {
-        this.usernames = [];
-      }
+      this.retrieveParticipants();
     },
     usernames() {
       const remove = this.users.filter(u => {
@@ -222,6 +218,9 @@ export default {
       }
     }
   },
+  created() {
+    this.retrieveParticipants();
+  },
   mounted() {
     this.fromDate = new Date(this.from.getTime());
     this.toDate = new Date(this.from.getTime());
@@ -256,6 +255,13 @@ export default {
         selectedPars: [],
         showParSelector: false
       };
+    },
+    retrieveParticipants() {
+      if (this.participants.length && this.participants[0]) {
+        this.usernames = this.participants.slice();
+      } else {
+        this.usernames = [];
+      }
     },
     formatTime(date) {
       const sub = -2;
