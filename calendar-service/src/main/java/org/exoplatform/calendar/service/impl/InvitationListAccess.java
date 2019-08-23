@@ -31,6 +31,7 @@ import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.calendar.service.Invitation;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
 import org.exoplatform.services.log.ExoLogger;
@@ -62,8 +63,9 @@ public class InvitationListAccess implements ListAccess<Invitation> {
 
   @Override
   public Invitation[] load(int offset, int limit) throws Exception, IllegalArgumentException {
+    SessionProvider provider = SessionProvider.createSystemProvider();
     try {
-      QueryImpl jcrQuery = evtDAO.createJCRQuery(query.getQueryStatement(), query.getQueryType());
+      QueryImpl jcrQuery = evtDAO.createJCRQuery(provider, query.getQueryStatement(), query.getQueryType());
       if (limit > 0) {
         jcrQuery.setOffset(offset);
         jcrQuery.setLimit(limit);
@@ -96,6 +98,10 @@ public class InvitationListAccess implements ListAccess<Invitation> {
       return invitations.toArray(new Invitation[invitations.size()]);
     } catch (Exception ex) {
       throw new CalendarException(null, ex);
+    } finally {
+      if (provider != null) {
+        provider.close();
+      }
     }
   }
 

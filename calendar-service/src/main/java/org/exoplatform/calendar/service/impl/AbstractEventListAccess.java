@@ -23,6 +23,7 @@ import javax.jcr.query.InvalidQueryException;
 
 import org.exoplatform.calendar.service.EventQuery;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.jcr.impl.core.query.lucene.QueryResultImpl;
 import org.exoplatform.services.log.ExoLogger;
@@ -42,9 +43,9 @@ public abstract class AbstractEventListAccess<T> implements ListAccess<T> {
     this.evtDAO = evtDAO;
   }
   
-  protected QueryResultImpl loadData(int offset, int limit) {
+  protected QueryResultImpl loadData(SessionProvider provider, int offset, int limit) {
     try {
-      QueryImpl jcrQuery = evtDAO.createJCRQuery(query.getQueryStatement(), query.getQueryType());
+      QueryImpl jcrQuery = evtDAO.createJCRQuery(provider, query.getQueryStatement(), query.getQueryType());
       if (limit > 0) {
         jcrQuery.setOffset(offset);
         jcrQuery.setLimit(limit);
@@ -64,7 +65,7 @@ public abstract class AbstractEventListAccess<T> implements ListAccess<T> {
     return null;
   }
 
-  public abstract T[] load(int offset, int limit);
+  public abstract T[] load(int offset, int limit) throws Exception;
   
   @Override
   public int getSize() throws Exception {
