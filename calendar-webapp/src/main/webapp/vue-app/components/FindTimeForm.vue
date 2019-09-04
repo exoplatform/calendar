@@ -270,10 +270,10 @@ export default {
       return `${hours}:${minutes}`;
     },
     fromTime() {
-      return this.formatTime(this.fromDate);
+      return Utils.formatTime(this.fromDate);
     },
     toTime() {
-      return this.formatTime(this.toDate);
+      return Utils.formatTime(this.toDate);
     },
     updateTime(date, val) {
       const parsedVal = Utils.parseTime(val);
