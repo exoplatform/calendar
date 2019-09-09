@@ -69,9 +69,13 @@ show : function() {
         month = arr[1] ;
     }
     
+    // See PLF-8195, in case date is 31 but current selected month date is 30,
+    // the month value will be incremented automatically, thus we reset here the date to 1
+    UIDateTimePicker.selectedDate.setDate(1);
+
+    UIDateTimePicker.selectedDate.setFullYear(parseInt(arr[2],10)) ;
     UIDateTimePicker.selectedDate.setMonth(parseInt(month,10) - 1) ;
     UIDateTimePicker.selectedDate.setDate(parseInt(date,10)) ;
-    UIDateTimePicker.selectedDate.setFullYear(parseInt(arr[2],10)) ;
     if (dateParts.length > 1 && dateParts[dateParts.length - 1] != "") {
       spLine = dateParts[dateParts.length - 1].match(/\W{1}/) ;
       arr = dateParts[dateParts.length - 1].split(spLine) ;
