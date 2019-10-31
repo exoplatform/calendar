@@ -118,11 +118,24 @@ export function getEventById(eventId, isOccur, recurId, startTime, endTime) {
 }
 
 export function saveEvent(form) {
-  const fromDate = Utils.buildUTCDate(form.event.fromDate);
-  const minute = 60;
-  fromDate.setHours(fromDate.getHours() - calConstants.SETTINGS.timezone / minute);
-  const toDate = Utils.buildUTCDate(form.event.toDate);
-  toDate.setHours(toDate.getHours() - calConstants.SETTINGS.timezone / minute);
+  const isCurrentDST = Utils.isDST(new Date());
+  const from = form.event.fromDate;
+  const isFromDST = Utils.isDST(from);
+  if(!isCurrentDST && isFromDST) {
+    from.setHours(from.getHours() - 1);
+  } else if(isCurrentDST && !isFromDST) {
+    from.setHours(from.getHours() + 1);
+  }
+  const fromDate = new Date(Date.UTC(from.getFullYear(), from.getMonth(), from.getDate(), from.getHours() - calConstants.SETTINGS.timezone/ calConstants.ONE_HOUR_MINUTES, from.getMinutes(), from.getSeconds()));
+  
+  const to = form.event.toDate;
+  const isToDST = Utils.isDST(to);
+  if(!isCurrentDST && isToDST) {
+    to.setHours(to.getHours() - 1);
+  } else if(isCurrentDST && !isToDST) {
+    to.setHours(to.getHours() + 1);
+  }
+  const toDate = new Date(Date.UTC(to.getFullYear(), to.getMonth(), to.getDate(), to.getHours() - calConstants.SETTINGS.timezone/ calConstants.ONE_HOUR_MINUTES, to.getMinutes(), to.getSeconds()));
 
   const event = {
     id: form.event.id,
