@@ -91,12 +91,15 @@ export default {
       return null;
     }
   },
-
-  buildUTCDate(date) {
-    const result = new Date();
-    result.setUTCFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-    result.setUTCHours(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
-    return result;
+  
+  //  Since no country observes DST that lasts for 7 months, in an area that observes DST the offset from UTC time in January will be different to the one in July.
+  // So we use the timezone offset between January and July to determine the DST since JavaScript always returns a greater value during Standard Time.
+  isDST(date) {
+    const jan = 0;
+    const jul = 6;
+    const janOffset = new Date(date.getFullYear(), jan, 1).getTimezoneOffset();
+    const julOffset = new Date(date.getFullYear(), jul, 1).getTimezoneOffset();
+    return Math.max(janOffset, julOffset) !== date.getTimezoneOffset();
   },
 
   getTimezoneOffset() {
