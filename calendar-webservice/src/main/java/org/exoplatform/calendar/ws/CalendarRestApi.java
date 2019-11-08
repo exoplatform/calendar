@@ -17,30 +17,38 @@
 
 package org.exoplatform.calendar.ws;
 
-import com.sun.syndication.feed.synd.*;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
-import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Method;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Version;
+import java.io.*;
+import java.net.URI;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.security.RolesAllowed;
+import javax.jcr.query.Query;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.ResponseBuilder;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.sun.syndication.feed.synd.*;
+import com.sun.syndication.io.*;
+
 import org.exoplatform.calendar.model.Event;
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.Calendar.Type;
 import org.exoplatform.calendar.service.impl.MailNotification;
+import org.exoplatform.calendar.storage.jcr.JCREventQuery;
 import org.exoplatform.calendar.ws.bean.*;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.calendar.ws.common.RestAPIConstants;
 import org.exoplatform.common.http.HTTPStatus;
-import org.exoplatform.commons.utils.DateUtils;
-import org.exoplatform.commons.utils.ISO8601;
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.commons.utils.MimeTypeResolver;
+import org.exoplatform.commons.utils.*;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -60,32 +68,11 @@ import org.exoplatform.upload.UploadService;
 import org.exoplatform.webservice.cs.bean.End;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.annotation.security.RolesAllowed;
-import javax.jcr.query.Query;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.net.URI;
-import java.security.MessageDigest;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // Swagger //
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.property.*;
 
 /**
  * This rest service class provides entry point for calendar resources.
@@ -123,6 +110,8 @@ public class CalendarRestApi implements ResourceContainer {
   private IdentityManager identityManager;
   private UploadService uploadService;
   private MailService mailService;
+
+  private ExtendedCalendarService   extendedCalendarService;
 
   private int defaultLimit = 10;
   private int hardLimit = 100;
@@ -189,11 +178,12 @@ public class CalendarRestApi implements ResourceContainer {
    * @param  params
    *         Object contains the configuration parameters.
    */
-  public CalendarRestApi(OrganizationService orgService, IdentityManager identityManager, UploadService uploadService, MailService mailService, InitParams params) {
+  public CalendarRestApi(OrganizationService orgService, IdentityManager identityManager, UploadService uploadService, MailService mailService, ExtendedCalendarService extendedCalendarService, InitParams params) {
     this.orgService = orgService;
     this.identityManager = identityManager;
     this.uploadService = uploadService;
     this.mailService = mailService;
+    this.extendedCalendarService = extendedCalendarService;
 
     int maxAge = 604800;
     if (params != null) {
@@ -1781,30 +1771,33 @@ public class CalendarRestApi implements ResourceContainer {
     limit = parseLimit(limit);
     String username = currentUserId();
 
-    CalendarService service = calendarServiceInstance();
-    EventDAO evtDAO = service.getEventDAO();
-
     long fullSize = returnSize ? 0 : -1;
     List data = new LinkedList();
-    List<Calendar> calendarList;
-    try {
-      calendarList = getCalendarsOfUser(service, username);
-    } catch (Exception e) {
-      log.error("Cannot find calendars of user " + username, e);
-      return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
+
+    org.exoplatform.calendar.model.query.EventQuery query = new JCREventQuery();
+    query.setOwner(username);
+
+    java.util.Calendar[] dates = parseDate(start, end);
+    query.setFromDate(dates[0].getTimeInMillis());
+    query.setToDate(dates[1].getTimeInMillis());
+
+    if (StringUtils.isNotBlank(category)) {
+      query.setCategoryIds(new String[] { category });
     }
 
-    EventQuery eventQuery = buildEventQuery(start, end, category, calendarList,
-            null, username, CalendarEvent.TYPE_EVENT);
-    ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
+    ListAccess<org.exoplatform.calendar.model.Event> extendedEventListAccess = extendedCalendarService.getEventHandler()
+                                                                                                      .findEventsByQuery(query);
+    Event[] extendedEvents = extendedEventListAccess.load(0, limit);
+    if (extendedEvents != null && extendedEvents.length > 0) {
+      for (Event event : extendedEvents) {
+        CalendarEvent calendarEvent = CalendarEvent.build(event);
+        data.add(buildEventResource(calendarEvent, uri, expand, fields));
+      }
+      if (returnSize) {
+        fullSize = extendedEventListAccess.getSize();
+      }
+    }
 
-    //
-    for (CalendarEvent event : events.load(offset, limit)) {
-      data.add(buildEventResource(event, uri, expand, fields));
-    }
-    if (returnSize) {
-      fullSize = events.getSize();
-    }
     CollectionResource evData = new CollectionResource(data, fullSize);
     evData.setOffset(offset);
     evData.setLimit(limit);

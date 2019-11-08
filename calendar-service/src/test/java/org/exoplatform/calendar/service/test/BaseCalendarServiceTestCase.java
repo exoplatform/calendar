@@ -223,6 +223,16 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
   }
 
   protected CalendarEvent createUserEvent(String calendarId,
+                                          String username,
+                                          EventCategory eventCategory,
+                                          String summary) {
+    java.util.Calendar fromCal = java.util.Calendar.getInstance();
+    java.util.Calendar toCal = java.util.Calendar.getInstance();
+    toCal.add(java.util.Calendar.HOUR, 1);
+    return createUserEvent(username, calendarId, eventCategory, summary, true, fromCal, toCal);
+  }
+  
+  protected CalendarEvent createUserEvent(String calendarId,
                                           EventCategory eventCategory,
                                           String summary) {
     java.util.Calendar fromCal = java.util.Calendar.getInstance();

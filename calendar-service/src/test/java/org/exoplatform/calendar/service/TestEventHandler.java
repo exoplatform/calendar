@@ -136,4 +136,70 @@ public class TestEventHandler extends BaseCalendarServiceTestCase {
     events = evtHandler.findEventsByQuery(condition);
     assertEquals(1, events.getSize());
   }
+
+  public void testFindEventWithOwner() throws Exception {
+    String user1 = "demo";
+    String user2 = "ghost";
+
+    JCREventQuery condition = new JCREventQuery();
+
+    condition.setOwner(user1);
+    ListAccess<Event> events = evtHandler.findEventsByQuery(condition);
+    int initialSizeUser1 = events.getSize();
+
+    condition.setOwner(user2);
+    events = evtHandler.findEventsByQuery(condition);
+    int initialSizeUser2 = events.getSize();
+
+    Calendar calUser1 = createPrivateCalendar(user1, "cal", "des");
+    createUserEvent(calUser1.getId(), user1, null, "Have a meeting");
+    createUserEvent(calUser1.getId(), user1, null, "Have a meeting");
+
+    Calendar calUser2 = createPrivateCalendar(user2, "cal", "des");
+    createUserEvent(calUser2.getId(), user2, null, "Have a meeting");
+
+    condition.setOwner(user1);
+    events = evtHandler.findEventsByQuery(condition);
+    assertEquals(initialSizeUser1 + 2, events.getSize());
+
+    condition.setOwner(user2);
+    events = evtHandler.findEventsByQuery(condition);
+    assertEquals(initialSizeUser2 + 1, events.getSize());
+  }
+  
+  public void testFindEventWithOwnerAsParticipant() throws Exception {
+    String user1 = "demo";
+    String user2 = "ghost";
+
+    JCREventQuery condition = new JCREventQuery();
+
+    condition.setOwner(user1);
+    ListAccess<Event> events = evtHandler.findEventsByQuery(condition);
+    int initialSizeUser1 = events.getSize();
+
+    condition.setOwner(user2);
+    events = evtHandler.findEventsByQuery(condition);
+    int initialSizeUser2 = events.getSize();
+
+    Calendar calUser1 = createPrivateCalendar(user1, "cal", "des");
+    createUserEvent(calUser1.getId(), user1, null, "Have a meeting");
+    CalendarEvent calendarEvent = createUserEvent(calUser1.getId(), user1, null, "Have a meeting");
+
+    Calendar calUser2 = createPrivateCalendar(user2, "cal", "des");
+    createUserEvent(calUser2.getId(), user2, null, "Have a meeting");
+    if (CalendarEvent.TYPE_EVENT.equals(calendarEvent.getCalType())) {
+      calendarEvent.addParticipant(user2, "");
+    } else {
+      calendarEvent.setTaskDelegator(user2);
+    }
+    calendarService_.saveUserEvent(user1, calUser1.getId(), calendarEvent, false);
+
+    condition.setOwner(user1);
+    events = evtHandler.findEventsByQuery(condition);
+    assertEquals(initialSizeUser1 + 2, events.getSize());
+
+    condition.setOwner(user2);
+    events = evtHandler.findEventsByQuery(condition);
+    assertEquals(initialSizeUser2 + 2, events.getSize());
+  }
 }

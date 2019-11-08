@@ -149,23 +149,12 @@ public class JCREventDAOImpl implements EventDAO {
       type = ((JCREventQuery)query).getCalType();
     }
     try {
-      if (Calendar.Type.PERSONAL.type() == type) {
+      if (Calendar.Type.PERSONAL.type() == type || Calendar.Type.UNDEFINED.type() == type) {
         events.addAll(dataStorage.getUserEvents(query.getOwner(), eventQuery));
       } else if (Calendar.Type.GROUP.type() == type) {
         events.addAll(dataStorage.getPublicEvents(eventQuery));
       } else if (Calendar.Type.SHARED.type() == type) {
         events.addAll(dataStorage.getSharedEvents(query.getOwner(), eventQuery));
-      } else {
-        SessionProvider provider = dataStorage.createSystemProvider();
-        Session session = dataStorage.getSession(provider);
-        QueryManager qm = session.getWorkspace().getQueryManager();
-        Query jcrQuery = qm.createQuery(eventQuery.getQueryStatement(), eventQuery.getQueryType());
-        QueryResult result = jcrQuery.execute();
-        NodeIterator it = result.getNodes();
-        while (it.hasNext()) {
-          CalendarEvent evt = dataStorage.getEventById(it.nextNode().getProperty(Utils.EXO_ID).getString());
-          events.add(evt);
-        }
       }
     } catch (Exception ex) {
       LOG.error("Can't query for event", ex);
