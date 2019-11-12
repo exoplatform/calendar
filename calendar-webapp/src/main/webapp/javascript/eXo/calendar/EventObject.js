@@ -39,7 +39,7 @@ EventObject.prototype.init = function(rootNode) {
   this.calId = this.rootNode.getAttribute('calid');
   this.eventCat = this.rootNode.getAttribute('eventcat');
   this.startTime = this.normalizeDate(this.rootNode.getAttribute('starttimefull'));
-  this.endTime = Date.parse(this.rootNode.getAttribute('endtimefull'));
+  this.endTime = this.normalizeDate(this.rootNode.getAttribute('endtimefull'));
 
   if (this.rootNode.innerText) {
     this.name = gj.trim(this.rootNode.innerText + '');
@@ -49,8 +49,12 @@ EventObject.prototype.init = function(rootNode) {
 };
 
 EventObject.prototype.normalizeDate = function(dateStr) {
-  var d = new Date(dateStr);
-  if(document.getElementById("UIWeekView")) return Date.parse(dateStr);
+  var d = null;
+  if (Number.isFinite(Number(dateStr))) {
+      d = new Date(Number(dateStr));
+  } else {
+      d = new Date(dateStr);
+  }
   return d.getTime();
 };
 
