@@ -172,7 +172,7 @@
           }
           color = uicomponent.getColors().get(event.calendarId) ;
           moveAction = uicomponent.url("MoveEvent",event.getId());
-          Boolean isOccur = (!CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()))?true:false;
+          Boolean isOccur = (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
           String recurId = event.getRecurrenceId();
           def isEditable;
           def username = CalendarUtils.getCurrentUser();
@@ -182,8 +182,8 @@
           %>
           
           <div class="dayContentContainer eventBoxes" tartIndex="$startIndex" calType="$calType" eventId="$event.id" calId="$event.calendarId" eventCat="$event.eventCategoryId" 
-          startTimeFull="<%=tempFormat.format(event.getFromDateTime())%>" endTimeFull="<%=tempFormat.format(event.getToDateTime())%>"
-          startTime="$startTime" endTime="$endTime" moveAction="$moveAction" isOccur="$isOccur" recurId="$recurId" style="display:none;" isEditable="$isEditable">
+          startTimeFull="$startTime" endTimeFull="$endTime"
+          startTime="$startTime" endTime="$endTime" moveAction="$moveAction"  isOccur="$isOccur" recurId="$recurId" style="display:none;" isEditable="$isEditable">
             <div class="eventOnDayBorder $color">
               <div class="clearfix">          
           <div class="eventOnDayContent">
