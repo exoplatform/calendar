@@ -77,12 +77,11 @@
               <span>{{ $t('UIRepeatEventForm.label.endByDate') }}</span>
             </label>
             <div id="endDate" class="inputSmall pull-left">
-              <input :value="endDate" :disabled="endRepeat != 'endByDate'" lang="en" format="MM/dd/yyyy" type="date" name="endDate" @change="updateDate(endDate, $event.target.value)">
+              <input :value="endDate" :disabled="endRepeat != 'endByDate'" lang="en" type="date" name="endDate" @change="updateDate(endDate, $event.target.value)">
             </div>
           </div>
         </div>
       </div>
-
     </div>
     <div class="uiAction uiActionBorder">
       <button class="btn" type="button" @click="save">
@@ -134,7 +133,11 @@ export default {
       this.$emit('cancel');
     },
     updateDate(date, val) {
-      const parsedVal = Utils.parseDate(val);
+      const parsedVal = Utils.parseDate(val, {
+        year:0,
+        month:1,
+        date: 2,
+      });
       if (parsedVal) {
         date.setFullYear(parsedVal.getFullYear(),parsedVal.getMonth(), parsedVal.getDate());
       }

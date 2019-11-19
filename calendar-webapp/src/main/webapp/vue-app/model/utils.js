@@ -29,12 +29,12 @@ export default {
     return `${hours}:${minutes}${s}`;
   },
 
-  parseDate(dateStr) {
+  parseDate(dateStr, parseOptions) {
     if (!dateStr) {
       return null;
     }
 
-    const col = {
+    const col = parseOptions || {
       month: 0,
       date: 1,
       year: 2,
