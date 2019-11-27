@@ -62,7 +62,7 @@ public class TestCalendarRestApi extends TestRestApi {
     ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + queryParams, baseURI, headers, null, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
     CollectionResource<CalendarResource> calR = (CollectionResource<CalendarResource>)response.getEntity();
-    assertEquals(2, calR.getData().size());
+    assertEquals(4, calR.getData().size());
     assertEquals(-1, calR.getSize());
     
     //url should be absolute, we'll improve this in unit test later

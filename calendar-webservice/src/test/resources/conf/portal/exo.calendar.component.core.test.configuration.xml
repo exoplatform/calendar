@@ -131,12 +131,14 @@
       </value-param>
       </init-params>
   </component>
-  
+  <component>
+    <key>>org.exoplatform.calendar.service.EventHandler</key>
+    <type>org.exoplatform.calendar.service.impl.EventHandlerImpl</type>
+  </component>
   <component>
     <key>org.exoplatform.services.scheduler.JobSchedulerService</key>
     <type>org.exoplatform.services.scheduler.impl.JobSchedulerServiceImpl</type>
   </component>
-  
   <component>
     <key>org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector</key>
     <type>org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector</type>
