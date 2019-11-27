@@ -24,6 +24,8 @@ import org.exoplatform.webservice.cs.rest.AbstractResourceTest;
 public abstract class TestRestApi extends AbstractResourceTest {
 
   protected Calendar userCalendar;
+
+  protected Calendar JohnCalendar;
   
   protected Calendar groupCalendar;
   
@@ -49,6 +51,8 @@ public abstract class TestRestApi extends AbstractResourceTest {
     binder.addResource(restApi, null);
 
     userCalendar = this.createPersonalCalendar("root-calendar", "root");
+
+    JohnCalendar = this.createPersonalCalendar("john-calendar", "john");
     
     groupCalendar = this.createGroupCalendarWithEditPermission("group-calendar", Arrays.asList("/platform/administrators", "/platform/users"), "/platform/administrators/:*.manager");
     
