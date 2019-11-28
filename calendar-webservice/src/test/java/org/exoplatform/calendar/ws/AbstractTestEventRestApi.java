@@ -41,6 +41,7 @@ import org.exoplatform.services.rest.impl.ContainerResponse;
 import org.exoplatform.services.rest.tools.ByteArrayContainerResponseWriter;
 import org.exoplatform.ws.frameworks.json.impl.JsonGeneratorImpl;
 import org.exoplatform.ws.frameworks.json.value.JsonValue;
+import org.junit.Test;
 
 public abstract class AbstractTestEventRestApi extends TestRestApi {
   
@@ -318,6 +319,10 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());
     assertEquals(0, ((CollectionResource)response.getEntity()).getData().size());
 
+    CalendarEvent event = createEvent(userCalendar);
+    event.setRepeatByDay(new String[]{"SU", "MO", "TU", "WE"});
+    calendarService.saveUserEvent("root", userCalendar.getId(), event, true);
+
     CalendarEvent uEvt = createEvent(userCalendar);
     uEvt.setEventType(eventType);
     calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, true);
@@ -335,8 +340,8 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     String queryParams = "?returnSize=true";
     response = service(HTTPMethods.GET, CAL_BASE_URI + uri + queryParams , baseURI, headers, null, writer);
     calR = (CollectionResource)response.getEntity();
-    assertEquals(1, calR.getData().size());
-    assertEquals(1, calR.getSize());
+    assertEquals(2, calR.getData().size());
+    assertEquals(2, calR.getSize());
     assertNotNull(response.getHttpHeaders().get(HEADER_LINK));
     Calendar cal = GregorianCalendar.getInstance();;
     cal.set(java.util.Calendar.HOUR, 0);
@@ -353,8 +358,8 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     String queryParams1 = queryParams + "&startTime=" + from + "&endTime=" + to;
     response = service(HTTPMethods.GET, CAL_BASE_URI + uri + queryParams1 , baseURI, headers, null, writer);
     calR = (CollectionResource)response.getEntity();
-    assertEquals(1, calR.getData().size());
-    assertEquals(1, calR.getSize());
+    assertEquals(2, calR.getData().size());
+    assertEquals(2, calR.getSize());
     assertNotNull(response.getHttpHeaders().get(HEADER_LINK));
 
     cal.add(Calendar.DAY_OF_WEEK, 1);
@@ -371,7 +376,9 @@ public abstract class AbstractTestEventRestApi extends TestRestApi {
     } else {
       uEvt.setTaskDelegator("john");
     }
-    calendarService.saveUserEvent("root", userCalendar.getId(), uEvt, false);
+    CalendarEvent event1 = createEvent(JohnCalendar);
+    event.setRepeatByDay(new String[]{"SU", "MO", "TU", "WE"});
+    calendarService.saveUserEvent("john", JohnCalendar.getId(), event1, false);
 
     login("john");
     //john can read private event because he's event participant or task delegator

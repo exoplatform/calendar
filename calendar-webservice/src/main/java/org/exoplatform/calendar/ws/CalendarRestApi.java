@@ -33,6 +33,7 @@ import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.Calendar.Type;
 import org.exoplatform.calendar.service.impl.MailNotification;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.calendar.ws.bean.*;
 import org.exoplatform.calendar.ws.common.Resource;
 import org.exoplatform.calendar.ws.common.RestAPIConstants;
@@ -123,6 +124,7 @@ public class CalendarRestApi implements ResourceContainer {
   private IdentityManager identityManager;
   private UploadService uploadService;
   private MailService mailService;
+  private EventHandler eventHandler;
 
   private int defaultLimit = 10;
   private int hardLimit = 100;
@@ -152,6 +154,8 @@ public class CalendarRestApi implements ResourceContainer {
   public static final String[] TASK_STATUS = CalendarEvent.TASK_STATUS.clone();
 
   private static final String[] INVITATION_STATUS = {"", "maybe", "yes", "no"};
+
+  private org.exoplatform.calendar.model.query.EventQuery query = null;
 
   public static enum RecurringUpdateType {
     ALL, FOLLOWING, ONE
@@ -189,11 +193,12 @@ public class CalendarRestApi implements ResourceContainer {
    * @param  params
    *         Object contains the configuration parameters.
    */
-  public CalendarRestApi(OrganizationService orgService, IdentityManager identityManager, UploadService uploadService, MailService mailService, InitParams params) {
+  public CalendarRestApi(OrganizationService orgService, IdentityManager identityManager, UploadService uploadService, MailService mailService, InitParams params, EventHandler eventHandler) {
     this.orgService = orgService;
     this.identityManager = identityManager;
     this.uploadService = uploadService;
     this.mailService = mailService;
+    this.eventHandler = eventHandler;
 
     int maxAge = 604800;
     if (params != null) {
@@ -1780,13 +1785,17 @@ public class CalendarRestApi implements ResourceContainer {
           @Context UriInfo uri) throws Exception {
     limit = parseLimit(limit);
     String username = currentUserId();
-
+    query = new org.exoplatform.calendar.model.query.EventQuery();
     CalendarService service = calendarServiceInstance();
-    EventDAO evtDAO = service.getEventDAO();
-
+    java.util.Calendar[] dates = parseDate(start, end);
+    CalendarSetting setting = service.getCalendarSetting(username);
+    Map<String, Map<String, CalendarEvent>> recurrenceEventsMap = new LinkedHashMap<String, Map<String, CalendarEvent>>();
     long fullSize = returnSize ? 0 : -1;
     List data = new LinkedList();
     List<Calendar> calendarList;
+    List<String> calIds = new LinkedList<String>();
+    List<Event> allEvents = new LinkedList<Event>();
+    List<Event> tmp = new LinkedList<Event>();
     try {
       calendarList = getCalendarsOfUser(service, username);
     } catch (Exception e) {
@@ -1794,16 +1803,55 @@ public class CalendarRestApi implements ResourceContainer {
       return Response.status(HTTPStatus.NOT_FOUND).cacheControl(nc).build();
     }
 
-    EventQuery eventQuery = buildEventQuery(start, end, category, calendarList,
-            null, username, CalendarEvent.TYPE_EVENT);
-    ListAccess<CalendarEvent> events = evtDAO.findEventsByQuery(eventQuery);
+    if (StringUtils.isNotBlank(category)) {
+      query.setCategoryIds(new String[]{category});
+    }
+    calendarList.stream().forEach(c -> calIds.add(c.getId()));
+    query.setCalendarIds(calIds.toArray(new String[calIds.size()]));
+    query.setFromDate(dates[0].getTimeInMillis());
+    query.setToDate(dates[1].getTimeInMillis());
+    query.setEventType(CalendarEvent.TYPE_EVENT);
+    query.setOwner(username);
+    ListAccess<org.exoplatform.calendar.model.Event> list = eventHandler.findEventsByQuery(query);
+    tmp.addAll(Arrays.asList(list.load(0, -1)));
+    for (Event evt : tmp) {
+      if (evt.getRepeatType() != null &&
+              !evt.getRepeatType().equals(org.exoplatform.calendar.model.Event.RP_NOREPEAT)) {
+        CalendarEvent depEvt = CalendarEvent.build(evt);
+
+        java.util.Calendar fromDate = CalendarUtils.getCalendarInstanceBySetting(setting);
+        if (dates[0] != null) {
+          fromDate.setTimeInMillis(dates[0].getTimeInMillis());
+        } else {
+          fromDate.setTime(evt.getFromDateTime());
+        }
+        java.util.Calendar toDate = (java.util.Calendar) fromDate.clone();
+        if (dates[1] != null) {
+          toDate.setTimeInMillis(dates[1].getTimeInMillis());
+        } else {
+          toDate.add(java.util.Calendar.YEAR, 2);
+        }
+
+        Map<String, CalendarEvent> tempMap = service.getOccurrenceEvents(depEvt, fromDate, toDate, setting.getTimeZone());
+        if (tempMap != null) {
+          recurrenceEventsMap.put(depEvt.getId(), tempMap);
+        }
+      } else {
+        allEvents.add(evt);
+      }
+    }
+
+    for (Map<String, CalendarEvent> map : recurrenceEventsMap.values()) {
+      allEvents.addAll(map.values());
+    }
 
     //
-    for (CalendarEvent event : events.load(offset, limit)) {
-      data.add(buildEventResource(event, uri, expand, fields));
+    for (int i = 0; i < allEvents.size(); i++) {
+      data.add(buildEventResource((CalendarEvent) allEvents.get(i), uri, expand, fields));
     }
+
     if (returnSize) {
-      fullSize = events.getSize();
+      fullSize = list.getSize();
     }
     CollectionResource evData = new CollectionResource(data, fullSize);
     evData.setOffset(offset);
