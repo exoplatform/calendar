@@ -108,8 +108,13 @@ export default {
     'recurring': {
       type: Object,
       default: {}
+    },
+    repeatDay: {
+      type: '',
+      default: ''
     }
   },
+
   data() {
     return new Recurring();
   },
@@ -120,6 +125,8 @@ export default {
   },
   watch: {
     recurring() {
+      const weekDay = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+      this.recurring.weekly = [weekDay[this.repeatDay]];
       this.reset();
     }
   },
@@ -146,7 +153,6 @@ export default {
       const data = new Recurring();
       Utils.copyObj(data, this.recurring);
       Object.entries(data).forEach(entry => Vue.set(this.$data, entry[0], entry[1]));
-
       if (!this.recurring.isEnabled()) {
         this.repeatType = 'weekly';
       }

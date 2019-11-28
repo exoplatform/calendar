@@ -9,7 +9,7 @@ class Recurring {
 
     this.repeatType = calConstants.NO_REPEAT;
     this.interval = 1;
-    this.weekly = [calConstants.WEEK_DAYS[new Date().getDay()]];
+    this.weekly = [];
     this.monthly = 'monthlyByMonthDay';
     this.endRepeat = 'neverEnd';
     this.endAfterNumber = 5;
