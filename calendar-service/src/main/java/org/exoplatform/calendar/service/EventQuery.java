@@ -18,9 +18,8 @@ package org.exoplatform.calendar.service;
 
 import javax.jcr.query.Query;
 
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.ISO8601;
-import org.exoplatform.commons.utils.XPathUtils;
+import org.exoplatform.services.jcr.impl.util.XPathUtils;
 
 /**
  * Created by The eXo Platform SARL

@@ -16,86 +16,39 @@
  **/
 package org.exoplatform.calendar.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.Date;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.TimeZone;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
+import javax.jcr.*;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
 import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-
-import net.fortuna.ical4j.model.DateList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
-import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.RRule;
+import javax.jcr.query.*;
 
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
+import com.sun.syndication.feed.synd.*;
+import com.sun.syndication.io.*;
 
-import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarImportExport;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.DataStorage;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventPageList;
-import org.exoplatform.calendar.service.EventPageListQuery;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.FeedData;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Reminder;
-import org.exoplatform.calendar.service.RemoteCalendar;
-import org.exoplatform.calendar.service.RssData;
-import org.exoplatform.calendar.service.Utils;
+import org.exoplatform.calendar.util.ActivityTypeUtils;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
-import org.exoplatform.commons.utils.ActivityTypeUtils;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.commons.utils.ISO8601;
-import org.exoplatform.commons.utils.XPathUtils;
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.PortalContainer;
-import org.exoplatform.services.cache.CacheService;
-import org.exoplatform.services.cache.CachedObjectSelector;
-import org.exoplatform.services.cache.ExoCache;
-import org.exoplatform.services.cache.ObjectCacheInfo;
+import org.exoplatform.container.*;
+import org.exoplatform.services.cache.*;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.access.AccessControlEntry;
 import org.exoplatform.services.jcr.access.PermissionType;
@@ -104,12 +57,17 @@ import org.exoplatform.services.jcr.core.ManageableRepository;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.exoplatform.services.jcr.impl.util.XPathUtils;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.organization.Group;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.security.IdentityConstants;
+
+import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.RRule;
 
 /**
  * Created by The eXo Platform SARL Author : Hung Nguyen Quang

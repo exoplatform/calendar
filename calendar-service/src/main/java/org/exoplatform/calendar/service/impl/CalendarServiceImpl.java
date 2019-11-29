@@ -1184,7 +1184,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     JobDetail job = findSynchronizeRemoteCalendarJob(schedulerService, username);
     if (job == null) {
       JobDataMap jobData = new JobDataMap();
-      jobData.put(SynchronizeRemoteCalendarJob.USERNAME, username);
+      jobData.put(SynchronizeRemoteCalendarJob.USERNAME_PARAMETER, username);
       RepositoryService repositoryService = (RepositoryService) container.getComponentInstanceOfType(RepositoryService.class);
       jobData.put(repositoryService.getCurrentRepository()
                   .getConfiguration()

@@ -21,164 +21,151 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
+import javax.jcr.query.*;
+
+import org.quartz.*;
 
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.ISO8601;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.container.component.ComponentRequestLifecycle;
-import org.exoplatform.job.MultiTenancyJob;
+import org.exoplatform.container.*;
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.lucene.IndexOfflineRepositoryException;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.ws.frameworks.cometd.ContinuationService;
-import org.quartz.JobExecutionContext;
 
-
-public class PopupReminderJob extends MultiTenancyJob {
-  private static Log log_ = ExoLogger.getLogger(PopupReminderJob.class);
+@DisallowConcurrentExecution
+public class PopupReminderJob implements Job {
+  private static final Log LOG = ExoLogger.getLogger(PopupReminderJob.class);
 
   @Override
-  public Class<? extends MultiTenancyTask> getTask() {
-    return PopupReminderTask.class;
-  }
-  
-  public class PopupReminderTask extends MultiTenancyTask{
+  public void execute(JobExecutionContext context) throws JobExecutionException {
+    ExoContainer oldContainer = ExoContainerContext.getCurrentContainer();
+    ExoContainer container = PortalContainer.getInstance();
 
-    public PopupReminderTask(JobExecutionContext context, String repoName) {
-      super(context, repoName);
-    }
-
-    @Override
-    public void run() {
-      super.run();
+    ExoContainerContext.setCurrentContainer(container);
+    RequestLifeCycle.begin(container);
+    try {
       SessionProvider provider = SessionProvider.createSystemProvider();
-      OrganizationService orgService = container.getComponentInstanceOfType(OrganizationService.class);
-      //We have JobEnvironmentConfigListener call request lifecycle methods
-      //But it's run in difference thread that create bug with PicketlinkIDM using hibernate session (CAL-1031)
-      if (orgService instanceof ComponentRequestLifecycle) {
-        ((ComponentRequestLifecycle)orgService).startRequest(ExoContainerContext.getCurrentContainer());          
-      }
-      
-      try {
-        if (log_.isDebugEnabled())
-          log_.debug("Calendar popup reminder service");
-        java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
-        ContinuationService continuation = (ContinuationService) container.getComponentInstanceOfType(ContinuationService.class);
-        Node calendarHome = Utils.getPublicServiceHome(provider);
-        if (calendarHome == null)
-          return;
-        StringBuffer path = new StringBuffer(getReminderPath(fromCalendar, provider));
-        path.append("//element(*,exo:reminder)");
-        path.append("[@exo:remindDateTime <= xs:dateTime('" + ISO8601.format(fromCalendar) + "') and @exo:isOver = 'false' and @exo:reminderType = 'popup' ]");
-        QueryManager queryManager = Utils.getSession(provider).getWorkspace().getQueryManager();
-        Query query = queryManager.createQuery(path.toString(), Query.XPATH);
-        QueryResult results = query.execute();
-        NodeIterator iter = results.getNodes();
-        Node reminder;
-        List<Reminder> popupReminders = new ArrayList<Reminder>();
-       
-        while (iter.hasNext()) {
-          reminder = iter.nextNode();
-          boolean isRepeat = reminder.getProperty(Utils.EXO_IS_REPEAT).getBoolean();
-          long fromTime = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
-          long remindTime = reminder.getProperty(Utils.EXO_REMINDER_DATE).getDate().getTimeInMillis();
-          long interval = reminder.getProperty(Utils.EXO_TIME_INTERVAL).getLong() * 60 * 1000;
-          
-          Reminder rmdObj = new Reminder();
-          rmdObj.setRepeate(isRepeat);
-          rmdObj.setReminderOwner(reminder.getProperty(Utils.EXO_OWNER).getString());
-          rmdObj.setId(reminder.getProperty(Utils.EXO_EVENT_ID).getString());
-          
-          if(isRepeat) {
-            long currentTime1 = java.util.Calendar.getInstance().getTimeInMillis();
-            long nextRemindTime = getNextRemindTime(remindTime, currentTime1, interval);
-            // if it's time to send reminder, add the rmdObj to list of popup reminders
-            if(nextRemindTime > 0) {
-              popupReminders.add(rmdObj);
-              // if the next reminder time is greater than event from time, the reminder is over (exo:isOver = true)
-              if(nextRemindTime > fromTime) { 
-                reminder.setProperty(Utils.EXO_IS_OVER, true);
-              } else {
-                // the reminder is continued, set new time of reminder
-                reminder.setProperty(Utils.EXO_IS_OVER, false);
-                reminder.setProperty(Utils.EXO_REMINDER_DATE, nextRemindTime);
-              }
-            }
-          } else {
-            long currentTime2 = java.util.Calendar.getInstance().getTimeInMillis();
-            if(isTimeToRemind(remindTime, currentTime2)) {
-              popupReminders.add(rmdObj);
+      if (LOG.isDebugEnabled())
+        LOG.debug("Calendar popup reminder service");
+      java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
+      ContinuationService continuation = container.getComponentInstanceOfType(ContinuationService.class);
+      Node calendarHome = Utils.getPublicServiceHome(provider);
+      if (calendarHome == null)
+        return;
+      StringBuilder path = new StringBuilder(getReminderPath(fromCalendar, provider));
+      path.append("//element(*,exo:reminder)");
+      path.append("[@exo:remindDateTime <= xs:dateTime('" + ISO8601.format(fromCalendar)
+          + "') and @exo:isOver = 'false' and @exo:reminderType = 'popup' ]");
+      QueryManager queryManager = Utils.getSession(provider).getWorkspace().getQueryManager();
+      Query query = queryManager.createQuery(path.toString(), Query.XPATH);
+      QueryResult results = query.execute();
+      NodeIterator iter = results.getNodes();
+      Node reminder;
+      List<Reminder> popupReminders = new ArrayList<>();
+
+      while (iter.hasNext()) {
+        reminder = iter.nextNode();
+        boolean isRepeat = reminder.getProperty(Utils.EXO_IS_REPEAT).getBoolean();
+        long fromTime = reminder.getProperty(Utils.EXO_FROM_DATE_TIME).getDate().getTimeInMillis();
+        long remindTime = reminder.getProperty(Utils.EXO_REMINDER_DATE).getDate().getTimeInMillis();
+        long interval = reminder.getProperty(Utils.EXO_TIME_INTERVAL).getLong() * 60 * 1000;
+
+        Reminder rmdObj = new Reminder();
+        rmdObj.setRepeate(isRepeat);
+        rmdObj.setReminderOwner(reminder.getProperty(Utils.EXO_OWNER).getString());
+        rmdObj.setId(reminder.getProperty(Utils.EXO_EVENT_ID).getString());
+
+        if (isRepeat) {
+          long currentTime1 = java.util.Calendar.getInstance().getTimeInMillis();
+          long nextRemindTime = getNextRemindTime(remindTime, currentTime1, interval);
+          // if it's time to send reminder, add the rmdObj to list of popup
+          // reminders
+          if (nextRemindTime > 0) {
+            popupReminders.add(rmdObj);
+            // if the next reminder time is greater than event from time, the
+            // reminder is over (exo:isOver = true)
+            if (nextRemindTime > fromTime) {
               reminder.setProperty(Utils.EXO_IS_OVER, true);
+            } else {
+              // the reminder is continued, set new time of reminder
+              reminder.setProperty(Utils.EXO_IS_OVER, false);
+              reminder.setProperty(Utils.EXO_REMINDER_DATE, nextRemindTime);
             }
           }
-          reminder.save();
-        }
-        if (!popupReminders.isEmpty()) {
-          for (Reminder rmdObj : popupReminders) {
-            for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
-              if (CommonsUtils.isUserEnabled(user)) {
-                continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
-              }  
-            }
+        } else {
+          long currentTime2 = java.util.Calendar.getInstance().getTimeInMillis();
+          if (isTimeToRemind(remindTime, currentTime2)) {
+            popupReminders.add(rmdObj);
+            reminder.setProperty(Utils.EXO_IS_OVER, true);
           }
         }
-      } catch (IndexOfflineRepositoryException e) {
-        if (log_.isTraceEnabled()) {
-          log_.trace("An Error occurred while running Calendar PopupReminderJob: " + e.getMessage(),e);
-        }
-      } catch (Exception e) {
-        log_.error(e.getMessage(), e);
-      } finally {
-        if (orgService instanceof ComponentRequestLifecycle) {
-          ((ComponentRequestLifecycle)orgService).endRequest(ExoContainerContext.getCurrentContainer());          
-        }
-        provider.close();
+        reminder.save();
       }
-      if (log_.isDebugEnabled())
-        log_.debug("File plan job done");
+      if (!popupReminders.isEmpty()) {
+        for (Reminder rmdObj : popupReminders) {
+          for (String user : rmdObj.getReminderOwner().split(Utils.COMMA)) {
+            if (CommonsUtils.isUserEnabled(user)) {
+              continuation.sendMessage(user, "/eXo/Application/Calendar/messages", rmdObj.getId());
+            }
+          }
+        }
+      }
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("File plan job done");
+      }
+    } catch (IndexOfflineRepositoryException e) {
+      if (LOG.isTraceEnabled()) {
+        LOG.trace("An Error occurred while running Calendar PopupReminderJob: " + e.getMessage(), e);
+      }
+    } catch (Exception e) {
+      LOG.error(e.getMessage(), e);
+    } finally {
+      RequestLifeCycle.end();
+      ExoContainerContext.setCurrentContainer(oldContainer);
     }
   }
 
   /*
-   * Gets next reminder time based on current reminder time, current time and the interval.
-   * Current time is time to send the reminder if it is greater than reminder time and 
-   * (current time - reminder time) % interval <= delta 
-   * (here we choose delta = 15 seconds, it's equals the period between jobs
-   * If current time is time to send the reminder, the method returns next reminder time
-   * otherwise, it return -1
+   * Gets next reminder time based on current reminder time, current time and
+   * the interval. Current time is time to send the reminder if it is greater
+   * than reminder time and (current time - reminder time) % interval <= delta
+   * (here we choose delta = 15 seconds, it's equals the period between jobs If
+   * current time is time to send the reminder, the method returns next reminder
+   * time otherwise, it return -1
    */
   private long getNextRemindTime(long remindTime, long currentTime, long interval) {
-    long delta = 15000; 
+    long delta = 15000;
     long diff = currentTime - remindTime;
-    long remaining =  diff % interval;
-    if(remaining <= delta && currentTime >= remindTime) {
-      // because the user can choose start time of reminder is very long before the from time of event, (refer to CAL-422)
-      // here we must get the most recent reminder time before adding the interval to avoid sending many unexpected reminders
-      return currentTime - remaining + interval; 
+    long remaining = diff % interval;
+    if (remaining <= delta && currentTime >= remindTime) {
+      // because the user can choose start time of reminder is very long before
+      // the from time of event, (refer to CAL-422)
+      // here we must get the most recent reminder time before adding the
+      // interval to avoid sending many unexpected reminders
+      return currentTime - remaining + interval;
     } else {
       return -1;
     }
   }
-  
+
   /*
-   * Checks if current time is time to send the reminder, in case the reminder is not repeated (no interval)
+   * Checks if current time is time to send the reminder, in case the reminder
+   * is not repeated (no interval)
    */
-  private Boolean isTimeToRemind(long remindTime, long currentTime) {
+  private boolean isTimeToRemind(long remindTime, long currentTime) {
     long delta = 15000;
     long diff = currentTime - remindTime;
     return diff <= delta && currentTime >= remindTime;
   }
-  
+
   public static String getReminderPath(java.util.Calendar fromCalendar, SessionProvider provider) throws Exception {
-    String year = "Y" + String.valueOf(fromCalendar.get(java.util.Calendar.YEAR));
-    String month = "M" + String.valueOf(fromCalendar.get(java.util.Calendar.MONTH) + 1);
-    String day = "D" + String.valueOf(fromCalendar.get(java.util.Calendar.DATE));
-    StringBuffer path = new StringBuffer("/jcr:root");
+    String year = "Y" + fromCalendar.get(java.util.Calendar.YEAR);
+    String month = "M" + (fromCalendar.get(java.util.Calendar.MONTH) + 1);
+    String day = "D" + fromCalendar.get(java.util.Calendar.DATE);
+    StringBuilder path = new StringBuilder("/jcr:root");
     path.append(Utils.getPublicServiceHome(provider).getPath());
     path.append(Utils.SLASH).append(year).append(Utils.SLASH).append(month).append(Utils.SLASH).append(day);
     path.append(Utils.SLASH).append(Utils.CALENDAR_REMINDER);

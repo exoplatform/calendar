@@ -17,35 +17,20 @@
 package org.exoplatform.calendar.service.impl;
 
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
+import javax.jcr.*;
 import javax.jcr.query.QueryManager;
 
-import net.fortuna.ical4j.model.DateTime;
-
-import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarException;
-import org.exoplatform.calendar.service.EventDAO;
-import org.exoplatform.calendar.service.EventPageListQuery;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.Invitation;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.commons.utils.ActivityTypeUtils;
+import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.util.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+
+import net.fortuna.ical4j.model.DateTime;
 
 @Deprecated
 public class EventDAOImpl implements EventDAO {
