@@ -51,7 +51,6 @@
     <org.exoplatform.commons.version>6.0.x-SNAPSHOT</org.exoplatform.commons.version>
     <org.exoplatform.social.version>6.0.x-SNAPSHOT</org.exoplatform.social.version>
     <org.exoplatform.platform-ui.version>6.0.x-SNAPSHOT</org.exoplatform.platform-ui.version>
-    <org.exoplatform.doc.doc-style.version>6.0.x-SNAPSHOT</org.exoplatform.doc.doc-style.version>
 
     <!-- Maven Plugin for JS and CSS bundling and Unit Test execution -->
     <com.github.eirslett.frontend.version>1.6</com.github.eirslett.frontend.version>
@@ -275,11 +274,6 @@
         <scope>import</scope>
       </dependency> -->
       <!-- Use to generate some documentation -->
-      <dependency>
-        <groupId>org.exoplatform.doc</groupId>
-        <artifactId>doc-style</artifactId>
-        <version>${org.exoplatform.doc.doc-style.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>

@@ -103,12 +103,6 @@
       <groupId>org.exoplatform.core</groupId>
       <artifactId>exo.core.component.security.core</artifactId>
     </dependency>
-    <!-- doc-style is required by wikbook to compile but we don't want to propagate it -->
-    <dependency>
-      <groupId>org.exoplatform.doc</groupId>
-      <artifactId>doc-style</artifactId>
-      <optional>true</optional>
-    </dependency>
     <dependency>
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.core</artifactId>
@@ -204,11 +198,6 @@
     </dependency>
     <!-- This dependency is used for tests execution but is erroneously reported as useless by mvn dependency:analyze -->
     <dependency>
-      <groupId>org.chromattic</groupId>
-      <artifactId>chromattic.core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.exoplatform.tool</groupId>
       <artifactId>exo.tool.framework.junit</artifactId>
       <scope>test</scope>
@@ -288,25 +277,6 @@
               <compilerArguments>
                 <sourcepath>${project.build.directory}/templates</sourcepath>
               </compilerArguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-templates</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeGroupIds>org.exoplatform.doc</includeGroupIds>
-              <includeArtifactIds>doc-style</includeArtifactIds>
-              <excludes>META-INF/**</excludes>
-              <outputDirectory>${project.build.directory}/templates</outputDirectory>
             </configuration>
           </execution>
         </executions>
