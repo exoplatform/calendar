@@ -20,6 +20,8 @@
     <module>calendar-webapp</module>
     <module>calendar-statistics</module>
     <module>calendar-component-create</module>
+    <module>calendar-social-integration</module>
+    <module>calendar-packaging</module>
   </modules>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/calendar.git</connection>
@@ -71,7 +73,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <!-- Our own project modules -->
       <!-- Declare our own artifacts -->
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
@@ -88,11 +89,6 @@
       <dependency>
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-component-create</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.exoplatform.calendar</groupId>
-        <artifactId>calendar-injector</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -121,6 +117,17 @@
         <groupId>org.exoplatform.calendar</groupId>
         <artifactId>calendar-webservice</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>calendar-social-integration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.exoplatform.calendar</groupId>
+        <artifactId>wiki-packaging</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
       </dependency>
       <!-- Import versions from social project -->
       <dependency>
