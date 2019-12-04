@@ -34,7 +34,31 @@
   </external-component-plugins>
 
   <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.search.SearchService</target-component>
+    <component-plugin>
+      <name>EventSearchConnector</name>
+      <set-method>addConnector</set-method>
+      <type>org.exoplatform.calendar.service.impl.EventSearchConnector</type>
+      <description>eXo Calendar events</description>
+      <init-params>
+        <properties-param>
+           <name>constructor.params</name>
+           <property name="searchType" value="event"/>
+           <property name="displayName" value="Events"/>
+           <property name="enable" value="${exo.unified-search.connector.event.enable:true}"/>
+        </properties-param>
+      </init-params>      
+      </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
     <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
+    <component-plugin>
+      <name>unifiedsearch.listeners.calendar</name>
+      <set-method>addEventListenerPlugin</set-method>
+      <type>org.exoplatform.calendar.indexing.listener.UnifiedSearchCalendarListener</type>
+      <description>Calendar listener for Unified Search</description>
+    </component-plugin>
     <component-plugin>
       <name>CalendarEventListener</name>
       <set-method>addEventListenerPlugin</set-method>
