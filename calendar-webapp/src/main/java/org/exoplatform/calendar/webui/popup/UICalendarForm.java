@@ -62,6 +62,7 @@ import org.exoplatform.webui.form.UIFormStringInput;
 import org.exoplatform.webui.form.UIFormTabPane;
 import org.exoplatform.webui.form.UIFormTextAreaInput;
 import org.exoplatform.webui.form.input.UICheckBoxInput;
+import org.exoplatform.webui.form.validator.ExpressionValidator;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
 import org.exoplatform.webui.form.validator.SpecialCharacterValidator;
 
@@ -143,12 +144,15 @@ public class UICalendarForm extends UIFormTabPane implements UIPopupComponent, U
   private boolean isAddNew_ = true ;
   public String groupCalId_ = null ;
 
+  // Message
+  private final String        MSG_INVALID_CALENDAR_NAME     = "UICalendarForm.msg.invalid_calendar_name";
+
   public UICalendarForm() throws Exception
   {
     super("UICalendarForm");
 
     UICalendarDetailTab calendarDetail = new UICalendarDetailTab(INPUT_CALENDAR) ;
-    calendarDetail.addUIFormInput(new UIFormStringInput(DISPLAY_NAME, DISPLAY_NAME, null).addValidator(MandatoryValidator.class).addValidator(SpecialCharacterValidator.class)) ;
+    calendarDetail.addUIFormInput(new UIFormStringInput(DISPLAY_NAME, DISPLAY_NAME, null).addValidator(MandatoryValidator.class).addValidator(ExpressionValidator.class, "^([\\p{L}\\s\\d\'_&]+[\\s]?)+$", MSG_INVALID_CALENDAR_NAME)) ;
     calendarDetail.addUIFormInput(new UIFormTextAreaInput(DESCRIPTION, DESCRIPTION, null)) ;
     CalendarSetting setting = CalendarUtils.getCurrentUserCalendarSetting();
 
