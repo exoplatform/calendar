@@ -377,7 +377,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     try {
       storage_.savePublicCalendar(calendar, isNew, null);
     } catch (Exception e) {
-      throw new CalendarException();
+      throw new CalendarException(e);
     }
   }
 

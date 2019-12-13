@@ -27,10 +27,6 @@ public class CalendarException extends RuntimeException {
   private static final long serialVersionUID = -5373338604126226579L;
   private final CalendarError error;
 
-  public CalendarException() {
-    this((CalendarError) null);
-  }
-
   public CalendarException(Exception e) {
     super(e);
     error = null;
