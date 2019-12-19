@@ -145,6 +145,7 @@ import ConfirmForm from './ExoCalendarConfirmForm.vue';
 import CalendarSelector from './ExoCalendarSelector.vue';
 import ErrorMessage from './ErrorMessage.vue';
 import ComboBox from './ComboBox.vue';
+import moment from 'moment';
 
 export default {
   components: {
@@ -305,7 +306,7 @@ export default {
 
         calendarGroups: [],
         categories: [],
-
+        LANG: typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en',
         errors: []
       };
 
@@ -345,13 +346,13 @@ export default {
       }
     },
     fromDate() {
-      return Utils.formatDate(this.event.fromDate);
+      return moment(this.event.fromDate).toDate().toLocaleDateString(this.LANG);
     },
     fromTime() {
       return Utils.formatTime(this.event.fromDate);
     },
     toDate() {
-      return Utils.formatDate(this.event.toDate);
+      return moment(this.event.toDate).toDate().toLocaleDateString(this.LANG);
     },
     toTime() {
       return Utils.formatTime(this.event.toDate);
