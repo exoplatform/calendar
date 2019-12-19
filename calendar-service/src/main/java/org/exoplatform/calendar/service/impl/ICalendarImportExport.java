@@ -209,7 +209,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     else
       event.getProperties().add(new Clazz(Clazz.PUBLIC.getValue()));
     event.getProperties().getProperty(Property.CLASS).getParameters().add(net.fortuna.ical4j.model.parameter.Value.TEXT);
-    String[] attendees = exoEvent.getInvitation();
+    String[] attendees = exoEvent.getParticipant();
     if (attendees != null && attendees.length > 0) {
       for (int i = 0; i < attendees.length; i++) {
         if (attendees[i] != null) {
