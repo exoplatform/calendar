@@ -180,7 +180,7 @@ export default {
       return !this.event.isOccur && this.event.recurrenceId;
     },
     isAllowToSave() {
-      return this.event.title && this.event.title.trim();
+      return this.event.title && this.event.title.trim() && this.event.calendar;
     },
     hasErrors() {
       return this.errors && this.errors.length;
