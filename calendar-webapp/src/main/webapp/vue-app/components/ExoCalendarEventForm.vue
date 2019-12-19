@@ -7,11 +7,7 @@
       </div>
       <div class="content">
         <form onsubmit="return false;" action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-          <div class="control-group mobile-header">
-            <div class="uiAction clearfix">
-              <button :disabled="!isAllowToSave" type="button" class="btn btn-primary" @click="save">{{ $t('ExoCalendarEventForm.btn.save') }}</button>
-              <button type="button" class="btn cancel" @click="toggleOpen">{{ $t('ExoCalendarEventForm.btn.cancel') }}</button>
-            </div>
+          <div class="control-group">
             <div class="controls">
               <input ref="title" v-model="event.title" :placeholder="$t('ExoCalendarEventForm.placeholder.eventTitle')" name="eventName" class="eventTitle" type="text"/>
               <span class="uiSelectbox form-horizontal">
