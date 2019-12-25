@@ -65,6 +65,11 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
   }
 
   public void testShouldSendMailToParticipantAfterCreateEvent() throws Exception {
+    // Test property 'exo.email.smtp.from' must not be null and must be set to default if not already defined.
+    assertNotNull(MailNotification.EXO_EMAIL_SMTP_FROM);
+    if (System.getProperty("exo.email.smtp.from") == null) {
+      assertEquals("noreply@exoplatform.com", MailNotification.EXO_EMAIL_SMTP_FROM);
+    }
     // Given
     Calendar calendar = createGroupCalendar(new String[] { "/platform/users", "/organization/management/executive-board" },
                                             "CalendarName",
@@ -100,13 +105,13 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     List<Message> messages = messageCaptor.getAllValues();
     Message messageLionel = messages.get(0);
     Assert.assertTrue(messageLionel.getSubject().startsWith("[invitation] Meeting"));
-    Assert.assertEquals("Root Root<" + System.getProperty("exo.email.smtp.from") + ">", messageLionel.getFrom());
+    Assert.assertEquals("Root Root<" + MailNotification.EXO_EMAIL_SMTP_FROM + ">", messageLionel.getFrom());
     Assert.assertEquals("lionel@gmail.com", messageLionel.getTo());
     Assert.assertNotNull(messageLionel.getAttachment());
     Assert.assertEquals(2, messageLionel.getAttachment().size()); // ics file + attachment
     Message messageCristiano = messages.get(1);
     Assert.assertTrue(messageCristiano.getSubject().startsWith("[invitation] Meeting"));
-    Assert.assertEquals("Root Root<" + System.getProperty("exo.email.smtp.from") + ">", messageCristiano.getFrom());
+    Assert.assertEquals("Root Root<" + MailNotification.EXO_EMAIL_SMTP_FROM + ">", messageCristiano.getFrom());
     Assert.assertEquals("cristiano@gmail.com", messageCristiano.getTo());
     Assert.assertNotNull(messageCristiano.getAttachment());
     Assert.assertEquals(2, messageCristiano.getAttachment().size()); // ics file + attachment
