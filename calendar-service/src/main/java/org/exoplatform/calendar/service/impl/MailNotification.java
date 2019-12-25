@@ -62,9 +62,10 @@ public class MailNotification {
   public static final   String FIELD_TO = "to";
   public static final   String FIELD_PLACE = "place";
   public static final   String FIELD_MEETING = "participant";
+  public static final   String EXO_EMAIL_SMTP_FROM = System.getProperty("exo.email.smtp.from", "noreply@exoplatform.com");
 
 
-  
+
   private static final  AtomicBoolean                 isRBLoaded           = new AtomicBoolean();
 
   private static final Log      LOG = ExoLogger.getExoLogger(MailNotification.class);
@@ -150,7 +151,7 @@ public class MailNotification {
                                   res));
       message.setTo(userEmail);
       message.setMimeType(Utils.MIMETYPE_TEXTHTML);
-      message.setFrom(user.getDisplayName() + "<" + System.getProperty("exo.email.smtp.from") + ">");
+      message.setFrom(user.getDisplayName() + "<" + EXO_EMAIL_SMTP_FROM + ">");
       message.setReplyTo(user.getEmail());
 
       if (icsFile != null) {
