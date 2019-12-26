@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
+import org.apache.commons.codec.binary.StringUtils;
+
 import org.exoplatform.calendar.service.CalendarEvent;
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.CalendarSetting;
@@ -139,6 +141,7 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
   
   private static final String LOCALE_US = "en";
   protected static final String CALENDAR_PREFIX_KEY = "CalendarUIActivity.msg.";
+  private static final String   EVENT_EXCEPTIONAL             = "EXCEPTIONAL_EVENT";
 
   private CalendarService calendarService;
   private IdentityManager identityManager;
@@ -191,6 +194,9 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
     params.put(EVENT_STARTTIME_KEY, String.valueOf(event.getFromDateTime().getTime()));
     params.put(EVENT_ENDTIME_KEY, String.valueOf(event.getToDateTime().getTime()));
     params.put(EVENT_LINK_KEY, makeEventLink(event));
+    if (event.getIsExceptionOccurrence() != null && event.getIsExceptionOccurrence()) {
+      params.put(EVENT_EXCEPTIONAL, Boolean.TRUE.toString());
+    }
     return params;
   }
 
@@ -225,6 +231,7 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
     identityManager = (IdentityManager) PortalContainer.getInstance().getComponentInstanceOfType(IdentityManager.class);
     spaceService = (SpaceService) PortalContainer.getInstance().getComponentInstanceOfType(SpaceService.class);
     activityManager = (ActivityManager) PortalContainer.getInstance().getComponentInstanceOfType(ActivityManager.class);
+    calendarService = (CalendarService)PortalContainer.getInstance().getComponentInstance(CalendarService.class);
 
     String spaceGroupId = Utils.getSpaceGroupIdFromCalendarId(calendarId);
     Space space = spaceService.getSpaceByGroupId(spaceGroupId);
@@ -242,7 +249,7 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
       activity = activityManager.getActivity(calendarEvent.getActivityId());
     }
 
-    if(activity == null) {
+    if(activity == null || (calendarEvent.getIsExceptionOccurrence() != null && activity.getTemplateParams().get(EVENT_EXCEPTIONAL) == null)) {
       // create activity
       activity = new ExoSocialActivityImpl();
       activity.setUserId(userIdentity.getId());
@@ -252,6 +259,11 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
       activity.setTemplateParams(makeActivityParams(calendarEvent, calendarId, eventType));
       activityManager.saveActivityNoReturn(spaceIdentity, activity);
       calendarEvent.setActivityId(activity.getId());
+      try {
+        calendarService.savePublicEvent(calendarId, calendarEvent, false);
+      } catch (Exception e) {
+        LOG.error("Couldn't attach the Activity ID {} to the event {}", activity.getId(), calendarEvent.getId(), e);
+      }
     } else {
       //update the activity
       activity.setTitle(calendarEvent.getSummary());
@@ -423,10 +435,11 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
           messagesParams.put(REPEAT_UPDATED, repeatSummary) ;
         }
 
+        /*=== a comment will be added in case we remove an Exception event from the suite of recurrent events  ===*/
         /*=== compare the activity id ===*/
         // oldEvent -- occurrence or instance of repetitive event -- no activity
         // newEvent -- repetitiveEvent - with activity
-        if (!newEvent.getActivityId().equals(oldEvent.getActivityId()))
+        if (!StringUtils.equals(newEvent.getActivityId(), oldEvent.getActivityId()))
         {
           messagesParams.put(REPEAT_EVENT_INSTANCE_REMOVED, getDateFormattedAfterUserSetting(oldEvent.getRecurrenceId())) ;
         }
