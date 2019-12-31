@@ -20,6 +20,7 @@ import net.fortuna.ical4j.data.ParserException;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.impl.*;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.commons.api.search.data.SearchResult;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
@@ -269,6 +270,32 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
 
     calendarService_.generateRss(username, calendars, rssData);
     assertEquals(1, calendarService_.getFeeds(username).size());
+    calendarService_.removeFeedData(username, name);
+    assertEquals(0, calendarService_.getFeeds(username).size());
+  }
+
+  public void testFeedWithDefaultHostname() throws Exception {
+    CalendarEvent event = createUserEvent("Have a meeting");
+    String calId = event.getCalendarId();
+
+    LinkedHashMap<String, Calendar> calendars = new LinkedHashMap<String, Calendar>();
+    calendars.put(Utils.PRIVATE_TYPE + Utils.COLON + calId, calendarService_.getCalendarById(calId));
+    RssData rssData = new RssData();
+
+    String name = "RSS";
+    rssData.setName(name + Utils.RSS_EXT);
+    String url = "http://" + CalendarUtils.getServerBaseUrl() + "/csdemo/rest-csdemo/cs/calendar/feed/" + username + Utils.SLASH + name + Utils.SLASH
+            + IdGenerator.generate() + Utils.RSS_EXT;
+    rssData.setUrl(url);
+    rssData.setTitle(name);
+    rssData.setDescription("Description");
+    rssData.setLink(url);
+    rssData.setVersion("rss_2.0");
+
+    assertNotNull(CalendarUtils.getServerBaseUrl());
+    calendarService_.generateRss(username, calendars, rssData);
+    assertEquals(1, calendarService_.getFeeds(username).size());
+    assertTrue(calendarService_.getFeeds(username).get(0).getUrl().startsWith("http://localhost:8080"));
     calendarService_.removeFeedData(username, name);
     assertEquals(0, calendarService_.getFeeds(username).size());
   }
