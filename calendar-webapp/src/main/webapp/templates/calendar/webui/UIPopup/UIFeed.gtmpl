@@ -15,7 +15,7 @@
          <%
          }else {
            for(feed in feeds) {
-             String feedUrl = serverBaseUrl + feed.getUrl().substring(1);
+             String feedUrl = serverBaseUrl + feed.getUrl();
              %>
                <a href="<%=feedUrl%>" target="_blank"><i class="uiIconRss  uiIconLightGray" ></i>&nbsp;<%=feed.getTitle()%></a> 
                <div class="feedLink">(<%=feedUrl%>)</div>

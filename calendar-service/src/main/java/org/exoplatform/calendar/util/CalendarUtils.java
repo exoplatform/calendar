@@ -55,6 +55,7 @@ import org.exoplatform.calendar.service.EventCategory;
 import org.exoplatform.calendar.service.GroupCalendarData;
 import org.exoplatform.calendar.service.Utils;
 import org.exoplatform.calendar.service.impl.NewUserListener;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.download.DownloadService;
@@ -554,13 +555,7 @@ public class CalendarUtils {
   }
 
   public static String getServerBaseUrl() {
-    HttpServletRequest currentServletRequest = getCurrentServletRequest();
-    if(currentServletRequest != null) {
-      return currentServletRequest.getScheme() + "://" + currentServletRequest.getServerName() +
-              ":" + currentServletRequest.getServerPort();
-    } else {
-      return null;
-    }
+    return CommonsUtils.getCurrentDomain();
   }
 
   /**
