@@ -111,7 +111,8 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
       for (User user : users.load(0, users.getSize())) {
         organizationService_.getUserHandler().setEnabled(user.getUserName(), true, false);
       }
-    }   
+    }
+    System.setProperty("gatein.email.domain.url", "localhost:8080");
   }
 
   @Override
