@@ -954,8 +954,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
                        + df.format(calEvent.getToDateTime()),
                    item.getDetail());
     }
-    SimpleDateFormat tempFm = new SimpleDateFormat("MM/dd/yyyy hh");
-    assertEquals(tempFm.format(new Date()), tempFm.format(new Date(item.getDate())));
+    assertEquals(new Date().getTime() / 3600000, item.getDate() / 3600000);
     assertEquals(true, item.getRelevancy() > 0);
     // case could not init url
     assertEquals(Utils.NONE_NAGVIGATION, item.getUrl());
@@ -971,7 +970,7 @@ public class UnifiedSearchTestCase extends BaseCalendarServiceTestCase {
     assertNotNull(item.getDetail());
     assertNull(item.getImageUrl());
     assertNotNull(item.getUrl());
-    assertEquals(true, item.getDate() > 0);
+    assertTrue(item.getDate() > 0);
   }
 
   private void checkFields(CalendarSearchResult item) {

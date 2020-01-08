@@ -4,11 +4,11 @@ import javax.jcr.Node;
 
 import org.exoplatform.calendar.service.CalendarService;
 import org.exoplatform.calendar.service.impl.JCRDataStorage;
-import org.exoplatform.calendar.util.ActivityTypeUtils;
 import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.cs.ext.impl.CalendarSpaceActivityPublisher;
 import org.exoplatform.services.cache.CacheService;
 import org.exoplatform.services.jcr.RepositoryService;
+import org.exoplatform.services.jcr.ext.ActivityTypeUtils;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;

@@ -330,23 +330,15 @@ public class EventPageListQuery extends JCRPageList {
   }
 
   private String getPublicServiceHome() throws Exception {
-    SessionProvider provider = Utils.createSystemProvider();
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) container.getComponentInstanceOfType(NodeHierarchyCreator.class);
-    Node publicApp = nodeHierarchyCreator.getPublicApplicationNode(provider);
-    if (publicApp != null && publicApp.hasNode(Utils.CALENDAR_APP))
-      return publicApp.getNode(Utils.CALENDAR_APP).getPath();
-    return null;
+    DataStorage dataStorage = ExoContainerContext.getService(DataStorage.class);
+    Node publicApp = dataStorage.getPublicCalendarServiceHome();
+    return publicApp == null ? null : publicApp.getPath();
   }
 
   private String getPrivateServiceHome() throws Exception {
-    SessionProvider provider = Utils.createSystemProvider();
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) container.getComponentInstanceOfType(NodeHierarchyCreator.class);
-    Node privateApp = nodeHierarchyCreator.getUserApplicationNode(provider, username_);
-    if (privateApp != null && privateApp.hasNode(Utils.CALENDAR_APP))
-      return privateApp.getNode(Utils.CALENDAR_APP).getPath();
-    return null;
+    DataStorage dataStorage = ExoContainerContext.getService(DataStorage.class);
+    Node privateApp = dataStorage.getUserCalendarServiceHome(username_);
+    return privateApp == null ? null : privateApp.getPath();
   }
 
   public void setSession(Session s) {

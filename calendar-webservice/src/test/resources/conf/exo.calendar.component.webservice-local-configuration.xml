@@ -22,34 +22,10 @@
                xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd http://www.exoplaform.org/xml/ns/kernel_1_2.xsd"
                xmlns="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd">
   <component>
-    <key>org.exoplatform.portal.config.UserACL</key>
-    <type>org.exoplatform.portal.config.UserACL</type>   
-    <init-params>       
-      <value-param>
-        <name>super.user</name>
-        <description>administrator</description>
-        <value>root</value>      
-      </value-param>
-    </init-params>  
+    <key>org.exoplatform.social.core.manager.IdentityManager</key>
+    <type>org.exoplatform.calendar.MockIdentityManager</type>
   </component>
-               
   <component>
-    <key>org.exoplatform.calendar.ws.common.RestSecurityService</key>
-    <type>org.exoplatform.calendar.ws.common.RestSecurityServiceImpl</type>
+    <type>org.exoplatform.upload.UploadService</type>
   </component>
-                 
-	<external-component-plugins>
-      <target-component>org.exoplatform.calendar.ws.common.RestSecurityService</target-component>     
-      <component-plugin>
-         <name>add.config.permission</name>
-         <set-method>addPermission</set-method>
-         <type>org.exoplatform.calendar.ws.common.RestSecurityServiceImpl$PermissionPlugin</type>
-         <init-params>
-            <properties-param>
-            	<name>permissions</name>
-            	<property name="/v1/calendar" value="*:/platform/administrators, *:/platform/editors"/>
-        		</properties-param>
-         </init-params>
-      </component-plugin>
-  </external-component-plugins>
 </configuration>

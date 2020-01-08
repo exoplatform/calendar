@@ -683,13 +683,9 @@ public class Utils {
     return (event.getRepeatType() != null && !CalendarEvent.RP_NOREPEAT.equals(event.getRepeatType()) && (event.getIsExceptionOccurrence() == null || !event.getIsExceptionOccurrence()));
   }
 
-  public static Node getPublicServiceHome(SessionProvider provider) throws Exception {
-    ExoContainer container = ExoContainerContext.getCurrentContainer();
-    NodeHierarchyCreator nodeHierarchyCreator = (NodeHierarchyCreator) container.getComponentInstanceOfType(NodeHierarchyCreator.class);
-    Node publicApp = nodeHierarchyCreator.getPublicApplicationNode(provider);
-    if (publicApp != null && publicApp.hasNode(CALENDAR_APP))
-      return publicApp.getNode(CALENDAR_APP);
-    return null;
+  public static Node getPublicServiceHome() throws Exception {
+    DataStorage dataStorage = ExoContainerContext.getService(DataStorage.class);
+    return dataStorage.getPublicCalendarServiceHome();
   }
 
   public static Session getSession(SessionProvider sprovider) throws Exception {

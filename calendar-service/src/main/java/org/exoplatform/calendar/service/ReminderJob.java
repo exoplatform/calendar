@@ -64,10 +64,10 @@ public class ReminderJob implements Job {
       if (LOG.isDebugEnabled())
         LOG.debug("Calendar email reminder service");
       java.util.Calendar fromCalendar = java.util.Calendar.getInstance();
-      Node calendarHome = Utils.getPublicServiceHome(provider);
+      Node calendarHome = Utils.getPublicServiceHome();
       if (calendarHome == null)
         return;
-      StringBuilder path = new StringBuilder(PopupReminderJob.getReminderPath(fromCalendar, provider));
+      StringBuilder path = new StringBuilder(PopupReminderJob.getReminderPath(fromCalendar));
       path.append("//element(*,exo:reminder)");
       path.append("[@exo:remindDateTime <= xs:dateTime('" + ISO8601.format(fromCalendar)
           + "') and @exo:isOver = 'false' and @exo:reminderType = 'email' ]");

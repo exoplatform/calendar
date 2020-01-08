@@ -23,8 +23,8 @@ import javax.jcr.*;
 import javax.jcr.query.QueryManager;
 
 import org.exoplatform.calendar.service.*;
-import org.exoplatform.calendar.util.ActivityTypeUtils;
 import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.services.jcr.ext.ActivityTypeUtils;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.impl.core.query.QueryImpl;
 import org.exoplatform.services.log.ExoLogger;

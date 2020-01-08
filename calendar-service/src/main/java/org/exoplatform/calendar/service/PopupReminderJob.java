@@ -52,10 +52,10 @@ public class PopupReminderJob implements Job {
         LOG.debug("Calendar popup reminder service");
       java.util.Calendar fromCalendar = Utils.getInstanceTempCalendar();
       ContinuationService continuation = container.getComponentInstanceOfType(ContinuationService.class);
-      Node calendarHome = Utils.getPublicServiceHome(provider);
+      Node calendarHome = Utils.getPublicServiceHome();
       if (calendarHome == null)
         return;
-      StringBuilder path = new StringBuilder(getReminderPath(fromCalendar, provider));
+      StringBuilder path = new StringBuilder(getReminderPath(fromCalendar));
       path.append("//element(*,exo:reminder)");
       path.append("[@exo:remindDateTime <= xs:dateTime('" + ISO8601.format(fromCalendar)
           + "') and @exo:isOver = 'false' and @exo:reminderType = 'popup' ]");
@@ -161,12 +161,12 @@ public class PopupReminderJob implements Job {
     return diff <= delta && currentTime >= remindTime;
   }
 
-  public static String getReminderPath(java.util.Calendar fromCalendar, SessionProvider provider) throws Exception {
+  public static String getReminderPath(java.util.Calendar fromCalendar) throws Exception {
     String year = "Y" + fromCalendar.get(java.util.Calendar.YEAR);
     String month = "M" + (fromCalendar.get(java.util.Calendar.MONTH) + 1);
     String day = "D" + fromCalendar.get(java.util.Calendar.DATE);
     StringBuilder path = new StringBuilder("/jcr:root");
-    path.append(Utils.getPublicServiceHome(provider).getPath());
+    path.append(Utils.getPublicServiceHome().getPath());
     path.append(Utils.SLASH).append(year).append(Utils.SLASH).append(month).append(Utils.SLASH).append(day);
     path.append(Utils.SLASH).append(Utils.CALENDAR_REMINDER);
     return path.toString();

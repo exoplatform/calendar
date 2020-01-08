@@ -2,7 +2,7 @@
   xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
 
  <!-- Social integration -->
-    <external-component-plugins>
+  <external-component-plugins>
     <target-component>org.exoplatform.social.core.space.spi.SpaceService</target-component>
     <component-plugin>
       <name>CalendarDataInitialize</name>
@@ -13,22 +13,6 @@
           <name>portletName</name>
           <value>CalendarPortlet</value>
         </value-param>
-      </init-params>
-    </component-plugin>
-  </external-component-plugins>
-
-  <external-component-plugins>
-    <target-component>org.exoplatform.services.jcr.RepositoryService</target-component>
-    <component-plugin>
-      <name>add.nodeType</name>
-      <set-method>addPlugin</set-method>
-      <type>org.exoplatform.services.jcr.impl.AddNodeTypePlugin</type>
-      <init-params>
-        <values-param>
-          <name>autoCreatedInNewRepository</name>
-          <description>Node types configuration file</description>
-          <value>jar:/activity-nodetypes-config.xml</value>
-        </values-param>
       </init-params>
     </component-plugin>
   </external-component-plugins>

@@ -42,7 +42,6 @@ import com.sun.syndication.io.*;
 
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.util.ActivityTypeUtils;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
 import org.exoplatform.commons.utils.DateUtils;
@@ -54,6 +53,7 @@ import org.exoplatform.services.jcr.access.AccessControlEntry;
 import org.exoplatform.services.jcr.access.PermissionType;
 import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.exoplatform.services.jcr.core.ManageableRepository;
+import org.exoplatform.services.jcr.ext.ActivityTypeUtils;
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
@@ -404,7 +404,7 @@ public class JCRDataStorage implements DataStorage {
   }
 
   private String buildGroupCalendarQuery(String groupId) {
-    StringBuilder queryString = new StringBuilder("/jcr:root").append(getGroupCalendarHomePath()).append("/element(*,exo:calendar)[@exo:groups='").append(groupId).append("']");
+    StringBuilder queryString = new StringBuilder("SELECT * FROM exo:calendar WHERE jcr:path LIKE '").append(getGroupCalendarHomePath()).append("/%' AND exo:groups = '").append(groupId).append("'");
     return queryString.toString();
   }
 
@@ -1102,7 +1102,7 @@ public class JCRDataStorage implements DataStorage {
   }
   // removes reference of an exception event to the original event 
   private void removeReference(CalendarEvent exceptionEvent) throws Exception {
-    Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+    Node calendarApp = Utils.getPublicServiceHome();
     QueryManager queryManager = calendarApp.getSession().getWorkspace().getQueryManager();
     String sql = "select * from exo:repeatCalendarEvent where exo:id=" + "\'" + exceptionEvent.getId() + "\'";
     Query query = queryManager.createQuery(sql, Query.SQL);
@@ -1847,7 +1847,7 @@ public class JCRDataStorage implements DataStorage {
   
   public void removeAttachmentById(String attId) {
       try {
-        Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+        Node calendarApp = Utils.getPublicServiceHome();
         Node parentNode =  calendarApp.getSession().getItem(attId).getParent();
         calendarApp.getSession().getItem(attId).remove();
         parentNode.save();
@@ -6078,12 +6078,13 @@ public class JCRDataStorage implements DataStorage {
   private static class GroupCalendarLoader implements Loader<String, List<Calendar>, JCRDataStorage> {
     @Override
     public List<Calendar> retrieve(JCRDataStorage context, String key) throws Exception {
+      List<Calendar> calendarList = new LinkedList<Calendar>();
+
       Node calendarHome = context.getPublicCalendarHome();
       QueryManager qm = calendarHome.getSession().getWorkspace().getQueryManager();
-      Query query = qm.createQuery(key, Query.XPATH);
+      Query query = qm.createQuery(key, Query.SQL);
       QueryResult result = query.execute();
       
-      List<Calendar> calendarList = new LinkedList<Calendar>();
       NodeIterator it = result.getNodes();
       while (it.hasNext()) {
         Node calNode = it.nextNode();

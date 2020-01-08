@@ -17,32 +17,24 @@
 
 package org.exoplatform.webservice.cs.rest;
 
-import org.exoplatform.commons.chromattic.ChromatticManager;
-import org.exoplatform.component.test.AbstractKernelTest;
-import org.exoplatform.component.test.ConfigurationUnit;
-import org.exoplatform.component.test.ConfiguredBy;
-import org.exoplatform.component.test.ContainerScope;
+import org.exoplatform.component.test.*;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.rest.impl.ApplicationContextImpl;
-import org.exoplatform.services.rest.impl.ProviderBinder;
-import org.exoplatform.services.rest.impl.RequestHandlerImpl;
-import org.exoplatform.services.rest.impl.ResourceBinder;
+import org.exoplatform.services.rest.impl.*;
 
 /**
  * @author <a href="mailto:andrew00x@gmail.com">Andrey Parfonov</a>
  * @version $Id: $
  */
 @ConfiguredBy({
+  @ConfigurationUnit(scope = ContainerScope.ROOT, path = "conf/configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/configuration.xml"),
   @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),
-           @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
-           @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
-           @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/test-portal-configuration.xml"),
-           @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.core.test.configuration.xml"),
-           @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.jcr-configuration.xml"),
-           @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.portal-configuration.xml")
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.calendar.component.webservice-dependencies-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.calendar.component.webservice-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.calendar.component.webservice-local-configuration.xml"),
 })
 public abstract class BaseTest extends AbstractKernelTest {
 
@@ -56,8 +48,6 @@ public abstract class BaseTest extends AbstractKernelTest {
 
   protected OrganizationService  orgService;
 
-  protected ChromatticManager chromatticManager;
-
   public BaseTest() {
     setForceContainerReload(true);
   }
@@ -66,7 +56,6 @@ public abstract class BaseTest extends AbstractKernelTest {
     super.setUp();
     container = getContainer();
     ExoContainerContext.setCurrentContainer(container);
-    chromatticManager = (ChromatticManager)container.getComponentInstanceOfType(ChromatticManager.class);
     orgService = (OrganizationService) container.getComponentInstanceOfType(OrganizationService.class);
     binder = (ResourceBinder) container.getComponentInstanceOfType(ResourceBinder.class);
     requestHandler = (RequestHandlerImpl) container.getComponentInstanceOfType(RequestHandlerImpl.class);

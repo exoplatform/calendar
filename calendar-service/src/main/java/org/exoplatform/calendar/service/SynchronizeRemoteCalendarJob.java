@@ -49,7 +49,7 @@ public class SynchronizeRemoteCalendarJob implements Job {
 
   public static final String USERNAME_PARAMETER                = "username";
 
-  private String             username;
+  private DataStorage        dataStorage;
 
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -80,13 +80,12 @@ public class SynchronizeRemoteCalendarJob implements Job {
       // get info from data map
       JobDetail jobDetail = context.getJobDetail();
       JobDataMap dataMap = jobDetail.getJobDataMap();
-      username = dataMap.getString(USERNAME_PARAMETER);
-
+      String username = dataMap.getString(USERNAME_PARAMETER);
       if (username == null) {
         return;
       }
       // get list of remote calendar of current user
-      Node userCalendarHome = getUserCalendarHome(provider);
+      Node userCalendarHome = getDataStorage().getUserCalendarHome(username);
       if (userCalendarHome == null) {
         throw new IllegalStateException("Can't get user calendar home node");
       }
@@ -192,16 +191,10 @@ public class SynchronizeRemoteCalendarJob implements Job {
     return jobNameBd.toString();
   }
 
-  private Node getUserCalendarHome(SessionProvider provider) throws Exception {
-    try {
-      ExoContainer container = ExoContainerContext.getCurrentContainer();
-      NodeHierarchyCreator nodeHierarchyCreator = container.getComponentInstanceOfType(NodeHierarchyCreator.class);
-      Node userApp = nodeHierarchyCreator.getUserApplicationNode(provider, username);
-      Node userCalendarApp = userApp.getNode(Utils.CALENDAR_APP);
-      return userCalendarApp.getNode(CALENDARS);
-    } catch (Exception e) {
-      return null;
+  public DataStorage getDataStorage() {
+    if (dataStorage == null) {
+      dataStorage = ExoContainerContext.getService(DataStorage.class);
     }
+    return dataStorage;
   }
-
 }

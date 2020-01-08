@@ -85,6 +85,11 @@
   </component>  
   
   <component>
+    <key>org.exoplatform.calendar.service.DataStorage</key>
+    <type>org.exoplatform.calendar.service.impl.JCRDataStorage</type>
+  </component>
+  
+  <component>
     <key>org.exoplatform.calendar.service.ExtendedCalendarService</key>
     <type>org.exoplatform.calendar.service.impl.ExtendedCalendarServiceImpl</type>
   </component>    

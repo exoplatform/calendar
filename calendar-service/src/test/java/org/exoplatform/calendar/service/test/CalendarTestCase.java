@@ -16,22 +16,23 @@
  */
 package org.exoplatform.calendar.service.test;
 
-import net.fortuna.ical4j.data.ParserException;
-import org.exoplatform.calendar.service.Calendar;
+import java.io.IOException;
+import java.util.*;
+
+import javax.jcr.PathNotFoundException;
+
 import org.exoplatform.calendar.service.*;
+import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.impl.*;
 import org.exoplatform.calendar.util.CalendarUtils;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.util.IdGenerator;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserStatus;
 
-import javax.jcr.PathNotFoundException;
-import java.io.IOException;
-import java.util.*;
+import net.fortuna.ical4j.data.ParserException;
 
 public class CalendarTestCase extends BaseCalendarServiceTestCase {
   private RepositoryService repositoryService_ ;
@@ -50,7 +51,7 @@ public class CalendarTestCase extends BaseCalendarServiceTestCase {
     assertNotNull(repositoryService_) ;
     assertNotNull(organizationService_) ;
 
-    assertEquals(9, organizationService_.getUserHandler().findAllUsers(UserStatus.ANY).getSize());
+    assertTrue(organizationService_.getUserHandler().findAllUsers(UserStatus.ANY).getSize() > 5);
 
     assertNotNull(storage_);
 
