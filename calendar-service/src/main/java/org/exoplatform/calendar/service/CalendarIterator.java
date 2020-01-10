@@ -19,8 +19,8 @@ public class CalendarIterator implements Iterator {
 
     public boolean hasNext() {
     	if(uItor.hasNext()) return uItor.hasNext();
-    	else if(pItor.hasNext()) return pItor.hasNext();
-    	else if(shItor.hasNext()) return shItor.hasNext();
+    	else if(pItor !=null && pItor.hasNext()) return pItor.hasNext();
+    	else if(shItor !=null && shItor.hasNext()) return shItor.hasNext();
     	return false;
     }
 

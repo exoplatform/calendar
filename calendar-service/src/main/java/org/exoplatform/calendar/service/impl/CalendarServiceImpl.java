@@ -244,7 +244,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         }
       }
     } catch (Exception e) {
-      LOG.error(e);
+      LOG.error("Error retrieving all calendars", e);
     }
     return new CalendarCollection<Calendar>(cals, fullSize);
   }
