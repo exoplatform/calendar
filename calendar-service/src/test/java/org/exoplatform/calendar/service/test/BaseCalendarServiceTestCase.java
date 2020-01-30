@@ -17,12 +17,9 @@
 package org.exoplatform.calendar.service.test;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
+
+import org.picocontainer.Startable;
 
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
@@ -57,15 +54,13 @@ import org.exoplatform.services.security.MembershipEntry;
  */
 
 @ConfiguredBy({
-        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.portal-configuration.xml"),
-        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
-        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.identity-configuration.xml"),
-        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/test-portal-configuration.xml"),
-        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.component.core.test.configuration.xml"),
-        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.jcr-configuration.xml"),
-        @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/exo.calendar.test.portal-configuration.xml")
+  @ConfigurationUnit(scope = ContainerScope.ROOT, path = "conf/configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/portal/configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.calendar.component.service-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.calendar.component.service-dependencies-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.calendar.component.service-local-configuration.xml"),
+  @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.calendar.component.service-organization-configuration.xml"),
 })
-
 public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
 
   protected static Log          log        = ExoLogger.getLogger("cs.calendar.services.test");
@@ -79,7 +74,7 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
   protected String[]            userGroups = new String[] { "/platform/users",
       "/organization/management/executive-board" };
 
-  protected SimpleDateFormat    df         = new SimpleDateFormat(Utils.DATE_TIME_FORMAT);
+  protected SimpleDateFormat    df         = new SimpleDateFormat(Utils.DATE_TIME_FORMAT, Locale.ENGLISH);
 
   protected OrganizationService organizationService_;
 
@@ -90,6 +85,8 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
   @Override
   public void setUp() throws Exception {
     begin();
+
+    Locale.setDefault(Locale.ENGLISH);
 
     // Init services
     organizationService_ = getService(OrganizationService.class);
@@ -105,7 +102,7 @@ public abstract class BaseCalendarServiceTestCase extends AbstractKernelTest {
 
     // Login user
     login(username);
-    
+
     ListAccess<User> users = organizationService_.getUserHandler().findAllUsers(UserStatus.DISABLED);
     if (users != null) {
       for (User user : users.load(0, users.getSize())) {

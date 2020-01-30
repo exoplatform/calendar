@@ -66,7 +66,7 @@ public abstract class TestRestApi extends AbstractResourceTest {
     
     for (String username : users) {
       CalendarCollection<Calendar> cals = calendarService.getAllCalendars(username, Calendar.TYPE_ALL,0, Utils.UNLIMITED);
-      for (int i = 0; i < cals.getFullSize(); i++) {
+      for (int i = 0; i < cals.getSize(); i++) {
         String id = cals.get(i).getId();
         calendarService.removeUserCalendar(username, id);
         calendarService.removePublicCalendar(id);

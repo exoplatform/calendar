@@ -3,6 +3,9 @@
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd http://www.exoplaform.org/xml/ns/kernel_1_2.xsd"
   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd">
 
+  <!-- JCR Repository Service and 'system' workspace -->
+  <import>jar:/conf/portal/jcr-ext-configuration.xml</import> 
+
   <!-- cs workspace and load nodetypes -->
   <import>war:/cs-extension/cs/cs-nodetypes-configuration.xml</import>
 

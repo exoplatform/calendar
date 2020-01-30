@@ -136,8 +136,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       switch (calType) {
       case Calendar.TYPE_PRIVATE:
         Node userNode = storage_.getUserCalendarHome(username);
-        sql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(userNode.getPath()).append("/%'")
-        .append("AND NOT jcr:path LIKE '").append(userNode.getPath()).append("/%/%'");
+        sql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(userNode.getPath()).append("/%'");
         queryManager = userNode.getSession().getWorkspace().getQueryManager();
         break;
       case Calendar.TYPE_SHARED:
@@ -162,8 +161,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         if (groups == null || groups.isEmpty()) return new CalendarCollection<Calendar>(Collections.<Calendar>emptyList(), 0);
         
         Node node =  storage_.getPublicCalendarHome();
-        sql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(node.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
-        .append(node.getPath()).append("/%/%'");
+        sql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(node.getPath()).append("/%'");
         sql.append(" AND (");
         for (Iterator<String> i = groups.iterator(); i.hasNext();) {
           sql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next()).append("')");
@@ -185,8 +183,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         }
         StringBuffer pSql = new StringBuffer(sql.toString());
 
-        pSql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(uNode.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
-        .append(uNode.getPath()).append("/%/%'"); 
+        pSql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(uNode.getPath()).append("/%'"); 
         queryManager = uNode.getSession().getWorkspace().getQueryManager();
         QueryImpl jcrquery = (QueryImpl)queryManager.createQuery(pSql.toString(), Query.SQL);
         QueryResult result = jcrquery.execute();
@@ -196,8 +193,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         groups = CommonsUtils.getGroupsOfUser(username);
         if (groups != null) {
           StringBuffer gSql = new StringBuffer(sql.toString());
-          gSql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(pNode.getPath()).append("/%'").append("AND NOT jcr:path LIKE '")
-          .append(pNode.getPath()).append("/%/%'");
+          gSql.append(" WHERE ").append(Utils.JCR_PATH).append(" LIKE '").append(pNode.getPath()).append("/%'");
           gSql.append(" AND (");
           for (Iterator<String> i = groups.iterator(); i.hasNext();) {
             gSql.append("CONTAINS(").append(Utils.EXO_GROUPS).append(", ").append("'").append(i.next()).append("')");
@@ -248,7 +244,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         }
       }
     } catch (Exception e) {
-      if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());
+      LOG.error("Error retrieving all calendars", e);
     }
     return new CalendarCollection<Calendar>(cals, fullSize);
   }
@@ -377,7 +373,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     try {
       storage_.savePublicCalendar(calendar, isNew, null);
     } catch (Exception e) {
-      throw new CalendarException();
+      throw new CalendarException(e);
     }
   }
 
@@ -1184,7 +1180,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
     JobDetail job = findSynchronizeRemoteCalendarJob(schedulerService, username);
     if (job == null) {
       JobDataMap jobData = new JobDataMap();
-      jobData.put(SynchronizeRemoteCalendarJob.USERNAME, username);
+      jobData.put(SynchronizeRemoteCalendarJob.USERNAME_PARAMETER, username);
       RepositoryService repositoryService = (RepositoryService) container.getComponentInstanceOfType(RepositoryService.class);
       jobData.put(repositoryService.getCurrentRepository()
                   .getConfiguration()
@@ -1908,7 +1904,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public Attachment getAttachmentById(String attId){
     Attachment att = null;
     try {
-      Node calendarApp = Utils.getPublicServiceHome(Utils.createSystemProvider());
+      Node calendarApp = Utils.getPublicServiceHome();
       att = Utils.loadAttachment((Node)calendarApp.getSession().getItem(attId));
     } catch (Exception e) {
       if(LOG.isDebugEnabled()) LOG.debug(e.getMessage());

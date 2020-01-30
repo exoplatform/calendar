@@ -1,0 +1,153 @@
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
+  xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
+
+ <!-- Social integration -->
+  <external-component-plugins>
+    <target-component>org.exoplatform.social.core.space.spi.SpaceService</target-component>
+    <component-plugin>
+      <name>CalendarDataInitialize</name>
+      <set-method>addSpaceListener</set-method>
+      <type>org.exoplatform.cs.ext.impl.CalendarDataInitialize</type>
+      <init-params>
+        <value-param>
+          <name>portletName</name>
+          <value>CalendarPortlet</value>
+        </value-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.search.SearchService</target-component>
+    <component-plugin>
+      <name>EventSearchConnector</name>
+      <set-method>addConnector</set-method>
+      <type>org.exoplatform.calendar.service.impl.EventSearchConnector</type>
+      <description>eXo Calendar events</description>
+      <init-params>
+        <properties-param>
+           <name>constructor.params</name>
+           <property name="searchType" value="event"/>
+           <property name="displayName" value="Events"/>
+           <property name="enable" value="${exo.unified-search.connector.event.enable:true}"/>
+        </properties-param>
+      </init-params>      
+      </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.calendar.service.CalendarService</target-component>
+    <component-plugin>
+      <name>unifiedsearch.listeners.calendar</name>
+      <set-method>addEventListenerPlugin</set-method>
+      <type>org.exoplatform.calendar.indexing.listener.UnifiedSearchCalendarListener</type>
+      <description>Calendar listener for Unified Search</description>
+    </component-plugin>
+    <component-plugin>
+      <name>CalendarEventListener</name>
+      <set-method>addEventListenerPlugin</set-method>
+      <type>org.exoplatform.cs.ext.impl.CalendarSpaceActivityPublisher</type>      
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <target-component>org.exoplatform.social.core.space.spi.SpaceService</target-component>
+    <component-plugin>
+      <name>portlets.prefs.required</name>
+      <set-method>setPortletsPrefsRequired</set-method>
+      <type>org.exoplatform.social.core.application.PortletPreferenceRequiredPlugin</type>
+            <init-params>      
+              <values-param>
+                <name>portletsPrefsRequired</name>
+                <value>CalendarPortlet</value>
+              </values-param>
+            </init-params>
+    </component-plugin>
+  </external-component-plugins>
+
+  <!-- configure activies plugin -->
+  <external-component-plugins>
+    <target-component>org.exoplatform.webui.ext.UIExtensionManager</target-component>
+    <component-plugin>
+      <name>add.cs.calendar.activity.plugin</name>
+      <set-method>registerUIExtensionPlugin</set-method>
+      <type>org.exoplatform.webui.ext.UIExtensionPlugin</type>
+      <init-params>
+        <object-param>
+          <name>Calendar Space Activity</name>
+          <object type="org.exoplatform.social.webui.activity.UIActivityExtension">
+            <field name="type"><string>org.exoplatform.social.webui.activity.BaseUIActivity</string></field>
+            <field name="name"><string>cs-calendar:spaces</string></field>
+            <field name="component"><string>org.exoplatform.cs.ext.impl.CalendarUIActivity</string></field>
+            <field name="activityBuiderClass"><string>org.exoplatform.cs.ext.impl.CalendarSpaceUIActivityBuilder</string></field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  
+  <external-component-plugins>
+    <!-- The full qualified name of the ResourceBundleService -->
+    <target-component>org.exoplatform.services.resources.ResourceBundleService</target-component>
+    <component-plugin>
+      <!-- The name of the plugin -->
+      <name>Calendar-Social integration ResourceBundle Plugin</name>
+      <!-- The name of the method to call on the ResourceBundleService in order to register the ResourceBundles -->
+      <set-method>addResourceBundle</set-method>
+      <!-- The full qualified name of the BaseResourceBundlePlugin -->
+      <type>org.exoplatform.services.resources.impl.BaseResourceBundlePlugin</type>
+      <init-params>
+        <values-param>
+          <name>classpath.resources</name>
+          <description>The resources that start with the following package name should be load from file system</description>
+          <value>locale.calendar.integration.integration</value>
+        </values-param>
+        <values-param>
+          <name>portal.resource.names</name>
+          <description>The properties files of the portal , those file will be merged
+            into one ResoruceBundle properties </description>
+          <value>locale.calendar.integration.integration</value>
+        </values-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.commons.api.notification.service.setting.PluginContainer</target-component>
+    <component-plugin>
+      <name>notification.plugins</name>
+      <set-method>addChildPlugin</set-method>
+      <type>org.exoplatform.calendar.notification.plugin.CalendarActivityChildPlugin</type>
+      <description>Initial information for calendar child notification plugin.</description>
+      <init-params>
+        <value-param>
+          <name>templatePath</name>
+          <value><![CDATA[classpath:/groovy/cs/social-integration/plugin/notification/CalendarActivity.gtmpl]]></value>
+        </value-param>
+        <object-param>
+          <name>template.CalendarActivityChildPlugin</name>
+          <description>The template of CalendarActivityChildPlugin</description>
+          <object type="org.exoplatform.commons.api.notification.plugin.config.PluginConfig">
+            <field name="pluginId">
+              <string>cs-calendar:spaces</string>
+            </field>
+            <field name="bundlePath">
+              <string>locale.calendar.integration.notification.CalendarNotification</string>
+            </field>
+          </object>
+        </object-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+  <!-- End social intergration -->
+
+	<external-component-plugins>
+		<target-component>org.exoplatform.commons.api.event.EventManager</target-component>
+		<component-plugin profiles="all">
+			<name>SOC_ACTIVITY_MIGRATION</name>
+			<set-method>addEventListener</set-method>
+			<type>org.exoplatform.calendar.addons.rdbms.listener.CalendarActivityUpdaterListener</type>
+		</component-plugin>
+	</external-component-plugins>
+
+  </configuration>

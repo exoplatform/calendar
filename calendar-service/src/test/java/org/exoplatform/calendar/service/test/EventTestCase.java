@@ -20,30 +20,14 @@ package org.exoplatform.calendar.service.test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import org.exoplatform.calendar.service.Attachment;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.EventCategory;
-import org.exoplatform.calendar.service.EventQuery;
-import org.exoplatform.calendar.service.GroupCalendarData;
-import org.exoplatform.calendar.service.Reminder;
-import org.exoplatform.calendar.service.Utils;
-import org.exoplatform.calendar.service.impl.CalendarSearchServiceConnector;
-import org.exoplatform.calendar.service.impl.EventSearchConnector;
-import org.exoplatform.calendar.service.impl.NewGroupListener;
-import org.exoplatform.calendar.service.impl.UnifiedQuery;
+import org.exoplatform.calendar.service.impl.*;
 import org.exoplatform.commons.api.search.data.SearchContext;
 import org.exoplatform.commons.api.search.data.SearchResult;
-import org.exoplatform.container.xml.InitParams;
-import org.exoplatform.services.organization.Group;
-import org.exoplatform.services.organization.MembershipType;
-import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.*;
 import org.exoplatform.web.controller.metadata.ControllerDescriptor;
 import org.exoplatform.web.controller.metadata.DescriptorBuilder;
 import org.exoplatform.web.controller.router.Router;
@@ -132,7 +116,7 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
     Date modifiedDate = calendarService_.getEventById(event.getId())
                                         .getLastUpdatedTime();
     assertNotNull(modifiedDate);
-    assertTrue(modifiedDate.after(createdDate));
+    assertTrue(modifiedDate + " should be after " + createdDate, modifiedDate.after(createdDate) || modifiedDate.equals(createdDate));
   }
 
   public void testGetPublicEvents() throws Exception {
@@ -211,17 +195,11 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
                                       query.getOrderBy()[0],
                                       query.getOrderType());
     assertEquals(1, rs.size());
-    
-    // update to space calendar
-    organizationService_.getGroupHandler()
-    .addGroupEventListener(new NewGroupListener(calendarService_,
-                                                new InitParams()));
-    Group parent = organizationService_.getGroupHandler().findGroupById("/spaces");
     Group g = organizationService_.getGroupHandler().createGroupInstance();
     g.setGroupName("spacetest");
     g.setLabel("Calendar Space");
     g.setDescription("simulate space creted");
-    organizationService_.getGroupHandler().addChild(parent, g, true);
+    organizationService_.getGroupHandler().addChild(null, g, true);
     g = organizationService_.getGroupHandler().findGroupById(g.getId());
     Collection<Group> gr = organizationService_.getGroupHandler().findGroupsOfUser("raul");
     assertEquals(1, gr.size());
@@ -233,10 +211,9 @@ public class EventTestCase extends BaseCalendarServiceTestCase {
     gr = organizationService_.getGroupHandler().findGroupsOfUser("raul");
     assertEquals(2, gr.size());
     
-    List<GroupCalendarData> spaceCals = calendarService_.getGroupCalendars(new String[] { "/spaces/spacetest" },
+    List<GroupCalendarData> spaceCals = calendarService_.getGroupCalendars(new String[] { "/spacetest" },
                                                                            true,
         "raul");
-    // success save calendar by NewGroupListener;
     assertEquals(1, spaceCals.get(0).getCalendars().size());
     Calendar spaceCal = spaceCals.get(0).getCalendars().get(0);
     // spaceCal.setId(g.getGroupName() + Utils.SPACE_ID_PREFIX);
