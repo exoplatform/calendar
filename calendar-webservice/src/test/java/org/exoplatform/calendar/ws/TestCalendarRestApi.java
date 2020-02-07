@@ -50,7 +50,6 @@ public class TestCalendarRestApi extends TestRestApi {
     Map<String, String[]> subResources = (Map<String, String[]>)response.getEntity();
     String[] resources = subResources.get("subResourcesHref");
     assertEquals(35, resources.length);
-    System.out.println(resources[0]);
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -87,17 +86,20 @@ public class TestCalendarRestApi extends TestRestApi {
     assertTrue(calR.getSize() >= calR.getData().size());
 
     for (int i = 0; i < 20; i++) {
-      createPersonalCalendar("root" + " myCalendar2" + i, "root");
+      createPersonalCalendar("root myCalendar3" + i, "root");
     }
 
     response = service(HTTPMethods.GET, CAL_BASE_URI + CALENDAR_URI + queryParams, baseURI, headers, null, writer);
     calR = (CollectionResource) response.getEntity();
     assertEquals(15, calR.getData().size());
-    assertTrue(calR.getSize() >= calR.getData().size());
-    long limit = calR.getSize() - calR.getData().size();
+
+    long calSize = calR.getSize();
+    assertTrue(calSize >= calR.getData().size());
+    long limit = --calSize % 15 + 1;
+    long offset = ++calSize - limit;
 
     String header = "[</v1/calendar/calendars/?offset=15&limit=15>;rel=\"next\"," +
-        "</v1/calendar/calendars/?offset=0&limit=15>;rel=\"first\",</v1/calendar/calendars/?offset=15&limit=" + limit + ">;rel=\"last\"]";
+        "</v1/calendar/calendars/?offset=0&limit=15>;rel=\"first\",</v1/calendar/calendars/?offset=" + offset + "&limit=" + limit + ">;rel=\"last\"]";
     assertEquals(header, response.getHttpHeaders().get(HEADER_LINK).toString());
   }
 
