@@ -2,6 +2,15 @@
 <gatein-resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.exoplatform.org/xml/ns/gatein_resources_1_4 http://www.exoplatform.org/xml/ns/gatein_resources_1_4"
   xmlns="http://www.exoplatform.org/xml/ns/gatein_resources_1_4">
+
+  <portlet-skin>
+    <application-name>calendar</application-name>
+    <portlet-name>CalendarPortlet</portlet-name>
+    <skin-name>${exo.skin.name}</skin-name>
+    <css-path>/skin/css/calendar/calendar.css</css-path>
+    <css-priority>1</css-priority>
+  </portlet-skin>
+
   <portlet>
     <name>CalendarPortlet</name>
     <module>
