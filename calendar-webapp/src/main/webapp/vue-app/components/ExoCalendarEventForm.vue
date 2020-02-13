@@ -313,6 +313,10 @@ export default {
       const event = new CalendarEvent();
       //add event creator as default participants
       event.participants.push(eXo.env.portal.userName);
+      //add event space as default value in space case
+      if (eXo.env.portal.spaceName) {
+        event.calendar = eXo.env.portal.spaceName.concat('_space_calendar');
+      }
       //if initEvt has participants, it will override above default value
       event.buildFrom(this.initEvt);
       data.event = event;
