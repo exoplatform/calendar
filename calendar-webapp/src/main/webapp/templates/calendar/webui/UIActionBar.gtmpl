@@ -47,8 +47,8 @@
 					style = "btn active" ;
 					}
 					%>
-					<li class="$style">
-					  <a onclick="$actionLink" href="javascript:void(0);">$label</a>
+					<li class="$style" onclick="$actionLink" style="cursor: pointer;">
+					 $label
 					</li>
 					  
 					<%  
