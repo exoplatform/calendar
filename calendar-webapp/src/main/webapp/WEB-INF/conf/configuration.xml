@@ -18,5 +18,7 @@
   <import>war:/cs-extension/cs/cs-configuration.xml</import>
 
   <import>war:/cs-extension/social/spaces-templates-configuration.xml</import>
-  
+
+  <import>war:/cs-extension/portal/portal-configuration.xml</import>
+
 </configuration>
