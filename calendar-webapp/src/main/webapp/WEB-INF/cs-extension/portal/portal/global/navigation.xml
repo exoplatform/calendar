@@ -24,10 +24,10 @@
   <priority>5</priority>
   <page-nodes>
     <node>
-      <name>calendar</name>
-      <label>#{portal.global.calendar}</label>
+      <name>agenda</name>
+      <label>#{portal.global.agenda}</label>
       <visibility>SYSTEM</visibility>
-      <page-reference>portal::global::calendar</page-reference>
+      <page-reference>portal::global::agenda</page-reference>
     </node>
   </page-nodes>
 </node-navigation>
