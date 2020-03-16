@@ -21,7 +21,7 @@
 
   <import>war:/cs-extension/portal/portal-configuration.xml</import>
 
-  <import>war:/cs-extension/app-center-configuration.xml</import>
+  <import profiles="app-center">war:/cs-extension/app-center-configuration.xml</import>
   <import>war:/cs-extension/dynamic-container-configuration.xml</import>
 
 </configuration>
