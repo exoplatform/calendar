@@ -4,7 +4,8 @@ const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 let config = {
   context: path.resolve(__dirname, './'),
   entry: {
-    calendar: './src/main/webapp/vue-app/main.js'
+    calendar: './src/main/webapp/vue-app/main.js',
+	events: './src/main/webapp/vue-app/events/main.js'
   },
   output: {
     filename: 'vue-app/js/[name].bundle.js',

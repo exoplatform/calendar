@@ -642,4 +642,92 @@
 	background-color: #82aad7;
 	color: #fff;
 }
+
+/*=============== Events drawer component ===========*/
+
+#events #ExoCalendarEventForm {
+	.drawer-backdrop {
+		z-index: 1050;
+	}
+	.info {
+		background-color: white!important;
+	}
+	.category {
+		-webkit-appearance:menulist!important;
+	}
+	.title {
+		font-size: 14px!important;
+		line-height: 1.5rem!important;
+	}
+	.fromTime ,.toTime {
+		border: Solid 2px #e1e8ee !important;
+		border-radius: 5px!important;
+		box-sizing: border-box!important;
+	}
+	#mailReminderTimeEntry, #popupReminderTimeEntry {
+		width: 60px!important;
+		border: 1px solid #e1e8ee!important;
+		border-radius: 3px!important;
+	}
+	.reminderByEmail .mailReminder + div {
+		margin: 0!important;
+	}
+	.fieldComponent {
+		padding-left: 0!important;
+	}
+    #endDate ,#endAfterNumber{
+		border: Solid 2px #e1e8ee !important;
+		border-radius: 5px!important;
+		input[disabled]{
+        	background-color: #f2f2f2!important;
+		}
+	}
+	.selectize-input ,.description {
+		box-sizing: border-box!important;
+	}
+	.selectbox {
+		border: Solid 1px #e1e8ee !important;
+		border-radius: 3px!important;
+		-webkit-appearance:menulist!important;
+	}
+	.eventTitle ,.category, .location  {
+		border: Solid 2px #e1e8ee !important;
+		border-radius: 5px!important;
+		box-sizing: border-box!important;
+    }
+    .category {
+		.select:not(.ignore-vuetify-classes) {
+        	-webkit-appearance:menulist!important;
+        }
+	}
+	.btn {
+		border: 1px solid #e1e8ee !important;
+		width: auto;
+	}
+	.controls tr {
+		display: table-row!important;
+	}
+	.controls td:first-child {
+		padding-top: 7px!important;
+		padding-bottom: 7px!important;
+	}
+	.leftSide {
+		padding-left: 7px!important;
+	}
+	.popupHeader {
+		line-height: 20px!important;
+		margin-bottom: 7px!important;
+	}
+	.drawer {
+		.header {
+			box-sizing: border-box !important;
+		}
+		.content {
+        	box-sizing: content-box !important;
+        }
+		.footer {
+        	box-sizing: border-box !important;
+		}
+	}
+}
 /* End */

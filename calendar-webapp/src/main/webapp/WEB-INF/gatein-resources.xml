@@ -10,6 +10,14 @@
     <css-path>/skin/css/calendar/calendar.css</css-path>
     <css-priority>1</css-priority>
   </portlet-skin>
+  
+  <portlet-skin>
+    <application-name>calendar</application-name>
+    <portlet-name>Events</portlet-name>
+    <skin-name>Enterprise</skin-name>
+    <css-path>/skin/css/calendar/calendar.css</css-path>
+    <css-priority>1</css-priority>
+  </portlet-skin>
 
   <portlet>
     <name>CalendarPortlet</name>
@@ -21,89 +29,91 @@
       <depends>
         <module>bts_tooltip</module>
       </depends>
-	   <depends>
-	     <module>LoadMorePlugin</module>
-	   </depends>
-	   <depends>
-	     <module>Highlighter</module>
-	   </depends>
-	   <depends>
-	     <module>CalendarLayout</module>
-	   </depends>
-	   <depends>
-	     <module>Reminder</module>
-	   </depends>
-	   <depends>
-	     <module>UIWeekView</module>
-	   </depends>
-	   <depends>
-	     <module>UICalendarMan</module>
-	   </depends>
-	   <depends>
-	     <module>common</module>
-	   </depends>
-	   <depends>
-	     <module>base</module>
-	   </depends>
-	   <depends>
-	     <module>uiPopup</module>
-	   </depends>	   
-	   <depends>
-	     <module>uiForm</module>
-	   </depends>
-	   <depends>
-	     <module>uiPopupWindow</module>
-	   </depends>	   
-	   <depends>
-	     <module>DOMUtil</module>
-	   </depends>
-	   <depends>
-	     <module>jquery</module>
-	     <as>gj</as>
-	   </depends>
-	   <depends>
-	     <module>UICalendars</module>
-	   </depends>
-	   <depends>
-	     <module>ScheduleSupport</module>
-	   </depends>
-	   <depends>
-	     <module>CSUtils</module>
-	   </depends>
-	   <depends>
-	     <module>CalContextMenu</module>
-	     <as>UIContextMenu</as>
-	   </depends>
-	   <depends>
-	     <module>CalDateTimePicker</module>
-	   </depends>
-	   <depends>
-	     <module>DateTimeFormatter</module>
-	   </depends>
-	   <depends>
-	     <module>UIHSelection</module>
-	   </depends>
-	   <depends>
-	     <module>UISelection</module>
-	   </depends>
-	   <depends>
-	     <module>EventTooltip</module>
-	   </depends>
-	   <depends>
-	     <module>UICombobox</module>
-	   </depends>
-	   <depends>
-	     <module>UIDayView</module>
-	   </depends>
-	   <depends>
-	     <module>DateUtils</module>
-	   </depends>
-     <depends>
-       <module>calendarEvent</module>
-     </depends>
+      <depends>
+        <module>LoadMorePlugin</module>
+      </depends>
+      <depends>
+        <module>Highlighter</module>
+      </depends>
+      <depends>
+        <module>CalendarLayout</module>
+      </depends>
+      <depends>
+        <module>Reminder</module>
+      </depends>
+      <depends>
+        <module>UIWeekView</module>
+      </depends>
+      <depends>
+        <module>UICalendarMan</module>
+      </depends>
+      <depends>
+        <module>common</module>
+      </depends>
+      <depends>
+        <module>base</module>
+      </depends>
+      <depends>
+        <module>uiPopup</module>
+      </depends>
+      <depends>
+        <module>uiForm</module>
+      </depends>
+      <depends>
+        <module>uiPopupWindow</module>
+      </depends>
+      <depends>
+        <module>DOMUtil</module>
+      </depends>
+      <depends>
+        <module>jquery</module>
+        <as>gj</as>
+      </depends>
+      <depends>
+        <module>UICalendars</module>
+      </depends>
+      <depends>
+        <module>ScheduleSupport</module>
+      </depends>
+      <depends>
+        <module>CSUtils</module>
+      </depends>
+      <depends>
+        <module>CalContextMenu</module>
+        <as>UIContextMenu</as>
+      </depends>
+      <depends>
+        <module>CalDateTimePicker</module>
+      </depends>
+      <depends>
+        <module>DateTimeFormatter</module>
+      </depends>
+      <depends>
+        <module>UIHSelection</module>
+      </depends>
+      <depends>
+        <module>UISelection</module>
+      </depends>
+      <depends>
+        <module>EventTooltip</module>
+      </depends>
+      <depends>
+        <module>UICombobox</module>
+      </depends>
+      <depends>
+        <module>UIDayView</module>
+      </depends>
+      <depends>
+        <module>DateUtils</module>
+      </depends>
+      <depends>
+        <module>calendarEvent</module>
+      </depends>
     </module>
   </portlet>
-  
+
+
+
   <module>
     <name>UICombobox</name>
     <load-group>calendar</load-group>
@@ -114,14 +124,14 @@
       <module>jquery</module>
     </depends>
     <depends>
-     <module>webui-ext</module>
-     <as>wx</as>
+      <module>webui-ext</module>
+      <as>wx</as>
     </depends>
     <depends>
-     <module>ScheduleSupport</module>
+      <module>ScheduleSupport</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UIDayView</name>
     <load-group>calendar</load-group>
@@ -139,12 +149,12 @@
     </depends>
     <depends>
       <module>base</module>
-    </depends>    
+    </depends>
     <depends>
       <module>CSUtils</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UIResizeEvent</name>
     <load-group>calendar</load-group>
@@ -161,7 +171,7 @@
       <module>CSUtils</module>
     </depends>
   </module>
-  
+
   <module>
     <name>DateUtils</name>
     <load-group>calendar</load-group>
@@ -169,7 +179,7 @@
       <path>/javascript/eXo/calendar/cs/DateUtils.js</path>
     </script>
   </module>
-  
+
   <module>
     <name>EventTooltip</name>
     <load-group>calendar</load-group>
@@ -186,7 +196,7 @@
       <module>xss-utils</module>
     </depends>
   </module>
-  
+
   <module>
     <name>DOMUtil</name>
     <load-group>calendar</load-group>
@@ -197,7 +207,7 @@
       <module>jquery</module>
       <as>gj</as>
     </depends>
-  </module>    
+  </module>
   <module>
     <name>CSUtils</name>
     <load-group>calendar</load-group>
@@ -271,7 +281,7 @@
     <depends>
       <module>uiRightClickPopupMenu</module>
     </depends>
-  </module>    
+  </module>
   <module>
     <name>TimePicker</name>
     <load-group>calendar</load-group>
@@ -289,7 +299,7 @@
       <module>CalDateTimePicker</module>
     </depends>
   </module>
-     
+
   <module>
     <name>ScheduleSupport</name>
     <load-group>calendar</load-group>
@@ -301,7 +311,7 @@
       <as>gj</as>
     </depends>
   </module>
-  
+
   <module>
     <name>UIEventPreview</name>
     <script>
@@ -315,7 +325,7 @@
       <module>calendarEvent</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UICalendarSettingForm</name>
     <script>
@@ -326,7 +336,7 @@
       <as>gj</as>
     </depends>
   </module>
-  
+
   <module>
     <name>Highlighter</name>
     <load-group>calendar</load-group>
@@ -344,7 +354,7 @@
       <module>CSUtils</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UIHSelection</name>
     <load-group>calendar</load-group>
@@ -362,7 +372,7 @@
       <module>CSUtils</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UISelection</name>
     <load-group>calendar</load-group>
@@ -380,7 +390,7 @@
       <module>DOMUtil</module>
     </depends>
   </module>
-  
+
   <module>
     <name>CalendarLayout</name>
     <load-group>calendar</load-group>
@@ -398,13 +408,13 @@
       <module>LayoutManager</module>
     </depends>
   </module>
-  
+
   <module>
     <name>Reminder</name>
     <load-group>calendar</load-group>
     <script>
       <path>/javascript/eXo/calendar/Reminder.js</path>
-    </script>    
+    </script>
     <depends>
       <module>jquery</module>
       <as>gj</as>
@@ -413,7 +423,7 @@
       <module>commons-cometd3</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UICalendars</name>
     <load-group>calendar</load-group>
@@ -428,7 +438,7 @@
       <module>base</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UICalendarDragDrop</name>
     <load-group>calendar</load-group>
@@ -443,13 +453,13 @@
       <module>base</module>
     </depends>
     <depends>
-        <module>CSUtils</module>
+      <module>CSUtils</module>
     </depends>
     <depends>
-        <module>common</module>
+      <module>common</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UIWeekView</name>
     <load-group>calendar</load-group>
@@ -488,7 +498,7 @@
       <module>DateUtils</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UIHorizontalResize</name>
     <load-group>calendar</load-group>
@@ -499,7 +509,7 @@
       <module>jquery</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UICalendarMan</name>
     <load-group>calendar</load-group>
@@ -517,7 +527,7 @@
       <module>EventMan</module>
     </depends>
   </module>
-  
+
   <module>
     <name>GUIMan</name>
     <load-group>calendar</load-group>
@@ -547,7 +557,7 @@
       <module>DateUtils</module>
     </depends>
   </module>
-  
+
   <module>
     <name>QuickSortObject</name>
     <load-group>calendar</load-group>
@@ -555,7 +565,7 @@
       <path>/javascript/eXo/calendar/QuickSortObject.js</path>
     </script>
   </module>
-  
+
   <module>
     <name>EventObject</name>
     <load-group>calendar</load-group>
@@ -567,7 +577,7 @@
       <as>gj</as>
     </depends>
   </module>
-  
+
   <module>
     <name>DayMan</name>
     <load-group>calendar</load-group>
@@ -575,7 +585,7 @@
       <path>/javascript/eXo/calendar/DayMan.js</path>
     </script>
   </module>
-  
+
   <module>
     <name>WeekMan</name>
     <load-group>calendar</load-group>
@@ -589,7 +599,7 @@
       <module>DayMan</module>
     </depends>
   </module>
-  
+
   <module>
     <name>EventMan</name>
     <load-group>calendar</load-group>
@@ -607,7 +617,7 @@
       <module>WeekMan</module>
     </depends>
   </module>
-  
+
   <module>
     <name>UIColorPicker</name>
     <script>
@@ -618,7 +628,7 @@
       <as>gj</as>
     </depends>
   </module>
-  
+
   <module>
     <name>LoadMorePlugin</name>
     <load-group>calendar</load-group>
@@ -691,6 +701,35 @@
     </depends>
     <depends>
       <module>extensionRegistry</module>
+    </depends>
+  </module>
+
+  <portlet>
+    <name>Events</name>
+    <module>
+      <depends>
+        <module>eventsBundle</module>
+      </depends>
+    </module>
+  </portlet>
+
+  <module>
+    <name>eventsBundle</name>
+    <script>
+      <minify>false</minify>
+      <path>/vue-app/js/events.bundle.js</path>
+    </script>
+    <depends>
+      <module>vue</module>
+    </depends>
+    <depends>
+      <module>vuetify</module>
+    </depends>
+    <depends>
+      <module>eXoVueI18n</module>
+    </depends>
+    <depends>
+      <module>calendarEvent</module>
     </depends>
   </module>
 
