@@ -64,7 +64,7 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     end();
   }
 
-  public void testShouldSendMailToParticipantAfterCreateEvent() throws Exception {
+  public void testShouldSendMailToParticipantAfterCreateEventInPublicCalendar() throws Exception {
     // Test property 'exo.email.smtp.from' must not be null and must be set to default if not already defined.
     assertNotNull(MailNotification.EXO_EMAIL_SMTP_FROM);
     if (System.getProperty("exo.email.smtp.from") == null) {
@@ -93,6 +93,56 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     attachment.setInputStream(new ByteArrayInputStream("text".getBytes()));
     newEvent.setAttachment(Arrays.asList(attachment));
     calendarService.savePublicEvent(calendar.getId(), newEvent, true);
+
+    MailNotification mail = new MailNotification(mailService, organizationService, calendarService);
+
+    // When
+    mail.sendEmail(newEvent, USERNAMEROOT);
+
+    // Then
+    ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
+    Mockito.verify(mailService, Mockito.times(2)).sendMessage(messageCaptor.capture());
+    List<Message> messages = messageCaptor.getAllValues();
+    Message messageLionel = messages.get(0);
+    Assert.assertTrue(messageLionel.getSubject().startsWith("[invitation] Meeting"));
+    Assert.assertEquals("Root Root<" + MailNotification.EXO_EMAIL_SMTP_FROM + ">", messageLionel.getFrom());
+    Assert.assertEquals("lionel@gmail.com", messageLionel.getTo());
+    Assert.assertNotNull(messageLionel.getAttachment());
+    Assert.assertEquals(2, messageLionel.getAttachment().size()); // ics file + attachment
+    Message messageCristiano = messages.get(1);
+    Assert.assertTrue(messageCristiano.getSubject().startsWith("[invitation] Meeting"));
+    Assert.assertEquals("Root Root<" + MailNotification.EXO_EMAIL_SMTP_FROM + ">", messageCristiano.getFrom());
+    Assert.assertEquals("cristiano@gmail.com", messageCristiano.getTo());
+    Assert.assertNotNull(messageCristiano.getAttachment());
+    Assert.assertEquals(2, messageCristiano.getAttachment().size()); // ics file + attachment
+  }
+  public void testShouldSendMailToParticipantAfterCreateEventInPrivateCalendar() throws Exception {
+    // Test property 'exo.email.smtp.from' must not be null and must be set to default if not already defined.
+    assertNotNull(MailNotification.EXO_EMAIL_SMTP_FROM);
+    if (System.getProperty("exo.email.smtp.from") == null) {
+      assertEquals("noreply@exoplatform.com", MailNotification.EXO_EMAIL_SMTP_FROM);
+    }
+    // Given
+    Calendar calendar = createPrivateCalendar(USERNAMEROOT,"personalCalendar","it is a personal calendar");
+    CalendarEvent newEvent = new CalendarEvent();
+    newEvent.setCalendarId(calendar.getId());
+    newEvent.setCalType(String.valueOf(Utils.PRIVATE_TYPE));
+    newEvent.setSummary("Meeting");
+    String[] participants = new String[] {"lionel", "samuel", "cristiano"};
+    newEvent.setParticipant(participants);
+    LocalDateTime fromDateTime = LocalDateTime.now();
+    newEvent.setFromDateTime(Date.from(fromDateTime.atZone(ZoneId.systemDefault()).toInstant()));
+    newEvent.setToDateTime(Date.from(fromDateTime.plusHours(2).atZone(ZoneId.systemDefault()).toInstant()));
+    java.util.Calendar calFrom = java.util.Calendar.getInstance();
+    calFrom.setTime(newEvent.getFromDateTime());
+    java.util.Calendar calTo = java.util.Calendar.getInstance();
+    calTo.setTime(newEvent.getToDateTime());
+    Attachment attachment = new Attachment();
+    attachment.setName("attachment1.txt");
+    attachment.setMimeType("plain/text");
+    attachment.setInputStream(new ByteArrayInputStream("text".getBytes()));
+    newEvent.setAttachment(Arrays.asList(attachment));
+    calendarService.saveUserEvent(USERNAMEROOT,calendar.getId(), newEvent, true);
 
     MailNotification mail = new MailNotification(mailService, organizationService, calendarService);
 
