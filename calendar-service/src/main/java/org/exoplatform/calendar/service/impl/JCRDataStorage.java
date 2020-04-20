@@ -1305,6 +1305,7 @@ public class JCRDataStorage implements DataStorage {
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     Node calendarNode = getPublicCalendarHome().getNode(calendarId);
     event.setCalendarId(calendarId);
+    event.setCalType(String.valueOf(Calendar.TYPE_PUBLIC));
     Node reminderFolder = getReminderFolder(event.getFromDateTime());
     saveEvent(calendarNode, event, reminderFolder, isNew);
 
