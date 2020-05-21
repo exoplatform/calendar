@@ -6,7 +6,7 @@
   <portlet>
     <description xml:lang="EN">Calendar Portlet</description>
     <portlet-name>CalendarPortlet</portlet-name>
-    <display-name xml:lang="EN">Calendar Portlet</display-name>
+    <display-name xml:lang="EN">Agenda</display-name>
     <portlet-class>org.exoplatform.webui.application.portlet.PortletApplicationController</portlet-class>
 
     <init-param>

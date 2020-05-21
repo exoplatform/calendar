@@ -19,6 +19,8 @@
 
   <import>war:/cs-extension/social/spaces-templates-configuration.xml</import>
 
+  <import>war:/cs-extension/portal/application-configuration.xml</import>
+
   <import>war:/cs-extension/portal/portal-configuration.xml</import>
 
   <import profiles="app-center">war:/cs-extension/app-center-configuration.xml</import>
