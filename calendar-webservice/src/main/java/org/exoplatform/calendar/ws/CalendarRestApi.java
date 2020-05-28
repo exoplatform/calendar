@@ -3997,6 +3997,50 @@ public class CalendarRestApi implements ResourceContainer {
     return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
   }
 
+  /**
+   * Return format date of settings.
+   *
+   * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
+   *        If not specified, only JSON object is returned.
+   *
+   * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/getDateFormat}
+   *
+   * @format  JSON
+   *
+   * @response
+   *
+   * @return  format date of settings in JSON.
+   *
+   * @authentication
+   *
+   * @anchor  CalendarRestApi.getDateFormat
+   */
+  @GET
+  @RolesAllowed("users")
+  @Path("/getDateFormat")
+  @Produces({MediaType.APPLICATION_JSON})
+  @ApiOperation(
+      value = "Return format date of settings.",
+      notes = "Get the format of date posted in settings")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successful retrieval"),
+      @ApiResponse(code = 503, message = "Can't generate JSON file") })
+  public Response getDateFormat(
+      @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
+      @Context UriInfo uri) {
+    try {
+      CalendarSetting setting = calendarServiceInstance().getCalendarSetting(currentUserId());
+      Collection data = new LinkedList();
+      data.add(setting.getDateFormat());
+      ResponseBuilder okResult = Response.ok(data, MediaType.APPLICATION_JSON);
+
+      return okResult.cacheControl(nc).build();
+    } catch (Exception e) {
+      log.error("Can not get date format of settings", e);
+    }
+    return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
+  }
+
   private java.util.Calendar buildTimeFrom(Long miliseconds, TimeZone timeZone) {
     java.util.Calendar cal = java.util.Calendar.getInstance();
     cal.setTimeZone(timeZone);

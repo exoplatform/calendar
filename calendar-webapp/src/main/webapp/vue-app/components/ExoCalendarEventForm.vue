@@ -290,6 +290,7 @@ export default {
     getDefaultData() {
       const data = {
         recurringUpdateType: null,
+        dateFormat: '',
         showRecurringUpdateType: false,
         enableRecurring: false,
         showRecurring: false,
@@ -305,7 +306,11 @@ export default {
         LANG: typeof eXo !== 'undefined' ? eXo.env.portal.language : 'en',
         errors: []
       };
-
+      // get current date fromat format from settings
+      calServices.getDateForme().then(results => {
+        if(results){
+          this.dateFormat = results[0];
+        }});
       const event = new CalendarEvent();
       //add event creator as default participants
       event.participants.push(eXo.env.portal.userName);
@@ -346,13 +351,29 @@ export default {
       }
     },
     fromDate() {
-      return moment(this.event.fromDate).toDate().toLocaleDateString(this.LANG);
+      if (this.dateFormat  === 'dd-MM-yyyy') {
+        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_1);
+      } else if (this.dateFormat  === 'MM-dd-yyyy') {
+        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_2);
+      } else if (this.dateFormat  === 'MM/dd/yyyy') {
+        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_3);
+      } else if (this.dateFormat  === 'dd/MM/yyyy') {
+        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_4);
+      }
     },
     fromTime() {
       return Utils.formatTime(this.event.fromDate);
     },
     toDate() {
-      return moment(this.event.toDate).toDate().toLocaleDateString(this.LANG);
+      if (this.dateFormat  === 'dd-MM-yyyy') {
+        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_1);
+      } else if (this.dateFormat  === 'MM-dd-yyyy') {
+        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_2);
+      } else if (this.dateFormat  === 'MM/dd/yyyy') {
+        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_3);
+      } else if (this.dateFormat  === 'dd/MM/yyyy') {
+        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_4);
+      }
     },
     toTime() {
       return Utils.formatTime(this.event.toDate);

@@ -280,6 +280,17 @@ export function getCategories() {
     });
 }
 
+export function getDateForme() {
+  return fetch(`${calConstants.CAL_SERVER_API}getDateFormat`, {headers: calConstants.HEADER_NO_CACHE})
+    .then(resp =>  resp.json()).then(json => {
+      if (json) {
+        return json;
+      } else {
+        return [];
+      }
+    });
+}
+
 export function getCalendars() {
   const groupMap = {
     'PERSONAL': {'id': 0, 'name': 'privateCalendar'},

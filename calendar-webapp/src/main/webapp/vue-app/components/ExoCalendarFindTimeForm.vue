@@ -136,6 +136,7 @@ import Utils from '../model/utils.js';
 import * as calServices from '../calServices.js';
 import ExoModal from './ExoModal.vue';
 import ParticipantSelector from './ExoCalendarParticipantSelector.vue';
+import moment from 'moment';
 
 const MID_NIGHT_HOUR = 23;
 const MID_NIGHT_MINUTE = 59;
@@ -250,6 +251,7 @@ export default {
         fromDate: new Date(),
         toDate: new Date(),
         usernames: [],
+        dateFormat: '',
         users: [],
         isAllDay: false,
         selectedPars: [],
@@ -284,7 +286,19 @@ export default {
       this.refreshDate();
     },
     currDate() {
-      return Utils.formatDate(this.fromDate);
+      calServices.getDateForme().then(results => {
+        if(results){
+          this.dateFormat = results[0];
+        }});
+      if (this.dateFormat  === 'dd-MM-yyyy') {
+        return moment(this.fromDate).format(calConstants.FORMAT_PATTERN_1);
+      } else if (this.dateFormat  === 'MM-dd-yyyy') {
+        return moment(this.fromDate).format(calConstants.FORMAT_PATTERN_2);
+      } else if (this.dateFormat  === 'MM/dd/yyyy') {
+        return moment(this.fromDate).format(calConstants.FORMAT_PATTERN_3);
+      } else if (this.dateFormat  === 'dd/MM/yyyy') {
+        return moment(this.fromDate).format(calConstants.FORMAT_PATTERN_4);
+      }
     },
     moveDatePrev() {
       this.fromDate.setDate(this.fromDate.getDate() - 1);      
