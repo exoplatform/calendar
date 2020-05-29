@@ -49,7 +49,7 @@ public class TestCalendarRestApi extends TestRestApi {
     assertEquals(HTTPStatus.OK, response.getStatus());    
     Map<String, String[]> subResources = (Map<String, String[]>)response.getEntity();
     String[] resources = subResources.get("subResourcesHref");
-    assertEquals(35, resources.length);
+    assertEquals(36, resources.length);
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
