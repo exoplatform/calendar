@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.lang.ArrayUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.CalendarEvent;
+import org.exoplatform.calendar.service.CalendarSetting;
 import org.exoplatform.calendar.ws.bean.CalendarResource;
 import org.exoplatform.calendar.ws.bean.CollectionResource;
 import org.exoplatform.common.http.HTTPMethods;
@@ -234,6 +235,25 @@ public class TestCalendarRestApi extends TestRestApi {
     
     login("root", "/platform/administrators:*");
     response = service(HTTPMethods.PUT, CAL_BASE_URI + CALENDAR_URI + groupCalendar.getId(), baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.OK, response.getStatus());
+  }
+
+  public void testGetCalendarSettings() throws Exception {
+    Calendar cal = new Calendar() ;
+    cal.setName("myCal") ;
+    cal.setCalendarOwner("root");
+    JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
+   // CalendarSetting data = calendarService.getCalendarSetting("root");
+    JsonValue json = generatorImpl.createJsonObject(new CalendarResource(cal, CAL_BASE_URI + "/"));
+
+    byte[] data = json.toString().getBytes("UTF-8");
+
+    headers.putSingle("content-type", "application/json");
+    headers.putSingle("content-length", "" + data.length);
+
+    login("root");
+    ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
+    ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + "/getCalendarSettings", baseURI, headers, data, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
   }
   

@@ -280,11 +280,11 @@ export function getCategories() {
     });
 }
 
-export function getDateForme() {
-  return fetch(`${calConstants.CAL_SERVER_API}getDateFormat`, {headers: calConstants.HEADER_NO_CACHE})
+export function getCalendarSettings() {
+  return fetch(`${calConstants.CAL_SERVER_API}getCalendarSettings`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json()).then(json => {
-      if (json) {
-        return json;
+      if (json && json.data) {
+        return json.data;
       } else {
         return [];
       }

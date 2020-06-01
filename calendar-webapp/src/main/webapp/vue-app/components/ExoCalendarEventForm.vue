@@ -307,10 +307,11 @@ export default {
         errors: []
       };
       // get current date fromat format from settings
-      calServices.getDateForme().then(results => {
+      calServices.getCalendarSettings().then(results => {
         if(results){
-          this.dateFormat = results[0];
-        }});
+          this.dateFormat = results[0].dateFormat;
+        }
+      });
       const event = new CalendarEvent();
       //add event creator as default participants
       event.participants.push(eXo.env.portal.userName);

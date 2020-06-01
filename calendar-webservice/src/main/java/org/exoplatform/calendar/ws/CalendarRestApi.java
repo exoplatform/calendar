@@ -3998,45 +3998,58 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Return format date of settings.
+   * Return calendar settings.
+   *
+   * @param offset The starting point when paging the result. Default is *0*.
+   *
+   * @param limit Maximum number of settings returned.
+   *        If omitted or exceeds the *query limit* parameter configured for the class, *query limit* is used instead.
+   *
+   * @param returnSize Default is *false*. If set to *true*, the total number of matched settings will be returned in JSON
    *
    * @param jsonp The name of a JavaScript function to be used as the JSONP callback.
    *        If not specified, only JSON object is returned.
    *
-   * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/getDateFormat}
+   * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/getCalendarSettings}
    *
    * @format  JSON
    *
    * @response
    *
-   * @return  format date of settings in JSON.
+   * @return  calendar settings in JSON.
    *
    * @authentication
    *
-   * @anchor  CalendarRestApi.getDateFormat
+   * @anchor  CalendarRestApi.getCalendarSettings
    */
   @GET
   @RolesAllowed("users")
-  @Path("/getDateFormat")
+  @Path("/getCalendarSettings")
   @Produces({MediaType.APPLICATION_JSON})
   @ApiOperation(
-      value = "Return format date of settings.",
-      notes = "Get the format of date posted in settings")
+      value = "Return calendar settings.",
+      notes = "Get all calendar settings")
   @ApiResponses(value = {
       @ApiResponse(code = 200, message = "Successful retrieval"),
       @ApiResponse(code = 503, message = "Can't generate JSON file") })
   public Response getDateFormat(
+      @ApiParam(value = "The starting point when paging through a list of entities", required = false, defaultValue = "0") @QueryParam("offset") int offset,
+      @ApiParam(value = "The maximum number of results when paging through a list of entities, and do not exceed *hardLimit*. If not specified, *defaultLimit* will be used", required = false) @QueryParam("limit") int limit,
+      @ApiParam(value = "Tell the service if it must return the total size of the returned collection result, and the *link* http headers", required = false, defaultValue = "false") @QueryParam("returnSize") boolean returnSize,
       @ApiParam(value = "The name of a JavaScript function to be used as the JSONP callback", required = false) @QueryParam("jsonp") String jsonp,
       @Context UriInfo uri) {
     try {
       CalendarSetting setting = calendarServiceInstance().getCalendarSetting(currentUserId());
       Collection data = new LinkedList();
-      data.add(setting.getDateFormat());
-      ResponseBuilder okResult = Response.ok(data, MediaType.APPLICATION_JSON);
+      data.add(setting);
+      CollectionResource parData = new CollectionResource(data, returnSize ? data.size() : -1);
+      parData.setOffset(offset);
+      parData.setLimit(parseLimit(limit));
+      ResponseBuilder okResult = Response.ok(parData, MediaType.APPLICATION_JSON);
 
       return okResult.cacheControl(nc).build();
     } catch (Exception e) {
-      log.error("Can not get date format of settings", e);
+      log.error("Can not get calendar settings", e);
     }
     return Response.status(HTTPStatus.UNAVAILABLE).cacheControl(nc).build();
   }

@@ -286,9 +286,9 @@ export default {
       this.refreshDate();
     },
     currDate() {
-      calServices.getDateForme().then(results => {
+      calServices.getCalendarSettings().then(results => {
         if(results){
-          this.dateFormat = results[0];
+          this.dateFormat = results[0].dateFormat;
         }});
       if (this.dateFormat  === 'dd-MM-yyyy') {
         return moment(this.fromDate).format(calConstants.FORMAT_PATTERN_1);
