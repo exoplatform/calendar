@@ -243,8 +243,8 @@ public class TestCalendarRestApi extends TestRestApi {
     cal.setName("myCal") ;
     cal.setCalendarOwner("root");
     JsonGeneratorImpl generatorImpl = new JsonGeneratorImpl();
-   // CalendarSetting data = calendarService.getCalendarSetting("root");
-    JsonValue json = generatorImpl.createJsonObject(new CalendarResource(cal, CAL_BASE_URI + "/"));
+   CalendarSetting calendarSetting = calendarService.getCalendarSetting("root");
+    JsonValue json = generatorImpl.createJsonObject(calendarSetting);
 
     byte[] data = json.toString().getBytes("UTF-8");
 
