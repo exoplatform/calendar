@@ -255,6 +255,7 @@ public class TestCalendarRestApi extends TestRestApi {
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service(HTTPMethods.GET, CAL_BASE_URI + "/getCalendarSettings", baseURI, headers, data, writer);
     assertEquals(HTTPStatus.OK, response.getStatus());
+    assertEquals("MM/dd/yyyy", calendarSetting.getDateFormat());
   }
   
   public void testUpdateGroupCalendar() throws Exception {

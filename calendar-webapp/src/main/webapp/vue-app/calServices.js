@@ -283,8 +283,8 @@ export function getCategories() {
 export function getCalendarSettings() {
   return fetch(`${calConstants.CAL_SERVER_API}getCalendarSettings`, {headers: calConstants.HEADER_NO_CACHE})
     .then(resp =>  resp.json()).then(json => {
-      if (json && json.data) {
-        return json.data;
+      if (json) {
+        return json;
       } else {
         return [];
       }

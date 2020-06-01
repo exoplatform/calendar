@@ -309,7 +309,7 @@ export default {
       // get current date fromat format from settings
       calServices.getCalendarSettings().then(results => {
         if(results){
-          this.dateFormat = results[0].dateFormat;
+          this.dateFormat = results.dateFormat;
         }
       });
       const event = new CalendarEvent();
@@ -353,13 +353,13 @@ export default {
     },
     fromDate() {
       if (this.dateFormat  === 'dd-MM-yyyy') {
-        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_1);
+        return moment(this.event.fromDate).format('DD-MM-YYYY');
       } else if (this.dateFormat  === 'MM-dd-yyyy') {
-        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_2);
+        return moment(this.event.fromDate).format('MM-DD-YYYY');
       } else if (this.dateFormat  === 'MM/dd/yyyy') {
-        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_3);
+        return moment(this.event.fromDate).format('MM/DD/YYYY');
       } else if (this.dateFormat  === 'dd/MM/yyyy') {
-        return moment(this.event.fromDate).format(calConstants.FORMAT_PATTERN_4);
+        return moment(this.event.fromDate).format('DD/MM/YYYY');
       }
     },
     fromTime() {
@@ -367,13 +367,13 @@ export default {
     },
     toDate() {
       if (this.dateFormat  === 'dd-MM-yyyy') {
-        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_1);
+        return moment(this.event.toDate).format('DD-MM-YYYY');
       } else if (this.dateFormat  === 'MM-dd-yyyy') {
-        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_2);
+        return moment(this.event.toDate).format('MM-DD-YYYY');
       } else if (this.dateFormat  === 'MM/dd/yyyy') {
-        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_3);
+        return moment(this.event.toDate).format('MM/DD/YYYY');
       } else if (this.dateFormat  === 'dd/MM/yyyy') {
-        return moment(this.event.toDate).format(calConstants.FORMAT_PATTERN_4);
+        return moment(this.event.toDate).format('DD/MM/YYYY');
       }
     },
     toTime() {
