@@ -291,6 +291,10 @@ export default {
       const data = {
         recurringUpdateType: null,
         dateFormat: '',
+        Format_1: 'DD-MM-YYYY',
+        Format_2: 'MM-DD-YYYY',
+        Format_3: 'MM/DD/YYYY',
+        Format_4: 'DD/MM/YYYY',
         showRecurringUpdateType: false,
         enableRecurring: false,
         showRecurring: false,
@@ -309,7 +313,7 @@ export default {
       // get current date fromat format from settings
       calServices.getCalendarSettings().then(results => {
         if(results){
-          this.dateFormat = results.dateFormat;
+          this.dateFormat = results.dateFormat.toUpperCase();
         }
       });
       const event = new CalendarEvent();
@@ -352,28 +356,28 @@ export default {
       }
     },
     fromDate() {
-      if (this.dateFormat  === 'dd-MM-yyyy') {
-        return moment(this.event.fromDate).format('DD-MM-YYYY');
-      } else if (this.dateFormat  === 'MM-dd-yyyy') {
-        return moment(this.event.fromDate).format('MM-DD-YYYY');
-      } else if (this.dateFormat  === 'MM/dd/yyyy') {
-        return moment(this.event.fromDate).format('MM/DD/YYYY');
-      } else if (this.dateFormat  === 'dd/MM/yyyy') {
-        return moment(this.event.fromDate).format('DD/MM/YYYY');
+      if (this.dateFormat === this.Format_1) {
+        return moment(this.event.fromDate).format(this.Format_1);
+      } else if (this.dateFormat === this.Format_2) {
+        return moment(this.event.fromDate).format(this.Format_2);
+      } else if (this.dateFormat === this.Format_3) {
+        return moment(this.event.fromDate).format(this.Format_3);
+      } else if (this.dateFormat === this.Format_4) {
+        return moment(this.event.fromDate).format(this.Format_4);
       }
     },
     fromTime() {
       return Utils.formatTime(this.event.fromDate);
     },
     toDate() {
-      if (this.dateFormat  === 'dd-MM-yyyy') {
-        return moment(this.event.toDate).format('DD-MM-YYYY');
-      } else if (this.dateFormat  === 'MM-dd-yyyy') {
-        return moment(this.event.toDate).format('MM-DD-YYYY');
-      } else if (this.dateFormat  === 'MM/dd/yyyy') {
-        return moment(this.event.toDate).format('MM/DD/YYYY');
-      } else if (this.dateFormat  === 'dd/MM/yyyy') {
-        return moment(this.event.toDate).format('DD/MM/YYYY');
+      if (this.dateFormat === this.Format_1) {
+        return moment(this.event.toDate).format(this.Format_1);
+      } else if (this.dateFormat  === this.Format_2) {
+        return moment(this.event.toDate).format(this.Format_2);
+      } else if (this.dateFormat  === this.Format_3) {
+        return moment(this.event.toDate).format(this.Format_3);
+      } else if (this.dateFormat  === this.Format_4) {
+        return moment(this.event.toDate).format(this.Format_4);
       }
     },
     toTime() {
