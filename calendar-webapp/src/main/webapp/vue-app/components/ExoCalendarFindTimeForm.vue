@@ -252,10 +252,6 @@ export default {
         toDate: new Date(),
         usernames: [],
         dateFormat: '',
-        Format_1: 'DD-MM-YYYY',
-        Format_2: 'MM-DD-YYYY',
-        Format_3: 'MM/DD/YYYY',
-        Format_4: 'DD/MM/YYYY',
         users: [],
         isAllDay: false,
         selectedPars: [],
@@ -292,17 +288,9 @@ export default {
     currDate() {
       calServices.getCalendarSettings().then(results => {
         if(results){
-          this.dateFormat = results.dateFormat.toUpperCase();
+          this.dateFormat = results.dateFormat;
         }});
-      if (this.dateFormat === this.Format_1) {
-        return moment(this.fromDate).format(this.Format_1);
-      } else if (this.dateFormat === this.Format_2) {
-        return moment(this.fromDate).format(this.Format_2);
-      } else if (this.dateFormat === this.Format_3) {
-        return moment(this.fromDate).format(this.Format_3);
-      } else if (this.dateFormat === this.Format_4) {
-        return moment(this.fromDate).format(this.Format_4);
-      }
+      return moment(this.fromDate).format(this.dateFormat.toUpperCase());
     },
     moveDatePrev() {
       this.fromDate.setDate(this.fromDate.getDate() - 1);      

@@ -291,10 +291,6 @@ export default {
       const data = {
         recurringUpdateType: null,
         dateFormat: '',
-        Format_1: 'DD-MM-YYYY',
-        Format_2: 'MM-DD-YYYY',
-        Format_3: 'MM/DD/YYYY',
-        Format_4: 'DD/MM/YYYY',
         showRecurringUpdateType: false,
         enableRecurring: false,
         showRecurring: false,
@@ -313,7 +309,7 @@ export default {
       // get current date fromat format from settings
       calServices.getCalendarSettings().then(results => {
         if(results){
-          this.dateFormat = results.dateFormat.toUpperCase();
+          this.dateFormat = results.dateFormat;
         }
       });
       const event = new CalendarEvent();
@@ -356,29 +352,13 @@ export default {
       }
     },
     fromDate() {
-      if (this.dateFormat === this.Format_1) {
-        return moment(this.event.fromDate).format(this.Format_1);
-      } else if (this.dateFormat === this.Format_2) {
-        return moment(this.event.fromDate).format(this.Format_2);
-      } else if (this.dateFormat === this.Format_3) {
-        return moment(this.event.fromDate).format(this.Format_3);
-      } else if (this.dateFormat === this.Format_4) {
-        return moment(this.event.fromDate).format(this.Format_4);
-      }
+      return moment(this.event.fromDate).format(this.dateFormat.toUpperCase());
     },
     fromTime() {
       return Utils.formatTime(this.event.fromDate);
     },
     toDate() {
-      if (this.dateFormat === this.Format_1) {
-        return moment(this.event.toDate).format(this.Format_1);
-      } else if (this.dateFormat  === this.Format_2) {
-        return moment(this.event.toDate).format(this.Format_2);
-      } else if (this.dateFormat  === this.Format_3) {
-        return moment(this.event.toDate).format(this.Format_3);
-      } else if (this.dateFormat  === this.Format_4) {
-        return moment(this.event.toDate).format(this.Format_4);
-      }
+      return moment(this.event.toDate).format(this.dateFormat.toUpperCase());
     },
     toTime() {
       return Utils.formatTime(this.event.toDate);

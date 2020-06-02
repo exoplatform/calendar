@@ -3998,7 +3998,7 @@ public class CalendarRestApi implements ResourceContainer {
   }
 
   /**
-   * Return calendar settings.
+   * Return calendar settings of logged-in user.
    *
    *
    * @request  {@code GET: http://localhost:8080/rest/private/v1/calendar/getCalendarSettings}
