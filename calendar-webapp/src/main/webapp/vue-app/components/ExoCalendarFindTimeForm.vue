@@ -136,6 +136,7 @@ import Utils from '../model/utils.js';
 import * as calServices from '../calServices.js';
 import ExoModal from './ExoModal.vue';
 import ParticipantSelector from './ExoCalendarParticipantSelector.vue';
+import moment from 'moment';
 
 const MID_NIGHT_HOUR = 23;
 const MID_NIGHT_MINUTE = 59;
@@ -284,7 +285,7 @@ export default {
       this.refreshDate();
     },
     currDate() {
-      return Utils.formatDate(this.fromDate);
+      return moment(this.fromDate).format(calConstants.SETTINGS.dateFormat.toUpperCase());
     },
     moveDatePrev() {
       this.fromDate.setDate(this.fromDate.getDate() - 1);      

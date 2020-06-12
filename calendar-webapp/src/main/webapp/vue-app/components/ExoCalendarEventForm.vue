@@ -350,13 +350,13 @@ export default {
       }
     },
     fromDate() {
-      return moment(this.event.fromDate).toDate().toLocaleDateString(this.LANG);
+      return moment(this.event.fromDate).format(calConstants.SETTINGS.dateFormat.toUpperCase());
     },
     fromTime() {
       return Utils.formatTime(this.event.fromDate);
     },
     toDate() {
-      return moment(this.event.toDate).toDate().toLocaleDateString(this.LANG);
+      return moment(this.event.toDate).format(calConstants.SETTINGS.dateFormat.toUpperCase());
     },
     toTime() {
       return Utils.formatTime(this.event.toDate);
