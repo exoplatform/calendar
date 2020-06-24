@@ -1,17 +1,16 @@
 package org.exoplatform.calendar.service.test;
 
 import org.exoplatform.calendar.service.*;
-import org.exoplatform.services.security.ConversationState;
-import org.junit.Assert;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-
 import org.exoplatform.calendar.service.impl.MailNotification;
 import org.exoplatform.services.mail.MailService;
 import org.exoplatform.services.mail.Message;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserHandler;
+import org.exoplatform.services.security.ConversationState;
+import org.junit.Assert;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
@@ -34,6 +33,8 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     super.setUp();
     organizationService = getContainer().getComponentInstanceOfType(OrganizationService.class);
     mailService = Mockito.mock(MailService.class);
+    getContainer().unregisterComponent(MailService.class);
+    getContainer().registerComponentInstance(MailService.class, mailService);
     calendarService = getContainer().getComponentInstanceOfType(CalendarService.class);
 
     begin();
@@ -78,7 +79,7 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     newEvent.setCalendarId(calendar.getId());
     newEvent.setCalType(String.valueOf(Utils.PUBLIC_TYPE));
     newEvent.setSummary("Meeting");
-    String[] participants = new String[] {"lionel", "samuel", "cristiano"};
+    String[] participants = new String[] {"lionel", "cristiano"};
     newEvent.setParticipant(participants);
     LocalDateTime fromDateTime = LocalDateTime.now();
     newEvent.setFromDateTime(Date.from(fromDateTime.atZone(ZoneId.systemDefault()).toInstant()));
@@ -94,12 +95,8 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     newEvent.setAttachment(Arrays.asList(attachment));
     calendarService.savePublicEvent(calendar.getId(), newEvent, true);
 
-    MailNotification mail = new MailNotification(mailService, organizationService, calendarService);
+    MailNotification.sendEmail(newEvent, USERNAMEROOT);
 
-    // When
-    mail.sendEmail(newEvent, USERNAMEROOT);
-
-    // Then
     ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
     Mockito.verify(mailService, Mockito.times(2)).sendMessage(messageCaptor.capture());
     List<Message> messages = messageCaptor.getAllValues();
@@ -115,6 +112,12 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     Assert.assertEquals("cristiano@gmail.com", messageCristiano.getTo());
     Assert.assertNotNull(messageCristiano.getAttachment());
     Assert.assertEquals(2, messageCristiano.getAttachment().size()); // ics file + attachment
+
+    assertNotNull(MailNotification.getParticiapntsDisplayName(newEvent));
+    assertEquals("Lionel Messi,Cristiano Ronaldo",MailNotification.getParticiapntsDisplayName(newEvent));
+    assertNotNull(MailNotification.getEmailsInivtationList(newEvent));
+    assertEquals("lionel@gmail.com,cristiano@gmail.com",MailNotification.getEmailsInivtationList(newEvent));
+    assertNotNull(newEvent.getAttachment());
   }
   public void testShouldSendMailToParticipantAfterCreateEventInPrivateCalendar() throws Exception {
     // Test property 'exo.email.smtp.from' must not be null and must be set to default if not already defined.
@@ -128,7 +131,7 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     newEvent.setCalendarId(calendar.getId());
     newEvent.setCalType(String.valueOf(Utils.PRIVATE_TYPE));
     newEvent.setSummary("Meeting");
-    String[] participants = new String[] {"lionel", "samuel", "cristiano"};
+    String[] participants = new String[] {"lionel", "cristiano"};
     newEvent.setParticipant(participants);
     LocalDateTime fromDateTime = LocalDateTime.now();
     newEvent.setFromDateTime(Date.from(fromDateTime.atZone(ZoneId.systemDefault()).toInstant()));
@@ -142,14 +145,11 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     attachment.setMimeType("plain/text");
     attachment.setInputStream(new ByteArrayInputStream("text".getBytes()));
     newEvent.setAttachment(Arrays.asList(attachment));
+
     calendarService.saveUserEvent(USERNAMEROOT,calendar.getId(), newEvent, true);
 
-    MailNotification mail = new MailNotification(mailService, organizationService, calendarService);
+    MailNotification.sendEmail(newEvent, USERNAMEROOT);
 
-    // When
-    mail.sendEmail(newEvent, USERNAMEROOT);
-
-    // Then
     ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
     Mockito.verify(mailService, Mockito.times(2)).sendMessage(messageCaptor.capture());
     List<Message> messages = messageCaptor.getAllValues();
@@ -165,6 +165,11 @@ public class MailNotificationTest extends BaseCalendarServiceTestCase {
     Assert.assertEquals("cristiano@gmail.com", messageCristiano.getTo());
     Assert.assertNotNull(messageCristiano.getAttachment());
     Assert.assertEquals(2, messageCristiano.getAttachment().size()); // ics file + attachment
-  }
 
+    assertNotNull(MailNotification.getParticiapntsDisplayName(newEvent));
+    assertEquals("Lionel Messi,Cristiano Ronaldo",MailNotification.getParticiapntsDisplayName(newEvent));
+    assertNotNull(MailNotification.getEmailsInivtationList(newEvent));
+    assertEquals("lionel@gmail.com,cristiano@gmail.com",MailNotification.getEmailsInivtationList(newEvent));
+    assertNotNull(newEvent.getAttachment());
+  }
 }

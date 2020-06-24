@@ -28,6 +28,7 @@ import javax.jcr.query.*;
 
 import org.exoplatform.calendar.model.CompositeID;
 import org.apache.commons.lang3.StringUtils;
+import org.exoplatform.calendar.util.CalendarUtils;
 import org.picocontainer.Startable;
 import org.quartz.*;
 import org.quartz.impl.JobDetailImpl;
@@ -632,6 +633,8 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       } else {
         cel.updatePublicEvent(oldEvent, event, calendarId);
         storage_.savePublicEvent(calendarId, event, false);
+        String username = CalendarUtils.getCurrentUser();
+        MailNotification.sendEmail(event,username);// Send email invitation to participants in case of drag and drop of event
       }
     }
   }
@@ -681,6 +684,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     initNewUser(username, defaultCalendarSetting_);
     storage_.saveEventToSharedCalendar(username, calendarId, event, isNew);
+    MailNotification.sendEmail(event,username);
   }
   
   public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
@@ -930,6 +934,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       }
     }
     storage_.moveEvent(fromCalendar, toCalendar, fromType, toType, calEvents, username);
+    MailNotification.sendEmail(calEvents.get(0),username);// Send email invitation to participants in case of event edit/update
 
     if (fromType.equalsIgnoreCase(toType) && toType.equalsIgnoreCase(String.valueOf(Calendar.TYPE_PUBLIC)) && fromCalendar.equalsIgnoreCase(toCalendar)) {
       for (CalendarEventListener cel : eventListeners_) {
