@@ -16,20 +16,10 @@
  */
 package org.exoplatform.calendar.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.exoplatform.calendar.service.Attachment;
-import org.exoplatform.calendar.service.CalendarEvent;
-import org.exoplatform.calendar.service.CalendarService;
-import org.exoplatform.calendar.service.CalendarSetting;
-import org.exoplatform.calendar.service.Utils;
+import org.apache.commons.lang.StringUtils;
+import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.util.CalendarUtils;
+import org.exoplatform.commons.utils.CommonsUtils;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.container.PortalContainer;
@@ -37,22 +27,20 @@ import org.exoplatform.portal.Constants;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.mail.MailService;
-import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserProfile;
 import org.exoplatform.services.resources.LocaleContextInfo;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.exoplatform.services.security.ConversationState;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class MailNotification {
-
-  private ResourceBundle        ressourceBundle;
-
-  private MailService           mailService;
-
-  private OrganizationService   organizationService;
-
-  private CalendarService       calendarService;
 
   public static final   String FIELD_MESSAGE = "messageName" ;
   public static final   String FIELD_EVENT = "eventName";
@@ -69,43 +57,29 @@ public class MailNotification {
   private static final  AtomicBoolean                 isRBLoaded           = new AtomicBoolean();
 
   private static final Log      LOG = ExoLogger.getExoLogger(MailNotification.class);
-  
-  public MailNotification(MailService mailService,
-                          OrganizationService organizationService,
-                          CalendarService calendarService) {
-    this.mailService = mailService;
-    this.organizationService = organizationService;
-    this.calendarService = calendarService;
-  }
 
-  public void sendEmail(CalendarEvent event, String username) throws Exception {
+  public static void sendEmail(CalendarEvent event, String username) throws Exception {
+    //TODO remove invitor
+    if(StringUtils.isBlank(username)){
+      throw new IllegalArgumentException("Username could not be be null or empty");
+    }
     User invitor = (User) ConversationState.getCurrent().getAttribute("UserProfile");
     if (invitor == null)
       return;
     List<Attachment> atts = event.getAttachment();
     Map<String, String> eXoIdMap = new HashMap<>();   
 
-    StringBuilder toDisplayName = new StringBuilder("");
-    StringBuilder sbAddress = new StringBuilder("");
+    String toDisplayName = getParticiapntsDisplayName(event);
+    String emailList = getEmailsInivtationList(event);
+
     for (String s : event.getParticipant()) {
-      User user = organizationService.getUserHandler().findUserByName(s);
-      if (user == null)  {
-        continue;
-      }
-      
+      User user = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(s);
       eXoIdMap.put(user.getEmail(), s);
-      if (toDisplayName.length() > 0) {
-        toDisplayName.append(",");
-      }
-      toDisplayName.append(user.getDisplayName());
-      if (sbAddress.length() > 0)
-        sbAddress.append(",");
-      sbAddress.append(user.getEmail());
     }
 
-    User user = organizationService.getUserHandler().findUserByName(username);
+    User user = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(username);
     byte[] icsFile;
-    try (OutputStream out = calendarService.getCalendarImportExports(calendarService.ICALENDAR)
+    try (OutputStream out = CommonsUtils.getService(CalendarService.class).getCalendarImportExports(CalendarService.ICALENDAR)
                                            .exportEventCalendar(username,
                                                                 event.getCalendarId(),
                                                                 event.getCalType(),
@@ -113,7 +87,6 @@ public class MailNotification {
       icsFile = out.toString().getBytes("UTF-8");
     }
 
-    String emailList = sbAddress.toString();
     String userId;
     for (String userEmail : emailList.split(CalendarUtils.COMMA)) {
       if (CalendarUtils.isEmpty(userEmail)) continue;
@@ -121,8 +94,8 @@ public class MailNotification {
       userId = eXoIdMap.get(userEmail);
       ResourceBundle res = null;
 
-      CalendarSetting calendarSetting = calendarService.getCalendarSetting(userId);
-      UserProfile userProfile = organizationService.getUserProfileHandler().findUserProfileByName(userId);
+      CalendarSetting calendarSetting = CommonsUtils.getService(CalendarService.class).getCalendarSetting(userId);
+      UserProfile userProfile = CommonsUtils.getOrganizationService().getUserProfileHandler().findUserProfileByName(userId);
       String lang = userProfile == null ? null : userProfile.getUserInfoMap().get(Constants.USER_LANGUAGE);
       ResourceBundleService ressourceBundleService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(ResourceBundleService.class);
       if (lang != null && !lang.isEmpty()) {
@@ -130,7 +103,7 @@ public class MailNotification {
       }
 
       if (res == null) {
-        res = getResourceBundle(ressourceBundleService);
+        res = getResourceBundle();
       }
 
       DateFormat df = new SimpleDateFormat(calendarSetting.getDateFormat() + " " + calendarSetting.getTimeFormat());
@@ -140,7 +113,7 @@ public class MailNotification {
       message.setSubject(buildMailSubject(event, df, res));
       message.setBody(getBodyMail(buildMailBody(invitor,
                                                 event,
-                                                toDisplayName.toString(),
+                                                toDisplayName,
                                                 df,
                                                 CalendarUtils.generateTimeZoneLabel(calendarSetting.getTimeZone()),
                                                 res),
@@ -173,11 +146,44 @@ public class MailNotification {
           message.addAttachment(attachment);
         }
       }
-      mailService.sendMessage(message);
+      CommonsUtils.getService(MailService.class).sendMessage(message);
     }
   }
 
-  private String getBodyMail(Object sbBody,
+  public static String getEmailsInivtationList(CalendarEvent event) throws Exception {
+    User invitor = (User) ConversationState.getCurrent().getAttribute("UserProfile");
+    StringBuilder emaillist = new StringBuilder("");
+    for (String s : event.getParticipant()) {
+      User user = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(s);
+      if (user == null)  {
+        continue;
+      }
+      if(! user.getEmail().equals(invitor.getEmail())) {
+        if (emaillist.length() > 0) {
+          emaillist.append(",");
+        }
+        emaillist.append(user.getEmail());
+      }
+    }
+    return String.valueOf(emaillist);
+  }
+
+  public static String getParticiapntsDisplayName(CalendarEvent event) throws Exception{
+    StringBuilder usersDisplayNameList = new StringBuilder("");
+    for (String s : event.getParticipant()) {
+      User user = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(s);
+      if (user == null)  {
+        continue;
+      }
+      if (usersDisplayNameList.length() > 0) {
+        usersDisplayNameList.append(",");
+      }
+      usersDisplayNameList.append(user.getDisplayName());
+    }
+    return String.valueOf(usersDisplayNameList);
+  }
+
+  private static String getBodyMail(Object sbBody,
                              Map<String, String> eXoIdMap,
                              String userEmail,
                              User invitor,
@@ -232,7 +238,7 @@ public class MailNotification {
     return "";
   }
 
-  private Object buildMailBody(User invitor,
+  private static String buildMailBody(User invitor,
                                CalendarEvent event,
                                String toDisplayName,
                                DateFormat df,
@@ -304,7 +310,7 @@ public class MailNotification {
     return sbBody.toString();
   }
 
-  private String buildMailSubject(CalendarEvent event, DateFormat df, ResourceBundle res) {
+  private static String buildMailSubject(CalendarEvent event, DateFormat df, ResourceBundle res) {
     StringBuilder sbSubject = new StringBuilder("[" + getLabel(res, "invitation") + "] ");
     sbSubject.append(event.getSummary());
     Date fromDateTime = event.getFromDateTime();
@@ -316,7 +322,7 @@ public class MailNotification {
     return sbSubject.toString();
   }
 
-  public String getLabel(ResourceBundle res, String label) {
+  public static String getLabel(ResourceBundle res, String label) {
     if(res != null) {
       String resKey = ".label." + label;
       try {
@@ -329,19 +335,20 @@ public class MailNotification {
     }
   }
   
-  public ResourceBundle getResourceBundle(ResourceBundleService ressourceBundleService) throws Exception {
+  public static ResourceBundle getResourceBundle() throws Exception {
+    ResourceBundle resourceBundle = null;
     if (!isRBLoaded.get()) {
       synchronized (isRBLoaded) {
         if (!isRBLoaded.get()) {
           try {
-            ressourceBundle = ressourceBundleService.getResourceBundle(Utils.RESOURCEBUNDLE_NAME, Locale.getDefault());
+            resourceBundle = CommonsUtils.getService(ResourceBundleService.class).getResourceBundle(Utils.RESOURCEBUNDLE_NAME, Locale.getDefault());
           } catch (MissingResourceException e) {
-            ressourceBundle = null;
+            resourceBundle = null;
           }
           isRBLoaded.set(true);
         }
       }
     } 
-    return ressourceBundle;
+    return resourceBundle;
   }
 }

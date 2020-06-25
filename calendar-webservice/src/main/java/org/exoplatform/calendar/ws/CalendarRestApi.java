@@ -1965,8 +1965,7 @@ public class CalendarRestApi implements ResourceContainer {
         newEvent.setCalendarId(id);
         saveEvent(calType, newEvent, true);
         String username = ConversationState.getCurrent().getIdentity().getUserId();
-        MailNotification mail = new MailNotification(mailService, orgService, calendarServiceInstance());
-        mail.sendEmail(newEvent,username);
+        MailNotification.sendEmail(newEvent,username);
 
         String location = new StringBuilder(getBasePath(uriInfo)).append(EVENT_URI).append(newEvent.getId()).toString();
         return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, location).cacheControl(nc).build();
