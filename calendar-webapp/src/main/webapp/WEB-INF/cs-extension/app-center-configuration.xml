@@ -54,6 +54,9 @@
             <field name="isMandatory">
               <boolean>false</boolean>
             </field>
+            <field name="isMobile">
+              <boolean>true</boolean>
+            </field>
           </object>
         </object-param>
       </init-params>
