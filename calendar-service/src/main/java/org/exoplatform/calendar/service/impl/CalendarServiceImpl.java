@@ -586,6 +586,9 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     initNewUser(username, defaultCalendarSetting_);
     storage_.saveUserEvent(username, calendarId, event, isNew);
+    if(!isNew) {
+      MailNotification.sendEmail(event, username); // Send email invitation to participants in case of drag and drop of user event
+    }
   }
 
   /**
@@ -629,7 +632,11 @@ public class CalendarServiceImpl implements CalendarService, Startable {
    */
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     CalendarEvent oldEvent = getGroupEvent(event.getId());
+    String username = CalendarUtils.getCurrentUser();
     storage_.savePublicEvent(calendarId, event, isNew);
+    if(!isNew) {
+      MailNotification.sendEmail(event,username);// Send email invitation to participants in case of drag and drop of space event
+    }
     for (CalendarEventListener cel : eventListeners_) {
       if (isNew) {
         cel.savePublicEvent(event, calendarId);
@@ -637,8 +644,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
       } else {
         cel.updatePublicEvent(oldEvent, event, calendarId);
         storage_.savePublicEvent(calendarId, event, false);
-        String username = CalendarUtils.getCurrentUser();
-        MailNotification.sendEmail(event,username);// Send email invitation to participants in case of drag and drop of event
       }
     }
   }
