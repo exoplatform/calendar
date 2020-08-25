@@ -836,16 +836,6 @@ public interface CalendarService {
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception;
 
   /**
-   * Saves event or task to a public calendar
-   * @param username The user who's saving the event
-   * @param calendarId Id of the public calendar to which the event will be saved
-   * @param event <code>CalendarEvent</code> object to be saved.
-   * @param isNew If <code>true</code>, a new event will be saved. If <code>false</code>, an existing event will be updated.
-   * @throws Exception
-   */
-  public void savePublicEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception;
-
-  /**
    * Removes a public event or task, all attachments and reminders of this event will be removed
    * @param calendarId given calendar id
    * @param eventId given event or task id

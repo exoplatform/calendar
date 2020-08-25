@@ -221,7 +221,6 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
    * we create new activity and set its activityId
    */
   private ExoSocialActivity getActivityForEvent(CalendarEvent calendarEvent) {
-    String username = ConversationState.getCurrent().getIdentity().getUserId();
     String eventType = calendarEvent.getEventType().equalsIgnoreCase(CalendarEvent.TYPE_EVENT) ? EVENT_ADDED : TASK_ADDED;
     String calendarId = calendarEvent.getCalendarId();
     //if calendar is null, or not a space calendar, returns null
@@ -261,7 +260,7 @@ public class CalendarSpaceActivityPublisher extends CalendarEventListener {
       activityManager.saveActivityNoReturn(spaceIdentity, activity);
       calendarEvent.setActivityId(activity.getId());
       try {
-        calendarService.savePublicEvent(username, calendarId, calendarEvent, false);
+        calendarService.savePublicEvent(calendarId, calendarEvent, false);
       } catch (Exception e) {
         LOG.error("Couldn't attach the Activity ID {} to the event {}", activity.getId(), calendarEvent.getId(), e);
       }

@@ -59,27 +59,25 @@ public class MailNotification {
   private static final Log      LOG = ExoLogger.getExoLogger(MailNotification.class);
 
   public static void sendEmail(CalendarEvent event, String username) throws Exception {
-
+    //TODO remove invitor
     if(StringUtils.isBlank(username)){
       throw new IllegalArgumentException("Username could not be be null or empty");
     }
-
+    User invitor = (User) ConversationState.getCurrent().getAttribute("UserProfile");
+    if (invitor == null)
+      return;
     List<Attachment> atts = event.getAttachment();
-    Map<String, String> eXoIdMap = new HashMap<>();
+    Map<String, String> eXoIdMap = new HashMap<>();   
 
     String toDisplayName = getParticiapntsDisplayName(event);
-    String emailList = getEmailsInivtationList(event, username);
+    String emailList = getEmailsInivtationList(event);
 
     for (String s : event.getParticipant()) {
-      User participant = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(s);
-      if (participant == null) {
-        continue;
-      } else {
-        eXoIdMap.put(participant.getEmail(), s);
-      }
+      User user = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(s);
+      eXoIdMap.put(user.getEmail(), s);
     }
 
-    User invitor = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(username);
+    User user = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(username);
     byte[] icsFile;
     try (OutputStream out = CommonsUtils.getService(CalendarService.class).getCalendarImportExports(CalendarService.ICALENDAR)
                                            .exportEventCalendar(username,
@@ -126,8 +124,8 @@ public class MailNotification {
                                   res));
       message.setTo(userEmail);
       message.setMimeType(Utils.MIMETYPE_TEXTHTML);
-      message.setFrom(invitor.getDisplayName() + "<" + EXO_EMAIL_SMTP_FROM + ">");
-      message.setReplyTo(invitor.getEmail());
+      message.setFrom(user.getDisplayName() + "<" + EXO_EMAIL_SMTP_FROM + ">");
+      message.setReplyTo(user.getEmail());
 
       if (icsFile != null) {
         try (ByteArrayInputStream is = new ByteArrayInputStream(icsFile)) {
@@ -152,15 +150,15 @@ public class MailNotification {
     }
   }
 
-  public static String getEmailsInivtationList(CalendarEvent event, String username) throws Exception {
-    User invitor = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(username);
+  public static String getEmailsInivtationList(CalendarEvent event) throws Exception {
+    User invitor = (User) ConversationState.getCurrent().getAttribute("UserProfile");
     StringBuilder emaillist = new StringBuilder("");
     for (String s : event.getParticipant()) {
       User user = CommonsUtils.getOrganizationService().getUserHandler().findUserByName(s);
       if (user == null)  {
         continue;
       }
-      if(! user.getEmail().equals(invitor.getEmail())) {// Event invitation's email is not sent to invitor
+      if(! user.getEmail().equals(invitor.getEmail())) {
         if (emaillist.length() > 0) {
           emaillist.append(",");
         }

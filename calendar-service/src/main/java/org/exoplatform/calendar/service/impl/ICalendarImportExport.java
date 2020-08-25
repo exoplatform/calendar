@@ -640,7 +640,7 @@ public class ICalendarImportExport implements CalendarImportExport {
             calService.saveEventToSharedCalendar(username, calendarId, exoEvent, true);
             break;
           case Utils.PUBLIC_TYPE:
-            calService.savePublicEvent(username, calendarId, exoEvent, true);
+            calService.savePublicEvent(calendarId, exoEvent, true);
             break;
           }
         } catch (Exception e) {
