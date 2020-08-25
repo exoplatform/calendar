@@ -5016,11 +5016,12 @@ public class JCRDataStorage implements DataStorage {
         if (getPublicCalendarHome().hasNode(formCalendar)) {
           switch (Integer.parseInt(toType)) {
           case Calendar.TYPE_PRIVATE:
-            // move events from public to public calendar
+            // move events from public to private calendar
             if (getUserCalendarHome(username).hasNode(toCalendar)) {
               for (CalendarEvent calEvent : calEvents) {
                 removePublicEvent(formCalendar, calEvent.getId());
                 calEvent.setCalendarId(toCalendar);
+                calEvent.setCalType(String.valueOf(Calendar.TYPE_PRIVATE));
                 saveUserEvent(username,
                               toCalendar,
                               calEvent,
