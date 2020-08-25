@@ -1964,6 +1964,8 @@ public class CalendarRestApi implements ResourceContainer {
 
         newEvent.setCalendarId(id);
         saveEvent(calType, newEvent, true);
+        String username = ConversationState.getCurrent().getIdentity().getUserId();
+        MailNotification.sendEmail(newEvent,username);
 
         String location = new StringBuilder(getBasePath(uriInfo)).append(EVENT_URI).append(newEvent.getId()).toString();
         return Response.status(HTTPStatus.CREATED).header(HEADER_LOCATION, location).cacheControl(nc).build();
@@ -4771,7 +4773,7 @@ public class CalendarRestApi implements ResourceContainer {
             calService.saveUserEvent(currentUserId(), event.getCalendarId(), event, bln);
             break;
           case Calendar.TYPE_PUBLIC:
-            calService.savePublicEvent(currentUserId(), event.getCalendarId(), event, bln);
+            calService.savePublicEvent(event.getCalendarId(), event, bln);
             break;
           case Calendar.TYPE_SHARED:
             calService.saveEventToSharedCalendar(currentUserId(), event.getCalendarId(), event,bln);

@@ -255,7 +255,7 @@ public class UIDayView extends UICalendarView {
               } else if (ce.getCalType().equals(CalendarUtils.SHARED_TYPE)) {
                 CalendarUtils.getCalendarService().saveEventToSharedCalendar(username, calendarId, ce, false) ;
               } else if (ce.getCalType().equals(CalendarUtils.PUBLIC_TYPE)) {
-                CalendarUtils.getCalendarService().savePublicEvent(username, calendarId, ce, false) ;
+                CalendarUtils.getCalendarService().savePublicEvent(calendarId, ce, false) ;          
               }
             }
             calendarview.setLastUpdatedEventId(eventId) ;
