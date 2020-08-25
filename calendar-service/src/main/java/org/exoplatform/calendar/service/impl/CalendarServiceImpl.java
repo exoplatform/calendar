@@ -586,6 +586,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void saveUserEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     initNewUser(username, defaultCalendarSetting_);
     storage_.saveUserEvent(username, calendarId, event, isNew);
+    MailNotification.sendEmail(event, username); // Besides sending invitation emails on user event creation, it Sends it to participants in case of drag and drop of user event
   }
 
   /**
@@ -626,6 +627,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
   /**
    * {@inheritDoc}
+   * @deprecated
    */
   public void savePublicEvent(String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     CalendarEvent oldEvent = getGroupEvent(event.getId());
@@ -639,6 +641,24 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         storage_.savePublicEvent(calendarId, event, false);
         String username = CalendarUtils.getCurrentUser();
         MailNotification.sendEmail(event,username);// Send email invitation to participants in case of drag and drop of event
+      }
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public void savePublicEvent(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
+    CalendarEvent oldEvent = getGroupEvent(event.getId());
+    storage_.savePublicEvent(calendarId, event, isNew);
+    MailNotification.sendEmail(event, username);// Send email invitation emails to participants on space event creation and in case of drag and drop of space event
+    for (CalendarEventListener cel : eventListeners_) {
+      if (isNew) {
+        cel.savePublicEvent(event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
+      } else {
+        cel.updatePublicEvent(oldEvent, event, calendarId);
+        storage_.savePublicEvent(calendarId, event, false);
       }
     }
   }
@@ -688,7 +708,6 @@ public class CalendarServiceImpl implements CalendarService, Startable {
   public void saveEventToSharedCalendar(String username, String calendarId, CalendarEvent event, boolean isNew) throws Exception {
     initNewUser(username, defaultCalendarSetting_);
     storage_.saveEventToSharedCalendar(username, calendarId, event, isNew);
-    MailNotification.sendEmail(event,username);
   }
   
   public void assignGroupTask(String taskId, String calendarId, String assignee) throws Exception {
@@ -1485,7 +1504,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         } else if (toType == Calendar.TYPE_SHARED) {
           saveEventToSharedCalendar(username, toCalendar, selectedOccurrence, true);
         } else if (toType == Calendar.TYPE_PUBLIC) {
-          savePublicEvent(toCalendar, selectedOccurrence, true);
+          savePublicEvent(username, toCalendar, selectedOccurrence, true);
         }
       }
     } catch (Exception e) {
@@ -1544,7 +1563,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           break;
 
         case Calendar.TYPE_PUBLIC:
-          savePublicEvent(toCalendar, newEvent, false);
+          savePublicEvent(username, toCalendar, newEvent, false);
           break;
 
         case Calendar.TYPE_SHARED:
@@ -1561,7 +1580,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
           break;
 
         case Calendar.TYPE_PUBLIC:
-          savePublicEvent(fromCalendar, originEvent, false);
+          savePublicEvent(username, fromCalendar, originEvent, false);
           break;
 
         case Calendar.TYPE_SHARED:
@@ -1642,7 +1661,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
       case Calendar.TYPE_PUBLIC:
         if(isFirstOccurrence) {
-          savePublicEvent(calendarId, selectedOccurrence, false);
+          savePublicEvent(username, calendarId, selectedOccurrence, false);
         } else {
           //we don't want to add old-content comment to origin event's activity, so we call the method from storage
           storage_.savePublicEvent(calendarId, originEvent, false);
@@ -1651,7 +1670,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
 
             listener.updateFollowingOccurrences(originEvent, stopDate);
           }
-          savePublicEvent(calendarId, selectedOccurrence, true);//publish event to create activity
+          savePublicEvent(username, calendarId, selectedOccurrence, true);//publish event to create activity
         }
         break;
 
@@ -1709,7 +1728,7 @@ public class CalendarServiceImpl implements CalendarService, Startable {
         if(isException) {
           removePublicEvent(calendarId, removedOccurence.getId());
         } else
-          savePublicEvent(calendarId, originEvent, false);
+          savePublicEvent(username, calendarId, originEvent, false);
         for(CalendarEventListener cel : eventListeners_) {
           cel.removeOneOccurrence(originEvent, removedOccurence );
         }
