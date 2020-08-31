@@ -2,7 +2,6 @@ package org.exoplatform.cs.event;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.exoplatform.calendar.service.*;
-import org.exoplatform.calendar.service.impl.NewUserListener;
 import org.exoplatform.commons.utils.DateUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.application.PortalRequestContext;
@@ -182,7 +181,7 @@ public class UICreateEvent extends UIForm {
         } else if (uiForm.calType_.equals(SHARED_TYPE)) {
           calService.saveEventToSharedCalendar(username, calEvent.getCalendarId(), calEvent, true);
         } else if (uiForm.calType_.equals(PUBLIC_TYPE)) {
-          calService.savePublicEvent(calEvent.getCalendarId(), calEvent, true);
+          calService.savePublicEvent(username, calEvent.getCalendarId(), calEvent, true);
         }
         String defaultMsg = "The event has been added to the {1}.";
         String message =  UICreateEvent.getResourceBundle(uiForm.getId()+".msg.add-successfully."+ calEvent.getEventType(),defaultMsg);
