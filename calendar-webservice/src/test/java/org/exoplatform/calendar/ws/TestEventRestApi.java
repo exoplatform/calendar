@@ -431,11 +431,18 @@ public class TestEventRestApi extends AbstractTestEventRestApi {
 
     headers.putSingle("content-type", "application/json");
     headers.putSingle("content-length", "" + data.length);
-    
+
     login("john");
-    //john has permission on shared calendar
+
     ByteArrayContainerResponseWriter writer = new ByteArrayContainerResponseWriter();
     ContainerResponse response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI + sharedCalendar.getId()
+            + EVENT_URI, baseURI, headers, data, writer);
+    assertEquals(HTTPStatus.CREATED, response.getStatus());
+
+    login("root");
+
+    writer = new ByteArrayContainerResponseWriter();
+    response = service(HTTPMethods.POST, CAL_BASE_URI + CALENDAR_URI + sharedCalendar.getId()
                                          + EVENT_URI, baseURI, headers, data, writer);
     assertEquals(HTTPStatus.CREATED, response.getStatus());
     assertNotNull(response.getHttpHeaders().get(CalendarRestApi.HEADER_LOCATION).toString());

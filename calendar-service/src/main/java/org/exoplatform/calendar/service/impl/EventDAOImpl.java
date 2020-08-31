@@ -176,7 +176,7 @@ public class EventDAOImpl implements EventDAO {
       calService.saveUserEvent(owner, calendarId, event, false);
       break;
     case Calendar.TYPE_PUBLIC:
-      calService.savePublicEvent(calendarId, event, false);
+      calService.savePublicEvent(username, calendarId, event, false);
       break;
     case Calendar.TYPE_SHARED:
       calService.saveEventToSharedCalendar(username, calendarId, event, false);
