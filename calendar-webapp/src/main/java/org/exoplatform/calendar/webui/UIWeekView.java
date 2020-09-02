@@ -670,7 +670,7 @@ public class UIWeekView extends UICalendarView {
               } else if(calType.equals(CalendarUtils.SHARED_TYPE)) {
                 calendarService.saveEventToSharedCalendar(username, calendarId, eventCalendar, false) ;
               } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
-                calendarService.savePublicEvent(calendarId, eventCalendar, false) ;          
+                calendarService.savePublicEvent(username, calendarId, eventCalendar, false) ;
               }
             }
             calendarview.setLastUpdatedEventId(eventId) ;
@@ -769,7 +769,7 @@ public class UIWeekView extends UICalendarView {
               } else if(calType.equals(CalendarUtils.SHARED_TYPE)) {
                 calendarService.saveEventToSharedCalendar(username, calendarId, eventCalendar, false) ;
               } else if(calType.equals(CalendarUtils.PUBLIC_TYPE)) {
-                calendarService.savePublicEvent(calendarId, eventCalendar, false) ;          
+                calendarService.savePublicEvent(username, calendarId, eventCalendar, false) ;
               }
             }
             calendarview.setLastUpdatedEventId(eventId) ;
