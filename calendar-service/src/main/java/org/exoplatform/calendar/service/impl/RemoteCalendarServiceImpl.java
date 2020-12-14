@@ -925,7 +925,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
   public static CalendarEvent calculateEvent(VEvent event, CalendarEvent exoEvent) throws Exception {
     RRule rrule = (RRule) event.getProperty(Property.RRULE);
     Recur recur = rrule.getRecur();
-    String repeatType = recur.getFrequency();
+    String repeatType = recur.getFrequency().name();
     int interval = recur.getInterval();
     if (interval < 1)
       interval = 1;
@@ -959,7 +959,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
           String[] byDays = new String[weekDays.size()];
           for (int i = 0; i < byDays.length; i++) {
             WeekDay weekDay = (WeekDay) weekDays.get(i);
-            String day = weekDay.getDay();
+            String day = weekDay.getDay().name();
             int offset = weekDay.getOffset();
             if (offset != 0)
               byDays[i] = String.valueOf(offset) + day;
@@ -979,7 +979,7 @@ public class RemoteCalendarServiceImpl implements RemoteCalendarService {
             WeekDay weekDay;
             for (int i = 0; i < byDays.length; i++) {
               weekDay = (WeekDay) weekDays.get(i);
-              String day = weekDay.getDay();
+              String day = weekDay.getDay().name();
               int offset = weekDay.getOffset();
               if (offset != 0)
                 byDays[i] = String.valueOf(offset) + day;

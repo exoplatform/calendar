@@ -60,7 +60,6 @@ import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.ValidationException;
 import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.component.CalendarComponent;
 import net.fortuna.ical4j.model.component.VAlarm;
@@ -135,17 +134,13 @@ public class ICalendarImportExport implements CalendarImportExport {
     if (event == null)
       return null;
 
-    event.getProperties().getProperty(Property.DTSTART).getParameters().add(net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
 
     event.getProperties().add(new Description(exoEvent.getDescription()));
-    event.getProperties().getProperty(Property.DESCRIPTION).getParameters().add(net.fortuna.ical4j.model.parameter.Value.TEXT);
 
     event.getProperties().add(new Location(exoEvent.getLocation()));
-    event.getProperties().getProperty(Property.LOCATION).getParameters().add(net.fortuna.ical4j.model.parameter.Value.TEXT);
 
     if (exoEvent.getEventCategoryName() != null) {
       event.getProperties().add(new Categories(exoEvent.getEventCategoryName()));
-      event.getProperties().getProperty(Property.CATEGORIES).getParameters().add(net.fortuna.ical4j.model.parameter.Value.TEXT);
     }
     setPriorityCalEvent(event.getProperties(), exoEvent);
 
@@ -153,13 +148,10 @@ public class ICalendarImportExport implements CalendarImportExport {
       if (exoEvent.getCompletedDateTime() != null) {
         long completed = exoEvent.getCompletedDateTime().getTime();
         event.getProperties().add(new Completed(new DateTime(completed)));
-        event.getProperties().getProperty(Property.COMPLETED).getParameters().add(net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
       }
       event.getProperties().add(new Due(new DateTime(end)));
-      event.getProperties().getProperty(Property.DUE).getParameters().add(net.fortuna.ical4j.model.parameter.Value.DATE_TIME);
       if (!Utils.isEmpty(exoEvent.getStatus())) {
         event.getProperties().add(new Status(exoEvent.getStatus()));
-        event.getProperties().getProperty(Property.STATUS).getParameters().add(net.fortuna.ical4j.model.parameter.Value.TEXT);
       }
     }
 
@@ -208,7 +200,6 @@ public class ICalendarImportExport implements CalendarImportExport {
       event.getProperties().add(new Clazz(Clazz.PRIVATE.getValue()));
     else
       event.getProperties().add(new Clazz(Clazz.PUBLIC.getValue()));
-    event.getProperties().getProperty(Property.CLASS).getParameters().add(net.fortuna.ical4j.model.parameter.Value.TEXT);
     String[] attendees = exoEvent.getParticipant();
     if (attendees != null && attendees.length > 0) {
       for (int i = 0; i < attendees.length; i++) {
@@ -216,7 +207,6 @@ public class ICalendarImportExport implements CalendarImportExport {
           event.getProperties().add(new Attendee(attendees[i]));
         }
       }
-      event.getProperties().getProperty(Property.ATTENDEE).getParameters().add(net.fortuna.ical4j.model.parameter.Value.TEXT);
     }
     if (!Utils.isEmpty(exoEvent.getRepeatType())) {
       Recur rc = null;
@@ -298,7 +288,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     CalendarOutputter output = new CalendarOutputter();
     try {
       output.output(calendar, bout);
-    } catch (ValidationException e) {
+    } catch (Exception e) {
       if (logger.isDebugEnabled()) {
         logger.debug("Validate error", e);
       }
@@ -337,7 +327,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     CalendarOutputter output = new CalendarOutputter();
     try {
       output.output(calendar, bout);
-    } catch (ValidationException e) {
+    } catch (Exception e) {
       if (logger.isDebugEnabled()) {
         logger.debug("Validate error", e);
       }
@@ -383,7 +373,7 @@ public class ICalendarImportExport implements CalendarImportExport {
           if (r != null && r.getRecur() != null) {
             Recur rc = r.getRecur();
             rc.getFrequency();
-            if (Recur.WEEKLY.equalsIgnoreCase(rc.getFrequency())) {
+            if (Recur.WEEKLY.equalsIgnoreCase(rc.getFrequency().name())) {
               if (rc.getDayList().size() == 2) {
                 exoEvent.setRepeatType(CalendarEvent.RP_WEEKEND);
               } else if (rc.getDayList().size() == 5) {
@@ -393,7 +383,7 @@ public class ICalendarImportExport implements CalendarImportExport {
                 exoEvent.setRepeatType(CalendarEvent.RP_WEEKLY);
               }
             } else {
-              exoEvent.setRepeatType(rc.getFrequency().toLowerCase());
+              exoEvent.setRepeatType(rc.getFrequency().name().toLowerCase());
             }
           }
         } catch (Exception e) {
@@ -670,7 +660,7 @@ public class ICalendarImportExport implements CalendarImportExport {
     CalendarOutputter output = new CalendarOutputter();
     try {
       output.output(calendar, bout);
-    } catch (ValidationException e) {
+    } catch (Exception e) {
       if (logger.isDebugEnabled()) {
         logger.debug("Validate error", e);
       }
@@ -692,8 +682,6 @@ public class ICalendarImportExport implements CalendarImportExport {
             priority = i;
           }
           propertyList.add(new Priority(priority));
-          propertyList.getProperty(Property.PRIORITY).getParameters()
-                      .add(net.fortuna.ical4j.model.parameter.Value.INTEGER);
           break;
         }
       }
