@@ -41,7 +41,9 @@
       <outputDirectory>/lib</outputDirectory>
       <includes>
         <include>org.exoplatform.calendar:*:jar</include>
-        <include>ical4j:ical4j:jar</include>
+        <include>backport-util-concurrent:backport-util-concurrent:jar</include>
+        <include>org.mnode.ical4j:ical4j:jar</include>
+        <include>javax.cache:cache-api:jar</include>
         <include>org.apache.jackrabbit:jackrabbit-webdav:jar</include>
         <include>org.apache.jackrabbit:jackrabbit-jcr-commons:jar</include>
       </includes>

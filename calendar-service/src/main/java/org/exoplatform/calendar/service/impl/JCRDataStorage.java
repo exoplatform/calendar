@@ -4776,7 +4776,12 @@ public class JCRDataStorage implements DataStorage {
       PeriodList list = vevent.calculateRecurrenceSet(period);
       if (list == null || list.size() == 0)
         return null;
-      Period last = (Period) list.last();
+      Period last = list.isEmpty() ? null
+                                   : list.stream()
+                                   .max((period1,
+                                         period2) -> period1.getStart()
+                                                            .compareTo(period2.getStart()))
+                                   .orElse(null);
       calendar.setTimeInMillis(last.getStart().getTime());
       calendar.add(java.util.Calendar.DATE, 1);
       calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);

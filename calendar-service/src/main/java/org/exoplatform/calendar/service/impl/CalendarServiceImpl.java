@@ -36,6 +36,7 @@ import org.quartz.impl.triggers.SimpleTriggerImpl;
 
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;
+import org.exoplatform.calendar.service.CalendarException;
 import org.exoplatform.calendar.util.Constants;
 import org.exoplatform.commons.utils.*;
 import org.exoplatform.container.ExoContainer;
