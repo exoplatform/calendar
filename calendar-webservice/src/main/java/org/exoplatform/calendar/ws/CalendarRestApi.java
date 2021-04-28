@@ -17,10 +17,9 @@
 
 package org.exoplatform.calendar.ws;
 
-import com.sun.syndication.feed.synd.*;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
+import com.rometools.rome.feed.synd.*;
+import com.rometools.rome.io.*;
+
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Method;

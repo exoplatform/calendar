@@ -16,10 +16,9 @@
  */
 package org.exoplatform.webservice.cs.calendar;
 
-import com.sun.syndication.feed.synd.*;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.XmlReader;
+import com.rometools.rome.feed.synd.*;
+import com.rometools.rome.io.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.calendar.service.Calendar;
 import org.exoplatform.calendar.service.*;

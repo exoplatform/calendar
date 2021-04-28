@@ -363,8 +363,9 @@
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>rome</groupId>
+      <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
+      <version>1.15.0</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
