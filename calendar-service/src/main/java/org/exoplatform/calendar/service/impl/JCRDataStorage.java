@@ -29,6 +29,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.rometools.rome.feed.synd.*;
+import com.rometools.rome.io.*;
+
 import javax.jcr.*;
 import javax.jcr.Property;
 import javax.jcr.nodetype.ConstraintViolationException;
@@ -37,8 +40,6 @@ import javax.jcr.query.*;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.sun.syndication.feed.synd.*;
-import com.sun.syndication.io.*;
 
 import org.exoplatform.calendar.service.*;
 import org.exoplatform.calendar.service.Calendar;

@@ -18,6 +18,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
+      <version>1.4.15</version>
       <exclusions>
         <exclusion>
           <artifactId>xpp3_min</artifactId>
@@ -250,10 +251,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>rome</groupId>
-      <artifactId>rome</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
@@ -337,6 +334,12 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome</artifactId>
+      <version>1.15.0</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
