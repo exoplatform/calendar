@@ -178,20 +178,6 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <systemPropertyVariables>
-              <org.apache.commons.logging.Log>org.apache.commons.logging.impl.SimpleLog</org.apache.commons.logging.Log>
-              <org.apache.commons.logging.simplelog.defaultlog>info</org.apache.commons.logging.simplelog.defaultlog>
-              <org.apache.commons.logging.simplelog.log.org.exoplatform>debug</org.apache.commons.logging.simplelog.log.org.exoplatform>
-              <org.apache.commons.logging.simplelog.log.net.hibernate>warn</org.apache.commons.logging.simplelog.log.net.hibernate>
-              <java.naming.factory.initial>org.exoplatform.services.naming.SimpleContextFactory</java.naming.factory.initial>
-              <exo.profiles>hsqldb</exo.profiles>
-            </systemPropertyVariables>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
           <configuration>
             <!-- Don't include libraries into Web Archives -->
